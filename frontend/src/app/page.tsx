@@ -268,6 +268,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ═══════════ SKILL FUSION LAB ═══════════ */}
+      <SkillFusionLab />
+
       {/* ═══════════ AUDIENCE SEGMENTATION ═══════════ */}
       <section id="enterprise" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
@@ -449,9 +452,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* ═══════════ SKILL FUSION LAB ═══════════ */}
-      <SkillFusionLab />
 
       {/* ═══════════ MASTER CLASSES ═══════════ */}
       <section id="master-classes" className="py-24 px-6 bg-slate-50">
