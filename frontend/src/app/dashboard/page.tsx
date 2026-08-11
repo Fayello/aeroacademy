@@ -523,62 +523,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Access */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          href="/dashboard/courses"
-          className="group rounded-xl border border-slate-200 bg-white p-6 hover:border-blue-300 hover:shadow-sm transition-all duration-200"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                <BookOpen size={20} className="text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-slate-900">Courses</h3>
-                <p className="text-sm text-slate-500">Continue learning</p>
-              </div>
-            </div>
-            <ArrowRight size={18} className="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-          </div>
-        </Link>
-
-        <Link
-          href="/dashboard/labs"
-          className="group rounded-xl border border-slate-200 bg-white p-6 hover:border-violet-300 hover:shadow-sm transition-all duration-200"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center group-hover:bg-violet-100 transition-colors">
-                <FlaskConical size={20} className="text-violet-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-slate-900">Labs</h3>
-                <p className="text-sm text-slate-500">Hands-on practice</p>
-              </div>
-            </div>
-            <ArrowRight size={18} className="text-slate-400 group-hover:text-violet-600 group-hover:translate-x-1 transition-all" />
-          </div>
-        </Link>
-
-        <Link
-          href="/dashboard/master-classes"
-          className="group rounded-xl border border-slate-200 bg-white p-6 hover:border-amber-300 hover:shadow-sm transition-all duration-200"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
-                <Play size={20} className="text-amber-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-slate-900">Master Classes</h3>
-                <p className="text-sm text-slate-500">Live sessions</p>
-              </div>
-            </div>
-            <ArrowRight size={18} className="text-slate-400 group-hover:text-amber-600 group-hover:translate-x-1 transition-all" />
-          </div>
-        </Link>
-      </div>
     </div>
   );
 }
