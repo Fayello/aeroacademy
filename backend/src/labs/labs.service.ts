@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException, OnModuleInit, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsService } from '../common/events.service';
+import { ActivityService } from '../common/activity.service';
 import { AchievementService } from '../dashboard/achievement.service';
 import { LeaguesService } from '../leagues/leagues.service';
 import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
@@ -17,6 +18,7 @@ const LAB_CPU_QUOTA = parseInt(process.env.LAB_CPU_QUOTA || '100000', 10);
 const PORT_RANGE_START = parseInt(process.env.LAB_PORT_START || '8000', 10);
 const PORT_RANGE_END = parseInt(process.env.LAB_PORT_END || '9000', 10);
 const MAX_CONCURRENT_LABS = parseInt(process.env.LAB_MAX_CONCURRENT || '20', 10);
+const MAX_LABS_PER_USER = parseInt(process.env.MAX_LABS_PER_USER || '3', 10);
 const TERMINAL_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
 @Injectable()
@@ -27,6 +29,7 @@ export class LabsService implements OnModuleInit {
   constructor(
     private prisma: PrismaService,
     private eventsService: EventsService,
+    private activityService: ActivityService,
     @Inject(forwardRef(() => AchievementService))
     private achievementService: AchievementService,
     private leaguesService: LeaguesService,
@@ -127,6 +130,11 @@ export class LabsService implements OnModuleInit {
       throw new BadRequestException('Lab capacity reached. Try again later.');
     }
 
+    const userRunningCount = await this.prisma.labInstance.count({ where: { userId, status: 'RUNNING' } });
+    if (userRunningCount >= MAX_LABS_PER_USER) {
+      throw new BadRequestException(`You can only run ${MAX_LABS_PER_USER} labs at a time. Stop a running lab first.`);
+    }
+
     const existing = await this.prisma.labInstance.findFirst({
       where: { userId, labId, status: 'RUNNING' }
     });
@@ -190,10 +198,18 @@ export class LabsService implements OnModuleInit {
 
       await container.start();
 
-      return await this.prisma.labInstance.update({
+      const updated = await this.prisma.labInstance.update({
         where: { id: instance.id },
         data: { containerId: container.id, status: 'RUNNING' }
       });
+
+      await this.activityService.log(userId, 'LAB_STARTED', {
+        labId: lab.id,
+        labTitle: lab.title,
+        instanceId: instance.id,
+      }).catch(() => {});
+
+      return updated;
 
     } catch (err) {
       await this.prisma.labInstance.delete({ where: { id: instance.id } }).catch(() => {});
@@ -222,6 +238,13 @@ export class LabsService implements OnModuleInit {
     await this.prisma.labInstance.update({
       where: { id: instance.id },
       data: { status: 'STOPPED' }
+    }).catch(() => {});
+
+    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
+    await this.activityService.log(userId, 'LAB_STOPPED', {
+      labId,
+      labTitle: lab?.title || 'Unknown Lab',
+      instanceId: instance.id,
     }).catch(() => {});
 
     return { success: true };
@@ -322,6 +345,14 @@ export class LabsService implements OnModuleInit {
       if (lab) await this.leaguesService.calculateUserElo(userId, lab.difficulty, true);
 
       await this.achievementService.checkAndUnlockAchievements(userId);
+
+      await this.activityService.log(userId, 'FLAG_SOLVED', {
+        labId: flag.labId,
+        labTitle: lab?.title || 'Unknown',
+        flagId: flag.id,
+        flagTitle: flag.title,
+        points: flag.points,
+      }).catch(() => {});
 
       this.eventsService.emit('FLAG_CAPTURED', {
         userId, flagTitle: flag.title, points: flag.points, timestamp: new Date()

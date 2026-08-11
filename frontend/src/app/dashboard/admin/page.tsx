@@ -41,6 +41,7 @@ export default function AdminDashboardPage() {
   const quickLinks = [
     { label: "Manage Courses", href: "/dashboard/admin/courses", icon: GraduationCap, description: "Create, edit sections, lessons & quizzes" },
     { label: "Manage Labs", href: "/dashboard/admin/labs", icon: Microscope, description: "Lab environments & CTF flags" },
+    { label: "Lab Monitoring", href: "/dashboard/admin/monitoring", icon: Activity, description: "Monitor active users & force-stop labs" },
     { label: "Manage Master Classes", href: "/dashboard/admin/master-classes", icon: Video, description: "Schedule live sessions" },
     { label: "Manage Trainers", href: "/dashboard/admin/trainers", icon: Calendar, description: "Add trainers & availability" },
     { label: "Manage Users", href: "/dashboard/admin/users", icon: Users, description: "User accounts & role management" },

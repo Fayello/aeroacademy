@@ -8,11 +8,11 @@ import toast from "react-hot-toast";
 import EmptyState from "@/components/ui/EmptyState";
 import { getLevel, getLabLock } from "@/lib/levelGating";
 
-function getDifficultyLabel(difficulty: number): { label: string; color: string } {
-  if (difficulty < 1100) return { label: "Beginner", color: "bg-emerald-100 text-emerald-700" };
-  if (difficulty < 1300) return { label: "Intermediate", color: "bg-amber-100 text-amber-700" };
-  if (difficulty < 1500) return { label: "Advanced", color: "bg-orange-100 text-orange-700" };
-  return { label: "Expert", color: "bg-red-100 text-red-700" };
+function getDifficultyLabel(difficulty: number): { label: string; color: string; gradient: string } {
+  if (difficulty <= 1100) return { label: "Beginner", color: "bg-emerald-100 text-emerald-700", gradient: "from-emerald-500 to-teal-600" };
+  if (difficulty <= 1300) return { label: "Intermediate", color: "bg-amber-100 text-amber-700", gradient: "from-blue-500 to-indigo-600" };
+  if (difficulty <= 1500) return { label: "Advanced", color: "bg-orange-100 text-orange-700", gradient: "from-orange-500 to-red-600" };
+  return { label: "Expert", color: "bg-red-100 text-red-700", gradient: "from-purple-500 to-pink-600" };
 }
 
 function getEstimatedTime(flags: number): string {
@@ -115,25 +115,30 @@ export default function LabsCatalog() {
                 aria-disabled="true"
                 aria-label={`${lab.title} — locked, requires level ${gate.requiredLevel}`}
               >
-                {lab.imageUrl && (
-                  <div className="h-40 overflow-hidden bg-slate-100 relative">
+                <div className="h-40 overflow-hidden relative">
+                  {lab.imageUrl ? (
                     <img src={lab.imageUrl} alt={lab.title} className="w-full h-full object-cover grayscale" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div className="absolute inset-0 bg-white/40 flex items-center justify-center">
-                      <div className="bg-slate-800/80 text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5">
-                        <Lock size={12} /> Level {gate.requiredLevel} required
-                      </div>
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${difficulty.gradient} flex items-center justify-center`}>
+                      <Microscope size={48} className="text-white/30" />
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${difficulty.color}`}>{difficulty.label}</span>
+                  </div>
+                  <div className="absolute inset-0 bg-white/40 flex items-center justify-center">
+                    <div className="bg-slate-800/80 text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5">
+                      <Lock size={12} /> Level {gate.requiredLevel} required
                     </div>
                   </div>
-                )}
+                </div>
                 <div className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                      <Lock size={18} className="text-slate-400" />
-                    </div>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Lv.{gate.requiredLevel}</span>
-                  </div>
                   <h3 className="text-base font-semibold mb-1 text-slate-500">{lab.title}</h3>
                   <p className="text-sm text-slate-500 line-clamp-2 mb-4">{gate.reason}</p>
+                  <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
+                    <span className="flex items-center gap-1"><Shield size={12} />{solvedFlags}/{flags} flags</span>
+                    <span className="flex items-center gap-1"><Clock size={12} />{getEstimatedTime(flags)}</span>
+                  </div>
                   <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                     <span className="text-xs text-slate-500">{flags} objectives</span>
                     <span className="text-sm font-medium text-slate-400">Locked</span>
@@ -146,23 +151,19 @@ export default function LabsCatalog() {
                 href={`/dashboard/labs/${lab.id}`}
                 className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:shadow-lg hover:border-emerald-300 transition-all duration-300"
               >
-                {lab.imageUrl && (
-                  <div className="h-40 overflow-hidden bg-slate-100 relative">
+                <div className="h-40 overflow-hidden relative">
+                  {lab.imageUrl ? (
                     <img src={lab.imageUrl} alt={lab.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div className="absolute top-3 right-3">
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${difficulty.color}`}>{difficulty.label}</span>
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${difficulty.gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
+                      <Microscope size={48} className="text-white/30" />
                     </div>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${difficulty.color}`}>{difficulty.label}</span>
                   </div>
-                )}
+                </div>
                 <div className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-600 transition-colors duration-300">
-                      <Microscope size={18} className="text-emerald-600 group-hover:text-white transition-colors duration-300" />
-                    </div>
-                    {!lab.imageUrl && (
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${difficulty.color}`}>{difficulty.label}</span>
-                    )}
-                  </div>
                   <h3 className="text-base font-semibold mb-1 text-slate-900 group-hover:text-emerald-700 transition-colors">{lab.title}</h3>
                   <p className="text-sm text-slate-500 line-clamp-2 mb-4">{lab.description}</p>
                   <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">

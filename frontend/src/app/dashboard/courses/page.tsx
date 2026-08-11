@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
-import { BookOpen, ChevronRight, Loader2, Lock, Layers } from "lucide-react";
+import { BookOpen, ChevronRight, GraduationCap, Clock, Layers, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 import { CourseCardSkeleton } from "@/components/Skeleton";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
@@ -78,61 +78,123 @@ export default function CoursesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course: any) => {
+          {courses.map((course: any, index: number) => {
             const firstSectionTitle = course.sections?.[0]?.title || "";
             const gate = getCourseLock(firstSectionTitle, level);
             const isLocked = gate.locked;
+            const sectionCount = course._count?.sections || course.sections?.length || 0;
+            const lessonCount = course.sections?.reduce((acc: number, s: any) => acc + (s._count?.lessons || s.lessons?.length || 0), 0) || 0;
+
+            const gradients = [
+              "from-emerald-500 to-teal-600",
+              "from-blue-500 to-indigo-600",
+              "from-violet-500 to-purple-600",
+              "from-orange-500 to-red-600",
+            ];
+            const gradient = gradients[index % gradients.length];
 
             return isLocked ? (
               <div
                 key={course.id}
-                className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-6 opacity-60 cursor-not-allowed"
+                className="relative overflow-hidden bg-white rounded-xl border border-slate-200 opacity-60 cursor-not-allowed"
                 role="button"
                 aria-disabled="true"
                 aria-label={`${course.title} — locked, requires level ${gate.requiredLevel}`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                    <Lock size={18} className="text-slate-400" />
+                {/* Cover image / placeholder */}
+                <div className="relative h-40 overflow-hidden">
+                  {course.imageUrl ? (
+                    <img
+                      src={course.imageUrl}
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+                      <GraduationCap size={40} className="text-white/80" />
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800/70 text-white backdrop-blur-sm">
+                      <Lock size={10} className="inline mr-1" />
+                      Lv.{gate.requiredLevel}
+                    </span>
                   </div>
-                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
-                    <Lock size={10} className="inline mr-1" />
-                    Lv.{gate.requiredLevel}
-                  </span>
                 </div>
-                <h3 className="text-base font-semibold mb-2 text-slate-500 line-clamp-2">{course.title}</h3>
-                <p className="text-sm text-slate-500 line-clamp-2 mb-4">{gate.reason}</p>
-                <div className="mt-4 flex items-center text-sm font-medium text-slate-400">Locked</div>
+                <div className="p-6">
+                  <h3 className="text-base font-semibold mb-2 text-slate-500 line-clamp-2">{course.title}</h3>
+                  <p className="text-sm text-slate-500 line-clamp-2 mb-4">{gate.reason}</p>
+                  <div className="flex items-center gap-3 text-xs text-slate-400">
+                    <span className="flex items-center gap-1.5">
+                      <Layers size={12} />
+                      {sectionCount} modules
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen size={12} />
+                      {lessonCount} lessons
+                    </span>
+                    {course.estimatedHours && (
+                      <span className="flex items-center gap-1.5">
+                        <Clock size={12} />
+                        {course.estimatedHours}h
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-4 flex items-center text-sm font-medium text-slate-400">Locked</div>
+                </div>
               </div>
             ) : (
               <Link
                 key={course.id}
                 href={`/dashboard/courses/${course.id}`}
-                className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg hover:border-emerald-300 transition-all duration-300"
+                className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:shadow-lg hover:border-emerald-300 transition-all duration-300"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-600 transition-colors duration-300">
-                    <BookOpen size={18} className="text-emerald-600 group-hover:text-white transition-colors duration-300" />
+                {/* Cover image / placeholder */}
+                <div className="relative h-40 overflow-hidden">
+                  {course.imageUrl ? (
+                    <img
+                      src={course.imageUrl}
+                      alt={course.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-500`}>
+                      <GraduationCap size={40} className="text-white/80" />
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-600/80 text-white backdrop-blur-sm">
+                      {sectionCount} modules
+                    </span>
                   </div>
-                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
-                    {course._count?.sections || 0} modules
-                  </span>
                 </div>
-                <h3 className="text-base font-semibold mb-2 text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2">
-                  {course.title}
-                </h3>
-                <p className="text-sm text-slate-500 line-clamp-2 mb-4">
-                  {course.description || "A comprehensive course on product security."}
-                </p>
-                <div className="flex items-center gap-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
-                  <span className="flex items-center gap-1.5">
-                    <Layers size={12} />
-                    {course._count?.sections || 0} modules
-                  </span>
-                </div>
-                <div className="mt-4 flex items-center justify-between text-sm font-medium text-emerald-600 group-hover:text-emerald-700">
-                  Start course
-                  <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                <div className="p-6">
+                  <h3 className="text-base font-semibold mb-2 text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-2">
+                    {course.title}
+                  </h3>
+                  <p className="text-sm text-slate-500 line-clamp-2 mb-4">
+                    {course.description || "A comprehensive course on product security."}
+                  </p>
+                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <span className="flex items-center gap-1.5">
+                      <Layers size={12} />
+                      {sectionCount} modules
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen size={12} />
+                      {lessonCount} lessons
+                    </span>
+                    {course.estimatedHours && (
+                      <span className="flex items-center gap-1.5">
+                        <Clock size={12} />
+                        {course.estimatedHours}h
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-4 flex items-center justify-between text-sm font-medium text-emerald-600 group-hover:text-emerald-700">
+                    Start course
+                    <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </div>
               </Link>
             );

@@ -38,6 +38,7 @@ model User {
   masterClassRegistrations MasterClassRegistration[]
   trainer         Trainer?
   bookings        Booking[]
+  activityEvents  ActivityEvent[]
 
   @@index([email])
   @@index([googleId])
@@ -76,11 +77,13 @@ model Organization {
 }
 
 model Course {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  createdAt   DateTime  @default(now())
-  sections    Section[]
+  id              String    @id @default(uuid())
+  title           String
+  description     String
+  imageUrl        String?
+  estimatedHours  Int?
+  createdAt       DateTime  @default(now())
+  sections        Section[]
 }
 
 model Section {
@@ -144,19 +147,20 @@ model Answer {
 }
 
 model Lab {
-  id          String        @id @default(uuid())
-  title       String
-  description String
-  dockerImage String
-  briefing    String?
-  credentials Json?
-  tasks       Json?
-  basePath    String?       @default("")
-  imageUrl    String?
-  difficulty  Int           @default(1200)
-  flags       LabFlag[]
-  instances   LabInstance[]
-  lesson      Lesson?
+  id              String        @id @default(uuid())
+  title           String
+  description     String
+  dockerImage     String
+  briefing        String?
+  credentials     Json?
+  tasks           Json?
+  basePath        String?       @default("")
+  imageUrl        String?
+  difficulty      Int           @default(1200)
+  estimatedMinutes Int?         @default(60)
+  flags           LabFlag[]
+  instances       LabInstance[]
+  lesson          Lesson?
 }
 
 model LabFlag {
@@ -369,4 +373,16 @@ enum LabStatus {
   STOPPED
   EXPIRED
   PROVISIONING
+}
+
+model ActivityEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // LAB_STARTED, LAB_STOPPED, FLAG_SOLVED, LESSON_COMPLETED, QUIZ_PASSED, COURSE_COMPLETED
+  metadata  Json?    // { labId, labTitle, flagTitle, lessonId, courseId, etc. }
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([type])
 }
