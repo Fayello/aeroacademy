@@ -8,6 +8,8 @@ import {
   Calendar, Clock, Video, UserCheck, Star, ChevronRight
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import SkillFusionLab from "@/components/SkillFusionLab";
+import HeroParticles from "@/components/HeroParticles";
 
 const AUDIENCES = [
   {
@@ -198,8 +200,9 @@ export default function LandingPage() {
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+        <HeroParticles />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-6">
@@ -446,6 +449,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ═══════════ SKILL FUSION LAB ═══════════ */}
+      <SkillFusionLab />
 
       {/* ═══════════ MASTER CLASSES ═══════════ */}
       <section id="master-classes" className="py-24 px-6 bg-slate-50">
