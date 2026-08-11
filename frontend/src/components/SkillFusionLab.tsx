@@ -322,17 +322,15 @@ export default function SkillFusionLab() {
   const onDiscovery = useCallback((d: Discovery) => {
     setDiscovered(prev => {
       const exists = prev.some(x => x.id === d.id);
-      return exists ? prev : [...prev, d];
+      const next = exists ? prev : [...prev, d];
+      saveDiscoveries(next);
+      return next;
     });
     setScore(prev => prev + d.score);
-    saveDiscoveries([...discoveredRef.current].map(k => {
-      const existing = discovered.find(x => x.id === k);
-      return existing || { id: k, a: k.split("+")[0], b: k.split("+")[1], result: "Unknown", tier: 1, rarity: "Common", timestamp: Date.now(), score: 50 };
-    }));
     setFusionMsg({ name: d.result, rarity: d.rarity, score: d.score });
     if (fusionTimeoutRef.current) clearTimeout(fusionTimeoutRef.current);
     fusionTimeoutRef.current = setTimeout(() => setFusionMsg(null), 3500);
-  }, [discovered]);
+  }, []);
 
   useEffect(() => { fusionCbRef.current = onDiscovery; }, [onDiscovery]);
 
