@@ -121,17 +121,19 @@ export default function HeroParticles() {
       mouse.y = -1000;
     };
 
+    const handleResize = () => { resize(); init(); };
+
     resize();
     init();
     frame = requestAnimationFrame(draw);
 
-    window.addEventListener("resize", () => { resize(); init(); });
+    window.addEventListener("resize", handleResize);
     canvas.addEventListener("mousemove", handleMouse);
     canvas.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", handleResize);
       canvas.removeEventListener("mousemove", handleMouse);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
     };
