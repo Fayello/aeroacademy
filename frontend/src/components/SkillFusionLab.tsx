@@ -402,7 +402,6 @@ export default function SkillFusionLab() {
   const [customName, setCustomName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showAllSkills, setShowAllSkills] = useState(false);
-  const [hoveredDiscovery, setHoveredDiscovery] = useState<string | null>(null);
   const fusionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalDiscovered = discovered.length;
@@ -828,8 +827,8 @@ export default function SkillFusionLab() {
             Discover <span className="text-emerald-400">{totalPossible}</span> real specializations
           </h2>
           <p className="text-base sm:text-lg text-slate-400 mt-3 max-w-2xl mx-auto">
-            Drag two skills together to discover a real, existing field. Every combination maps to a genuine career path.
-            How many can you find?
+            Combine two skills to discover a real, existing career field. Each fusion explains what the field is,
+            what professionals do, and why it matters. Build your own learning map.
           </p>
         </div>
 
@@ -868,16 +867,23 @@ export default function SkillFusionLab() {
 
         {/* Fusion notification */}
         {fusionMsg && (
-          <div className="text-center mb-3">
-            <div className="inline-flex flex-col items-center gap-1 px-6 py-3 rounded-2xl border text-sm animate-pulse"
-              style={{ backgroundColor: rgba(RARITY_COLORS[fusionMsg.rarity] || "#10b981", 0.12), borderColor: rgba(RARITY_COLORS[fusionMsg.rarity] || "#10b981", 0.35) }}>
-              <div className="flex items-center gap-2 font-bold" style={{ color: RARITY_COLORS[fusionMsg.rarity] || "#10b981" }}>
-                <Zap size={16} />
-                {fusionMsg.rarity}: {fusionMsg.name}
-                <span className="ml-1 opacity-70">+{fusionMsg.score}</span>
+          <div className="mb-4">
+            <div className="mx-auto max-w-xl rounded-2xl border p-5 text-center transition-all"
+              style={{ backgroundColor: rgba(RARITY_COLORS[fusionMsg.rarity] || "#10b981", 0.08), borderColor: rgba(RARITY_COLORS[fusionMsg.rarity] || "#10b981", 0.3) }}>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Sparkles size={18} style={{ color: RARITY_COLORS[fusionMsg.rarity] }} />
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: RARITY_COLORS[fusionMsg.rarity] }}>
+                  {fusionMsg.rarity} Discovery
+                </span>
+                <Sparkles size={18} style={{ color: RARITY_COLORS[fusionMsg.rarity] }} />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-1">{fusionMsg.name}</h3>
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mb-3">
+                <span className="px-2 py-0.5 rounded bg-slate-800/60 border border-slate-700/40 capitalize">{fusionMsg.name.split(" ").length > 3 ? "Advanced Field" : "Specialization"}</span>
+                <span className="text-amber-400 font-bold">+{fusionMsg.score} pts</span>
               </div>
               {fusionMsg.description && (
-                <p className="text-xs text-slate-400 max-w-md text-center">{fusionMsg.description}</p>
+                <p className="text-sm text-slate-300 leading-relaxed max-w-lg mx-auto">{fusionMsg.description}</p>
               )}
             </div>
           </div>
@@ -885,35 +891,42 @@ export default function SkillFusionLab() {
 
         {/* Discovery Journal */}
         {showJournal && (
-          <div className="mb-4 p-4 rounded-2xl bg-slate-800/90 border border-slate-700/50 backdrop-blur-sm max-h-72 overflow-y-auto">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Discovery Journal ({totalDiscovered} / {totalPossible})</h3>
+          <div className="mb-4 p-4 sm:p-5 rounded-2xl bg-slate-800/90 border border-slate-700/50 backdrop-blur-sm max-h-96 overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Discovery Journal</h3>
+                <p className="text-xs text-slate-500 mt-0.5">{totalDiscovered} of {totalPossible} real specializations discovered</p>
+              </div>
               <button onClick={() => setShowJournal(false)} className="text-slate-500 hover:text-white cursor-pointer"><X size={14} /></button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="space-y-3">
               {discovered.length === 0 && (
-                <p className="text-slate-500 text-xs col-span-full text-center py-4">No discoveries yet. Click skills from the palette, then drag them together!</p>
+                <p className="text-slate-500 text-xs text-center py-6">No discoveries yet. Click skills from the palette, then drag them together!</p>
               )}
               {[...discovered].reverse().map((d) => (
-                <div key={d.id} className="flex items-start gap-2 p-2.5 rounded-lg bg-slate-900/50 border border-slate-700/30 text-xs cursor-pointer hover:border-slate-600/50 transition-all"
-                  onMouseEnter={() => setHoveredDiscovery(d.id)} onMouseLeave={() => setHoveredDiscovery(null)}>
-                  <div className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ backgroundColor: RARITY_COLORS[d.rarity] }} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1 flex-wrap">
-                      <span className="text-slate-400 capitalize">{d.a}</span>
-                      <span className="text-slate-600">+</span>
-                      <span className="text-slate-400 capitalize">{d.b}</span>
+                <div key={d.id} className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/30 transition-all hover:border-slate-600/50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: RARITY_COLORS[d.rarity] }} />
+                        <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RARITY_COLORS[d.rarity] }}>{d.rarity}</span>
+                      </div>
+                      <h4 className="font-bold text-white text-sm mb-1">{d.result}</h4>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
+                        <span className="px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700/30 capitalize">{d.a}</span>
+                        <Zap size={10} className="text-slate-600" />
+                        <span className="px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700/30 capitalize">{d.b}</span>
+                      </div>
+                      {d.description && (
+                        <p className="text-xs text-slate-400 leading-relaxed">{d.description}</p>
+                      )}
                     </div>
-                    <div className="font-bold mt-0.5" style={{ color: RARITY_COLORS[d.rarity] }}>{d.result}</div>
-                    {hoveredDiscovery === d.id && d.description && (
-                      <p className="text-slate-500 text-[10px] mt-1 leading-relaxed">{d.description}</p>
-                    )}
+                    <span className="text-amber-400/70 font-mono text-xs shrink-0">+{d.score}</span>
                   </div>
-                  <span className="text-amber-400/70 font-mono shrink-0">+{d.score}</span>
                 </div>
               ))}
             </div>
-            <div className="flex flex-wrap gap-3 mt-3 pt-3 border-t border-slate-700/30">
+            <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-slate-700/30">
               {Object.entries(RARITY_COLORS).map(([rarity, color]) => (
                 <div key={rarity} className="flex items-center gap-1.5 text-xs">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
