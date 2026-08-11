@@ -219,9 +219,9 @@ export default function LandingPage() {
                 <Link href="/get-started" className="btn-primary text-sm px-7 py-3">
                   Start Learning Free <ArrowRight size={16} />
                 </Link>
-                <Link href="#labs" className="btn-secondary text-sm px-7 py-3">
+                <a href="#labs" className="btn-secondary text-sm px-7 py-3">
                   <Play size={14} /> Explore Labs
-                </Link>
+                </a>
               </div>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-slate-500">
                 {["No credit card required", `${stats.totalLabs || 37}+ hands-on labs`, "Free tier available"].map((item) => (
@@ -613,9 +613,9 @@ export default function LandingPage() {
             <Link href="/get-started" className="btn-primary text-sm px-8 py-3">
               Start Free Today <ArrowRight size={16} />
             </Link>
-            <Link href="#courses" className="btn-secondary text-sm px-8 py-3">
+            <a href="#courses" className="btn-secondary text-sm px-8 py-3">
               Browse Courses
-            </Link>
+            </a>
           </div>
           <p className="text-sm text-slate-400 mt-4">No credit card required. Free tier available.</p>
         </div>
@@ -667,9 +667,15 @@ export default function LandingPage() {
                 <ul className="space-y-2.5">
                   {links.map((link) => (
                     <li key={link.label}>
-                      <Link href={link.href} className="text-sm text-slate-500 hover:text-emerald-600 transition-colors">
-                        {link.label}
-                      </Link>
+                      {link.href.startsWith("#") ? (
+                        <a href={link.href} className="text-sm text-slate-500 hover:text-emerald-600 transition-colors">
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link href={link.href} className="text-sm text-slate-500 hover:text-emerald-600 transition-colors">
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -681,8 +687,8 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
             <p>&copy; 2026 AEROACADEMY. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-slate-600 transition-colors">Privacy</Link>
-              <Link href="#" className="hover:text-slate-600 transition-colors">Terms</Link>
+              <a href="#" className="hover:text-slate-600 transition-colors">Privacy</a>
+              <a href="#" className="hover:text-slate-600 transition-colors">Terms</a>
               <a href="mailto:contact@aeroacademy.org" className="hover:text-slate-600 transition-colors">Contact</a>
             </div>
           </div>
