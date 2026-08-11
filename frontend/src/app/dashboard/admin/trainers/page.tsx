@@ -1,149 +1,397 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, Plus, Loader2, BookOpen, Clock } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import { Calendar, Plus, Trash2, Clock, BookOpen, X } from "lucide-react";
 import toast from "react-hot-toast";
+import AdminTable from "@/components/admin/AdminTable";
+import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
+import { AdminInput, AdminTextarea, AdminStatusBadge } from "@/components/admin/AdminForm";
+
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function AdminTrainersPage() {
   const [trainers, setTrainers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAdd, setShowAdd] = useState(false);
-  const [userId, setUserId] = useState("");
-  const [bio, setBio] = useState("");
-  const [specialties, setSpecialties] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [slotsModal, setSlotsModal] = useState<{ isOpen: boolean; trainer: any }>({ isOpen: false, trainer: null });
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
+  const [editing, setEditing] = useState<any>(null);
+  const [form, setForm] = useState({ userId: "", bio: "", specialties: "" });
   const [saving, setSaving] = useState(false);
 
+  // Slots form
+  const [slots, setSlots] = useState<any[]>([]);
+  const [newSlot, setNewSlot] = useState({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
+
   useEffect(() => {
-    fetchApi("/training/trainers")
-      .then((data: any) => setTrainers(Array.isArray(data) ? data : data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    loadTrainers();
   }, []);
 
-  const handleAdd = async () => {
-    if (!userId.trim()) return;
+  const loadTrainers = async () => {
+    try {
+      const data = await fetchApi("/training/trainers");
+      setTrainers(Array.isArray(data) ? data : data.data || []);
+    } catch {
+      toast.error("Failed to load trainers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdd = () => {
+    setEditing(null);
+    setForm({ userId: "", bio: "", specialties: "" });
+    setModalOpen(true);
+  };
+
+  const handleEdit = (trainer: any) => {
+    setEditing(trainer);
+    setForm({
+      userId: trainer.userId || "",
+      bio: trainer.bio || "",
+      specialties: trainer.specialties?.join(", ") || "",
+    });
+    setModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    if (!form.userId.trim() && !editing) {
+      toast.error("User ID is required");
+      return;
+    }
     setSaving(true);
     try {
-      const trainer = await fetchApi("/training/trainers", {
-        method: "POST",
-        body: JSON.stringify({
-          userId: userId.trim(),
-          bio: bio.trim() || undefined,
-          specialties: specialties.split(",").map((s) => s.trim()).filter(Boolean),
-        }),
-      });
-      setTrainers((prev) => [trainer, ...prev]);
-      setShowAdd(false);
-      setUserId("");
-      setBio("");
-      setSpecialties("");
-      toast.success("Trainer added!");
+      const payload = {
+        bio: form.bio.trim() || undefined,
+        specialties: form.specialties.split(",").map((s) => s.trim()).filter(Boolean),
+      };
+      if (editing) {
+        await fetchApi(`/training/trainers/${editing.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(payload),
+        });
+        toast.success("Trainer updated!");
+      } else {
+        await fetchApi("/training/trainers", {
+          method: "POST",
+          body: JSON.stringify({ userId: form.userId.trim(), ...payload }),
+        });
+        toast.success("Trainer added!");
+      }
+      setModalOpen(false);
+      loadTrainers();
     } catch (err: any) {
-      toast.error(err.message || "Failed to add trainer");
+      toast.error(err.message || "Failed to save trainer");
     } finally {
       setSaving(false);
     }
   };
+
+  const handleDelete = async () => {
+    if (!deleteDialog.item) return;
+    setSaving(true);
+    try {
+      await fetchApi(`/training/trainers/${deleteDialog.item.id}`, { method: "DELETE" });
+      toast.success("Trainer removed!");
+      setDeleteDialog({ isOpen: false, item: null });
+      loadTrainers();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to remove trainer");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openSlotsModal = (trainer: any) => {
+    setSlotsModal({ isOpen: true, trainer });
+    setSlots(trainer.slots || []);
+    setNewSlot({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
+  };
+
+  const handleAddSlot = async () => {
+    if (!slotsModal.trainer) return;
+    setSaving(true);
+    try {
+      const payload = {
+        slots: [{
+          dayOfWeek: parseInt(newSlot.dayOfWeek),
+          startTime: newSlot.startTime,
+          endTime: newSlot.endTime,
+        }],
+      };
+      await fetchApi(`/training/trainers/${slotsModal.trainer.id}/slots`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      toast.success("Slot added!");
+      const updatedTrainers = await fetchApi("/training/trainers");
+      setTrainers(Array.isArray(updatedTrainers) ? updatedTrainers : updatedTrainers.data || []);
+      const updated = Array.isArray(updatedTrainers) ? updatedTrainers : updatedTrainers.data || [];
+      const trainer = updated.find((t: any) => t.id === slotsModal.trainer?.id);
+      setSlots(trainer?.slots || []);
+      setNewSlot({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
+    } catch (err: any) {
+      toast.error(err.message || "Failed to add slot");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteSlot = async (slotId: string) => {
+    setSaving(true);
+    try {
+      await fetchApi(`/training/slots/${slotId}`, { method: "DELETE" });
+      toast.success("Slot removed!");
+      setSlots((prev) => prev.filter((s) => s.id !== slotId));
+      loadTrainers();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to remove slot");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const columns = [
+    {
+      key: "user",
+      label: "Trainer",
+      sortable: true,
+      render: (trainer: any) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 text-white font-bold">
+            {(trainer.user?.name || "T").charAt(0)}
+          </div>
+          <div>
+            <p className="font-medium text-slate-900">{trainer.user?.name || "Unknown"}</p>
+            <p className="text-xs text-slate-500">{trainer.user?.email}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "isActive",
+      label: "Status",
+      render: (trainer: any) => (
+        <AdminStatusBadge
+          status={trainer.isActive ? "ACTIVE" : "INACTIVE"}
+        />
+      ),
+    },
+    {
+      key: "specialties",
+      label: "Specialties",
+      render: (trainer: any) => (
+        <div className="flex flex-wrap gap-1">
+          {trainer.specialties?.slice(0, 3).map((s: string, i: number) => (
+            <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs">
+              {s}
+            </span>
+          ))}
+          {trainer.specialties?.length > 3 && (
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs">
+              +{trainer.specialties.length - 3}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "bookings",
+      label: "Bookings",
+      render: (trainer: any) => (
+        <span className="flex items-center gap-1.5 text-slate-600">
+          <BookOpen size={14} className="text-slate-400" />
+          {trainer._count?.bookings || 0}
+        </span>
+      ),
+    },
+    {
+      key: "slots",
+      label: "Slots",
+      render: (trainer: any) => (
+        <button
+          onClick={() => openSlotsModal(trainer)}
+          className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-medium text-sm"
+        >
+          <Clock size={14} />
+          {trainer.slots?.length || 0} slots
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Calendar size={28} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">Manage Trainers</h1>
-              <p className="text-amber-100 text-sm">Add trainers and manage their availability</p>
-            </div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <Calendar size={28} className="text-white" />
           </div>
-          <button onClick={() => setShowAdd(!showAdd)} className="bg-white text-amber-600 hover:bg-amber-50 font-medium py-2.5 px-5 rounded-lg transition-all duration-150 text-sm inline-flex items-center justify-center gap-2">
-            <Plus size={16} /> Add Trainer
-          </button>
+          <div>
+            <h1 className="text-2xl font-bold">Manage Trainers</h1>
+            <p className="text-amber-100 text-sm">Add trainers and manage their availability</p>
+          </div>
         </div>
       </div>
 
-      {/* Add Form */}
-      {showAdd && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-lg">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-              <Plus size={18} className="text-amber-600" />
-            </div>
-            <h3 className="font-semibold text-slate-900">Add New Trainer</h3>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">User ID</label>
-              <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} className="input-field" placeholder="User UUID" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Specialties (comma-separated)</label>
-              <input type="text" value={specialties} onChange={(e) => setSpecialties(e.target.value)} className="input-field" placeholder="Security, Linux, DevOps" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
-              <textarea value={bio} onChange={(e) => setBio(e.target.value)} className="input-field" rows={2} placeholder="Trainer bio" />
-            </div>
-          </div>
-          <div className="flex gap-2 pt-2">
-            <button onClick={handleAdd} disabled={saving} className="btn-primary text-sm">
-              {saving ? <Loader2 className="animate-spin" size={14} /> : <Calendar size={14} />}
-              Add Trainer
-            </button>
-            <button onClick={() => setShowAdd(false)} className="btn-secondary text-sm">Cancel</button>
-          </div>
-        </div>
-      )}
+      <AdminTable
+        columns={columns}
+        data={trainers}
+        loading={loading}
+        searchPlaceholder="Search trainers..."
+        searchKey="user"
+        onAdd={handleAdd}
+        onEdit={handleEdit}
+        onDelete={(item) => setDeleteDialog({ isOpen: true, item })}
+        addLabel="Add Trainer"
+        emptyMessage="No trainers yet."
+      />
 
-      {/* Trainers List */}
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-emerald-600" size={32} />
-        </div>
-      ) : trainers.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-            <Calendar size={28} className="text-slate-400" />
+      {/* Create/Edit Modal */}
+      <AdminModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editing ? "Edit Trainer" : "Add Trainer"}
+      >
+        <div className="space-y-4">
+          {!editing && (
+            <AdminInput
+              label="User ID"
+              value={form.userId}
+              onChange={(e) => setForm({ ...form, userId: e.target.value })}
+              placeholder="User UUID"
+            />
+          )}
+          <AdminTextarea
+            label="Bio"
+            value={form.bio}
+            onChange={(e) => setForm({ ...form, bio: e.target.value })}
+            placeholder="Trainer bio"
+            rows={3}
+          />
+          <AdminInput
+            label="Specialties (comma-separated)"
+            value={form.specialties}
+            onChange={(e) => setForm({ ...form, specialties: e.target.value })}
+            placeholder="Security, Linux, DevOps"
+          />
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+            >
+              {saving ? "Saving..." : editing ? "Update Trainer" : "Add Trainer"}
+            </button>
+            <button
+              onClick={() => setModalOpen(false)}
+              disabled={saving}
+              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+            >
+              Cancel
+            </button>
           </div>
-          <h3 className="text-lg font-medium text-slate-900 mb-2">No trainers yet</h3>
-          <p className="text-sm text-slate-500 mb-6">Add your first trainer to get started.</p>
-          <button onClick={() => setShowAdd(true)} className="btn-primary text-sm">
-            <Plus size={14} /> Add Trainer
-          </button>
         </div>
-      ) : (
-        <div className="grid gap-4">
-          {trainers.map((trainer) => (
-            <div key={trainer.id} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg">
-                    {(trainer.user?.name || "T").charAt(0)}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-slate-900">{trainer.user?.name}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${trainer.isActive ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
-                        {trainer.isActive ? "Active" : "Inactive"}
-                      </span>
+      </AdminModal>
+
+      {/* Slots Modal */}
+      <AdminModal
+        isOpen={slotsModal.isOpen}
+        onClose={() => setSlotsModal({ isOpen: false, trainer: null })}
+        title={`Manage Slots — ${slotsModal.trainer?.user?.name || ""}`}
+        size="lg"
+      >
+        <div className="space-y-6">
+          {/* Existing Slots */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">Current Slots</h3>
+            {slots.length === 0 ? (
+              <p className="text-sm text-slate-500 bg-slate-50 rounded-xl p-4 text-center">No slots configured yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {slots.map((slot: any) => (
+                  <div key={slot.id || `${slot.dayOfWeek}-${slot.startTime}`} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                        <Calendar size={14} className="text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{DAYS[slot.dayOfWeek]}</p>
+                        <p className="text-xs text-slate-500">{slot.startTime} - {slot.endTime}</p>
+                      </div>
                     </div>
-                    <div className="text-sm text-slate-500 mt-1">{trainer.specialties?.join(", ") || "General"}</div>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                      <span className="flex items-center gap-1"><BookOpen size={12} /> {trainer._count?.bookings || 0} bookings</span>
-                      <span className="flex items-center gap-1"><Clock size={12} /> {trainer.slots?.length || 0} slots</span>
-                    </div>
+                    <button
+                      onClick={() => handleDeleteSlot(slot.id)}
+                      disabled={saving}
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Add New Slot */}
+          <div className="border-t border-slate-200 pt-4">
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">Add New Slot</h3>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Day</label>
+                <select
+                  value={newSlot.dayOfWeek}
+                  onChange={(e) => setNewSlot({ ...newSlot, dayOfWeek: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                >
+                  {DAYS.map((day, i) => (
+                    <option key={i} value={i}>{day}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Start Time</label>
+                <input
+                  type="time"
+                  value={newSlot.startTime}
+                  onChange={(e) => setNewSlot({ ...newSlot, startTime: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">End Time</label>
+                <input
+                  type="time"
+                  value={newSlot.endTime}
+                  onChange={(e) => setNewSlot({ ...newSlot, endTime: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                />
               </div>
             </div>
-          ))}
+            <button
+              onClick={handleAddSlot}
+              disabled={saving}
+              className="mt-3 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+            >
+              <Plus size={16} /> Add Slot
+            </button>
+          </div>
         </div>
-      )}
+      </AdminModal>
+
+      {/* Delete Confirmation */}
+      <AdminConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, item: null })}
+        onConfirm={handleDelete}
+        title="Remove Trainer"
+        message={`Are you sure you want to remove "${deleteDialog.item?.user?.name}" as a trainer? Their slots will also be deleted.`}
+        confirmLabel="Remove Trainer"
+        loading={saving}
+      />
     </div>
   );
 }

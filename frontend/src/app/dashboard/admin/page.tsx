@@ -41,6 +41,7 @@ export default function AdminDashboardPage() {
 
   const quickLinks = [
     { label: "Manage Courses", href: "/dashboard/admin/courses", icon: GraduationCap, description: "Add, edit, or remove courses" },
+    { label: "Manage Labs", href: "/dashboard/admin/labs", icon: Microscope, description: "Create and configure lab environments" },
     { label: "Manage Master Classes", href: "/dashboard/admin/master-classes", icon: Video, description: "Schedule live sessions" },
     { label: "Manage Trainers", href: "/dashboard/admin/trainers", icon: Calendar, description: "Add trainers & availability" },
   ];
@@ -88,7 +89,7 @@ export default function AdminDashboardPage() {
       {/* Quick Actions */}
       <div>
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickLinks.map((link) => (
             <Link key={link.href} href={link.href} className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg hover:border-emerald-300 transition-all duration-300">
               <div className="flex items-center justify-between mb-4">

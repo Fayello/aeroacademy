@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TrainingService {
@@ -130,5 +131,24 @@ export class TrainingService {
 
   async removeSlot(slotId: string) {
     return this.prisma.trainingSlot.delete({ where: { id: slotId } });
+  }
+
+  async updateTrainer(id: string, data: Prisma.TrainerUpdateInput) {
+    const trainer = await this.prisma.trainer.findUnique({ where: { id } });
+    if (!trainer) throw new NotFoundException('Trainer not found');
+
+    return this.prisma.trainer.update({
+      where: { id },
+      data,
+      include: { user: { select: { name: true, email: true } } },
+    });
+  }
+
+  async deleteTrainer(id: string) {
+    const trainer = await this.prisma.trainer.findUnique({ where: { id } });
+    if (!trainer) throw new NotFoundException('Trainer not found');
+
+    await this.prisma.trainingSlot.deleteMany({ where: { trainerId: id } });
+    return this.prisma.trainer.delete({ where: { id } });
   }
 }
