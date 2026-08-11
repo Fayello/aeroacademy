@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero-GPT | Tactical LLM Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #020617;
+            color: #94a3b8;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .emerald-glow {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .pulse { animation: pulse-soft 2s infinite; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+    <!-- Header -->
+    <header class="h-16 border-b border-white/5 px-8 flex items-center justify-between glass z-10">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            </div>
+            <div>
+                <h1 class="text-xs font-black text-slate-100 uppercase tracking-[0.3em]">Aero-GPT <span class="text-emerald-500">v1.4.2</span></h1>
+                <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Tactical LLM Orchestrator // Secure Channel</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse"></div>
+                <span class="text-[9px] font-black uppercase tracking-widest text-emerald-500/80">System Ready</span>
+            </div>
+            <div class="h-4 w-[1px] bg-white/5"></div>
+            <span class="text-[9px] font-black uppercase tracking-widest text-slate-600">Latency: 14ms</span>
+        </div>
+    </header>
+
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col p-8 gap-6 overflow-hidden relative">
+        <div id="chat-history" class="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-4">
+            <!-- System Message -->
+            <div class="flex flex-col gap-2 max-w-2xl">
+                <div class="flex items-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                    <span>System</span>
+                    <span class="text-[7px] opacity-30">// 09:00:00</span>
+                </div>
+                <div class="glass p-4 rounded-2xl rounded-tl-none border-emerald-500/10 text-xs leading-relaxed text-slate-400">
+                    Welcome Operative. I am Aero-GPT. I am configured for high-security tactical assistance. Please provide your query.
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur opacity-25 group-focus-within:opacity-50 transition duration-1000"></div>
+            <div class="relative glass rounded-2xl p-2 flex items-center gap-2">
+                <input 
+                    type="text" 
+                    id="user-input"
+                    placeholder="Enter command or query for Aero-GPT..."
+                    class="flex-1 bg-transparent border-none outline-none px-4 py-3 text-xs text-slate-100 placeholder:text-slate-600 font-medium"
+                    autocomplete="off"
+                >
+                <button 
+                    id="send-btn"
+                    class="h-10 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-[10px] font-black uppercase tracking-widest transition-all emerald-glow flex items-center gap-2"
+                >
+                    Transmit
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sidebar / Status -->
+    <div class="absolute right-8 top-24 w-64 space-y-4 pointer-events-none opacity-40">
+        <div class="glass p-4 rounded-xl border-white/5 space-y-3">
+            <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Instance Metadata</h3>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-[8px] font-bold text-slate-600 uppercase">Model</span>
+                    <span class="text-[8px] font-mono text-emerald-500">AERO-T-800</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[8px] font-bold text-slate-600 uppercase">Security</span>
+                    <span class="text-[8px] font-mono text-blue-500">GUARDRAIL_MAX</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[8px] font-bold text-slate-600 uppercase">Context</span>
+                    <span class="text-[8px] font-mono text-slate-400">ENCRYPTED</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        function appendMessage(role, content, isError = false) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex flex-col gap-2 ${role === 'User' ? 'items-end ml-auto' : 'mr-auto'} max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-300`;
+            
+            msgDiv.innerHTML = `
+                <div class="flex items-center gap-2 text-[9px] font-black ${role === 'User' ? 'text-blue-500' : 'text-slate-500'} uppercase tracking-widest">
+                    <span>${role}</span>
+                    <span class="text-[7px] opacity-30">// ${time}</span>
+                </div>
+                <div class="glass p-4 rounded-2xl ${role === 'User' ? 'rounded-tr-none bg-blue-500/5' : 'rounded-tl-none'} ${isError ? 'border-red-500/20 text-red-400' : 'text-slate-400'} text-xs leading-relaxed">
+                    ${content}
+                </div>
+            `;
+            chatHistory.appendChild(msgDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function handleSend() {
+            const query = userInput.value.trim();
+            if (!query) return;
+
+            appendMessage('User', query);
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const data = await response.json();
+                
+                appendMessage('Aero-GPT', data.response, data.blocked);
+            } catch (err) {
+                appendMessage('System', 'Failed to establish uplink with model core.', true);
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>

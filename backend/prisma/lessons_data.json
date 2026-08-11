@@ -1,0 +1,3211 @@
+{
+  "courses": [
+    {
+      "title": "Web Server Administration",
+      "description": "Master web server technologies from Nginx to Apache, learn reverse proxying, load balancing, SSL configuration, and modern application deployment patterns including containerized solutions.",
+      "sections": [
+        {
+          "title": "Nginx Mastery",
+          "order": 1,
+          "lessons": [
+            {
+              "title": "Nginx Architecture",
+              "order": 1,
+              "lab": "nginxLab?.id",
+              "content": "# Nginx Architecture\n\n### Learning Objectives\n- Understand the master-worker process model\n- Learn how Nginx handles concurrent connections\n- Configure worker processes and connection limits\n- Monitor Nginx process health and resource usage\n\n### Section 1: The Master-Worker Model\n\nNginx uses an event-driven, asynchronous architecture that differs fundamentally from traditional process-based web servers like Apache prefork model. At its core, Nginx employs a master-worker process hierarchy:\n\n**Master Process:** The master process runs as root and handles privileged operations including reading and validating configuration files, binding to privileged ports (80, 443), managing worker processes (start, stop, reload), opening log files, and handling signals (SIGHUP for reload, SIGTERM for shutdown).\n\n**Worker Processes:** Worker processes run as unprivileged users and handle actual request processing. Each worker is a single-threaded process that handles thousands of connections using an event-driven model.\n\n```bash\n# Check Nginx process hierarchy\nps aux | grep nginx\n# Output example:\n# root     1234  0.0  0.1  nginx: master process /usr/sbin/nginx\n# www-data 1235  0.0  0.2  nginx: worker process\n# www-data 1236  0.0  0.2  nginx: worker process\n```\n\n### Section 2: Event-Driven Processing\n\nUnlike thread-per-connection models, Nginx workers use epoll (Linux) or kqueue (BSD/macOS) to monitor file descriptors for events. This allows a single worker to handle 10,000+ concurrent connections:\n\n```nginx\n# /etc/nginx/nginx.conf\nworker_processes auto;       # Match CPU cores\nworker_rlimit_nofile 65535;  # Max open files per worker\n\nevents {\n    worker_connections 4096;  # Max connections per worker\n    multi_accept on;          # Accept multiple connections at once\n    use epoll;                # Linux event mechanism\n}\n```\n\n**Total concurrent connections = worker_processes x worker_connections**\n\n### Section 3: Connection Processing Pipeline\n\nWhen a request arrives, Nginx processes it through a defined pipeline:\n\n1. **Accept** — Worker accepts the connection from the listen socket\n2. **Read** — Request headers are read from the socket\n3. **Process** — Nginx matches the request to a location block, applies access controls, rewrites URIs\n4. **Generate** — Content is generated from static files or proxied to a backend\n5. **Send** — Response headers and body are written to the socket\n\nEach phase is non-blocking. If a phase would block (e.g., reading from a slow backend), the worker registers a callback and moves on to handle other connections.\n\n### Section 4: Key Configuration Directives\n\n```nginx\nworker_processes auto;           # Auto-detect CPU cores\nworker_cpu_affinity auto;        # Pin workers to cores\nworker_rlimit_nofile 65535;      # File descriptor limit\n\nevents {\n    worker_connections 4096;\n    multi_accept on;\n    use epoll;\n}\n\nhttp {\n    sendfile on;                 # Kernel-level file transfer\n    tcp_nopush on;               # Optimize packet sending\n    tcp_nodelay on;              # Disable Nagle algorithm\n    keepalive_timeout 65;        # Client keepalive\n    keepalive_requests 1000;     # Max requests per keepalive\n}\n```\n\n### Section 5: Monitoring and Status\n\n```nginx\n# Enable the stub_status module\nlocation /nginx_status {\n    stub_status;\n    allow 127.0.0.1;\n    deny all;\n}\n```\n\n```bash\n# View status output\ncurl http://localhost/nginx_status\n# Active connections: 291\n# server accepts handled requests\n#  16630948 16630948 31070465\n# Reading: 6 Writing: 179 Waiting: 106\n```\n\n### Hands-On Practice\n\n1. Install Nginx and inspect the process hierarchy with `ps aux | grep nginx`\n2. Edit `worker_processes` and reload with `nginx -s reload`\n3. Enable `stub_status` and verify with `curl`\n4. Run `ab -n 10000 -c 100 http://localhost/` to test concurrent connections\n5. Monitor with `watch -n1 'cat /proc/$(pgrep -o nginx)/limits'`\n\n### Key Takeaways\n- Nginx uses a master-worker process model with event-driven processing\n- Worker processes handle thousands of connections via epoll/kqueue\n- Total capacity equals worker_processes multiplied by worker_connections\n- The stub_status module provides runtime connection metrics\n- sendfile and tcp_nopush optimize static file delivery\n\n### References & Further Reading\n**Textbooks:**\n1. \"Mastering Nginx\" by Dimitri Aivaliotis — Chapter 2: Nginx Mechanics, pages 25-60\n2. \"Nginx Cookbook\" by Alex Crawford — Chapter 1: Basic Configuration, pages 1-20\n3. \"High Performance Browser Networking\" by Ilya Grigorik — Chapter 12: Optimizing for TLS\n\n**Online Resources:**\n1. [Nginx Official Documentation — Tuning](https://nginx.org/en/docs/ngx_core_module.html)\n2. [Nginx Architecture](https://www.nginx.com/blog/inside-nginx-how-we-designed-for-performance-scale/)\n3. [Linux epoll man page](https://man7.org/linux/man-pages/man7/epoll.7.html)",
+              "questions": [
+                {
+                  "text": "What process model does Nginx use?",
+                  "answers": [
+                    {
+                      "text": "Thread-per-connection model",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Master-worker event-driven model",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Single-process model",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Fork-per-request model",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which system call does Nginx use on Linux for event notification?",
+                  "answers": [
+                    {
+                      "text": "select",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "poll",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "epoll",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "kqueue",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does worker_cpu_affinity do?",
+                  "answers": [
+                    {
+                      "text": "Limits CPU usage per worker",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Pins workers to specific CPU cores",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Sets CPU priority for workers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Enables CPU load balancing",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "How do you calculate maximum concurrent connections?",
+                  "answers": [
+                    {
+                      "text": "worker_connections only",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "worker_processes + worker_connections",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "worker_processes x worker_connections",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "worker_processes x worker_rlimit_nofile",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What signal triggers a graceful reload of Nginx?",
+                  "answers": [
+                    {
+                      "text": "SIGTERM",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "SIGQUIT",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "SIGHUP",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "SIGUSR1",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which directive enables efficient file transfers?",
+                  "answers": [
+                    {
+                      "text": "directio on",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "sendfile on",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "aio on",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "tcp_nodelay on",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the purpose of the stub_status module?",
+                  "answers": [
+                    {
+                      "text": "Enable SSL termination",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Provide runtime statistics",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Load balance requests",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Cache static files",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Virtual Hosts & SSL",
+              "order": 2,
+              "lab": "nginxLab?.id",
+              "content": "# Virtual Hosts & SSL Configuration\n\n### Learning Objectives\n- Configure server blocks to host multiple domains\n- Set up Let's Encrypt SSL certificates with auto-renewal\n- Implement HTTP to HTTPS redirects\n- Configure OCSP stapling and SSL session caching\n\n### Section 1: Server Blocks (Virtual Hosts)\n\nNginx uses \"server blocks\" instead of Apache VirtualHost directives:\n\n```nginx\n# /etc/nginx/sites-available/example.com\nserver {\n    listen 80;\n    server_name example.com www.example.com;\n    root /var/www/example.com/html;\n    index index.html index.htm;\n\n    location / {\n        try_files $uri $uri/ =404;\n    }\n\n    error_page 404 /404.html;\n    error_page 500 502 503 504 /50x.html;\n}\n\n# Enable the site\nsudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/\nsudo nginx -t && sudo systemctl reload nginx\n```\n\n### Section 2: SSL Certificate Setup with Let's Encrypt\n\n```bash\n# Install Certbot\nsudo apt install certbot python3-certbot-nginx\n\n# Obtain certificate (auto-configures Nginx)\nsudo certbot --nginx -d example.com -d www.example.com\n\n# Manual certificate request\nsudo certbot certonly --webroot -w /var/www/example.com/html -d example.com\n\n# Certificates stored in:\nls /etc/letsencrypt/live/example.com/\n# cert.pem, chain.pem, fullchain.pem, privkey.pem\n```\n\n### Section 3: Complete SSL Configuration\n\n```nginx\nserver {\n    listen 443 ssl http2;\n    server_name example.com www.example.com;\n\n    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;\n\n    ssl_protocols TLSv1.2 TLSv1.3;\n    ssl_prefer_server_ciphers on;\n    ssl_session_timeout 1d;\n    ssl_session_cache shared:SSL:50m;\n    ssl_session_tickets off;\n\n    ssl_stapling on;\n    ssl_stapling_verify on;\n    resolver 8.8.8.8 8.8.4.4 valid=300s;\n\n    add_header Strict-Transport-Security \"max-age=63072000; includeSubDomains\" always;\n    add_header X-Frame-Options DENY always;\n    add_header X-Content-Type-Options nosniff always;\n}\n\n# HTTP to HTTPS redirect\nserver {\n    listen 80;\n    server_name example.com www.example.com;\n    return 301 https://$host$request_uri;\n}\n```\n\n### Section 4: Auto-Renewal\n\n```bash\n# Test renewal\nsudo certbot renew --dry-run\n\n# Check timer\nsystemctl status certbot.timer\n\n# Manual renewal\nsudo certbot renew\n```\n\n### Hands-On Practice\n\n1. Create a server block for a test domain\n2. Use Certbot to obtain a certificate\n3. Verify SSL with `openssl s_client -connect localhost:443`\n4. Test auto-renewal with `certbot renew --dry-run`\n\n### Key Takeaways\n- Server blocks define virtual hosts in Nginx\n- Let's Encrypt provides free SSL certificates\n- SSL should use only TLSv1.2 and TLSv1.3\n- OCSP stapling and session caching improve performance\n- HSTS headers protect against downgrade attacks\n\n### References & Further Reading\n1. \"Nginx Cookbook\" by Alex Crawford — Chapter 5: SSL/TLS\n2. [Nginx SSL Documentation](https://nginx.org/en/docs/http/configuring_https_servers.html)\n3. [Let's Encrypt Documentation](https://letsencrypt.org/docs/)\n4. [Mozilla SSL Configuration Generator](https://ssl-config.mozilla.org/)",
+              "questions": [
+                {
+                  "text": "What directive defines a virtual host in Nginx?",
+                  "answers": [
+                    {
+                      "text": "VirtualHost",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "server",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "vhost",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which SSL protocols should be enabled in production?",
+                  "answers": [
+                    {
+                      "text": "SSLv3, TLSv1.0, TLSv1.1",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "TLSv1.0, TLSv1.1, TLSv1.2",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "TLSv1.2, TLSv1.3 only",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "TLSv1.3 only",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does OCSP stapling improve?",
+                  "answers": [
+                    {
+                      "text": "Certificate encryption strength",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "SSL handshake performance",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Key exchange security",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Certificate renewal speed",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What header prevents clickjacking attacks?",
+                  "answers": [
+                    {
+                      "text": "X-XSS-Protection",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "X-Content-Type-Options",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "X-Frame-Options",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Content-Security-Policy",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "How do you redirect HTTP to HTTPS in Nginx?",
+                  "answers": [
+                    {
+                      "text": "return 301 https://$host$request_uri;",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "rewrite ^ https://$host$request_uri;",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "proxy_pass https://$host;",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "redirect https://$host;",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the purpose of ssl_session_cache?",
+                  "answers": [
+                    {
+                      "text": "Store SSL certificates",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Cache SSL session parameters for reuse",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Encrypt session cookies",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Manage SSL certificate revocation",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command obtains a certificate using DNS validation?",
+                  "answers": [
+                    {
+                      "text": "certbot --nginx",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "certbot certonly --webroot",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "certbot certonly --manual --preferred-challenges dns",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "certbot --apache",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Reverse Proxying & Load Balancing",
+              "order": 3,
+              "lab": "nginxLab?.id",
+              "content": "# Reverse Proxying & Load Balancing\n\n### Learning Objectives\n- Configure Nginx as a reverse proxy for backend applications\n- Set up upstream server groups with health checks\n- Implement load balancing algorithms (round-robin, least-connections, ip-hash)\n- Configure proxy buffering, timeouts, and WebSocket support\n\n### Section 1: Basic Reverse Proxy\n\nNginx excels as a reverse proxy, forwarding client requests to backend application servers:\n\n```nginx\nserver {\n    listen 80;\n    server_name app.example.com;\n\n    location / {\n        proxy_pass http://127.0.0.1:3000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}\n```\n\n**Important:** Always set the proxy headers. Without them, the backend cannot see the original client IP or protocol.\n\n### Section 2: Upstream Server Groups\n\nDefine groups of backend servers for load balancing:\n\n```nginx\nupstream app_backend {\n    server 10.0.0.1:3000 weight=3;\n    server 10.0.0.2:3000 weight=2;\n    server 10.0.0.3:3000 weight=1;\n    server 10.0.0.4:3000 backup;  # Only used when others are down\n\n    keepalive 32;  # Connection pool to backends\n}\n\nserver {\n    listen 80;\n    location / {\n        proxy_pass http://app_backend;\n        proxy_http_version 1.1;\n        proxy_set_header Connection \"\";\n    }\n}\n```\n\n### Section 3: Load Balancing Algorithms\n\n| Algorithm | Directive | Description |\n|-----------|-----------|-------------|\n| Round-Robin | (default) | Distributes requests sequentially |\n| Least Connections | `least_conn;` | Sends to server with fewest active connections |\n| IP Hash | `ip_hash;` | Same client IP always hits same server (session persistence) |\n| Random | `random two least_conn;` | Random selection among least-loaded servers |\n\n```nginx\nupstream backend {\n    least_conn;\n    server 10.0.0.1:3000;\n    server 10.0.0.2:3000;\n    server 10.0.0.3:3000;\n}\n```\n\n### Section 4: Health Checks\n\nNginx performs passive health checks by default. Active health checks require Nginx Plus, but you can configure passive checks:\n\n```nginx\nupstream backend {\n    server 10.0.0.1:3000 max_fails=3 fail_timeout=30s;\n    server 10.0.0.2:3000 max_fails=3 fail_timeout=30s;\n}\n```\n\n`max_fails`: Number of failures before marking server as unavailable\n`fail_timeout`: Duration to mark server as unavailable after max_fails\n\n### Section 5: Proxy Buffering and Timeouts\n\n```nginx\nlocation / {\n    proxy_pass http://app_backend;\n\n    # Buffers\n    proxy_buffering on;\n    proxy_buffer_size 4k;\n    proxy_buffers 8 4k;\n\n    # Timeouts\n    proxy_connect_timeout 60s;\n    proxy_send_timeout 60s;\n    proxy_read_timeout 60s;\n\n    # Retry on failure\n    proxy_next_upstream error timeout http_502 http_503;\n    proxy_next_upstream_tries 3;\n}\n```\n\n### Section 6: WebSocket Proxying\n\n```nginx\nlocation /ws/ {\n    proxy_pass http://app_backend;\n    proxy_http_version 1.1;\n    proxy_set_header Upgrade $http_upgrade;\n    proxy_set_header Connection \"upgrade\";\n    proxy_read_timeout 86400s;  # Keep WebSocket alive\n}\n```\n\n### Hands-On Practice\n\n1. Set up two Python Flask servers on different ports\n2. Configure Nginx as a reverse proxy with upstream\n3. Test load balancing by sending multiple requests\n4. Simulate a backend failure and observe failover\n5. Configure WebSocket proxying for a real-time app\n\n### Key Takeaways\n- Always set proxy headers (X-Real-IP, X-Forwarded-For, X-Forwarded-Proto)\n- Use upstream blocks to group backend servers\n- least_conn is best for variable request times; ip_hash for session persistence\n- Configure timeouts and retry logic for resilience\n- WebSocket proxying requires Upgrade and Connection headers\n\n### References & Further Reading\n1. \"Nginx Cookbook\" by Alex Crawford — Chapter 3: Proxying\n2. [Nginx Proxy Documentation](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)\n3. [Nginx Load Balancing](https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/)",
+              "questions": [
+                {
+                  "text": "Which directive is required for WebSocket proxying in Nginx?",
+                  "answers": [
+                    {
+                      "text": "proxy_set_header Upgrade $http_upgrade",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "proxy_websocket on",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ws_upgrade on",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "proxy_set_header Upgrade websocket",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which load balancing algorithm sends requests to the server with fewest active connections?",
+                  "answers": [
+                    {
+                      "text": "round-robin",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ip_hash",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "least_conn",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "random",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does max_fails=3 mean in an upstream server definition?",
+                  "answers": [
+                    {
+                      "text": "Server will handle exactly 3 requests",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Server is marked down after 3 consecutive failures",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Server will be removed after 3 minutes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Server accepts maximum 3 concurrent connections",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Why should you always set proxy_set_header Host $host?",
+                  "answers": [
+                    {
+                      "text": "To enable SSL on the backend",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To preserve the original Host header for the backend",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "To enable compression",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To set the server name in access logs",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does proxy_next_upstream do?",
+                  "answers": [
+                    {
+                      "text": "Enables response caching",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Forwards the request to the next backend on failure",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Sends the request to all backends simultaneously",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Load balances across multiple Nginx instances",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the purpose of the keepalive directive in an upstream block?",
+                  "answers": [
+                    {
+                      "text": "Keep client connections alive",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Maintain a pool of connections to backend servers",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Enable HTTP keepalive for Nginx itself",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Prevent backend servers from shutting down",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Caching & Performance Tuning",
+              "order": 4,
+              "lab": "nginxLab?.id",
+              "content": "# Caching & Performance Tuning\n\n### Learning Objectives\n- Configure proxy caching to reduce backend load\n- Implement browser caching with expires headers\n- Optimize Nginx for high-throughput workloads\n- Use Gzip/Brotli compression effectively\n\n### Section 1: Proxy Cache Configuration\n\nNginx can cache responses from backend servers, reducing load and improving response times:\n\n```nginx\n# Define cache zone in http block\nproxy_cache_path /var/cache/nginx levels=1:2 keys_zone=my_cache:100m\n    max_size=10g inactive=60m use_temp_path=off;\n\nserver {\n    location / {\n        proxy_pass http://app_backend;\n        proxy_cache my_cache;\n        proxy_cache_valid 200 302 10m;\n        proxy_cache_valid 404 1m;\n        proxy_cache_key \"$scheme$request_method$host$request_uri\";\n        proxy_cache_use_stale error timeout updating http_500 http_502 http_503;\n        add_header X-Cache-Status $upstream_cache_status;\n    }\n}\n```\n\nCache status values: HIT, MISS, EXPIRED, STALE, UPDATING, BYPASS\n\n### Section 2: Cache Invalidation\n\n```bash\n# Purge cache for a specific URL (requires proxy_cache_purge module)\ncurl -X PURGE http://example.com/api/data\n\n# Skip cache for specific requests\nlocation /api/ {\n    proxy_cache off;\n    proxy_pass http://app_backend;\n}\n\n# Bypass cache with header\nproxy_cache_bypass $http_x_no_cache;\nproxy_no_cache $http_x_no_cache;\n```\n\n### Section 3: Browser Caching\n\n```nginx\n# Static assets - cache for 1 year\nlocation ~* \\.(css|js|png|jpg|jpeg|gif|ico|svg|woff2)$ {\n    root /var/www/html;\n    expires 1y;\n    add_header Cache-Control \"public, immutable\";\n    access_log off;\n}\n\n# HTML - no cache\nlocation ~* \\.html$ {\n    expires -1;\n    add_header Cache-Control \"no-store, no-cache, must-revalidate\";\n}\n\n# API responses - no cache\nlocation /api/ {\n    proxy_pass http://app_backend;\n    add_header Cache-Control \"no-cache, no-store, must-revalidate\";\n}\n```\n\n### Section 4: Gzip Compression\n\n```nginx\nhttp {\n    gzip on;\n    gzip_vary on;\n    gzip_proxied any;\n    gzip_comp_level 6;\n    gzip_min_length 256;\n    gzip_types\n        text/plain text/css text/xml\n        application/json application/javascript\n        application/xml application/rss+xml\n        image/svg+xml;\n}\n```\n\n### Section 5: Brotli Compression\n\n```nginx\n# Requires ngx_brotli module\nbrotli on;\nbroli_comp_level 6;\nbrotli_types text/plain text/css application/json application/javascript;\n```\n\n### Section 6: Performance Tuning\n\n```nginx\nhttp {\n    # Sendfile for zero-copy file transfers\n    sendfile on;\n    tcp_nopush on;\n    tcp_nodelay on;\n\n    # Open file cache\n    open_file_cache max=10000 inactive=20s;\n    open_file_cache_valid 30s;\n    open_file_cache_min_uses 2;\n\n    # Buffer optimization\n    client_body_buffer_size 16k;\n    client_header_buffer_size 1k;\n    large_client_header_buffers 4 8k;\n\n    # Timeout tuning\n    client_body_timeout 12;\n    client_header_timeout 12;\n    keepalive_timeout 65;\n    send_timeout 10;\n}\n```\n\n### Hands-On Practice\n\n1. Configure proxy caching and verify with `X-Cache-Status` header\n2. Set up browser caching for static assets\n3. Enable gzip compression and test with `curl -H 'Accept-Encoding: gzip'`\n4. Benchmark before and after with `ab` or `wrk`\n\n### Key Takeaways\n- Proxy caching reduces backend load and improves response times\n- Use Cache-Control headers to control browser caching\n- Gzip/Brotli compression reduces bandwidth by 60-80%\n- sendfile enables zero-copy file transfers\n- Tune buffer sizes and timeouts for your workload\n\n### References & Further Reading\n1. \"Nginx Cookbook\" by Alex Crawford — Chapter 6: Caching\n2. [Nginx Caching Guide](https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/)\n3. [PageSpeed Module for Nginx](https://developers.google.com/speed/pagespeed/module/)",
+              "questions": [
+                {
+                  "text": "What does proxy_cache_valid 200 10m mean?",
+                  "answers": [
+                    {
+                      "text": "Cache only lasts 10 minutes total",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Cache 200 responses for 10 minutes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Cache for 10 minutes on port 200",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Maximum 200 cached items for 10 minutes",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What header reveals whether a response was served from cache?",
+                  "answers": [
+                    {
+                      "text": "X-Cache",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "X-Cache-Status",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Cache-Control",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "X-Proxy-Cache",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the sendfile directive do?",
+                  "answers": [
+                    {
+                      "text": "Enables file uploads",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Uses kernel zero-copy for efficient file transfers",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Sends files via email",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Enables file compression",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which gzip_comp_level provides the best balance of compression and CPU usage?",
+                  "answers": [
+                    {
+                      "text": "1 (fastest)",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "6 (balanced)",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "9 (maximum)",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "0 (disabled)",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does proxy_cache_use_stale do?",
+                  "answers": [
+                    {
+                      "text": "Disables caching",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Serves stale cached content when backend is unavailable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Deletes old cache entries",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Forces cache refresh",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the correct Cache-Control header for immutable static assets?",
+                  "answers": [
+                    {
+                      "text": "no-cache, no-store",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "public, immutable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "private, max-age=0",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "must-revalidate",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Apache & Alternatives",
+          "order": 2,
+          "lessons": [
+            {
+              "title": "Apache httpd Configuration",
+              "order": 1,
+              "lab": "undefined",
+              "content": "# Apache httpd Configuration\n\n### Learning Objectives\n- Understand Apache MPM modules (prefork, worker, event)\n- Configure VirtualHosts for multiple sites\n- Set up .htaccess for directory-level configuration\n- Implement authentication and access control\n\n### Section 1: MPM Modules\n\nApache uses Multi-Processing Modules (MPMs) to handle connections. Unlike Nginx, Apache supports multiple MPMs:\n\n| MPM | Model | Best For |\n|-----|-------|----------|\n| prefork | Process-per-connection | Stability, mod_php |\n| worker | Threaded with process pool | Balanced performance |\n| event | Async keep-alive handling | High concurrency |\n\n```bash\n# Check current MPM\napachectl -V | grep MPM\n\n# Switch MPM (Debian/Ubuntu)\nsudo a2dismod mpm_prefork\nsudo a2enmod mpm_worker\nsudo systemctl restart apache2\n```\n\n### Section 2: VirtualHosts\n\n```apache\n# /etc/apache2/sites-available/example.com.conf\n<VirtualHost *:80>\n    ServerName example.com\n    ServerAlias www.example.com\n    DocumentRoot /var/www/example.com/html\n\n    <Directory /var/www/example.com/html>\n        Options -Indexes +FollowSymLinks\n        AllowOverride All\n        Require all granted\n    </Directory>\n\n    ErrorLog ${APACHE_LOG_DIR}/example.com-error.log\n    CustomLog ${APACHE_LOG_DIR}/example.com-access.log combined\n</VirtualHost>\n\n# Enable the site\nsudo a2ensite example.com.conf\nsudo systemctl reload apache2\n```\n\n### Section 3: .htaccess Configuration\n\n```apache\n# URL Rewriting\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^(.*)$ index.php/$1 [L]\n\n# Basic Authentication\nAuthType Basic\nAuthName \"Restricted Area\"\nAuthUserFile /etc/apache2/.htpasswd\nRequire valid-user\n```\n\n### Section 4: Authentication\n\n```bash\n# Create password file\nsudo htpasswd -c /etc/apache2/.htpasswd admin\n\n# Add more users\nsudo htpasswd /etc/apache2/.htpasswd user2\n```\n\n### Section 5: Performance Tuning\n\n```apache\n# Enable compression\n<IfModule mod_deflate.c>\n    AddOutputFilterByType DEFLATE text/html text/plain text/css\n    AddOutputFilterByType DEFLATE application/javascript application/json\n</IfModule>\n\n# Connection keep-alive\nKeepAlive On\nKeepAliveTimeout 5\nMaxKeepAliveRequests 100\n```\n\n### Key Takeaways\n- Apache MPMs determine connection handling (prefork, worker, event)\n- VirtualHosts allow hosting multiple sites on one server\n- .htaccess provides directory-level configuration\n- Apache offers flexible authentication and access control\n\n### References\n1. \"Apache Cookbook\" by Ken Coar\n2. [Apache httpd Documentation](https://httpd.apache.org/docs/2.4/)\n3. [Apache MPM Comparison](https://httpd.apache.org/docs/2.4/mpm.html)",
+              "questions": [
+                {
+                  "text": "Which Apache MPM is best for high concurrency with minimal memory?",
+                  "answers": [
+                    {
+                      "text": "prefork",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "worker",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "event",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "itk",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What directive enables .htaccess processing?",
+                  "answers": [
+                    {
+                      "text": "Options +Includes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "AllowOverride All",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "AccessFileName .htaccess",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "EnableHtaccess On",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command creates an Apache password file?",
+                  "answers": [
+                    {
+                      "text": "htpasswd -c /path/file user",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "apache-passwd create user",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "htpasswd create user /path/file",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "echo 'user:pass' > /path/file",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does Options -Indexes do?",
+                  "answers": [
+                    {
+                      "text": "Enables directory listing",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Disables directory listing when no index file exists",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Enables indexing for search engines",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Disables all directory options",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which Apache module provides URL rewriting?",
+                  "answers": [
+                    {
+                      "text": "mod_rewrite",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "mod_redirect",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "mod_alias",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "mod_proxy",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the difference between ServerName and ServerAlias?",
+                  "answers": [
+                    {
+                      "text": "No difference",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ServerName is primary, ServerAlias is additional names",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ServerAlias is the primary domain",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ServerName handles HTTP, ServerAlias handles HTTPS",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Alternative Web Servers",
+              "order": 2,
+              "lab": "undefined",
+              "content": "# Alternative Web Servers\n\n### Learning Objectives\n- Compare Caddy, HAProxy, and Traefik as web server alternatives\n- Understand when to use each server\n- Configure automatic HTTPS with Caddy\n- Set up HAProxy for TCP/HTTP load balancing\n\n### Section 1: Caddy\n\nCaddy is a modern web server with automatic HTTPS via Let's Encrypt:\n\n```caddy\n# Caddyfile\nexample.com {\n    root * /var/www/html\n    file_server\n    encode gzip\n\n    tls {\n        protocols tls1.2 tls1.3\n    }\n\n    log {\n        output file /var/log/caddy/access.log\n    }\n}\n\napi.example.com {\n    reverse_proxy localhost:3000\n}\n```\n\n**Caddy vs Nginx:**\n- Caddy automatically obtains and renews SSL certificates\n- Caddy uses a simpler configuration syntax\n- Nginx has better performance under extreme load\n- Nginx has a larger module ecosystem\n\n### Section 2: HAProxy\n\nHAProxy specializes in load balancing and proxying:\n\n```haproxy\n# /etc/haproxy/haproxy.cfg\nglobal\n    maxconn 50000\n    log /dev/log local0\n\ndefaults\n    mode http\n    timeout connect 5s\n    timeout client 30s\n    timeout server 30s\n\nfrontend http_front\n    bind *:80\n    bind *:443 ssl crt /etc/ssl/certs/example.pem\n    redirect scheme https if !{ ssl_fc }\n    default_backend web_servers\n\nbackend web_servers\n    balance roundrobin\n    option httpchk GET /health\n    server web1 10.0.0.1:8080 check\n    server web2 10.0.0.2:8080 check\n    server web3 10.0.0.3:8080 check backup\n\nlisten stats\n    bind *:8404\n    stats enable\n    stats uri /stats\n```\n\n### Section 3: Traefik\n\nTraefik is designed for containerized environments:\n\n```yaml\nentryPoints:\n  web:\n    address: \":80\"\n  websecure:\n    address: \":443\"\n\ncertificatesResolvers:\n  letsencrypt:\n    acme:\n      email: admin@example.com\n      storage: acme.json\n      httpChallenge:\n        entryPoint: web\n\nproviders:\n  docker:\n    exposedByDefault: false\n```\n\n### Section 4: Comparison Matrix\n\n| Feature | Nginx | Apache | Caddy | HAProxy | Traefik |\n|---------|-------|--------|-------|---------|--------|\n| Performance | Excellent | Good | Good | Excellent | Good |\n| Auto HTTPS | No | No | Yes | No | Yes |\n| Config Simplicity | Medium | Complex | Simple | Medium | Simple |\n| Container Support | Good | Poor | Good | Good | Excellent |\n| Load Balancing | Good | Limited | Basic | Excellent | Good |\n\n### Key Takeaways\n- Caddy provides automatic HTTPS with zero configuration\n- HAProxy excels at load balancing with health checks\n- Traefik integrates natively with Docker and Kubernetes\n- Choose the right tool based on your specific use case\n\n### References\n1. [Caddy Documentation](https://caddyserver.com/docs/)\n2. [HAProxy Configuration Manual](https://www.haproxy.org/#docs)\n3. [Traefik Documentation](https://doc.traefik.io/traefik/)",
+              "questions": [
+                {
+                  "text": "Which web server automatically obtains SSL certificates?",
+                  "answers": [
+                    {
+                      "text": "Nginx",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Apache",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Caddy",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "LiteSpeed",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is HAProxy primarily designed for?",
+                  "answers": [
+                    {
+                      "text": "Serving static files",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Load balancing and reverse proxying",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Running PHP applications",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Managing DNS records",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which server is best for Docker and Kubernetes environments?",
+                  "answers": [
+                    {
+                      "text": "Nginx",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Apache",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Lighttpd",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Traefik",
+                      "isCorrect": true
+                    }
+                  ]
+                },
+                {
+                  "text": "What configuration file does Caddy use?",
+                  "answers": [
+                    {
+                      "text": "nginx.conf",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "httpd.conf",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Caddyfile",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "caddy.yml",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does HAProxy httpchk option do?",
+                  "answers": [
+                    {
+                      "text": "Checks HTTP headers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Performs HTTP health checks on backends",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Validates HTTP requests",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Enables HTTP logging",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Why choose Nginx over Caddy in production?",
+                  "answers": [
+                    {
+                      "text": "Caddy cannot handle HTTPS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nginx has better performance at scale and more modules",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Caddy does not support Linux",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nginx is simpler to configure",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Containerized Web Deployment",
+              "order": 3,
+              "lab": "undefined",
+              "content": "# Containerized Web Deployment\n\n### Learning Objectives\n- Deploy web applications using Docker containers\n- Configure Nginx as a Docker reverse proxy\n- Use Docker Compose for multi-container deployments\n- Implement container health checks and restart policies\n\n### Section 1: Docker Basics for Web Servers\n\n```bash\n# Pull and run Nginx\ndocker pull nginx:latest\ndocker run -d --name web -p 80:80 -p 443:443 \\\n    -v /etc/nginx/conf.d:/etc/nginx/conf.d \\\n    -v /var/www/html:/usr/share/nginx/html \\\n    nginx:latest\n\n# Run a Node.js app\ndocker run -d --name api -p 3000:3000 \\\n    -e NODE_ENV=production \\\n    myapp:latest\n```\n\n### Section 2: Docker Compose Setup\n\n```yaml\n# docker-compose.yml\nversion: '3.8'\n\nservices:\n  nginx:\n    image: nginx:latest\n    ports:\n      - \"80:80\"\n      - \"443:443\"\n    volumes:\n      - ./nginx/conf.d:/etc/nginx/conf.d\n      - ./certs:/etc/nginx/certs\n      - ./www:/var/www/html\n    depends_on:\n      - api\n      - app\n    restart: always\n\n  api:\n    build: ./api\n    environment:\n      - NODE_ENV=production\n      - DB_HOST=db\n    depends_on:\n      - db\n    restart: always\n\n  app:\n    build: ./frontend\n    restart: always\n\n  db:\n    image: postgres:15\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    environment:\n      POSTGRES_DB: myapp\n    restart: always\n\nvolumes:\n  pgdata:\n```\n\n### Section 3: Nginx Docker Configuration\n\n```nginx\n# nginx/conf.d/default.conf\nupstream api_backend {\n    server api:3000;\n}\n\nupstream frontend {\n    server app:8080;\n}\n\nserver {\n    listen 80;\n    server_name example.com;\n    return 301 https://$host$request_uri;\n}\n\nserver {\n    listen 443 ssl http2;\n    server_name example.com;\n\n    ssl_certificate /etc/nginx/certs/fullchain.pem;\n    ssl_certificate_key /etc/nginx/certs/privkey.pem;\n\n    location / {\n        proxy_pass http://frontend;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n    }\n\n    location /api/ {\n        proxy_pass http://api_backend/;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n    }\n}\n```\n\n### Section 4: Health Checks and Restart Policies\n\n```yaml\nservices:\n  api:\n    build: ./api\n    healthcheck:\n      test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:3000/health\"]\n      interval: 30s\n      timeout: 10s\n      retries: 3\n      start_period: 40s\n    restart: unless-stopped\n\n  nginx:\n    image: nginx:latest\n    depends_on:\n      api:\n        condition: service_healthy\n    restart: unless-stopped\n```\n\n### Key Takeaways\n- Docker provides consistent deployment across environments\n- Docker Compose simplifies multi-container orchestration\n- Use volumes for persistent data and configuration files\n- Health checks ensure containers are running properly\n- Restart policies handle automatic recovery from failures\n\n### References\n1. [Docker Documentation](https://docs.docker.com/)\n2. [Docker Compose Specification](https://docs.docker.com/compose/)\n3. [Nginx Docker Hub](https://hub.docker.com/_/nginx/)",
+              "questions": [
+                {
+                  "text": "What Docker flag maps container ports to host ports?",
+                  "answers": [
+                    {
+                      "text": "-v",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-p",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "--expose",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "--link",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What Docker Compose directive defines service dependencies?",
+                  "answers": [
+                    {
+                      "text": "links",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "depends_on",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "requires",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "needs",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the restart: unless-stopped policy do?",
+                  "answers": [
+                    {
+                      "text": "Never restarts containers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Restarts containers unless manually stopped",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Always restarts containers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Restarts only on system reboot",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the purpose of Docker volumes?",
+                  "answers": [
+                    {
+                      "text": "Increase CPU allocation",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Persist data beyond container lifecycle",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Enable networking between containers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Build container images",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "In Docker Compose, how do services reference other containers by name?",
+                  "answers": [
+                    {
+                      "text": "By IP address",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "By service name as hostname",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "By container ID",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "By environment variable",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Application Deployment",
+          "order": 3,
+          "lessons": [
+            {
+              "title": "Node.js Application Deployment",
+              "order": 1,
+              "lab": "undefined",
+              "content": "# Node.js Application Deployment\n\n### Learning Objectives\n- Deploy Node.js applications behind Nginx\n- Configure PM2 process manager for production\n- Set up environment variables and secrets management\n- Implement logging and monitoring\n\n### Section 1: Deployment Architecture\n\n```\nClient -> Nginx (port 80/443) -> Node.js (port 3000) -> Database\n```\n\nNginx handles SSL termination, static files, load balancing, and rate limiting while Node.js focuses on application logic.\n\n### Section 2: PM2 Process Manager\n\n```bash\n# Install PM2\nnpm install -g pm2\n\n# Start application\npm2 start app.js --name \"myapi\" -i max\n\n# Cluster mode (one process per CPU core)\npm2 start app.js --name \"myapi\" --instances max --exec-mode cluster\n\n# Save and restore\npm2 save\npm2 startup\n\n# Monitor\npm2 monit\npm2 logs myapi\npm2 status\n```\n\n### Section 3: Nginx Configuration for Node.js\n\n```nginx\nupstream node_backend {\n    least_conn;\n    server 127.0.0.1:3000 weight=1 max_fails=3 fail_timeout=30s;\n    server 127.0.0.1:3001 weight=1 max_fails=3 fail_timeout=30s;\n    keepalive 64;\n}\n\nserver {\n    listen 443 ssl http2;\n    server_name api.example.com;\n\n    ssl_certificate /etc/letsencrypt/live/api.example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;\n\n    # Rate limiting\n    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;\n\n    location / {\n        limit_req zone=api burst=20 nodelay;\n        proxy_pass http://node_backend;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection 'upgrade';\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_cache_bypass $http_upgrade;\n    }\n\n    location /static/ {\n        alias /var/www/myapp/static/;\n        expires 30d;\n        add_header Cache-Control \"public, immutable\";\n    }\n}\n```\n\n### Section 4: Environment Variables\n\n```bash\n# .env file (never commit to git)\nNODE_ENV=production\nPORT=3000\nDB_HOST=localhost\nDB_PORT=5432\nDB_NAME=myapp\nJWT_SECRET=your-secret-key\n\n# Load with dotenv\nrequire('dotenv').config();\n```\n\n### Section 5: Logging with Winston\n\n```javascript\nconst winston = require('winston');\nconst logger = winston.createLogger({\n  level: 'info',\n  format: winston.format.json(),\n  transports: [\n    new winston.transports.File({ filename: '/var/log/myapp/error.log', level: 'error' }),\n    new winston.transports.File({ filename: '/var/log/myapp/combined.log' }),\n  ],\n});\n```\n\n### Key Takeaways\n- Use PM2 in cluster mode for multi-core utilization\n- Let Nginx handle SSL, rate limiting, and static files\n- Always use environment variables for secrets\n- Implement structured logging for debugging and monitoring\n- Configure keepalive connections between Nginx and Node.js\n\n### References\n1. [PM2 Documentation](https://pm2.keymetrics.io/docs/)\n2. [Nginx Proxy Configuration](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)\n3. [Node.js Production Best Practices](https://github.com/goldbergyoni/nodebestpractices)",
+              "questions": [
+                {
+                  "text": "What does PM2 cluster mode do?",
+                  "answers": [
+                    {
+                      "text": "Runs multiple Node.js instances on different machines",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Runs one process per CPU core",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Creates a backup of the application",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Monitors application health",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Why should Nginx handle SSL instead of Node.js?",
+                  "answers": [
+                    {
+                      "text": "Node.js cannot handle SSL",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nginx is optimized for SSL termination and performs better",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "SSL requires root privileges only Nginx has",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "There is no difference",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the pm2 save command do?",
+                  "answers": [
+                    {
+                      "text": "Saves application code",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Saves the process list for automatic restart",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Creates a database backup",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Saves environment variables",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the purpose of proxy_http_version 1.1 in Nginx?",
+                  "answers": [
+                    {
+                      "text": "Enables HTTP/2",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Required for keepalive connections to upstream",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Forces clients to use HTTP/1.1",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Enables WebSocket support",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Where should secrets like JWT_SECRET be stored?",
+                  "answers": [
+                    {
+                      "text": "In the source code",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "In environment variables",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "In the Nginx configuration",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "In the database",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Python/Django Deployment",
+              "order": 2,
+              "lab": "undefined",
+              "content": "# Python/Django Deployment\n\n### Learning Objectives\n- Deploy Django applications with Gunicorn and Nginx\n- Configure Gunicorn workers and binding\n- Serve Django static and media files through Nginx\n- Implement Django security settings for production\n\n### Section 1: Deployment Stack\n\n```\nClient -> Nginx -> Gunicorn -> Django -> Database\n           |-> Static Files\n           |-> Media Files\n```\n\n### Section 2: Gunicorn Setup\n\n```bash\n# Install Gunicorn\npip install gunicorn\n\n# Run Django with Gunicorn\ngunicorn myproject.wsgi:application \\\n    --bind 127.0.0.1:8000 \\\n    --workers 4 \\\n    --worker-class gevent \\\n    --timeout 120 \\\n    --access-logfile /var/log/gunicorn/access.log \\\n    --error-logfile /var/log/gunicorn/error.log\n```\n\n**Worker Calculation:** workers = (2 x CPU cores) + 1\n\n### Section 3: Systemd Service\n\n```ini\n# /etc/systemd/system/myapp.service\n[Unit]\nDescription=Gunicorn Django Application\nAfter=network.target\n\n[Service]\nUser=www-data\nGroup=www-data\nWorkingDirectory=/var/www/myapp\nExecStart=/var/www/myapp/venv/bin/gunicorn \\\n    myproject.wsgi:application \\\n    --bind unix:/run/gunicorn/myapp.sock \\\n    --workers 4\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\n```\n\n### Section 4: Nginx Configuration for Django\n\n```nginx\nserver {\n    listen 80;\n    server_name example.com;\n    return 301 https://$host$request_uri;\n}\n\nserver {\n    listen 443 ssl http2;\n    server_name example.com;\n\n    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;\n\n    # Static files\n    location /static/ {\n        alias /var/www/myapp/staticfiles/;\n        expires 30d;\n        add_header Cache-Control \"public, immutable\";\n    }\n\n    # Media files\n    location /media/ {\n        alias /var/www/myapp/media/;\n        expires 7d;\n    }\n\n    # Django application\n    location / {\n        include proxy_params;\n        proxy_pass http://unix:/run/gunicorn/myapp.sock;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}\n```\n\n### Section 5: Django Production Settings\n\n```python\n# settings.py (production overrides)\nDEBUG = False\nALLOWED_HOSTS = ['example.com', 'www.example.com']\n\n# Security\nSECURE_SSL_REDIRECT = True\nSECURE_HSTS_SECONDS = 31536000\nSECURE_HSTS_INCLUDE_SUBDOMAINS = True\nSECURE_HSTS_PRELOAD = True\nSESSION_COOKIE_SECURE = True\nCSRF_COOKIE_SECURE = True\n\n# Static files\nSTATIC_URL = '/static/'\nSTATIC_ROOT = '/var/www/myapp/staticfiles/'\nMEDIA_URL = '/media/'\nMEDIA_ROOT = '/var/www/myapp/media/'\n```\n\n### Key Takeaways\n- Gunicorn is the standard WSGI server for Django\n- Use systemd to manage Gunicorn as a service\n- Nginx serves static/media files directly for performance\n- Always disable DEBUG and enable HTTPS in production\n- Use Unix sockets instead of TCP for local Gunicorn-Nginx communication\n\n### References\n1. [Django Deployment Checklist](https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/)\n2. [Gunicorn Configuration](https://docs.gunicorn.org/en/stable/settings.html)\n3. [Deploying Django with Gunicorn and Nginx](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html)",
+              "questions": [
+                {
+                  "text": "What is the recommended Gunicorn worker count formula?",
+                  "answers": [
+                    {
+                      "text": "Number of CPU cores",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "(2 x CPU cores) + 1",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Number of RAM GB",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "10 workers",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Why use Unix sockets instead of TCP for Gunicorn-Nginx communication?",
+                  "answers": [
+                    {
+                      "text": "Sockets are more secure",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Unix sockets are faster with lower overhead",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "TCP does not work with Gunicorn",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Sockets support more workers",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What Django setting should be False in production?",
+                  "answers": [
+                    {
+                      "text": "ALLOWED_HOSTS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "DEBUG",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "STATIC_URL",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "DATABASES",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the collectstatic command do?",
+                  "answers": [
+                    {
+                      "text": "Collects user data",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Gathers all static files into STATIC_ROOT",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Downloads static assets from CDN",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Compresses static files",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What systemd directive ensures the service starts on boot?",
+                  "answers": [
+                    {
+                      "text": "Restart=always",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "WantedBy=multi-user.target",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "After=network.target",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ExecStart",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Container Orchestration",
+              "order": 3,
+              "lab": "undefined",
+              "content": "# Container Orchestration\n\n### Learning Objectives\n- Understand Kubernetes architecture for web applications\n- Deploy applications using Kubernetes manifests\n- Configure Ingress controllers for HTTP routing\n- Implement horizontal pod autoscaling\n\n### Section 1: Kubernetes Architecture\n\n```\nMaster Node: API Server, etcd, Scheduler, Controller Manager\nWorker Nodes: kubelet, kube-proxy, Container Runtime\n```\n\n**Key Resources:**\n- **Pod**: Smallest deployable unit, one or more containers\n- **Deployment**: Manages pod replicas and updates\n- **Service**: Stable network endpoint for pods\n- **Ingress**: HTTP/HTTPS routing rules\n\n### Section 2: Deployment Manifest\n\n```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-app\n  namespace: production\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: web-app\n  template:\n    metadata:\n      labels:\n        app: web-app\n    spec:\n      containers:\n      - name: nginx\n        image: nginx:1.25\n        ports:\n        - containerPort: 80\n        resources:\n          requests:\n            memory: \"128Mi\"\n            cpu: \"250m\"\n          limits:\n            memory: \"256Mi\"\n            cpu: \"500m\"\n      - name: app\n        image: myapp:latest\n        ports:\n        - containerPort: 3000\n        env:\n        - name: NODE_ENV\n          value: \"production\"\n```\n\n### Section 3: Service and Ingress\n\n```yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: web-app-service\nspec:\n  selector:\n    app: web-app\n  ports:\n  - port: 80\n    targetPort: 80\n  type: ClusterIP\n---\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: web-app-ingress\n  annotations:\n    nginx.ingress.kubernetes.io/ssl-redirect: \"true\"\n    cert-manager.io/cluster-issuer: \"letsencrypt-prod\"\nspec:\n  tls:\n  - hosts:\n    - example.com\n    secretName: example-tls\n  rules:\n  - host: example.com\n    http:\n      paths:\n      - path: /\n        pathType: Prefix\n        backend:\n          service:\n            name: web-app-service\n            port:\n              number: 80\n```\n\n### Section 4: Horizontal Pod Autoscaler\n\n```yaml\napiVersion: autoscaling/v2\nkind: HorizontalPodAutoscaler\nmetadata:\n  name: web-app-hpa\nspec:\n  scaleTargetRef:\n    apiVersion: apps/v1\n    kind: Deployment\n    name: web-app\n  minReplicas: 3\n  maxReplicas: 20\n  metrics:\n  - type: Resource\n    resource:\n      name: cpu\n      target:\n        type: Utilization\n        averageUtilization: 70\n  - type: Resource\n    resource:\n      name: memory\n      target:\n        type: Utilization\n        averageUtilization: 80\n```\n\n### Section 5: Useful Commands\n\n```bash\n# Deploy and check\nkubectl apply -f deployment.yaml\nkubectl get pods -n production\nkubectl describe pod <pod-name> -n production\n\n# Scale manually\nkubectl scale deployment web-app --replicas=5 -n production\n\n# Logs and debugging\nkubectl logs -f deployment/web-app -n production\nkubectl exec -it <pod-name> -n production -- /bin/bash\n\n# Update and rollback\nkubectl set image deployment/web-app nginx=nginx:1.26 -n production\nkubectl rollout undo deployment/web-app -n production\n```\n\n### Key Takeaways\n- Kubernetes provides automated deployment, scaling, and management\n- Deployments manage pod replicas and rolling updates\n- Services provide stable networking for pods\n- Ingress controllers handle HTTP/HTTPS routing and SSL termination\n- HPA automatically scales based on CPU/memory usage\n\n### References\n1. [Kubernetes Documentation](https://kubernetes.io/docs/)\n2. [Kubernetes Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)\n3. [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)",
+              "questions": [
+                {
+                  "text": "What is the smallest deployable unit in Kubernetes?",
+                  "answers": [
+                    {
+                      "text": "Container",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Pod",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Node",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Cluster",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What Kubernetes resource provides stable network access to pods?",
+                  "answers": [
+                    {
+                      "text": "Deployment",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ConfigMap",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Service",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Volume",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does HPA stand for in Kubernetes?",
+                  "answers": [
+                    {
+                      "text": "High Performance Allocation",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Horizontal Pod Autoscaler",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "High Priority Application",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Host Path Access",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What command rolls back a Kubernetes deployment?",
+                  "answers": [
+                    {
+                      "text": "kubectl rollback deployment/web-app",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "kubectl rollout undo deployment/web-app",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "kubectl undo deployment/web-app",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "kubectl revert deployment/web-app",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What Kubernetes resource handles HTTP/HTTPS routing?",
+                  "answers": [
+                    {
+                      "text": "Service",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Pod",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ingress",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ConfigMap",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Networking & Security",
+      "description": "Learn Linux networking fundamentals, firewall configuration with iptables and nftables, VPN setup, intrusion detection with Snort and Suricata, and network troubleshooting tools.",
+      "sections": [
+        {
+          "title": "Network Fundamentals",
+          "order": 1,
+          "lessons": [
+            {
+              "title": "TCP/IP Fundamentals",
+              "order": 1,
+              "lab": "netSecLab?.id",
+              "content": "# TCP/IP Fundamentals\n\n### Learning Objectives\n- Understand the TCP/IP model and its four layers\n- Know the differences between TCP and UDP\n- Identify common port numbers and their services\n- Use netstat and ss to inspect network connections\n\n### Section 1: The TCP/IP Model\n\n| Layer | Name | Protocols | Description |\n|-------|------|-----------|-------------|\n| 4 | Application | HTTP, DNS, SSH, FTP, SMTP | User-facing services |\n| 3 | Transport | TCP, UDP | End-to-end communication |\n| 2 | Internet | IP, ICMP, ARP | Routing and addressing |\n| 1 | Network Access | Ethernet, Wi-Fi | Physical transmission |\n\n### Section 2: TCP vs UDP\n\n| Feature | TCP | UDP |\n|---------|-----|-----|\n| Connection | Connection-oriented | Connectionless |\n| Reliability | Guaranteed delivery | Best-effort delivery |\n| Ordering | Ordered | No ordering |\n| Speed | Slower (overhead) | Faster (minimal overhead) |\n| Use Cases | Web, email, file transfer | DNS, video streaming, gaming |\n\n### Section 3: Common Ports\n\n```bash\n# Well-known ports\n22   - SSH\n25   - SMTP\n53   - DNS\n80   - HTTP\n443  - HTTPS\n3306 - MySQL\n5432 - PostgreSQL\n6379 - Redis\n8080 - HTTP Alt\n```\n\n### Section 4: Inspecting Connections\n\n```bash\n# Show all listening ports\nss -tlnp\n\n# Show established connections\nss -tnp state established\n\n# Using netstat\nnetstat -tlnp\nnetstat -anp | grep ESTABLISHED\n\n# Check specific port\nss -tlnp | grep :443\n```\n\n### Section 5: Network Interfaces\n\n```bash\n# Show interfaces\nip addr show\n\n# Bring interface up/down\nsudo ip link set eth0 up\nsudo ip link set eth0 down\n\n# Set IP address\nsudo ip addr add 192.168.1.100/24 dev eth0\n\n# Show routing table\nip route show\n\n# Add static route\nsudo ip route add 10.0.0.0/8 via 192.168.1.1\n```\n\n### Key Takeaways\n- TCP/IP has four layers: Application, Transport, Internet, Network Access\n- TCP provides reliable, ordered delivery; UDP is faster but unreliable\n- Common ports: 22 (SSH), 80 (HTTP), 443 (HTTPS), 3306 (MySQL)\n- Use ss and ip commands for modern network inspection\n\n### References\n1. \"TCP/IP Illustrated\" by W. Richard Stevens\n2. [Linux ip command documentation](https://man7.org/linux/man-pages/man8/ip.8.html)\n3. [ss command documentation](https://man7.org/linux/man-pages/man8/ss.8.html)",
+              "questions": [
+                {
+                  "text": "Which TCP/IP layer handles HTTP, DNS, and SSH?",
+                  "answers": [
+                    {
+                      "text": "Transport",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Internet",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Application",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Network Access",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the main difference between TCP and UDP?",
+                  "answers": [
+                    {
+                      "text": "TCP is faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "TCP provides reliable delivery, UDP is best-effort",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "UDP supports encryption",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "TCP is connectionless",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which port is used by HTTPS?",
+                  "answers": [
+                    {
+                      "text": "80",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "443",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "8080",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "8443",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command shows listening TCP ports on modern Linux?",
+                  "answers": [
+                    {
+                      "text": "netstat -tlnp",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ss -tlnp",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ip ports",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "tcpdump ports",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What command shows the routing table?",
+                  "answers": [
+                    {
+                      "text": "ip route show",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "route list",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ip addr show",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "netstat -r",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which port does DNS typically use?",
+                  "answers": [
+                    {
+                      "text": "53",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "80",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "25",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "110",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "DNS and Name Resolution",
+              "order": 2,
+              "lab": "netSecLab?.id",
+              "content": "# DNS and Name Resolution\n\n### Learning Objectives\n- Understand DNS hierarchy and resolution process\n- Configure local DNS resolution with /etc/hosts and /etc/resolv.conf\n- Use dig, nslookup, and host to query DNS\n- Set up a local DNS cache with systemd-resolved\n\n### Section 1: DNS Hierarchy\n\n```\nRoot (.)\n  -> TLD (.com, .org, .net)\n    -> Authoritative (example.com)\n      -> Specific (www.example.com)\n```\n\n### Section 2: DNS Resolution Process\n\n1. Browser checks browser cache\n2. OS checks /etc/hosts\n3. OS queries configured DNS server (from /etc/resolv.conf)\n4. DNS server checks cache, then recurses up the hierarchy\n5. IP address returned to browser\n\n### Section 3: Configuration Files\n\n```bash\n# /etc/resolv.conf - DNS servers\nnameserver 8.8.8.8\nnameserver 1.1.1.1\nsearch example.com\n\n# /etc/hosts - Local resolution\n127.0.0.1   localhost\n192.168.1.10 myserver.local myserver\n192.168.1.20 db.local db\n```\n\n### Section 4: DNS Lookup Tools\n\n```bash\n# dig - most comprehensive\ndig example.com\ndig +short example.com\ndig @8.8.8.8 example.com\ndig example.com MX\ndig -x 93.184.216.34  # Reverse lookup\n\n# nslookup\nnslookup example.com\nnslookup -type=MX example.com\n\n# host\nhost example.com\nhost -t MX example.com\n```\n\n### Section 5: Local DNS Cache\n\n```bash\n# Check systemd-resolved status\nresolvectl status\n\n# Flush DNS cache\nresolvectl flush-caches\n\n# Test with specific server\nresolvectl query example.com\n```\n\n### Section 6: DNS Record Types\n\n| Record | Purpose | Example |\n|--------|---------|---------|\n| A | Maps domain to IPv4 | example.com -> 93.184.216.34 |\n| AAAA | Maps domain to IPv6 | example.com -> 2606:2800:220:1:... |\n| CNAME | Alias to another domain | www.example.com -> example.com |\n| MX | Mail server | example.com -> mail.example.com |\n| TXT | Text data (SPF, DKIM) | example.com -> \"v=spf1 ...\" |\n| NS | Nameserver | example.com -> ns1.example.com |\n\n### Key Takeaways\n- DNS resolves domain names to IP addresses through a hierarchical system\n- /etc/resolv.conf configures DNS servers; /etc/hosts provides local overrides\n- dig is the most powerful DNS lookup tool\n- systemd-resolved provides local DNS caching\n- Common record types: A, AAAA, CNAME, MX, TXT, NS\n\n### References\n1. \"DNS and BIND\" by Paul Albitz\n2. [dig man page](https://man7.org/linux/man-pages/man1/dig.1.html)\n3. [Linux DNS How-To](https://tldp.org/HOWTO/DNS-HOWTO/)",
+              "questions": [
+                {
+                  "text": "Which file configures which DNS servers to use?",
+                  "answers": [
+                    {
+                      "text": "/etc/hosts",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "/etc/resolv.conf",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "/etc/dns.conf",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "/etc/nameserver",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What DNS record type maps a domain to an IPv4 address?",
+                  "answers": [
+                    {
+                      "text": "AAAA",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "CNAME",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "MX",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command performs a DNS reverse lookup?",
+                  "answers": [
+                    {
+                      "text": "dig -x IP",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "dig reverse IP",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "nslookup -reverse IP",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "host -r IP",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the /etc/hosts file do?",
+                  "answers": [
+                    {
+                      "text": "Configures DNS servers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Provides local hostname-to-IP mappings",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Stores DNS cache",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Lists remote DNS zones",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which tool flushes the systemd-resolved DNS cache?",
+                  "answers": [
+                    {
+                      "text": "resolvectl flush-caches",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "systemd-resolve --flush",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "dns-flush",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "resolvectl clear-cache",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What MX record specifies for a domain?",
+                  "answers": [
+                    {
+                      "text": "The mail server address",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The web server address",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The nameserver",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The IPv6 address",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Network Configuration",
+              "order": 3,
+              "lab": "netSecLab?.id",
+              "content": "# Network Configuration\n\n### Learning Objectives\n- Configure network interfaces using netplan and nmcli\n- Set up static IP addresses and DNS resolution\n- Manage network connections with NetworkManager\n- Configure bonding and VLANs for advanced networking\n\n### Section 1: Netplan (Ubuntu)\n\n```yaml\n# /etc/netplan/01-config.yaml\nnetwork:\n  version: 2\n  renderer: networkd\n  ethernets:\n    eth0:\n      dhcp4: false\n      addresses:\n        - 192.168.1.100/24\n      gateway4: 192.168.1.1\n      nameservers:\n        addresses: [8.8.8.8, 1.1.1.1]\n        search: [example.com]\n```\n\n```bash\n# Apply netplan configuration\nsudo netplan apply\nsudo netplan try  # Temporary for testing\n```\n\n### Section 2: NetworkManager (nmcli)\n\n```bash\n# Show connections\nnmcli connection show\nnmcli device status\n\n# Add static connection\nnmcli connection add type ethernet con-name office \\\n    ifname eth0 \\\n    ipv4.addresses 192.168.1.100/24 \\\n    ipv4.gateway 192.168.1.1 \\\n    ipv4.dns \"8.8.8.8 1.1.1.1\" \\\n    ipv4.method manual\n\n# Activate connection\nnmcli connection up office\n\n# Modify existing connection\nnmcli connection modify office ipv4.dns \"8.8.8.8\"\n```\n\n### Section 3: Network Bonding\n\n```yaml\n# /etc/netplan/02-bonding.yaml\nnetwork:\n  version: 2\n  bonds:\n    bond0:\n      interfaces: [eth0, eth1]\n      addresses: [10.0.0.10/24]\n      gateway4: 10.0.0.1\n      parameters:\n        mode: 802.3ad  # LACP\n        mii-monitor-interval: 100\n      nameservers:\n        addresses: [8.8.8.8]\n```\n\n### Section 4: VLAN Configuration\n\n```yaml\n# /etc/netplan/03-vlan.yaml\nnetwork:\n  version: 2\n  vlans:\n    vlan100:\n      id: 100\n      link: eth0\n      addresses: [10.100.0.10/24]\n    vlan200:\n      id: 200\n      link: eth0\n      addresses: [10.200.0.10/24]\n```\n\n### Section 5: Diagnostic Commands\n\n```bash\n# Check connectivity\nping -c 4 8.8.8.8\ntraceroute example.com\nmtr example.com  # Real-time traceroute\n\n# Check DNS resolution\nresolvectl query example.com\n\n# Check interface statistics\nip -s link show eth0\nethtool eth0\n```\n\n### Key Takeaways\n- Netplan is the modern network configuration tool for Ubuntu\n- nmcli provides command-line NetworkManager management\n- Bonding combines multiple interfaces for redundancy and throughput\n- VLANs segment networks for security and organization\n- Use mtr for real-time network path analysis\n\n### References\n1. [Netplan Documentation](https://netplan.io/)\n2. [NetworkManager nmcli](https://networkmanager.dev/docs/api/latest/nmcli.html)\n3. [Linux Networking Documentation](https://www.kernel.org/doc/Documentation/networking/)",
+              "questions": [
+                {
+                  "text": "What is the correct netplan configuration command?",
+                  "answers": [
+                    {
+                      "text": "netplan set",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "netplan apply",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "netplan config",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "netplan load",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does nmcli connection up do?",
+                  "answers": [
+                    {
+                      "text": "Creates a new connection",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Activates a network connection",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Updates connection settings",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Shows connection details",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is network bonding used for?",
+                  "answers": [
+                    {
+                      "text": "Encrypting network traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Combining multiple interfaces for redundancy/performance",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Creating virtual machines",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Configuring DNS",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What netplan mode provides LACP bonding?",
+                  "answers": [
+                    {
+                      "text": "mode: balance-rr",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "mode: active-backup",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "mode: 802.3ad",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "mode: balance-xor",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What tool provides real-time network path analysis?",
+                  "answers": [
+                    {
+                      "text": "ping",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "traceroute",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "mtr",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "curl",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the ip -s link show command display?",
+                  "answers": [
+                    {
+                      "text": "IP addresses only",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Interface statistics including packet counts",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Routing table",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "DNS configuration",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "SSH Configuration and Security",
+              "order": 4,
+              "lab": "netSecLab?.id",
+              "content": "# SSH Configuration and Security\n\n### Learning Objectives\n- Generate and manage SSH key pairs\n- Configure SSH server for hardened security\n- Set up SSH jump hosts and tunneling\n- Use ssh-agent and config for efficient workflows\n\n### Section 1: SSH Key Management\n\n```bash\n# Generate ED25519 key pair (recommended)\nssh-keygen -t ed25519 -C \"user@example.com\"\n\n# Generate RSA key pair (4096-bit)\nssh-keygen -t rsa -b 4096 -C \"user@example.com\"\n\n# Copy public key to server\nssh-copy-id user@server\n\n# List keys\nssh-add -l\n```\n\n### Section 2: Hardened sshd_config\n\n```bash\n# /etc/ssh/sshd_config\n\n# Authentication\nPermitRootLogin no\nPasswordAuthentication no\nPubkeyAuthentication yes\nAuthenticationMethods publickey\nMaxAuthTries 3\nMaxSessions 5\n\n# Access Control\nAllowUsers admin deploy\nAllowGroups sshusers\n\n# Cryptography\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org\nCiphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\nMACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com\n\n# Session\nClientAliveInterval 300\nClientAliveCountMax 2\nLoginGraceTime 30\n\n# Forwarding\nAllowTcpForwarding no\nX11Forwarding no\nAllowAgentForwarding no\n\n# Logging\nLogLevel VERBOSE\n```\n\n### Section 3: SSH Config for Efficiency\n\n```bash\n# ~/.ssh/config\nHost server1\n    HostName 192.168.1.10\n    User admin\n    Port 2222\n    IdentityFile ~/.ssh/server1_key\n\nHost jump\n    HostName jump.example.com\n    User admin\n\nHost internal-*\n    ProxyJump jump\n    User admin\n\nHost internal-db\n    HostName 10.0.0.50\n```\n\n```bash\n# Connect using config aliases\nssh server1\nssh internal-db  # Automatically jumps through jump host\n```\n\n### Section 4: SSH Tunneling\n\n```bash\n# Local port forwarding (access remote MySQL locally)\nssh -L 3306:localhost:3306 user@db-server\n\n# Remote port forwarding (expose local service)\nssh -R 8080:localhost:3000 user@public-server\n\n# Dynamic SOCKS proxy\nssh -D 1080 user@server\n\n# Use with proxychains\nproxychains curl http://internal-service.local\n```\n\n### Section 5: SSH Agent\n\n```bash\n# Start agent\neval \"$(ssh-agent -s)\"\n\n# Add key\nssh-add ~/.ssh/id_ed25519\n\n# Forward agent to server\nssh -A user@server\n\n# List loaded keys\nssh-add -l\n```\n\n### Key Takeaways\n- Use ED25519 keys for best performance and security\n- Disable password authentication in production\n- Use SSH config files to simplify complex connection patterns\n- SSH tunneling provides secure access to internal services\n- Limit root login and use AllowUsers/AllowGroups for access control\n\n### References\n1. \"SSH, The Secure Shell\" by Daniel Barrett\n2. [OpenSSH Server Configuration](https://man.openbsd.org/sshd_config)\n3. [SSH Tunneling Guide](https://www.ssh.com/ssh/tunneling/)",
+              "questions": [
+                {
+                  "text": "Which SSH key type is recommended for modern use?",
+                  "answers": [
+                    {
+                      "text": "RSA 2048",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "DSA",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ED25519",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ECDSA",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What sshd_config directive disables root login?",
+                  "answers": [
+                    {
+                      "text": "DenyRoot yes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "PermitRootLogin no",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "RootAccess disabled",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "LoginAsRoot no",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does ssh-copy-id do?",
+                  "answers": [
+                    {
+                      "text": "Creates a new SSH key",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Copies public key to remote server",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Copies private key securely",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Generates SSH config",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does ProxyJump in SSH config enable?",
+                  "answers": [
+                    {
+                      "text": "Direct connection",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Jump host/bastion access pattern",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "SOCKS proxy",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Agent forwarding",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the -L flag do in SSH?",
+                  "answers": [
+                    {
+                      "text": "Local port forwarding",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "List all connections",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Login with specific user",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Local agent forwarding",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Why should AgentForwarding be disabled on production servers?",
+                  "answers": [
+                    {
+                      "text": "It reduces performance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A compromised server could use forwarded agent keys",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It only works with RSA keys",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It conflicts with firewall rules",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Firewalls & VPNs",
+          "order": 2,
+          "lessons": [
+            {
+              "title": "iptables Fundamentals",
+              "order": 1,
+              "lab": "netSecLab?.id",
+              "content": "# iptables Fundamentals\n\n### Learning Objectives\n- Understand iptables chains and tables\n- Create rules for input filtering and port blocking\n- Configure NAT for port forwarding and masquerading\n- Save and restore iptables rules\n\n### Section 1: Tables and Chains\n\n| Table | Purpose | Chains |\n|-------|---------|--------|\n| filter | Packet filtering (default) | INPUT, OUTPUT, FORWARD |\n| nat | Network address translation | PREROUTING, OUTPUT, POSTROUTING |\n| mangle | Packet modification | All chains |\n| raw | Connection tracking bypass | PREROUTING, OUTPUT |\n\n**Packet Flow:** PREROUTING -> ROUTING -> FORWARD/INPUT -> LOCAL PROCESS -> OUTPUT -> POSTROUTING\n\n### Section 2: Basic Rules\n\n```bash\n# Show current rules\nsudo iptables -L -n -v\n\n# Allow all traffic (default policy)\nsudo iptables -P INPUT ACCEPT\nsudo iptables -P FORWARD ACCEPT\nsudo iptables -P OUTPUT ACCEPT\n\n# Drop all incoming traffic (lockdown mode)\nsudo iptables -P INPUT DROP\nsudo iptables -P FORWARD DROP\n\n# Allow established connections\nsudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT\n\n# Allow loopback\nsudo iptables -A INPUT -i lo -j ACCEPT\n\n# Allow SSH\nsudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT\n\n# Allow HTTP/HTTPS\nsudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT\nsudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT\n\n# Allow ICMP (ping)\nsudo iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT\n```\n\n### Section 3: Rate Limiting and Anti-Brute-Force\n\n```bash\n# Rate limit SSH connections\nsudo iptables -A INPUT -p tcp --dport 22 \\\n    -m conntrack --ctstate NEW \\\n    -m recent --set --name SSH\n\nsudo iptables -A INPUT -p tcp --dport 22 \\\n    -m conntrack --ctstate NEW \\\n    -m recent --update --seconds 60 --hitcount 4 --name SSH -j DROP\n\n# Limit new connections per IP\nsudo iptables -A INPUT -p tcp --dport 443 \\\n    -m connlimit --connlimit-above 50 --connlimit-mask 32 -j DROP\n```\n\n### Section 4: NAT Configuration\n\n```bash\n# Enable IP forwarding\necho 1 | sudo tee /proc/sys/net/ipv4/ip_forward\n\n# Masquerade (hide internal network)\nsudo iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth0 -j MASQUERADE\n\n# Port forwarding (8080 -> internal:80)\nsudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j DNAT --to-destination 192.168.1.10:80\nsudo iptables -A FORWARD -p tcp -d 192.168.1.10 --dport 80 -j ACCEPT\n```\n\n### Section 5: Save and Restore\n\n```bash\n# Save rules (Debian/Ubuntu)\nsudo iptables-save > /etc/iptables/rules.v4\nsudo ip6tables-save > /etc/iptables/rules.v6\n\n# Restore rules\nsudo iptables-restore < /etc/iptables/rules.v4\n\n# Install persistence package\nsudo apt install iptables-persistent\n```\n\n### Key Takeaways\n- iptables uses tables (filter, nat, mangle) and chains (INPUT, OUTPUT, FORWARD)\n- Default policies determine what happens to unmatched traffic\n- Rate limiting protects against brute-force attacks\n- NAT enables masquerading and port forwarding\n- Always save rules for persistence across reboots\n\n### References\n1. [iptables man page](https://man7.org/linux/man-pages/man8/iptables.8.html)\n2. [Linux Firewalls by Steve Suehring](https://www.netfilter.org/)\n3. [iptables Tutorial](https://www.frozentux.net/iptables-tutorial/)",
+              "questions": [
+                {
+                  "text": "Which iptables table handles packet filtering?",
+                  "answers": [
+                    {
+                      "text": "nat",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "mangle",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "filter",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "raw",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the -A flag do in iptables?",
+                  "answers": [
+                    {
+                      "text": "Append a rule",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Delete a rule",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "List all rules",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Apply a rule",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which chain handles incoming packets destined for the local system?",
+                  "answers": [
+                    {
+                      "text": "FORWARD",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "OUTPUT",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "INPUT",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "PREROUTING",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does iptables MASQUERADE do?",
+                  "answers": [
+                    {
+                      "text": "Blocks all traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Hides internal IP addresses behind the router",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Encrypts network traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Logs all connections",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command saves iptables rules?",
+                  "answers": [
+                    {
+                      "text": "iptables save",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "iptables-save > file",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "iptables -save",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "iptables store",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does -m conntrack --ctstate ESTABLISHED,RELATED match?",
+                  "answers": [
+                    {
+                      "text": "New connections only",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Packets belonging to existing or related connections",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "All packets",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Invalid packets",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "nftables Modern Firewall",
+              "order": 2,
+              "lab": "netSecLab?.id",
+              "content": "# nftables Modern Firewall\n\n### Learning Objectives\n- Understand nftables as the successor to iptables\n- Write nftables rulesets with tables, chains, and rules\n- Migrate from iptables to nftables\n- Use nftables for packet filtering and NAT\n\n### Section 1: nftables vs iptables\n\n| Feature | iptables | nftables |\n|---------|----------|----------|\n| Performance | Slower (per-rule evaluation) | Faster (rule concatenation) |\n| Syntax | Verbose | Cleaner, more consistent |\n| Sets | Limited | Built-in, efficient |\n| IPv4/IPv6 | Separate tools | Unified |\n| Atomic ruleset | No | Yes |\n\n### Section 2: Basic nftables Rules\n\n```bash\n# List all rules\nsudo nft list ruleset\n\n# Create a table and chain\nsudo nft add table inet filter\nsudo nft add chain inet filter input '{ type filter hook input priority 0; policy drop; }'\n\n# Allow established connections\nsudo nft add rule inet filter input ct state established,related accept\n\n# Allow loopback\nsudo nft add rule inet filter input iif lo accept\n\n# Allow SSH\nsudo nft add rule inet filter input tcp dport 22 accept\n\n# Allow HTTP/HTTPS\nsudo nft add rule inet filter input tcp dport { 80, 443 } accept\n\n# Allow ICMP\nsudo nft add rule inet filter input ip protocol icmp accept\n```\n\n### Section 3: Complete Ruleset File\n\n```nft\n#!/usr/sbin/nft -f\nflush ruleset\n\ntable inet filter {\n    set blacklist {\n        type ipv4_addr\n        flags timeout\n        timeout 1h\n    }\n\n    chain input {\n        type filter hook input priority 0; policy drop;\n\n        # Allow established\n        ct state established,related accept\n\n        # Drop invalid\n        ct state invalid drop\n\n        # Loopback\n        iif lo accept\n\n        # Anti-spoofing\n        iif != lo ip saddr 127.0.0.0/8 drop\n\n        # Rate limit ICMP\n        ip protocol icmp limit rate 10/second accept\n\n        # Drop blacklisted IPs\n        ip saddr @blacklist drop\n\n        # SSH with rate limit\n        tcp dport 22 ct state new limit rate 3/minute accept\n\n        # HTTP/HTTPS\n        tcp dport { 80, 443 } accept\n\n        # Log and drop everything else\n        limit rate 5/minute log prefix \"DROPPED: \" counter drop\n    }\n\n    chain forward {\n        type filter hook forward priority 0; policy drop;\n    }\n\n    chain output {\n        type filter hook output priority 0; policy accept;\n    }\n}\n```\n\n### Section 4: NAT with nftables\n\n```nft\ntable ip nat {\n    chain prerouting {\n        type nat hook prerouting priority -100;\n        tcp dport 8080 dnat to 192.168.1.10:80\n    }\n\n    chain postrouting {\n        type nat hook postrouting priority 100;\n        oif eth0 masquerade\n    }\n}\n```\n\n### Section 5: Management Commands\n\n```bash\n# Load ruleset\nsudo nft -f /etc/nftables.conf\n\n# Add rule interactively\nsudo nft add rule inet filter input tcp dport 8443 accept\n\n# Delete rule by handle\nsudo nft -a list chain inet filter input  # Show handles\nsudo nft delete rule inet filter input handle 5\n\n# Monitor changes\nnft monitor\n```\n\n### Key Takeaways\n- nftables is the modern replacement for iptables\n- Unified handling of IPv4 and IPv6 with cleaner syntax\n- Sets provide efficient IP matching for blacklists and whitelists\n- Atomic ruleset replacement ensures consistent configuration\n- Built-in rate limiting and logging capabilities\n\n### References\n1. [nftables Wiki](https://wiki.nftables.org/)\n2. [nftables man page](https://man7.org/linux/man-pages/man8/nft.8.html)\n3. [How to migrate from iptables to nftables](https://wiki.nftables.org/wiki-nftables/index.php/Migrating_rules_from_iptables_to_nftables)",
+              "questions": [
+                {
+                  "text": "What is the primary advantage of nftables over iptables?",
+                  "answers": [
+                    {
+                      "text": "More tables",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Faster performance and cleaner syntax",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Better Windows support",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "More chain types",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What command flushes all nftables rules?",
+                  "answers": [
+                    {
+                      "text": "nft flush",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "nft flush ruleset",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "nft -F",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "nft delete all",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "How do you define a drop chain in nftables?",
+                  "answers": [
+                    {
+                      "text": "nft add chain inet filter input '{ type filter hook input priority 0; policy drop; }'",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "nft create chain inet filter input DROP",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "nft set policy drop input",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "nft chain input policy drop",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the 'ct state established,related accept' rule do?",
+                  "answers": [
+                    {
+                      "text": "Blocks all traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Allows packets belonging to existing connections",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Accepts only new connections",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Logs all connection states",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What nftables feature provides efficient IP blacklisting?",
+                  "answers": [
+                    {
+                      "text": "Lists",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Sets",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Maps",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Queues",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does 'nft monitor' do?",
+                  "answers": [
+                    {
+                      "text": "Monitors CPU usage",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Shows real-time rule changes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Lists all tables",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Checks ruleset syntax",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "VPN Configuration",
+              "order": 3,
+              "lab": "netSecLab?.id",
+              "content": "# VPN Configuration\n\n### Learning Objectives\n- Understand VPN technologies (OpenVPN, WireGuard, IPSec)\n- Configure a WireGuard VPN server\n- Set up OpenVPN with certificate-based authentication\n- Implement split tunneling and routing\n\n### Section 1: VPN Technologies Comparison\n\n| Feature | WireGuard | OpenVPN | IPSec |\n|---------|-----------|---------|-------|\n| Speed | Fastest | Good | Good |\n| Codebase | ~4,000 lines | ~100,000 lines | Complex |\n| Configuration | Simple | Moderate | Complex |\n| UDP Only | Yes | TCP/UDP | UDP |\n| Mobile Support | Excellent | Good | Good |\n\n### Section 2: WireGuard Server Setup\n\n```bash\n# Install WireGuard\nsudo apt install wireguard\n\n# Generate server keys\nwg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key\nchmod 600 /etc/wireguard/server_private.key\n\n# /etc/wireguard/wg0.conf\n[Interface]\nAddress = 10.0.0.1/24\nListenPort = 51820\nPrivateKey = <server_private_key>\nPostUp = iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE\nPostDown = iptables -t nat -D POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE\n\n[Peer]\nPublicKey = <client_public_key>\nAllowedIPs = 10.0.0.2/32\n```\n\n### Section 3: WireGuard Client Configuration\n\n```ini\n# /etc/wireguard/wg0.conf (client)\n[Interface]\nAddress = 10.0.0.2/24\nPrivateKey = <client_private_key>\nDNS = 8.8.8.8\n\n[Peer]\nPublicKey = <server_public_key>\nEndpoint = vpn.example.com:51820\nAllowedIPs = 0.0.0.0/0  # Route all traffic through VPN\nPersistentKeepalive = 25\n```\n\n### Section 4: OpenVPN Server Setup\n\n```bash\n# Install OpenVPN and Easy-RSA\nsudo apt install openvpn easy-rsa\n\n# Initialize PKI\nmake-cadir ~/openvpn-ca\ncd ~/openvpn-ca\n./easyrsa init-pki\n./easyrsa build-ca\n./easyrsa gen-req server nopass\n./easyrsa sign-req server server\nopenvpn --genkey secret /etc/openvpn/ta.key\n\n# Generate client certificate\n./easyrsa gen-req client1 nopass\n./easyrsa sign-req client client1\n```\n\n### Section 5: OpenVPN Server Configuration\n\n```conf\n# /etc/openvpn/server.conf\nport 1194\nproto udp\ndev tun\n\nca /etc/openvpn/ca.crt\ncert /etc/openvpn/server.crt\nkey /etc/openvpn/server.key\ndh /etc/openvpn/dh2048.pem\ntls-auth /etc/openvpn/ta.key 0\n\nserver 10.8.0.0 255.255.255.0\npush \"redirect-gateway def1\"\npush \"dhcp-option DNS 8.8.8.8\"\n\nkeepalive 10 120\ncipher AES-256-GCM\nuser nobody\ngroup nogroup\npersist-key\npersist-tun\nstatus /var/log/openvpn-status.log\nverb 3\n```\n\n### Section 6: Management Commands\n\n```bash\n# WireGuard\nsudo wg-quick up wg0\nsudo wg-quick down wg0\nsudo wg show\n\n# OpenVPN\nsudo systemctl start openvpn@server\nsudo systemctl status openvpn@server\n```\n\n### Key Takeaways\n- WireGuard is faster and simpler than OpenVPN\n- OpenVPN offers more flexibility with TCP/UDP and extensive configuration\n- Use certificate-based authentication for both\n- Split tunneling routes only specific traffic through VPN\n- Always use TLS authentication in addition to certificates\n\n### References\n1. [WireGuard Documentation](https://www.wireguard.com/)\n2. [OpenVPN How-To](https://openvpn.net/community-resources/)\n3. [WireGuard vs OpenVPN comparison](https://www.wireguard.com/performances/)",
+              "questions": [
+                {
+                  "text": "What is the main advantage of WireGuard over OpenVPN?",
+                  "answers": [
+                    {
+                      "text": "Supports more protocols",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Faster performance and simpler configuration",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Better Windows support",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Supports more encryption algorithms",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does AllowedIPs = 0.0.0.0/0 mean in WireGuard?",
+                  "answers": [
+                    {
+                      "text": "Block all traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Route all IPv4 traffic through the VPN",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Only allow local traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Allow traffic to any single IP",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the PostUp directive do in WireGuard?",
+                  "answers": [
+                    {
+                      "text": "Starts the VPN tunnel",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Runs a command after the interface is up",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Updates the server configuration",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Connects to a peer",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What tool is used to manage OpenVPN certificates?",
+                  "answers": [
+                    {
+                      "text": "openssl",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "easy-rsa",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "certbot",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ca-certificates",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does push 'redirect-gateway def1' do in OpenVPN?",
+                  "answers": [
+                    {
+                      "text": "Redirects DNS only",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Routes all client traffic through the VPN",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Redirects specific subnets",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Enables split tunneling",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command shows WireGuard interface status?",
+                  "answers": [
+                    {
+                      "text": "wg status",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "wg show",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "wireguard status",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ip link show wg0",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Firewall Hardening",
+              "order": 4,
+              "lab": "netSecLab?.id",
+              "content": "# Firewall Hardening\n\n### Learning Objectives\n- Implement defense-in-depth firewall strategies\n- Configure fail2ban for automatic IP banning\n- Set up intrusion prevention with firewall rules\n- Create rules for application hardening\n\n### Section 1: Defense-in-Depth\n\nLayer 1: Network firewall (cloud provider)\nLayer 2: Host firewall (iptables/nftables)\nLayer 3: Application firewall (fail2ban)\nLayer 4: Service-level restrictions (sshd_config)\n\n### Section 2: fail2ban Setup\n\n\n\n\n\n### Section 3: Custom fail2ban Filters\n\n\n\n### Section 4: Application Hardening\n\n\n\n### Section 5: Monitoring\n\n\n\n### Key Takeaways\n- Apply defense-in-depth with multiple firewall layers\n- fail2ban automatically bans IPs based on log patterns\n- Rate limiting prevents brute-force and DoS attacks\n- Monitor logs regularly for suspicious activity\n\n### References\n1. fail2ban Documentation\n2. nftables Wiki\n3. Linux Security Hardening Guide",
+              "questions": [
+                {
+                  "text": "What is the default action of fail2ban when maxretry is reached?",
+                  "answers": [
+                    {
+                      "text": "Log the IP address",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ban the IP address",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Block the port",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Restart the service",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does fail2ban filter regex <HOST> represent?",
+                  "answers": [
+                    {
+                      "text": "The server hostname",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The attacking IP address",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The attacked port",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The fail2ban server",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does bantime=86400 mean in fail2ban?",
+                  "answers": [
+                    {
+                      "text": "Ban for 86 minutes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ban for 24 hours",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Ban for 8640 seconds",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ban permanently",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is defense-in-depth in firewall strategy?",
+                  "answers": [
+                    {
+                      "text": "Using one strong firewall",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Multiple layers of security controls",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Only using cloud firewalls",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Disabling unused services",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which command unbans an IP from fail2ban sshd jail?",
+                  "answers": [
+                    {
+                      "text": "fail2ban-client set sshd unbanip IP",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "fail2ban-client banremove IP",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "fail2ban-client delete sshd IP",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "fail2ban-client unban sshd IP",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Intrusion Detection & Monitoring",
+          "order": 3,
+          "lessons": [
+            {
+              "title": "Snort Intrusion Detection",
+              "order": 1,
+              "lab": "netSecLab?.id",
+              "content": "# Snort Intrusion Detection\n\n### Learning Objectives\n- Install and configure Snort as an IDS/IPS\n- Write custom Snort rules for network monitoring\n- Analyze Snort alerts and logs\n- Integrate Snort with logging infrastructure\n\n### Section 1: Snort Modes\n\n| Mode | Description | Use Case |\n|------|-------------|----------|\n| Sniffer | Reads packets and displays them | Real-time debugging |\n| Packet Logger | Logs packets to disk | Forensics |\n| NIDS | Network intrusion detection | Production monitoring |\n| NIPS | Network intrusion prevention | Inline blocking |\n\n### Section 2: Installation and Basic Configuration\n\n```bash\n# Install Snort\nsudo apt install snort\n\n# Verify installation\nsnort --version\n\n# Test in sniffer mode\nsudo snort -v -i eth0\n\n# Test in packet logger mode\nsudo snort -dev -l /var/log/snort\n```\n\n### Section 3: NIDS Configuration\n\n```bash\n# /etc/snort/snort.conf\n# Set network variables\nvar HOME_NET 192.168.1.0/24\nvar EXTERNAL_NET !$HOME_NET\n\n# Configure rules\ninclude /etc/snort/rules/local.rules\ninclude /etc/snort/rules/community.rules\n\n# Output plugins\noutput unified2: filename snort.log, limit 128\n```\n\n### Section 4: Writing Custom Rules\n\n```bash\n# /etc/snort/rules/local.rules\n\n# Detect SSH brute force\nalert tcp any any -> $HOME_NET 22 (msg:\"SSH Brute Force Attempt\";     flags:S; threshold:type threshold, track by_src, count 5, seconds 60;     sid:1000001; rev:1;)\n\n# Detect SQL injection attempts\nalert http any any -> $HOME_NET 80 (msg:\"SQL Injection Attempt\";     content:\"SELECT\"; nocase; content:\"FROM\"; nocase;     content:\"UNION\"; nocase;     sid:1000002; rev:1;)\n\n# Detect port scanning\nalert tcp any any -> $HOME_NET any (msg:\"Port Scan Detected\";     flags:S; threshold:type threshold, track by_src, count 20, seconds 10;     sid:1000003; rev:1;)\n\n# Detect DNS tunneling\nalert udp any any -> any 53 (msg:\"Possible DNS Tunneling\";     content:\"|01 00|\"; depth:2; byte_test:1,>,12,2;     sid:1000004; rev:1;)\n```\n\n### Section 5: Running Snort as NIDS\n\n```bash\n# Run Snort with specific configuration\nsudo snort -c /etc/snort/snort.conf -i eth0 -A fast\n\n# Daemon mode\nsudo snort -c /etc/snort/snort.conf -i eth0 -D\n\n# Check Snort status\nsudo systemctl status snort\n```\n\n### Section 6: Analyzing Alerts\n\n```bash\n# View alert log\ntail -f /var/log/snort/alert\n\n# Parse unified2 logs\nsudo snort -r /var/log/snort/snort.log.1234567890 -c /etc/snort/snort.conf\n\n# Use Barnyard2 for log processing\nsudo barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -w /var/log/snort/barnyard2\n```\n\n### Key Takeaways\n- Snort can operate in sniffer, logger, IDS, or IPS mode\n- Custom rules enable detection of specific attack patterns\n- Threshold-based rules prevent alert flooding\n- Unified2 format provides detailed packet logging\n- Regular rule updates are essential for effective detection\n\n### References\n1. [Snort Documentation](https://www.snort.org/documents)\n2. [Snort Rules Tutorial](https://www.snort.org/documents#11)\n3. [Oinkmaster for rule updates](https://oisf.net/idspup/)",
+              "questions": [
+                {
+                  "text": "What Snort mode runs inline and can block packets?",
+                  "answers": [
+                    {
+                      "text": "NIDS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Sniffer",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "NIPS",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Packet Logger",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the threshold directive in Snort rules do?",
+                  "answers": [
+                    {
+                      "text": "Limits alert frequency",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Sets packet capture size",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Defines rule priority",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Configures log rotation",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What format does Snort use for detailed packet logging?",
+                  "answers": [
+                    {
+                      "text": "syslog",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "unified2",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "CSV",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "JSON",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does var HOME_NET define in snort.conf?",
+                  "answers": [
+                    {
+                      "text": "The external network to monitor",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The internal network being protected",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The Snort server IP",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The log directory path",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Which flag in a Snort rule specifies the rule identifier?",
+                  "answers": [
+                    {
+                      "text": "rev:",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "msg:",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "sid:",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "class:",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What tool processes unified2 logs for database storage?",
+                  "answers": [
+                    {
+                      "text": "snort-log",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Barnyard2",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "logparser",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "snortdb",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Suricata Intrusion Detection",
+              "order": 2,
+              "lab": "netSecLab?.id",
+              "content": "# Suricata Intrusion Detection\n\n### Learning Objectives\n- Understand Suricata as a multi-threaded IDS/IPS\n- Configure Suricata rules and detection engine\n- Use EVE JSON logging for SIEM integration\n- Compare Suricata vs Snort\n\n### Section 1: Suricata vs Snort\n\n| Feature | Suricata | Snort |\n|---------|----------|-------|\n| Threading | Multi-threaded | Single-threaded |\n| Performance | Better on multi-core | Good on single core |\n| Protocol Analysis | HTTP, TLS, DNS, SMB | Basic |\n| Lua Scripting | Yes | No |\n| Rule Compatibility | Snort rules | Native |\n\n### Section 2: Installation\n\n```bash\n# Install Suricata\nsudo apt install suricata\n\n# Update rules\nsudo suricata-update\n\n# Verify installation\nsuricata --build-info\n```\n\n### Section 3: Configuration\n\n```yaml\n# /etc/suricata/suricata.yaml\nstats:\n  enabled: yes\n  interval: 30\n\noutputs:\n  - fast:\n      enabled: yes\n      filename: fast.log\n  - eve-log:\n      enabled: yes\n      filename: eve.json\n      types:\n        - alert\n        - http\n        - dns\n        - tls\n        - files\n  - unified2:\n      enabled: no\n\naf-packet:\n  - interface: eth0\n    cluster-id: 99\n    cluster-type: cluster_flow\n    defrag: yes\n\ndetect:\n  profile: medium\n  sgh-mpm-context: auto\n\nmpm-algo: auto\nspm-algo: auto\n```\n\n### Section 4: Rule Writing\n\n```bash\n# /etc/suricata/rules/local.rules\n\n# Detect malicious User-Agent\nalert http any any -> any any (msg:\"Malicious User-Agent\";     http.header; content:\"curl\"; nocase;     sid:2000001; rev:1;)\n\n# Detect SMB exploits\nalert smb any any -> any any (msg:\"SMB Vulnerability Exploit\";     flow:to_server; content:\"|FF|SMB\"; depth:4;     byte_test:1,&,0x80,4;     sid:2000002; rev:1;)\n\n# Detect DNS exfiltration\nalert dns any any -> any any (msg:\"Possible DNS Exfiltration\";     dns.query; pcre:\"/^[a-z0-9]{30,}\\.[a-z]+$/\";     sid:2000003; rev:1;)\n```\n\n### Section 5: EVE JSON for SIEM Integration\n\n```bash\n# Query EVE JSON with jq\ncat /var/log/suricata/eve.json | jq 'select(.event_type==\"alert\")'\ncat /var/log/suricata/eve.json | jq 'select(.event_type==\"http\")'\n\n# Filter by alert severity\ncat /var/log/suricata/eve.json | jq 'select(.alert.severity <= 2)'\n```\n\n### Section 6: Running Suricata\n\n```bash\n# Test configuration\nsudo suricata -T -c /etc/suricata/suricata.yaml\n\n# Run in IDS mode\nsudo suricata -c /etc/suricata/suricata.yaml -i eth0\n\n# Run as service\nsudo systemctl start suricata\nsudo systemctl enable suricata\n\n# Update rules\nsudo suricata-update\nsudo systemctl restart suricata\n```\n\n### Key Takeaways\n- Suricata offers multi-threaded performance advantages over Snort\n- EVE JSON provides structured logging ideal for SIEM integration\n- af-packet provides zero-copy packet capture for high performance\n- Suricata is compatible with Snort rules\n- Regular rule updates via suricata-update are essential\n\n### References\n1. [Suricata Documentation](https://suricata.readthedocs.io/)\n2. [Suricata Rule Writing](https://suricata.readthedocs.io/en/latest/rules/)\n3. [EVE JSON Format](https://suricata.readthedocs.io/en/latest/output/eve/eve-json-format.html)",
+              "questions": [
+                {
+                  "text": "What is Suricata's main advantage over Snort?",
+                  "answers": [
+                    {
+                      "text": "Better rule syntax",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Multi-threaded performance",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Smaller binary size",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "More output formats",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does suricata-update do?",
+                  "answers": [
+                    {
+                      "text": "Updates the Suricata binary",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Downloads and installs latest detection rules",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Updates the configuration file",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Patches the kernel",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What logging format is recommended for SIEM integration?",
+                  "answers": [
+                    {
+                      "text": "fast.log",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "unified2",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "EVE JSON",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "syslog",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does af-packet provide in Suricata?",
+                  "answers": [
+                    {
+                      "text": "Application filtering",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Zero-copy packet capture",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Auto-filter packets",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Application firewall",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "How do you test Suricata configuration syntax?",
+                  "answers": [
+                    {
+                      "text": "suricata --test",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "suricata -T -c config.yaml",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "suricata --validate",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "suricata -C config.yaml",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Can Suricata use Snort rules?",
+                  "answers": [
+                    {
+                      "text": "No, they are incompatible",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Yes, Suricata is compatible with Snort rules",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Only with a conversion tool",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only for basic rules",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Log Analysis and SIEM",
+              "order": 3,
+              "lab": "netSecLab?.id",
+              "content": "# Log Analysis and SIEM\n\n### Learning Objectives\n- Centralize system and security logs with rsyslog\n- Use grep, awk, and journalctl for log analysis\n- Understand SIEM concepts and ELK stack basics\n- Create log-based alerting rules\n\n### Section 1: Linux Log Locations\n\n| Log File | Content |\n|----------|---------|\n| /var/log/syslog | General system messages |\n| /var/log/auth.log | Authentication events |\n| /var/log/kern.log | Kernel messages |\n| /var/log/nginx/ | Nginx access/error logs |\n| /var/log/fail2ban.log | fail2ban ban actions |\n| journalctl | Systemd journal |\n\n### Section 2: Log Analysis with Command Line\n\n```bash\n# Find failed SSH logins\ngrep \"Failed password\" /var/log/auth.log | awk '{print $11}' | sort | uniq -c | sort -rn | head\n\n# Count requests by IP\nawk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head\n\n# Find 500 errors\nawk '$9 >= 500 {print $0}' /var/log/nginx/access.log\n\n# Monitor real-time logs\ntail -f /var/log/nginx/access.log | grep \"POST\"\n\n# Journalctl filtering\njournalctl -u nginx --since \"1 hour ago\"\njournalctl -p err --since today\njournalctl -f -u sshd\n```\n\n### Section 3: Centralized Logging with rsyslog\n\n```bash\n# /etc/rsyslog.d/50-forwarding.conf\n# Forward logs to central server\n*.* @@192.168.1.200:514\n\n# Or TCP\n*.* @@192.168.1.200:514\n```\n\n```bash\n# On central server - enable receiving\n# /etc/rsyslog.d/10-receiving.conf\nmodule(load=\"imudp\")\ninput(type=\"imudp\" port=\"514\")\nmodule(load=\"imtcp\")\ninput(type=\"imtcp\" port=\"514\")\n\n# Store by hostname\ntemplate RemoteLogs,\"/var/log/remote/%HOSTNAME%/%PROGRAMNAME%.log\"\n*.* ?RemoteLogs\n```\n\n### Section 4: ELK Stack Overview\n\n```\nElasticsearch - Storage and search engine\nLogstash      - Log processing pipeline\nKibana        - Visualization dashboard\n```\n\n```yaml\n# Filebeat agent configuration\n# /etc/filebeat/filebeat.yml\nfilebeat.inputs:\n- type: log\n  enabled: true\n  paths:\n    - /var/log/nginx/access.log\n  fields:\n    type: nginx-access\n\n- type: log\n  enabled: true\n  paths:\n    - /var/log/auth.log\n  fields:\n    type: auth\n\noutput.elasticsearch:\n  hosts: [\"localhost:9200\"]\n```\n\n### Section 5: Log-Based Alerting\n\n```bash\n# Simple cron-based alert\n# /etc/cron.d/security-alert\n*/5 * * * * root /usr/local/bin/check-auth.sh\n\n# /usr/local/bin/check-auth.sh\n#!/bin/bash\nFAILED=$(grep \"Failed password\" /var/log/auth.log | wc -l)\nif [ \"$FAILED\" -gt 50 ]; then\n    echo \"ALERT: $FAILED failed SSH attempts in 5 minutes\" | \\\n    mail -s \"Security Alert\" admin@example.com\nfi\n```\n\n### Key Takeaways\n- Centralized logging enables correlation across multiple servers\n- grep, awk, and journalctl are essential log analysis tools\n- ELK stack provides powerful search, visualization, and alerting\n- Regular log review is critical for security monitoring\n- Forward logs to an external server to prevent tampering\n\n### References\n1. [rsyslog Documentation](https://www.rsyslog.com/doc/)\n2. [Elastic Stack Documentation](https://www.elastic.co/guide/)\n3. [Linux Log Files Guide](https://www.digitalocean.com/community/tutorials/linux-logs)",
+              "questions": [
+                {
+                  "text": "Which file contains SSH authentication events on Debian/Ubuntu?",
+                  "answers": [
+                    {
+                      "text": "/var/log/syslog",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "/var/log/auth.log",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "/var/log/secure",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "/var/log/messages",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the ELK stack consist of?",
+                  "answers": [
+                    {
+                      "text": "Elasticsearch, Logstash, Kibana",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Elasticsearch, Linux, Kubernetes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Elastic, Log, Kibana",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Event, Log, Knowledge",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What command shows journal entries from the last hour?",
+                  "answers": [
+                    {
+                      "text": "journalctl -f",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "journalctl --since '1 hour ago'",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "journalctl -r 1h",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "journalctl --last-hour",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "Why should logs be forwarded to a remote server?",
+                  "answers": [
+                    {
+                      "text": "To save disk space",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To prevent attackers from deleting evidence",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "To improve performance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To enable compression",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the purpose of Filebeat in the ELK stack?",
+                  "answers": [
+                    {
+                      "text": "Search and query logs",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Visualize data",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ship logs to Elasticsearch",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Parse log formats",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What awk command filters Nginx 500+ errors?",
+                  "answers": [
+                    {
+                      "text": "awk '$9 >= 500'",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "awk '/500/'",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "awk 'error >= 500'",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "awk 'status == 500'",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Network Monitoring",
+              "order": 4,
+              "lab": "netSecLab?.id",
+              "content": "# Network Monitoring\n\n### Learning Objectives\n- Capture and analyze network traffic with tcpdump\n- Use nmap for network discovery and port scanning\n- Set up network monitoring with Prometheus and Grafana\n- Detect anomalies in network traffic patterns\n\n### Section 1: tcpdump Packet Capture\n\n```bash\n# Capture all traffic on interface\nsudo tcpdump -i eth0\n\n# Capture specific port\nsudo tcpdump -i eth0 port 443\n\n# Capture traffic from specific host\nsudo tcpdump -i eth0 src host 192.168.1.100\n\n# Write to file for analysis\nsudo tcpdump -i eth0 -w /tmp/capture.pcap\n\n# Read from file\ntcpdump -r /tmp/capture.pcap\n\n# Display in human-readable form\nsudo tcpdump -i eth0 -A port 80\n```\n\n### Section 2: nmap Network Scanning\n\n```bash\n# Scan a target\nnmap 192.168.1.1\n\n# Scan entire subnet\nnmap 192.168.1.0/24\n\n# Service version detection\nnmap -sV 192.168.1.1\n\n# OS detection\nnmap -O 192.168.1.1\n\n# Stealth scan\nnmap -sS 192.168.1.1\n\n# Script scanning\nnmap --script vuln 192.168.1.1\n```\n\n### Section 3: Prometheus Network Metrics\n\n```yaml\n# prometheus.yml\nglobal:\n  scrape_interval: 15s\n\nscrape_configs:\n  - job_name: 'node'\n    static_configs:\n      - targets: ['localhost:9100']\n\n  - job_name: 'nginx'\n    static_configs:\n      - targets: ['localhost:9113']\n```\n\n```bash\n# Install node_exporter for system metrics\nsudo apt install prometheus-node-exporter\n\n# Install nginx-exporter\nsudo apt install prometheus/nginx-exporter\n```\n\n### Section 4: Grafana Dashboard\n\n```bash\n# Install Grafana\nsudo apt install grafana\n\n# Start service\nsudo systemctl start grafana-server\n\n# Access at http://localhost:3000\n# Default credentials: admin/admin\n\n# Import dashboard ID 1860 (Node Exporter Full)\n# Import dashboard ID 12708 (Nginx)\n```\n\n### Section 5: Anomaly Detection\n\n```bash\n# Simple anomaly detection script\n#!/bin/bash\n# Monitor connection count\nwhile true; do\n    CONNS=$(ss -s | awk '/^TCP:/ {print $4}' | tr -d ',')\n    if [ \"$CONNS\" -gt 1000 ]; then\n        echo \"$(date): High connection count: $CONNS\" >> /var/log/anomaly.log\n    fi\n    sleep 60\ndone\n```\n\n### Key Takeaways\n- tcpdump captures packets for offline analysis\n- nmap discovers hosts, ports, and services on networks\n- Prometheus and Grafana provide real-time network monitoring\n- Node exporter exposes system metrics for Prometheus\n- Baseline your normal traffic to detect anomalies\n\n### References\n1. [tcpdump man page](https://man7.org/linux/man-pages/man1/tcpdump.1.html)\n2. [nmap Documentation](https://nmap.org/book/)\n3. [Prometheus Documentation](https://prometheus.io/docs/)\n4. [Grafana Documentation](https://grafana.com/docs/)",
+              "questions": [
+                {
+                  "text": "What tcpdump flag writes captured packets to a file?",
+                  "answers": [
+                    {
+                      "text": "-f",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-w",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "-o",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-d",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What nmap flag performs service version detection?",
+                  "answers": [
+                    {
+                      "text": "-sS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-O",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-sV",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "-A",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does Prometheus node_exporter do?",
+                  "answers": [
+                    {
+                      "text": "Exports Prometheus config",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Exposes system metrics for scraping",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Monitors network nodes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Exports Grafana dashboards",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the default Grafana port?",
+                  "answers": [
+                    {
+                      "text": "80",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "9090",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "3000",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "8080",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What nmap flag performs a stealth SYN scan?",
+                  "answers": [
+                    {
+                      "text": "-sT",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-sV",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-sS",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "-sU",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does the -A flag in tcpdump do?",
+                  "answers": [
+                    {
+                      "text": "Captures all traffic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Prints packets in ASCII",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Enables ARP resolution",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Appends to existing file",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Network Troubleshooting",
+          "order": 4,
+          "lessons": [
+            {
+              "title": "Network Diagnostic Tools",
+              "order": 1,
+              "lab": "netSecLab?.id",
+              "content": "# Network Diagnostic Tools\n\n### Learning Objectives\n- Master ping, traceroute, and mtr for connectivity testing\n- Use curl and wget for HTTP debugging\n- Debug DNS issues with dig and host\n- Diagnose connection problems systematically\n\n### Section 1: Connectivity Testing\n\n```bash\n# Basic ping\nping -c 4 8.8.8.8\n\n# Ping with specific packet size\nping -s 1472 -M do 8.8.8.8  # Test MTU\n\n# Traceroute\ntraceroute example.com\ntraceroute -T example.com  # Use TCP\n\n# Real-time route analysis\nmtr example.com\nmtr -r -c 100 example.com  # Report mode\n```\n\n### Section 2: HTTP Debugging\n\n```bash\n# Verbose HTTP request\ncurl -v https://example.com\n\n# Show response headers\ncurl -I https://example.com\n\n# Follow redirects\ncurl -L https://example.com\n\n# Custom headers\ncurl -H \"Authorization: Bearer token\" https://api.example.com\n\n# POST with data\ncurl -X POST -d '{\"key\":\"value\"}' -H \"Content-Type: application/json\" https://api.example.com\n\n# Download with wget\nwget --no-check-certificate https://example.com/file.zip\nwget -r -l 1 https://example.com/  # Recursive download\n```\n\n### Section 3: DNS Debugging\n\n```bash\n# Query specific DNS server\ndig @8.8.8.8 example.com\n\n# Check specific record type\ndig example.com MX\ndig example.com TXT\n\n# Trace full resolution path\ndig +trace example.com\n\n# Reverse DNS lookup\ndig -x 93.184.216.34\n\n# Quick lookup\nhost example.com\n```\n\n### Section 4: Port and Connection Testing\n\n```bash\n# Test port connectivity\nnc -zv 192.168.1.1 80\nnc -zv 192.168.1.1 22\n\n# Telnet to port\ntelnet 192.168.1.1 443\n\n# Test SSL certificate\nopenssl s_client -connect example.com:443 -servername example.com\n\n# Check what's listening\nss -tlnp | grep :80\nlsof -i :80\n```\n\n### Section 5: Systematic Troubleshooting\n\n```\nStep 1: Verify physical/data link\n  ip link show eth0\n\nStep 2: Verify IP configuration\n  ip addr show eth0\n\nStep 3: Verify default gateway\n  ip route show\n\nStep 4: Test gateway connectivity\n  ping <gateway-ip>\n\nStep 5: Test DNS resolution\n  dig example.com\n\nStep 6: Test remote host connectivity\n  ping <remote-ip>\n\nStep 7: Test specific service\n  curl -v https://example.com\n  nc -zv example.com 443\n```\n\n### Key Takeaways\n- mtr combines ping and traceroute for comprehensive path analysis\n- curl -v provides detailed HTTP request/response debugging\n- dig +trace shows the complete DNS resolution path\n- Always test from physical layer up to application layer\n- nc and openssl are invaluable for testing specific services\n\n### References\n1. [curl Documentation](https://curl.se/docs/)\n2. [dig man page](https://man7.org/linux/man-pages/man1/dig.1.html)\n3. [mtr documentation](https://www.bitwizard.nl/mtr/)",
+              "questions": [
+                {
+                  "text": "What does mtr combine into a single tool?",
+                  "answers": [
+                    {
+                      "text": "ping and curl",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ping and traceroute",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "dig and host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ss and netstat",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What curl flag follows HTTP redirects?",
+                  "answers": [
+                    {
+                      "text": "-v",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-I",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-L",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "-k",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does dig +trace show?",
+                  "answers": [
+                    {
+                      "text": "Only the final answer",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The complete DNS resolution path from root servers",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "DNS server configuration",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Network latency to DNS servers",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What is the correct order for systematic network troubleshooting?",
+                  "answers": [
+                    {
+                      "text": "Application -> Transport -> Network -> Link",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Physical -> Link -> Network -> Transport -> Application",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "DNS -> Gateway -> Host -> Service",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Service -> Protocol -> Network -> Physical",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What command tests SSL certificate validity?",
+                  "answers": [
+                    {
+                      "text": "curl -I",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "openssl s_client -connect host:443",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "dig +short host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "nc -zv host 443",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What curl flag shows verbose request/response headers?",
+                  "answers": [
+                    {
+                      "text": "-d",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-H",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "-v",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "-x",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Common Network Issues",
+              "order": 2,
+              "lab": "netSecLab?.id",
+              "content": "# Common Network Issues\n\n### Learning Objectives\n- Diagnose DNS resolution failures\n- Troubleshoot firewall-related connectivity issues\n- Resolve SSL/TLS certificate problems\n- Fix common routing and MTU issues\n\n### Section 1: DNS Issues\n\n```bash\n# Symptoms: Cannot resolve hostnames\n# Check DNS configuration\ncat /etc/resolv.conf\nresolvectl status\n\n# Test DNS resolution\ndig example.com\nnslookup example.com\n\n# Fix: Update DNS servers\nsudo bash -c 'echo \"nameserver 8.8.8.8\" > /etc/resolv.conf'\n\n# Flush DNS cache\nresolvectl flush-caches\n\n# Check /etc/hosts entries\ngrep example.com /etc/hosts\n```\n\n### Section 2: Firewall Blocking\n\n```bash\n# Symptoms: Connection refused or timeout\n# Check if port is listening\nss -tlnp | grep :443\n\n# Check iptables rules\nsudo iptables -L -n | grep 443\nsudo nft list ruleset | grep 443\n\n# Test if firewall is blocking\nsudo iptables -I INPUT -s <client-ip> -j ACCEPT  # Temporarily allow\n\n# Check cloud provider firewall (AWS SG, GCP FW)\n```\n\n### Section 3: SSL/TLS Certificate Issues\n\n```bash\n# Check certificate validity\nopenssl s_client -connect example.com:443 </dev/null 2>/dev/null | \\\n    openssl x509 -noout -dates\n\n# Check certificate chain\nopenssl s_client -connect example.com:443 -showcerts\n\n# Verify certificate matches domain\nopenssl s_client -connect example.com:443 -servername example.com\n\n# Common issues:\n# 1. Expired certificate\n# 2. Wrong certificate for domain\n# 3. Missing intermediate certificate\n# 4. Self-signed certificate\n```\n\n### Section 4: Connection Timeouts\n\n```bash\n# Symptoms: Slow connections or timeouts\n# Check TCP connection state\nss -tnp | awk '{print $1}' | sort | uniq -c | sort -rn\n\n# High SYN_RECV = possible SYN flood\n# High TIME_WAIT = too many short-lived connections\n\n# Fix: Increase connection tracking\nsudo sysctl -w net.netfilter.nf_conntrack_max=262144\nsudo sysctl -w net.ipv4.tcp_max_syn_backlog=65536\n\n# Check connection limits\nulimit -n\ncat /proc/sys/net/core/somaxconn\n```\n\n### Section 5: MTU Issues\n\n```bash\n# Symptoms: Connections hang or fail for large transfers\n# Test MTU\nping -M do -s 1472 8.8.8.8\n\n# If fails, reduce MTU\nsudo ip link set eth0 mtu 1400\n\n# Common MTU values:\n# Ethernet: 1500\n# PPPoE: 1492\n# VPN: varies (often 1400)\n# Cloud VPC: 9001 (Jumbo frames)\n```\n\n### Section 6: Service-Specific Issues\n\n```bash\n# Nginx 502 Bad Gateway\n# Backend not running or not responding\nsudo systemctl status my-backend\ncurl -v http://localhost:3000/health\n\n# Nginx 504 Gateway Timeout\n# Backend too slow\n# Increase proxy_read_timeout in nginx.conf\n\n# Connection refused\n# Service not listening\nss -tlnp | grep :80\nsudo systemctl start nginx\n```\n\n### Key Takeaways\n- DNS issues are the most common cause of \"cannot connect\" errors\n- Always check firewall rules before assuming network issues\n- SSL certificate problems often stem from missing intermediaries\n- High TIME_WAIT counts indicate connection recycling issues\n- MTU problems manifest as hanging transfers, not outright failures\n\n### References\n1. [Linux Network Troubleshooting Guide](https://www.tecmint.com/linux-network-configuration-and-troubleshooting-commands/)\n2. [SSL/TLS Debugging with OpenSSL](https://www.openssl.org/docs/manmaster/man1/openssl-s_client.html)\n3. [conntrack tuning](https://www.nixcraft.com/t/linux-tuning-nf-conntrack-max/3778)",
+              "questions": [
+                {
+                  "text": "What is the most common cause of 'cannot resolve hostname' errors?",
+                  "answers": [
+                    {
+                      "text": "Wrong IP address",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "DNS configuration issues",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Firewall blocking",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "MTU mismatch",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does a high TIME_WAIT count indicate?",
+                  "answers": [
+                    {
+                      "text": "DDoS attack",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Too many short-lived connections",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "DNS failure",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Firewall blocking",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What command tests if a specific port is listening?",
+                  "answers": [
+                    {
+                      "text": "ping host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "curl host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ss -tlnp | grep :port",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "dig host",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What does Nginx 502 Bad Gateway usually mean?",
+                  "answers": [
+                    {
+                      "text": "Nginx is not running",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The backend application is not responding",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The client sent a bad request",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "SSL certificate is invalid",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What MTU test command detects MTU mismatches?",
+                  "answers": [
+                    {
+                      "text": "ping -c 4 host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "traceroute host",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ping -M do -s 1472 host",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "mtr host",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "text": "What system call limit affects maximum connections?",
+                  "answers": [
+                    {
+                      "text": "ulimit -n",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ulimit -u",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ulimit -s",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ulimit -f",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

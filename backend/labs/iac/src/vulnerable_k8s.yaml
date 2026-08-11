@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tactical-dashboard
+  labels:
+    app: dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+      - name: dashboard-container
+        image: nginx:latest
+        securityContext:
+          privileged: true # VULNERABILITY: Privileged container
+          runAsUser: 0     # VULNERABILITY: Running as root
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+      volumes:
+      - name: host-root
+        hostPath:
+          path: / # VULNERABILITY: Host filesystem mount

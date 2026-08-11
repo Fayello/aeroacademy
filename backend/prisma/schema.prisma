@@ -1,0 +1,372 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  passwordHash    String?
+  googleId        String?           @unique
+  role            Role              @default(STUDENT)
+  createdAt       DateTime          @default(now())
+  bio             String?
+  name            String?
+  city            String?           @default("Yaoundé")
+  organizationId  String?
+  organization    Organization?     @relation(fields: [organizationId], references: [id])
+  xp              Int               @default(0)
+  rank            Int               @default(0)
+  division        String            @default("BRONZE")
+  clearanceLevel  Int               @default(1)
+  teamId          String?
+  team            Team?             @relation(fields: [teamId], references: [id])
+  ownedTeams      Team[]           @relation("TeamOwner")
+  labInstances    LabInstance[]
+  labSubmissions  LabSubmission[]
+  progress        Progress[]
+  quizSubmissions QuizSubmission[]
+  achievements    UserAchievement[]
+  shortlistedBy   Shortlist[]       @relation("StudentShortlisted")
+  shortlistedUsers Shortlist[]      @relation("RecruiterShortlist")
+  refreshTokens   RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  masterClassRegistrations MasterClassRegistration[]
+  trainer         Trainer?
+  bookings        Booking[]
+
+  @@index([email])
+  @@index([googleId])
+  @@index([role])
+  @@index([xp])
+}
+
+model Team {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  ownerId     String
+  owner       User?    @relation("TeamOwner", fields: [ownerId], references: [id])
+  members     User[]
+  createdAt   DateTime @default(now())
+
+  @@index([ownerId])
+}
+
+model Season {
+  id          String   @id @default(uuid())
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  type      String   @default("UNIVERSITY") // UNIVERSITY, ENTERPRISE, GOVERNMENT
+  location  String
+  users     User[]
+  createdAt DateTime @default(now())
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  createdAt   DateTime  @default(now())
+  sections    Section[]
+}
+
+model Section {
+  id       String   @id @default(uuid())
+  courseId String
+  title    String
+  order    Int      @default(0)
+  lessons  Lesson[]
+  course   Course   @relation(fields: [courseId], references: [id])
+}
+
+model Lesson {
+  id        String     @id @default(uuid())
+  sectionId String
+  title     String
+  order     Int        @default(0)
+  videoUrl  String?
+  content   String?
+  labId     String?    @unique
+  lab       Lab?       @relation(fields: [labId], references: [id])
+  section   Section    @relation(fields: [sectionId], references: [id])
+  progress  Progress[]
+  quiz      Quiz?
+}
+
+model Quiz {
+  id          String           @id @default(uuid())
+  lessonId    String           @unique
+  questions   Question[]
+  lesson      Lesson           @relation(fields: [lessonId], references: [id])
+  submissions QuizSubmission[]
+}
+
+model QuizSubmission {
+  id        String   @id @default(uuid())
+  quizId    String
+  userId    String
+  score     Int
+  passed    Boolean
+  createdAt DateTime @default(now())
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, quizId])
+}
+
+model Question {
+  id      String   @id @default(uuid())
+  quizId  String
+  text    String
+  answers Answer[]
+  quiz    Quiz     @relation(fields: [quizId], references: [id])
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  questionId String
+  text       String
+  isCorrect  Boolean
+  question   Question @relation(fields: [questionId], references: [id])
+}
+
+model Lab {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  dockerImage String
+  briefing    String?
+  credentials Json?
+  tasks       Json?
+  basePath    String?       @default("")
+  imageUrl    String?
+  difficulty  Int           @default(1200)
+  flags       LabFlag[]
+  instances   LabInstance[]
+  lesson      Lesson?
+}
+
+model LabFlag {
+  id            String          @id @default(uuid())
+  labId         String
+  title         String
+  description   String?
+  points        Int             @default(100)
+  correctAnswer String
+  lab           Lab             @relation(fields: [labId], references: [id])
+  submissions   LabSubmission[]
+}
+
+model LabSubmission {
+  id        String   @id @default(uuid())
+  flagId    String
+  userId    String
+  answer    String
+  isCorrect Boolean
+  createdAt DateTime @default(now())
+  flag      LabFlag  @relation(fields: [flagId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, flagId])
+}
+
+model Progress {
+  userId    String
+  lessonId  String
+  completed Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, lessonId])
+  @@index([userId, updatedAt])
+}
+
+model LabInstance {
+  id          String    @id @default(uuid())
+  userId      String
+  labId       String
+  containerId String?
+  port        Int?
+  status      LabStatus @default(RUNNING)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  lab         Lab       @relation(fields: [labId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([userId, status])
+}
+
+model Achievement {
+  id          String            @id @default(uuid())
+  title       String            @unique
+  description String
+  icon        String
+  category    String
+  xpReward    Int               @default(0)
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  userId        String
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@id([userId, achievementId])
+}
+
+model Shortlist {
+  id          String   @id @default(uuid())
+  recruiterId String
+  studentId   String
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  recruiter   User     @relation("RecruiterShortlist", fields: [recruiterId], references: [id])
+  student     User     @relation("StudentShortlisted", fields: [studentId], references: [id])
+
+  @@unique([recruiterId, studentId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model MasterClass {
+  id                String                  @id @default(uuid())
+  title             String
+  description       String
+  instructorName    String?
+  instructorBio     String?
+  instructorAvatar  String?
+  thumbnailUrl      String?
+  category          String                  @default("SECURITY")
+  scheduledAt       DateTime?
+  duration          Int                     @default(60)
+  maxParticipants   Int?
+  isLive            Boolean                 @default(true)
+  recordingUrl      String?
+  status            MasterClassStatus       @default(UPCOMING)
+  createdAt         DateTime                @default(now())
+  registrations     MasterClassRegistration[]
+}
+
+model MasterClassRegistration {
+  id            String      @id @default(uuid())
+  masterClassId String
+  userId        String
+  registeredAt  DateTime    @default(now())
+  masterClass   MasterClass @relation(fields: [masterClassId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([masterClassId, userId])
+  @@index([userId])
+}
+
+model Trainer {
+  id          String         @id @default(uuid())
+  userId      String         @unique
+  bio         String?
+  specialties String[]
+  hourlyRate  Int?
+  isActive    Boolean        @default(true)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slots       TrainingSlot[]
+  bookings    Booking[]
+
+  @@index([userId])
+}
+
+model TrainingSlot {
+  id        String    @id @default(uuid())
+  trainerId String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  isActive  Boolean   @default(true)
+  trainer   Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@index([trainerId])
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  trainerId String
+  studentId String
+  slotId    String?
+  date      DateTime
+  startTime String
+  endTime   String
+  topic     String
+  status    BookingStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime      @default(now())
+  trainer   Trainer       @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  student   User          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([trainerId])
+}
+
+enum MasterClassStatus {
+  UPCOMING
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  RECRUITER
+}
+
+enum LabStatus {
+  RUNNING
+  STOPPED
+  EXPIRED
+  PROVISIONING
+}

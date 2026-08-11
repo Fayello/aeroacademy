@@ -1,0 +1,36 @@
+FROM alpine:latest
+
+# Install tools
+RUN apk add --no-cache \
+    curl \
+    python3 \
+    py3-pip \
+    bash \
+    git \
+    openssl
+
+# Install Terraform
+RUN curl -SL https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip -o terraform.zip \
+    && unzip terraform.zip \
+    && mv terraform /usr/local/bin/ \
+    && rm terraform.zip
+
+# Install Checkov
+RUN pip3 install --no-cache-dir checkov --break-system-packages
+
+# Setup workspace
+WORKDIR /home/operative/audit
+
+# Copy source files
+COPY src/vulnerable_infra.tf .
+COPY src/vulnerable_k8s.yaml .
+COPY src/init_audit.sh /usr/local/bin/init_audit
+
+# Fix permissions
+RUN chmod +x /usr/local/bin/init_audit
+
+# Initialize audit history
+RUN /usr/local/bin/init_audit
+
+# Set default command
+CMD ["/bin/bash"]

@@ -1,0 +1,109 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar } from "lucide-react";
+import { logout } from "@/lib/auth";
+import { useState, useEffect } from "react";
+import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
+
+interface NavLink {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  roles?: string[];
+}
+
+const links: NavLink[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/courses", label: "Courses", icon: GraduationCap },
+  { href: "/dashboard/labs", label: "Labs", icon: Microscope },
+  { href: "/dashboard/master-classes", label: "Master Classes", icon: Video },
+  { href: "/dashboard/training", label: "Training", icon: Calendar },
+  { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/dashboard/certifications", label: "Certifications", icon: Award },
+  { href: "/dashboard/registry", label: "Registry", icon: Shield },
+  { href: "/dashboard/enterprise", label: "Enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
+  { href: "/dashboard/admin", label: "Admin", icon: Award, roles: ["ADMIN"] },
+  { href: "/dashboard/profile", label: "Profile", icon: User },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [userRole, setUserRole] = useState<string>("STUDENT");
+  const [level, setLevel] = useState(1);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
+      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
+      setLevel(getLevel(xp));
+    } catch {}
+  }, []);
+
+  const filteredLinks = links.filter(link => !link.roles || link.roles.includes(userRole));
+
+  return (
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">
+      <div className="p-6 flex items-center gap-3">
+        <div className="bg-emerald-600 p-2 rounded-lg">
+          <Shield className="text-white" size={20} />
+        </div>
+        <div>
+          <h1 className="text-base font-semibold text-slate-900 tracking-tight">AEROACADEMY</h1>
+          <p className="text-[11px] text-slate-400">Tech Training Platform</p>
+        </div>
+      </div>
+
+      <div className="px-3">
+        <div className="h-px bg-slate-100" />
+      </div>
+
+      <nav className="flex-1 px-3 py-4 space-y-1" role="navigation" aria-label="Main navigation">
+        {filteredLinks.map(({ href, label, icon: Icon }) => {
+          const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+          const gate = getSidebarItemLock(href, level);
+          const isLocked = gate.locked;
+
+          return (
+            <Link
+              key={href}
+              href={isLocked ? "#" : href}
+              aria-current={isActive ? "page" : undefined}
+              title={isLocked ? gate.reason : undefined}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
+                isLocked
+                  ? "text-slate-400 cursor-not-allowed opacity-60"
+                  : isActive
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+              onClick={(e) => { if (isLocked) e.preventDefault(); }}
+            >
+              <Icon size={18} className={isActive && !isLocked ? "text-emerald-600" : "text-slate-400"} />
+              <span className="flex-1">{label}</span>
+              {isLocked && (
+                <span className="flex items-center gap-1 text-[10px] text-slate-400">
+                  <Lock size={10} />
+                  Lv.{gate.requiredLevel}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="p-3 mt-auto">
+        <button
+          onClick={logout}
+          aria-label="Log out"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors duration-150"
+        >
+          <LogOut size={18} />
+          Log out
+        </button>
+      </div>
+    </aside>
+  );
+}

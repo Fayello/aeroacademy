@@ -1,0 +1,42 @@
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+
+const SALT_ROUNDS = 10;
+const ENCRYPTION_KEY = process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!';
+const IV_LENGTH = 16;
+const ALGORITHM = 'aes-256-cbc';
+
+export async function hashAnswer(answer: string): Promise<string> {
+  return bcrypt.hash(answer.trim().toLowerCase(), SALT_ROUNDS);
+}
+
+export async function verifyAnswer(answer: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(answer.trim().toLowerCase(), hash);
+}
+
+export function encryptData(plaintext: string): string {
+  const key = crypto.scryptSync(ENCRYPTION_KEY, ENCRYPTION_KEY, 32);
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+  let encrypted = cipher.update(plaintext, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return iv.toString('hex') + ':' + encrypted;
+}
+
+export function decryptData(ciphertext: string): string {
+  const key = crypto.scryptSync(ENCRYPTION_KEY, ENCRYPTION_KEY, 32);
+  const [ivHex, encrypted] = ciphertext.split(':');
+  const iv = Buffer.from(ivHex, 'hex');
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
+export function encryptCredentials(credentials: any[]): string {
+  return encryptData(JSON.stringify(credentials));
+}
+
+export function decryptCredentials(encrypted: string): any[] {
+  return JSON.parse(decryptData(encrypted));
+}
