@@ -46,35 +46,38 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
-      {/* Profile header */}
-      <div className="card p-8">
-        <div className="flex flex-col sm:flex-row items-start gap-6">
-          <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-            <User size={36} className="text-slate-400" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-semibold text-slate-900">{user.name || user.email.split("@")[0]}</h1>
-            <div className="flex items-center gap-3 mt-2 text-sm text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <Mail size={14} />
-                {user.email}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Shield size={14} className="text-emerald-600" />
-                {user.role}
-              </span>
+      {/* Profile Hero */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative z-10">
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+              <User size={36} className="text-white" />
             </div>
-            {user.bio && (
-              <p className="text-sm text-slate-600 mt-3 italic">"{user.bio}"</p>
-            )}
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <Link href="/dashboard/profile/edit" className="btn-secondary text-sm">
-              Edit profile
-            </Link>
-            <Link href="/dashboard/profile/change-password" className="btn-secondary text-sm">
-              Change password
-            </Link>
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold">{user.name || user.email.split("@")[0]}</h1>
+              <div className="flex items-center gap-3 mt-2 text-sm text-emerald-100">
+                <span className="flex items-center gap-1.5">
+                  <Mail size={14} />
+                  {user.email}
+                </span>
+                <span className="flex items-center gap-1.5 bg-white/20 px-2 py-0.5 rounded-full">
+                  <Shield size={14} />
+                  {user.role}
+                </span>
+              </div>
+              {user.bio && (
+                <p className="text-sm text-emerald-100 mt-3 italic">"{user.bio}"</p>
+              )}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Link href="/dashboard/profile/edit" className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 font-medium py-2 px-4 rounded-lg text-sm transition-all">
+                Edit profile
+              </Link>
+              <Link href="/dashboard/profile/change-password" className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 font-medium py-2 px-4 rounded-lg text-sm transition-all">
+                Change password
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -82,25 +85,25 @@ export default function ProfilePage() {
       {/* Level & Division */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Level Progress */}
-        <div className="card p-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <TrendingUp size={20} className="text-emerald-600" />
+            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <TrendingUp size={22} className="text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Level {level}</h2>
-              <p className="text-xs text-slate-500">{xp.toLocaleString()} total XP</p>
+              <h2 className="text-lg font-semibold text-slate-900">Level {level}</h2>
+              <p className="text-sm text-slate-500">{xp.toLocaleString()} total XP</p>
             </div>
           </div>
           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
             <div
-              className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-sm text-slate-500">
             <span>{xpInLevel.toLocaleString()} / 1,000 XP in this level</span>
-            <span>{Math.round(progress * 100)}%</span>
+            <span className="font-medium text-slate-900">{Math.round(progress * 100)}%</span>
           </div>
           <p className="text-xs text-slate-400 mt-2">
             {(1000 - xpInLevel).toLocaleString()} XP to Level {level + 1}
@@ -108,27 +111,27 @@ export default function ProfilePage() {
         </div>
 
         {/* Division */}
-        <div className="card p-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${divInfo.bg}`}>
-              <Shield size={20} className={divInfo.color} />
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${divInfo.bg}`}>
+              <Shield size={22} className={divInfo.color} />
             </div>
             <div>
-              <h2 className={`text-sm font-semibold ${divInfo.color}`}>{division}</h2>
-              <p className="text-xs text-slate-500">ELO Rating: {rank}</p>
+              <h2 className={`text-lg font-semibold ${divInfo.color}`}>{division}</h2>
+              <p className="text-sm text-slate-500">ELO Rating: {rank}</p>
             </div>
           </div>
           {divInfo.next && (
             <>
               <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
                 <div
-                  className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(100, (rank / divInfo.nextAt) * 100)}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex items-center justify-between text-sm text-slate-500">
                 <span>{rank} / {divInfo.nextAt} ELO</span>
-                <span>{divInfo.next}</span>
+                <span className="font-medium text-slate-900">{divInfo.next}</span>
               </div>
             </>
           )}
@@ -139,31 +142,31 @@ export default function ProfilePage() {
       </div>
 
       {/* Level Unlocks */}
-      <div className="card p-6">
-        <h2 className="text-sm font-semibold text-slate-900 mb-4">Content Unlocks</h2>
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Content Unlocks</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {LEVEL_UNLOCKS.map(({ level: reqLevel, label, icon: Icon }) => {
             const unlocked = level >= reqLevel;
             return (
               <div
                 key={reqLevel}
-                className={`p-3 rounded-lg border text-center ${
+                className={`p-4 rounded-xl border text-center transition-all ${
                   unlocked
-                    ? "bg-emerald-50 border-emerald-200"
+                    ? "bg-emerald-50 border-emerald-200 hover:shadow-md"
                     : "bg-slate-50 border-slate-200 opacity-60"
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2 ${
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2 ${
                   unlocked ? "bg-emerald-100" : "bg-slate-100"
                 }`}>
                   {unlocked ? (
-                    <Icon size={16} className="text-emerald-600" />
+                    <Icon size={18} className="text-emerald-600" />
                   ) : (
-                    <Lock size={16} className="text-slate-400" />
+                    <Lock size={18} className="text-slate-400" />
                   )}
                 </div>
-                <p className="text-[11px] font-medium text-slate-700">{label}</p>
-                <p className={`text-[10px] mt-0.5 ${unlocked ? "text-emerald-600" : "text-slate-400"}`}>
+                <p className="text-xs font-medium text-slate-700">{label}</p>
+                <p className={`text-[10px] mt-1 ${unlocked ? "text-emerald-600" : "text-slate-400"}`}>
                   {unlocked ? "Unlocked" : `Lv.${reqLevel}`}
                 </p>
               </div>
@@ -174,8 +177,8 @@ export default function ProfilePage() {
 
       {/* Stats & Achievements */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 card p-6">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4">Skills</h2>
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Skills</h2>
           <div className="space-y-4">
             {[
               { label: "Web Security", progress: userMetrics?.courseProgress || 0 },
@@ -184,30 +187,30 @@ export default function ProfilePage() {
               { label: "AI Security", progress: 0 },
             ].map((skill) => (
               <div key={skill.label}>
-                <div className="flex justify-between text-xs text-slate-500 mb-1">
+                <div className="flex justify-between text-sm text-slate-600 mb-1.5">
                   <span>{skill.label}</span>
                   <span className="font-medium text-slate-900">{skill.progress}%</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${skill.progress}%` }} />
+                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full" style={{ width: `${skill.progress}%` }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="card p-6">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4">Achievements</h2>
+        <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Achievements</h2>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {userMetrics && userMetrics.achievements && userMetrics.achievements.length > 0 ? userMetrics.achievements.map((ach: any) => (
-              <div key={ach.id} className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+              <div key={ach.id} className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:shadow-sm transition-all">
                 <div className="flex items-center gap-2">
-                  <Star size={14} className="text-amber-500" fill="currentColor" />
+                  <Star size={16} className="text-amber-500" fill="currentColor" />
                   <p className="text-sm font-medium text-slate-900">{ach.title?.replaceAll("_", " ")}</p>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">{ach.description}</p>
+                <p className="text-xs text-slate-500 mt-1">{ach.description}</p>
                 {ach.unlockedAt && (
-                  <p className="text-[10px] text-slate-400 mt-1">
+                  <p className="text-[10px] text-slate-400 mt-1.5">
                     <Clock size={10} className="inline mr-1" />
                     {new Date(ach.unlockedAt).toLocaleDateString()}
                   </p>

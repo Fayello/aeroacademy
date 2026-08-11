@@ -88,29 +88,42 @@ export default function LessonPage() {
 
   return (
     <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between mb-6">
-        <Link
-          href={`/dashboard/courses/${lesson.section?.courseId || ""}`}
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
-        >
-          <ChevronLeft size={16} />
-          Back to course
-        </Link>
-        <button
-          onClick={handleMarkComplete}
-          disabled={saving || completed}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            completed
-              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-              : "bg-white text-slate-700 border border-slate-300 hover:border-emerald-300 hover:text-emerald-700"
-          } disabled:opacity-50`}
-        >
-          <CheckCircle size={16} />
-          {completed ? "Completed" : "Mark as complete"}
-        </button>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white mb-6">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative z-10">
+          <Link
+            href={`/dashboard/courses/${lesson.section?.courseId || ""}`}
+            className="inline-flex items-center gap-1 text-sm text-emerald-200 hover:text-white transition-colors mb-4"
+          >
+            <ChevronLeft size={16} />
+            Back to course
+          </Link>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-medium px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full">{lesson.section?.title}</span>
+                <span className="text-xs text-emerald-200">~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read</span>
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight">{lesson.title}</h1>
+            </div>
+            <button
+              onClick={handleMarkComplete}
+              disabled={saving || completed}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                completed
+                  ? "bg-white text-emerald-600"
+                  : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+              } disabled:opacity-50`}
+            >
+              <CheckCircle size={16} />
+              {completed ? "Completed" : "Mark as complete"}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           {/* Video Player */}
           <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden relative shadow-lg">
@@ -127,19 +140,8 @@ export default function LessonPage() {
           </div>
 
           {/* Lesson Content */}
-          <div className="card p-6 md:p-8">
-            <div className="flex items-center gap-4 mb-6 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <BookOpen size={12} />
-                {lesson.section?.title}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Shield size={12} />
-                ~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read
-              </span>
-            </div>
-
-            <h1 className="text-2xl font-semibold text-slate-900 mb-6">{lesson.title}</h1>
+          <div className="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
+            <h1 className="text-2xl font-bold text-slate-900 mb-6">{lesson.title}</h1>
 
             <div className="prose prose-slate max-w-none">
               <ReactMarkdown

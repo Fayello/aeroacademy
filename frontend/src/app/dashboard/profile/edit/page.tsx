@@ -65,29 +65,33 @@ export default function ProfileEditPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <Link href="/dashboard/profile" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700">
-          <ArrowLeft size={16} />
-          Back to profile
-        </Link>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative z-10">
+          <Link href="/dashboard/profile" className="inline-flex items-center gap-1 text-sm text-emerald-200 hover:text-white transition-colors mb-4">
+            <ArrowLeft size={16} />
+            Back to profile
+          </Link>
+          <h1 className="text-2xl font-bold">Edit Profile</h1>
+          <p className="text-emerald-100 text-sm mt-1">Update your personal information</p>
+        </div>
       </div>
 
-      <div className="card p-6">
-        <h1 className="text-lg font-semibold text-slate-900 mb-6">Edit Profile</h1>
-
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">Name</label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input id="name" {...register("name")} className={`input-field pl-10 ${errors.name ? "border-red-300" : ""}`} placeholder="Your name" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input id="name" {...register("name")} className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.name ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all`} placeholder="Your name" />
             </div>
-            {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
+            {errors.name && <p className="text-xs text-red-600 mt-1.5">{errors.name.message}</p>}
           </div>
 
           <div>
-            <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1.5">City</label>
-            <select {...register("city")} className="input-field">
+            <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-2">City</label>
+            <select {...register("city")} className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
               <option value="">Select city</option>
               {CAMEROON_CITIES.map((city) => (
                 <option key={city} value={city}>{city}</option>
@@ -96,8 +100,8 @@ export default function ProfileEditPage() {
           </div>
 
           <div>
-            <label htmlFor="org" className="block text-sm font-medium text-slate-700 mb-1.5">Organization</label>
-            <select {...register("organizationId")} className="input-field">
+            <label htmlFor="org" className="block text-sm font-medium text-slate-700 mb-2">Organization</label>
+            <select {...register("organizationId")} className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
               <option value="">Independent Learner</option>
               {organizations.map((org) => (
                 <option key={org.id} value={org.id}>{org.name}</option>
@@ -106,20 +110,22 @@ export default function ProfileEditPage() {
           </div>
 
           <div>
-            <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
-            <textarea {...register("bio")} rows={4} className={`input-field resize-none ${errors.bio ? "border-red-300" : ""}`} placeholder="Tell us about yourself..." />
-            <div className="flex justify-between items-center mt-1">
+            <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-2">Bio</label>
+            <textarea {...register("bio")} rows={4} className={`w-full px-4 py-3 rounded-xl border ${errors.bio ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none`} placeholder="Tell us about yourself..." />
+            <div className="flex justify-between items-center mt-1.5">
               {errors.bio && <p className="text-xs text-red-600">{errors.bio.message}</p>}
               <span className="text-xs text-slate-400 ml-auto">Max 250 characters</span>
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={isSubmitting || !isDirty} className="btn-primary flex-1">
+            <button type="submit" disabled={isSubmitting || !isDirty} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">
               {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
               Save changes
             </button>
-            <Link href="/dashboard/profile" className="btn-secondary">Cancel</Link>
+            <Link href="/dashboard/profile" className="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-5 rounded-xl border border-slate-300 transition-all text-sm">
+              Cancel
+            </Link>
           </div>
         </form>
       </div>

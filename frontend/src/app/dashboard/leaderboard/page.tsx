@@ -64,39 +64,54 @@ export default function LeaderboardPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <PageHeader title="Leaderboard" description="See how you rank against other learners." />
-        <div className="flex bg-slate-100 p-1 rounded-lg">
-          {(["GLOBAL", "REGIONAL", "UNIVERSITY"] as const).map((league) => (
-            <button
-              key={league}
-              onClick={() => setActiveLeague(league)}
-              className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                activeLeague === league ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              {league}
-            </button>
-          ))}
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 p-8 text-white">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <Trophy size={28} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">Leaderboard</h1>
+                <p className="text-amber-100 text-sm">See how you rank against other learners</p>
+              </div>
+            </div>
+            <div className="flex bg-white/20 backdrop-blur-sm p-1 rounded-xl">
+              {(["GLOBAL", "REGIONAL", "UNIVERSITY"] as const).map((league) => (
+                <button
+                  key={league}
+                  onClick={() => setActiveLeague(league)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeLeague === league ? "bg-white text-orange-600 shadow-sm" : "text-white hover:bg-white/20"
+                  }`}
+                >
+                  {league}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <input
           type="text"
           placeholder="Search by name..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="input-field max-w-xs"
+          className="w-full max-w-xs px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
         />
         {activeLeague === "REGIONAL" && (
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
             {leagueStats.regional.map((city) => (
               <button
                 key={city.name}
                 onClick={() => setSelectedCity(city.name)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  selectedCity === city.name ? "bg-blue-100 text-blue-700 border border-blue-200" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  selectedCity === city.name ? "bg-orange-100 text-orange-700 border border-orange-200" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 {city.name}
@@ -108,12 +123,12 @@ export default function LeaderboardPage() {
 
       {/* Season stats */}
       {leagueStats.season && (
-        <div className="card p-4 flex items-center justify-between">
+        <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between">
           <div>
             <p className="text-xs text-slate-500">Current Season</p>
-            <p className="text-sm font-medium text-slate-900">{leagueStats.season.name}</p>
+            <p className="text-sm font-semibold text-slate-900">{leagueStats.season.name}</p>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm text-slate-500">
             Ends {new Date(leagueStats.season.endDate).toLocaleDateString()}
           </p>
         </div>
@@ -135,30 +150,30 @@ export default function LeaderboardPage() {
         ].find((u) => u.level > currentLevel);
 
         return (
-          <div className="card p-5">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <TrendingUp size={18} className="text-emerald-600" />
+          <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <TrendingUp size={22} className="text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">Level {currentLevel} — {userMetrics.division}</p>
-                <p className="text-xs text-slate-500">{xpNeeded} XP to Level {currentLevel + 1}</p>
+                <p className="text-lg font-semibold text-slate-900">Level {currentLevel} — {userMetrics.division}</p>
+                <p className="text-sm text-slate-500">{xpNeeded} XP to Level {currentLevel + 1}</p>
               </div>
             </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
+            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
-            <div className="flex items-center justify-between text-xs text-slate-500">
+            <div className="flex items-center justify-between text-sm text-slate-500">
               <span>{xpInLevel.toLocaleString()} / 1,000 XP</span>
-              <span>{Math.round(progress * 100)}%</span>
+              <span className="font-medium text-slate-900">{Math.round(progress * 100)}%</span>
             </div>
             {nextUnlock && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2">
-                <Lock size={12} className="text-slate-400" />
-                <span>Reach <span className="font-semibold text-slate-700">Level {nextUnlock.level}</span> to unlock {nextUnlock.label}</span>
+              <div className="mt-4 flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3">
+                <Lock size={14} className="text-slate-400" />
+                <span>Reach <span className="font-semibold text-slate-900">Level {nextUnlock.level}</span> to unlock {nextUnlock.label}</span>
               </div>
             )}
           </div>
@@ -166,47 +181,64 @@ export default function LeaderboardPage() {
       })()}
 
       {/* Leaderboard list */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {filteredOperators.length > 0 ? filteredOperators.map((op, idx) => (
           <div
             key={op.id}
-            className={`card p-4 flex items-center gap-4 ${
-              op.id === currentUserId ? "border-emerald-300 bg-emerald-50/50" :
-              idx < 3 ? "border-amber-200 bg-amber-50/30" : ""
+            className={`bg-white rounded-xl border p-5 flex items-center gap-4 transition-all hover:shadow-md ${
+              op.id === currentUserId ? "border-emerald-300 bg-emerald-50/50 shadow-md" :
+              idx < 3 ? "border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50" : "border-slate-200"
             }`}
           >
-            <span className={`w-8 text-center font-semibold ${idx === 0 ? "text-amber-600" : idx === 1 ? "text-slate-500" : idx === 2 ? "text-amber-700" : "text-slate-400"}`}>
-              {idx < 3 ? <Trophy size={16} className="inline" /> : idx + 1}
-            </span>
+            {/* Rank */}
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+              idx === 0 ? "bg-amber-100 text-amber-600" : 
+              idx === 1 ? "bg-slate-100 text-slate-500" : 
+              idx === 2 ? "bg-orange-100 text-orange-600" : 
+              "bg-slate-50 text-slate-400"
+            }`}>
+              {idx < 3 ? <Trophy size={18} /> : idx + 1}
+            </div>
 
-            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium text-slate-600">
+            {/* Avatar */}
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
+              idx === 0 ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white" :
+              idx === 1 ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white" :
+              idx === 2 ? "bg-gradient-to-br from-orange-400 to-red-500 text-white" :
+              "bg-slate-100 text-slate-600"
+            }`}>
               {op.name?.[0] || '?'}
             </div>
 
+            {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-slate-900 truncate">{op.name}</p>
+                <p className="text-base font-semibold text-slate-900 truncate">{op.name}</p>
                 <Badge variant={(DIVISION_COLORS[op.division] ? undefined : "slate") as any} className={DIVISION_COLORS[op.division] || ""}>
                   {op.division}
                 </Badge>
                 {op.xp > 2500 && (
-                  <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full border border-blue-200 flex items-center gap-0.5">
-                    <CheckCircle size={8} /> Top talent
+                  <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200 flex items-center gap-0.5">
+                    <CheckCircle size={10} /> Top talent
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-sm text-slate-500 mt-0.5">
                 {op.organization?.name || "Independent"} • {op.city || "Unknown"}
               </p>
             </div>
 
+            {/* Score */}
             <div className="text-right">
-              <p className="text-lg font-semibold text-slate-900">{op.rank || 1200}</p>
-              <p className="text-[10px] text-slate-400">{op.xp.toLocaleString()} XP</p>
+              <p className="text-2xl font-bold text-slate-900">{op.rank || 1200}</p>
+              <p className="text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
         )) : (
-          <div className="card p-12 text-center text-sm text-slate-500">No results found.</div>
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <Trophy size={40} className="text-slate-300 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">No results found.</p>
+          </div>
         )}
       </div>
     </div>
