@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Trash2, AlertTriangle, Info } from "lucide-react";
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -114,9 +114,9 @@ export function AdminConfirmDialog({
   if (!isOpen) return null;
 
   const typeConfig = {
-    danger: { bg: "bg-red-600 hover:bg-red-700", icon: "🗑️" },
-    warning: { bg: "bg-amber-600 hover:bg-amber-700", icon: "⚠️" },
-    info: { bg: "bg-blue-600 hover:bg-blue-700", icon: "ℹ️" },
+    danger: { bg: "bg-red-600 hover:bg-red-700", IconComponent: Trash2, iconColor: "text-red-600" },
+    warning: { bg: "bg-amber-600 hover:bg-amber-700", IconComponent: AlertTriangle, iconColor: "text-amber-600" },
+    info: { bg: "bg-blue-600 hover:bg-blue-700", IconComponent: Info, iconColor: "text-blue-600" },
   };
 
   const config = typeConfig[type];
@@ -126,7 +126,7 @@ export function AdminConfirmDialog({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-start gap-4 mb-4">
-          <div className="text-2xl">{config.icon}</div>
+          <div className={`p-2 rounded-xl bg-slate-100 ${config.iconColor}`}><config.IconComponent size={24} /></div>
           <div>
             <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
             <p className="text-sm text-slate-500 mt-1">{message}</p>
