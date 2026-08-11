@@ -46,38 +46,28 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
-      {/* Profile Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row items-start gap-6">
-            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
-              <User size={36} className="text-white" />
+      {/* Profile Header */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="flex flex-col sm:flex-row items-start gap-5">
+          <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
+            <span className="text-xl font-bold text-white">
+              {(user.name || user.email).charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-slate-900">{user.name || user.email.split("@")[0]}</h1>
+            <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
+              <span>{user.email}</span>
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">{user.role}</span>
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">{user.name || user.email.split("@")[0]}</h1>
-              <div className="flex items-center gap-3 mt-2 text-sm text-emerald-100">
-                <span className="flex items-center gap-1.5">
-                  <Mail size={14} />
-                  {user.email}
-                </span>
-                <span className="flex items-center gap-1.5 bg-white/20 px-2 py-0.5 rounded-full">
-                  <Shield size={14} />
-                  {user.role}
-                </span>
-              </div>
-              {user.bio && (
-                <p className="text-sm text-emerald-100 mt-3 italic">"{user.bio}"</p>
-              )}
-            </div>
-            <div className="flex gap-2 shrink-0">
-              <Link href="/dashboard/profile/edit" className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 font-medium py-2 px-4 rounded-lg text-sm transition-all">
-                Edit profile
-              </Link>
-              <Link href="/dashboard/profile/change-password" className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 font-medium py-2 px-4 rounded-lg text-sm transition-all">
-                Change password
-              </Link>
-            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <Link href="/dashboard/profile/edit" className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium py-2 px-4 rounded-lg text-sm transition-all">
+              Edit profile
+            </Link>
+            <Link href="/dashboard/profile/change-password" className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium py-2 px-4 rounded-lg text-sm transition-all">
+              Change password
+            </Link>
           </div>
         </div>
       </div>

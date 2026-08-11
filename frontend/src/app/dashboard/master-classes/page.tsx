@@ -23,34 +23,22 @@ export default function MasterClassesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Video size={28} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">Master Classes</h1>
-              <p className="text-violet-100 text-sm">Live sessions and recorded classes from expert instructors</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  category === cat
-                    ? "bg-white text-violet-600"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                }`}
-              >
-                {cat === "All" ? "All Categories" : cat}
-              </button>
-            ))}
-          </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900">Master Classes</h1>
+        <div className="flex flex-wrap gap-2 mt-4">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                category === cat
+                  ? "bg-violet-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              {cat === "All" ? "All" : cat}
+            </button>
+          ))}
         </div>
       </div>
 

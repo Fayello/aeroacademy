@@ -19,22 +19,14 @@ export default function TrainingPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 p-8 text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Calendar size={28} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">1-on-1 Training</h1>
-              <p className="text-amber-100 text-sm">Book private sessions with expert trainers</p>
-            </div>
-          </div>
-          <Link href="/dashboard/training/bookings" className="bg-white text-amber-600 hover:bg-amber-50 font-medium py-2.5 px-5 rounded-lg transition-all duration-150 text-sm inline-flex items-center justify-center gap-2">
-            <BookOpen size={16} /> My Bookings
-          </Link>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Training</h1>
+          <p className="text-sm text-slate-500 mt-1">Book private sessions with expert trainers</p>
         </div>
+        <Link href="/dashboard/training/bookings" className="bg-slate-900 text-white hover:bg-slate-800 font-medium py-2.5 px-5 rounded-lg transition-all duration-150 text-sm inline-flex items-center justify-center gap-2">
+          <BookOpen size={16} /> My Bookings
+        </Link>
       </div>
 
       {/* Trainers Grid */}

@@ -110,7 +110,7 @@ export default function CertificationsPage() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-slate-200">{cert.xp}</p>
+                <p className="text-3xl font-bold text-slate-300">{cert.xp}</p>
                 <p className="text-[10px] text-slate-400 font-medium">XP</p>
               </div>
             </div>

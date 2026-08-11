@@ -64,35 +64,22 @@ export default function LeaderboardPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 p-8 text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Trophy size={28} className="text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">Leaderboard</h1>
-                <p className="text-amber-100 text-sm">See how you rank against other learners</p>
-              </div>
-            </div>
-            <div className="flex bg-white/20 backdrop-blur-sm p-1 rounded-xl">
-              {(["GLOBAL", "REGIONAL", "UNIVERSITY"] as const).map((league) => (
-                <button
-                  key={league}
-                  onClick={() => setActiveLeague(league)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeLeague === league ? "bg-white text-orange-600 shadow-sm" : "text-white hover:bg-white/20"
-                  }`}
-                >
-                  {league}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900">Leaderboard</h1>
+      </div>
+
+      <div className="flex gap-2">
+        {(["GLOBAL", "REGIONAL", "UNIVERSITY"] as const).map((league) => (
+          <button
+            key={league}
+            onClick={() => setActiveLeague(league)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeLeague === league ? "bg-orange-100 text-orange-700 border border-orange-200" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            {league}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}

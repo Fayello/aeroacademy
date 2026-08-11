@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, TrendingUp, Award, BookOpen, Shield } from "lucide-react";
+import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, Award, BookOpen } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
 export default function AdminDashboardPage() {
@@ -50,20 +50,14 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-slate-900 border border-slate-200">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 backdrop-blur-sm flex items-center justify-center"><BarChart3 size={24} className="text-emerald-400" /></div>
+            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center"><BarChart3 size={24} className="text-emerald-600" /></div>
             <div>
-              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <p className="text-slate-300 text-sm">Platform overview and management</p>
+              <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
             </div>
-          </div>
-          <div className="flex flex-wrap gap-4 mt-6">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2"><Activity size={16} className="text-emerald-400" /><span className="text-sm font-medium">{stats?.totalStudents || 0} Active Students</span></div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2"><TrendingUp size={16} className="text-emerald-400" /><span className="text-sm font-medium">{stats?.totalCourses || 0} Courses</span></div>
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2"><Shield size={16} className="text-emerald-400" /><span className="text-sm font-medium">{stats?.totalLabs || 0} Labs</span></div>
           </div>
         </div>
       </div>
