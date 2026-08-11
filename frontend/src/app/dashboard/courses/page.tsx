@@ -20,13 +20,13 @@ import toast from "react-hot-toast";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
 
 const CATEGORIES: Record<string, { label: string; color: string; bg: string }> = {
-  aerodynamics: { label: "Aerodynamics", color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30" },
-  structures: { label: "Structures", color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
-  propulsion: { label: "Propulsion", color: "text-rose-400", bg: "bg-rose-500/15 border-rose-500/30" },
-  avionics: { label: "Avionics", color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
-  controls: { label: "Controls", color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30" },
-  composites: { label: "Composites", color: "text-cyan-400", bg: "bg-cyan-500/15 border-cyan-500/30" },
-  default: { label: "Core", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/30" },
+  aerodynamics: { label: "Aerodynamics", color: "text-sky-600", bg: "bg-sky-50 border-sky-200" },
+  structures: { label: "Structures", color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
+  propulsion: { label: "Propulsion", color: "text-rose-600", bg: "bg-rose-50 border-rose-200" },
+  avionics: { label: "Avionics", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+  controls: { label: "Controls", color: "text-violet-600", bg: "bg-violet-50 border-violet-200" },
+  composites: { label: "Composites", color: "text-cyan-600", bg: "bg-cyan-50 border-cyan-200" },
+  default: { label: "Core", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
 };
 
 const DIFFICULTY_MAP: Record<number, { label: string; dots: number }> = {
@@ -50,22 +50,22 @@ function getDifficulty(level: number) {
 
 function ShimmerSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-slate-800 border border-slate-700/50">
-      <div className="h-40 bg-slate-700/50">
+    <div className="relative overflow-hidden rounded-xl bg-white border border-slate-200">
+      <div className="h-40 bg-slate-200">
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
       </div>
       <div className="p-5 space-y-3">
         <div className="flex gap-2">
-          <div className="h-5 w-16 rounded-full bg-slate-700/50" />
-          <div className="h-5 w-20 rounded-full bg-slate-700/50" />
+          <div className="h-5 w-16 rounded-full bg-slate-200" />
+          <div className="h-5 w-20 rounded-full bg-slate-200" />
         </div>
-        <div className="h-5 w-3/4 bg-slate-700/50 rounded" />
-        <div className="h-3 w-full bg-slate-700/50 rounded" />
-        <div className="h-3 w-1/2 bg-slate-700/50 rounded" />
+        <div className="h-5 w-3/4 bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
+        <div className="h-3 w-1/2 bg-slate-200 rounded" />
         <div className="flex gap-3 pt-1">
-          <div className="h-3 w-16 bg-slate-700/50 rounded" />
-          <div className="h-3 w-14 bg-slate-700/50 rounded" />
-          <div className="h-3 w-12 bg-slate-700/50 rounded" />
+          <div className="h-3 w-16 bg-slate-200 rounded" />
+          <div className="h-3 w-14 bg-slate-200 rounded" />
+          <div className="h-3 w-12 bg-slate-200 rounded" />
         </div>
       </div>
     </div>
@@ -141,8 +141,8 @@ export default function CoursesPage() {
       {/* Page Header */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Courses</h1>
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30 tabular-nums">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Courses</h1>
+          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-200 tabular-nums">
             {courses.length}
           </span>
         </div>
@@ -151,14 +151,14 @@ export default function CoursesPage() {
         <div className="relative max-w-md">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
           />
           <input
             type="text"
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-800 border border-slate-700/50 rounded-lg text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
           />
         </div>
 
@@ -169,8 +169,8 @@ export default function CoursesPage() {
               onClick={() => setSelectedCategory(null)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                 !selectedCategory
-                  ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
-                  : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600"
+                  ? "bg-blue-50 text-blue-600 border-blue-200"
+                  : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
               }`}
             >
               All
@@ -184,7 +184,7 @@ export default function CoursesPage() {
                   className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                     selectedCategory === cat
                       ? `${style.bg} ${style.color}`
-                      : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600"
+                      : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   {style.label}
@@ -197,24 +197,24 @@ export default function CoursesPage() {
 
       {/* Courses Grid */}
       {filteredCourses.length === 0 ? (
-        <div className="relative overflow-hidden rounded-xl bg-slate-800/50 border border-slate-700/50">
+        <div className="relative overflow-hidden rounded-xl bg-slate-50 border border-slate-200">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_70%)]" />
           <div className="relative flex flex-col items-center justify-center py-24 px-6 text-center">
             <div className="relative mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-slate-700/50 border border-slate-600/50 flex items-center justify-center">
-                <Rocket size={32} className="text-blue-400" />
+              <div className="w-20 h-20 rounded-2xl bg-slate-200 border border-slate-300 flex items-center justify-center">
+                <Rocket size={32} className="text-blue-500" />
               </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-lg bg-slate-700 border border-slate-600 flex items-center justify-center">
+              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
                 <Cpu size={12} className="text-slate-400" />
               </div>
-              <div className="absolute -bottom-1 -left-1 w-6 h-6 rounded-lg bg-slate-700 border border-slate-600 flex items-center justify-center">
+              <div className="absolute -bottom-1 -left-1 w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
                 <Shield size={12} className="text-slate-400" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-2">
+            <h3 className="text-lg font-semibold text-slate-700 mb-2">
               {searchQuery || selectedCategory ? "No matching courses" : "No courses available"}
             </h3>
-            <p className="text-sm text-slate-400 max-w-sm mb-6">
+            <p className="text-sm text-slate-500 max-w-sm mb-6">
               {searchQuery || selectedCategory
                 ? "Try adjusting your search or filter criteria."
                 : "Training modules will appear here once published by your administrator."}
@@ -225,7 +225,7 @@ export default function CoursesPage() {
                   setSearchQuery("");
                   setSelectedCategory(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg hover:bg-blue-500/15 transition-all"
+                className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-all"
               >
                 Clear filters
               </button>
@@ -252,7 +252,7 @@ export default function CoursesPage() {
             const cardContent = (
               <>
                 {/* Card Top - Cover */}
-                <div className="relative h-40 overflow-hidden bg-slate-800 border-b border-slate-700/50">
+                <div className="relative h-40 overflow-hidden bg-white border-b border-slate-200">
                   {course.imageUrl ? (
                     <img
                       src={course.imageUrl}
@@ -260,18 +260,15 @@ export default function CoursesPage() {
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
                       <GraduationCap
                         size={40}
-                        className="text-blue-400/40 group-hover:text-blue-400/60 transition-colors"
+                        className="text-blue-300 group-hover:text-blue-500 transition-colors"
                       />
                     </div>
                   )}
 
-                  {/* Circuit pattern overlay */}
-                  <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
-
-                  {/* Top badges */}
+                    {/* Top badges */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
                     <span
                       className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded border ${categoryStyle.bg} ${categoryStyle.color}`}
@@ -279,7 +276,7 @@ export default function CoursesPage() {
                       {categoryStyle.label}
                     </span>
                     {isLocked && (
-                      <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-slate-900/80 text-slate-300 border border-slate-600/50 backdrop-blur-sm">
+                      <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-white/90 text-slate-600 border border-slate-200 backdrop-blur-sm">
                         <Lock size={10} />
                         Lv.{gate.requiredLevel}
                       </span>
@@ -287,7 +284,7 @@ export default function CoursesPage() {
                   </div>
 
                   {/* Bottom gradient */}
-                  <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-slate-900 to-transparent" />
+                  <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-white to-transparent" />
                 </div>
 
                 {/* Card Body */}
@@ -297,20 +294,20 @@ export default function CoursesPage() {
                     <h3
                       className={`text-base font-semibold line-clamp-2 mb-1.5 ${
                         isLocked
-                          ? "text-slate-500"
-                          : "text-slate-100 group-hover:text-blue-400 transition-colors"
+                          ? "text-slate-400"
+                          : "text-slate-900 group-hover:text-blue-600 transition-colors"
                       }`}
                     >
                       {course.title}
                     </h3>
-                    <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
                       {course.description || "Comprehensive training module."}
                     </p>
                   </div>
 
                   {/* Difficulty Indicator */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
                       {difficulty.label}
                     </span>
                     <div className="flex gap-0.5">
@@ -319,8 +316,8 @@ export default function CoursesPage() {
                           key={dot}
                           className={`w-1.5 h-1.5 rounded-full ${
                             dot <= difficulty.dots
-                              ? "bg-blue-400"
-                              : "bg-slate-700"
+                              ? "bg-blue-500"
+                              : "bg-slate-300"
                           }`}
                         />
                       ))}
@@ -328,18 +325,18 @@ export default function CoursesPage() {
                   </div>
 
                   {/* Stats Row */}
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-slate-500">
                     <span className="flex items-center gap-1.5">
-                      <Layers size={12} className="text-slate-500" />
+                      <Layers size={12} className="text-slate-400" />
                       {sectionCount} modules
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <BookOpen size={12} className="text-slate-500" />
+                      <BookOpen size={12} className="text-slate-400" />
                       {lessonCount} lessons
                     </span>
                     {course.estimatedHours && (
                       <span className="flex items-center gap-1.5">
-                        <Clock size={12} className="text-slate-500" />
+                        <Clock size={12} className="text-slate-400" />
                         {course.estimatedHours}h est.
                       </span>
                     )}
@@ -349,8 +346,8 @@ export default function CoursesPage() {
                   <div
                     className={`pt-2 border-t flex items-center justify-between text-sm font-medium ${
                       isLocked
-                        ? "border-slate-700/50 text-slate-500"
-                        : "border-slate-700/50 text-blue-400 group-hover:text-blue-300"
+                        ? "border-slate-200 text-slate-400"
+                        : "border-slate-200 text-blue-600 group-hover:text-blue-500"
                     }`}
                   >
                     <span>{isLocked ? "Locked" : "Begin training"}</span>
@@ -366,7 +363,7 @@ export default function CoursesPage() {
             );
 
             const baseClasses =
-              "group relative overflow-hidden rounded-xl bg-slate-900 border border-slate-700/50 transition-all duration-300";
+              "group relative overflow-hidden rounded-xl bg-white border border-slate-200 transition-all duration-300";
 
             if (isLocked) {
               return (
@@ -386,7 +383,7 @@ export default function CoursesPage() {
               <Link
                 key={course.id}
                 href={`/dashboard/courses/${course.id}`}
-                className={`${baseClasses} hover:border-blue-500/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.08)]`}
+                className={`${baseClasses} hover:border-blue-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.08)]`}
               >
                 {cardContent}
               </Link>
