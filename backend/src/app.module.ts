@@ -18,6 +18,7 @@ import { AdminModule } from './admin/admin.module';
 import { RecruitmentModule } from './recruitment/recruitment.module';
 import { MasterClassesModule } from './master-classes/master-classes.module';
 import { TrainingModule } from './training/training.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TrainingModule } from './training/training.module';
     AdminModule,
     MasterClassesModule,
     TrainingModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

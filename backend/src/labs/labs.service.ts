@@ -424,4 +424,39 @@ export class LabsService implements OnModuleInit {
     await currentLock;
     return release;
   }
+
+  // === FLAG MANAGEMENT ===
+
+  async createFlag(labId: string, data: { title: string; description?: string; points?: number; correctAnswer: string }) {
+    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
+    if (!lab) throw new NotFoundException('Lab not found');
+    const bcrypt = require('bcrypt');
+    const hashedAnswer = await bcrypt.hash(data.correctAnswer.trim().toLowerCase(), 10);
+    return this.prisma.labFlag.create({
+      data: {
+        labId,
+        title: data.title,
+        description: data.description,
+        points: data.points || 100,
+        correctAnswer: hashedAnswer,
+      },
+    });
+  }
+
+  async updateFlag(flagId: string, data: { title?: string; description?: string; points?: number; correctAnswer?: string }) {
+    const flag = await this.prisma.labFlag.findUnique({ where: { id: flagId } });
+    if (!flag) throw new NotFoundException('Flag not found');
+    const updateData: any = { ...data };
+    if (data.correctAnswer) {
+      const bcrypt = require('bcrypt');
+      updateData.correctAnswer = await bcrypt.hash(data.correctAnswer.trim().toLowerCase(), 10);
+    }
+    return this.prisma.labFlag.update({ where: { id: flagId }, data: updateData });
+  }
+
+  async removeFlag(flagId: string) {
+    const flag = await this.prisma.labFlag.findUnique({ where: { id: flagId } });
+    if (!flag) throw new NotFoundException('Flag not found');
+    return this.prisma.labFlag.delete({ where: { id: flagId } });
+  }
 }

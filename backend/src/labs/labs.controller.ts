@@ -91,4 +91,27 @@ export class LabsController {
   ) {
     return this.labsService.submitFlag(req.user.id, flagId, submitFlagDto.answer);
   }
+
+  // === FLAG MANAGEMENT ===
+
+  @Post(':labId/flags')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async createFlag(@Param('labId', ParseUUIDPipe) labId: string, @Body() body: { title: string; description?: string; points?: number; correctAnswer: string }) {
+    return this.labsService.createFlag(labId, body);
+  }
+
+  @Patch('flags/:flagId')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async updateFlag(@Param('flagId', ParseUUIDPipe) flagId: string, @Body() body: { title?: string; description?: string; points?: number; correctAnswer?: string }) {
+    return this.labsService.updateFlag(flagId, body);
+  }
+
+  @Delete('flags/:flagId')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async removeFlag(@Param('flagId', ParseUUIDPipe) flagId: string) {
+    return this.labsService.removeFlag(flagId);
+  }
 }

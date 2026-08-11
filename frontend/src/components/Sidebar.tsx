@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, Users } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
