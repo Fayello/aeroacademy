@@ -14,6 +14,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import { BatchIdsDto } from '../common/batch.dto';
 
 @ApiTags('courses')
 @ApiBearerAuth('JWT-auth')
@@ -57,6 +58,14 @@ export class CoursesController {
   @Audit('COURSE_DELETED')
   async remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
+  }
+
+  @Post('batch/delete')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @Audit('COURSES_DELETED_BATCH')
+  async batchRemove(@Body() body: BatchIdsDto) {
+    return this.coursesService.batchRemove(body.ids);
   }
 
   // === SECTIONS ===

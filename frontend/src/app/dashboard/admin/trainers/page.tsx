@@ -16,6 +16,7 @@ export default function AdminTrainersPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [slotsModal, setSlotsModal] = useState<{ isOpen: boolean; trainer: any }>({ isOpen: false, trainer: null });
   const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
+  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: { id: string }[] }>({ open: false, items: [] });
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ userId: "", bio: "", specialties: "" });
   const [saving, setSaving] = useState(false);
@@ -98,6 +99,27 @@ export default function AdminTrainersPage() {
       loadTrainers();
     } catch (err: any) {
       toast.error(err.message || "Failed to remove trainer");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBatchDelete = (selected: { id: string }[]) => {
+    setBatchDelete({ open: true, items: selected });
+  };
+
+  const confirmBatchDelete = async () => {
+    setSaving(true);
+    try {
+      const res = await fetchApi("/training/batch/delete-trainers", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchDelete.items.map((t) => t.id) }),
+      });
+      toast.success(`Removed ${res.deleted || batchDelete.items.length} trainer${(res.deleted || batchDelete.items.length) !== 1 ? "s" : ""}`);
+      setBatchDelete({ open: false, items: [] });
+      loadTrainers();
+    } catch {
+      toast.error("Failed to remove trainers");
     } finally {
       setSaving(false);
     }
@@ -248,6 +270,10 @@ export default function AdminTrainersPage() {
         onDelete={(item) => setDeleteDialog({ isOpen: true, item })}
         addLabel="Add Trainer"
         emptyMessage="No trainers yet."
+        selectable
+        bulkActions={[
+          { label: "Delete", icon: <Trash2 size={16} />, variant: "danger", onClick: handleBatchDelete },
+        ]}
       />
 
       {/* Create/Edit Modal */}
@@ -390,6 +416,16 @@ export default function AdminTrainersPage() {
         title="Remove Trainer"
         message={`Are you sure you want to remove "${deleteDialog.item?.user?.name}" as a trainer? Their slots will also be deleted.`}
         confirmLabel="Remove Trainer"
+        loading={saving}
+      />
+
+      <AdminConfirmDialog
+        isOpen={batchDelete.open}
+        onClose={() => setBatchDelete({ open: false, items: [] })}
+        onConfirm={confirmBatchDelete}
+        title="Remove Trainers"
+        message={`Remove ${batchDelete.items.length} selected trainer${batchDelete.items.length > 1 ? "s" : ""}? Their slots will also be deleted.`}
+        confirmLabel="Remove Selected"
         loading={saving}
       />
     </div>

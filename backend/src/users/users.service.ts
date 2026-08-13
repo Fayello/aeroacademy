@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -48,6 +48,23 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  async batchRemove(ids: string[], actorId?: string) {
+    const targetIds = actorId ? ids.filter((id) => id !== actorId) : ids;
+    const result = await this.prisma.user.deleteMany({
+      where: { id: { in: targetIds } },
+    });
+    return { deleted: result.count };
+  }
+
+  async batchSetRole(ids: string[], role: Role, actorId?: string) {
+    const targetIds = actorId ? ids.filter((id) => id !== actorId) : ids;
+    const result = await this.prisma.user.updateMany({
+      where: { id: { in: targetIds } },
+      data: { role },
+    });
+    return { updated: result.count };
   }
 
   async getStats() {

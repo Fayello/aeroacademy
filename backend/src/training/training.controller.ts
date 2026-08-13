@@ -16,6 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 import { TrainingService } from './training.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import { BatchIdsDto } from '../common/batch.dto';
 
 @ApiTags('training')
 @Controller('training')
@@ -88,6 +89,15 @@ export class TrainingController {
   @Audit('TRAINER_DELETED')
   async deleteTrainer(@Param('id') id: string) {
     return this.trainingService.deleteTrainer(id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post('batch/delete-trainers')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  @Audit('TRAINERS_DELETED_BATCH')
+  async batchDeleteTrainers(@Body() body: BatchIdsDto) {
+    return this.trainingService.batchDeleteTrainers(body.ids);
   }
 
   @ApiBearerAuth('JWT-auth')

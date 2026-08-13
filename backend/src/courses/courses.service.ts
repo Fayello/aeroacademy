@@ -80,6 +80,10 @@ export class CoursesService {
     return this.prisma.course.delete({ where: { id } });
   }
 
+  async batchRemove(ids: string[]) {
+    return this.prisma.course.deleteMany({ where: { id: { in: ids } } });
+  }
+
   // === SECTIONS ===
 
   async findSections(courseId: string) {

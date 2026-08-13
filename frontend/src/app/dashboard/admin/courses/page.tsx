@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { fetchApi } from "@/lib/api";
-import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, ChevronDown, Plus, Pencil, Trash2, ArrowLeft, Loader2, GripVertical } from "lucide-react";
+import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, ChevronDown, Plus, Pencil, Trash2, ArrowLeft, Loader2, GripVertical, CheckSquare, Square, X } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminNumber, AdminSelect, AdminFormField } from "@/components/admin/AdminForm";
@@ -56,6 +56,8 @@ export default function AdminCoursesPage() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [selectedCourses, setSelectedCourses] = useState<Set<string>>(new Set());
+  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: Course[] }>({ open: false, items: [] });
 
   // Modal states
   const [courseModal, setCourseModal] = useState<{ open: boolean; editing: Course | null }>({ open: false, editing: null });
@@ -132,6 +134,36 @@ export default function AdminCoursesPage() {
       setSelectedCourse(null);
       loadCourses();
     } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+  };
+
+  const toggleCourseSelection = (id: string) => {
+    const next = new Set(selectedCourses);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedCourses(next);
+  };
+
+  const toggleSelectAllCourses = () => {
+    if (selectedCourses.size === courses.length) setSelectedCourses(new Set());
+    else setSelectedCourses(new Set(courses.map((c) => c.id)));
+  };
+
+  const handleBatchDelete = (selected: Course[]) => {
+    setBatchDelete({ open: true, items: selected });
+  };
+
+  const confirmBatchDelete = async () => {
+    setSaving(true);
+    try {
+      await fetchApi("/courses/batch/delete", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchDelete.items.map((c) => c.id) }),
+      });
+      toast.success(`Deleted ${batchDelete.items.length} course${batchDelete.items.length > 1 ? "s" : ""}`);
+      setBatchDelete({ open: false, items: [] });
+      setSelectedCourses(new Set());
+      loadCourses();
+    } catch { toast.error("Failed to delete courses"); } finally { setSaving(false); }
   };
 
   // === Section CRUD ===
@@ -276,17 +308,37 @@ export default function AdminCoursesPage() {
                 <p className="text-blue-100 text-sm">{courses.length} courses total</p>
               </div>
             </div>
+            <button onClick={toggleSelectAllCourses} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-4 rounded-xl transition-all text-sm backdrop-blur-sm">
+              {selectedCourses.size === courses.length && courses.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />} {selectedCourses.size === courses.length && courses.length > 0 ? "Deselect All" : "Select All"}
+            </button>
             <button onClick={() => { setCourseForm({ title: "", description: "" }); setCourseModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
               <Plus size={16} /> New Course
             </button>
           </div>
         </div>
 
+        {selectedCourses.size > 0 && (
+          <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+            <span className="text-sm font-medium text-emerald-700">{selectedCourses.size} selected</span>
+            <div className="flex items-center gap-2 ml-auto">
+              <button onClick={() => setSelectedCourses(new Set())} className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all" title="Clear selection">
+                <X size={16} />
+              </button>
+              <button onClick={() => setBatchDelete({ open: true, items: courses.filter((c) => selectedCourses.has(c.id)) })} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-all">
+                <Trash2 size={14} /> Delete Selected
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-4">
           {courses.map((course) => (
-            <div key={course.id} onClick={() => loadCourseDetail(course.id)} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group">
+            <div key={course.id} onClick={() => loadCourseDetail(course.id)} className={`bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group ${selectedCourses.has(course.id) ? "border-emerald-400 ring-1 ring-emerald-400/40" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
+                  <button onClick={(e) => { e.stopPropagation(); toggleCourseSelection(course.id); }} className="text-slate-300 hover:text-emerald-600 transition-colors shrink-0" title={selectedCourses.has(course.id) ? "Deselect" : "Select"}>
+                    {selectedCourses.has(course.id) ? <CheckSquare size={18} className="text-emerald-600" /> : <Square size={18} />}
+                  </button>
                   <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
                     <GraduationCap size={20} className="text-blue-600 group-hover:text-white transition-colors" />
                   </div>
@@ -323,6 +375,7 @@ export default function AdminCoursesPage() {
         </AdminModal>
 
         <AdminConfirmDialog isOpen={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, type: "", item: null })} onConfirm={handleDeleteCourse} title="Delete Course" message={`Delete "${deleteDialog.item?.title}"? This will also delete all sections, lessons, and quizzes.`} loading={saving} />
+        <AdminConfirmDialog isOpen={batchDelete.open} onClose={() => setBatchDelete({ open: false, items: [] })} onConfirm={confirmBatchDelete} title="Delete Courses" message={`Delete ${batchDelete.items.length} selected course${batchDelete.items.length > 1 ? "s" : ""}? This will also delete all sections, lessons, and quizzes.`} loading={saving} confirmLabel="Delete Selected" />
       </div>
     );
   }

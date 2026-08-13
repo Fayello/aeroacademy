@@ -16,6 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 import { MasterClassesService } from './master-classes.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import { BatchIdsDto, BatchStatusDto } from '../common/batch.dto';
 
 @ApiTags('master-classes')
 @Controller('master-classes')
@@ -86,5 +87,23 @@ export class MasterClassesController {
   @Audit('MASTERCLASS_DELETED')
   async remove(@Param('id') id: string) {
     return this.masterClassesService.remove(id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post('batch/delete')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  @Audit('MASTERCLASSES_DELETED_BATCH')
+  async batchRemove(@Body() body: BatchIdsDto) {
+    return this.masterClassesService.batchRemove(body.ids);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post('batch/status')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  @Audit('MASTERCLASS_STATUS_UPDATED_BATCH')
+  async batchSetStatus(@Body() body: BatchStatusDto) {
+    return this.masterClassesService.batchSetStatus(body.ids, body.status);
   }
 }

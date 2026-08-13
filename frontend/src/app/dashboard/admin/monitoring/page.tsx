@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Activity, Users, Container, Gauge, Clock, Loader2, Square, RefreshCw, Monitor } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import { AdminStatusBadge } from "@/components/admin/AdminForm";
 
@@ -85,6 +86,24 @@ export default function AdminMonitoringPage() {
       setInstances((prev) => prev.filter((i) => i.labId !== labId || i.userId !== userId));
     } catch {
       // silently handle
+    } finally {
+      setStoppingId(null);
+    }
+  };
+
+  const handleBatchStop = async (selected: LabInstance[]) => {
+    setStoppingId("batch");
+    try {
+      const res = await fetchApi("/labs/batch/stop", {
+        method: "POST",
+        body: JSON.stringify({
+          items: selected.map((i) => ({ labId: i.labId, userId: i.userId })),
+        }),
+      });
+      setInstances((prev) => prev.filter((i) => !selected.some((s) => s.labId === i.labId && s.userId === i.userId)));
+      toast.success(`Stopped ${res.stopped || selected.length} lab session${(res.stopped || selected.length) !== 1 ? "s" : ""}`);
+    } catch {
+      toast.error("Failed to stop selected sessions");
     } finally {
       setStoppingId(null);
     }
@@ -196,6 +215,10 @@ export default function AdminMonitoringPage() {
           searchKeys={["user.name", "user.email", "lab.title"]}
           pageSize={15}
           emptyMessage="No active lab sessions"
+          selectable
+          bulkActions={[
+            { label: "Force Stop", icon: <Square size={16} />, variant: "danger", onClick: handleBatchStop },
+          ]}
           headerExtra={
             <button onClick={() => loadData()} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all">
               <RefreshCw size={16} /> Refresh

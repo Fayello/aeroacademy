@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { fetchApi } from "@/lib/api";
-import { Users, Shield, GraduationCap, UserCheck, Loader2, BarChart3 } from "lucide-react";
+import { Users, Shield, GraduationCap, UserCheck, Loader2, BarChart3, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -18,6 +18,8 @@ export default function AdminUsersPage() {
   const [form, setForm] = useState({ name: "", email: "", role: "STUDENT", bio: "", city: "", xp: 0 });
   const [saving, setSaving] = useState(false);
   const [roleFilter, setRoleFilter] = useState("");
+  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: { id: string }[] }>({ open: false, items: [] });
+  const [batchRole, setBatchRole] = useState<{ open: boolean; items: { id: string }[]; role: string }>({ open: false, items: [], role: "STUDENT" });
 
   useEffect(() => { loadUsers(); loadStats(); }, []);
 
@@ -68,6 +70,46 @@ export default function AdminUsersPage() {
       loadUsers(roleFilter);
       loadStats();
     } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+  };
+
+  const handleBatchDelete = (selected: { id: string }[]) => {
+    setBatchDelete({ open: true, items: selected });
+  };
+
+  const confirmBatchDelete = async () => {
+    setSaving(true);
+    try {
+      const res = await fetchApi("/admin/users/batch/delete", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchDelete.items.map((u) => u.id) }),
+      });
+      toast.success(`Deleted ${res.deleted || batchDelete.items.length} user${(res.deleted || batchDelete.items.length) !== 1 ? "s" : ""}`);
+      setBatchDelete({ open: false, items: [] });
+      loadUsers(roleFilter);
+      loadStats();
+    } catch {
+      toast.error("Failed to delete users");
+    } finally { setSaving(false); }
+  };
+
+  const handleBatchRole = (selected: { id: string }[]) => {
+    setBatchRole({ open: true, items: selected, role: "STUDENT" });
+  };
+
+  const confirmBatchRole = async () => {
+    setSaving(true);
+    try {
+      const res = await fetchApi("/admin/users/batch/role", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchRole.items.map((u) => u.id), role: batchRole.role }),
+      });
+      toast.success(`Role updated for ${res.updated || batchRole.items.length} user${(res.updated || batchRole.items.length) !== 1 ? "s" : ""}`);
+      setBatchRole({ open: false, items: [], role: "STUDENT" });
+      loadUsers(roleFilter);
+      loadStats();
+    } catch {
+      toast.error("Failed to update roles");
+    } finally { setSaving(false); }
   };
 
   const getRoleStats = (role: string) => stats?.byRole?.find((r: any) => r.role === role)?._count || 0;
@@ -186,6 +228,10 @@ export default function AdminUsersPage() {
         selectable
         exportable
         exportFilename="users"
+        bulkActions={[
+          { label: "Set Role", icon: <UserCheck size={16} />, onClick: handleBatchRole },
+          { label: "Delete", icon: <Trash2 size={16} />, variant: "danger", onClick: handleBatchDelete },
+        ]}
         filters={
           <select value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); loadUsers(e.target.value); }} className="px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
             <option value="">All Roles</option>
@@ -209,6 +255,13 @@ export default function AdminUsersPage() {
       </AdminModal>
 
       <AdminConfirmDialog isOpen={deleteDialog.isOpen} onClose={() => setDeleteDialog({ isOpen: false, item: null })} onConfirm={handleDelete} title="Delete User" message={`Permanently delete "${deleteDialog.item?.email}"? This cannot be undone.`} loading={saving} />
+
+      <AdminModal isOpen={batchRole.open} onClose={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} title="Change User Roles" footer={<div className="flex gap-3 justify-end"><button onClick={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={confirmBatchRole} disabled={saving} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Apply Role"}</button></div>}>
+        <p className="text-sm text-slate-600 mb-4">Set the role for <span className="font-semibold text-slate-900">{batchRole.items.length}</span> selected user{batchRole.items.length !== 1 ? "s" : ""}. Your own role cannot be changed.</p>
+        <AdminSelect label="Role" value={batchRole.role} onChange={(e) => setBatchRole({ ...batchRole, role: e.target.value })} options={[{ value: "STUDENT", label: "Student" }, { value: "ADMIN", label: "Admin" }, { value: "RECRUITER", label: "Recruiter" }]} />
+      </AdminModal>
+
+      <AdminConfirmDialog isOpen={batchDelete.open} onClose={() => setBatchDelete({ open: false, items: [] })} onConfirm={confirmBatchDelete} title="Delete Users" message={`Permanently delete ${batchDelete.items.length} selected user${batchDelete.items.length > 1 ? "s" : ""}? This cannot be undone.`} loading={saving} confirmLabel="Delete Selected" />
     </div>
   );
 }

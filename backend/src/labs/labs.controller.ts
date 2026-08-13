@@ -19,6 +19,10 @@ import { Roles } from '../auth/roles.decorator';
 import { SubmitFlagDto } from './dto/submit-flag.dto';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import {
+  BatchIdsDto,
+  BatchLabStopDto,
+} from '../common/batch.dto';
 
 @ApiTags('labs')
 @Controller('labs')
@@ -95,6 +99,24 @@ export class LabsController {
   @Audit('LAB_DELETED')
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.labsService.remove(id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post('batch/delete')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  @Audit('LABS_DELETED_BATCH')
+  async batchRemove(@Body() body: BatchIdsDto) {
+    return this.labsService.batchRemove(body.ids);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post('batch/stop')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  @Audit('LABS_STOPPED_BATCH')
+  async batchStop(@Body() body: BatchLabStopDto) {
+    return this.labsService.batchStop(body.items);
   }
 
   @ApiBearerAuth('JWT-auth')

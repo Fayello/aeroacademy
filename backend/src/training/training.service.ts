@@ -200,4 +200,17 @@ export class TrainingService {
     await this.prisma.trainingSlot.deleteMany({ where: { trainerId: id } });
     return this.prisma.trainer.delete({ where: { id } });
   }
+
+  async batchDeleteTrainers(ids: string[]) {
+    const existing = await this.prisma.trainer.findMany({
+      where: { id: { in: ids } },
+      select: { id: true },
+    });
+    const found = existing.map((t) => t.id);
+    await this.prisma.trainingSlot.deleteMany({
+      where: { trainerId: { in: found } },
+    });
+    await this.prisma.trainer.deleteMany({ where: { id: { in: found } } });
+    return { deleted: found.length };
+  }
 }

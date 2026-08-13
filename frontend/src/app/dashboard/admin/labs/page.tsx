@@ -44,6 +44,7 @@ export default function AdminLabsPage() {
   const [labModal, setLabModal] = useState<{ open: boolean; editing: Lab | null }>({ open: false, editing: null });
   const [flagModal, setFlagModal] = useState<{ open: boolean; editing: LabFlag | null }>({ open: false, editing: null });
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: string; item: any }>({ open: false, type: "", item: null });
+  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: Lab[] }>({ open: false, items: [] });
 
   // Form states
   const [labForm, setLabForm] = useState({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "" });
@@ -93,6 +94,23 @@ export default function AdminLabsPage() {
       setSelectedLab(null);
       loadLabs();
     } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+  };
+
+  const handleBatchDelete = (selected: Lab[]) => {
+    setBatchDelete({ open: true, items: selected });
+  };
+
+  const confirmBatchDelete = async () => {
+    setSaving(true);
+    try {
+      await fetchApi("/labs/batch/delete", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchDelete.items.map((l) => l.id) }),
+      });
+      toast.success(`Deleted ${batchDelete.items.length} lab${batchDelete.items.length > 1 ? "s" : ""}`);
+      setBatchDelete({ open: false, items: [] });
+      loadLabs();
+    } catch { toast.error("Failed to delete labs"); } finally { setSaving(false); }
   };
 
   // === Flag CRUD ===
@@ -167,6 +185,9 @@ export default function AdminLabsPage() {
           selectable
           exportable
           exportFilename="labs"
+          bulkActions={[
+            { label: "Delete", icon: <Trash2 size={16} />, variant: "danger", onClick: handleBatchDelete },
+          ]}
         />
 
         <AdminModal isOpen={labModal.open} onClose={() => setLabModal({ open: false, editing: null })} title={labModal.editing ? "Edit Lab" : "New Lab"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLabModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveLab} disabled={saving} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
@@ -182,6 +203,7 @@ export default function AdminLabsPage() {
         </AdminModal>
 
         <AdminConfirmDialog isOpen={deleteDialog.open && deleteDialog.type === "lab"} onClose={() => setDeleteDialog({ open: false, type: "", item: null })} onConfirm={handleDeleteLab} title="Delete Lab" message={`Delete "${deleteDialog.item?.title}"? This will also delete all flags.`} loading={saving} />
+        <AdminConfirmDialog isOpen={batchDelete.open} onClose={() => setBatchDelete({ open: false, items: [] })} onConfirm={confirmBatchDelete} title="Delete Labs" message={`Delete ${batchDelete.items.length} selected lab${batchDelete.items.length > 1 ? "s" : ""}? This will also delete all associated flags.`} loading={saving} confirmLabel="Delete Selected" />
       </div>
     );
   }

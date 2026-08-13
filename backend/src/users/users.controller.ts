@@ -3,9 +3,11 @@ import {
   Get,
   Patch,
   Delete,
+  Post,
   Param,
   Body,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -14,6 +16,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import { BatchIdsDto, BatchRoleDto } from '../common/batch.dto';
 
 @ApiTags('admin-users')
 @ApiBearerAuth('JWT-auth')
@@ -60,5 +63,17 @@ export class UsersController {
   @Audit('USER_DELETED')
   async remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Post('batch/delete')
+  @Audit('USERS_DELETED_BATCH')
+  async batchRemove(@Request() req: any, @Body() body: BatchIdsDto) {
+    return this.usersService.batchRemove(body.ids, req.user.id);
+  }
+
+  @Post('batch/role')
+  @Audit('USER_ROLES_UPDATED_BATCH')
+  async batchSetRole(@Request() req: any, @Body() body: BatchRoleDto) {
+    return this.usersService.batchSetRole(body.ids, body.role, req.user.id);
   }
 }

@@ -417,6 +417,23 @@ export class LabsService implements OnModuleInit {
     return this.prisma.lab.delete({ where: { id } });
   }
 
+  async batchRemove(ids: string[]) {
+    return this.prisma.lab.deleteMany({ where: { id: { in: ids } } });
+  }
+
+  async batchStop(items: { labId: string; userId: string }[]) {
+    const results: { labId: string; success: boolean }[] = [];
+    for (const item of items) {
+      try {
+        await this.stopLab(item.userId, item.labId);
+        results.push({ labId: item.labId, success: true });
+      } catch {
+        results.push({ labId: item.labId, success: false });
+      }
+    }
+    return { stopped: results.filter((r) => r.success).length, results };
+  }
+
   private async getAvailablePort(): Promise<number | null> {
     const release = await this.acquireLock();
 

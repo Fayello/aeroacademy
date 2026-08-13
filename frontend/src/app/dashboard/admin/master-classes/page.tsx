@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { fetchApi } from "@/lib/api";
-import { Video, Calendar, Clock, Users, UserCheck } from "lucide-react";
+import { Video, Calendar, Clock, Users, UserCheck, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -27,6 +27,8 @@ export default function AdminMasterClassesPage() {
     recordingUrl: "",
   });
   const [saving, setSaving] = useState(false);
+  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: { id: string }[] }>({ open: false, items: [] });
+  const [batchStatus, setBatchStatus] = useState<{ open: boolean; items: { id: string }[]; status: string }>({ open: false, items: [], status: "UPCOMING" });
 
   useEffect(() => {
     loadClasses();
@@ -115,6 +117,48 @@ export default function AdminMasterClassesPage() {
       loadClasses();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete master class");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBatchDelete = (selected: { id: string }[]) => {
+    setBatchDelete({ open: true, items: selected });
+  };
+
+  const confirmBatchDelete = async () => {
+    setSaving(true);
+    try {
+      const res = await fetchApi("/master-classes/batch/delete", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchDelete.items.map((mc) => mc.id) }),
+      });
+      toast.success(`Deleted ${res.count || batchDelete.items.length} master class${(res.count || batchDelete.items.length) !== 1 ? "es" : ""}`);
+      setBatchDelete({ open: false, items: [] });
+      loadClasses();
+    } catch {
+      toast.error("Failed to delete master classes");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBatchStatus = (selected: { id: string }[]) => {
+    setBatchStatus({ open: true, items: selected, status: "UPCOMING" });
+  };
+
+  const confirmBatchStatus = async () => {
+    setSaving(true);
+    try {
+      const res = await fetchApi("/master-classes/batch/status", {
+        method: "POST",
+        body: JSON.stringify({ ids: batchStatus.items.map((mc) => mc.id), status: batchStatus.status }),
+      });
+      toast.success(`Status updated for ${res.count || batchStatus.items.length} master class${(res.count || batchStatus.items.length) !== 1 ? "es" : ""}`);
+      setBatchStatus({ open: false, items: [], status: "UPCOMING" });
+      loadClasses();
+    } catch {
+      toast.error("Failed to update master classes");
     } finally {
       setSaving(false);
     }
@@ -212,6 +256,11 @@ export default function AdminMasterClassesPage() {
         onDelete={(item) => setDeleteDialog({ isOpen: true, item })}
         addLabel="New Master Class"
         emptyMessage="No master classes yet."
+        selectable
+        bulkActions={[
+          { label: "Set Status", icon: <Calendar size={16} />, onClick: handleBatchStatus },
+          { label: "Delete", icon: <Trash2 size={16} />, variant: "danger", onClick: handleBatchDelete },
+        ]}
       />
 
       {/* Create/Edit Modal */}
@@ -325,6 +374,51 @@ export default function AdminMasterClassesPage() {
         title="Delete Master Class"
         message={`Are you sure you want to delete "${deleteDialog.item?.title}"? This action cannot be undone.`}
         confirmLabel="Delete Master Class"
+        loading={saving}
+      />
+
+      <AdminModal
+        isOpen={batchStatus.open}
+        onClose={() => setBatchStatus({ open: false, items: [], status: "UPCOMING" })}
+        title="Change Master Class Status"
+      >
+        <p className="text-sm text-slate-600 mb-4">Set the status for <span className="font-semibold text-slate-900">{batchStatus.items.length}</span> selected master class{batchStatus.items.length !== 1 ? "es" : ""}.</p>
+        <AdminSelect
+          label="Status"
+          value={batchStatus.status}
+          onChange={(e) => setBatchStatus({ ...batchStatus, status: e.target.value })}
+          options={[
+            { value: "UPCOMING", label: "Upcoming" },
+            { value: "LIVE", label: "Live" },
+            { value: "COMPLETED", label: "Completed" },
+            { value: "CANCELLED", label: "Cancelled" },
+          ]}
+        />
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={confirmBatchStatus}
+            disabled={saving}
+            className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Apply Status"}
+          </button>
+          <button
+            onClick={() => setBatchStatus({ open: false, items: [], status: "UPCOMING" })}
+            disabled={saving}
+            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      </AdminModal>
+
+      <AdminConfirmDialog
+        isOpen={batchDelete.open}
+        onClose={() => setBatchDelete({ open: false, items: [] })}
+        onConfirm={confirmBatchDelete}
+        title="Delete Master Classes"
+        message={`Delete ${batchDelete.items.length} selected master class${batchDelete.items.length > 1 ? "es" : ""}? This action cannot be undone.`}
+        confirmLabel="Delete Selected"
         loading={saving}
       />
     </div>

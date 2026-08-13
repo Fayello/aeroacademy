@@ -149,4 +149,17 @@ export class MasterClassesService {
     if (!mc) throw new NotFoundException('Master class not found');
     return this.prisma.masterClass.delete({ where: { id } });
   }
+
+  async batchRemove(ids: string[]) {
+    return this.prisma.masterClass.deleteMany({
+      where: { id: { in: ids } },
+    });
+  }
+
+  async batchSetStatus(ids: string[], status: MasterClassStatus) {
+    return this.prisma.masterClass.updateMany({
+      where: { id: { in: ids } },
+      data: { status },
+    });
+  }
 }
