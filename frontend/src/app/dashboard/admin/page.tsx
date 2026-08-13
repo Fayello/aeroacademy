@@ -2,11 +2,20 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, Award, BookOpen } from "lucide-react";
+import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, ScrollText, TrendingUp } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
+interface AdminStats {
+  totalStudents?: number;
+  totalCourses?: number;
+  totalLabs?: number;
+  masterClasses?: number;
+  trainers?: number;
+  users?: number;
+}
+
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,6 +51,8 @@ export default function AdminDashboardPage() {
     { label: "Manage Courses", href: "/dashboard/admin/courses", icon: GraduationCap, description: "Create, edit sections, lessons & quizzes" },
     { label: "Manage Labs", href: "/dashboard/admin/labs", icon: Microscope, description: "Lab environments & CTF flags" },
     { label: "Lab Monitoring", href: "/dashboard/admin/monitoring", icon: Activity, description: "Monitor active users & force-stop labs" },
+    { label: "Analytics", href: "/dashboard/admin/analytics", icon: TrendingUp, description: "User growth, engagement & completion metrics" },
+    { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ScrollText, description: "Security and administrative action trail" },
     { label: "Manage Master Classes", href: "/dashboard/admin/master-classes", icon: Video, description: "Schedule live sessions" },
     { label: "Manage Trainers", href: "/dashboard/admin/trainers", icon: Calendar, description: "Add trainers & availability" },
     { label: "Manage Users", href: "/dashboard/admin/users", icon: Users, description: "User accounts & role management" },
