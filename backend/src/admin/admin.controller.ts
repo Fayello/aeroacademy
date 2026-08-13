@@ -1,5 +1,13 @@
-
-import { Controller, Post, Get, Body, Param, UseGuards, Request, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AdminService } from './admin.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -7,6 +15,8 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
 import { IsString, MaxLength, IsOptional } from 'class-validator';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Audit } from '../common/audit.decorator';
 
 class CreateTeamDto {
   @IsString()
@@ -19,6 +29,8 @@ class CreateTeamDto {
   description?: string;
 }
 
+@ApiTags('admin')
+@ApiBearerAuth('JWT-auth')
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.ADMIN, Role.RECRUITER)
@@ -27,6 +39,7 @@ export class AdminController {
 
   @Post('teams')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Audit('TEAM_CREATED')
   async createTeam(@Request() req, @Body() dto: CreateTeamDto) {
     return this.adminService.createTeam(req.user.id, dto.name, dto.description);
   }
@@ -38,6 +51,7 @@ export class AdminController {
 
   @Post('teams/:teamId/members/:userId')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @Audit('TEAM_MEMBER_ADDED')
   async addMember(
     @Param('teamId', ParseUUIDPipe) teamId: string,
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -52,6 +66,7 @@ export class AdminController {
 
   @Post('classroom/launch')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Audit('CLASSROOM_LAUNCHED')
   async classroomLaunch(
     @Body('teamId', ParseUUIDPipe) teamId: string,
     @Body('labId', ParseUUIDPipe) labId: string,
@@ -61,6 +76,7 @@ export class AdminController {
 
   @Post('classroom/terminate')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Audit('CLASSROOM_TERMINATED')
   async classroomTerminate(
     @Body('teamId', ParseUUIDPipe) teamId: string,
     @Body('labId', ParseUUIDPipe) labId: string,

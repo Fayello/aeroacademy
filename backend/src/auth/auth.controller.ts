@@ -1,27 +1,55 @@
-import { Controller, Post, Body, Get, UseGuards, Request, UnauthorizedException, Patch, Res, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+  Patch,
+  Res,
+  Query,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RegisterDto, LoginDto, UpdateProfileDto, ChangePasswordDto } from './dto/auth.dto';
+import {
+  RegisterDto,
+  LoginDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+} from './dto/auth.dto';
 import * as https from 'https';
 import { Throttle } from '@nestjs/throttler';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Audit } from '../common/audit.decorator';
 import createLogger from '../common/logger';
 
 const logger = createLogger('Auth');
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Audit('AUTH_REGISTER')
   async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto.email, registerDto.password, registerDto.name);
+    return this.authService.register(
+      registerDto.email,
+      registerDto.password,
+      registerDto.name,
+    );
   }
 
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Audit('AUTH_LOGIN')
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
     if (!user) {
       throw new UnauthorizedException('Invalid security credentials');
     }
@@ -44,7 +72,9 @@ export class AuthController {
 
     try {
       if (query.error) {
-        res.writeHead(302, { Location: `${frontendUrl}/login?error=google_denied` });
+        res.writeHead(302, {
+          Location: `${frontendUrl}/login?error=google_denied`,
+        });
         res.end();
         return;
       }
@@ -65,20 +95,27 @@ export class AuthController {
         avatar: profile.picture,
       });
 
-      const { access_token, refresh_token } = await this.authService.login(user);
+      const { access_token, refresh_token } =
+        await this.authService.login(user);
 
       // Pass state back to frontend for validation
       const stateParam = query.state ? `&state=${query.state}` : '';
-      res.writeHead(302, { Location: `${frontendUrl}/dashboard?token=${access_token}&refresh_token=${refresh_token}${stateParam}` });
+      res.writeHead(302, {
+        Location: `${frontendUrl}/dashboard?token=${access_token}&refresh_token=${refresh_token}${stateParam}`,
+      });
       res.end();
     } catch (err) {
       logger.error(`Callback error: ${err.message}`);
-      res.writeHead(302, { Location: `${frontendUrl}/login?error=google_auth_failed` });
+      res.writeHead(302, {
+        Location: `${frontendUrl}/login?error=google_auth_failed`,
+      });
       res.end();
     }
   }
 
-  private exchangeCodeForToken(code: string): Promise<{ access_token: string; id_token: string }> {
+  private exchangeCodeForToken(
+    code: string,
+  ): Promise<{ access_token: string; id_token: string }> {
     return new Promise((resolve, reject) => {
       const data = new URLSearchParams({
         code,
@@ -88,20 +125,27 @@ export class AuthController {
         grant_type: 'authorization_code',
       }).toString();
 
-      const req = https.request('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      }, (res) => {
-        let body = '';
-        res.on('data', (chunk) => body += chunk);
-        res.on('end', () => {
-          try {
-            const parsed = JSON.parse(body);
-            if (parsed.error) reject(new Error(parsed.error_description || parsed.error));
-            else resolve(parsed);
-          } catch (e) { reject(e); }
-        });
-      });
+      const req = https.request(
+        'https://oauth2.googleapis.com/token',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        },
+        (res) => {
+          let body = '';
+          res.on('data', (chunk) => (body += chunk));
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(body);
+              if (parsed.error)
+                reject(new Error(parsed.error_description || parsed.error));
+              else resolve(parsed);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        },
+      );
 
       req.on('error', reject);
       req.write(data);
@@ -111,40 +155,63 @@ export class AuthController {
 
   private getUserProfile(accessToken: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      const req = https.request('https://www.googleapis.com/oauth2/v2/userinfo', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }, (res) => {
-        let body = '';
-        res.on('data', (chunk) => body += chunk);
-        res.on('end', () => {
-          try { resolve(JSON.parse(body)); } catch (e) { reject(e); }
-        });
-      });
+      const req = https.request(
+        'https://www.googleapis.com/oauth2/v2/userinfo',
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+        (res) => {
+          let body = '';
+          res.on('data', (chunk) => (body += chunk));
+          res.on('end', () => {
+            try {
+              resolve(JSON.parse(body));
+            } catch (e) {
+              reject(e);
+            }
+          });
+        },
+      );
 
       req.on('error', reject);
       req.end();
     });
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async getProfile(@Request() req) {
     return this.authService.getFullProfile(req.user.id);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Patch('profile')
-  async updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
+  async updateProfile(
+    @Request() req,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
     return this.authService.updateProfile(req.user.id, updateProfileDto);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Post('change-password')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
-    return this.authService.changePassword(req.user.id, changePasswordDto.oldPassword, changePasswordDto.newPassword);
+  @Audit('AUTH_CHANGE_PASSWORD')
+  async changePassword(
+    @Request() req,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(
+      req.user.id,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword,
+    );
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('organizations')
   async getOrganizations() {
@@ -153,29 +220,39 @@ export class AuthController {
 
   @Post('forgot-password')
   @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Audit('AUTH_FORGOT_PASSWORD')
   async forgotPassword(@Body('email') email: string) {
     // Always return success to prevent email enumeration
     if (email) {
       await this.authService.forgotPassword(email).catch(() => {});
     }
-    return { message: 'If an account exists with that email, a recovery link has been sent.' };
+    return {
+      message:
+        'If an account exists with that email, a recovery link has been sent.',
+    };
   }
 
   @Post('reset-password')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async resetPassword(@Body('token') token: string, @Body('newPassword') newPassword: string) {
+  @Audit('AUTH_RESET_PASSWORD')
+  async resetPassword(
+    @Body('token') token: string,
+    @Body('newPassword') newPassword: string,
+  ) {
     return this.authService.resetPassword(token, newPassword);
   }
 
   @Post('refresh')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async refresh(@Body('refresh_token') refreshToken: string) {
-    if (!refreshToken) throw new UnauthorizedException('Refresh token required');
+    if (!refreshToken)
+      throw new UnauthorizedException('Refresh token required');
     return this.authService.refreshTokens(refreshToken);
   }
 
   @Post('logout')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Audit('AUTH_LOGOUT')
   async logout(@Body('refresh_token') refreshToken: string) {
     if (refreshToken) await this.authService.logout(refreshToken);
     return { message: 'Logged out' };

@@ -39,6 +39,8 @@ model User {
   trainer         Trainer?
   bookings        Booking[]
   activityEvents  ActivityEvent[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
 
   @@index([email])
   @@index([googleId])
@@ -385,4 +387,39 @@ model ActivityEvent {
 
   @@index([userId, createdAt])
   @@index([type])
+}
+
+model AuditLog {
+  id         String    @id @default(uuid())
+  action     String    // AUTH_LOGIN, COURSE_CREATED, LAB_STARTED, BOOKING_CREATED, etc.
+  actorId    String?   // null for unauthenticated actions (failed login, etc.)
+  actorEmail String?
+  method     String
+  path       String
+  statusCode Int
+  ip         String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+  actor      User?     @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([statusCode])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ACHIEVEMENT, BOOKING, MASTERCLASS
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, read])
 }

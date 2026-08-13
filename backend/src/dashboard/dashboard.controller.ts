@@ -4,7 +4,9 @@ import { LeaderboardService } from './leaderboard.service';
 import { DashboardService } from './dashboard.service';
 import { ActivityService } from '../common/activity.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('dashboard')
 @Controller('dashboard')
 export class DashboardController {
   constructor(
@@ -19,18 +21,21 @@ export class DashboardController {
     return this.dashboardService.getPublicStats();
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('leagues')
   async getLeagues() {
     return this.leaderboardService.getLeagues();
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('activity')
   async getMyActivity(@Request() req: any) {
     return this.activityService.getUserActivity(req.user.id, 20);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('active-labs')
   async getMyActiveLabs(@Request() req: any) {
@@ -43,6 +48,7 @@ export class DashboardController {
     });
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('user-stats')
   async getUserStats(@Request() req: any) {

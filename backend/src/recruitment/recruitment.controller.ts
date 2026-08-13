@@ -1,10 +1,24 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Request, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  Request,
+  Param,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RecruitmentService } from './recruitment.service';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Audit } from '../common/audit.decorator';
 
+@ApiTags('recruitment')
+@ApiBearerAuth('JWT-auth')
 @Controller('recruitment')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles('ADMIN', 'RECRUITER')
@@ -31,7 +45,11 @@ export class RecruitmentController {
 
   @Post('shortlist/toggle')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
-  async toggleShortlist(@Request() req, @Body('studentId', ParseUUIDPipe) studentId: string) {
+  @Audit('SHORTLIST_TOGGLED')
+  async toggleShortlist(
+    @Request() req,
+    @Body('studentId', ParseUUIDPipe) studentId: string,
+  ) {
     return this.recruitmentService.toggleShortlist(req.user.id, studentId);
   }
 

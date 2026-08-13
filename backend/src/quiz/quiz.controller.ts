@@ -1,9 +1,22 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { AuthGuard } from '@nestjs/passport';
 import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { Throttle } from '@nestjs/throttler';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Audit } from '../common/audit.decorator';
 
+@ApiTags('quiz')
+@ApiBearerAuth('JWT-auth')
 @Controller('quiz')
 @UseGuards(AuthGuard('jwt'))
 export class QuizController {
@@ -16,11 +29,16 @@ export class QuizController {
 
   @Post('submit/:quizId')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Audit('QUIZ_SUBMITTED')
   async submitQuiz(
     @Param('quizId', ParseUUIDPipe) quizId: string,
     @Body() submitQuizDto: SubmitQuizDto,
     @Request() req,
   ) {
-    return this.quizService.submitQuiz(req.user.id, quizId, submitQuizDto.answers);
+    return this.quizService.submitQuiz(
+      req.user.id,
+      quizId,
+      submitQuizDto.answers,
+    );
   }
 }

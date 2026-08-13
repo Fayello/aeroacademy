@@ -220,3 +220,104 @@ export interface AuthResponse {
     role: string;
   };
 }
+
+export interface AuditLog {
+  id: string;
+  action: string;
+  actorId: string | null;
+  actorEmail: string | null;
+  method: string;
+  path: string;
+  statusCode: number;
+  ip: string | null;
+  userAgent: string | null;
+  metadata: {
+    body?: Record<string, unknown>;
+    params?: Record<string, unknown>;
+    query?: Record<string, unknown>;
+    durationMs?: number;
+    error?: string;
+  } | null;
+  createdAt: string;
+  actor?: { id: string; name: string | null; email: string } | null;
+}
+
+export interface AuditLogResponse {
+  items: AuditLog[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AnalyticsOverview {
+  totals: {
+    users: number;
+    students: number;
+    courses: number;
+    lessons: number;
+    labs: number;
+    masterClasses: number;
+    trainers: number;
+    teams: number;
+    organizations: number;
+    lessonsCompleted: number;
+    quizSubmissions: number;
+    flagsSolved: number;
+    activeUsers30d: number;
+  };
+  userGrowth: { date: string; count: number }[];
+  roleDistribution: { role: string; count: number }[];
+  divisionDistribution: { division: string; count: number }[];
+  levelDistribution: { level: number; count: number }[];
+  courseStats: {
+    courseId: string;
+    courseTitle: string;
+    totalLessons: number;
+    completed: number;
+    completionRate: number;
+    students: number;
+  }[];
+  labStats: {
+    labId: string;
+    labTitle: string;
+    difficulty: number;
+    starts: number;
+    flagsSolved: number;
+    solvers: number;
+  }[];
+  quizStats: { submissions: number; passed: number; failed: number; passRate: number };
+  flagStats: { correct: number; incorrect: number };
+  activity: { date: string; lessons: number; flags: number; quizzes: number; registrations: number }[];
+  topPerformers: {
+    id: string;
+    name: string;
+    email: string;
+    xp: number;
+    level: number;
+    division: string;
+    organization: string | null;
+    city: string | null;
+    achievements: number;
+    flagsSolved: number;
+    lessonsCompleted: number;
+  }[];
+}
+
+export interface NotificationItem {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: string;
+  link: string | null;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationResponse {
+  items: NotificationItem[];
+  total: number;
+  unread: number;
+  limit: number;
+  offset: number;
+}

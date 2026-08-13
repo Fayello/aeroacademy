@@ -1,9 +1,22 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Audit } from '../common/audit.decorator';
 
+@ApiTags('courses')
+@ApiBearerAuth('JWT-auth')
 @Controller('courses')
 @UseGuards(AuthGuard('jwt'))
 export class CoursesController {
@@ -22,6 +35,7 @@ export class CoursesController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('COURSE_CREATED')
   async create(@Body() body: { title: string; description: string }) {
     return this.coursesService.create(body);
   }
@@ -29,13 +43,18 @@ export class CoursesController {
   @Patch(':id')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  async update(@Param('id') id: string, @Body() body: { title?: string; description?: string }) {
+  @Audit('COURSE_UPDATED')
+  async update(
+    @Param('id') id: string,
+    @Body() body: { title?: string; description?: string },
+  ) {
     return this.coursesService.update(id, body);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('COURSE_DELETED')
   async remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
   }
@@ -50,13 +69,18 @@ export class CoursesController {
   @Post(':courseId/sections')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  async createSection(@Param('courseId') courseId: string, @Body() body: { title: string; order?: number }) {
+  @Audit('SECTION_CREATED')
+  async createSection(
+    @Param('courseId') courseId: string,
+    @Body() body: { title: string; order?: number },
+  ) {
     return this.coursesService.createSection(courseId, body);
   }
 
   @Patch(':courseId/sections/:sectionId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('SECTION_UPDATED')
   async updateSection(
     @Param('courseId') courseId: string,
     @Param('sectionId') sectionId: string,
@@ -68,7 +92,11 @@ export class CoursesController {
   @Delete(':courseId/sections/:sectionId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  async removeSection(@Param('courseId') courseId: string, @Param('sectionId') sectionId: string) {
+  @Audit('SECTION_DELETED')
+  async removeSection(
+    @Param('courseId') courseId: string,
+    @Param('sectionId') sectionId: string,
+  ) {
     return this.coursesService.removeSection(courseId, sectionId);
   }
 
@@ -87,9 +115,17 @@ export class CoursesController {
   @Post(':courseId/sections/:sectionId/lessons')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('LESSON_CREATED')
   async createLesson(
     @Param('sectionId') sectionId: string,
-    @Body() body: { title: string; videoUrl?: string; content?: string; labId?: string; order?: number },
+    @Body()
+    body: {
+      title: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+      order?: number;
+    },
   ) {
     return this.coursesService.createLesson(sectionId, body);
   }
@@ -97,10 +133,18 @@ export class CoursesController {
   @Patch(':courseId/sections/:sectionId/lessons/:lessonId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('LESSON_UPDATED')
   async updateLesson(
     @Param('sectionId') sectionId: string,
     @Param('lessonId') lessonId: string,
-    @Body() body: { title?: string; videoUrl?: string; content?: string; labId?: string; order?: number },
+    @Body()
+    body: {
+      title?: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+      order?: number;
+    },
   ) {
     return this.coursesService.updateLesson(sectionId, lessonId, body);
   }
@@ -108,6 +152,7 @@ export class CoursesController {
   @Delete(':courseId/sections/:sectionId/lessons/:lessonId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('LESSON_DELETED')
   async removeLesson(@Param('lessonId') lessonId: string) {
     return this.coursesService.removeLesson(lessonId);
   }
@@ -122,9 +167,16 @@ export class CoursesController {
   @Post(':courseId/sections/:sectionId/lessons/:lessonId/quiz')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('QUIZ_CREATED')
   async createQuiz(
     @Param('lessonId') lessonId: string,
-    @Body() body: { questions: { text: string; answers: { text: string; isCorrect: boolean }[] }[] },
+    @Body()
+    body: {
+      questions: {
+        text: string;
+        answers: { text: string; isCorrect: boolean }[];
+      }[];
+    },
   ) {
     return this.coursesService.createQuiz(lessonId, body);
   }
@@ -132,9 +184,17 @@ export class CoursesController {
   @Patch(':courseId/sections/:sectionId/lessons/:lessonId/quiz/:quizId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('QUIZ_UPDATED')
   async updateQuiz(
     @Param('quizId') quizId: string,
-    @Body() body: { questions: { id?: string; text: string; answers: { id?: string; text: string; isCorrect: boolean }[] }[] },
+    @Body()
+    body: {
+      questions: {
+        id?: string;
+        text: string;
+        answers: { id?: string; text: string; isCorrect: boolean }[];
+      }[];
+    },
   ) {
     return this.coursesService.updateQuiz(quizId, body);
   }
@@ -142,6 +202,7 @@ export class CoursesController {
   @Delete(':courseId/sections/:sectionId/lessons/:lessonId/quiz/:quizId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @Audit('QUIZ_DELETED')
   async removeQuiz(@Param('quizId') quizId: string) {
     return this.coursesService.removeQuiz(quizId);
   }

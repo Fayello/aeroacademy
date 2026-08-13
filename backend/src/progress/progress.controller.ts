@@ -1,9 +1,21 @@
-import { Controller, Post, Body, Get, UseGuards, Request, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Request,
+  Param,
+} from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CompleteLessonDto } from './dto/complete-lesson.dto';
 import { Throttle } from '@nestjs/throttler';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Audit } from '../common/audit.decorator';
 
+@ApiTags('progress')
+@ApiBearerAuth('JWT-auth')
 @Controller('progress')
 @UseGuards(AuthGuard('jwt'))
 export class ProgressController {
@@ -11,8 +23,15 @@ export class ProgressController {
 
   @Post('complete')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
-  async completeLesson(@Request() req, @Body() completeLessonDto: CompleteLessonDto) {
-    return this.progressService.markAsComplete(req.user.id, completeLessonDto.lessonId);
+  @Audit('LESSON_COMPLETED')
+  async completeLesson(
+    @Request() req,
+    @Body() completeLessonDto: CompleteLessonDto,
+  ) {
+    return this.progressService.markAsComplete(
+      req.user.id,
+      completeLessonDto.lessonId,
+    );
   }
 
   @Get('latest')
