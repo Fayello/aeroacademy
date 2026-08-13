@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Shield, Lock, CheckCircle, ChevronLeft, Loader2 } from "lucide-react";
@@ -8,6 +8,20 @@ import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+          <Loader2 className="animate-spin text-emerald-600" size={28} />
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [newPassword, setNewPassword] = useState("");
@@ -53,8 +67,10 @@ export default function ResetPasswordPage() {
         body: JSON.stringify({ token, newPassword }),
       });
       setSuccess(true);
-    } catch (err: any) {
-      toast.error(err.message || "Reset failed. The link may have expired.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Reset failed. The link may have expired.",
+      );
     } finally {
       setLoading(false);
     }
