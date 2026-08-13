@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { auth, API_URL } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Cookies from "js-cookie";
@@ -64,8 +65,8 @@ export default function RegisterPage() {
       Cookies.set("token", res.access_token, { expires: 1 });
       toast.success("Account created successfully!");
       router.push("/dashboard");
-    } catch (err: any) {
-      toast.error(err.message || "Registration failed");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Registration failed"));
     }
   };
 

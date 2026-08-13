@@ -2,18 +2,20 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { Video, Calendar, Clock, Users, UserCheck, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminStatusBadge } from "@/components/admin/AdminForm";
+import type { MasterClass } from "@/types/api";
 
 export default function AdminMasterClassesPage() {
-  const [classes, setClasses] = useState<any[]>([]);
+  const [classes, setClasses] = useState<MasterClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
-  const [editing, setEditing] = useState<any>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: MasterClass | null }>({ isOpen: false, item: null });
+  const [editing, setEditing] = useState<MasterClass | null>(null);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -55,7 +57,7 @@ export default function AdminMasterClassesPage() {
     setModalOpen(true);
   };
 
-  const handleEdit = (mc: any) => {
+  const handleEdit = (mc: MasterClass) => {
     setEditing(mc);
     setForm({
       title: mc.title || "",
@@ -100,8 +102,8 @@ export default function AdminMasterClassesPage() {
       }
       setModalOpen(false);
       loadClasses();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to save master class");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to save master class"));
     } finally {
       setSaving(false);
     }
@@ -115,8 +117,8 @@ export default function AdminMasterClassesPage() {
       toast.success("Master class deleted!");
       setDeleteDialog({ isOpen: false, item: null });
       loadClasses();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete master class");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to delete master class"));
     } finally {
       setSaving(false);
     }
@@ -169,7 +171,7 @@ export default function AdminMasterClassesPage() {
       key: "title",
       label: "Master Class",
       sortable: true,
-      render: (mc: any) => (
+      render: (mc: MasterClass) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
             <Video size={18} className="text-white" />
@@ -184,12 +186,12 @@ export default function AdminMasterClassesPage() {
     {
       key: "status",
       label: "Status",
-      render: (mc: any) => <AdminStatusBadge status={mc.status} />,
+      render: (mc: MasterClass) => <AdminStatusBadge status={mc.status} />,
     },
     {
       key: "instructorName",
       label: "Instructor",
-      render: (mc: any) => (
+      render: (mc: MasterClass) => (
         <span className="flex items-center gap-1.5 text-slate-600">
           <UserCheck size={14} className="text-slate-400" />
           {mc.instructorName || "TBD"}
@@ -200,7 +202,7 @@ export default function AdminMasterClassesPage() {
       key: "scheduledAt",
       label: "Scheduled",
       sortable: true,
-      render: (mc: any) => (
+      render: (mc: MasterClass) => (
         <span className="flex items-center gap-1.5 text-slate-500 text-sm">
           <Calendar size={14} className="text-slate-400" />
           {mc.scheduledAt ? new Date(mc.scheduledAt).toLocaleDateString() : "-"}
@@ -210,7 +212,7 @@ export default function AdminMasterClassesPage() {
     {
       key: "duration",
       label: "Duration",
-      render: (mc: any) => (
+      render: (mc: MasterClass) => (
         <span className="flex items-center gap-1.5 text-slate-600">
           <Clock size={14} className="text-slate-400" />
           {mc.duration}min
@@ -220,7 +222,7 @@ export default function AdminMasterClassesPage() {
     {
       key: "registrations",
       label: "Registered",
-      render: (mc: any) => (
+      render: (mc: MasterClass) => (
         <span className="flex items-center gap-1.5 text-slate-600">
           <Users size={14} className="text-slate-400" />
           {mc._count?.registrations || 0}/{mc.maxParticipants || "∞"}

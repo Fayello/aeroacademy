@@ -2,27 +2,29 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { Calendar, Plus, Trash2, Clock, BookOpen } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminStatusBadge } from "@/components/admin/AdminForm";
+import type { Trainer, TrainingSlot } from "@/types/api";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function AdminTrainersPage() {
-  const [trainers, setTrainers] = useState<any[]>([]);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [slotsModal, setSlotsModal] = useState<{ isOpen: boolean; trainer: any }>({ isOpen: false, trainer: null });
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
+  const [slotsModal, setSlotsModal] = useState<{ isOpen: boolean; trainer: Trainer | null }>({ isOpen: false, trainer: null });
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: Trainer | null }>({ isOpen: false, item: null });
   const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: { id: string }[] }>({ open: false, items: [] });
-  const [editing, setEditing] = useState<any>(null);
+  const [editing, setEditing] = useState<Trainer | null>(null);
   const [form, setForm] = useState({ userId: "", bio: "", specialties: "" });
   const [saving, setSaving] = useState(false);
 
   // Slots form
-  const [slots, setSlots] = useState<any[]>([]);
+  const [slots, setSlots] = useState<TrainingSlot[]>([]);
   const [newSlot, setNewSlot] = useState({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
 
   const loadTrainers = useCallback(async () => {
@@ -46,7 +48,7 @@ export default function AdminTrainersPage() {
     setModalOpen(true);
   };
 
-  const handleEdit = (trainer: any) => {
+  const handleEdit = (trainer: Trainer) => {
     setEditing(trainer);
     setForm({
       userId: trainer.userId || "",
@@ -82,8 +84,8 @@ export default function AdminTrainersPage() {
       }
       setModalOpen(false);
       loadTrainers();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to save trainer");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to save trainer"));
     } finally {
       setSaving(false);
     }
@@ -97,8 +99,8 @@ export default function AdminTrainersPage() {
       toast.success("Trainer removed!");
       setDeleteDialog({ isOpen: false, item: null });
       loadTrainers();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to remove trainer");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to remove trainer"));
     } finally {
       setSaving(false);
     }
@@ -125,7 +127,7 @@ export default function AdminTrainersPage() {
     }
   };
 
-  const openSlotsModal = (trainer: any) => {
+  const openSlotsModal = (trainer: Trainer) => {
     setSlotsModal({ isOpen: true, trainer });
     setSlots(trainer.slots || []);
     setNewSlot({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
@@ -150,11 +152,11 @@ export default function AdminTrainersPage() {
       const updatedTrainers = await fetchApi("/training/trainers");
       setTrainers(Array.isArray(updatedTrainers) ? updatedTrainers : updatedTrainers.data || []);
       const updated = Array.isArray(updatedTrainers) ? updatedTrainers : updatedTrainers.data || [];
-      const trainer = updated.find((t: any) => t.id === slotsModal.trainer?.id);
+      const trainer = updated.find((t: Trainer) => t.id === slotsModal.trainer?.id);
       setSlots(trainer?.slots || []);
       setNewSlot({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
-    } catch (err: any) {
-      toast.error(err.message || "Failed to add slot");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to add slot"));
     } finally {
       setSaving(false);
     }
@@ -167,8 +169,8 @@ export default function AdminTrainersPage() {
       toast.success("Slot removed!");
       setSlots((prev) => prev.filter((s) => s.id !== slotId));
       loadTrainers();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to remove slot");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to remove slot"));
     } finally {
       setSaving(false);
     }
@@ -179,7 +181,7 @@ export default function AdminTrainersPage() {
       key: "user",
       label: "Trainer",
       sortable: true,
-      render: (trainer: any) => (
+      render: (trainer: Trainer) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 text-white font-bold">
             {(trainer.user?.name || "T").charAt(0)}
@@ -194,7 +196,7 @@ export default function AdminTrainersPage() {
     {
       key: "isActive",
       label: "Status",
-      render: (trainer: any) => (
+      render: (trainer: Trainer) => (
         <AdminStatusBadge
           status={trainer.isActive ? "ACTIVE" : "INACTIVE"}
         />
@@ -203,25 +205,25 @@ export default function AdminTrainersPage() {
     {
       key: "specialties",
       label: "Specialties",
-      render: (trainer: any) => (
+      render: (trainer: Trainer) => (
         <div className="flex flex-wrap gap-1">
           {trainer.specialties?.slice(0, 3).map((s: string, i: number) => (
             <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs">
               {s}
             </span>
           ))}
-          {trainer.specialties?.length > 3 && (
+          {trainer.specialties?.length ? (
             <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs">
               +{trainer.specialties.length - 3}
             </span>
-          )}
+          ) : null}
         </div>
       ),
     },
     {
       key: "bookings",
       label: "Bookings",
-      render: (trainer: any) => (
+      render: (trainer: Trainer) => (
         <span className="flex items-center gap-1.5 text-slate-600">
           <BookOpen size={14} className="text-slate-400" />
           {trainer._count?.bookings || 0}
@@ -231,7 +233,7 @@ export default function AdminTrainersPage() {
     {
       key: "slots",
       label: "Slots",
-      render: (trainer: any) => (
+      render: (trainer: Trainer) => (
         <button
           onClick={() => openSlotsModal(trainer)}
           className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-medium text-sm"
@@ -338,7 +340,7 @@ export default function AdminTrainersPage() {
               <p className="text-sm text-slate-500 bg-slate-50 rounded-xl p-4 text-center">No slots configured yet.</p>
             ) : (
               <div className="space-y-2">
-                {slots.map((slot: any) => (
+                {slots.map((slot: TrainingSlot) => (
                   <div key={slot.id || `${slot.dayOfWeek}-${slot.startTime}`} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">

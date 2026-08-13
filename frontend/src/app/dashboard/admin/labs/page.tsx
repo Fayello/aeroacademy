@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { Microscope, Shield, Plus, Pencil, Trash2, ChevronRight, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
+import type { AdminLab, AdminLabFlag } from "@/types/api";
 
 function getDifficultyLabel(d: number) {
   if (d < 1100) return { label: "Beginner", color: "bg-emerald-100 text-emerald-700" };
@@ -15,36 +17,16 @@ function getDifficultyLabel(d: number) {
   return { label: "Expert", color: "bg-red-100 text-red-700" };
 }
 
-interface LabFlag {
-  id?: string;
-  title: string;
-  description: string;
-  points: number;
-  correctAnswer: string;
-}
-
-interface Lab {
-  id: string;
-  title: string;
-  description: string;
-  dockerImage: string;
-  difficulty: number;
-  briefing: string | null;
-  imageUrl: string | null;
-  basePath: string | null;
-  flags: LabFlag[];
-}
-
 export default function AdminLabsPage() {
-  const [labs, setLabs] = useState<Lab[]>([]);
+  const [labs, setLabs] = useState<AdminLab[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
+  const [selectedLab, setSelectedLab] = useState<AdminLab | null>(null);
 
   // Modal states
-  const [labModal, setLabModal] = useState<{ open: boolean; editing: Lab | null }>({ open: false, editing: null });
-  const [flagModal, setFlagModal] = useState<{ open: boolean; editing: LabFlag | null }>({ open: false, editing: null });
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: string; item: any }>({ open: false, type: "", item: null });
-  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: Lab[] }>({ open: false, items: [] });
+  const [labModal, setLabModal] = useState<{ open: boolean; editing: AdminLab | null }>({ open: false, editing: null });
+  const [flagModal, setFlagModal] = useState<{ open: boolean; editing: AdminLabFlag | null }>({ open: false, editing: null });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: string; item: AdminLab | AdminLabFlag | null }>({ open: false, type: "", item: null });
+  const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: AdminLab[] }>({ open: false, items: [] });
 
   // Form states
   const [labForm, setLabForm] = useState({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "" });
@@ -82,21 +64,22 @@ export default function AdminLabsPage() {
       }
       setLabModal({ open: false, editing: null });
       loadLabs();
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDeleteLab = async () => {
     setSaving(true);
     try {
+      if (!deleteDialog.item || deleteDialog.type !== "lab") return;
       await fetchApi(`/labs/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Lab deleted");
       setDeleteDialog({ open: false, type: "", item: null });
       setSelectedLab(null);
       loadLabs();
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
-  const handleBatchDelete = (selected: Lab[]) => {
+  const handleBatchDelete = (selected: AdminLab[]) => {
     setBatchDelete({ open: true, items: selected });
   };
 
@@ -128,17 +111,18 @@ export default function AdminLabsPage() {
       }
       setFlagModal({ open: false, editing: null });
       loadLabDetail(selectedLab!.id);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDeleteFlag = async () => {
+    if (!deleteDialog.item || deleteDialog.type !== "flag") return;
     setSaving(true);
     try {
       await fetchApi(`/labs/flags/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Flag deleted");
       setDeleteDialog({ open: false, type: "", item: null });
       loadLabDetail(selectedLab!.id);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   // === Lab List View ===
@@ -163,15 +147,15 @@ export default function AdminLabsPage() {
 
         <AdminTable
           columns={[
-            { key: "title", label: "Lab", sortable: true, render: (lab: any) => (
+            { key: "title", label: "Lab", sortable: true, render: (lab: AdminLab) => (
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"><Microscope size={18} className="text-violet-600" /></div>
                 <div><p className="font-medium text-slate-900">{lab.title}</p><p className="text-xs text-slate-500 font-mono truncate max-w-[200px]">{lab.dockerImage}</p></div>
               </div>
             )},
-            { key: "difficulty", label: "Difficulty", sortable: true, render: (lab: any) => { const d = getDifficultyLabel(lab.difficulty || 1200); return <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${d.color}`}>{d.label}</span>; }},
-            { key: "flags", label: "Flags", render: (lab: any) => <span className="flex items-center gap-1.5 text-slate-600"><Shield size={14} className="text-slate-400" />{lab.flags?.length || 0}</span> },
-            { key: "basePath", label: "Base Path", render: (lab: any) => <span className="text-xs font-mono text-slate-500">{lab.basePath || "/"}</span> },
+            { key: "difficulty", label: "Difficulty", sortable: true, render: (lab: AdminLab) => { const d = getDifficultyLabel(lab.difficulty || 1200); return <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${d.color}`}>{d.label}</span>; }},
+            { key: "flags", label: "Flags", render: (lab: AdminLab) => <span className="flex items-center gap-1.5 text-slate-600"><Shield size={14} className="text-slate-400" />{lab.flags?.length || 0}</span> },
+            { key: "basePath", label: "Base Path", render: (lab: AdminLab) => <span className="text-xs font-mono text-slate-500">{lab.basePath || "/"}</span> },
           ]}
           data={labs}
           loading={loading}

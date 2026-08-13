@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, Plus, Pencil, Trash2, ArrowLeft, Loader2, CheckSquare, Square, X } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -40,6 +41,7 @@ interface Section {
   title: string;
   order: number;
   lessons: Lesson[];
+  _count?: { lessons: number };
 }
 
 interface Course {
@@ -64,7 +66,7 @@ export default function AdminCoursesPage() {
   const [sectionModal, setSectionModal] = useState<{ open: boolean; editing: Section | null }>({ open: false, editing: null });
   const [lessonModal, setLessonModal] = useState<{ open: boolean; editing: Lesson | null }>({ open: false, editing: null });
   const [quizModal, setQuizModal] = useState<{ open: boolean; lesson: Lesson | null }>({ open: false, lesson: null });
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: string; item: any }>({ open: false, type: "", item: null });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: string; item: Course | Section | Lesson | null }>({ open: false, type: "", item: null });
 
   // Form states
   const [courseForm, setCourseForm] = useState({ title: "", description: "" });
@@ -113,18 +115,19 @@ export default function AdminCoursesPage() {
       }
       setCourseModal({ open: false, editing: null });
       loadCourses();
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDeleteCourse = async () => {
     setSaving(true);
     try {
+      if (!deleteDialog.item || deleteDialog.type !== "course") return;
       await fetchApi(`/courses/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Course deleted");
       setDeleteDialog({ open: false, type: "", item: null });
       setSelectedCourse(null);
       loadCourses();
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const toggleCourseSelection = (id: string) => {
@@ -168,17 +171,18 @@ export default function AdminCoursesPage() {
       }
       setSectionModal({ open: false, editing: null });
       loadCourseDetail(courseId);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDeleteSection = async () => {
     setSaving(true);
     try {
+      if (!deleteDialog.item || deleteDialog.type !== "section") return;
       await fetchApi(`/courses/${selectedCourse!.id}/sections/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Section deleted");
       setDeleteDialog({ open: false, type: "", item: null });
       loadCourseDetail(selectedCourse!.id);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   // === Lesson CRUD ===
@@ -197,17 +201,18 @@ export default function AdminCoursesPage() {
       }
       setLessonModal({ open: false, editing: null });
       loadCourseDetail(courseId);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDeleteLesson = async () => {
     setSaving(true);
     try {
+      if (!deleteDialog.item || !deleteDialog.type.startsWith("lesson")) return;
       await fetchApi(`/courses/${selectedCourse!.id}/sections/${selectedSection!.id}/lessons/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Lesson deleted");
       setDeleteDialog({ open: false, type: "", item: null });
       loadCourseDetail(selectedCourse!.id);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   // === Quiz CRUD ===
@@ -230,7 +235,7 @@ export default function AdminCoursesPage() {
       toast.success(existingQuiz ? "Quiz updated" : "Quiz created");
       setQuizModal({ open: false, lesson: null });
       loadCourseDetail(courseId);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   // === Quiz Form Helpers ===
@@ -329,7 +334,7 @@ export default function AdminCoursesPage() {
                     <p className="text-xs text-slate-500">Sections</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-slate-900">{course.sections?.reduce((acc: number, s: any) => acc + (s.lessons?.length || s._count?.lessons || 0), 0) || 0}</p>
+                    <p className="text-sm font-medium text-slate-900">{course.sections?.reduce((acc: number, s: Section) => acc + (s.lessons?.length || s._count?.lessons || 0), 0) || 0}</p>
                     <p className="text-xs text-slate-500">Lessons</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -454,7 +459,7 @@ export default function AdminCoursesPage() {
               <div className="flex items-center gap-2">
                 <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">Order: {lesson.order}</span>
                 <button onClick={() => { setLessonForm({ title: lesson.title, videoUrl: lesson.videoUrl || "", content: lesson.content || "", labId: lesson.labId || "", order: lesson.order }); setLessonModal({ open: true, editing: lesson }); }} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"><Pencil size={16} /></button>
-                <button onClick={() => { setQuizForm(lesson.quiz?.questions?.map((q: any) => ({ text: q.text, answers: q.answers.map((a: any) => ({ text: a.text, isCorrect: a.isCorrect })) })) || []); setQuizModal({ open: true, lesson }); }} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"><HelpCircle size={16} /></button>
+                <button onClick={() => { setQuizForm(lesson.quiz?.questions?.map((q: QuizQuestion) => ({ text: q.text, answers: q.answers.map((a: QuizAnswer) => ({ text: a.text, isCorrect: a.isCorrect })) })) || []); setQuizModal({ open: true, lesson }); }} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"><HelpCircle size={16} /></button>
                 <button onClick={() => setDeleteDialog({ open: true, type: lesson.quiz ? "lesson-with-quiz" : "lesson", item: lesson })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
               </div>
             </div>

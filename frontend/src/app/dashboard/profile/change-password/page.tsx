@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import { Lock, Save, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -39,8 +40,8 @@ export default function ChangePasswordPage() {
       });
       toast.success("Password updated successfully!");
       router.push("/dashboard/profile");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update password");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update password"));
     }
   };
 

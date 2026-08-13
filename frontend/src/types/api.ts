@@ -321,3 +321,118 @@ export interface NotificationResponse {
   limit: number;
   offset: number;
 }
+
+export type UserRole = "STUDENT" | "ADMIN" | "RECRUITER";
+
+export interface AdminUser extends User {
+  organization: { name: string; type: string } | null;
+  _count: {
+    progress: number;
+    labSubmissions: number;
+    quizSubmissions: number;
+    achievements: number;
+  };
+}
+
+export interface UserStats {
+  total: number;
+  byRole: { role: UserRole; _count: number }[];
+}
+
+export type MasterClassStatus =
+  | "UPCOMING"
+  | "LIVE"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export interface MasterClass {
+  id: string;
+  title: string;
+  description: string;
+  instructorName: string | null;
+  instructorBio: string | null;
+  category: string;
+  scheduledAt: string | null;
+  duration: number;
+  maxParticipants: number | null;
+  status: MasterClassStatus;
+  recordingUrl: string | null;
+  isLive: boolean;
+  registrations?: {
+    id: string;
+    registeredAt: string;
+    user: { id: string; name: string | null; email: string };
+  }[];
+  _count?: { registrations: number };
+}
+
+export interface MasterClassRegistration {
+  id: string;
+  masterClassId: string;
+  userId: string;
+  registeredAt: string;
+  masterClass?: MasterClass;
+}
+
+export interface TrainingSlot {
+  id: string;
+  trainerId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  isActive?: boolean;
+}
+
+export interface Trainer {
+  id: string;
+  userId: string;
+  bio: string | null;
+  specialties: string[] | null;
+  isActive?: boolean;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    role: string;
+  };
+  slots: TrainingSlot[];
+  _count?: { bookings: number };
+}
+
+export interface TrainingBooking {
+  id: string;
+  trainerId: string;
+  slotId?: string | null;
+  studentId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  topic: string;
+  status: string;
+  notes?: string | null;
+  createdAt: string;
+  slot?: TrainingSlot;
+  trainer?: Trainer;
+  student?: { id: string; name: string | null; email: string };
+}
+
+export interface AdminLabFlag {
+  id?: string;
+  title: string;
+  description: string;
+  points: number;
+  correctAnswer: string;
+}
+
+export interface AdminLab {
+  id: string;
+  title: string;
+  description: string;
+  dockerImage: string;
+  difficulty: number;
+  imageUrl: string | null;
+  basePath: string | null;
+  briefing: string | null;
+  createdAt?: string;
+  flags: AdminLabFlag[];
+}

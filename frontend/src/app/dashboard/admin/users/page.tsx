@@ -2,19 +2,23 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import { Users, Shield, GraduationCap, UserCheck, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminSelect, AdminNumber, AdminTextarea, AdminStatusBadge } from "@/components/admin/AdminForm";
+import type { AdminUser, UserStats } from "@/types/api";
+
+type EditingUser = Pick<AdminUser, "id" | "name" | "email" | "role" | "bio" | "city" | "xp"> | null;
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<any>(null);
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: any }>({ isOpen: false, item: null });
+  const [editing, setEditing] = useState<EditingUser>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; item: AdminUser | null }>({ isOpen: false, item: null });
   const [form, setForm] = useState({ name: "", email: "", role: "STUDENT", bio: "", city: "", xp: 0 });
   const [saving, setSaving] = useState(false);
   const [roleFilter, setRoleFilter] = useState("");
@@ -35,7 +39,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => { loadUsers(); loadStats(); }, [loadUsers, loadStats]);
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: AdminUser) => {
     setEditing(user);
     setForm({ name: user.name || "", email: user.email, role: user.role, bio: user.bio || "", city: user.city || "", xp: user.xp || 0 });
     setModalOpen(true);
@@ -52,10 +56,11 @@ export default function AdminUsersPage() {
       setModalOpen(false);
       loadUsers(roleFilter);
       loadStats();
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
+    if (!deleteDialog.item) return;
     setSaving(true);
     try {
       await fetchApi(`/admin/users/${deleteDialog.item.id}`, { method: "DELETE" });
@@ -63,7 +68,7 @@ export default function AdminUsersPage() {
       setDeleteDialog({ isOpen: false, item: null });
       loadUsers(roleFilter);
       loadStats();
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
+    } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleBatchDelete = (selected: { id: string }[]) => {
@@ -106,14 +111,14 @@ export default function AdminUsersPage() {
     } finally { setSaving(false); }
   };
 
-  const getRoleStats = (role: string) => stats?.byRole?.find((r: any) => r.role === role)?._count || 0;
+  const getRoleStats = (role: string) => stats?.byRole?.find((r) => r.role === role)?._count || 0;
 
   const columns = [
     {
       key: "name",
       label: "User",
       sortable: true,
-      render: (user: any) => (
+      render: (user: AdminUser) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-sm font-bold">
             {(user.name || user.email)?.[0]?.toUpperCase()}
@@ -128,33 +133,33 @@ export default function AdminUsersPage() {
     {
       key: "role",
       label: "Role",
-      render: (user: any) => <AdminStatusBadge status={user.role} />,
+      render: (user: AdminUser) => <AdminStatusBadge status={user.role} />,
     },
     {
       key: "xp",
       label: "XP",
       sortable: true,
-      render: (user: any) => <span className="font-mono text-sm text-slate-700">{user.xp.toLocaleString()}</span>,
+      render: (user: AdminUser) => <span className="font-mono text-sm text-slate-700">{user.xp.toLocaleString()}</span>,
     },
     {
       key: "level",
       label: "Level",
-      render: (user: any) => <span className="text-sm font-medium text-slate-700">Lv.{Math.floor((user.xp || 0) / 1000) + 1}</span>,
+      render: (user: AdminUser) => <span className="text-sm font-medium text-slate-700">Lv.{Math.floor((user.xp || 0) / 1000) + 1}</span>,
     },
     {
       key: "division",
       label: "Division",
-      render: (user: any) => <span className="text-sm text-slate-600">{user.division}</span>,
+      render: (user: AdminUser) => <span className="text-sm text-slate-600">{user.division}</span>,
     },
     {
       key: "organization",
       label: "Organization",
-      render: (user: any) => <span className="text-sm text-slate-600">{user.organization?.name || "-"}</span>,
+      render: (user: AdminUser) => <span className="text-sm text-slate-600">{user.organization?.name || "-"}</span>,
     },
     {
       key: "_count",
       label: "Activity",
-      render: (user: any) => (
+      render: (user: AdminUser) => (
         <div className="flex gap-2 text-xs text-slate-500">
           <span>{user._count?.progress || 0} lessons</span>
           <span>{user._count?.labSubmissions || 0} labs</span>
@@ -165,7 +170,7 @@ export default function AdminUsersPage() {
       key: "createdAt",
       label: "Joined",
       sortable: true,
-      render: (user: any) => <span className="text-sm text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</span>,
+      render: (user: AdminUser) => <span className="text-sm text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</span>,
     },
   ];
 

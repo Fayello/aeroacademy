@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
+import type { Organization } from "@/types/api";
 import { CAMEROON_CITIES } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { User, Save, ArrowLeft, Loader2 } from "lucide-react";
@@ -23,7 +25,7 @@ type ProfileValues = z.infer<typeof profileSchema>;
 export default function ProfileEditPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -54,8 +56,8 @@ export default function ProfileEditPage() {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       toast.success("Profile updated.");
       router.push("/dashboard/profile");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update profile");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update profile"));
     }
   };
 

@@ -4,17 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, ArrowLeft, Loader2, X } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
+import type { TrainingBooking } from "@/types/api";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "react-hot-toast";
 
 export default function MyBookingsPage() {
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<TrainingBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
 
   useEffect(() => {
     fetchApi("/training/bookings")
-      .then((data: any) => setBookings(Array.isArray(data) ? data : data.data || []))
+      .then((data) => setBookings(Array.isArray(data) ? data : data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -25,8 +27,8 @@ export default function MyBookingsPage() {
       await fetchApi(`/training/bookings/${id}`, { method: "DELETE" });
       setBookings((prev) => prev.map((b) => b.id === id ? { ...b, status: "CANCELLED" } : b));
       toast.success("Booking cancelled");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to cancel");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to cancel"));
     } finally {
       setCancelling(null);
     }
