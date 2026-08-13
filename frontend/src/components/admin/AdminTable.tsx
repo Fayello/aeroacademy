@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Loader2, ArrowUpDown, ChevronDown, Download, Eye, MoreHorizontal, CheckSquare, Square, X } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, ChevronLeft, ChevronRight, Loader2, ArrowUpDown, ChevronDown, Download, Eye, CheckSquare, Square, X } from "lucide-react";
 
 interface Column<T> {
   key: string;
@@ -234,7 +234,7 @@ export default function AdminTable<T extends { id: string }>({
         <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
           <span className="text-sm font-medium text-emerald-700">{selected.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
-            <button onClick={() => setSelected(new Set())} className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all">
+            <button onClick={() => setSelected(new Set())} className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all" aria-label="Clear selection">
               <X size={16} />
             </button>
             {bulkActions.map((action, i) => (
@@ -265,7 +265,7 @@ export default function AdminTable<T extends { id: string }>({
               <tr className="border-b border-slate-200 bg-slate-50">
                 {selectable && (
                   <th className="px-4 py-4 w-10">
-                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-emerald-600 transition-colors">
+                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-emerald-600 transition-colors" aria-label={selected.size === paginated.length && paginated.length > 0 ? "Deselect all rows" : "Select all rows"}>
                       {selected.size === paginated.length && paginated.length > 0 ? (
                         <CheckSquare size={16} className="text-emerald-600" />
                       ) : (
@@ -316,7 +316,7 @@ export default function AdminTable<T extends { id: string }>({
                   >
                     {selectable && (
                       <td className="px-4 py-4 w-10">
-                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }} className="text-slate-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }} className="text-slate-400 hover:text-emerald-600 transition-colors" aria-label={selected.has(item.id) ? "Deselect row" : "Select row"}>
                           {selected.has(item.id) ? <CheckSquare size={16} className="text-emerald-600" /> : <Square size={16} />}
                         </button>
                       </td>

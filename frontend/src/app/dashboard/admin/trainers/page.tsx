@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
-import { Calendar, Plus, Trash2, Clock, BookOpen, X } from "lucide-react";
+import { Calendar, Plus, Trash2, Clock, BookOpen } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -25,11 +25,7 @@ export default function AdminTrainersPage() {
   const [slots, setSlots] = useState<any[]>([]);
   const [newSlot, setNewSlot] = useState({ dayOfWeek: "1", startTime: "09:00", endTime: "10:00" });
 
-  useEffect(() => {
-    loadTrainers();
-  }, []);
-
-  const loadTrainers = async () => {
+  const loadTrainers = useCallback(async () => {
     try {
       const data = await fetchApi("/training/trainers");
       setTrainers(Array.isArray(data) ? data : data.data || []);
@@ -38,7 +34,11 @@ export default function AdminTrainersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadTrainers();
+  }, [loadTrainers]);
 
   const handleAdd = () => {
     setEditing(null);

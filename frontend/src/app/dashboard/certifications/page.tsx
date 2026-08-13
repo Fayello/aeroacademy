@@ -3,7 +3,6 @@
 import { useDashboard } from "@/hooks/useDashboard";
 import { useState, useEffect } from "react";
 import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2 } from "lucide-react";
-import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 import { CertificationsSkeleton } from "@/components/Skeleton";
 

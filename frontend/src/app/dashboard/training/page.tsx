@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, ArrowRight, Loader2, BookOpen, Clock, Award } from "lucide-react";
+import { Calendar, ArrowRight, Loader2, BookOpen, Award } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
 export default function TrainingPage() {

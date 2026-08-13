@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, Clock, ArrowLeft, Loader2, X } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, X } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "react-hot-toast";

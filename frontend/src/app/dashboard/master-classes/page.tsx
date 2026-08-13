@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Video, Calendar, Clock, UserCheck, ArrowRight, Loader2, Users, Search, X } from "lucide-react";
+import { Video, Calendar, UserCheck, Loader2, Users, Search, X } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
 const CATEGORIES = ["All", "SECURITY", "LINUX", "DEVOPS", "CLOUD"];

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Clock, ArrowLeft, Loader2, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Loader2, Check } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
 

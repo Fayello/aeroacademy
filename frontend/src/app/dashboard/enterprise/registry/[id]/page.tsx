@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Shield, Award, CheckCircle, Target, Trophy, Loader2, MapPin, GraduationCap, ChevronLeft, Mail, Star } from "lucide-react";
+import { Shield, Award, CheckCircle, Target, Trophy, Loader2, MapPin, GraduationCap, ChevronLeft, Mail } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -13,11 +13,7 @@ export default function CandidateRegistry() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (id) loadProfile();
-  }, [id]);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       const data = await fetchApi(`/recruitment/candidate/${id}`);
       setProfile(data);
@@ -27,7 +23,11 @@ export default function CandidateRegistry() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, router]);
+
+  useEffect(() => {
+    if (id) loadProfile();
+  }, [id, loadProfile]);
 
   if (loading || !profile) {
     return (

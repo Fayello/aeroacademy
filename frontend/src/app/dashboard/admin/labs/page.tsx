@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Shield, Plus, Pencil, Trash2, ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
+import { Microscope, Shield, Plus, Pencil, Trash2, ChevronRight, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -51,14 +51,14 @@ export default function AdminLabsPage() {
   const [flagForm, setFlagForm] = useState({ title: "", description: "", points: 100, correctAnswer: "" });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { loadLabs(); }, []);
-
-  const loadLabs = async () => {
+  const loadLabs = useCallback(async () => {
     try {
       const data = await fetchApi("/labs");
       setLabs(Array.isArray(data) ? data : data.data || []);
     } catch { toast.error("Failed to load labs"); } finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { loadLabs(); }, [loadLabs]);
 
   const loadLabDetail = async (labId: string) => {
     try {
@@ -221,7 +221,7 @@ export default function AdminLabsPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={() => setSelectedLab(null)} className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-all"><ArrowLeft size={20} /></button>
+            <button onClick={() => setSelectedLab(null)} className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-all" aria-label="Back to labs list"><ArrowLeft size={20} /></button>
             <div>
               <h1 className="text-2xl font-bold">{selectedLab!.title}</h1>
               <p className="text-amber-100 text-sm font-mono">{selectedLab!.dockerImage} | {selectedLab!.flags?.length || 0} flags</p>

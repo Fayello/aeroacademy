@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
-import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, ChevronDown, Plus, Pencil, Trash2, ArrowLeft, Loader2, GripVertical, CheckSquare, Square, X } from "lucide-react";
+import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, Plus, Pencil, Trash2, ArrowLeft, Loader2, CheckSquare, Square, X } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
-import { AdminInput, AdminTextarea, AdminNumber, AdminSelect, AdminFormField } from "@/components/admin/AdminForm";
+import { AdminInput, AdminTextarea, AdminNumber, AdminSelect } from "@/components/admin/AdminForm";
 
 interface QuizAnswer {
   id?: string;
@@ -74,12 +74,7 @@ export default function AdminCoursesPage() {
   const [saving, setSaving] = useState(false);
   const [labs, setLabs] = useState<{ id: string; title: string }[]>([]);
 
-  useEffect(() => {
-    loadCourses();
-    fetchApi("/labs").then((data) => setLabs(Array.isArray(data) ? data : [])).catch(() => {});
-  }, []);
-
-  const loadCourses = async () => {
+  const loadCourses = useCallback(async () => {
     try {
       const data = await fetchApi("/courses");
       setCourses(Array.isArray(data) ? data : data.data || []);
@@ -88,7 +83,12 @@ export default function AdminCoursesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadCourses();
+    fetchApi("/labs").then((data) => setLabs(Array.isArray(data) ? data : [])).catch(() => {});
+  }, [loadCourses]);
 
   const loadCourseDetail = async (courseId: string) => {
     try {
@@ -96,15 +96,6 @@ export default function AdminCoursesPage() {
       setSelectedCourse(data);
     } catch {
       toast.error("Failed to load course details");
-    }
-  };
-
-  const loadLessonDetail = async (lessonId: string) => {
-    try {
-      const data = await fetchApi(`/courses/lessons/${lessonId}`);
-      setSelectedLesson(data);
-    } catch {
-      toast.error("Failed to load lesson details");
     }
   };
 
@@ -146,10 +137,6 @@ export default function AdminCoursesPage() {
   const toggleSelectAllCourses = () => {
     if (selectedCourses.size === courses.length) setSelectedCourses(new Set());
     else setSelectedCourses(new Set(courses.map((c) => c.id)));
-  };
-
-  const handleBatchDelete = (selected: Course[]) => {
-    setBatchDelete({ open: true, items: selected });
   };
 
   const confirmBatchDelete = async () => {
@@ -246,17 +233,6 @@ export default function AdminCoursesPage() {
     } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
   };
 
-  const handleDeleteQuiz = async () => {
-    setSaving(true);
-    try {
-      const { courseId, sectionId } = { courseId: selectedCourse!.id, sectionId: selectedSection!.id };
-      await fetchApi(`/courses/${courseId}/sections/${sectionId}/lessons/${deleteDialog.item.id}/quiz/${deleteDialog.item.quiz.id}`, { method: "DELETE" });
-      toast.success("Quiz deleted");
-      setDeleteDialog({ open: false, type: "", item: null });
-      loadCourseDetail(courseId);
-    } catch (err: any) { toast.error(err.message); } finally { setSaving(false); }
-  };
-
   // === Quiz Form Helpers ===
   const addQuestion = () => setQuizForm([...quizForm, { text: "", answers: [{ text: "", isCorrect: true }, { text: "", isCorrect: false }] }]);
   const updateQuestion = (i: number, data: Partial<QuizQuestion>) => { const next = [...quizForm]; next[i] = { ...next[i], ...data }; setQuizForm(next); };
@@ -266,7 +242,7 @@ export default function AdminCoursesPage() {
   const removeAnswer = (qi: number, ai: number) => { const next = [...quizForm]; next[qi].answers = next[qi].answers.filter((_, idx) => idx !== ai); setQuizForm(next); };
 
   // === Breadcrumb ===
-  const Breadcrumb = () => (
+  const renderBreadcrumb = () => (
     <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
       <button onClick={() => { setSelectedCourse(null); setSelectedSection(null); setSelectedLesson(null); }} className="hover:text-emerald-600 transition-colors">Courses</button>
       {selectedCourse && (
@@ -384,7 +360,7 @@ export default function AdminCoursesPage() {
   if (!selectedSection) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <Breadcrumb />
+        {renderBreadcrumb()}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
           <div className="relative z-10 flex items-center justify-between">
@@ -440,7 +416,7 @@ export default function AdminCoursesPage() {
   // === Lesson View ===
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <Breadcrumb />
+      {renderBreadcrumb()}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
@@ -511,7 +487,7 @@ export default function AdminCoursesPage() {
                       <div key={ai} className="flex items-center gap-2">
                         <input type="radio" name={`q${qi}`} checked={a.isCorrect} onChange={() => { const next = [...quizForm]; next[qi].answers = next[qi].answers.map((ans, idx) => ({ ...ans, isCorrect: idx === ai })); setQuizForm(next); }} className="text-emerald-600" />
                         <input value={a.text} onChange={(e) => updateAnswer(qi, ai, { text: e.target.value })} placeholder={`Answer ${ai + 1}...`} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/20" />
-                        {q.answers.length > 2 && <button onClick={() => removeAnswer(qi, ai)} className="p-1 text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>}
+                        {q.answers.length > 2 && <button onClick={() => removeAnswer(qi, ai)} className="p-1 text-slate-400 hover:text-red-500" aria-label={`Remove answer ${ai + 1}`}><Trash2 size={14} /></button>}
                       </div>
                     ))}
                   </div>
@@ -519,7 +495,7 @@ export default function AdminCoursesPage() {
                     <button onClick={() => addAnswer(qi)} className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">+ Add Answer</button>
                   </div>
                 </div>
-                <button onClick={() => removeQuestion(qi)} className="p-1 text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                <button onClick={() => removeQuestion(qi)} className="p-1 text-slate-400 hover:text-red-500" aria-label={`Remove question ${qi + 1}`}><Trash2 size={16} /></button>
               </div>
             </div>
           ))}

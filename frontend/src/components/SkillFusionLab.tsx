@@ -893,7 +893,6 @@ export default function SkillFusionLab() {
         ctx.font = "bold 10px Inter, system-ui, sans-serif";
         ctx.textAlign = "center";
         ctx.fillStyle = "#cbd5e1";
-        const labelMaxW = r * 2.5;
         const labelText = node.label.length > 16 ? node.label.slice(0, 14) + "..." : node.label;
         ctx.fillText(labelText, node.x, node.y + r + 16);
 
@@ -1155,7 +1154,7 @@ export default function SkillFusionLab() {
                 <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Discovery Journal</h3>
                 <p className="text-xs text-slate-500 mt-0.5">{totalDiscovered} of {totalPossible} real specializations discovered</p>
               </div>
-              <button onClick={() => setShowJournal(false)} className="text-slate-500 hover:text-white cursor-pointer"><X size={14} /></button>
+              <button onClick={() => setShowJournal(false)} className="text-slate-500 hover:text-white cursor-pointer" aria-label="Close discovery journal"><X size={14} /></button>
             </div>
             <div className="space-y-3">
               {discovered.length === 0 && (
@@ -1201,7 +1200,7 @@ export default function SkillFusionLab() {
           <div className="mb-4 p-4 rounded-2xl bg-slate-800/90 border border-amber-500/20 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider">Create a Custom Skill</h3>
-              <button onClick={() => setShowCreator(false)} className="text-slate-500 hover:text-white cursor-pointer"><X size={14} /></button>
+              <button onClick={() => setShowCreator(false)} className="text-slate-500 hover:text-white cursor-pointer" aria-label="Close custom skill creator"><X size={14} /></button>
             </div>
             <div className="flex gap-2">
               <input type="text" value={customName} onChange={(e) => setCustomName(e.target.value)}
@@ -1230,7 +1229,7 @@ export default function SkillFusionLab() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-700/50 text-slate-400 hover:text-amber-400 hover:bg-slate-700/80 border border-slate-600/30 transition-all cursor-pointer">
                   <RotateCcw size={11} /> Reset to Defaults
                 </button>
-                <button onClick={() => setShowAdmin(false)} className="text-slate-500 hover:text-white cursor-pointer"><X size={14} /></button>
+                <button onClick={() => setShowAdmin(false)} className="text-slate-500 hover:text-white cursor-pointer" aria-label="Close fusion admin"><X size={14} /></button>
               </div>
             </div>
             <div className="space-y-2">

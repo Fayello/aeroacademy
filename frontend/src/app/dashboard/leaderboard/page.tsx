@@ -1,11 +1,10 @@
 "use client";
 
 import { useDashboard } from "@/hooks/useDashboard";
-import { Trophy, Shield, Loader2, User, CheckCircle, TrendingUp, Lock } from "lucide-react";
+import { Trophy, Loader2, CheckCircle, TrendingUp, Lock } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
-import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
 import { DIVISION_COLORS } from "@/lib/constants";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";

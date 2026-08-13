@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, Plus, GripVertical } from "lucide-react";
+import { Upload, X, Plus } from "lucide-react";
 
 interface AdminFormFieldProps {
   label: string;
@@ -143,7 +143,7 @@ interface AdminCheckboxProps {
   disabled?: boolean;
 }
 
-export function AdminCheckbox({ label, checked, onChange, error, disabled }: AdminCheckboxProps) {
+export function AdminCheckbox({ label, checked, error, disabled }: AdminCheckboxProps) {
   return (
     <label className={`flex items-center gap-3 cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${checked ? "bg-emerald-600 border-emerald-600" : "border-slate-300 bg-white"}`}>
@@ -168,7 +168,7 @@ interface AdminRadioProps {
   horizontal?: boolean;
 }
 
-export function AdminRadio({ label, options, selected, onChange, error, horizontal }: AdminRadioProps) {
+export function AdminRadio({ label, options, selected, error, horizontal }: AdminRadioProps) {
   return (
     <AdminFormField label={label} error={error}>
       <div className={`flex ${horizontal ? "flex-row flex-wrap gap-4" : "flex-col gap-2"}`}>
@@ -241,7 +241,7 @@ export function AdminTags({ label, tags, onChange, error, hint, placeholder = "A
             {tags.map((tag, i) => (
               <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm">
                 {tag}
-                <button onClick={() => removeTag(i)} className="hover:text-emerald-900 transition-colors">
+                <button onClick={() => removeTag(i)} className="hover:text-emerald-900 transition-colors" aria-label={`Remove tag ${tag}`}>
                   <X size={12} />
                 </button>
               </span>
@@ -309,7 +309,7 @@ export function AdminFileUpload({ label, accept, onChange, currentFile, error, h
         {currentFile && (
           <div className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg">
             <span className="text-sm text-emerald-700 truncate max-w-[200px]">{currentFile}</span>
-            <button onClick={(e) => { e.stopPropagation(); onChange(null); }} className="text-emerald-600 hover:text-emerald-800">
+            <button onClick={(e) => { e.stopPropagation(); onChange(null); }} className="text-emerald-600 hover:text-emerald-800" aria-label={`Remove file ${currentFile}`}>
               <X size={14} />
             </button>
           </div>

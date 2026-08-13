@@ -1,5 +1,5 @@
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LabsService } from '../labs/labs.service';
 
@@ -61,7 +61,7 @@ export class AdminService {
       select: { id: true, members: { select: { id: true } } }
     });
 
-    if (!team) throw new Error('Team not found');
+    if (!team) throw new NotFoundException('Team not found');
 
     const results: any[] = [];
     for (const member of team.members) {
@@ -84,7 +84,7 @@ export class AdminService {
       select: { id: true, members: { select: { id: true } } }
     });
 
-    if (!team) throw new Error('Team not found');
+    if (!team) throw new NotFoundException('Team not found');
 
     for (const member of team.members) {
       await this.labsService.stopLab(member.id, labId).catch(() => {});

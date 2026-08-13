@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, CheckCircle, Loader2, Shield, BookOpen, Microscope } from "lucide-react";
+import { ChevronLeft, CheckCircle, Loader2, Microscope } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as any;

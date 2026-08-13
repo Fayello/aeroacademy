@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { Video, Calendar, Clock, Users, UserCheck, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -30,11 +30,7 @@ export default function AdminMasterClassesPage() {
   const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: { id: string }[] }>({ open: false, items: [] });
   const [batchStatus, setBatchStatus] = useState<{ open: boolean; items: { id: string }[]; status: string }>({ open: false, items: [], status: "UPCOMING" });
 
-  useEffect(() => {
-    loadClasses();
-  }, []);
-
-  const loadClasses = async () => {
+  const loadClasses = useCallback(async () => {
     try {
       const data = await fetchApi("/master-classes");
       setClasses(Array.isArray(data) ? data : data.data || []);
@@ -43,7 +39,11 @@ export default function AdminMasterClassesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadClasses();
+  }, [loadClasses]);
 
   const handleAdd = () => {
     setEditing(null);

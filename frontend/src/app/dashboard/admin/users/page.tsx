@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
-import { Users, Shield, GraduationCap, UserCheck, Loader2, BarChart3, Trash2 } from "lucide-react";
+import { Users, Shield, GraduationCap, UserCheck, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -21,25 +21,19 @@ export default function AdminUsersPage() {
   const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: { id: string }[] }>({ open: false, items: [] });
   const [batchRole, setBatchRole] = useState<{ open: boolean; items: { id: string }[]; role: string }>({ open: false, items: [], role: "STUDENT" });
 
-  useEffect(() => { loadUsers(); loadStats(); }, []);
-
-  const loadUsers = async (role?: string) => {
+  const loadUsers = useCallback(async (role?: string) => {
     try {
       const url = role ? `/admin/users?role=${role}` : "/admin/users";
       const data = await fetchApi(url);
       setUsers(Array.isArray(data) ? data : []);
     } catch { toast.error("Failed to load users"); } finally { setLoading(false); }
-  };
+  }, []);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try { const data = await fetchApi("/admin/users/stats"); setStats(data); } catch {}
-  };
+  }, []);
 
-  const handleAdd = () => {
-    setEditing(null);
-    setForm({ name: "", email: "", role: "STUDENT", bio: "", city: "Yaoundé", xp: 0 });
-    setModalOpen(true);
-  };
+  useEffect(() => { loadUsers(); loadStats(); }, [loadUsers, loadStats]);
 
   const handleEdit = (user: any) => {
     setEditing(user);

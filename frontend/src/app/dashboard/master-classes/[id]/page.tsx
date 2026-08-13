@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Video, Calendar, Clock, UserCheck, ArrowLeft, Loader2, Users } from "lucide-react";
 import { fetchApi } from "@/lib/api";
@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 
 export default function MasterClassDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [mc, setMc] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);

@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   Shield, Target, Microscope, ArrowRight, CheckCircle2, Play,
   Terminal, Users, BookOpen, Award, Server, Code, Network, Layers, BarChart3,
-  Calendar, Clock, Video, UserCheck, Star, ChevronRight
+  Calendar, Clock, Video, UserCheck, ChevronRight
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";

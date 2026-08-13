@@ -76,7 +76,6 @@ interface CourseWithProgress {
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [latestProgress, setLatestProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const [activeLabs, setActiveLabs] = useState<ActiveLabInstance[]>([]);
@@ -86,7 +85,6 @@ export default function DashboardPage() {
   const [labActivityLoading, setLabActivityLoading] = useState(true);
 
   const [userStats, setUserStats] = useState<UserLabStats | null>(null);
-  const [userStatsLoading, setUserStatsLoading] = useState(true);
 
   const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
@@ -94,7 +92,7 @@ export default function DashboardPage() {
   const [globalActivity, setGlobalActivity] = useState<GlobalActivityEvent[]>([]);
   const [globalActivityLoading, setGlobalActivityLoading] = useState(true);
 
-  const { intelligence, userMetrics, feed, leaderboard } = useDashboard();
+  const { userMetrics, feed, leaderboard } = useDashboard();
 
   useEffect(() => {
     try {
@@ -107,14 +105,12 @@ export default function DashboardPage() {
     async function loadData() {
       try {
         const [
-          progress,
           labs,
           activity,
           stats,
           coursesData,
           globalActivityData,
         ] = await Promise.allSettled([
-          fetchApi("/progress/latest"),
           fetchApi("/dashboard/active-labs"),
           fetchApi("/dashboard/activity"),
           fetchApi("/dashboard/user-stats"),
@@ -122,7 +118,6 @@ export default function DashboardPage() {
           fetchApi("/dashboard/global-activity"),
         ]);
 
-        if (progress.status === "fulfilled") setLatestProgress(progress.value);
         if (labs.status === "fulfilled") setActiveLabs(labs.value as ActiveLabInstance[]);
         if (activity.status === "fulfilled") setLabActivity(activity.value as ActivityEvent[]);
         if (stats.status === "fulfilled") setUserStats(stats.value as UserLabStats);
@@ -152,7 +147,6 @@ export default function DashboardPage() {
         setLoading(false);
         setActiveLabsLoading(false);
         setLabActivityLoading(false);
-        setUserStatsLoading(false);
         setCoursesLoading(false);
         setGlobalActivityLoading(false);
       }

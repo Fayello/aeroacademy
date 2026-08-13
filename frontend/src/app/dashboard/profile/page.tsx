@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Shield, Trophy, Target, Mail, TrendingUp, BookOpen, Microscope, Clock, Lock, Star, ChevronRight } from "lucide-react";
+import { Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star } from "lucide-react";
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";

@@ -13,7 +13,6 @@ import {
   Search,
   Rocket,
   Shield,
-  Zap,
   Cpu,
 } from "lucide-react";
 import toast from "react-hot-toast";

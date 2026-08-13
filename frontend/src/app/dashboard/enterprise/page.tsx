@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Users, Search, MapPin, GraduationCap, Trophy, ShieldCheck, ExternalLink, Star, ChevronRight, Award, Loader2, ChevronLeft } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { Search, MapPin, GraduationCap, Star, ChevronRight, Loader2, ChevronLeft } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import { CAMEROON_CITIES } from "@/lib/constants";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import ClassroomCommand from "@/components/enterprise/ClassroomCommand";
 import PageHeader from "@/components/ui/PageHeader";
-import Badge from "@/components/ui/Badge";
 
 interface Talent {
   id: string;
@@ -46,16 +45,7 @@ export default function EnterprisePortal() {
 
   const cities = ["All", ...CAMEROON_CITIES];
 
-  useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      setUserRole(user.role);
-    } catch { /* ignore */ }
-    loadTalent();
-    loadShortlist();
-  }, []);
-
-  const loadTalent = async () => {
+  const loadTalent = useCallback(async () => {
     try {
       const data = await fetchApi("/recruitment/talent-pool");
       setTalent(data);
@@ -64,14 +54,23 @@ export default function EnterprisePortal() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadShortlist = async () => {
+  const loadShortlist = useCallback(async () => {
     try {
       const data = await fetchApi("/recruitment/shortlisted");
       setShortlisted(new Set(data.map((s: any) => s.studentId)));
     } catch { /* ignore */ }
-  };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      setUserRole(user.role);
+    } catch { /* ignore */ }
+    loadTalent();
+    loadShortlist();
+  }, [loadTalent, loadShortlist]);
 
   const handleToggleShortlist = async (studentId: string) => {
     try {
@@ -163,7 +162,7 @@ export default function EnterprisePortal() {
                   <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${divisionBadge[t.division] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
                     {t.division}
                   </span>
-                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-emerald-100 text-emerald-600" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`}>
+                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-emerald-100 text-emerald-600" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
                     <Star size={14} fill={shortlisted.has(t.id) ? "currentColor" : "none"} />
                   </button>
                 </div>

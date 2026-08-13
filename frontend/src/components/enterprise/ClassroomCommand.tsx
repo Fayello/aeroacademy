@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Users, Play, Square, Activity, Shield, Loader2, CheckCircle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Play, Square, Activity, Shield, Loader2, CheckCircle } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
 
@@ -27,19 +27,7 @@ export default function ClassroomCommand() {
   const [actionLoading, setActionLoading] = useState(false);
   const [teamProgress, setTeamProgress] = useState<any>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTeam) {
-      loadTeamProgress();
-      const interval = setInterval(loadTeamProgress, 10000);
-      return () => clearInterval(interval);
-    }
-  }, [selectedTeam]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [teamsData, labsData] = await Promise.all([fetchApi("/admin/teams"), fetchApi("/labs")]);
       setTeams(teamsData);
@@ -51,15 +39,27 @@ export default function ClassroomCommand() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadTeamProgress = async () => {
+  const loadTeamProgress = useCallback(async () => {
     if (!selectedTeam) return;
     try {
       const data = await fetchApi(`/admin/teams/${selectedTeam}/progress`);
       setTeamProgress(data);
     } catch { /* ignore */ }
-  };
+  }, [selectedTeam]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    if (selectedTeam) {
+      loadTeamProgress();
+      const interval = setInterval(loadTeamProgress, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedTeam, loadTeamProgress]);
 
   const handleLaunch = async () => {
     if (!selectedTeam || !selectedLab) return;
