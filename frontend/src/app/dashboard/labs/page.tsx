@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Loader2, Activity, Terminal, Clock, Shield, Lock, Server, Cpu, Zap } from "lucide-react";
+import { Microscope, Play, Loader2, Activity, Terminal, Clock, Shield, Lock, Server, Cpu, Zap, Search, X } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { getLevel, getLabLock } from "@/lib/levelGating";
@@ -20,11 +20,60 @@ function getEstimatedTime(flags: number): string {
   return "~2h";
 }
 
+type LabFlag = { id: string; submissions?: unknown[] };
+
+function getSolvedCount(flags: LabFlag[] | undefined): number {
+  return flags?.filter((f) => f.submissions?.length).length || 0;
+}
+
+function getProgressStatus(flags: LabFlag[] | undefined): string {
+  if (!flags || flags.length === 0) return "NOT_STARTED";
+  const solved = getSolvedCount(flags);
+  if (solved >= flags.length) return "COMPLETED";
+  return solved > 0 ? "IN_PROGRESS" : "NOT_STARTED";
+}
+
 export default function LabsCatalog() {
   const [labs, setLabs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [systemStats, setSystemStats] = useState<any>(null);
   const [level, setLevel] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [difficultyFilter, setDifficultyFilter] = useState("ALL");
+  const [progressFilter, setProgressFilter] = useState("ALL");
+
+  const DIFFICULTIES = ["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
+  const PROGRESS_FILTERS = [
+    { value: "ALL", label: "All progress" },
+    { value: "NOT_STARTED", label: "Not started" },
+    { value: "IN_PROGRESS", label: "In progress" },
+    { value: "COMPLETED", label: "Completed" },
+  ];
+
+  const filteredLabs = (labs || []).filter((lab) => {
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      lab.title?.toLowerCase().includes(q) ||
+      lab.description?.toLowerCase().includes(q) ||
+      lab.difficulty?.toString().includes(q);
+
+    const diff = getDifficultyStyle(lab.difficulty || 1200);
+    const matchesDifficulty = difficultyFilter === "ALL" || diff.label === difficultyFilter;
+
+    const progressStatus = getProgressStatus(lab.flags);
+    const matchesProgress = progressFilter === "ALL" || progressStatus === progressFilter;
+
+    return matchesSearch && matchesDifficulty && matchesProgress;
+  });
+
+  const hasActiveFilters = searchQuery !== "" || difficultyFilter !== "ALL" || progressFilter !== "ALL";
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setDifficultyFilter("ALL");
+    setProgressFilter("ALL");
+  };
 
   useEffect(() => {
     try {
@@ -82,21 +131,105 @@ export default function LabsCatalog() {
         )}
       </div>
 
+      {/* Search & Filters */}
+      <div className="space-y-3">
+        <div className="relative">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search labs by title, description..."
+            className="w-full pl-9 pr-9 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label="Clear search"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {DIFFICULTIES.map((d) => (
+              <button
+                key={d}
+                onClick={() => setDifficultyFilter(d)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  difficultyFilter === d
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {d === "ALL" ? "All" : d.charAt(0) + d.slice(1).toLowerCase()}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            {PROGRESS_FILTERS.map((p) => (
+              <button
+                key={p.value}
+                onClick={() => setProgressFilter(p.value)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  progressFilter === p.value
+                    ? "bg-slate-800 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="px-2.5 py-1 rounded-full text-xs font-medium text-blue-600 hover:bg-blue-50 flex items-center gap-1"
+            >
+              <X size={12} /> Clear filters
+            </button>
+          )}
+        </div>
+
+        <div className="text-xs text-slate-500">
+          Showing {filteredLabs.length} of {labs.length} labs
+        </div>
+      </div>
+
       {/* Labs Grid */}
-      {labs.length === 0 ? (
+      {filteredLabs.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
           <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
             <Microscope size={24} className="text-slate-400" />
           </div>
-          <h3 className="text-sm font-medium text-slate-500 mb-1">NO LABS AVAILABLE</h3>
-          <p className="text-xs text-slate-400">Lab environments will appear here once configured.</p>
+          <h3 className="text-sm font-medium text-slate-500 mb-1">
+            {labs.length === 0 ? "NO LABS AVAILABLE" : "NO LABS MATCH YOUR FILTERS"}
+          </h3>
+          <p className="text-xs text-slate-400">
+            {labs.length === 0
+              ? "Lab environments will appear here once configured."
+              : "Try adjusting your search or filter criteria."}
+          </p>
+          {labs.length > 0 && hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 px-4 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors"
+            >
+              Clear all filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {labs.map((lab) => {
+          {filteredLabs.map((lab) => {
             const diff = getDifficultyStyle(lab.difficulty || 1200);
             const flags = lab.flags?.length || 0;
-            const solvedFlags = lab.flags?.filter((f: any) => f.submissions?.length > 0).length || 0;
+            const solvedFlags = getSolvedCount(lab.flags);
             const gate = getLabLock(lab.difficulty || 1200, level);
             const isLocked = gate.locked;
             const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;

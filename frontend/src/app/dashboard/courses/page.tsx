@@ -78,6 +78,7 @@ export default function CoursesPage() {
   const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
 
   useEffect(() => {
     try {
@@ -105,7 +106,9 @@ export default function CoursesPage() {
       course.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
       !selectedCategory || course.category?.toLowerCase() === selectedCategory.toLowerCase();
-    return matchesSearch && matchesCategory;
+    const courseDifficulty = getDifficulty(course.difficulty || 1).dots;
+    const matchesDifficulty = !selectedDifficulty || courseDifficulty === selectedDifficulty;
+    return matchesSearch && matchesCategory && matchesDifficulty;
   });
 
   const activeCategories = Array.from(
@@ -193,6 +196,40 @@ export default function CoursesPage() {
             })}
           </div>
         )}
+
+        {/* Difficulty Filter */}
+        {courses.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              Difficulty
+            </span>
+            <button
+              onClick={() => setSelectedDifficulty(null)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                !selectedDifficulty
+                  ? "bg-slate-800 text-white border-slate-800"
+                  : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+              }`}
+            >
+              All levels
+            </button>
+            {Object.entries(DIFFICULTY_MAP).map(([key, d]) => (
+              <button
+                key={key}
+                onClick={() =>
+                  setSelectedDifficulty(selectedDifficulty === d.dots ? null : d.dots)
+                }
+                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                  selectedDifficulty === d.dots
+                    ? "bg-slate-800 text-white border-slate-800"
+                    : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Courses Grid */}
@@ -212,18 +249,21 @@ export default function CoursesPage() {
               </div>
             </div>
             <h3 className="text-lg font-semibold text-slate-700 mb-2">
-              {searchQuery || selectedCategory ? "No matching courses" : "No courses available"}
+              {searchQuery || selectedCategory || selectedDifficulty
+                ? "No matching courses"
+                : "No courses available"}
             </h3>
             <p className="text-sm text-slate-500 max-w-sm mb-6">
-              {searchQuery || selectedCategory
+              {searchQuery || selectedCategory || selectedDifficulty
                 ? "Try adjusting your search or filter criteria."
                 : "Training modules will appear here once published by your administrator."}
             </p>
-            {(searchQuery || selectedCategory) && (
+            {(searchQuery || selectedCategory || selectedDifficulty) && (
               <button
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory(null);
+                  setSelectedDifficulty(null);
                 }}
                 className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-all"
               >

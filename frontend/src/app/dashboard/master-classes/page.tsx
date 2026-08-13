@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Video, Calendar, Clock, UserCheck, ArrowRight, Loader2, Users } from "lucide-react";
+import { Video, Calendar, Clock, UserCheck, ArrowRight, Loader2, Users, Search, X } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
 const CATEGORIES = ["All", "SECURITY", "LINUX", "DEVOPS", "CLOUD"];
@@ -11,6 +11,17 @@ export default function MasterClassesPage() {
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredClasses = (classes || []).filter((mc: { title?: string; description?: string; instructorName?: string }) => {
+    const q = searchQuery.trim().toLowerCase();
+    return (
+      !q ||
+      mc.title?.toLowerCase().includes(q) ||
+      mc.description?.toLowerCase().includes(q) ||
+      mc.instructorName?.toLowerCase().includes(q)
+    );
+  });
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -25,6 +36,16 @@ export default function MasterClassesPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Master Classes</h1>
+        <div className="relative mt-4 max-w-md">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search master classes..."
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50 transition-all"
+          />
+        </div>
         <div className="flex flex-wrap gap-2 mt-4">
           {CATEGORIES.map((cat) => (
             <button
@@ -40,6 +61,11 @@ export default function MasterClassesPage() {
             </button>
           ))}
         </div>
+        {searchQuery.trim() && (
+          <p className="mt-3 text-xs text-slate-500">
+            Showing {filteredClasses.length} of {classes.length} master classes
+          </p>
+        )}
       </div>
 
       {/* Master Classes Grid */}
@@ -47,17 +73,31 @@ export default function MasterClassesPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-emerald-600" size={32} />
         </div>
-      ) : classes.length === 0 ? (
+      ) : filteredClasses.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
             <Video size={28} className="text-slate-400" />
           </div>
-          <h3 className="text-lg font-medium text-slate-900 mb-2">No master classes found</h3>
-          <p className="text-sm text-slate-500">Check back later for upcoming sessions.</p>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">
+            {searchQuery.trim() ? "No matching master classes" : "No master classes found"}
+          </h3>
+          <p className="text-sm text-slate-500">
+            {searchQuery.trim()
+              ? "Try a different search term or category."
+              : "Check back later for upcoming sessions."}
+          </p>
+          {searchQuery.trim() && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-violet-600 bg-violet-50 border border-violet-200 rounded-lg hover:bg-violet-100 transition-all"
+            >
+              <X size={14} /> Clear search
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {classes.map((mc: any) => (
+          {filteredClasses.map((mc: any) => (
             <Link
               key={mc.id}
               href={`/dashboard/master-classes/${mc.id}`}
