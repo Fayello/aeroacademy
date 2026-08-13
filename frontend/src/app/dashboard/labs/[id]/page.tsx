@@ -1,36 +1,75 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useParams } from "next/navigation";
 import { fetchApi, API_URL } from "@/lib/api";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import Modal from "@/components/Modal";
 import { getLevel, getLabLock } from "@/lib/levelGating";
+import type { LabTelemetry } from "@/types/api";
 
-function formatTimeRemaining(expiresAt: string): string {
-  const now = new Date();
+interface LabCredential {
+  service: string;
+  username: string;
+  password?: string;
+}
+
+interface LabFlag {
+  id: string;
+  title: string;
+  points: number;
+  description: string;
+  submissions?: unknown[];
+}
+
+interface LabDefinition {
+  id: string;
+  title: string;
+  description: string;
+  briefing?: string | null;
+  basePath?: string;
+  difficulty: number;
+  tasks?: string[];
+  credentials?: LabCredential[];
+  flags?: LabFlag[];
+}
+
+interface LabInstance {
+  id?: string;
+  status: string;
+  port?: number | null;
+  expiresAt?: string | null;
+  containerId?: string | null;
+  labId?: string;
+  lab?: { id: string; title: string; description: string; difficulty: number };
+}
+
+function formatTimeRemaining(expiresAt: string, now: Date = new Date()): string {
   const expiry = new Date(expiresAt);
   const diff = expiry.getTime() - now.getTime();
   if (diff <= 0) return "Expired";
-  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const totalHours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  if (totalHours > 0) return `${totalHours}h ${minutes}m`;
+  return `${minutes}m ${seconds}s`;
 }
+
+const QUICK_COMMANDS = ["whoami", "pwd", "ls -la", "id", "cat /etc/hostname"];
 
 export default function LabWorkspace() {
   const { id } = useParams();
-  const router = useRouter();
   const { labTelemetry } = useDashboard();
-  const [lab, setLab] = useState<any>(null);
-  const [instance, setInstance] = useState<any>(null);
+  const [lab, setLab] = useState<LabDefinition | null>(null);
+  const [instance, setInstance] = useState<LabInstance | null>(null);
   const [loading, setLoading] = useState(true);
   const [provisioning, setProvisioning] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -43,6 +82,8 @@ export default function LabWorkspace() {
     confirmText?: string;
   }>({ isOpen: false, title: "", message: "", type: "info" });
   const [level, setLevel] = useState(1);
+  const [now, setNow] = useState<Date>(new Date());
+  const expiredHandledRef = useRef(false);
 
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<XTerm | null>(null);
@@ -50,13 +91,52 @@ export default function LabWorkspace() {
   const fitAddonRef = useRef<FitAddon | null>(null);
 
   const currentLabTitle = lab?.title?.toLowerCase().replace(/\s+/g, "-");
-  const telemetry = labTelemetry.find((t: any) => t.labName?.toLowerCase() === currentLabTitle) || null;
+  const telemetry =
+    labTelemetry.find(
+      (t: LabTelemetry) => t.labName?.toLowerCase() === currentLabTitle,
+    ) || null;
+
+  const isExpired = !!instance?.expiresAt && new Date(instance.expiresAt).getTime() <= now.getTime();
+  const isRunning = instance?.status === "RUNNING" && !isExpired;
+  const minutesRemaining = instance?.expiresAt
+    ? Math.floor((new Date(instance.expiresAt).getTime() - now.getTime()) / 60000)
+    : Infinity;
+  const countdownTone =
+    isExpired || minutesRemaining < 10
+      ? "bg-red-50 text-red-600"
+      : minutesRemaining < 30
+        ? "bg-amber-50 text-amber-600"
+        : "bg-emerald-50 text-emerald-600";
 
   useEffect(() => {
-    try {
-      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-      setLevel(getLevel(xp));
-    } catch {}
+    if (instance?.status !== "RUNNING" || !instance?.expiresAt) return;
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, [instance?.status, instance?.expiresAt]);
+
+  useEffect(() => {
+    expiredHandledRef.current = false;
+  }, [instance?.id, instance?.status]);
+
+  useEffect(() => {
+    if (isExpired && instance?.status === "RUNNING" && !expiredHandledRef.current) {
+      expiredHandledRef.current = true;
+      toast.error("Your lab instance has expired. Start a new instance to continue.");
+      if (socketRef.current) socketRef.current.disconnect();
+      if (xtermRef.current) {
+        xtermRef.current.dispose();
+        xtermRef.current = null;
+      }
+    }
+  }, [isExpired, instance?.status]);
+
+  useEffect(() => {
+    const levelTimer = setTimeout(() => {
+      try {
+        const xp = parseInt(localStorage.getItem("xp") || "0", 10);
+        setLevel(getLevel(xp));
+      } catch {}
+    }, 0);
 
     async function loadLab() {
       try {
@@ -81,14 +161,11 @@ export default function LabWorkspace() {
       }
     }, 5000);
 
-    return () => clearInterval(pollInterval);
+    return () => {
+      clearTimeout(levelTimer);
+      clearInterval(pollInterval);
+    };
   }, [id]);
-
-  useEffect(() => {
-    if (instance?.status === "RUNNING" && terminalRef.current && !xtermRef.current) {
-      initTerminal();
-    }
-  }, [instance]);
 
   useEffect(() => {
     return () => {
@@ -97,7 +174,7 @@ export default function LabWorkspace() {
     };
   }, []);
 
-  const initTerminal = () => {
+  const initTerminal = useCallback(() => {
     if (!terminalRef.current) return;
 
     const term = new XTerm({
@@ -105,10 +182,14 @@ export default function LabWorkspace() {
         background: "#0f172a",
         foreground: "#94a3b8",
         cursor: "#059669",
+        cursorAccent: "#0f172a",
         selectionBackground: "rgba(5, 150, 105, 0.3)",
       },
       fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
       fontSize: 14,
+      cursorBlink: true,
+      cursorStyle: "bar",
+      scrollback: 5000,
     });
 
     const fitAddon = new FitAddon();
@@ -159,7 +240,37 @@ export default function LabWorkspace() {
       resizeObserver.disconnect();
       origDispose();
     };
+  }, [id]);
+
+  const sendCommand = (cmd: string) => {
+    if (socketRef.current?.connected) {
+      socketRef.current.emit("input", `${cmd}\r`);
+      xtermRef.current?.focus();
+    }
   };
+
+  const handleClear = () => {
+    if (xtermRef.current) {
+      xtermRef.current.clear();
+      xtermRef.current.focus();
+    }
+  };
+
+  const handleReconnect = () => {
+    if (xtermRef.current) {
+      xtermRef.current.dispose();
+      xtermRef.current = null;
+    }
+    if (socketRef.current) socketRef.current.disconnect();
+    if (terminalRef.current) initTerminal();
+    toast.success("Reconnecting terminal...");
+  };
+
+  useEffect(() => {
+    if (isRunning && terminalRef.current && !xtermRef.current) {
+      initTerminal();
+    }
+  }, [instance, isRunning, initTerminal]);
 
   const handleLaunch = async () => {
     setProvisioning(true);
@@ -265,15 +376,20 @@ export default function LabWorkspace() {
         </div>
 
         <div className="flex items-center gap-3">
-          {instance?.status === "RUNNING" && instance?.expiresAt && (
-            <span className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">
+          {isRunning && instance?.expiresAt && (
+            <span className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg ${countdownTone} font-medium`}>
               <Clock size={12} />
-              {formatTimeRemaining(instance.expiresAt)}
+              {formatTimeRemaining(instance.expiresAt, now)}
             </span>
           )}
-          {instance?.status === "RUNNING" ? (
+          {isRunning ? (
             <>
               <span className="flex items-center gap-1.5 text-xs text-emerald-600">
+                {connected ? (
+                  <Wifi size={12} className="text-emerald-600" />
+                ) : (
+                  <WifiOff size={12} className="text-amber-500" />
+                )}
                 <span className={`w-2 h-2 rounded-full ${connected ? "bg-emerald-500" : "bg-amber-500"}`} />
                 {connected ? "Connected" : "Connecting..."}
               </span>
@@ -310,7 +426,7 @@ export default function LabWorkspace() {
       </header>
 
       {/* Telemetry bar */}
-      {instance?.status === "RUNNING" && telemetry && (
+      {isRunning && telemetry && (
         <div className="h-10 border-b border-slate-200 bg-white px-4 flex items-center gap-6 text-xs text-slate-500 shrink-0">
           <span className="font-medium">CPU</span>
           <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -332,6 +448,41 @@ export default function LabWorkspace() {
           <div className="p-5 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-900">Briefing</h2>
           </div>
+
+          {isRunning && (
+            <div className="p-4 border-b border-slate-100 bg-emerald-50/40">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Zap size={12} className="text-emerald-600" />
+                <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Quick Start</h4>
+              </div>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Click a command to send it straight to the terminal:
+              </p>
+              <div className="space-y-1.5">
+                {QUICK_COMMANDS.map((cmd) => (
+                  <div key={cmd} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white border border-slate-200">
+                    <button
+                      onClick={() => sendCommand(cmd)}
+                      className="text-[11px] font-mono text-slate-700 hover:text-emerald-700 transition-colors text-left truncate"
+                    >
+                      {cmd}
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(cmd);
+                        toast.success("Command copied!");
+                      }}
+                      title="Copy command"
+                      className="text-slate-400 hover:text-emerald-600 transition-colors shrink-0"
+                    >
+                      <Copy size={11} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="p-5 prose prose-sm prose-slate max-w-none">
             <ReactMarkdown>{lab?.briefing || lab?.description}</ReactMarkdown>
 
@@ -351,9 +502,26 @@ export default function LabWorkspace() {
 
             {lab?.credentials && Array.isArray(lab.credentials) && (
               <div className="mt-4">
-                <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">Credentials</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Credentials</h4>
+                  <button
+                    onClick={() => {
+                      const text = lab.credentials
+                        ?.map((c: LabCredential) =>
+                          `${c.service}:\nUser: ${c.username}${c.password ? `\nPass: ${c.password}` : ""}`,
+                        )
+                        .join("\n\n") ?? "";
+                      navigator.clipboard.writeText(text);
+                      toast.success("All credentials copied!");
+                    }}
+                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-emerald-600 transition-colors"
+                  >
+                    <Copy size={11} />
+                    Copy all
+                  </button>
+                </div>
                 <div className="space-y-2">
-                  {lab.credentials.map((cred: any, i: number) => (
+                  {lab.credentials.map((cred: LabCredential, i: number) => (
                     <div key={i} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium text-slate-700">{cred.service}</p>
@@ -383,7 +551,7 @@ export default function LabWorkspace() {
                   Flags
                 </h4>
                 <div className="space-y-3">
-                  {lab.flags.map((flag: any) => (
+                  {lab.flags.map((flag: LabFlag) => (
                     <div key={flag.id} className="p-3 rounded-lg bg-slate-50 border border-slate-200">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-medium text-slate-700">{flag.title}</span>
@@ -408,17 +576,68 @@ export default function LabWorkspace() {
           <div className="h-10 border-b border-slate-200 px-4 flex items-center gap-2 shrink-0">
             <TerminalIcon size={14} className="text-slate-400" />
             <span className="text-xs font-medium text-slate-500">Terminal</span>
+
+            {isRunning && connected && (
+              <div className="ml-auto flex items-center gap-1">
+                <span className="text-[10px] text-slate-400 mr-1 hidden sm:block">Quick:</span>
+                {QUICK_COMMANDS.map((cmd) => (
+                  <button
+                    key={cmd}
+                    onClick={() => sendCommand(cmd)}
+                    title={`Run: ${cmd}`}
+                    className="px-2 py-1 rounded-md bg-slate-50 hover:bg-slate-100 text-[11px] font-mono text-slate-500 hover:text-emerald-700 transition-colors"
+                  >
+                    {cmd}
+                  </button>
+                ))}
+                <button
+                  onClick={handleClear}
+                  title="Clear terminal"
+                  className="ml-1 p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                >
+                  <Eraser size={13} />
+                </button>
+              </div>
+            )}
+
+            {isRunning && !connected && (
+              <div className="ml-auto flex items-center gap-2">
+                <span className="flex items-center gap-1.5 text-xs text-amber-600">
+                  <Loader2 className="animate-spin" size={12} />
+                  Connecting...
+                </span>
+                <button
+                  onClick={handleReconnect}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-emerald-700 hover:bg-emerald-50 transition-colors"
+                >
+                  <PlugZap size={12} />
+                  Reconnect
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex-1 min-h-0">
-            {instance?.status === "RUNNING" ? (
+            {isRunning ? (
               <div ref={terminalRef} className="w-full h-full" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-500 gap-3">
                 <TerminalIcon size={28} className="text-slate-300" />
                 <div className="text-center">
-                  <p className="text-sm font-medium">Terminal offline</p>
-                  <p className="text-xs text-slate-400 mt-1">Start a lab instance to connect</p>
+                  <p className="text-sm font-medium">
+                    {isExpired ? "Lab instance expired" : "Terminal offline"}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {isExpired
+                      ? "Start a fresh instance to continue"
+                      : "Start a lab instance to connect"}
+                  </p>
                 </div>
+                {!isRunning && instance?.status !== "PROVISIONING" && !provisioning && (
+                  <button onClick={handleLaunch} className="btn-primary text-sm">
+                    <Play size={14} />
+                    Start Lab
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -438,7 +657,7 @@ export default function LabWorkspace() {
   );
 }
 
-function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; setLab: any }) {
+function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; setLab: (lab: LabDefinition) => void }) {
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
