@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, Users } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -21,10 +21,13 @@ const links: NavLink[] = [
   { href: "/dashboard/master-classes", label: "Master Classes", icon: Video },
   { href: "/dashboard/training", label: "Training", icon: Calendar },
   { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   { href: "/dashboard/certifications", label: "Certifications", icon: Award },
   { href: "/dashboard/registry", label: "Registry", icon: Shield },
   { href: "/dashboard/enterprise", label: "Enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
   { href: "/dashboard/admin", label: "Admin", icon: Award, roles: ["ADMIN"] },
+  { href: "/dashboard/admin/analytics", label: "Analytics", icon: BarChart3, roles: ["ADMIN"] },
+  { href: "/dashboard/admin/audit", label: "Audit Logs", icon: ScrollText, roles: ["ADMIN"] },
   { href: "/dashboard/profile", label: "Profile", icon: User },
 ];
 
@@ -34,12 +37,15 @@ export default function Sidebar() {
   const [level, setLevel] = useState(1);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
-      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-      setLevel(getLevel(xp));
-    } catch {}
+    const timer = setTimeout(() => {
+      try {
+        const stored = localStorage.getItem("user");
+        if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
+        const xp = parseInt(localStorage.getItem("xp") || "0", 10);
+        setLevel(getLevel(xp));
+      } catch {}
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const filteredLinks = links.filter(link => !link.roles || link.roles.includes(userRole));

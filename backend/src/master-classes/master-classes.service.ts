@@ -1,14 +1,27 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma, MasterClassStatus } from '@prisma/client';
+import { EventsService } from '../common/events.service';
 
 @Injectable()
 export class MasterClassesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventsService: EventsService,
+  ) {}
 
-  async findAll(query?: { category?: string; status?: string; limit?: number }) {
-    const where: any = {};
+  async findAll(query?: {
+    category?: string;
+    status?: string;
+    limit?: number;
+  }) {
+    const where: Prisma.MasterClassWhereInput = {};
     if (query?.category) where.category = query.category;
-    if (query?.status) where.status = query.status;
+    if (query?.status) where.status = query.status as MasterClassStatus;
 
     return this.prisma.masterClass.findMany({
       where,
@@ -35,14 +48,19 @@ export class MasterClassesService {
   }
 
   async register(masterClassId: string, userId: string) {
-    const mc = await this.prisma.masterClass.findUnique({ where: { id: masterClassId } });
+    const mc = await this.prisma.masterClass.findUnique({
+      where: { id: masterClassId },
+    });
     if (!mc) throw new NotFoundException('Master class not found');
     if (mc.status === 'COMPLETED' || mc.status === 'CANCELLED') {
       throw new BadRequestException('Cannot register for this master class');
     }
     if (mc.maxParticipants) {
-      const count = await this.prisma.masterClassRegistration.count({ where: { masterClassId } });
-      if (count >= mc.maxParticipants) throw new BadRequestException('Master class is full');
+      const count = await this.prisma.masterClassRegistration.count({
+        where: { masterClassId },
+      });
+      if (count >= mc.maxParticipants)
+        throw new BadRequestException('Master class is full');
     }
 
     const existing = await this.prisma.masterClassRegistration.findUnique({
@@ -50,9 +68,18 @@ export class MasterClassesService {
     });
     if (existing) throw new BadRequestException('Already registered');
 
-    return this.prisma.masterClassRegistration.create({
+    const registration = await this.prisma.masterClassRegistration.create({
       data: { masterClassId, userId },
     });
+
+    this.eventsService.emit('MASTERCLASS_REGISTERED', {
+      userId,
+      title: mc.title,
+      message: `You registered for "${mc.title}".`,
+      link: '/dashboard/master-classes',
+    });
+
+    return registration;
   }
 
   async unregister(masterClassId: string, userId: string) {
@@ -61,9 +88,22 @@ export class MasterClassesService {
     });
     if (!registration) throw new NotFoundException('Not registered');
 
-    return this.prisma.masterClassRegistration.delete({
+    const mc = await this.prisma.masterClass.findUnique({
+      where: { id: masterClassId },
+    });
+
+    const result = await this.prisma.masterClassRegistration.delete({
       where: { masterClassId_userId: { masterClassId, userId } },
     });
+
+    this.eventsService.emit('MASTERCLASS_UNREGISTERED', {
+      userId,
+      title: mc?.title,
+      message: `You unregistered from "${mc?.title ?? 'a master class'}".`,
+      link: '/dashboard/master-classes',
+    });
+
+    return result;
   }
 
   async getMyRegistrations(userId: string) {

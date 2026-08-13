@@ -1,10 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { EventsService } from '../common/events.service';
 
 @Injectable()
 export class TrainingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventsService: EventsService,
+  ) {}
 
   async findAllTrainers() {
     return this.prisma.trainer.findMany({
@@ -54,8 +62,19 @@ export class TrainingService {
     });
   }
 
-  async book(data: { trainerId: string; studentId: string; slotId?: string; date: string; startTime: string; endTime: string; topic: string; notes?: string }) {
-    const trainer = await this.prisma.trainer.findUnique({ where: { id: data.trainerId } });
+  async book(data: {
+    trainerId: string;
+    studentId: string;
+    slotId?: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    topic: string;
+    notes?: string;
+  }) {
+    const trainer = await this.prisma.trainer.findUnique({
+      where: { id: data.trainerId },
+    });
     if (!trainer) throw new NotFoundException('Trainer not found');
 
     const d = new Date(data.date);
@@ -69,7 +88,7 @@ export class TrainingService {
     });
     if (existing) throw new BadRequestException('This slot is already booked');
 
-    return this.prisma.booking.create({
+    const booking = await this.prisma.booking.create({
       data: {
         trainerId: data.trainerId,
         studentId: data.studentId,
@@ -85,17 +104,35 @@ export class TrainingService {
         trainer: { include: { user: { select: { name: true } } } },
       },
     });
+
+    this.eventsService.emit('BOOKING_CONFIRMED', {
+      userId: data.studentId,
+      message: `Your training session on ${data.date} at ${data.startTime} has been confirmed.`,
+      trainerName: booking.trainer?.user?.name,
+    });
+
+    return booking;
   }
 
   async cancelBooking(bookingId: string, userId: string) {
-    const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } });
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+    });
     if (!booking) throw new NotFoundException('Booking not found');
-    if (booking.studentId !== userId) throw new BadRequestException('Not your booking');
+    if (booking.studentId !== userId)
+      throw new BadRequestException('Not your booking');
 
-    return this.prisma.booking.update({
+    const cancelled = await this.prisma.booking.update({
       where: { id: bookingId },
       data: { status: 'CANCELLED' },
     });
+
+    this.eventsService.emit('BOOKING_CANCELLED', {
+      userId,
+      message: `Your training session on ${cancelled.date.toISOString().slice(0, 10)} has been cancelled.`,
+    });
+
+    return cancelled;
   }
 
   async getMyBookings(userId: string) {
@@ -110,8 +147,15 @@ export class TrainingService {
     });
   }
 
-  async addTrainer(data: { userId: string; bio?: string; specialties?: string[]; hourlyRate?: number }) {
-    const existing = await this.prisma.trainer.findUnique({ where: { userId: data.userId } });
+  async addTrainer(data: {
+    userId: string;
+    bio?: string;
+    specialties?: string[];
+    hourlyRate?: number;
+  }) {
+    const existing = await this.prisma.trainer.findUnique({
+      where: { userId: data.userId },
+    });
     if (existing) throw new BadRequestException('User is already a trainer');
 
     return this.prisma.trainer.create({
@@ -120,8 +164,13 @@ export class TrainingService {
     });
   }
 
-  async addSlots(trainerId: string, slots: { dayOfWeek: number; startTime: string; endTime: string }[]) {
-    const trainer = await this.prisma.trainer.findUnique({ where: { id: trainerId } });
+  async addSlots(
+    trainerId: string,
+    slots: { dayOfWeek: number; startTime: string; endTime: string }[],
+  ) {
+    const trainer = await this.prisma.trainer.findUnique({
+      where: { id: trainerId },
+    });
     if (!trainer) throw new NotFoundException('Trainer not found');
 
     return this.prisma.trainingSlot.createMany({

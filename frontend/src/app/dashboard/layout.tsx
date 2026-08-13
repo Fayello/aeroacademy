@@ -1,15 +1,22 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
+import NotificationBell from "@/components/NotificationBell";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 
-function decodeJwtPayload(token: string): Record<string, any> | null {
+interface JwtPayload {
+  sub: string;
+  email: string;
+  role: string;
+}
+
+function decodeJwtPayload(token: string): JwtPayload | null {
   try {
     const base64 = token.split(".")[1];
     const json = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(json);
+    return JSON.parse(json) as JwtPayload;
   } catch {
     return null;
   }
@@ -62,6 +69,7 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-slate-50">
       <TokenHandler />
       <Sidebar />
+      <NotificationBell />
       <main className="pb-20 md:pb-0 md:pl-64 min-h-screen">
         <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
           <PageErrorBoundary>

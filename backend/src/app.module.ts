@@ -19,14 +19,19 @@ import { RecruitmentModule } from './recruitment/recruitment.module';
 import { MasterClassesModule } from './master-classes/master-classes.module';
 import { TrainingModule } from './training/training.module';
 import { UsersModule } from './users/users.module';
+import { AuditModule } from './audit/audit.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     ScheduleModule.forRoot(),
     EventsModule,
     PrismaModule,
@@ -42,11 +47,11 @@ import { UsersModule } from './users/users.module';
     MasterClassesModule,
     TrainingModule,
     UsersModule,
+    AuditModule,
+    AnalyticsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-  ],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
