@@ -8,7 +8,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -64,6 +64,9 @@ function formatTimeRemaining(expiresAt: string, now: Date = new Date()): string 
 }
 
 const QUICK_COMMANDS = ["whoami", "pwd", "ls -la", "id", "cat /etc/hostname"];
+const MAX_RECONNECT_ATTEMPTS = 4;
+const MIN_FONT_SIZE = 10;
+const MAX_FONT_SIZE = 24;
 
 export default function LabWorkspace() {
   const { id } = useParams();
@@ -84,11 +87,108 @@ export default function LabWorkspace() {
   const [level, setLevel] = useState(1);
   const [now, setNow] = useState<Date>(new Date());
   const expiredHandledRef = useRef(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fontSize, setFontSize] = useState(() => {
+    if (typeof window === "undefined") return 14;
+    try {
+      const saved = parseInt(window.localStorage.getItem("xterm:fontSize") || "", 10);
+      if (saved >= MIN_FONT_SIZE && saved <= MAX_FONT_SIZE) return saved;
+    } catch {}
+    return 14;
+  });
+  const [selection, setSelection] = useState("");
+  const [autoReconnecting, setAutoReconnecting] = useState(false);
+  const [reconnectTick, setReconnectTick] = useState(0);
 
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<XTerm | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
+  const reconnectAttemptsRef = useRef(0);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasConnectedRef = useRef(false);
+  const sessionEndedRef = useRef(false);
+  const [hasConnected, setHasConnected] = useState(false);
+
+  const clearReconnectTimer = useCallback(() => {
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+  }, []);
+
+  const handleReconnect = useCallback(() => {
+    clearReconnectTimer();
+    if (xtermRef.current) {
+      xtermRef.current.dispose();
+      xtermRef.current = null;
+    }
+    if (socketRef.current) socketRef.current.disconnect();
+    sessionEndedRef.current = false;
+    setReconnectTick((t) => t + 1);
+    toast.success("Reconnecting terminal...");
+  }, [clearReconnectTimer]);
+
+  const scheduleReconnect = useCallback(() => {
+    if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+      setAutoReconnecting(false);
+      return;
+    }
+    reconnectAttemptsRef.current += 1;
+    setAutoReconnecting(true);
+    const delay = 1500 * reconnectAttemptsRef.current;
+    reconnectTimerRef.current = setTimeout(() => {
+      reconnectTimerRef.current = null;
+      handleReconnect();
+    }, delay);
+  }, [handleReconnect]);
+
+  const handleManualReconnect = () => {
+    reconnectAttemptsRef.current = 0;
+    setAutoReconnecting(false);
+    handleReconnect();
+  };
+
+  const updateFontSize = (next: number) => {
+    if (next < MIN_FONT_SIZE || next > MAX_FONT_SIZE) return;
+    setFontSize(next);
+    localStorage.setItem("xterm:fontSize", String(next));
+    if (xtermRef.current) {
+      xtermRef.current.options.fontSize = next;
+      fitAddonRef.current?.fit();
+      const dims = { cols: xtermRef.current.cols, rows: xtermRef.current.rows };
+      socketRef.current?.emit("resize", dims);
+    }
+  };
+
+  const handleCopy = async () => {
+    const text = xtermRef.current?.getSelection();
+    if (!text) {
+      toast.error("No selection to copy.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Selection copied to clipboard.");
+    } catch {
+      toast.error("Failed to copy selection.");
+    }
+  };
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text) return;
+      if (socketRef.current?.connected) {
+        socketRef.current.emit("input", text);
+        toast.success("Clipboard pasted to terminal.");
+      } else {
+        toast.error("Terminal is not connected.");
+      }
+    } catch {
+      toast.error("Unable to read clipboard.");
+    }
+  };
 
   const currentLabTitle = lab?.title?.toLowerCase().replace(/\s+/g, "-");
   const telemetry =
@@ -122,13 +222,17 @@ export default function LabWorkspace() {
     if (isExpired && instance?.status === "RUNNING" && !expiredHandledRef.current) {
       expiredHandledRef.current = true;
       toast.error("Your lab instance has expired. Start a new instance to continue.");
+      setHasConnected(false);
+      hasConnectedRef.current = false;
+      sessionEndedRef.current = false;
+      clearReconnectTimer();
       if (socketRef.current) socketRef.current.disconnect();
       if (xtermRef.current) {
         xtermRef.current.dispose();
         xtermRef.current = null;
       }
     }
-  }, [isExpired, instance?.status]);
+  }, [isExpired, instance?.status, clearReconnectTimer]);
 
   useEffect(() => {
     const levelTimer = setTimeout(() => {
@@ -171,11 +275,18 @@ export default function LabWorkspace() {
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
       if (xtermRef.current) xtermRef.current.dispose();
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
     };
   }, []);
 
   const initTerminal = useCallback(() => {
     if (!terminalRef.current) return;
+
+    let savedFontSize = 14;
+    try {
+      const parsed = parseInt(localStorage.getItem("xterm:fontSize") || "", 10);
+      if (parsed >= MIN_FONT_SIZE && parsed <= MAX_FONT_SIZE) savedFontSize = parsed;
+    } catch {}
 
     const term = new XTerm({
       theme: {
@@ -186,7 +297,7 @@ export default function LabWorkspace() {
         selectionBackground: "rgba(5, 150, 105, 0.3)",
       },
       fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-      fontSize: 14,
+      fontSize: savedFontSize,
       cursorBlink: true,
       cursorStyle: "bar",
       scrollback: 5000,
@@ -205,18 +316,46 @@ export default function LabWorkspace() {
     const token = localStorage.getItem("token");
     const socket = io(`${API_URL}/terminal`, { auth: { token } });
 
-    socket.on("connect", () => { setConnected(true); socket.emit("join", { labId: id }); });
-    socket.on("output", (data: string) => term.write(data));
-    socket.on("ready", () => term.focus());
-    socket.on("disconnect", () => setConnected(false));
+    socket.on("connect", () => {
+      if (socketRef.current !== socket) return;
+      setConnected(true);
+      setHasConnected(true);
+      hasConnectedRef.current = true;
+      sessionEndedRef.current = false;
+      reconnectAttemptsRef.current = 0;
+      setAutoReconnecting(false);
+      socket.emit("join", { labId: id });
+    });
+    socket.on("output", (data: string) => {
+      if (socketRef.current !== socket) return;
+      term.write(data);
+    });
+    socket.on("ready", () => {
+      if (socketRef.current !== socket) return;
+      term.focus();
+    });
+    socket.on("disconnect", () => {
+      if (socketRef.current !== socket) return;
+      setConnected(false);
+      if (hasConnectedRef.current && xtermRef.current && !sessionEndedRef.current) {
+        scheduleReconnect();
+      }
+    });
     socket.on("exit", () => {
+      if (socketRef.current !== socket) return;
       toast.error("Terminal session ended.");
       setConnected(false);
+      sessionEndedRef.current = true;
+      clearReconnectTimer();
     });
     socket.on("error", (msg: string) => {
+      if (socketRef.current !== socket) return;
       toast.error(msg || "Terminal error occurred.");
     });
     term.onData((data: string) => socket.emit("input", data));
+    term.onSelectionChange(() => {
+      if (xtermRef.current === term) setSelection(term.getSelection());
+    });
 
     // Send resize events when terminal is resized (debounced)
     let resizeTimeout: ReturnType<typeof setTimeout>;
@@ -240,7 +379,7 @@ export default function LabWorkspace() {
       resizeObserver.disconnect();
       origDispose();
     };
-  }, [id]);
+  }, [id, clearReconnectTimer, scheduleReconnect]);
 
   const sendCommand = (cmd: string) => {
     if (socketRef.current?.connected) {
@@ -256,21 +395,11 @@ export default function LabWorkspace() {
     }
   };
 
-  const handleReconnect = () => {
-    if (xtermRef.current) {
-      xtermRef.current.dispose();
-      xtermRef.current = null;
-    }
-    if (socketRef.current) socketRef.current.disconnect();
-    if (terminalRef.current) initTerminal();
-    toast.success("Reconnecting terminal...");
-  };
-
   useEffect(() => {
     if (isRunning && terminalRef.current && !xtermRef.current) {
       initTerminal();
     }
-  }, [instance, isRunning, initTerminal]);
+  }, [instance, isRunning, initTerminal, reconnectTick]);
 
   const handleLaunch = async () => {
     setProvisioning(true);
@@ -300,6 +429,10 @@ export default function LabWorkspace() {
           // soft-fail
         } finally {
           setInstance(null);
+          setHasConnected(false);
+          hasConnectedRef.current = false;
+          sessionEndedRef.current = false;
+          clearReconnectTimer();
           if (socketRef.current) socketRef.current.disconnect();
           if (xtermRef.current) { xtermRef.current.dispose(); xtermRef.current = null; }
         }
@@ -317,6 +450,10 @@ export default function LabWorkspace() {
       onConfirm: async () => {
         setProvisioning(true);
         try {
+          setHasConnected(false);
+          hasConnectedRef.current = false;
+          sessionEndedRef.current = false;
+          clearReconnectTimer();
           if (socketRef.current) socketRef.current.disconnect();
           if (xtermRef.current) { xtermRef.current.dispose(); xtermRef.current = null; }
           const newInstance = await fetchApi(`/labs/reset/${id}`, { method: "POST" });
@@ -362,7 +499,7 @@ export default function LabWorkspace() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] -m-4 md:-m-8 animate-in fade-in duration-500">
+    <div className={`${isFullscreen ? "fixed inset-0 z-50 bg-white" : "h-[calc(100vh-4rem)] -m-4 md:-m-8"} flex flex-col animate-in fade-in duration-500`}>
       {/* Header */}
       <header className="h-14 border-b border-slate-200 bg-white px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
@@ -376,6 +513,15 @@ export default function LabWorkspace() {
         </div>
 
         <div className="flex items-center gap-3">
+          {isFullscreen && (
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium transition-colors"
+            >
+              <Minimize2 size={14} />
+              Exit Fullscreen
+            </button>
+          )}
           {isRunning && instance?.expiresAt && (
             <span className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg ${countdownTone} font-medium`}>
               <Clock size={12} />
@@ -426,7 +572,7 @@ export default function LabWorkspace() {
       </header>
 
       {/* Telemetry bar */}
-      {isRunning && telemetry && (
+      {!isFullscreen && isRunning && telemetry && (
         <div className="h-10 border-b border-slate-200 bg-white px-4 flex items-center gap-6 text-xs text-slate-500 shrink-0">
           <span className="font-medium">CPU</span>
           <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -444,6 +590,7 @@ export default function LabWorkspace() {
       {/* Main content */}
       <main className="flex-1 flex min-h-0 p-4 gap-4">
         {/* Briefing panel */}
+        {!isFullscreen && (
         <div className="w-80 shrink-0 bg-white rounded-xl border border-slate-200 shadow-sm overflow-y-auto hidden lg:block">
           <div className="p-5 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-900">Briefing</h2>
@@ -570,6 +717,7 @@ export default function LabWorkspace() {
             )}
           </div>
         </div>
+        )}
 
         {/* Terminal */}
         <div className="flex-1 flex flex-col min-w-0 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -590,6 +738,38 @@ export default function LabWorkspace() {
                     {cmd}
                   </button>
                 ))}
+                <div className="w-px h-4 bg-slate-200 mx-1" />
+                <button
+                  onClick={handleCopy}
+                  disabled={!selection}
+                  title="Copy selection"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                >
+                  <Copy size={13} />
+                </button>
+                <button
+                  onClick={handlePaste}
+                  title="Paste from clipboard"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                >
+                  <ClipboardPaste size={13} />
+                </button>
+                <button
+                  onClick={() => updateFontSize(fontSize - 1)}
+                  disabled={fontSize <= MIN_FONT_SIZE}
+                  title="Decrease font size"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                >
+                  <ZoomOut size={13} />
+                </button>
+                <button
+                  onClick={() => updateFontSize(fontSize + 1)}
+                  disabled={fontSize >= MAX_FONT_SIZE}
+                  title="Increase font size"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                >
+                  <ZoomIn size={13} />
+                </button>
                 <button
                   onClick={handleClear}
                   title="Clear terminal"
@@ -607,7 +787,7 @@ export default function LabWorkspace() {
                   Connecting...
                 </span>
                 <button
-                  onClick={handleReconnect}
+                  onClick={handleManualReconnect}
                   className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-emerald-700 hover:bg-emerald-50 transition-colors"
                 >
                   <PlugZap size={12} />
@@ -615,8 +795,16 @@ export default function LabWorkspace() {
                 </button>
               </div>
             )}
+
+            <button
+              onClick={() => setIsFullscreen((v) => !v)}
+              title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            >
+              {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+            </button>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 relative">
             {isRunning ? (
               <div ref={terminalRef} className="w-full h-full" />
             ) : (
@@ -638,6 +826,28 @@ export default function LabWorkspace() {
                     Start Lab
                   </button>
                 )}
+              </div>
+            )}
+            {isRunning && !connected && hasConnected && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-50">
+                <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
+                  <WifiOff size={20} className="text-amber-500" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-slate-900">Connection lost</p>
+                  <p className="text-xs text-slate-500 mt-1 max-w-xs">
+                    {autoReconnecting
+                      ? "Attempting to reconnect automatically..."
+                      : "The connection to your terminal was lost. Click below to re-establish the session."}
+                  </p>
+                </div>
+                <button
+                  onClick={handleManualReconnect}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-colors"
+                >
+                  <PlugZap size={12} />
+                  Reconnect
+                </button>
               </div>
             )}
           </div>

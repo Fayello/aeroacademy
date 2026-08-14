@@ -32,6 +32,10 @@ const MAX_CONCURRENT_LABS = parseInt(
   10,
 );
 const MAX_LABS_PER_USER = parseInt(process.env.MAX_LABS_PER_USER || '3', 10);
+const STALE_PROVISIONING_MS = parseInt(
+  process.env.LAB_PROVISION_TIMEOUT_MS || (10 * 60 * 1000).toString(),
+  10,
+);
 
 @Injectable()
 export class LabsService implements OnModuleInit {
@@ -370,6 +374,29 @@ export class LabsService implements OnModuleInit {
         await this.prisma.labInstance.update({
           where: { id: instance.id },
           data: { status: 'EXPIRED' },
+        });
+      } catch {
+        /* container may already be gone */
+      }
+    }
+
+    const staleProvisioning = await this.prisma.labInstance.findMany({
+      where: {
+        status: 'PROVISIONING',
+        createdAt: { lt: new Date(Date.now() - STALE_PROVISIONING_MS) },
+      },
+    });
+
+    for (const instance of staleProvisioning) {
+      try {
+        if (instance.containerId) {
+          const container = this.docker.getContainer(instance.containerId);
+          await container.stop().catch(() => {});
+          await container.remove().catch(() => {});
+        }
+        await this.prisma.labInstance.update({
+          where: { id: instance.id },
+          data: { status: 'STOPPED' },
         });
       } catch {
         /* container may already be gone */

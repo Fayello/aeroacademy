@@ -6,35 +6,37 @@ import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Troph
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
+import { useI18n, LanguageSwitcher } from "@/lib/i18n";
 
 interface NavLink {
   href: string;
-  label: string;
+  tKey: string;
   icon: typeof LayoutDashboard;
   roles?: string[];
 }
 
 const links: NavLink[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/courses", label: "Courses", icon: GraduationCap },
-  { href: "/dashboard/labs", label: "Labs", icon: Microscope },
-  { href: "/dashboard/master-classes", label: "Master Classes", icon: Video },
-  { href: "/dashboard/training", label: "Training", icon: Calendar },
-  { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  { href: "/dashboard/certifications", label: "Certifications", icon: Award },
-  { href: "/dashboard/registry", label: "Registry", icon: Shield },
-  { href: "/dashboard/enterprise", label: "Enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
-  { href: "/dashboard/admin", label: "Admin", icon: Award, roles: ["ADMIN"] },
-  { href: "/dashboard/admin/analytics", label: "Analytics", icon: BarChart3, roles: ["ADMIN"] },
-  { href: "/dashboard/admin/audit", label: "Audit Logs", icon: ScrollText, roles: ["ADMIN"] },
-  { href: "/dashboard/profile", label: "Profile", icon: User },
+  { href: "/dashboard", tKey: "dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/courses", tKey: "courses", icon: GraduationCap },
+  { href: "/dashboard/labs", tKey: "labs", icon: Microscope },
+  { href: "/dashboard/master-classes", tKey: "master-classes", icon: Video },
+  { href: "/dashboard/training", tKey: "training", icon: Calendar },
+  { href: "/dashboard/leaderboard", tKey: "leaderboard", icon: Trophy },
+  { href: "/dashboard/notifications", tKey: "notifications", icon: Bell },
+  { href: "/dashboard/certifications", tKey: "certifications", icon: Award },
+  { href: "/dashboard/registry", tKey: "registry", icon: Shield },
+  { href: "/dashboard/enterprise", tKey: "enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
+  { href: "/dashboard/admin", tKey: "admin", icon: Award, roles: ["ADMIN"] },
+  { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3, roles: ["ADMIN"] },
+  { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText, roles: ["ADMIN"] },
+  { href: "/dashboard/profile", tKey: "profile", icon: User },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string>("STUDENT");
   const [level, setLevel] = useState(1);
+  const { t } = useI18n();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -58,7 +60,7 @@ export default function Sidebar() {
         </div>
         <div>
           <h1 className="text-base font-semibold text-slate-900 tracking-tight">AEROACADEMY</h1>
-          <p className="text-[11px] text-slate-400">Tech Training Platform</p>
+          <p className="text-[11px] text-slate-400">{t("app.tagline")}</p>
         </div>
       </div>
 
@@ -66,11 +68,12 @@ export default function Sidebar() {
         <div className="h-px bg-slate-100" />
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1" role="navigation" aria-label="Main navigation">
-        {filteredLinks.map(({ href, label, icon: Icon }) => {
+      <nav className="flex-1 px-3 py-4 space-y-1" role="navigation" aria-label={t("nav.main")}>
+        {filteredLinks.map(({ href, tKey, icon: Icon }) => {
           const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
           const gate = getSidebarItemLock(href, level);
           const isLocked = gate.locked;
+          const label = t(`nav.${tKey}`);
 
           return (
             <Link
@@ -100,14 +103,15 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-3 mt-auto">
+      <div className="p-3 mt-auto space-y-2">
+        <LanguageSwitcher />
         <button
           onClick={logout}
-          aria-label="Log out"
+          aria-label={t("common.logout")}
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors duration-150"
         >
           <LogOut size={18} />
-          Log out
+          {t("common.logout")}
         </button>
       </div>
     </aside>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { BarChart3, Users, GraduationCap, BookOpen, Microscope, Trophy, Award, Target, Activity, TrendingUp, Loader2, ShieldCheck } from "lucide-react";
+import { BarChart3, Users, GraduationCap, BookOpen, Microscope, Trophy, Award, Target, Activity, TrendingUp, Loader2, ShieldCheck, Download, FileDown } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import { downloadAnalyticsCsv, downloadAnalyticsPdf } from "@/lib/analyticsReport";
 import type { AnalyticsOverview } from "@/types/api";
 
 function maxOf(values: number[]): number {
@@ -72,6 +73,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: n
 export default function AdminAnalyticsPage() {
   const [data, setData] = useState<AnalyticsOverview | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetchApi("/admin/analytics/overview")
@@ -125,6 +127,27 @@ export default function AdminAnalyticsPage() {
             <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
               <Target size={16} className="text-emerald-600" />
               <span className="font-medium">{totals.flagsSolved} flags captured</span>
+            </div>
+            <div className="flex-1" />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => downloadAnalyticsCsv(data)}
+                className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow"
+              >
+                <Download size={16} className="text-emerald-600" />
+                CSV
+              </button>
+              <button
+                onClick={() => {
+                  setExporting(true);
+                  downloadAnalyticsPdf(data).finally(() => setExporting(false));
+                }}
+                disabled={exporting}
+                className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {exporting ? <Loader2 size={16} className="animate-spin text-emerald-600" /> : <FileDown size={16} className="text-emerald-600" />}
+                {exporting ? "Generating..." : "PDF"}
+              </button>
             </div>
           </div>
         </div>
