@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, ReactNode } from "react";
+import type { ErrorInfo } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface Props {
@@ -22,7 +23,7 @@ export default class RootErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("RootErrorBoundary caught:", error, errorInfo);
   }
 

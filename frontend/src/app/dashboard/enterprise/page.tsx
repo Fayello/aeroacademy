@@ -19,7 +19,7 @@ interface Talent {
   division: string;
   bio: string;
   organization: { name: string; type: string } | null;
-  achievements: any[];
+  achievements: { achievement: { id: string; title: string; description: string; icon: string; category: string; xpReward: number } }[];
   _count: { labSubmissions: number };
 }
 
@@ -59,7 +59,7 @@ export default function EnterprisePortal() {
   const loadShortlist = useCallback(async () => {
     try {
       const data = await fetchApi("/recruitment/shortlisted");
-      setShortlisted(new Set(data.map((s: any) => s.studentId)));
+      setShortlisted(new Set(data.map((s: { studentId: string }) => s.studentId)));
     } catch { /* ignore */ }
   }, []);
 

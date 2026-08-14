@@ -25,9 +25,15 @@ export interface Course {
   id: string;
   title: string;
   description: string;
+  imageUrl?: string | null;
+  estimatedHours?: number | null;
+  duration?: string | null;
+  category?: string;
+  difficulty?: number;
   createdAt: string;
   sections: Section[];
   progress?: number;
+  _count?: { sections?: number; lessons?: number };
 }
 
 export interface Section {
@@ -36,6 +42,7 @@ export interface Section {
   title: string;
   order: number;
   lessons: Lesson[];
+  _count?: { lessons?: number };
 }
 
 export interface Lesson {
@@ -48,6 +55,15 @@ export interface Lesson {
   labId: string | null;
   lab?: { id: string; title: string; description: string; difficulty: number } | null;
   quiz?: Quiz | null;
+  section?: { courseId: string; title: string };
+}
+
+export interface QuizSubmissionResult {
+  score: number;
+  passed: boolean;
+  correctCount: number;
+  totalCount: number;
+  details: { questionId: string; isCorrect: boolean }[];
 }
 
 export interface Quiz {
@@ -127,6 +143,7 @@ export interface Achievement {
   icon: string;
   category: string;
   xpReward: number;
+  unlockedAt?: string;
 }
 
 export interface Progress {
@@ -141,6 +158,7 @@ export interface LeaderboardEntry {
   position: number;
   id: string;
   name: string;
+  email?: string | null;
   xp: number;
   rank: number;
   level: number;
@@ -148,6 +166,33 @@ export interface LeaderboardEntry {
   division: string;
   organization: { name: string; type: string } | null;
   city: string | null;
+}
+
+export interface LeagueRegion {
+  name: string;
+  totalXp: number;
+  studentCount: number;
+}
+
+export interface LeagueUniversity {
+  id: string | null;
+  name: string;
+  totalXp: number;
+  studentCount: number;
+}
+
+export interface Season {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export interface LeagueStats {
+  regional: LeagueRegion[];
+  university: LeagueUniversity[];
+  season: Season | null;
 }
 
 export interface Team {
@@ -358,11 +403,9 @@ export interface MasterClass {
   status: MasterClassStatus;
   recordingUrl: string | null;
   isLive: boolean;
-  registrations?: {
-    id: string;
-    registeredAt: string;
+  registrations?: (MasterClassRegistration & {
     user: { id: string; name: string | null; email: string };
-  }[];
+  })[];
   _count?: { registrations: number };
 }
 
@@ -381,6 +424,7 @@ export interface TrainingSlot {
   startTime: string;
   endTime: string;
   isActive?: boolean;
+  available?: boolean;
 }
 
 export interface Trainer {
@@ -388,6 +432,7 @@ export interface Trainer {
   userId: string;
   bio: string | null;
   specialties: string[] | null;
+  hourlyRate?: number | null;
   isActive?: boolean;
   user: {
     id: string;

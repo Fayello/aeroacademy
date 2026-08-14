@@ -8,15 +8,16 @@ import toast from "react-hot-toast";
 import Badge from "@/components/ui/Badge";
 import { DIVISION_COLORS } from "@/lib/constants";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
+import type { LeaderboardEntry, LeagueStats } from "@/types/api";
 
 export default function LeaderboardPage() {
   const { socket, userMetrics } = useDashboard();
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [activeLeague, setActiveLeague] = useState<"GLOBAL" | "REGIONAL" | "UNIVERSITY">("GLOBAL");
   const [filter, setFilter] = useState("");
-  const [leagueStats, setLeagueStats] = useState<{ regional: any[]; university: any[]; season?: any }>({ regional: [], university: [] });
+  const [leagueStats, setLeagueStats] = useState<LeagueStats>({ regional: [], university: [], season: null });
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,13 +38,13 @@ export default function LeaderboardPage() {
     fetchLeagues();
 
     if (!socket) return;
-    socket.on("leaderboard_update", (data: any[]) => { setLeaderboard(data); setLoading(false); });
+    socket.on("leaderboard_update", (data: LeaderboardEntry[]) => { setLeaderboard(data); setLoading(false); });
     return () => { socket.off("leaderboard_update"); };
   }, [socket]);
 
   const filteredOperators = useMemo(() => {
     return leaderboard
-      .filter((op) => (op.name || op.email).toLowerCase().includes(filter.toLowerCase()))
+      .filter((op) => (op.name || op.email || "").toLowerCase().includes(filter.toLowerCase()))
       .filter((op) => {
         if (activeLeague === "GLOBAL") return true;
         if (activeLeague === "REGIONAL") return op.city === selectedCity;
@@ -200,7 +201,7 @@ export default function LeaderboardPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-base font-semibold text-slate-900 truncate">{op.name}</p>
-                <Badge variant={(DIVISION_COLORS[op.division] ? undefined : "slate") as any} className={DIVISION_COLORS[op.division] || ""}>
+                <Badge variant={DIVISION_COLORS[op.division] ? undefined : "slate"} className={DIVISION_COLORS[op.division] || ""}>
                   {op.division}
                 </Badge>
                 {op.xp > 2500 && (

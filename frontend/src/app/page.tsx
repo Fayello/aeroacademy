@@ -10,6 +10,7 @@ import {
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";
 import HeroParticles from "@/components/HeroParticles";
+import type { MasterClass, Trainer } from "@/types/api";
 
 const AUDIENCES = [
   {
@@ -149,8 +150,8 @@ export default function LandingPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalLabs: 0 });
-  const [masterClasses, setMasterClasses] = useState<any[]>([]);
-  const [trainers, setTrainers] = useState<any[]>([]);
+  const [masterClasses, setMasterClasses] = useState<MasterClass[]>([]);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -163,10 +164,10 @@ export default function LandingPage() {
       .then(setStats)
       .catch(() => {});
     fetchApi("/master-classes?status=UPCOMING&limit=3")
-      .then((data: any) => setMasterClasses(Array.isArray(data) ? data : data.data || []))
+      .then((data) => setMasterClasses(Array.isArray(data) ? data : data.data || []))
       .catch(() => {});
     fetchApi("/training/trainers")
-      .then((data: any) => setTrainers(Array.isArray(data) ? data.slice(0, 3) : data.data?.slice(0, 3) || []))
+      .then((data) => setTrainers(Array.isArray(data) ? data.slice(0, 3) : data.data?.slice(0, 3) || []))
       .catch(() => {});
   }, []);
 
@@ -470,7 +471,7 @@ export default function LandingPage() {
           </div>
           {masterClasses.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
-              {masterClasses.map((mc: any) => (
+              {masterClasses.map((mc: MasterClass) => (
                 <div key={mc.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow group">
                   <div className="h-40 bg-gradient-to-br from-violet-500 to-emerald-600 flex items-center justify-center relative">
                     <Video size={40} className="text-white/80" />
@@ -530,14 +531,14 @@ export default function LandingPage() {
           </div>
           {trainers.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
-              {trainers.map((trainer: any) => (
+              {trainers.map((trainer: Trainer) => (
                 <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all group">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-lg">
-                      {(trainer.user?.name || trainer.name || "T").charAt(0)}
+                      {(trainer.user?.name || "T").charAt(0)}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{trainer.user?.name || trainer.name}</div>
+                      <div className="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{trainer.user?.name}</div>
                       <div className="text-xs text-slate-500">{trainer.specialties?.join(", ") || "Security, Linux"}</div>
                     </div>
                   </div>

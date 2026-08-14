@@ -6,10 +6,11 @@ import { useParams } from "next/navigation";
 import { ChevronRight, ChevronLeft, Play, BookOpen, Clock, Loader2, Lock, CheckCircle2, Layers } from "lucide-react";
 import Link from "next/link";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
+import type { Course, Section, Lesson } from "@/types/api";
 
 export default function CourseDetailPage() {
   const { id } = useParams();
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<{ total: number; completed: number; percentage: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,13 +25,13 @@ export default function CourseDetailPage() {
     async function loadCourse() {
       try {
         const [courseData, progressData] = await Promise.all([
-          fetchApi(`/courses/${id}`),
+          fetchApi(`/courses/${id}`) as Promise<Course>,
           fetchApi(`/progress/course/${id}`).catch(() => null),
         ]);
         setCourse(courseData);
         setProgress(progressData);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -46,6 +47,7 @@ export default function CourseDetailPage() {
     );
   }
   if (error) return <div role="alert" className="text-red-600 p-4">{error}</div>;
+  if (!course) return null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
@@ -85,7 +87,7 @@ export default function CourseDetailPage() {
         {/* Modules */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-lg font-semibold text-slate-900">Course Modules</h2>
-          {course.sections.map((section: any) => {
+          {course.sections.map((section: Section) => {
             const gate = getCourseLock(section.title, level);
             const isLocked = gate.locked;
 
@@ -112,7 +114,7 @@ export default function CourseDetailPage() {
                 </div>
 
                 <div className="divide-y divide-slate-100">
-                  {section.lessons.map((lesson: any) => (
+                  {section.lessons.map((lesson: Lesson) => (
                     <Link
                       key={lesson.id}
                       href={isLocked ? "#" : `/dashboard/courses/lessons/${lesson.id}`}

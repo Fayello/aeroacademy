@@ -7,15 +7,29 @@ import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
+interface CandidateProfile {
+  id: string;
+  name: string | null;
+  email: string;
+  city: string | null;
+  bio: string | null;
+  xp: number;
+  division: string;
+  clearance: string;
+  organization: { name: string; type: string } | null;
+  achievements: { achievement: { id: string; title: string; description: string } }[];
+  _count: { labSubmissions: number; progress: number };
+}
+
 export default function CandidateRegistry() {
   const { id } = useParams();
   const router = useRouter();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<CandidateProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async () => {
     try {
-      const data = await fetchApi(`/recruitment/candidate/${id}`);
+      const data = await fetchApi(`/recruitment/candidate/${id}`) as CandidateProfile;
       setProfile(data);
     } catch {
       toast.error("Candidate not found.");
@@ -102,7 +116,7 @@ export default function CandidateRegistry() {
           </h3>
           {profile.achievements.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {profile.achievements.map((item: any) => (
+              {profile.achievements.map((item) => (
                 <div key={item.achievement.id} className="p-4 rounded-lg bg-slate-50 border border-slate-100 flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
                     <Trophy size={18} className="text-amber-600" />

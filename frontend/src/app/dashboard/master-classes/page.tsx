@@ -4,16 +4,17 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Video, Calendar, UserCheck, Loader2, Users, Search, X } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import type { MasterClass } from "@/types/api";
 
 const CATEGORIES = ["All", "SECURITY", "LINUX", "DEVOPS", "CLOUD"];
 
 export default function MasterClassesPage() {
-  const [classes, setClasses] = useState<any[]>([]);
+  const [classes, setClasses] = useState<MasterClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredClasses = (classes || []).filter((mc: { title?: string; description?: string; instructorName?: string }) => {
+  const filteredClasses = classes.filter((mc) => {
     const q = searchQuery.trim().toLowerCase();
     return (
       !q ||
@@ -27,7 +28,7 @@ export default function MasterClassesPage() {
     const params = new URLSearchParams();
     if (category !== "All") params.set("category", category);
     fetchApi(`/master-classes?${params}`)
-      .then((data: any) => setClasses(Array.isArray(data) ? data : data.data || []))
+      .then((data) => setClasses(Array.isArray(data) ? data : data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [category]);
@@ -97,7 +98,7 @@ export default function MasterClassesPage() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredClasses.map((mc: any) => (
+          {filteredClasses.map((mc: MasterClass) => (
             <Link
               key={mc.id}
               href={`/dashboard/master-classes/${mc.id}`}

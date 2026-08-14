@@ -4,6 +4,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { Shield, Award, CheckCircle, Trophy, Loader2, ExternalLink } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "react-hot-toast";
+import type { Achievement } from "@/types/api";
 
 export default function RegistryPage() {
   const { userMetrics } = useDashboard();
@@ -85,7 +86,7 @@ export default function RegistryPage() {
         </h3>
         {userMetrics.achievements?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {userMetrics.achievements.map((achievement: any) => (
+            {userMetrics.achievements.map((achievement: Achievement) => (
               <div key={achievement.id} className="p-4 rounded-lg bg-slate-50 border border-slate-100 flex items-start gap-3">
                 <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
                   <Trophy size={18} className="text-amber-600" />

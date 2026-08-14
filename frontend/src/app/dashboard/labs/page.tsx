@@ -7,11 +7,12 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { getLevel, getLabLock } from "@/lib/levelGating";
 import { getDifficultyStyle, getEstimatedTime, getSolvedCount, getProgressStatus } from "@/lib/labs";
+import type { Lab, LabStats } from "@/types/api";
 
 export default function LabsCatalog() {
-  const [labs, setLabs] = useState<any[]>([]);
+  const [labs, setLabs] = useState<Lab[]>([]);
   const [loading, setLoading] = useState(true);
-  const [systemStats, setSystemStats] = useState<any>(null);
+  const [systemStats, setSystemStats] = useState<LabStats | null>(null);
   const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");

@@ -45,6 +45,10 @@ interface AdminTableProps<T> {
   filters?: React.ReactNode;
 }
 
+function getField<T>(item: T, key: string): unknown {
+  return (item as Record<string, unknown>)[key];
+}
+
 export default function AdminTable<T extends { id: string }>({
   columns,
   data,
@@ -82,7 +86,7 @@ export default function AdminTable<T extends { id: string }>({
     if (!search.trim()) return data;
     return data.filter((item) => {
       return effectiveSearchKeys.some((key) => {
-        const val = String((item as any)[key] || "").toLowerCase();
+        const val = String(getField(item, key) || "").toLowerCase();
         return val.includes(search.toLowerCase());
       });
     });
@@ -92,8 +96,8 @@ export default function AdminTable<T extends { id: string }>({
     const arr = [...filtered];
     if (!sortKey) return arr;
     return arr.sort((a, b) => {
-      const aVal = (a as any)[sortKey];
-      const bVal = (b as any)[sortKey];
+      const aVal = getField(a, sortKey);
+      const bVal = getField(b, sortKey);
       if (aVal == null && bVal == null) return 0;
       if (aVal == null) return 1;
       if (bVal == null) return -1;
@@ -137,7 +141,7 @@ export default function AdminTable<T extends { id: string }>({
     const rows = sorted.map((item) =>
       exportCols.map((col) => {
         if (col.exportRender) return col.exportRender(item);
-        const val = (item as any)[col.key];
+        const val = getField(item, col.key);
         return typeof val === "string" ? val : JSON.stringify(val ?? "");
       })
     );
@@ -323,7 +327,7 @@ export default function AdminTable<T extends { id: string }>({
                     )}
                     {visibleColumns.map((col) => (
                       <td key={col.key} className={`px-6 py-4 text-sm text-slate-700 ${col.className || ""}`}>
-                        {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+                        {col.render ? col.render(item) : String(getField(item, col.key) ?? "")}
                       </td>
                     ))}
                     {(onEdit || onDelete || onView) && (

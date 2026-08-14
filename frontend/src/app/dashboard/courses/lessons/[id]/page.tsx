@@ -6,16 +6,27 @@ import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, CheckCircle, Loader2, Microscope } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as any;
+type ReactPlayerComponent = React.ComponentType<{
+  url?: string;
+  width?: string | number;
+  height?: string | number;
+  playing?: boolean;
+  controls?: boolean;
+  onEnded?: () => void;
+  onPlay?: () => void;
+  onPause?: () => void;
+}>;
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as unknown as ReactPlayerComponent;
 import toast from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
+import type { Lesson, QuizQuestion, QuizAnswer, QuizSubmissionResult } from "@/types/api";
 
 export default function LessonPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [lesson, setLesson] = useState<any>(null);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -24,7 +35,7 @@ export default function LessonPage() {
   const [quizAnswer, setQuizAnswer] = useState<Record<string, string>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizCorrect, setQuizCorrect] = useState(false);
-  const [submissionResult, setSubmissionResult] = useState<any>(null);
+  const [submissionResult, setSubmissionResult] = useState<QuizSubmissionResult | null>(null);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     title: string;
@@ -38,9 +49,9 @@ export default function LessonPage() {
     async function loadLesson() {
       try {
         const data = await fetchApi(`/courses/lessons/${id}`);
-        setLesson(data);
-      } catch (err: any) {
-        setError(err.message);
+        setLesson(data as Lesson);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -64,8 +75,8 @@ export default function LessonPage() {
           });
           setCompleted(true);
           toast.success("Lesson completed!");
-        } catch (err: any) {
-          toast.error(err.message || "Failed to record progress.");
+        } catch (err) {
+          toast.error(err instanceof Error ? err.message : "Failed to record progress.");
         } finally {
           setSaving(false);
         }
@@ -85,6 +96,7 @@ export default function LessonPage() {
     );
   }
   if (error) return <div role="alert" className="text-red-600 p-4">{error}</div>;
+  if (!lesson) return null;
 
   return (
     <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500">
@@ -148,7 +160,7 @@ export default function LessonPage() {
                 remarkPlugins={[remarkGfm]}
                 components={{
                   pre: ({ children }) => <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 overflow-x-auto">{children}</pre>,
-                  code: ({ className, children, ...props }: any) => {
+                  code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
                     const match = /language-(\w+)/.exec(className || "");
                     const isInline = !match;
                     if (isInline) {
@@ -186,16 +198,16 @@ export default function LessonPage() {
               <div className="mt-12 pt-8 border-t border-slate-200">
                 <h3 className="text-lg font-semibold text-slate-900 mb-6">Knowledge Check</h3>
                 <div className="space-y-8">
-                  {lesson.quiz.questions.map((question: any, qIdx: number) => (
+                  {lesson.quiz.questions.map((question: QuizQuestion, qIdx: number) => (
                     <div key={question.id} className="bg-slate-50 rounded-xl p-6 border border-slate-200">
                       <p className="text-sm font-medium text-slate-900 mb-4">
                         <span className="text-slate-400 mr-2">{qIdx + 1}.</span>
                         {question.text}
                       </p>
                       <div className="space-y-2">
-                        {question.answers.map((answer: any) => {
+                        {question.answers.map((answer: QuizAnswer) => {
                           const isSelected = quizAnswer[question.id] === answer.id;
-                          const result = submissionResult?.details?.find((d: any) => d.questionId === question.id);
+                          const result = submissionResult?.details?.find((d) => d.questionId === question.id);
                           const wasSelectedAndWrong = isSelected && quizSubmitted && result && !result.isCorrect;
                           const wasSelectedAndCorrect = isSelected && quizSubmitted && result && result.isCorrect;
 
@@ -230,7 +242,8 @@ export default function LessonPage() {
                 {!quizSubmitted ? (
                   <button
                     onClick={async () => {
-                      if (Object.keys(quizAnswer).length < (lesson.quiz?.questions?.length || 0)) {
+                      if (!lesson.quiz) return;
+                      if (Object.keys(quizAnswer).length < (lesson.quiz.questions?.length || 0)) {
                         toast.error("Please answer all questions.");
                         return;
                       }
@@ -239,13 +252,13 @@ export default function LessonPage() {
                         const result = await fetchApi(`/quiz/submit/${lesson.quiz.id}`, {
                           method: "POST",
                           body: JSON.stringify({ answers: quizAnswer }),
-                        });
+                        }) as QuizSubmissionResult;
                         setSubmissionResult(result);
                         setQuizSubmitted(true);
                         setQuizCorrect(result.passed);
                         toast[result.passed ? "success" : "error"](`Score: ${result.score}%`);
-                      } catch (err: any) {
-                        toast.error(err.message || "Submission failed.");
+                      } catch (err) {
+                        toast.error(err instanceof Error ? err.message : "Submission failed.");
                       } finally {
                         setSaving(false);
                       }

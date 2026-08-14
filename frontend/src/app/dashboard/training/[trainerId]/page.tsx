@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Calendar, Clock, ArrowLeft, Loader2, Check } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import toast from "react-hot-toast";
+import type { Trainer, TrainingSlot } from "@/types/api";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -23,18 +24,18 @@ function getNextWeekDates() {
 export default function TrainerProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const [trainer, setTrainer] = useState<any>(null);
+  const [trainer, setTrainer] = useState<Trainer | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [slots, setSlots] = useState<any[]>([]);
+  const [slots, setSlots] = useState<TrainingSlot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [booking, setBooking] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  const [selectedSlot, setSelectedSlot] = useState<TrainingSlot | null>(null);
   const [topic, setTopic] = useState("");
 
   useEffect(() => {
     fetchApi(`/training/trainers/${params.trainerId}`)
-      .then(setTrainer)
+      .then((data) => setTrainer(data as Trainer))
       .catch(() => toast.error("Failed to load trainer"))
       .finally(() => setLoading(false));
   }, [params.trainerId]);
@@ -44,13 +45,13 @@ export default function TrainerProfilePage() {
     setSlotsLoading(true);
     const dateStr = selectedDate.toISOString().split("T")[0];
     fetchApi(`/training/trainers/${trainer.id}/slots?date=${dateStr}`)
-      .then((data: any) => setSlots(Array.isArray(data) ? data : []))
+      .then((data) => setSlots(data as TrainingSlot[]))
       .catch(() => {})
       .finally(() => setSlotsLoading(false));
   }, [trainer, selectedDate]);
 
   const handleBook = async () => {
-    if (!selectedSlot || !topic.trim()) {
+    if (!trainer || !selectedSlot || !topic.trim()) {
       toast.error("Please select a slot and enter a topic");
       return;
     }
@@ -69,8 +70,8 @@ export default function TrainerProfilePage() {
       });
       toast.success("Session booked!");
       router.push("/dashboard/training/bookings");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to book session");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to book session");
     } finally {
       setBooking(false);
     }
@@ -148,7 +149,7 @@ export default function TrainerProfilePage() {
             <p className="text-sm text-slate-500 text-center py-8">No slots available for this date.</p>
           ) : (
             <div className="space-y-2">
-              {slots.map((slot: any) => (
+              {slots.map((slot) => (
                 <button
                   key={slot.id}
                   disabled={!slot.available}

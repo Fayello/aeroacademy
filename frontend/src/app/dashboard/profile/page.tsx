@@ -5,6 +5,7 @@ import { Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star } f
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
+import type { User, Achievement } from "@/types/api";
 
 const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; nextAt: number }> = {
   BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", next: "SILVER", nextAt: 800 },
@@ -24,7 +25,7 @@ const LEVEL_UNLOCKS = [
 ];
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { userMetrics } = useDashboard();
 
   useEffect(() => {
@@ -192,7 +193,7 @@ export default function ProfilePage() {
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Achievements</h2>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
-            {userMetrics && userMetrics.achievements && userMetrics.achievements.length > 0 ? userMetrics.achievements.map((ach: any) => (
+            {userMetrics && userMetrics.achievements && userMetrics.achievements.length > 0 ? userMetrics.achievements.map((ach: Achievement) => (
               <div key={ach.id} className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:shadow-sm transition-all">
                 <div className="flex items-center gap-2">
                   <Star size={16} className="text-amber-500" fill="currentColor" />

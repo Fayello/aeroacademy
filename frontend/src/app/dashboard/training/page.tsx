@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, ArrowRight, Loader2, BookOpen, Award } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import type { Trainer } from "@/types/api";
 
 export default function TrainingPage() {
-  const [trainers, setTrainers] = useState<any[]>([]);
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchApi("/training/trainers")
-      .then((data: any) => setTrainers(Array.isArray(data) ? data : data.data || []))
+      .then((data) => setTrainers(Array.isArray(data) ? data : data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -44,7 +45,7 @@ export default function TrainingPage() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trainers.map((trainer: any) => (
+          {trainers.map((trainer: Trainer) => (
             <Link
               key={trainer.id}
               href={`/dashboard/training/${trainer.id}`}

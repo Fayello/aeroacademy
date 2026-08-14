@@ -5,11 +5,22 @@ import { useState, useEffect } from "react";
 import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import { CertificationsSkeleton } from "@/components/Skeleton";
+import type { User } from "@/types/api";
+
+interface Certification {
+  id: string;
+  title: string;
+  requirement: string;
+  icon: typeof Trophy;
+  color: string;
+  unlocked: boolean;
+  xp: number;
+}
 
 export default function CertificationsPage() {
   const { userMetrics } = useDashboard();
   const [generating, setGenerating] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     try {
@@ -22,7 +33,7 @@ export default function CertificationsPage() {
     return <CertificationsSkeleton />;
   }
 
-  const generatePDF = async (cert: any) => {
+  const generatePDF = async (cert: Certification) => {
     setGenerating(cert.id);
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
@@ -66,7 +77,7 @@ export default function CertificationsPage() {
     setGenerating(null);
   };
 
-  const certifications = [
+  const certifications: Certification[] = [
     { id: "MASTER", title: "Master Cyber Operative", requirement: "5,000 XP", icon: Trophy, color: "text-amber-500 bg-amber-100", unlocked: (userMetrics?.xp || 0) >= 5000, xp: 5000 },
     { id: "EXPERT", title: "Expert Security Researcher", requirement: "2,500 XP", icon: Shield, color: "text-purple-500 bg-purple-100", unlocked: (userMetrics?.xp || 0) >= 2500, xp: 2500 },
     { id: "PROFESSIONAL", title: "Professional Pen-Tester", requirement: "1,000 XP", icon: Award, color: "text-blue-500 bg-blue-100", unlocked: (userMetrics?.xp || 0) >= 1000, xp: 1000 },

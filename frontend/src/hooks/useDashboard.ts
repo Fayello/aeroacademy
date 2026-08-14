@@ -15,6 +15,7 @@ export interface UserMetrics {
   rank: number;
   clearance: string;
   latestProgress: {
+    lessonId: string;
     lesson: {
       title: string;
       section: { title: string; course: { title: string } };

@@ -5,21 +5,23 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Video, Calendar, Clock, UserCheck, ArrowLeft, Loader2, Users } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import { getErrorMessage } from "@/lib/format";
 import toast from "react-hot-toast";
+import type { MasterClass, MasterClassRegistration } from "@/types/api";
 
 export default function MasterClassDetailPage() {
   const params = useParams();
-  const [mc, setMc] = useState<any>(null);
+  const [mc, setMc] = useState<MasterClass | null>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
   useEffect(() => {
     fetchApi(`/master-classes/${params.id}`)
-      .then((data: any) => {
+      .then((data) => {
         setMc(data);
         const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
-        setIsRegistered(data.registrations?.some((r: any) => r.userId === userId) || false);
+        setIsRegistered(data.registrations?.some((r: MasterClassRegistration) => r.userId === userId) || false);
       })
       .catch(() => toast.error("Failed to load master class"))
       .finally(() => setLoading(false));
@@ -31,12 +33,12 @@ export default function MasterClassDetailPage() {
       await fetchApi(`/master-classes/${params.id}/register`, { method: "POST" });
       setIsRegistered(true);
       toast.success("Registered successfully!");
-      setMc((prev: any) => ({
+      setMc((prev) => prev && ({
         ...prev,
         _count: { ...prev._count, registrations: (prev._count?.registrations || 0) + 1 },
       }));
-    } catch (err: any) {
-      toast.error(err.message || "Failed to register");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to register"));
     } finally {
       setRegistering(false);
     }
@@ -48,12 +50,12 @@ export default function MasterClassDetailPage() {
       await fetchApi(`/master-classes/${params.id}/register`, { method: "DELETE" });
       setIsRegistered(false);
       toast.success("Unregistered");
-      setMc((prev: any) => ({
+      setMc((prev) => prev && ({
         ...prev,
         _count: { ...prev._count, registrations: Math.max((prev._count?.registrations || 1) - 1, 0) },
       }));
-    } catch (err: any) {
-      toast.error(err.message || "Failed to unregister");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to unregister"));
     } finally {
       setRegistering(false);
     }
@@ -131,7 +133,7 @@ export default function MasterClassDetailPage() {
             <div className="bg-white rounded-xl border border-slate-200 p-6">
               <h3 className="font-bold text-slate-900 mb-3">Registered ({mc.registrations.length})</h3>
               <div className="space-y-2">
-                {mc.registrations.map((r: any) => (
+                {mc.registrations.map((r) => (
                   <div key={r.id} className="flex items-center gap-3 text-sm text-slate-600">
                     <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
                       {(r.user?.name || "U").charAt(0)}

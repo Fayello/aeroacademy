@@ -18,6 +18,30 @@ interface Lab {
   difficulty: number;
 }
 
+interface LabFlag {
+  id: string;
+  labId: string;
+  title: string;
+}
+
+interface MemberProgress {
+  id: string;
+  name: string | null;
+  xp: number;
+  rank: number;
+  labSubmissions: { flag: LabFlag }[];
+}
+
+interface TeamProgress {
+  id: string;
+  name: string;
+  members: MemberProgress[];
+}
+
+interface LaunchResult {
+  status: string;
+}
+
 export default function ClassroomCommand() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [labs, setLabs] = useState<Lab[]>([]);
@@ -25,7 +49,7 @@ export default function ClassroomCommand() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [teamProgress, setTeamProgress] = useState<any>(null);
+  const [teamProgress, setTeamProgress] = useState<TeamProgress | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -69,7 +93,7 @@ export default function ClassroomCommand() {
         method: "POST",
         body: JSON.stringify({ teamId: selectedTeam, labId: selectedLab }),
       });
-      const count = results.filter((r: any) => r.status === "SUCCESS").length;
+      const count = results.filter((r: LaunchResult) => r.status === "SUCCESS").length;
       toast.success(`Launched ${count} instances.`);
       loadTeamProgress();
     } catch {
@@ -159,8 +183,8 @@ export default function ClassroomCommand() {
         </div>
 
         <div className="space-y-2 max-h-[500px] overflow-y-auto">
-          {teamProgress?.members?.map((member: any) => {
-            const isCorrect = member.labSubmissions?.some((s: any) => s.flag.labId === selectedLab);
+          {teamProgress?.members?.map((member: MemberProgress) => {
+            const isCorrect = member.labSubmissions?.some((s: { flag: LabFlag }) => s.flag.labId === selectedLab);
             return (
               <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors">
                 <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium text-slate-600">

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
+import type { Course, Section } from "@/types/api";
 
 const CATEGORIES: Record<string, { label: string; color: string; bg: string }> = {
   aerodynamics: { label: "Aerodynamics", color: "text-sky-600", bg: "bg-sky-50 border-sky-200" },
@@ -72,7 +73,7 @@ function ShimmerSkeleton() {
 }
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,7 +99,7 @@ export default function CoursesPage() {
     loadCourses();
   }, []);
 
-  const filteredCourses = courses.filter((course: any) => {
+  const filteredCourses = courses.filter((course: Course) => {
     const matchesSearch =
       !searchQuery ||
       course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -111,7 +112,7 @@ export default function CoursesPage() {
   });
 
   const activeCategories = Array.from(
-    new Set(courses.map((c: any) => c.category).filter(Boolean))
+    new Set(courses.map((c: Course) => c.category).filter(Boolean))
   ) as string[];
 
   if (loading) {
@@ -273,7 +274,7 @@ export default function CoursesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map((course: any) => {
+          {filteredCourses.map((course: Course) => {
             const firstSectionTitle = course.sections?.[0]?.title || "";
             const gate = getCourseLock(firstSectionTitle, level);
             const isLocked = gate.locked;
@@ -281,7 +282,7 @@ export default function CoursesPage() {
               course._count?.sections || course.sections?.length || 0;
             const lessonCount =
               course.sections?.reduce(
-                (acc: number, s: any) => acc + (s._count?.lessons || s.lessons?.length || 0),
+                (acc: number, s: Section) => acc + (s._count?.lessons || s.lessons?.length || 0),
                 0
               ) || 0;
 

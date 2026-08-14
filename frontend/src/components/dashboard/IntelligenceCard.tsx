@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { Play, ChevronRight } from "lucide-react";
+import type { UserMetrics } from "@/hooks/useDashboard";
 
 interface IntelligenceCardProps {
-  latestProgress: any;
+  latestProgress: UserMetrics["latestProgress"];
   courseProgress: number;
 }
 
