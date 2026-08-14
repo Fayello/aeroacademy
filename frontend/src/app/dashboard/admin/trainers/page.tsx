@@ -39,8 +39,21 @@ export default function AdminTrainersPage() {
   }, []);
 
   useEffect(() => {
-    loadTrainers();
-  }, [loadTrainers]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi("/training/trainers");
+        if (!cancelled) setTrainers(Array.isArray(data) ? data : data.data || []);
+      } catch {
+        toast.error("Failed to load trainers");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleAdd = () => {
     setEditing(null);

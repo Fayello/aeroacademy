@@ -51,20 +51,6 @@ export default function ClassroomCommand() {
   const [actionLoading, setActionLoading] = useState(false);
   const [teamProgress, setTeamProgress] = useState<TeamProgress | null>(null);
 
-  const loadData = useCallback(async () => {
-    try {
-      const [teamsData, labsData] = await Promise.all([fetchApi("/admin/teams"), fetchApi("/labs")]);
-      setTeams(teamsData);
-      setLabs(labsData);
-      if (teamsData.length > 0) setSelectedTeam(teamsData[0].id);
-      if (labsData.length > 0) setSelectedLab(labsData[0].id);
-    } catch {
-      toast.error("Failed to load data.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   const loadTeamProgress = useCallback(async () => {
     if (!selectedTeam) return;
     try {
@@ -74,16 +60,42 @@ export default function ClassroomCommand() {
   }, [selectedTeam]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const [teamsData, labsData] = await Promise.all([fetchApi("/admin/teams"), fetchApi("/labs")]);
+        if (cancelled) return;
+        setTeams(teamsData);
+        setLabs(labsData);
+        if (teamsData.length > 0) setSelectedTeam(teamsData[0].id);
+        if (labsData.length > 0) setSelectedLab(labsData[0].id);
+      } catch {
+        toast.error("Failed to load data.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
-    if (selectedTeam) {
-      loadTeamProgress();
-      const interval = setInterval(loadTeamProgress, 10000);
-      return () => clearInterval(interval);
-    }
-  }, [selectedTeam, loadTeamProgress]);
+    if (!selectedTeam) return;
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const data = await fetchApi(`/admin/teams/${selectedTeam}/progress`);
+        if (!cancelled) setTeamProgress(data);
+      } catch { /* ignore */ }
+    };
+    run();
+    const interval = setInterval(run, 10000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [selectedTeam]);
 
   const handleLaunch = async () => {
     if (!selectedTeam || !selectedLab) return;

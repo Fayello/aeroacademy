@@ -88,9 +88,22 @@ export default function AdminCoursesPage() {
   }, []);
 
   useEffect(() => {
-    loadCourses();
-    fetchApi("/labs").then((data) => setLabs(Array.isArray(data) ? data : [])).catch(() => {});
-  }, [loadCourses]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi("/courses");
+        if (!cancelled) setCourses(Array.isArray(data) ? data : data.data || []);
+      } catch {
+        toast.error("Failed to load courses");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    fetchApi("/labs").then((data) => { if (!cancelled) setLabs(Array.isArray(data) ? data : []); }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const loadCourseDetail = async (courseId: string) => {
     try {

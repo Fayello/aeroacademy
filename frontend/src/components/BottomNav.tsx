@@ -26,14 +26,14 @@ export default function BottomNav() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
-  const [level, setLevel] = useState(1);
-
-  useEffect(() => {
+  const [level] = useState(() => {
     try {
-      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-      setLevel(getLevel(xp));
-    } catch {}
-  }, []);
+      if (typeof window === "undefined") return 1;
+      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {
+      return 1;
+    }
+  });
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

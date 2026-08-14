@@ -75,7 +75,15 @@ interface CourseWithProgress {
 }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user] = useState<User | null>(() => {
+    try {
+      if (typeof window === "undefined") return null;
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   const [activeLabs, setActiveLabs] = useState<ActiveLabInstance[]>([]);
@@ -95,13 +103,6 @@ export default function DashboardPage() {
   const { userMetrics, feed, leaderboard } = useDashboard();
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) setUser(JSON.parse(storedUser));
-    } catch {
-      setUser(null);
-    }
-
     async function loadData() {
       try {
         const [

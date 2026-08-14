@@ -81,7 +81,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     try {
       const errorData = JSON.parse(errorText);
       errorMessage = errorData.message || errorMessage;
-    } catch (e) {
+    } catch {
       errorMessage = errorText || errorMessage;
     }
     throw new Error(errorMessage);

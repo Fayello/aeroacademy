@@ -32,17 +32,10 @@ export function useDashboard() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [labTelemetry, setLabTelemetry] = useState<LabTelemetry[]>([]);
   const [lastAchievement, setLastAchievement] = useState<Achievement | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const achievementTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
+  const [socket] = useState<Socket | null>(() => {
+    if (typeof window === "undefined") return null;
     const token = localStorage.getItem("token");
-    if (!token) return;
-
+    if (!token) return null;
     if (!globalSocket) {
       globalSocket = io(`${API_URL}/dashboard`, {
         auth: { token },
@@ -52,9 +45,17 @@ export function useDashboard() {
         timeout: 10000,
       });
     }
+    return globalSocket;
+  });
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const achievementTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!socket) return;
 
     globalListeners++;
-    const s = globalSocket;
+    const s = socket;
 
     s.on("connect", () => { setIsConnected(true); setError(null); });
     s.on("disconnect", () => setIsConnected(false));
@@ -74,8 +75,6 @@ export function useDashboard() {
     });
     s.on("lab_telemetry", (data: LabTelemetry[]) => setLabTelemetry(data));
 
-    setSocket(s);
-
     return () => {
       globalListeners--;
       if (achievementTimeoutRef.current) clearTimeout(achievementTimeoutRef.current);
@@ -84,7 +83,7 @@ export function useDashboard() {
         globalSocket = null;
       }
     };
-  }, []);
+  }, [socket]);
 
   return { intelligence, userMetrics, feed, lastAchievement, leaderboard, labTelemetry, socket, isConnected, error };
 }

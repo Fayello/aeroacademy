@@ -14,14 +14,16 @@ export default function CourseDetailPage() {
   const [progress, setProgress] = useState<{ total: number; completed: number; percentage: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [level, setLevel] = useState(1);
+  const [level] = useState(() => {
+    try {
+      if (typeof window === "undefined") return 1;
+      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {
+      return 1;
+    }
+  });
 
   useEffect(() => {
-    try {
-      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-      setLevel(getLevel(xp));
-    } catch {}
-
     async function loadCourse() {
       try {
         const [courseData, progressData] = await Promise.all([

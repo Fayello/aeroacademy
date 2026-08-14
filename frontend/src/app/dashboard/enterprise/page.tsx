@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, MapPin, GraduationCap, Star, ChevronRight, Loader2, ChevronLeft } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import { CAMEROON_CITIES } from "@/lib/constants";
@@ -40,37 +40,41 @@ export default function EnterprisePortal() {
   const [shortlisted, setShortlisted] = useState<Set<string>>(new Set());
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
   const [view, setView] = useState<"TALENT" | "CLASSROOM">("TALENT");
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRole] = useState<string | null>(() => {
+    try {
+      if (typeof window === "undefined") return null;
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      return user.role ?? null;
+    } catch {
+      return null;
+    }
+  });
   const [page, setPage] = useState(1);
 
   const cities = ["All", ...CAMEROON_CITIES];
 
-  const loadTalent = useCallback(async () => {
-    try {
-      const data = await fetchApi("/recruitment/talent-pool");
-      setTalent(data);
-    } catch {
-      toast.error("Failed to load talent pool.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const loadShortlist = useCallback(async () => {
-    try {
-      const data = await fetchApi("/recruitment/shortlisted");
-      setShortlisted(new Set(data.map((s: { studentId: string }) => s.studentId)));
-    } catch { /* ignore */ }
-  }, []);
-
   useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      setUserRole(user.role);
-    } catch { /* ignore */ }
-    loadTalent();
-    loadShortlist();
-  }, [loadTalent, loadShortlist]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi("/recruitment/talent-pool");
+        if (!cancelled) setTalent(data);
+      } catch {
+        toast.error("Failed to load talent pool.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    (async () => {
+      try {
+        const data = await fetchApi("/recruitment/shortlisted");
+        if (!cancelled) setShortlisted(new Set(data.map((s: { studentId: string }) => s.studentId)));
+      } catch { /* ignore */ }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleToggleShortlist = async (studentId: string) => {
     try {

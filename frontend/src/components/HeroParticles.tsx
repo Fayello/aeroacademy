@@ -23,7 +23,7 @@ export default function HeroParticles() {
     let w = 0;
     let h = 0;
     let particles: Particle[] = [];
-    let mouse = { x: -1000, y: -1000 };
+    const mouse = { x: -1000, y: -1000 };
     let frame: number;
 
     const resize = () => {

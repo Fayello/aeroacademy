@@ -66,10 +66,29 @@ export default function AdminMonitoringPage() {
   }, []);
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 15000);
-    return () => clearInterval(interval);
-  }, [loadData]);
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const [active, systemStats] = await Promise.all([
+          fetchApi("/dashboard/active-users"),
+          fetchApi("/labs/stats"),
+        ]);
+        if (cancelled) return;
+        setInstances(Array.isArray(active) ? active : []);
+        setStats(systemStats);
+      } catch {
+        // silently handle
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    run();
+    const interval = setInterval(run, 15000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const ticker = setInterval(() => setTick((t) => t + 1), 1000);

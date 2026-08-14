@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star } from "lucide-react";
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -25,15 +25,16 @@ const LEVEL_UNLOCKS = [
 ];
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const { userMetrics } = useDashboard();
-
-  useEffect(() => {
+  const [user] = useState<User | null>(() => {
     try {
+      if (typeof window === "undefined") return null;
       const storedUser = localStorage.getItem("user");
-      if (storedUser) setUser(JSON.parse(storedUser));
-    } catch { /* ignore */ }
-  }, []);
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
+    }
+  });
+  const { userMetrics } = useDashboard();
 
   if (!user) return null;
 

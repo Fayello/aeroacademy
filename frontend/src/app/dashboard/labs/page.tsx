@@ -13,7 +13,14 @@ export default function LabsCatalog() {
   const [labs, setLabs] = useState<Lab[]>([]);
   const [loading, setLoading] = useState(true);
   const [systemStats, setSystemStats] = useState<LabStats | null>(null);
-  const [level, setLevel] = useState(1);
+  const [level] = useState(() => {
+    try {
+      if (typeof window === "undefined") return 1;
+      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {
+      return 1;
+    }
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [progressFilter, setProgressFilter] = useState("ALL");
@@ -52,11 +59,6 @@ export default function LabsCatalog() {
   };
 
   useEffect(() => {
-    try {
-      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-      setLevel(getLevel(xp));
-    } catch {}
-
     async function loadData() {
       try {
         const [labsData, stats] = await Promise.all([

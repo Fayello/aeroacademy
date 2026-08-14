@@ -37,7 +37,28 @@ export default function AdminUsersPage() {
     try { const data = await fetchApi("/admin/users/stats"); setStats(data); } catch {}
   }, []);
 
-  useEffect(() => { loadUsers(); loadStats(); }, [loadUsers, loadStats]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi("/admin/users");
+        if (!cancelled) setUsers(Array.isArray(data) ? data : []);
+      } catch {
+        toast.error("Failed to load users");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    (async () => {
+      try {
+        const data = await fetchApi("/admin/users/stats");
+        if (!cancelled) setStats(data);
+      } catch {}
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleEdit = (user: AdminUser) => {
     setEditing(user);

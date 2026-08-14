@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GraduationCap, Microscope, Trophy, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
 
@@ -34,15 +34,15 @@ const steps = [
 ];
 
 export default function OnboardingCard() {
-  const [visible, setVisible] = useState(false);
-  const [step, setStep] = useState(0);
-
-  useEffect(() => {
+  const [visible, setVisible] = useState(() => {
     try {
-      const onboarded = localStorage.getItem(ONBOARDING_KEY);
-      if (!onboarded) setVisible(true);
-    } catch {}
-  }, []);
+      if (typeof window === "undefined") return false;
+      return !localStorage.getItem(ONBOARDING_KEY);
+    } catch {
+      return false;
+    }
+  });
+  const [step, setStep] = useState(0);
 
   const dismiss = () => {
     localStorage.setItem(ONBOARDING_KEY, "true");

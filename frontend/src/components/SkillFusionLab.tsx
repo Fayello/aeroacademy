@@ -435,8 +435,9 @@ export default function SkillFusionLab() {
   const animFrameRef = useRef<number>(0);
   const fusionCbRef = useRef<((d: Discovery) => void) | null>(null);
 
-  const [discovered, setDiscovered] = useState<Discovery[]>([]);
-  const [score, setScore] = useState(0);
+  const [discovered, setDiscovered] = useState<Discovery[]>(() => loadDiscoveries());
+  const [arenaEmpty, setArenaEmpty] = useState(true);
+  const [score, setScore] = useState(() => loadDiscoveries().reduce((s, d) => s + d.score, 0));
   const [fusionMsg, setFusionMsg] = useState<{ name: string; rarity: string; score: number; description: string } | null>(null);
   const [showJournal, setShowJournal] = useState(false);
   const [screenFlash, setScreenFlash] = useState<string | null>(null);
@@ -447,15 +448,31 @@ export default function SkillFusionLab() {
   const [customName, setCustomName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showAllSkills, setShowAllSkills] = useState(false);
-  const [streakData, setStreakData] = useState<{ lastDate: string; streak: number }>({ lastDate: "", streak: 0 });
-  const [categoryStats, setCategoryStats] = useState<Record<string, { discovered: number; total: number }>>({});
-  const [rarestDiscovery, setRarestDiscovery] = useState<{ name: string; rarity: string; score: number } | null>(null);
+  const [streakData, setStreakData] = useState<{ lastDate: string; streak: number }>(() => {
+    const savedStreak = loadStreak();
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    if (savedStreak.lastDate && savedStreak.lastDate !== today && savedStreak.lastDate !== yesterday) {
+      return { lastDate: savedStreak.lastDate, streak: 0 };
+    }
+    return savedStreak;
+  });
+  const [categoryStats, setCategoryStats] = useState<Record<string, { discovered: number; total: number }>>(() => getCategoryBreakdown(loadDiscoveries()));
+  const [rarestDiscovery, setRarestDiscovery] = useState<{ name: string; rarity: string; score: number } | null>(() => {
+    const saved = loadDiscoveries();
+    if (saved.length === 0) return null;
+    let best = saved[0];
+    saved.forEach(d => {
+      if ((RARITY_RANK[d.rarity] || 0) > (RARITY_RANK[best.rarity] || 0)) best = d;
+    });
+    return { name: best.result, rarity: best.rarity, score: best.score };
+  });
   const fusionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [showAdmin, setShowAdmin] = useState(false);
   const [editingFusion, setEditingFusion] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ name: string; description: string; tier: number; rarity: string; score: number }>({ name: "", description: "", tier: 1, rarity: "Common", score: 100 });
-  const [fusionEdits, setFusionEdits] = useState<Record<string, Partial<{ name: string; description: string; tier: number; rarity: string; score: number }>>>({});
+  const [fusionEdits, setFusionEdits] = useState<Record<string, Partial<{ name: string; description: string; tier: number; rarity: string; score: number }>>>(() => loadFusionEdits());
 
   const getEffectiveFusions = useCallback(() => {
     return Object.fromEntries(
@@ -511,10 +528,6 @@ export default function SkillFusionLab() {
     setEditingFusion(null);
   }, []);
 
-  useEffect(() => {
-    setFusionEdits(loadFusionEdits());
-  }, []);
-
   const totalDiscovered = discovered.length;
   const totalPossible = TOTAL_PAIRS;
 
@@ -535,29 +548,7 @@ export default function SkillFusionLab() {
   }, [discovered]);
 
   useEffect(() => {
-    const saved = loadDiscoveries();
-    setDiscovered(saved);
-    setScore(saved.reduce((s, d) => s + d.score, 0));
-    saved.forEach(d => { discoveredRef.current.add(d.id); });
-
-    const savedStreak = loadStreak();
-    const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-    if (savedStreak.lastDate && savedStreak.lastDate !== today && savedStreak.lastDate !== yesterday) {
-      setStreakData({ lastDate: savedStreak.lastDate, streak: 0 });
-    } else {
-      setStreakData(savedStreak);
-    }
-
-    setCategoryStats(getCategoryBreakdown(saved));
-
-    if (saved.length > 0) {
-      let best = saved[0];
-      saved.forEach(d => {
-        if ((RARITY_RANK[d.rarity] || 0) > (RARITY_RANK[best.rarity] || 0)) best = d;
-      });
-      setRarestDiscovery({ name: best.result, rarity: best.rarity, score: best.score });
-    }
+    loadDiscoveries().forEach(d => { discoveredRef.current.add(d.id); });
   }, []);
 
   const onDiscovery = useCallback((d: Discovery) => {
@@ -620,6 +611,7 @@ export default function SkillFusionLab() {
       vy: (Math.random() - 0.5) * 0.5,
       radius: 30, pulse: 0, pulseDir: 1, dragging: false, tier: 0, rarity: "Custom",
     });
+    setArenaEmpty(false);
     setCustomName("");
     setShowCreator(false);
   }, [customName]);
@@ -638,6 +630,7 @@ export default function SkillFusionLab() {
       vy: (Math.random() - 0.5) * 0.6,
       radius: 32, pulse: 0, pulseDir: 1, dragging: false, tier: 0, rarity: "Base",
     });
+    setArenaEmpty(false);
   }, []);
 
   const spawnParticles = useCallback((x: number, y: number, color: string, count: number) => {
@@ -673,6 +666,7 @@ export default function SkillFusionLab() {
     particlesRef.current = [];
     explosionsRef.current = [];
     discoveredRef.current.clear();
+    setArenaEmpty(true);
     setDiscovered([]);
     setScore(0);
     saveDiscoveries([]);
@@ -1351,7 +1345,7 @@ export default function SkillFusionLab() {
         {/* Canvas */}
         <div ref={containerRef} className="relative w-full h-[450px] sm:h-[500px] rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
           <canvas ref={canvasRef} className="absolute inset-0 cursor-grab active:cursor-grabbing" />
-          {nodesRef.current.length === 0 && (
+          {arenaEmpty && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
                 <div className="text-5xl mb-4 opacity-20">+</div>

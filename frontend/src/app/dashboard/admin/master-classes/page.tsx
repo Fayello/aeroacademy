@@ -44,8 +44,21 @@ export default function AdminMasterClassesPage() {
   }, []);
 
   useEffect(() => {
-    loadClasses();
-  }, [loadClasses]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi("/master-classes");
+        if (!cancelled) setClasses(Array.isArray(data) ? data : data.data || []);
+      } catch {
+        toast.error("Failed to load master classes");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleAdd = () => {
     setEditing(null);

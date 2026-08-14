@@ -80,17 +80,15 @@ export default function AdminTable<T extends { id: string }>({
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
 
-  const effectiveSearchKeys = searchKeys || [searchKey];
-
   const filtered = useMemo(() => {
     if (!search.trim()) return data;
     return data.filter((item) => {
-      return effectiveSearchKeys.some((key) => {
+      return (searchKeys || [searchKey]).some((key) => {
         const val = String(getField(item, key) || "").toLowerCase();
         return val.includes(search.toLowerCase());
       });
     });
-  }, [data, search, effectiveSearchKeys]);
+  }, [data, search, searchKeys, searchKey]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];

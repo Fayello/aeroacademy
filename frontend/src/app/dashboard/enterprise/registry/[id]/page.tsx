@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Shield, Award, CheckCircle, Target, Trophy, Loader2, MapPin, GraduationCap, ChevronLeft, Mail } from "lucide-react";
 import { fetchApi } from "@/lib/api";
@@ -27,21 +27,24 @@ export default function CandidateRegistry() {
   const [profile, setProfile] = useState<CandidateProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = useCallback(async () => {
-    try {
-      const data = await fetchApi(`/recruitment/candidate/${id}`) as CandidateProfile;
-      setProfile(data);
-    } catch {
-      toast.error("Candidate not found.");
-      router.push("/dashboard/enterprise");
-    } finally {
-      setLoading(false);
-    }
-  }, [id, router]);
-
   useEffect(() => {
-    if (id) loadProfile();
-  }, [id, loadProfile]);
+    if (!id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi(`/recruitment/candidate/${id}`) as CandidateProfile;
+        if (!cancelled) setProfile(data);
+      } catch {
+        toast.error("Candidate not found.");
+        router.push("/dashboard/enterprise");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, router]);
 
   if (loading || !profile) {
     return (

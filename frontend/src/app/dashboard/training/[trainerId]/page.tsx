@@ -42,12 +42,22 @@ export default function TrainerProfilePage() {
 
   useEffect(() => {
     if (!trainer) return;
-    setSlotsLoading(true);
+    let cancelled = false;
     const dateStr = selectedDate.toISOString().split("T")[0];
-    fetchApi(`/training/trainers/${trainer.id}/slots?date=${dateStr}`)
-      .then((data) => setSlots(data as TrainingSlot[]))
-      .catch(() => {})
-      .finally(() => setSlotsLoading(false));
+    (async () => {
+      setSlotsLoading(true);
+      try {
+        const data = await fetchApi(`/training/trainers/${trainer.id}/slots?date=${dateStr}`);
+        if (!cancelled) setSlots(data as TrainingSlot[]);
+      } catch {
+        // ignore
+      } finally {
+        if (!cancelled) setSlotsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [trainer, selectedDate]);
 
   const handleBook = async () => {

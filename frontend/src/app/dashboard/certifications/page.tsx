@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboard } from "@/hooks/useDashboard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import { CertificationsSkeleton } from "@/components/Skeleton";
@@ -20,14 +20,15 @@ interface Certification {
 export default function CertificationsPage() {
   const { userMetrics } = useDashboard();
   const [generating, setGenerating] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  const [user] = useState<User | null>(() => {
     try {
+      if (typeof window === "undefined") return null;
       const stored = localStorage.getItem("user");
-      if (stored) setUser(JSON.parse(stored));
-    } catch {}
-  }, []);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
   if (!userMetrics) {
     return <CertificationsSkeleton />;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { auth, API_URL } from "@/lib/api";
@@ -39,11 +39,11 @@ const BENEFITS = [
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<RegisterValues>({
+  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
   });
 
-  const passwordValue = watch("password") || "";
+  const passwordValue = useWatch({ control: control, name: "password" }) || "";
   const strength = useMemo(() => {
     return (
       (passwordValue.length >= 8 ? 1 : 0) +

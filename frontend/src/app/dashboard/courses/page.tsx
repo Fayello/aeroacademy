@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
+import Image from "next/image";
 import Link from "next/link";
 import {
   BookOpen,
@@ -75,17 +76,19 @@ function ShimmerSkeleton() {
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [level, setLevel] = useState(1);
+  const [level] = useState(() => {
+    try {
+      if (typeof window === "undefined") return 1;
+      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {
+      return 1;
+    }
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
 
   useEffect(() => {
-    try {
-      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-      setLevel(getLevel(xp));
-    } catch {}
-
     async function loadCourses() {
       try {
         const data = await fetchApi("/courses");
@@ -294,10 +297,13 @@ export default function CoursesPage() {
                 {/* Card Top - Cover */}
                 <div className="relative h-40 overflow-hidden bg-white border-b border-slate-200">
                   {course.imageUrl ? (
-                    <img
+                    <Image
                       src={course.imageUrl}
                       alt={course.title}
-                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      unoptimized
+                      className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">

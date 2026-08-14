@@ -40,7 +40,22 @@ export default function AdminLabsPage() {
     } catch { toast.error("Failed to load labs"); } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { loadLabs(); }, [loadLabs]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchApi("/labs");
+        if (!cancelled) setLabs(Array.isArray(data) ? data : data.data || []);
+      } catch {
+        toast.error("Failed to load labs");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const loadLabDetail = async (labId: string) => {
     try {

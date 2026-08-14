@@ -14,18 +14,21 @@ export default function LeaderboardPage() {
   const { socket, userMetrics } = useDashboard();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId] = useState<string | null>(() => {
+    try {
+      if (typeof window === "undefined") return null;
+      const user = localStorage.getItem("user");
+      return user ? JSON.parse(user).id ?? null : null;
+    } catch {
+      return null;
+    }
+  });
   const [activeLeague, setActiveLeague] = useState<"GLOBAL" | "REGIONAL" | "UNIVERSITY">("GLOBAL");
   const [filter, setFilter] = useState("");
   const [leagueStats, setLeagueStats] = useState<LeagueStats>({ regional: [], university: [], season: null });
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const user = localStorage.getItem("user");
-      if (user) setCurrentUserId(JSON.parse(user).id);
-    } catch { /* ignore */ }
-
     const fetchLeagues = async () => {
       try {
         const data = await fetchApi("/dashboard/leagues");
