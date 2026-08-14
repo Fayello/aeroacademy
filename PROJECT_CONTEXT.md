@@ -14,7 +14,8 @@ AEROACADEMY is a **full-stack cybersecurity and technology training platform** �
 - **1-on-1 training** with trainers (booking system with time slots)
 - **Gamification** — XP, levels, ELO-based divisions (Bronze → Titan), achievements, leaderboard
 - **Enterprise portal** — talent pool, classroom management, team progress
-- **Admin panel** — full CRUD for courses, labs, master classes, trainers
+- **Admin panel** — full CRUD for courses, labs, master classes, trainers, users; analytics, audit logs, and real-time lab monitoring
+- **Notifications** — in-app feed with real-time WebSocket delivery (achievements, flags, bookings, master classes)
 
 **It is NOT just a cybersecurity platform** — the domain covers Linux, DevOps, cloud, and general tech training.
 
@@ -83,7 +84,7 @@ AEROACADEMY/
 │       │   ├── reset-password/page.tsx
 │       │   ├── get-started/page.tsx    # HTB-style path chooser
 │       │   └── dashboard/
-│       │       ├── layout.tsx          # Dashboard layout (Sidebar + BottomNav + TokenHandler)
+│       │       ├── layout.tsx          # Dashboard layout (Sidebar + BottomNav + TokenHandler + NotificationBell)
 │       │       ├── page.tsx            # Dashboard home
 │       │       ├── courses/            # Course listing, detail, lessons
 │       │       ├── labs/               # Lab listing, workspace
@@ -91,55 +92,68 @@ AEROACADEMY/
 │       │       ├── training/           # Trainer listing, profile, bookings
 │       │       ├── leaderboard/
 │       │       ├── certifications/
+│       │       ├── notifications/      # Notifications feed
 │       │       ├── registry/
 │       │       ├── profile/            # Profile, edit, change-password
 │       │       ├── enterprise/         # Enterprise portal
-│       │       └── admin/              # Admin CRUD pages
+│       │       └── admin/              # Overview, analytics, audit, monitoring, users + CRUD pages
 │       ├── components/
 │       │   ├── Sidebar.tsx             # Desktop sidebar with level gating
 │       │   ├── BottomNav.tsx           # Mobile bottom nav
 │       │   ├── Modal.tsx               # Accessible modal
 │       │   ├── OnboardingCard.tsx      # 3-step wizard
 │       │   ├── Skeleton.tsx            # Loading skeletons
+│       │   ├── ErrorBoundary.tsx       # 3-tier error boundaries (Root/Page/Component)
+│       │   ├── HeroParticles.tsx       # Landing page animated particles
+│       │   ├── NotificationBell.tsx    # Fixed top-right dropdown with unread badge
+│       │   ├── NotificationTypeIcon.tsx# Icon per notification type
+│       │   ├── SkillFusionLab.tsx      # Gamified skill-fusion sandbox
 │       │   ├── admin/                  # Reusable admin components
-│       │   │   ├── AdminTable.tsx      # Sortable/searchable/paginated table
+│       │   │   ├── AdminTable.tsx      # Sortable/searchable/paginated, selectable + bulk actions
 │       │   │   ├── AdminModal.tsx      # Modal + ConfirmDialog
 │       │   │   └── AdminForm.tsx       # Form fields, StatusBadge
-│       │   ├── dashboard/              # Dashboard widgets
+│       │   ├── dashboard/              # StatsGrid, IntelligenceCard, LeaderboardPreview, ActivityFeed, SandboxCard
 │       │   ├── enterprise/             # ClassroomCommand
 │       │   └── ui/                     # Badge, EmptyState, PageHeader
 │       ├── hooks/
-│       │   └── useDashboard.ts         # Socket.io singleton hook
+│       │   ├── useDashboard.ts         # Socket.io singleton hook (dashboard namespace)
+│       │   └── useNotifications.ts     # Socket.io singleton hook (notifications namespace)
 │       ├── lib/
 │       │   ├── api.ts                  # fetchApi wrapper (JWT refresh, auto-logout)
 │       │   ├── auth.ts                 # logout()
 │       │   ├── constants.ts            # CAMEROON_CITIES, DIVISION_COLORS
+│       │   ├── format.ts               # timeAgo, getErrorMessage helpers
+│       │   ├── labs.ts                 # Lab/terminal helpers
 │       │   └── levelGating.ts          # Level system, locks
 │       └── types/
-│           └── api.ts                  # All TypeScript interfaces
+│           └── api.ts                  # All TypeScript interfaces (43 exports)
 │
 ├── backend/                           # NestJS backend
 │   ├── package.json
 │   ├── prisma/
-│   │   ├── schema.prisma              # 19 models, 4 enums
+│   │   ├── schema.prisma              # 29 models, 4 enums
 │   │   ├── seed.ts                    # Seed script
 │   │   └── seed-data/                 # 5 satellite seed files
 │   └── src/
-│       ├── main.ts                    # Port 4000, helmet, CORS, ValidationPipe
-│       ├── app.module.ts              # Root module
+│       ├── main.ts                    # Port 4000, helmet, CORS, ValidationPipe, Swagger /api/docs
+│       ├── app.module.ts              # Root module (global AuditInterceptor)
 │       ├── auth/                      # JWT, Google OAuth, roles
 │       ├── prisma/                    # PrismaService (global)
-│       ├── courses/                   # Course/lesson CRUD
+│       ├── courses/                   # Course/section/lesson/quiz CRUD
 │       ├── progress/                  # Lesson completion + gates
 │       ├── quiz/                      # Quiz submission + scoring
 │       ├── labs/                      # Docker labs + WebSocket terminal
-│       ├── dashboard/                 # Stats, WebSocket real-time
+│       ├── dashboard/                 # Stats, WebSocket real-time, achievements, leagues
+│       ├── analytics/                 # Admin analytics overview endpoint
+│       ├── audit/                     # Audit log query + global AuditInterceptor
+│       ├── notifications/             # In-app notifications + WebSocket push
+│       ├── users/                     # Admin user management (batch ops)
 │       ├── leagues/                   # ELO calculation
 │       ├── master-classes/            # Master class CRUD
 │       ├── training/                  # Trainer CRUD + bookings
 │       ├── admin/                     # Teams, classroom management
 │       ├── recruitment/               # Talent pool, shortlisting
-│       └── common/                    # Events, crypto, level utils, logger
+│       └── common/                    # Events pub/sub, batch DTOs, audit decorator, crypto, level utils, logger
 │
 ├── PROJECT_CONTEXT.md                 # This file
 └── README.md
@@ -157,13 +171,14 @@ enum MasterClassStatus { UPCOMING  LIVE  COMPLETED  CANCELLED }
 enum BookingStatus { PENDING  CONFIRMED  COMPLETED  CANCELLED }
 ```
 
-### Core Models
+### Core Models (29 total)
 
 | Model | Purpose | Key Relationships |
 |---|---|---|
 | **User** | Core user account | role, xp, rank (ELO), division, clearanceLevel → Organization, Team |
 | **Organization** | Universities/enterprises | type: UNIVERSITY/ENTERPRISE/GOVERNMENT |
 | **Team** | Admin-created groups | owner → User, members → User[] |
+| **Season** | Competitive season | isActive, multiplier |
 | **Course** | Learning paths | → Section[] → Lesson[] |
 | **Section** | Course chapters | order, title (used for level gating) |
 | **Lesson** | Individual lessons | videoUrl, content (markdown), labId → Lab?, quiz? |
@@ -184,6 +199,9 @@ enum BookingStatus { PENDING  CONFIRMED  COMPLETED  CANCELLED }
 | **Shortlist** | Recruiter shortlists | recruiterId, studentId |
 | **RefreshToken** | Token rotation | 7-day expiry |
 | **PasswordResetToken** | Password reset | 30-min expiry, one-time use |
+| **ActivityEvent** | Activity feed rows | userId, type (LAB_STARTED, FLAG_SOLVED, LESSON_COMPLETED...), metadata JSON |
+| **AuditLog** | Security audit trail | action, actorId, method, path, statusCode, ip, userAgent (written by AuditInterceptor) |
+| **Notification** | In-app notifications | userId, title, message, type (INFO/SUCCESS/WARNING/ACHIEVEMENT/BOOKING/MASTERCLASS), link, read |
 
 ---
 
@@ -277,6 +295,19 @@ level = Math.floor(xp / 1000) + 1
 | POST | `/courses` | ADMIN | Create course |
 | PATCH | `/courses/:id` | ADMIN | Update course |
 | DELETE | `/courses/:id` | ADMIN | Delete course |
+| POST | `/courses/batch/delete` | ADMIN | Batch delete courses |
+| GET | `/courses/:courseId/sections` | Any | List sections |
+| POST | `/courses/:courseId/sections` | ADMIN | Create section |
+| PATCH | `/courses/:courseId/sections/:sectionId` | ADMIN | Update section |
+| DELETE | `/courses/:courseId/sections/:sectionId` | ADMIN | Delete section |
+| GET | `/courses/:courseId/sections/:sectionId/lessons` | Any | List lessons in section |
+| POST | `/courses/:courseId/sections/:sectionId/lessons` | ADMIN | Create lesson |
+| PATCH | `.../sections/:sectionId/lessons/:lessonId` | ADMIN | Update lesson |
+| DELETE | `.../sections/:sectionId/lessons/:lessonId` | ADMIN | Delete lesson |
+| GET | `.../lessons/:lessonId/quiz` | Any | Get quiz (no answers) |
+| POST | `.../lessons/:lessonId/quiz` | ADMIN | Create quiz |
+| PATCH | `.../quiz/:quizId` | ADMIN | Update quiz |
+| DELETE | `.../quiz/:quizId` | ADMIN | Delete quiz |
 
 ### Progress (`/progress`) — JWT required
 | Method | Route | Description |
@@ -302,10 +333,15 @@ level = Math.floor(xp / 1000) + 1
 | POST | `/labs` | ADMIN | — | Create lab |
 | PATCH | `/labs/:id` | ADMIN | — | Update lab |
 | DELETE | `/labs/:id` | ADMIN | — | Delete lab |
+| POST | `/labs/batch/delete` | ADMIN | — | Batch delete labs |
+| POST | `/labs/batch/stop` | ADMIN | — | Batch stop lab sessions |
 | POST | `/labs/start/:id` | JWT | 3/min | Start Docker container |
 | POST | `/labs/stop/:id` | JWT | 5/min | Stop container |
 | POST | `/labs/reset/:id` | JWT | 5/min | Reset container |
 | POST | `/labs/submit-flag/:flagId` | JWT | 5/min | Submit flag answer |
+| POST | `/labs/:labId/flags` | ADMIN | — | Create lab flag |
+| PATCH | `/labs/flags/:flagId` | ADMIN | — | Update flag |
+| DELETE | `/labs/flags/:flagId` | ADMIN | — | Delete flag |
 
 ### Master Classes (`/master-classes`)
 | Method | Route | Auth | Description |
@@ -318,6 +354,8 @@ level = Math.floor(xp / 1000) + 1
 | POST | `/master-classes` | ADMIN | Create |
 | PATCH | `/master-classes/:id` | ADMIN | Update |
 | DELETE | `/master-classes/:id` | ADMIN | Delete |
+| POST | `/master-classes/batch/delete` | ADMIN | Batch delete |
+| POST | `/master-classes/batch/status` | ADMIN | Batch update status |
 
 ### Training (`/training`)
 | Method | Route | Auth | Description |
@@ -331,6 +369,7 @@ level = Math.floor(xp / 1000) + 1
 | POST | `/training/trainers` | ADMIN | Add trainer |
 | PATCH | `/training/trainers/:id` | ADMIN | Update trainer |
 | DELETE | `/training/trainers/:id` | ADMIN | Delete trainer |
+| POST | `/training/batch/delete-trainers` | ADMIN | Batch delete trainers |
 | POST | `/training/trainers/:id/slots` | ADMIN | Add time slots |
 | DELETE | `/training/slots/:id` | ADMIN | Remove slot |
 
@@ -339,6 +378,11 @@ level = Math.floor(xp / 1000) + 1
 |---|---|---|---|
 | GET | `/dashboard/public-stats` | No | Total students, courses, labs |
 | GET | `/dashboard/leagues` | JWT | Regional + university leagues |
+| GET | `/dashboard/activity` | JWT | My recent activity (last 20) |
+| GET | `/dashboard/active-labs` | JWT | My running lab instances |
+| GET | `/dashboard/user-stats` | JWT | My stats (XP, completions, rank) |
+| GET | `/dashboard/global-activity` | No | Global activity feed (last 30) |
+| GET | `/dashboard/active-users` | No | Active lab sessions (admin monitoring) |
 
 ### Admin (`/admin`) — JWT + ADMIN/RECRUITER
 | Method | Route | Description |
@@ -349,6 +393,37 @@ level = Math.floor(xp / 1000) + 1
 | GET | `/admin/teams/:teamId/progress` | Team progress |
 | POST | `/admin/classroom/launch` | Bulk provision labs |
 | POST | `/admin/classroom/terminate` | Bulk terminate labs |
+
+### Admin Analytics (`/admin/analytics`) — JWT + ADMIN
+| Method | Route | Description |
+|---|---|---|
+| GET | `/admin/analytics/overview` | Full analytics: totals, growth, distributions, course/lab stats, top performers |
+
+### Admin Audit (`/admin/audit-logs`) — JWT + ADMIN
+| Method | Route | Description |
+|---|---|---|
+| GET | `/admin/audit-logs` | Filter by action, actorId, status, date range, paginated |
+| GET | `/admin/audit-logs/summary` | Aggregated counts by action, status, last 24h |
+
+### Admin Users (`/admin/users`) — JWT + ADMIN
+| Method | Route | Description |
+|---|---|---|
+| GET | `/admin/users` | List users (filter by role) |
+| GET | `/admin/users/stats` | Total + byRole counts |
+| GET | `/admin/users/:id` | Single user detail |
+| PATCH | `/admin/users/:id` | Update user (role, xp, profile) |
+| DELETE | `/admin/users/:id` | Delete user |
+| POST | `/admin/users/batch/delete` | Batch delete users |
+| POST | `/admin/users/batch/role` | Batch set role |
+
+### Notifications (`/notifications`) — JWT
+| Method | Route | Description |
+|---|---|---|
+| GET | `/notifications` | List (limit/offset/unreadOnly) |
+| GET | `/notifications/unread-count` | Unread count |
+| PATCH | `/notifications/read-all` | Mark all read |
+| PATCH | `/notifications/:id/read` | Mark one read |
+| DELETE | `/notifications/:id` | Delete one |
 
 ### Recruitment (`/recruitment`) — JWT + ADMIN/RECRUITER
 | Method | Route | Description |
@@ -425,13 +500,24 @@ import { useDashboard } from "@/hooks/useDashboard";
 // In component:
 const { intelligence, metrics, leaderboard, feed } = useDashboard();
 // Global singleton — one socket connection shared across all dashboard pages
+
+import { useNotifications } from "@/hooks/useNotifications";
+
+// Notifications feed + bell:
+const { notifications, unread, markRead, markAllRead, remove } = useNotifications();
+// Separate singleton on the /notifications namespace
 ```
+
+### Notifications
+- `NotificationBell` component (fixed top-right) shows a dropdown with unread badge; links to `/dashboard/notifications`
+- `NotificationTypeIcon` renders a lucide icon per type (ACHIEVEMENT, BOOKING, MASTERCLASS, INFO, SUCCESS, WARNING)
+- Notifications are created server-side by `NotificationsService` reacting to `EventsService` pub/sub events (achievement unlocked, flag captured, booking confirmed/cancelled, master class registered/unregistered)
 
 ### State Management
 - No external state library (Redux, Zustand, etc.)
 - `useState` + `useEffect` for local state
 - `localStorage` for auth tokens, user data, onboarding state
-- Socket.io for real-time data
+- Socket.io for real-time data (dashboard + notifications namespaces, both via module-level singleton sockets)
 
 ---
 
@@ -493,7 +579,22 @@ await this.prisma.course.delete({ where: { id } });
 
 ### WebSocket Gateways
 1. `/terminal` — Docker container terminal (JWT auth, idle timeout 30min)
-2. `/dashboard` — Real-time metrics broadcast (10-15s intervals)
+2. `/dashboard` — Real-time metrics broadcast (10-15s intervals), achievement unlock + global feed push, connected-user tracking
+3. `/notifications` — Per-user notification push (`notification:new`, joins `notifications:{userId}` room)
+
+### Events Pub/Sub (EventsService)
+- A shared RxJS `Subject<{ type, payload }>` bridges services → gateways/notifications
+- Emitters: achievement unlocks (`ACHIEVEMENT_UNLOCKED`), flag captures (`FLAG_CAPTURED`), booking lifecycle, master class registration
+- Subscribers: `DashboardGateway` (global feed), `NotificationsGateway` + `NotificationsService` (persist + push in-app notifications)
+
+### Audit Logging
+- `@Audit('ACTION_NAME')` decorator (method or class level) marks an endpoint
+- Global `AuditInterceptor` writes an `AuditLog` row (action, actor, method, path, status, ip, userAgent, duration) after success or failure
+- Queryable via `GET /admin/audit-logs` + `/summary` (ADMIN only)
+
+### Batch Operations
+- Shared DTOs in `src/common/batch.dto.ts`: `BatchIdsDto`, `BatchStatusDto`, `BatchRoleDto`, `BatchLabStopDto`
+- Exposed as `POST /batch/delete`, `/batch/status`, `/batch/role`, `/batch/stop` across courses, labs, master classes, training, users
 
 ---
 
@@ -537,25 +638,35 @@ LAB_MAX_CONCURRENT=20
 | `src/hooks/useDashboard.ts` | Socket.io singleton |
 | `src/components/Sidebar.tsx` | Desktop navigation with level gating |
 | `src/components/BottomNav.tsx` | Mobile navigation |
-| `src/components/admin/AdminTable.tsx` | Reusable admin table |
+| `src/components/admin/AdminTable.tsx` | Reusable admin table (search/sort/paginate/select/bulk) |
 | `src/components/admin/AdminModal.tsx` | Reusable admin modal |
 | `src/components/admin/AdminForm.tsx` | Reusable admin form fields |
-| `src/app/dashboard/layout.tsx` | Dashboard layout (auth check, sidebar, TokenHandler) |
+| `src/components/NotificationBell.tsx` | Real-time notification dropdown |
+| `src/hooks/useNotifications.ts` | Notifications socket singleton + CRUD |
+| `src/hooks/useDashboard.ts` | Dashboard socket singleton |
+| `src/app/dashboard/layout.tsx` | Dashboard layout (auth check, sidebar, TokenHandler, NotificationBell) |
 | `src/app/layout.tsx` | Root layout (Inter font, Toaster) |
 
 ### Backend — Must-Know Files
 | File | Purpose |
 |---|---|
-| `src/main.ts` | Bootstrap (port 4000, helmet, CORS, ValidationPipe) |
+| `src/main.ts` | Bootstrap (port 4000, helmet, CORS, ValidationPipe, Swagger /api/docs) |
 | `src/app.module.ts` | Root module (imports all feature modules) |
-| `prisma/schema.prisma` | **Complete database schema** |
+| `prisma/schema.prisma` | **Complete database schema (29 models)** |
 | `prisma/seed.ts` | Seed script |
 | `src/auth/auth.service.ts` | JWT, login, register, OAuth |
 | `src/auth/jwt.strategy.ts` | JWT extraction strategy |
 | `src/auth/roles.guard.ts` | Role-based authorization |
 | `src/labs/labs.service.ts` | Docker container lifecycle |
 | `src/labs/labs.gateway.ts` | WebSocket terminal |
-| `src/dashboard/dashboard.gateway.ts` | WebSocket real-time |
+| `src/dashboard/dashboard.gateway.ts` | WebSocket real-time + global feed |
+| `src/notifications/notifications.service.ts` | Persist notifications from events |
+| `src/notifications/notifications.gateway.ts` | WebSocket push per user |
+| `src/audit/audit.interceptor.ts` | Global audit logging |
+| `src/analytics/analytics.service.ts` | Admin analytics aggregation |
+| `src/common/events.service.ts` | RxJS pub/sub bus |
+| `src/common/batch.dto.ts` | Shared batch-operation DTOs |
+| `src/common/request-with-user.ts` | Shared authenticated-request type |
 | `src/common/level.util.ts` | Server-side level calculation |
 
 ---
@@ -584,17 +695,22 @@ LAB_MAX_CONCURRENT=20
 /dashboard/leaderboard               → Global/Regional/University leaderboards
 /dashboard/certifications            → XP-based certifications (PDF download)
 /dashboard/registry                  → Security registry (verification link)
+/dashboard/notifications             → Notifications feed (all/unread, mark read, delete)
 /dashboard/profile                   → Profile (level, division, achievements)
 /dashboard/profile/edit              → Edit profile
 /dashboard/profile/change-password   → Change password
 /dashboard/enterprise                → Enterprise portal (talent pool + classroom)
 /dashboard/enterprise/registry/:id   → Candidate detail
 
-/dashboard/admin                     → Admin dashboard (stats overview)
-/dashboard/admin/courses             → Manage courses (CRUD)
-/dashboard/admin/labs                → Manage labs (CRUD)
-/dashboard/admin/master-classes      → Manage master classes (CRUD)
-/dashboard/admin/trainers            → Manage trainers + slots (CRUD)
+/dashboard/admin                     → Admin dashboard (stats overview + quick links)
+/dashboard/admin/analytics           → Analytics (growth, engagement, completion, top performers)
+/dashboard/admin/audit               → Audit logs (filterable security trail)
+/dashboard/admin/monitoring          → Lab monitoring (active sessions, force-stop, batch stop)
+/dashboard/admin/users               → Manage users (CRUD + batch role/delete)
+/dashboard/admin/courses             → Manage courses, sections, lessons, quizzes (CRUD)
+/dashboard/admin/labs                → Manage labs + flags (CRUD)
+/dashboard/admin/master-classes      → Manage master classes (CRUD + batch status)
+/dashboard/admin/trainers            → Manage trainers + slots (CRUD + batch delete)
 ```
 
 ---
@@ -617,8 +733,17 @@ npm run dev          # Starts on port 3000
 # Frontend type check
 cd frontend && npx tsc --noEmit
 
+# Frontend lint (flat config, React Compiler rules)
+cd frontend && npx eslint src
+
 # Backend type check
 cd backend && npx tsc --noEmit
+
+# Backend lint (typed-checked, auto-fix)
+cd backend && npx eslint "{src,test}/**/*.ts" --fix
+
+# Backend tests
+cd backend && npm run test
 
 # Database migrations
 cd backend && npx prisma migrate dev
@@ -659,35 +784,40 @@ cd backend && npx prisma generate
 ## 15. Current State (What's Built)
 
 ### Completed
-- Full landing page with hero, features, stats, CTA sections
+- Full landing page with hero, features, stats, CTA sections (animated HeroParticles)
 - Login/Register with Google OAuth
-- Dashboard with real-time metrics (Socket.io)
-- Course system with sections, lessons, quizzes, progress tracking
-- Lab system with Docker containers, browser terminal, CTF flags
+- Dashboard with real-time metrics (Socket.io) + live activity feed
+- Course system with sections, lessons, quizzes, progress tracking + admin section/lesson/quiz management
+- Lab system with Docker containers, browser terminal, CTF flags + admin flag management
 - Master class system with registration
 - Training system with trainer profiles, booking, time slots
-- Leaderboard with ELO-based divisions
+- Leaderboard with ELO-based divisions (regional + university leagues)
 - Certifications with PDF download
 - Profile management (edit, change password)
-- Admin dashboard with stats
-- Admin CRUD for courses, labs, master classes, trainers
-- Reusable admin components (AdminTable, AdminModal, AdminForm)
+- Admin dashboard with stats + quick links
+- Admin CRUD for courses, labs, master classes, trainers, **users**
+- **Admin analytics dashboard** (growth, engagement, course/lab completion, top performers)
+- **Admin audit logs** (filterable security/action trail)
+- **Admin lab monitoring** (active sessions, force-stop, batch stop)
+- **Batch operations** (delete/role/status/stop) across courses, labs, master classes, trainers, users
+- Reusable admin components (AdminTable with selection/bulk actions, AdminModal, AdminForm)
 - Enterprise portal with talent pool, classroom management
 - Level gating system (XP-based content locking)
 - Achievement system
+- **Notifications system** (in-app feed + WebSocket bell, achievement/flag/booking/master-class triggers)
+- **SkillFusionLab** gamified sandbox (persisted discoveries, streak, fusion)
+- Advanced search/filtering on catalog pages (courses, labs, master classes)
 - Error boundaries (3-tier)
 - Mobile responsive (sidebar + bottom nav)
 - Onboarding wizard
+- **Swagger API docs** at `/api/docs`
+- **Zero TypeScript `any` debt and zero ESLint problems** across frontend and backend
 
 ### Not Yet Built
-- Notifications system
-- Analytics dashboard
+- Email notifications (reset/verification emails are logged only)
 - Lab detail page terminal polish
-- Email notifications
-- Advanced search/filtering
-- Batch operations
-- Audit logging
-- API documentation (Swagger)
+- Advanced analytics exports / PDF reports
+- Localization / i18n
 
 ---
 
