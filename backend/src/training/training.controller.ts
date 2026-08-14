@@ -17,6 +17,8 @@ import { TrainingService } from './training.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import { BatchIdsDto } from '../common/batch.dto';
+import type { RequestWithUser } from '../common/request-with-user';
+import type { Prisma } from '@prisma/client';
 
 @ApiTags('training')
 @Controller('training')
@@ -45,7 +47,19 @@ export class TrainingController {
   @Post('book')
   @UseGuards(AuthGuard('jwt'))
   @Audit('BOOKING_CREATED')
-  async book(@Body() body: any, @Request() req: any) {
+  async book(
+    @Body()
+    body: {
+      trainerId: string;
+      slotId?: string;
+      date: string;
+      startTime: string;
+      endTime: string;
+      topic: string;
+      notes?: string;
+    },
+    @Request() req: RequestWithUser,
+  ) {
     return this.trainingService.book({ ...body, studentId: req.user.id });
   }
 
@@ -53,14 +67,17 @@ export class TrainingController {
   @Delete('bookings/:id')
   @UseGuards(AuthGuard('jwt'))
   @Audit('BOOKING_CANCELLED')
-  async cancelBooking(@Param('id') id: string, @Request() req: any) {
+  async cancelBooking(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ) {
     return this.trainingService.cancelBooking(id, req.user.id);
   }
 
   @ApiBearerAuth('JWT-auth')
   @Get('bookings')
   @UseGuards(AuthGuard('jwt'))
-  async getMyBookings(@Request() req: any) {
+  async getMyBookings(@Request() req: RequestWithUser) {
     return this.trainingService.getMyBookings(req.user.id);
   }
 
@@ -69,7 +86,15 @@ export class TrainingController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('TRAINER_CREATED')
-  async addTrainer(@Body() body: any) {
+  async addTrainer(
+    @Body()
+    body: {
+      userId: string;
+      bio?: string;
+      specialties?: string[];
+      hourlyRate?: number;
+    },
+  ) {
     return this.trainingService.addTrainer(body);
   }
 
@@ -78,7 +103,10 @@ export class TrainingController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('TRAINER_UPDATED')
-  async updateTrainer(@Param('id') id: string, @Body() body: any) {
+  async updateTrainer(
+    @Param('id') id: string,
+    @Body() body: Prisma.TrainerUpdateInput,
+  ) {
     return this.trainingService.updateTrainer(id, body);
   }
 

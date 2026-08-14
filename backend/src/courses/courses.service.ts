@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -28,7 +32,10 @@ export class CoursesService {
           include: {
             lessons: {
               orderBy: { order: 'asc' },
-              include: { quiz: true, lab: { select: { id: true, title: true, difficulty: true } } },
+              include: {
+                quiz: true,
+                lab: { select: { id: true, title: true, difficulty: true } },
+              },
             },
           },
         },
@@ -42,7 +49,14 @@ export class CoursesService {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id },
       include: {
-        lab: { select: { id: true, title: true, description: true, difficulty: true } },
+        lab: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            difficulty: true,
+          },
+        },
         quiz: {
           include: {
             questions: { include: { answers: true } },
@@ -53,13 +67,20 @@ export class CoursesService {
     });
     if (!lesson) throw new NotFoundException('Lesson not found');
     if (lesson.quiz) {
-      lesson.quiz.questions = lesson.quiz.questions.map((q: any) => ({
-        ...q,
-        answers: q.answers.map((a: any) => {
-          const { isCorrect, ...rest } = a;
-          return rest;
-        }),
-      })) as any;
+      return {
+        ...lesson,
+        quiz: {
+          ...lesson.quiz,
+          questions: lesson.quiz.questions.map((q) => ({
+            ...q,
+            answers: q.answers.map((a) => ({
+              id: a.id,
+              questionId: a.questionId,
+              text: a.text,
+            })),
+          })),
+        },
+      };
     }
     return lesson;
   }
@@ -87,7 +108,9 @@ export class CoursesService {
   // === SECTIONS ===
 
   async findSections(courseId: string) {
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) throw new NotFoundException('Course not found');
     return this.prisma.section.findMany({
       where: { courseId },
@@ -99,23 +122,37 @@ export class CoursesService {
     });
   }
 
-  async createSection(courseId: string, data: { title: string; order?: number }) {
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+  async createSection(
+    courseId: string,
+    data: { title: string; order?: number },
+  ) {
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) throw new NotFoundException('Course not found');
-    const order = data.order ?? (await this.prisma.section.count({ where: { courseId } }));
+    const order =
+      data.order ?? (await this.prisma.section.count({ where: { courseId } }));
     return this.prisma.section.create({
       data: { courseId, title: data.title, order },
     });
   }
 
-  async updateSection(courseId: string, sectionId: string, data: { title?: string; order?: number }) {
-    const section = await this.prisma.section.findFirst({ where: { id: sectionId, courseId } });
+  async updateSection(
+    courseId: string,
+    sectionId: string,
+    data: { title?: string; order?: number },
+  ) {
+    const section = await this.prisma.section.findFirst({
+      where: { id: sectionId, courseId },
+    });
     if (!section) throw new NotFoundException('Section not found');
     return this.prisma.section.update({ where: { id: sectionId }, data });
   }
 
   async removeSection(courseId: string, sectionId: string) {
-    const section = await this.prisma.section.findFirst({ where: { id: sectionId, courseId } });
+    const section = await this.prisma.section.findFirst({
+      where: { id: sectionId, courseId },
+    });
     if (!section) throw new NotFoundException('Section not found');
     return this.prisma.section.delete({ where: { id: sectionId } });
   }
@@ -125,28 +162,64 @@ export class CoursesService {
   async findLessons(sectionId: string) {
     return this.prisma.lesson.findMany({
       where: { sectionId },
-      include: { quiz: true, lab: { select: { id: true, title: true, difficulty: true } } },
+      include: {
+        quiz: true,
+        lab: { select: { id: true, title: true, difficulty: true } },
+      },
       orderBy: { order: 'asc' },
     });
   }
 
-  async createLesson(sectionId: string, data: { title: string; videoUrl?: string; content?: string; labId?: string; order?: number }) {
-    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
+  async createLesson(
+    sectionId: string,
+    data: {
+      title: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+      order?: number;
+    },
+  ) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+    });
     if (!section) throw new NotFoundException('Section not found');
-    const order = data.order ?? (await this.prisma.lesson.count({ where: { sectionId } }));
+    const order =
+      data.order ?? (await this.prisma.lesson.count({ where: { sectionId } }));
     return this.prisma.lesson.create({
-      data: { sectionId, title: data.title, videoUrl: data.videoUrl, content: data.content, labId: data.labId, order },
+      data: {
+        sectionId,
+        title: data.title,
+        videoUrl: data.videoUrl,
+        content: data.content,
+        labId: data.labId,
+        order,
+      },
     });
   }
 
-  async updateLesson(sectionId: string, lessonId: string, data: { title?: string; videoUrl?: string; content?: string; labId?: string; order?: number }) {
-    const lesson = await this.prisma.lesson.findFirst({ where: { id: lessonId, sectionId } });
+  async updateLesson(
+    sectionId: string,
+    lessonId: string,
+    data: {
+      title?: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+      order?: number;
+    },
+  ) {
+    const lesson = await this.prisma.lesson.findFirst({
+      where: { id: lessonId, sectionId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
     return this.prisma.lesson.update({ where: { id: lessonId }, data });
   }
 
   async removeLesson(lessonId: string) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
     return this.prisma.lesson.delete({ where: { id: lessonId } });
   }
@@ -154,23 +227,38 @@ export class CoursesService {
   // === QUIZZES ===
 
   async findQuiz(lessonId: string) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
     return this.prisma.quiz.findUnique({
       where: { lessonId },
       include: {
         questions: {
-          include: { answers: { select: { id: true, text: true, isCorrect: true } } },
+          include: {
+            answers: { select: { id: true, text: true, isCorrect: true } },
+          },
         },
       },
     });
   }
 
-  async createQuiz(lessonId: string, data: { questions: { text: string; answers: { text: string; isCorrect: boolean }[] }[] }) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+  async createQuiz(
+    lessonId: string,
+    data: {
+      questions: {
+        text: string;
+        answers: { text: string; isCorrect: boolean }[];
+      }[];
+    },
+  ) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
     const existing = await this.prisma.quiz.findUnique({ where: { lessonId } });
-    if (existing) throw new BadRequestException('Quiz already exists for this lesson');
+    if (existing)
+      throw new BadRequestException('Quiz already exists for this lesson');
 
     return this.prisma.quiz.create({
       data: {
@@ -188,7 +276,16 @@ export class CoursesService {
     });
   }
 
-  async updateQuiz(quizId: string, data: { questions: { id?: string; text: string; answers: { id?: string; text: string; isCorrect: boolean }[] }[] }) {
+  async updateQuiz(
+    quizId: string,
+    data: {
+      questions: {
+        id?: string;
+        text: string;
+        answers: { id?: string; text: string; isCorrect: boolean }[];
+      }[];
+    },
+  ) {
     const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId } });
     if (!quiz) throw new NotFoundException('Quiz not found');
 
@@ -201,7 +298,12 @@ export class CoursesService {
         questions: {
           create: data.questions.map((q) => ({
             text: q.text,
-            answers: { create: q.answers.map((a) => ({ text: a.text, isCorrect: a.isCorrect })) },
+            answers: {
+              create: q.answers.map((a) => ({
+                text: a.text,
+                isCorrect: a.isCorrect,
+              })),
+            },
           })),
         },
       },

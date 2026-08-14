@@ -15,16 +15,16 @@ export class AchievementService {
   async checkAndUnlockAchievements(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { 
-        achievements: true, 
-        progress: { where: { completed: true } }, 
-        labSubmissions: { where: { isCorrect: true } } 
-      }
+      include: {
+        achievements: true,
+        progress: { where: { completed: true } },
+        labSubmissions: { where: { isCorrect: true } },
+      },
     });
 
     if (!user) return;
 
-    const unlockedIds = new Set(user.achievements.map(a => a.achievementId));
+    const unlockedIds = new Set(user.achievements.map((a) => a.achievementId));
     const allAchievements = await this.prisma.achievement.findMany();
 
     for (const ach of allAchievements) {
@@ -36,26 +36,32 @@ export class AchievementService {
 
       // Logic by Code/Title
       if (ach.title === 'FIRST_BLOOD' && solvedCount >= 1) shouldUnlock = true;
-      if (ach.title === 'PENTEST_APPRENTICE' && solvedCount >= 5) shouldUnlock = true;
-      if (ach.title === 'ZERO_DAY_HUNTER' && (solvedCount >= 10 || user.xp >= 5000)) shouldUnlock = true;
-      
+      if (ach.title === 'PENTEST_APPRENTICE' && solvedCount >= 5)
+        shouldUnlock = true;
+      if (
+        ach.title === 'ZERO_DAY_HUNTER' &&
+        (solvedCount >= 10 || user.xp >= 5000)
+      )
+        shouldUnlock = true;
+
       // Compatibility with old names
-      if (ach.title === 'Initiate Operative' && lessonCount >= 1) shouldUnlock = true;
+      if (ach.title === 'Initiate Operative' && lessonCount >= 1)
+        shouldUnlock = true;
 
       if (shouldUnlock) {
         await this.prisma.userAchievement.create({
           data: {
             userId,
             achievementId: ach.id,
-          }
+          },
         });
-        
+
         // Grant XP reward
         await this.prisma.user.update({
           where: { id: userId },
-          data: { xp: { increment: ach.xpReward } }
+          data: { xp: { increment: ach.xpReward } },
         });
-        
+
         logger.info(`Unlocked "${ach.title}" for user ${userId}`);
 
         this.eventsService.emit('ACHIEVEMENT_UNLOCKED', {
@@ -65,7 +71,7 @@ export class AchievementService {
           description: ach.description,
           icon: ach.icon || 'Trophy',
           xpReward: ach.xpReward,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }

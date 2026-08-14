@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class RecruitmentService {
   constructor(private prisma: PrismaService) {}
 
-  async getTalentPool(filters: { city?: string; organizationId?: string; minXp?: number }) {
+  async getTalentPool(filters: {
+    city?: string;
+    organizationId?: string;
+    minXp?: number;
+  }) {
     const { city, organizationId, minXp } = filters;
 
     return this.prisma.user.findMany({
@@ -28,18 +32,18 @@ export class RecruitmentService {
           select: {
             name: true,
             type: true,
-          }
+          },
         },
         achievements: {
           include: {
             achievement: true,
-          }
+          },
         },
         _count: {
           select: {
             labSubmissions: { where: { isCorrect: true } },
-          }
-        }
+          },
+        },
       },
       orderBy: {
         xp: 'desc',
@@ -66,9 +70,9 @@ export class RecruitmentService {
           select: {
             labSubmissions: { where: { isCorrect: true } },
             progress: { where: { completed: true } },
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!user) throw new NotFoundException('Candidate not found');
@@ -77,7 +81,8 @@ export class RecruitmentService {
     const rank = user.rank || 1200;
     const level = Math.floor(xp / 1000) + 1;
     const division = user.division || 'BRONZE';
-    const clearance = level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
+    const clearance =
+      level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
 
     return {
       ...user,
@@ -92,18 +97,18 @@ export class RecruitmentService {
     const existing = await this.prisma.shortlist.findUnique({
       where: {
         recruiterId_studentId: { recruiterId, studentId },
-      }
+      },
     });
 
     if (existing) {
       await this.prisma.shortlist.delete({
-        where: { id: existing.id }
+        where: { id: existing.id },
       });
       return { shortlisted: false };
     }
 
     await this.prisma.shortlist.create({
-      data: { recruiterId, studentId }
+      data: { recruiterId, studentId },
     });
     return { shortlisted: true };
   }
@@ -119,10 +124,10 @@ export class RecruitmentService {
             email: true,
             city: true,
             xp: true,
-            organization: { select: { name: true } }
-          }
-        }
-      }
+            organization: { select: { name: true } },
+          },
+        },
+      },
     });
   }
 
@@ -132,43 +137,51 @@ export class RecruitmentService {
       _sum: { xp: true },
       _count: { id: true },
       where: { role: 'STUDENT' },
-      orderBy: { _sum: { xp: 'desc' } }
+      orderBy: { _sum: { xp: 'desc' } },
     });
 
     const universityStats = await this.prisma.user.groupBy({
       by: ['organizationId'],
       _sum: { xp: true },
       _count: { id: true },
-      where: { 
+      where: {
         role: 'STUDENT',
-        organization: { type: 'UNIVERSITY' }
+        organization: { type: 'UNIVERSITY' },
       },
-      orderBy: { _sum: { xp: 'desc' } }
+      orderBy: { _sum: { xp: 'desc' } },
     });
 
     // Hydrate university names
     const universities = await this.prisma.organization.findMany({
-      where: { id: { in: universityStats.map(u => u.organizationId).filter(Boolean) as string[] } }
+      where: {
+        id: {
+          in: universityStats
+            .map((u) => u.organizationId)
+            .filter(Boolean) as string[],
+        },
+      },
     });
 
     const activeSeason = await this.prisma.season.findFirst({
       where: { isActive: true },
-      orderBy: { startDate: 'desc' }
+      orderBy: { startDate: 'desc' },
     });
 
     return {
-      regional: regionalStats.map(r => ({
+      regional: regionalStats.map((r) => ({
         name: r.city || 'Unknown',
         totalXp: r._sum.xp || 0,
         studentCount: r._count.id,
       })),
-      university: universityStats.map(u => ({
+      university: universityStats.map((u) => ({
         id: u.organizationId,
-        name: universities.find(v => v.id === u.organizationId)?.name || 'Unknown',
+        name:
+          universities.find((v) => v.id === u.organizationId)?.name ||
+          'Unknown',
         totalXp: u._sum.xp || 0,
         studentCount: u._count.id,
       })),
-      season: activeSeason
+      season: activeSeason,
     };
   }
 }

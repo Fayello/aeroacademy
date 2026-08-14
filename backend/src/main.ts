@@ -3,6 +3,7 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -34,7 +35,7 @@ async function bootstrap() {
   });
 
   // Request logging
-  app.use((req: any, _res: any, next: () => void) => {
+  app.use((req: Request, _res: Response, next: NextFunction) => {
     logger.log(`${req.method} ${req.url}`);
     next();
   });
@@ -81,4 +82,4 @@ async function bootstrap() {
   await app.listen(port);
   logger.log(`Server running on port ${port}`);
 }
-bootstrap();
+void bootstrap();

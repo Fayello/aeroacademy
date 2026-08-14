@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ActivityService {
   constructor(private prisma: PrismaService) {}
 
-  async log(userId: string, type: string, metadata?: any) {
+  async log(userId: string, type: string, metadata?: unknown) {
     return this.prisma.activityEvent.create({
-      data: { userId, type, metadata },
+      data: { userId, type, metadata: metadata as Prisma.InputJsonValue },
     });
   }
 
@@ -56,9 +57,13 @@ export class ActivityService {
 
   async getUserStats(userId: string) {
     const [totalSessions, activeSessions, flagsSolved] = await Promise.all([
-      this.prisma.activityEvent.count({ where: { userId, type: 'LAB_STARTED' } }),
+      this.prisma.activityEvent.count({
+        where: { userId, type: 'LAB_STARTED' },
+      }),
       this.prisma.labInstance.count({ where: { userId, status: 'RUNNING' } }),
-      this.prisma.activityEvent.count({ where: { userId, type: 'FLAG_SOLVED' } }),
+      this.prisma.activityEvent.count({
+        where: { userId, type: 'FLAG_SOLVED' },
+      }),
     ]);
     return { totalSessions, activeSessions, flagsSolved };
   }

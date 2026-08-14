@@ -17,6 +17,7 @@ import { Role } from '@prisma/client';
 import { IsString, MaxLength, IsOptional } from 'class-validator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import type { RequestWithUser } from '../common/request-with-user';
 
 class CreateTeamDto {
   @IsString()
@@ -40,12 +41,15 @@ export class AdminController {
   @Post('teams')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Audit('TEAM_CREATED')
-  async createTeam(@Request() req, @Body() dto: CreateTeamDto) {
+  async createTeam(
+    @Request() req: RequestWithUser,
+    @Body() dto: CreateTeamDto,
+  ) {
     return this.adminService.createTeam(req.user.id, dto.name, dto.description);
   }
 
   @Get('teams')
-  async getTeams(@Request() req) {
+  async getTeams(@Request() req: RequestWithUser) {
     return this.adminService.getMyTeams(req.user.id);
   }
 

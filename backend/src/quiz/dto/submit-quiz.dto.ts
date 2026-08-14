@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsObject } from 'class-validator';
+import { IsNotEmpty, IsObject } from 'class-validator';
 
 export class SubmitQuizDto {
   @IsNotEmpty({ message: 'Answers are required' })

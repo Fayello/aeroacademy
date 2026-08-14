@@ -1,13 +1,17 @@
-
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class LeaderboardService {
   constructor(private prisma: PrismaService) {}
 
-  async getGlobalLeaderboard(limit = 10, organizationId?: string, city?: string) {
-    const where: any = {};
+  async getGlobalLeaderboard(
+    limit = 10,
+    organizationId?: string,
+    city?: string,
+  ) {
+    const where: Prisma.UserWhereInput = {};
     if (organizationId) where.organizationId = organizationId;
     if (city) where.city = city;
 
@@ -26,12 +30,12 @@ export class LeaderboardService {
           select: {
             name: true,
             type: true,
-          }
+          },
         },
         achievements: {
-          include: { achievement: true }
-        }
-      }
+          include: { achievement: true },
+        },
+      },
     });
 
     return users.map((user, index) => ({
@@ -54,7 +58,7 @@ export class LeaderboardService {
       _sum: { xp: true },
       _count: { id: true },
       where: { role: 'STUDENT' },
-      orderBy: { _sum: { xp: 'desc' } }
+      orderBy: { _sum: { xp: 'desc' } },
     });
 
     const universityStats = await this.prisma.user.groupBy({
@@ -63,33 +67,41 @@ export class LeaderboardService {
       _count: { id: true },
       where: {
         role: 'STUDENT',
-        organization: { type: 'UNIVERSITY' }
+        organization: { type: 'UNIVERSITY' },
       },
-      orderBy: { _sum: { xp: 'desc' } }
+      orderBy: { _sum: { xp: 'desc' } },
     });
 
     const universities = await this.prisma.organization.findMany({
-      where: { id: { in: universityStats.map(u => u.organizationId).filter(Boolean) as string[] } }
+      where: {
+        id: {
+          in: universityStats
+            .map((u) => u.organizationId)
+            .filter(Boolean) as string[],
+        },
+      },
     });
 
     const activeSeason = await this.prisma.season.findFirst({
       where: { isActive: true },
-      orderBy: { startDate: 'desc' }
+      orderBy: { startDate: 'desc' },
     });
 
     return {
-      regional: regionalStats.map(r => ({
+      regional: regionalStats.map((r) => ({
         name: r.city || 'Unknown',
         totalXp: r._sum.xp || 0,
         studentCount: r._count.id,
       })),
-      university: universityStats.map(u => ({
+      university: universityStats.map((u) => ({
         id: u.organizationId,
-        name: universities.find(v => v.id === u.organizationId)?.name || 'Unknown',
+        name:
+          universities.find((v) => v.id === u.organizationId)?.name ||
+          'Unknown',
         totalXp: u._sum.xp || 0,
         studentCount: u._count.id,
       })),
-      season: activeSeason
+      season: activeSeason,
     };
   }
 }

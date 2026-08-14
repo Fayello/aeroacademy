@@ -1,5 +1,4 @@
-
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LabsService } from '../labs/labs.service';
 
@@ -7,28 +6,28 @@ import { LabsService } from '../labs/labs.service';
 export class AdminService {
   constructor(
     private prisma: PrismaService,
-    private labsService: LabsService
+    private labsService: LabsService,
   ) {}
 
   async createTeam(ownerId: string, name: string, description?: string) {
     return this.prisma.team.create({
-      data: { name, description, ownerId }
+      data: { name, description, ownerId },
     });
   }
 
   async getMyTeams(ownerId: string) {
     return this.prisma.team.findMany({
       where: { ownerId },
-      include: { 
-        _count: { select: { members: true } }
-      }
+      include: {
+        _count: { select: { members: true } },
+      },
     });
   }
 
   async addMemberToTeam(teamId: string, userId: string) {
     return this.prisma.team.update({
       where: { id: teamId },
-      data: { members: { connect: { id: userId } } }
+      data: { members: { connect: { id: userId } } },
     });
   }
 
@@ -44,11 +43,11 @@ export class AdminService {
             rank: true,
             labSubmissions: {
               where: { isCorrect: true },
-              include: { flag: true }
-            }
-          }
-        }
-      }
+              include: { flag: true },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -58,18 +57,31 @@ export class AdminService {
   async bulkProvisionLab(teamId: string, labId: string) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
-      select: { id: true, members: { select: { id: true } } }
+      select: { id: true, members: { select: { id: true } } },
     });
 
     if (!team) throw new NotFoundException('Team not found');
 
-    const results: any[] = [];
+    const results: {
+      userId: string;
+      status: 'SUCCESS' | 'FAILED';
+      instanceId?: string;
+      error?: string;
+    }[] = [];
     for (const member of team.members) {
       try {
         const instance = await this.labsService.startLab(member.id, labId);
-        results.push({ userId: member.id, status: 'SUCCESS', instanceId: instance.id });
-      } catch (err) {
-        results.push({ userId: member.id, status: 'FAILED', error: err.message });
+        results.push({
+          userId: member.id,
+          status: 'SUCCESS',
+          instanceId: instance.id,
+        });
+      } catch (err: unknown) {
+        results.push({
+          userId: member.id,
+          status: 'FAILED',
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     }
     return results;
@@ -81,7 +93,7 @@ export class AdminService {
   async bulkTerminateLab(teamId: string, labId: string) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
-      select: { id: true, members: { select: { id: true } } }
+      select: { id: true, members: { select: { id: true } } },
     });
 
     if (!team) throw new NotFoundException('Team not found');

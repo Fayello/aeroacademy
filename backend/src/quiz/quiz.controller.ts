@@ -14,6 +14,7 @@ import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('quiz')
 @ApiBearerAuth('JWT-auth')
@@ -33,7 +34,7 @@ export class QuizController {
   async submitQuiz(
     @Param('quizId', ParseUUIDPipe) quizId: string,
     @Body() submitQuizDto: SubmitQuizDto,
-    @Request() req,
+    @Request() req: RequestWithUser,
   ) {
     return this.quizService.submitQuiz(
       req.user.id,

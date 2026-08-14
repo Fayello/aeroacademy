@@ -18,13 +18,14 @@ export class QuizService {
     });
 
     if (!quiz) throw new NotFoundException('Quiz not found for this lesson');
-    
-    const sanitizedQuestions = quiz.questions.map(q => ({
+
+    const sanitizedQuestions = quiz.questions.map((q) => ({
       ...q,
-      answers: q.answers.map(a => {
-        const { isCorrect, ...rest } = a;
-        return rest;
-      }),
+      answers: q.answers.map((a) => ({
+        id: a.id,
+        questionId: a.questionId,
+        text: a.text,
+      })),
     }));
 
     return {
@@ -33,7 +34,11 @@ export class QuizService {
     };
   }
 
-  async submitQuiz(userId: string, quizId: string, answers: Record<string, string>) {
+  async submitQuiz(
+    userId: string,
+    quizId: string,
+    answers: Record<string, string>,
+  ) {
     const quiz = await this.prisma.quiz.findUnique({
       where: { id: quizId },
       include: {
@@ -50,12 +55,12 @@ export class QuizService {
     let correctCount = 0;
     const totalCount = quiz.questions.length;
 
-    const details = quiz.questions.map(question => {
+    const details = quiz.questions.map((question) => {
       const selectedAnswerId = answers[question.id];
-      const correctAnswer = question.answers.find(a => a.isCorrect);
+      const correctAnswer = question.answers.find((a) => a.isCorrect);
       const isCorrect = selectedAnswerId === correctAnswer?.id;
       if (isCorrect) correctCount++;
-      
+
       return {
         questionId: question.id,
         isCorrect,

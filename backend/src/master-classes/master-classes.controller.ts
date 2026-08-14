@@ -17,6 +17,19 @@ import { MasterClassesService } from './master-classes.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import { BatchIdsDto, BatchStatusDto } from '../common/batch.dto';
+import type { RequestWithUser } from '../common/request-with-user';
+
+interface CreateMasterClassDto {
+  title: string;
+  description: string;
+  instructorName?: string;
+  instructorBio?: string;
+  category?: string;
+  scheduledAt?: string;
+  duration?: number;
+  maxParticipants?: number;
+  isLive?: boolean;
+}
 
 @ApiTags('master-classes')
 @Controller('master-classes')
@@ -43,7 +56,7 @@ export class MasterClassesController {
   @Post(':id/register')
   @UseGuards(AuthGuard('jwt'))
   @Audit('MASTERCLASS_REGISTERED')
-  async register(@Param('id') id: string, @Request() req: any) {
+  async register(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.masterClassesService.register(id, req.user.id);
   }
 
@@ -51,14 +64,14 @@ export class MasterClassesController {
   @Delete(':id/register')
   @UseGuards(AuthGuard('jwt'))
   @Audit('MASTERCLASS_UNREGISTERED')
-  async unregister(@Param('id') id: string, @Request() req: any) {
+  async unregister(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.masterClassesService.unregister(id, req.user.id);
   }
 
   @ApiBearerAuth('JWT-auth')
   @Get('my/registrations')
   @UseGuards(AuthGuard('jwt'))
-  async getMyRegistrations(@Request() req: any) {
+  async getMyRegistrations(@Request() req: RequestWithUser) {
     return this.masterClassesService.getMyRegistrations(req.user.id);
   }
 
@@ -67,7 +80,7 @@ export class MasterClassesController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('MASTERCLASS_CREATED')
-  async create(@Body() body: any) {
+  async create(@Body() body: CreateMasterClassDto) {
     return this.masterClassesService.create(body);
   }
 
@@ -76,7 +89,7 @@ export class MasterClassesController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('MASTERCLASS_UPDATED')
-  async update(@Param('id') id: string, @Body() body: any) {
+  async update(@Param('id') id: string, @Body() body: Record<string, any>) {
     return this.masterClassesService.update(id, body);
   }
 

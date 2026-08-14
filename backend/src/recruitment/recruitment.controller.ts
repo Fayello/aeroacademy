@@ -16,6 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 import { RecruitmentService } from './recruitment.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('recruitment')
 @ApiBearerAuth('JWT-auth')
@@ -47,14 +48,14 @@ export class RecruitmentController {
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Audit('SHORTLIST_TOGGLED')
   async toggleShortlist(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Body('studentId', ParseUUIDPipe) studentId: string,
   ) {
     return this.recruitmentService.toggleShortlist(req.user.id, studentId);
   }
 
   @Get('shortlisted')
-  async getShortlisted(@Request() req) {
+  async getShortlisted(@Request() req: RequestWithUser) {
     return this.recruitmentService.getShortlistedCandidates(req.user.id);
   }
 

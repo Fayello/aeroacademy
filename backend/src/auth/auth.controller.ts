@@ -19,12 +19,28 @@ import {
   ChangePasswordDto,
 } from './dto/auth.dto';
 import * as https from 'https';
+import type { Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import createLogger from '../common/logger';
+import type { RequestWithUser } from '../common/request-with-user';
 
 const logger = createLogger('Auth');
+
+interface GoogleCallbackQuery {
+  code?: string;
+  state?: string;
+  error?: string;
+  error_description?: string;
+}
+
+interface GoogleUserProfile {
+  id: string;
+  email: string;
+  name: string;
+  picture?: string;
+}
 
 @ApiTags('auth')
 @Controller('auth')
@@ -57,7 +73,7 @@ export class AuthController {
   }
 
   @Get('google')
-  async googleAuth(@Query('state') state: string, @Res() res: any) {
+  googleAuth(@Query('state') state: string, @Res() res: Response) {
     // Redirect to Google with state passed through
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const redirectUri = `${process.env.BACKEND_URL || 'http://localhost:4000'}/auth/google/callback`;
@@ -67,7 +83,10 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  async googleAuthCallback(@Query() query: any, @Res() res: any) {
+  async googleAuthCallback(
+    @Query() query: GoogleCallbackQuery,
+    @Res() res: Response,
+  ) {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     try {
@@ -104,8 +123,10 @@ export class AuthController {
         Location: `${frontendUrl}/dashboard?token=${access_token}&refresh_token=${refresh_token}${stateParam}`,
       });
       res.end();
-    } catch (err) {
-      logger.error(`Callback error: ${err.message}`);
+    } catch (err: unknown) {
+      logger.error(
+        `Callback error: ${err instanceof Error ? err.message : String(err)}`,
+      );
       res.writeHead(302, {
         Location: `${frontendUrl}/login?error=google_auth_failed`,
       });
@@ -136,12 +157,24 @@ export class AuthController {
           res.on('data', (chunk) => (body += chunk));
           res.on('end', () => {
             try {
-              const parsed = JSON.parse(body);
-              if (parsed.error)
+              const parsed = JSON.parse(body) as {
+                error?: string;
+                error_description?: string;
+                access_token?: string;
+                id_token?: string;
+              };
+              if (parsed.error) {
                 reject(new Error(parsed.error_description || parsed.error));
-              else resolve(parsed);
-            } catch (e) {
-              reject(e);
+              } else if (parsed.access_token && parsed.id_token) {
+                resolve({
+                  access_token: parsed.access_token,
+                  id_token: parsed.id_token,
+                });
+              } else {
+                reject(new Error('Invalid OAuth token response'));
+              }
+            } catch (e: unknown) {
+              reject(e instanceof Error ? e : new Error(String(e)));
             }
           });
         },
@@ -153,7 +186,7 @@ export class AuthController {
     });
   }
 
-  private getUserProfile(accessToken: string): Promise<any> {
+  private getUserProfile(accessToken: string): Promise<GoogleUserProfile> {
     return new Promise((resolve, reject) => {
       const req = https.request(
         'https://www.googleapis.com/oauth2/v2/userinfo',
@@ -165,9 +198,9 @@ export class AuthController {
           res.on('data', (chunk) => (body += chunk));
           res.on('end', () => {
             try {
-              resolve(JSON.parse(body));
-            } catch (e) {
-              reject(e);
+              resolve(JSON.parse(body) as GoogleUserProfile);
+            } catch (e: unknown) {
+              reject(e instanceof Error ? e : new Error(String(e)));
             }
           });
         },
@@ -181,7 +214,7 @@ export class AuthController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async getProfile(@Request() req) {
+  async getProfile(@Request() req: RequestWithUser) {
     return this.authService.getFullProfile(req.user.id);
   }
 
@@ -189,7 +222,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Patch('profile')
   async updateProfile(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.authService.updateProfile(req.user.id, updateProfileDto);
@@ -201,7 +234,7 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Audit('AUTH_CHANGE_PASSWORD')
   async changePassword(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
     return this.authService.changePassword(

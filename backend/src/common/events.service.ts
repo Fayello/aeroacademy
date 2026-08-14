@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { Subject } from 'rxjs';
 
@@ -7,7 +6,7 @@ export class EventsService {
   private eventSubject = new Subject<{ type: string; payload: any }>();
   events$ = this.eventSubject.asObservable();
 
-  emit(type: string, payload: any) {
+  emit(type: string, payload: unknown) {
     this.eventSubject.next({ type, payload });
   }
 }

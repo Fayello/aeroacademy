@@ -1,4 +1,10 @@
-import { Injectable, BadRequestException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AchievementService } from '../dashboard/achievement.service';
 import { getLevel, getRequiredSectionLevel } from '../common/level.util';
@@ -25,7 +31,9 @@ export class ProgressService {
     const userLevel = getLevel(user.xp);
     const requiredLevel = getRequiredSectionLevel(lesson.section.title);
     if (userLevel < requiredLevel) {
-      throw new ForbiddenException(`Level ${requiredLevel} required. Your level: ${userLevel}`);
+      throw new ForbiddenException(
+        `Level ${requiredLevel} required. Your level: ${userLevel}`,
+      );
     }
 
     // Sequential unlock: check that all previous lessons in the section are completed
@@ -34,10 +42,12 @@ export class ProgressService {
       include: { progress: { where: { userId, completed: true } } },
       orderBy: { order: 'asc' },
     });
-    const incompletePrevious = previousLessons.filter((l) => l.progress.length === 0);
+    const incompletePrevious = previousLessons.filter(
+      (l) => l.progress.length === 0,
+    );
     if (incompletePrevious.length > 0) {
       throw new BadRequestException(
-        `Complete previous lessons first: ${incompletePrevious.map((l) => l.title).join(', ')}`
+        `Complete previous lessons first: ${incompletePrevious.map((l) => l.title).join(', ')}`,
       );
     }
 
@@ -51,7 +61,9 @@ export class ProgressService {
       });
 
       if (!passedSubmission) {
-        throw new BadRequestException('Technical Verification Required: You must pass the technical quiz for this module before progress can be recorded.');
+        throw new BadRequestException(
+          'Technical Verification Required: You must pass the technical quiz for this module before progress can be recorded.',
+        );
       }
     }
 
@@ -65,7 +77,9 @@ export class ProgressService {
       });
 
       if (!labCompletion) {
-        throw new BadRequestException('Lab Completion Required: You must complete at least one lab objective for this module before progress can be recorded.');
+        throw new BadRequestException(
+          'Lab Completion Required: You must complete at least one lab objective for this module before progress can be recorded.',
+        );
       }
     }
 
@@ -96,7 +110,7 @@ export class ProgressService {
     if (!alreadyCompleted) {
       await this.prisma.user.update({
         where: { id: userId },
-        data: { xp: { increment: 100 } }
+        data: { xp: { increment: 100 } },
       });
     }
 
@@ -140,7 +154,10 @@ export class ProgressService {
     return {
       total: totalLessons,
       completed: completedLessons,
-      percentage: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
+      percentage:
+        totalLessons > 0
+          ? Math.round((completedLessons / totalLessons) * 100)
+          : 0,
     };
   }
 }

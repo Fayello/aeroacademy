@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
+import { Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -9,6 +14,14 @@ const logger = createLogger('Auth');
 
 const REFRESH_TOKEN_DAYS = 7;
 const RESET_TOKEN_EXPIRY_MINUTES = 30;
+
+interface LoginUser {
+  id: string;
+  email: string;
+  role: Role;
+  name: string | null;
+  bio: string | null;
+}
 
 @Injectable()
 export class AuthService {
@@ -35,7 +48,8 @@ export class AuthService {
     });
 
     if (!record || record.expiresAt < new Date()) {
-      if (record) await this.prisma.refreshToken.delete({ where: { id: record.id } });
+      if (record)
+        await this.prisma.refreshToken.delete({ where: { id: record.id } });
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
@@ -54,11 +68,15 @@ export class AuthService {
   }
 
   async logout(refreshToken: string) {
-    await this.prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
+    await this.prisma.refreshToken.deleteMany({
+      where: { token: refreshToken },
+    });
   }
 
   async register(email: string, password: string, name?: string) {
-    const existingUser = await this.prisma.user.findUnique({ where: { email } });
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
@@ -75,11 +93,14 @@ export class AuthService {
     return this.login(user);
   }
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (user && user.passwordHash && (await bcrypt.compare(pass, user.passwordHash))) {
-      const { passwordHash, ...result } = user;
-      return result;
+    if (
+      user &&
+      user.passwordHash &&
+      (await bcrypt.compare(pass, user.passwordHash))
+    ) {
+      return user;
     }
     return null;
   }
@@ -101,16 +122,28 @@ export class AuthService {
         teamId: true,
         createdAt: true,
         organization: { select: { id: true, name: true, type: true } },
-        _count: { select: { achievements: true, progress: { where: { completed: true } }, labSubmissions: { where: { isCorrect: true } } } },
+        _count: {
+          select: {
+            achievements: true,
+            progress: { where: { completed: true } },
+            labSubmissions: { where: { isCorrect: true } },
+          },
+        },
       },
     });
     if (!user) throw new UnauthorizedException('User not found');
     const level = Math.floor(user.xp / 1000) + 1;
-    const clearance = level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
+    const clearance =
+      level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
     return { ...user, level, clearance };
   }
 
-  async validateGoogleUser(profile: { googleId: string; email: string; name: string; avatar?: string }) {
+  async validateGoogleUser(profile: {
+    googleId: string;
+    email: string;
+    name: string;
+    avatar?: string;
+  }) {
     let user = await this.prisma.user.findFirst({
       where: { OR: [{ googleId: profile.googleId }, { email: profile.email }] },
     });
@@ -136,7 +169,7 @@ export class AuthService {
     return user;
   }
 
-  async login(user: any) {
+  async login(user: LoginUser) {
     const payload = { email: user.email, sub: user.id, role: user.role };
     const refreshToken = await this.generateRefreshToken(user.id);
     return {
@@ -152,22 +185,35 @@ export class AuthService {
     };
   }
 
-  async updateProfile(userId: string, data: { email?: string; name?: string; bio?: string; city?: string; organizationId?: string }) {
+  async updateProfile(
+    userId: string,
+    data: {
+      email?: string;
+      name?: string;
+      bio?: string;
+      city?: string;
+      organizationId?: string;
+    },
+  ) {
     if (data.email) {
-      const existingUser = await this.prisma.user.findUnique({ where: { email: data.email } });
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: data.email },
+      });
       if (existingUser && existingUser.id !== userId) {
         throw new ConflictException('Email already in use');
       }
     }
 
-    const updateData: any = {};
+    const updateData: Prisma.UserUncheckedUpdateInput = {};
     if (data.email !== undefined) updateData.email = data.email;
     if (data.name !== undefined) updateData.name = data.name;
     if (data.bio !== undefined) updateData.bio = data.bio;
     if (data.city !== undefined) updateData.city = data.city;
 
     if (data.organizationId) {
-      const org = await this.prisma.organization.findUnique({ where: { id: data.organizationId } });
+      const org = await this.prisma.organization.findUnique({
+        where: { id: data.organizationId },
+      });
       if (org) updateData.organizationId = data.organizationId;
     }
 
@@ -180,19 +226,22 @@ export class AuthService {
   async changePassword(userId: string, oldPass: string, newPass: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('User not found');
-    if (!user.passwordHash) throw new UnauthorizedException('Account uses Google sign-in. Cannot change password.');
+    if (!user.passwordHash)
+      throw new UnauthorizedException(
+        'Account uses Google sign-in. Cannot change password.',
+      );
     const isMatch = await bcrypt.compare(oldPass, user.passwordHash);
     if (!isMatch) throw new UnauthorizedException('Incorrect password');
     const passwordHash = await bcrypt.hash(newPass, 10);
     return this.prisma.user.update({
       where: { id: userId },
-      data: { passwordHash }
+      data: { passwordHash },
     });
   }
 
   async getOrganizations() {
     return this.prisma.organization.findMany({
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     });
   }
 
@@ -201,7 +250,9 @@ export class AuthService {
     if (!user) return; // Silently return to prevent email enumeration
 
     // Invalidate any existing reset tokens for this user
-    await this.prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+    await this.prisma.passwordResetToken.deleteMany({
+      where: { userId: user.id },
+    });
 
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date();
@@ -239,7 +290,9 @@ export class AuthService {
     });
 
     // Delete the used token and all other tokens for this user
-    await this.prisma.passwordResetToken.deleteMany({ where: { userId: record.userId } });
+    await this.prisma.passwordResetToken.deleteMany({
+      where: { userId: record.userId },
+    });
 
     return { message: 'Password has been reset successfully' };
   }

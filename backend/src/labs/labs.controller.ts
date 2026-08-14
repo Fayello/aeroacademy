@@ -19,10 +19,8 @@ import { Roles } from '../auth/roles.decorator';
 import { SubmitFlagDto } from './dto/submit-flag.dto';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
-import {
-  BatchIdsDto,
-  BatchLabStopDto,
-} from '../common/batch.dto';
+import { BatchIdsDto, BatchLabStopDto } from '../common/batch.dto';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('labs')
 @Controller('labs')
@@ -30,7 +28,7 @@ export class LabsController {
   constructor(private readonly labsService: LabsService) {}
 
   @Get('health')
-  async health() {
+  health() {
     return { status: 'OK', timestamp: new Date() };
   }
 
@@ -58,7 +56,10 @@ export class LabsController {
   @ApiBearerAuth('JWT-auth')
   @Get('status/:id')
   @UseGuards(AuthGuard('jwt'))
-  async getStatus(@Request() req, @Param('id', ParseUUIDPipe) labId: string) {
+  async getStatus(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) labId: string,
+  ) {
     return this.labsService.getLabStatus(req.user.id, labId);
   }
 
@@ -124,7 +125,10 @@ export class LabsController {
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @UseGuards(AuthGuard('jwt'))
   @Audit('LAB_STARTED')
-  async startLab(@Request() req, @Param('id', ParseUUIDPipe) labId: string) {
+  async startLab(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) labId: string,
+  ) {
     return this.labsService.startLab(req.user.id, labId);
   }
 
@@ -133,7 +137,10 @@ export class LabsController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @UseGuards(AuthGuard('jwt'))
   @Audit('LAB_STOPPED')
-  async stopLab(@Request() req, @Param('id', ParseUUIDPipe) labId: string) {
+  async stopLab(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) labId: string,
+  ) {
     return this.labsService.stopLab(req.user.id, labId);
   }
 
@@ -142,7 +149,10 @@ export class LabsController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @UseGuards(AuthGuard('jwt'))
   @Audit('LAB_RESET')
-  async resetLab(@Request() req, @Param('id', ParseUUIDPipe) labId: string) {
+  async resetLab(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) labId: string,
+  ) {
     return this.labsService.resetLab(req.user.id, labId);
   }
 
@@ -152,7 +162,7 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   @Audit('FLAG_SUBMITTED')
   async submitFlag(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Param('flagId', ParseUUIDPipe) flagId: string,
     @Body(ValidationPipe) submitFlagDto: SubmitFlagDto,
   ) {

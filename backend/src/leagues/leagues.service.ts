@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -11,29 +10,38 @@ export class LeaguesService {
   /**
    * Updates user ELO based on flag submission performance
    */
-  async calculateUserElo(userId: string, labDifficulty: number, isCorrect: boolean) {
+  async calculateUserElo(
+    userId: string,
+    labDifficulty: number,
+    isCorrect: boolean,
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) return;
 
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     const multiplier = activeSeason ? 1.2 : 1.0; // Seasonal bonus
 
     const oldRating = user.rank || 1200;
-    const expectedScore = 1 / (1 + Math.pow(10, (labDifficulty - oldRating) / 400));
+    const expectedScore =
+      1 / (1 + Math.pow(10, (labDifficulty - oldRating) / 400));
     const actualScore = isCorrect ? 1 : 0;
 
-    const change = Math.round(this.K_FACTOR * (actualScore - expectedScore) * multiplier);
+    const change = Math.round(
+      this.K_FACTOR * (actualScore - expectedScore) * multiplier,
+    );
     const newRating = Math.max(0, oldRating + change);
-    
+
     // Determine division based on new rating
     const division = this.getDivision(newRating);
 
     await this.prisma.user.update({
       where: { id: userId },
-      data: { 
+      data: {
         rank: newRating,
-        division
-      }
+        division,
+      },
     });
 
     return { newRating, division, change };
@@ -57,8 +65,8 @@ export class LeaguesService {
         name: true,
         rank: true,
         division: true,
-        xp: true
-      }
+        xp: true,
+      },
     });
   }
 }

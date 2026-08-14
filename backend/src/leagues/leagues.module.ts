@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { LeaguesService } from './leagues.service';
 import { PrismaModule } from '../prisma/prisma.module';

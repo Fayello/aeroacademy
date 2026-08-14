@@ -5,6 +5,7 @@ import { DashboardService } from './dashboard.service';
 import { ActivityService } from '../common/activity.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('dashboard')
 @Controller('dashboard')
@@ -31,18 +32,26 @@ export class DashboardController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('activity')
-  async getMyActivity(@Request() req: any) {
+  async getMyActivity(@Request() req: RequestWithUser) {
     return this.activityService.getUserActivity(req.user.id, 20);
   }
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('active-labs')
-  async getMyActiveLabs(@Request() req: any) {
+  async getMyActiveLabs(@Request() req: RequestWithUser) {
     return this.prisma.labInstance.findMany({
       where: { userId: req.user.id, status: 'RUNNING' },
       include: {
-        lab: { select: { id: true, title: true, difficulty: true, imageUrl: true, dockerImage: true } },
+        lab: {
+          select: {
+            id: true,
+            title: true,
+            difficulty: true,
+            imageUrl: true,
+            dockerImage: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -51,7 +60,7 @@ export class DashboardController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('user-stats')
-  async getUserStats(@Request() req: any) {
+  async getUserStats(@Request() req: RequestWithUser) {
     return this.activityService.getUserStats(req.user.id);
   }
 

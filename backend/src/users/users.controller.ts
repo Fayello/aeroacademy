@@ -17,6 +17,7 @@ import { Roles } from '../auth/roles.decorator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import { BatchIdsDto, BatchRoleDto } from '../common/batch.dto';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('admin-users')
 @ApiBearerAuth('JWT-auth')
@@ -67,13 +68,19 @@ export class UsersController {
 
   @Post('batch/delete')
   @Audit('USERS_DELETED_BATCH')
-  async batchRemove(@Request() req: any, @Body() body: BatchIdsDto) {
+  async batchRemove(
+    @Request() req: RequestWithUser,
+    @Body() body: BatchIdsDto,
+  ) {
     return this.usersService.batchRemove(body.ids, req.user.id);
   }
 
   @Post('batch/role')
   @Audit('USER_ROLES_UPDATED_BATCH')
-  async batchSetRole(@Request() req: any, @Body() body: BatchRoleDto) {
+  async batchSetRole(
+    @Request() req: RequestWithUser,
+    @Body() body: BatchRoleDto,
+  ) {
     return this.usersService.batchSetRole(body.ids, body.role, req.user.id);
   }
 }

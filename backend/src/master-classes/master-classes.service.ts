@@ -139,7 +139,9 @@ export class MasterClassesService {
     const mc = await this.prisma.masterClass.findUnique({ where: { id } });
     if (!mc) throw new NotFoundException('Master class not found');
 
-    if (data.scheduledAt) data.scheduledAt = new Date(data.scheduledAt);
+    if (typeof data.scheduledAt === 'string') {
+      data.scheduledAt = new Date(data.scheduledAt);
+    }
 
     return this.prisma.masterClass.update({ where: { id }, data });
   }

@@ -11,7 +11,12 @@ import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [PrismaModule, forwardRef(() => LabsModule), AuthModule],
   controllers: [DashboardController],
-  providers: [DashboardService, DashboardGateway, LeaderboardService, AchievementService],
+  providers: [
+    DashboardService,
+    DashboardGateway,
+    LeaderboardService,
+    AchievementService,
+  ],
   exports: [DashboardService, LeaderboardService, AchievementService],
 })
 export class DashboardModule {}

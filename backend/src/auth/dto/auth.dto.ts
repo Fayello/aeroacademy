@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsEmail({}, { message: 'Invalid email format' })
@@ -6,9 +14,15 @@ export class RegisterDto {
 
   @IsNotEmpty({ message: 'Password is required' })
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  @Matches(/^(?=.*[a-z])/, { message: 'Password must contain at least one lowercase letter' })
-  @Matches(/^(?=.*[A-Z])/, { message: 'Password must contain at least one uppercase letter' })
-  @Matches(/^(?=.*\d)/, { message: 'Password must contain at least one number' })
+  @Matches(/^(?=.*[a-z])/, {
+    message: 'Password must contain at least one lowercase letter',
+  })
+  @Matches(/^(?=.*[A-Z])/, {
+    message: 'Password must contain at least one uppercase letter',
+  })
+  @Matches(/^(?=.*\d)/, {
+    message: 'Password must contain at least one number',
+  })
   password: string;
 
   @IsString()
@@ -56,8 +70,14 @@ export class ChangePasswordDto {
 
   @IsNotEmpty({ message: 'New password is required' })
   @MinLength(8, { message: 'New password must be at least 8 characters long' })
-  @Matches(/^(?=.*[a-z])/, { message: 'New password must contain at least one lowercase letter' })
-  @Matches(/^(?=.*[A-Z])/, { message: 'New password must contain at least one uppercase letter' })
-  @Matches(/^(?=.*\d)/, { message: 'New password must contain at least one number' })
+  @Matches(/^(?=.*[a-z])/, {
+    message: 'New password must contain at least one lowercase letter',
+  })
+  @Matches(/^(?=.*[A-Z])/, {
+    message: 'New password must contain at least one uppercase letter',
+  })
+  @Matches(/^(?=.*\d)/, {
+    message: 'New password must contain at least one number',
+  })
   newPassword: string;
 }

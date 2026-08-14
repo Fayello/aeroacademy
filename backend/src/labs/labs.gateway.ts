@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { LabsService } from './labs.service';
 import { JwtService } from '@nestjs/jwt';
 import Docker from 'dockerode';
+import { Duplex } from 'stream';
 import createLogger from '../common/logger';
 
 const logger = createLogger('LabsGateway');
@@ -18,9 +19,8 @@ const MAX_INPUT_SIZE = 4096;
 const MAX_CONNECTIONS_PER_USER = 3;
 const TERMINAL_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 const ALLOWED_CONTROL_CHARS = new Set([
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  127,
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+  22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 127,
 ]);
 
 function sanitizeInput(data: string): string {
@@ -37,15 +37,28 @@ function sanitizeInput(data: string): string {
   return filtered.join('');
 }
 
+interface JwtPayload {
+  email: string;
+  sub: string;
+  role: string;
+}
+
+interface SocketData {
+  user?: JwtPayload;
+}
+
 interface TerminalSession {
-  stream: any;
-  exec: any;
+  stream: Duplex;
+  exec: Docker.Exec;
   idleTimer: NodeJS.Timeout;
   lastActivity: number;
 }
 
 @WebSocketGateway({
-  cors: { origin: process.env.FRONTEND_URL || 'http://localhost:3000', credentials: true },
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  },
   namespace: 'terminal',
 })
 export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -63,16 +76,16 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.docker = new Docker();
   }
 
-  async handleConnection(client: Socket) {
-    const token = client.handshake.auth.token;
+  handleConnection(client: Socket) {
+    const token = client.handshake.auth?.token as string | undefined;
     if (!token) {
       client.disconnect();
       return;
     }
 
     try {
-      const payload = this.jwtService.verify(token);
-      client.data.user = payload;
+      const payload = this.jwtService.verify<JwtPayload>(token);
+      (client.data as SocketData).user = payload;
 
       const userId = payload.sub;
       const currentConnections = this.userConnections.get(userId) || 0;
@@ -95,8 +108,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.activeSessions.delete(client.id);
     }
 
-    if (client.data.user) {
-      const userId = client.data.user.sub;
+    const user = (client.data as SocketData).user;
+    if (user) {
+      const userId = user.sub;
       const currentConnections = this.userConnections.get(userId) || 0;
       if (currentConnections <= 1) {
         this.userConnections.delete(userId);
@@ -111,7 +125,11 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { labId: string },
   ) {
-    const userId = client.data.user.sub;
+    const userId = (client.data as SocketData).user?.sub;
+    if (!userId) {
+      client.emit('error', 'Not authenticated');
+      return;
+    }
     const instance = await this.labsService.getLabStatus(userId, data.labId);
 
     if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
@@ -122,8 +140,8 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const container = this.docker.getContainer(instance.containerId);
       const shells = ['/bin/bash', '/bin/sh', 'sh'];
-      let stream: any = null;
-      let execInstance: any = null;
+      let stream: Duplex | null = null;
+      let execInstance: Docker.Exec | null = null;
 
       for (const shell of shells) {
         try {
@@ -135,29 +153,30 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             Cmd: [shell],
           });
 
-          stream = await exec.start({ hijack: true, stdin: true });
+          const nextStream = await exec.start({ hijack: true, stdin: true });
 
           const isAlive = await Promise.race([
-            new Promise<boolean>(r => {
-              stream.once('data', () => r(true));
-              stream.once('end', () => r(false));
+            new Promise<boolean>((r) => {
+              nextStream.once('data', () => r(true));
+              nextStream.once('end', () => r(false));
               setTimeout(() => r(true), 500);
-            })
+            }),
           ]);
 
           if (isAlive) {
             execInstance = exec;
+            stream = nextStream;
             break;
           } else {
-            stream.end();
-            stream = null;
+            nextStream.end();
           }
         } catch {
           continue;
         }
       }
 
-      if (!stream) throw new Error('No compatible shell found in container');
+      if (!stream || !execInstance)
+        throw new Error('No compatible shell found in container');
 
       const idleTimer = setTimeout(() => {
         this.cleanupSession(client.id);
@@ -185,16 +204,17 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       client.emit('ready', 'Terminal connected');
     } catch (err) {
-      logger.error(`Terminal attach failed for client ${client.id}: ${err.message}`);
+      logger.error(
+        `Terminal attach failed for client ${client.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
       client.emit('error', 'Failed to attach terminal. Please try again.');
     }
   }
 
   @SubscribeMessage('input')
-  handleInput(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: string,
-  ) {
+  handleInput(@ConnectedSocket() client: Socket, @MessageBody() data: string) {
     const session = this.activeSessions.get(client.id);
     if (session) {
       const sanitized = sanitizeInput(data);
@@ -214,7 +234,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (session?.exec) {
       try {
         await session.exec.resize({ h: data.rows, w: data.cols });
-      } catch {}
+      } catch {
+        /* session may have ended */
+      }
     }
   }
 

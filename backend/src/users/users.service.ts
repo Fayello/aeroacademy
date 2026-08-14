@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -8,10 +8,17 @@ export class UsersService {
 
   async findAll(role?: string) {
     return this.prisma.user.findMany({
-      where: role ? { role: role as any } : {},
+      where: role ? { role: role as Role } : {},
       include: {
         organization: { select: { name: true, type: true } },
-        _count: { select: { progress: true, labSubmissions: true, quizSubmissions: true, achievements: true } },
+        _count: {
+          select: {
+            progress: true,
+            labSubmissions: true,
+            quizSubmissions: true,
+            achievements: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -24,18 +31,44 @@ export class UsersService {
         organization: { select: { name: true, type: true } },
         progress: { include: { lesson: { select: { title: true } } } },
         achievements: { include: { achievement: true } },
-        _count: { select: { progress: true, labSubmissions: true, quizSubmissions: true } },
+        _count: {
+          select: {
+            progress: true,
+            labSubmissions: true,
+            quizSubmissions: true,
+          },
+        },
       },
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
-  async update(id: string, data: { name?: string; email?: string; role?: string; bio?: string; city?: string; xp?: number; organizationId?: string }) {
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      email?: string;
+      role?: string;
+      bio?: string;
+      city?: string;
+      xp?: number;
+      organizationId?: string;
+    },
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
-    const updateData: any = { ...data };
-    if (data.role) updateData.role = data.role as any;
+    const { role, ...rest } = data;
+    const updateData: {
+      name?: string;
+      email?: string;
+      role?: Role;
+      bio?: string;
+      city?: string;
+      xp?: number;
+      organizationId?: string | null;
+    } = rest;
+    if (role) updateData.role = role as Role;
     if (data.organizationId === null) updateData.organizationId = null;
     return this.prisma.user.update({
       where: { id },

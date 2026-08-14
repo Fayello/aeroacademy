@@ -2,12 +2,13 @@ export function getLevel(xp: number): number {
   return Math.floor(xp / 1000) + 1;
 }
 
-const LAB_DIFFICULTY_GATES: { maxDifficulty: number; requiredLevel: number }[] = [
-  { maxDifficulty: 1100, requiredLevel: 1 },
-  { maxDifficulty: 1300, requiredLevel: 4 },
-  { maxDifficulty: 1500, requiredLevel: 7 },
-  { maxDifficulty: Infinity, requiredLevel: 10 },
-];
+const LAB_DIFFICULTY_GATES: { maxDifficulty: number; requiredLevel: number }[] =
+  [
+    { maxDifficulty: 1100, requiredLevel: 1 },
+    { maxDifficulty: 1300, requiredLevel: 4 },
+    { maxDifficulty: 1500, requiredLevel: 7 },
+    { maxDifficulty: Infinity, requiredLevel: 10 },
+  ];
 
 const SECTION_GATES: Record<string, number> = {
   Fundamentals: 1,

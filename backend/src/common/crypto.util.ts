@@ -1,8 +1,11 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { Prisma } from '@prisma/client';
 
 const SALT_ROUNDS = 10;
-const ENCRYPTION_KEY = process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!';
+const ENCRYPTION_KEY =
+  process.env.LAB_ENCRYPTION_KEY ||
+  'aeroacademy-labs-default-key-change-in-production-32b!';
 const IV_LENGTH = 16;
 const ALGORITHM = 'aes-256-cbc';
 
@@ -10,7 +13,10 @@ export async function hashAnswer(answer: string): Promise<string> {
   return bcrypt.hash(answer.trim().toLowerCase(), SALT_ROUNDS);
 }
 
-export async function verifyAnswer(answer: string, hash: string): Promise<boolean> {
+export async function verifyAnswer(
+  answer: string,
+  hash: string,
+): Promise<boolean> {
   return bcrypt.compare(answer.trim().toLowerCase(), hash);
 }
 
@@ -37,6 +43,6 @@ export function encryptCredentials(credentials: any[]): string {
   return encryptData(JSON.stringify(credentials));
 }
 
-export function decryptCredentials(encrypted: string): any[] {
-  return JSON.parse(decryptData(encrypted));
+export function decryptCredentials(encrypted: string): Prisma.JsonValue {
+  return JSON.parse(decryptData(encrypted)) as Prisma.JsonValue;
 }
