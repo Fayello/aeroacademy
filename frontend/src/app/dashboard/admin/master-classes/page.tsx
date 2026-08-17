@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { Video, Calendar, Clock, Users, UserCheck, Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminStatusBadge } from "@/components/admin/AdminForm";

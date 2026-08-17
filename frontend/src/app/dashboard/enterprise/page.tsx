@@ -5,7 +5,7 @@ import { Search, MapPin, GraduationCap, Star, ChevronRight, Loader2, ChevronLeft
 import { fetchApi } from "@/lib/api";
 import { CAMEROON_CITIES } from "@/lib/constants";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import ClassroomCommand from "@/components/enterprise/ClassroomCommand";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -40,18 +40,19 @@ export default function EnterprisePortal() {
   const [shortlisted, setShortlisted] = useState<Set<string>>(new Set());
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
   const [view, setView] = useState<"TALENT" | "CLASSROOM">("TALENT");
-  const [userRole] = useState<string | null>(() => {
-    try {
-      if (typeof window === "undefined") return null;
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      return user.role ?? null;
-    } catch {
-      return null;
-    }
-  });
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   const cities = ["All", ...CAMEROON_CITIES];
+
+  useEffect(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      setUserRole(user.role ?? null);
+    } catch {
+      setUserRole(null);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,9 +108,23 @@ export default function EnterprisePortal() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 className="animate-spin text-slate-400" size={32} />
-        <p className="text-sm text-slate-500">Loading talent pool...</p>
+      <div className="space-y-6">
+        <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
+        <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((id) => (
+            <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+              <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-slate-200 animate-pulse" />
+                <div className="space-y-2">
+                  <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
+                  <div className="h-3 w-24 bg-slate-200 rounded animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -120,6 +135,7 @@ export default function EnterprisePortal() {
         <PageHeader title="Enterprise Portal" description="Discover and recruit top security talent." />
         <div className="flex items-center gap-3 text-sm text-slate-500">
           <span>{talent.length} candidates</span>
+          <span className="text-slate-300">|</span>
           <span>{shortlisted.size} saved</span>
         </div>
       </div>
@@ -146,12 +162,12 @@ export default function EnterprisePortal() {
               <input type="text" placeholder="Search by name or institution..." className="input-field pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+              <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
                 <Star size={12} className="inline mr-1" fill={showShortlistedOnly ? "currentColor" : "none"} />
                 Saved
               </button>
               {cities.map((city) => (
-                <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+                <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
                   {city}
                 </button>
               ))}
@@ -159,14 +175,14 @@ export default function EnterprisePortal() {
           </div>
 
           {/* Talent grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedTalent.map((t) => (
-              <div key={t.id} className="card p-5 space-y-4 hover:shadow-md transition-shadow">
+              <div key={t.id} className="bg-white rounded-xl border border-slate-200 p-5 space-y-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${divisionBadge[t.division] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
                     {t.division}
                   </span>
-                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-emerald-100 text-emerald-600" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
+                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
                     <Star size={14} fill={shortlisted.has(t.id) ? "currentColor" : "none"} />
                   </button>
                 </div>
@@ -232,7 +248,9 @@ export default function EnterprisePortal() {
           )}
 
           {filteredTalent.length === 0 && (
-            <div className="card p-12 text-center text-sm text-slate-500">No candidates match your criteria.</div>
+            <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+              <p className="text-sm font-medium text-slate-500">No candidates match your criteria.</p>
+            </div>
           )}
         </>
       )}

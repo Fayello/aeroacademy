@@ -143,9 +143,16 @@ interface AdminCheckboxProps {
   disabled?: boolean;
 }
 
-export function AdminCheckbox({ label, checked, error, disabled }: AdminCheckboxProps) {
+export function AdminCheckbox({ label, checked, onChange, error, disabled }: AdminCheckboxProps) {
   return (
     <label className={`flex items-center gap-3 cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        disabled={disabled}
+        className="sr-only"
+      />
       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${checked ? "bg-emerald-600 border-emerald-600" : "border-slate-300 bg-white"}`}>
         {checked && (
           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

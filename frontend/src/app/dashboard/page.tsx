@@ -71,19 +71,23 @@ interface CourseWithProgress {
   imageUrl: string | null;
   estimatedHours: number | null;
   sections: { lessons: { id: string }[] }[];
-  progress?: { total: number; completed: number; percentage: number };
+  progress?: { total: number; completed: number; started: number; percentage: number };
 }
 
 export default function DashboardPage() {
-  const [user] = useState<User | null>(() => {
+  const [user, setUser] = useState<User | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
     try {
-      if (typeof window === "undefined") return null;
       const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
+      setUser(storedUser ? JSON.parse(storedUser) : null);
     } catch {
-      return null;
+      setUser(null);
     }
-  });
+    setHydrated(true);
+  }, []);
+
   const [loading, setLoading] = useState(true);
 
   const [activeLabs, setActiveLabs] = useState<ActiveLabInstance[]>([]);
@@ -103,6 +107,7 @@ export default function DashboardPage() {
   const { userMetrics, feed, leaderboard } = useDashboard();
 
   useEffect(() => {
+    let cancelled = false;
     async function loadData() {
       try {
         const [
@@ -119,12 +124,12 @@ export default function DashboardPage() {
           fetchApi("/dashboard/global-activity"),
         ]);
 
-        if (labs.status === "fulfilled") setActiveLabs(labs.value as ActiveLabInstance[]);
-        if (activity.status === "fulfilled") setLabActivity(activity.value as ActivityEvent[]);
-        if (stats.status === "fulfilled") setUserStats(stats.value as UserLabStats);
-        if (globalActivityData.status === "fulfilled") setGlobalActivity(globalActivityData.value as GlobalActivityEvent[]);
+        if (labs.status === "fulfilled" && !cancelled) setActiveLabs(labs.value as ActiveLabInstance[]);
+        if (activity.status === "fulfilled" && !cancelled) setLabActivity(activity.value as ActivityEvent[]);
+        if (stats.status === "fulfilled" && !cancelled) setUserStats(stats.value as UserLabStats);
+        if (globalActivityData.status === "fulfilled" && !cancelled) setGlobalActivity(globalActivityData.value as GlobalActivityEvent[]);
 
-        if (coursesData.status === "fulfilled") {
+        if (coursesData.status === "fulfilled" && !cancelled) {
           const courseList = coursesData.value as CourseWithProgress[];
           const enriched = await Promise.allSettled(
             courseList.map(async (course) => {
@@ -145,14 +150,17 @@ export default function DashboardPage() {
       } catch {
         // silently fail
       } finally {
-        setLoading(false);
-        setActiveLabsLoading(false);
-        setLabActivityLoading(false);
-        setCoursesLoading(false);
-        setGlobalActivityLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setActiveLabsLoading(false);
+          setLabActivityLoading(false);
+          setCoursesLoading(false);
+          setGlobalActivityLoading(false);
+        }
       }
     }
     loadData();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -161,13 +169,13 @@ export default function DashboardPage() {
     }
   }, [userMetrics?.xp]);
 
-  if (!user) {
+  if (!hydrated || !user) {
     return <DashboardSkeleton />;
   }
 
   const greeting = `Welcome back, ${user.name || user.email.split("@")[0]}`;
 
-  const coursesInProgress = courses.filter((c) => c.progress && c.progress.completed > 0);
+  const coursesInProgress = courses.filter((c) => c.progress && (c.progress.completed > 0 || c.progress.started > 0));
 
   function formatActivityType(type: string): { label: string; color: string; icon: typeof Play; dotColor: string } {
     switch (type) {
@@ -243,8 +251,8 @@ export default function DashboardPage() {
             <h3 className="text-sm font-semibold text-slate-900">Active Labs</h3>
             <div className="flex items-center gap-3">
               {userStats?.activeSessions ? (
-                <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200">
-                  <Circle size={6} className="fill-emerald-500 text-emerald-500 animate-pulse" />
+                <div className="flex items-center gap-1.5 text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded-full border border-slate-200">
+                  <Circle size={6} className="fill-slate-500 text-slate-500 animate-pulse" />
                   {userStats.activeSessions} online
                 </div>
               ) : (
@@ -288,7 +296,7 @@ export default function DashboardPage() {
                       <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                         <FlaskConical size={16} className="text-blue-600" />
                       </div>
-                      <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
+                      <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-slate-500 border-2 border-white animate-pulse" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors">
@@ -464,8 +472,8 @@ export default function DashboardPage() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-slate-900">Global Activity</h3>
-            <span className="flex items-center gap-1.5 text-[11px] text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200">
-              <Circle size={6} className="fill-emerald-500 text-emerald-500 animate-pulse" />
+            <span className="flex items-center gap-1.5 text-[11px] text-slate-600 bg-slate-100 px-2 py-1 rounded-full border border-slate-200">
+              <Circle size={6} className="fill-slate-500 text-slate-500 animate-pulse" />
               Live
             </span>
           </div>

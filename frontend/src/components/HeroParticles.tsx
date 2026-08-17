@@ -27,8 +27,10 @@ export default function HeroParticles() {
     let frame: number;
 
     const resize = () => {
-      w = canvas.parentElement!.offsetWidth;
-      h = canvas.parentElement!.offsetHeight;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      w = parent.offsetWidth;
+      h = parent.offsetHeight;
       canvas.width = w * window.devicePixelRatio;
       canvas.height = h * window.devicePixelRatio;
       canvas.style.width = w + "px";

@@ -2,13 +2,14 @@ services:
   db:
     image: postgres:15-alpine
     restart: unless-stopped
-    env_file: ./backend/.env
     environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: aeroacademy
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -U user -d aeroacademy"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -41,9 +42,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:4000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
     ports:
       - "3000:3000"
     depends_on:

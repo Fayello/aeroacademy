@@ -14,31 +14,36 @@ export default function CourseDetailPage() {
   const [progress, setProgress] = useState<{ total: number; completed: number; percentage: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [level] = useState(() => {
-    try {
-      if (typeof window === "undefined") return 1;
-      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
-    } catch {
-      return 1;
-    }
-  });
+  const [level, setLevel] = useState(1);
 
   useEffect(() => {
+    try {
+      setLevel(getLevel(parseInt(localStorage.getItem("xp") || "0", 10)));
+    } catch {
+      setLevel(1);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     async function loadCourse() {
       try {
         const [courseData, progressData] = await Promise.all([
           fetchApi(`/courses/${id}`) as Promise<Course>,
           fetchApi(`/progress/course/${id}`).catch(() => null),
         ]);
-        setCourse(courseData);
-        setProgress(progressData);
+        if (!cancelled) {
+          setCourse(courseData);
+          setProgress(progressData);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : String(err));
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     loadCourse();
+    return () => { cancelled = true; };
   }, [id]);
 
   if (loading) {

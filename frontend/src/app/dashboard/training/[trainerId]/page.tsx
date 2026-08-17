@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Calendar, Clock, ArrowLeft, Loader2, Check } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import type { Trainer, TrainingSlot } from "@/types/api";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -34,16 +34,19 @@ export default function TrainerProfilePage() {
   const [topic, setTopic] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     fetchApi(`/training/trainers/${params.trainerId}`)
-      .then((data) => setTrainer(data as Trainer))
-      .catch(() => toast.error("Failed to load trainer"))
-      .finally(() => setLoading(false));
+      .then((data) => { if (!cancelled) setTrainer(data as Trainer); })
+      .catch(() => { if (!cancelled) toast.error("Failed to load trainer"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [params.trainerId]);
 
   useEffect(() => {
     if (!trainer) return;
     let cancelled = false;
     const dateStr = selectedDate.toISOString().split("T")[0];
+    setSelectedSlot(null);
     (async () => {
       setSlotsLoading(true);
       try {

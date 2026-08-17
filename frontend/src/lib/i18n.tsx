@@ -88,14 +88,7 @@ function readStoredLang(): Lang {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLangState(readStoredLang());
-    }, 0);
-    return () => clearTimeout(timer);
-  }, []);
+  const [lang, setLangState] = useState<Lang>(readStoredLang);
 
   useEffect(() => {
     document.documentElement.lang = lang;

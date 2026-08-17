@@ -49,8 +49,11 @@ export class LabsController {
   @ApiBearerAuth('JWT-auth')
   @Get('definition/:id')
   @UseGuards(AuthGuard('jwt'))
-  async getDefinition(@Param('id', ParseUUIDPipe) id: string) {
-    return this.labsService.getLabDefinition(id);
+  async getDefinition(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.labsService.getLabDefinition(id, req.user.id, req.user.role);
   }
 
   @ApiBearerAuth('JWT-auth')
@@ -88,7 +91,7 @@ export class LabsController {
   @Audit('LAB_UPDATED')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: Record<string, any>,
+    @Body() body: { title?: string; description?: string; dockerImage?: string; difficulty?: number; briefing?: string; imageUrl?: string },
   ) {
     return this.labsService.update(id, body);
   }

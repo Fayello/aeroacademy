@@ -15,6 +15,7 @@ import { OnModuleInit } from '@nestjs/common';
 import createLogger from '../common/logger';
 
 const logger = createLogger('Dashboard');
+const MAX_CONNECTIONS_PER_USER = 3;
 
 interface NotificationPayload {
   userId?: string;
@@ -40,6 +41,8 @@ export class DashboardGateway
   server: Server;
 
   private connectedUsers: Map<string, string> = new Map(); // socketId -> userId
+  private connectionCounts: Map<string, number> = new Map(); // userId -> count
+  private achievementCheckCounter = 0;
 
   constructor(
     private readonly dashboardService: DashboardService,
@@ -93,17 +96,18 @@ export class DashboardGateway
     try {
       const payload = this.jwtService.verify<{ sub: string }>(token);
       const userId = payload.sub;
+
+      const count = this.connectionCounts.get(userId) || 0;
+      if (count >= MAX_CONNECTIONS_PER_USER) {
+        client.disconnect();
+        return;
+      }
+
       this.connectedUsers.set(client.id, userId);
+      this.connectionCounts.set(userId, count + 1);
 
-      await this.achievementService.checkAndUnlockAchievements(userId);
-
-      const intelligence = await this.dashboardService.getSystemIntelligence();
       const userMetrics = await this.dashboardService.getUserMetrics(userId);
-      const leaderboard = await this.leaderboardService.getGlobalLeaderboard();
-
-      client.emit('intelligence_update', intelligence);
       client.emit('user_metrics_update', userMetrics);
-      client.emit('leaderboard_update', leaderboard);
 
       logger.info(`User ${userId} connected`);
     } catch {
@@ -112,7 +116,16 @@ export class DashboardGateway
   }
 
   handleDisconnect(client: Socket) {
+    const userId = this.connectedUsers.get(client.id);
     this.connectedUsers.delete(client.id);
+    if (userId) {
+      const count = this.connectionCounts.get(userId) || 1;
+      if (count <= 1) {
+        this.connectionCounts.delete(userId);
+      } else {
+        this.connectionCounts.set(userId, count - 1);
+      }
+    }
     logger.info('Client disconnected');
   }
 
@@ -134,17 +147,34 @@ export class DashboardGateway
     const leaderboard = await this.leaderboardService.getGlobalLeaderboard();
     this.server.emit('leaderboard_update', leaderboard);
 
-    for (const [socketId, userId] of this.connectedUsers.entries()) {
-      try {
-        await this.achievementService.checkAndUnlockAchievements(userId);
-        const intelligence =
-          await this.dashboardService.getSystemIntelligence(userId);
-        const userMetrics = await this.dashboardService.getUserMetrics(userId);
+    const uniqueUserIds = [...new Set(this.connectedUsers.values())];
 
-        this.server.to(socketId).emit('intelligence_update', intelligence);
-        this.server.to(socketId).emit('user_metrics_update', userMetrics);
-      } catch {
-        // skip individual user errors
+    // Batch: check achievements once per user — every 6th cycle (~90s) to reduce DB load
+    this.achievementCheckCounter++;
+    if (this.achievementCheckCounter >= 6) {
+      this.achievementCheckCounter = 0;
+      await Promise.allSettled(
+        uniqueUserIds.map((uid) => this.achievementService.checkAndUnlockAchievements(uid)),
+      );
+    }
+
+    // Batch: fetch metrics for all connected users in parallel
+    const metricsResults = await Promise.allSettled(
+      uniqueUserIds.map(async (uid) => ({
+        userId: uid,
+        intelligence: await this.dashboardService.getSystemIntelligence(uid),
+        userMetrics: await this.dashboardService.getUserMetrics(uid),
+      })),
+    );
+
+    // Emit to each socket
+    for (const [socketId, userId] of this.connectedUsers.entries()) {
+      const result = metricsResults.find(
+        (r) => r.status === 'fulfilled' && r.value.userId === userId,
+      );
+      if (result && result.status === 'fulfilled') {
+        this.server.to(socketId).emit('intelligence_update', result.value.intelligence);
+        this.server.to(socketId).emit('user_metrics_update', result.value.userMetrics);
       }
     }
   }

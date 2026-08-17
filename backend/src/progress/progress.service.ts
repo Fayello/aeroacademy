@@ -17,6 +17,22 @@ export class ProgressService {
     private achievementService: AchievementService,
   ) {}
 
+  async startLesson(userId: string, lessonId: string) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
+    if (!lesson) throw new BadRequestException('Lesson not found');
+
+    const existing = await this.prisma.progress.findUnique({
+      where: { userId_lessonId: { userId, lessonId } },
+    });
+    if (existing) return existing;
+
+    return this.prisma.progress.create({
+      data: { userId, lessonId, completed: false },
+    });
+  }
+
   async markAsComplete(userId: string, lessonId: string) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
@@ -83,41 +99,33 @@ export class ProgressService {
       }
     }
 
-    // Check if already completed BEFORE upsert to avoid double XP
-    const existingProgress = await this.prisma.progress.findUnique({
-      where: { userId_lessonId: { userId, lessonId } },
-    });
-    const alreadyCompleted = existingProgress?.completed === true;
-
-    const progress = await this.prisma.progress.upsert({
-      where: {
-        userId_lessonId: {
-          userId,
-          lessonId,
-        },
-      },
-      update: {
-        completed: true,
-      },
-      create: {
-        userId,
-        lessonId,
-        completed: true,
-      },
-    });
-
-    // Grant XP only on first completion
-    if (!alreadyCompleted) {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { xp: { increment: 100 } },
+    const progress = await this.prisma.$transaction(async (tx) => {
+      const existingProgress = await tx.progress.findUnique({
+        where: { userId_lessonId: { userId, lessonId } },
       });
+      const alreadyCompleted = existingProgress?.completed === true;
+
+      const p = await tx.progress.upsert({
+        where: { userId_lessonId: { userId, lessonId } },
+        update: { completed: true },
+        create: { userId, lessonId, completed: true },
+      });
+
+      if (!alreadyCompleted) {
+        await tx.user.update({
+          where: { id: userId },
+          data: { xp: { increment: 100 } },
+        });
+      }
+
+      return { progress: p, wasNew: !alreadyCompleted };
+    });
+
+    if (progress.wasNew) {
+      await this.achievementService.checkAndUnlockAchievements(userId);
     }
 
-    // Check for new achievements
-    await this.achievementService.checkAndUnlockAchievements(userId);
-
-    return progress;
+    return progress.progress;
   }
 
   async getLatestProgress(userId: string) {
@@ -151,9 +159,17 @@ export class ProgressService {
       },
     });
 
+    const startedLessons = await this.prisma.progress.count({
+      where: {
+        userId,
+        lesson: { section: { courseId } },
+      },
+    });
+
     return {
       total: totalLessons,
       completed: completedLessons,
+      started: startedLessons,
       percentage:
         totalLessons > 0
           ? Math.round((completedLessons / totalLessons) * 100)

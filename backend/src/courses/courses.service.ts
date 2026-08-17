@@ -9,8 +9,10 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CoursesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(opts?: { skip?: number; take?: number }) {
     return this.prisma.course.findMany({
+      skip: opts?.skip ?? 0,
+      take: opts?.take ?? 50,
       include: {
         _count: { select: { sections: true } },
         sections: {
@@ -98,11 +100,30 @@ export class CoursesService {
   async remove(id: string) {
     const course = await this.prisma.course.findUnique({ where: { id } });
     if (!course) throw new NotFoundException('Course not found');
+
+    const lessons = await this.prisma.lesson.findMany({
+      where: { section: { courseId: id } },
+      select: { id: true },
+    });
+    const lessonIds = lessons.map((l) => l.id);
+
+    await this.prisma.$transaction([
+      this.prisma.progress.deleteMany({ where: { lessonId: { in: lessonIds } } }),
+      this.prisma.quizSubmission.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
+      this.prisma.question.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
+      this.prisma.quiz.deleteMany({ where: { lessonId: { in: lessonIds } } }),
+      this.prisma.lesson.deleteMany({ where: { section: { courseId: id } } }),
+      this.prisma.section.deleteMany({ where: { courseId: id } }),
+    ]);
+
     return this.prisma.course.delete({ where: { id } });
   }
 
   async batchRemove(ids: string[]) {
-    return this.prisma.course.deleteMany({ where: { id: { in: ids } } });
+    for (const id of ids) {
+      await this.remove(id);
+    }
+    return { deleted: ids.length };
   }
 
   // === SECTIONS ===
@@ -154,6 +175,21 @@ export class CoursesService {
       where: { id: sectionId, courseId },
     });
     if (!section) throw new NotFoundException('Section not found');
+
+    const lessons = await this.prisma.lesson.findMany({
+      where: { sectionId },
+      select: { id: true },
+    });
+    const lessonIds = lessons.map((l) => l.id);
+
+    await this.prisma.$transaction([
+      this.prisma.progress.deleteMany({ where: { lessonId: { in: lessonIds } } }),
+      this.prisma.quizSubmission.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
+      this.prisma.question.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
+      this.prisma.quiz.deleteMany({ where: { lessonId: { in: lessonIds } } }),
+      this.prisma.lesson.deleteMany({ where: { sectionId } }),
+    ]);
+
     return this.prisma.section.delete({ where: { id: sectionId } });
   }
 
@@ -221,6 +257,14 @@ export class CoursesService {
       where: { id: lessonId },
     });
     if (!lesson) throw new NotFoundException('Lesson not found');
+
+    await this.prisma.$transaction([
+      this.prisma.progress.deleteMany({ where: { lessonId } }),
+      this.prisma.quizSubmission.deleteMany({ where: { quiz: { lessonId } } }),
+      this.prisma.question.deleteMany({ where: { quiz: { lessonId } } }),
+      this.prisma.quiz.deleteMany({ where: { lessonId } }),
+    ]);
+
     return this.prisma.lesson.delete({ where: { id: lessonId } });
   }
 
@@ -236,7 +280,7 @@ export class CoursesService {
       include: {
         questions: {
           include: {
-            answers: { select: { id: true, text: true, isCorrect: true } },
+            answers: { select: { id: true, text: true } },
           },
         },
       },
@@ -259,6 +303,12 @@ export class CoursesService {
     const existing = await this.prisma.quiz.findUnique({ where: { lessonId } });
     if (existing)
       throw new BadRequestException('Quiz already exists for this lesson');
+
+    for (const q of data.questions) {
+      if (!q.answers.some((a) => a.isCorrect)) {
+        throw new BadRequestException('Each question must have at least one correct answer');
+      }
+    }
 
     return this.prisma.quiz.create({
       data: {
@@ -289,34 +339,43 @@ export class CoursesService {
     const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId } });
     if (!quiz) throw new NotFoundException('Quiz not found');
 
-    // Delete existing questions and recreate
-    await this.prisma.question.deleteMany({ where: { quizId } });
+    for (const q of data.questions) {
+      if (!q.answers.some((a) => a.isCorrect)) {
+        throw new BadRequestException('Each question must have at least one correct answer');
+      }
+    }
 
-    return this.prisma.quiz.update({
-      where: { id: quizId },
-      data: {
-        questions: {
-          create: data.questions.map((q) => ({
-            text: q.text,
-            answers: {
-              create: q.answers.map((a) => ({
-                text: a.text,
-                isCorrect: a.isCorrect,
-              })),
-            },
-          })),
+    // Delete existing questions and recreate — inside transaction
+    return this.prisma.$transaction(async (tx) => {
+      await tx.question.deleteMany({ where: { quizId } });
+      return tx.quiz.update({
+        where: { id: quizId },
+        data: {
+          questions: {
+            create: data.questions.map((q) => ({
+              text: q.text,
+              answers: {
+                create: q.answers.map((a) => ({
+                  text: a.text,
+                  isCorrect: a.isCorrect,
+                })),
+              },
+            })),
+          },
         },
-      },
-      include: {
-        questions: { include: { answers: true } },
-      },
+        include: {
+          questions: { include: { answers: true } },
+        },
+      });
     });
   }
 
   async removeQuiz(quizId: string) {
     const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId } });
     if (!quiz) throw new NotFoundException('Quiz not found');
-    await this.prisma.question.deleteMany({ where: { quizId } });
-    return this.prisma.quiz.delete({ where: { id: quizId } });
+    return this.prisma.$transaction(async (tx) => {
+      await tx.question.deleteMany({ where: { quizId } });
+      return tx.quiz.delete({ where: { id: quizId } });
+    });
   }
 }

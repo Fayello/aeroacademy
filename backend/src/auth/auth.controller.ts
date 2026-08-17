@@ -10,6 +10,7 @@ import {
   Res,
   Query,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -78,7 +79,7 @@ export class AuthController {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const redirectUri = `${process.env.BACKEND_URL || 'http://localhost:4000'}/auth/google/callback`;
     const scope = 'openid email profile';
-    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${state || ''}&access_type=offline`;
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${encodeURIComponent(state || '')}&access_type=offline`;
     res.redirect(url);
   }
 
@@ -118,9 +119,15 @@ export class AuthController {
         await this.authService.login(user);
 
       // Pass state back to frontend for validation
-      const stateParam = query.state ? `&state=${query.state}` : '';
+      const stateParam = query.state ? `&state=${encodeURIComponent(query.state)}` : '';
+      const isProduction = process.env.NODE_ENV === 'production';
+      const secureFlag = isProduction ? '; Secure' : '';
       res.writeHead(302, {
-        Location: `${frontendUrl}/dashboard?token=${access_token}&refresh_token=${refresh_token}${stateParam}`,
+        'Set-Cookie': [
+          `token=${access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=900${secureFlag}`,
+          `refresh_token=${refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureFlag}`,
+        ],
+        Location: `${frontendUrl}/dashboard${stateParam}`,
       });
       res.end();
     } catch (err: unknown) {
@@ -272,6 +279,12 @@ export class AuthController {
     @Body('token') token: string,
     @Body('newPassword') newPassword: string,
   ) {
+    if (!newPassword || newPassword.length < 8) {
+      throw new UnauthorizedException('Password must be at least 8 characters');
+    }
+    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
+      throw new UnauthorizedException('Password must contain uppercase, lowercase, and a number');
+    }
     return this.authService.resetPassword(token, newPassword);
   }
 

@@ -6,6 +6,12 @@ const SALT_ROUNDS = 10;
 const ENCRYPTION_KEY =
   process.env.LAB_ENCRYPTION_KEY ||
   'aeroacademy-labs-default-key-change-in-production-32b!';
+
+if (!process.env.LAB_ENCRYPTION_KEY) {
+  console.warn(
+    '[SECURITY] LAB_ENCRYPTION_KEY not set — using default key. Lab credentials are NOT secure in production!',
+  );
+}
 const IV_LENGTH = 16;
 const ALGORITHM = 'aes-256-cbc';
 
@@ -39,7 +45,7 @@ export function decryptData(ciphertext: string): string {
   return decrypted;
 }
 
-export function encryptCredentials(credentials: any[]): string {
+export function encryptCredentials(credentials: unknown[]): string {
   return encryptData(JSON.stringify(credentials));
 }
 

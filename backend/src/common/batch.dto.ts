@@ -7,6 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Role } from '@prisma/client';
 
 export class BatchIdsDto {
   @IsArray()
@@ -34,8 +35,8 @@ export class BatchRoleDto {
   @IsString({ each: true })
   ids: string[];
 
-  @IsIn(['STUDENT', 'ADMIN', 'RECRUITER'])
-  role: 'STUDENT' | 'ADMIN' | 'RECRUITER';
+  @IsIn(Object.values(Role))
+  role: Role;
 }
 
 export class BatchLabStopItemDto {

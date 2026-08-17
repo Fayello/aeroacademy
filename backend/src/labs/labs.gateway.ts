@@ -18,9 +18,10 @@ const logger = createLogger('LabsGateway');
 const MAX_INPUT_SIZE = 4096;
 const MAX_CONNECTIONS_PER_USER = 3;
 const TERMINAL_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const INPUT_RATE_LIMIT = 100; // max messages per second
+const INPUT_RATE_WINDOW_MS = 1000;
 const ALLOWED_CONTROL_CHARS = new Set([
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-  22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 127,
+  9, 10, 13, 27, // tab, newline, carriage return, ESC (ANSI)
 ]);
 
 function sanitizeInput(data: string): string {
@@ -52,6 +53,8 @@ interface TerminalSession {
   exec: Docker.Exec;
   idleTimer: NodeJS.Timeout;
   lastActivity: number;
+  inputCount: number;
+  inputWindowStart: number;
 }
 
 @WebSocketGateway({
@@ -130,6 +133,10 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit('error', 'Not authenticated');
       return;
     }
+    if (!data?.labId || typeof data.labId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.labId)) {
+      client.emit('error', 'Invalid lab ID');
+      return;
+    }
     const instance = await this.labsService.getLabStatus(userId, data.labId);
 
     if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
@@ -188,6 +195,8 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         exec: execInstance,
         idleTimer,
         lastActivity: Date.now(),
+        inputCount: 0,
+        inputWindowStart: Date.now(),
       };
 
       this.activeSessions.set(client.id, session);
@@ -217,6 +226,15 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleInput(@ConnectedSocket() client: Socket, @MessageBody() data: string) {
     const session = this.activeSessions.get(client.id);
     if (session) {
+      // Rate limit: max INPUT_RATE_LIMIT messages per window
+      const now = Date.now();
+      if (now - session.inputWindowStart > INPUT_RATE_WINDOW_MS) {
+        session.inputCount = 0;
+        session.inputWindowStart = now;
+      }
+      session.inputCount++;
+      if (session.inputCount > INPUT_RATE_LIMIT) return;
+
       const sanitized = sanitizeInput(data);
       if (sanitized.length > 0) {
         session.stream.write(sanitized);
@@ -232,8 +250,10 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const session = this.activeSessions.get(client.id);
     if (session?.exec) {
+      const cols = Math.max(1, Math.min(500, Number(data.cols) || 80));
+      const rows = Math.max(1, Math.min(200, Number(data.rows) || 24));
       try {
-        await session.exec.resize({ h: data.rows, w: data.cols });
+        await session.exec.resize({ h: rows, w: cols });
       } catch {
         /* session may have ended */
       }

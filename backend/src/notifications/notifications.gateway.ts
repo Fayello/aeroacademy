@@ -10,6 +10,7 @@ import { EventsService } from '../common/events.service';
 import createLogger from '../common/logger';
 
 const logger = createLogger('Notifications');
+const MAX_CONNECTIONS_PER_USER = 3;
 
 @WebSocketGateway({
   cors: {
@@ -21,6 +22,8 @@ const logger = createLogger('Notifications');
 export class NotificationsGateway implements OnGatewayConnection, OnModuleInit {
   @WebSocketServer()
   server: Server;
+
+  private connectionCounts: Map<string, number> = new Map();
 
   constructor(
     private jwtService: JwtService,
@@ -49,8 +52,23 @@ export class NotificationsGateway implements OnGatewayConnection, OnModuleInit {
 
     try {
       const payload = this.jwtService.verify<{ sub: string }>(token);
-      void client.join(`notifications:${payload.sub}`);
-      logger.info(`User ${payload.sub} subscribed to notifications`);
+      const userId = payload.sub;
+
+      const count = this.connectionCounts.get(userId) || 0;
+      if (count >= MAX_CONNECTIONS_PER_USER) {
+        client.disconnect();
+        return;
+      }
+
+      this.connectionCounts.set(userId, count + 1);
+      void client.join(`notifications:${userId}`);
+      logger.info(`User ${userId} subscribed to notifications`);
+
+      client.on('disconnect', () => {
+        const c = this.connectionCounts.get(userId) || 1;
+        if (c <= 1) this.connectionCounts.delete(userId);
+        else this.connectionCounts.set(userId, c - 1);
+      });
     } catch {
       client.disconnect();
     }

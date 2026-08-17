@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Shield, Lock, CheckCircle, ChevronLeft, Loader2 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 
 export default function ResetPasswordPage() {
   return (

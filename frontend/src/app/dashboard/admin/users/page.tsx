@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { Users, Shield, GraduationCap, UserCheck, Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminSelect, AdminNumber, AdminTextarea, AdminStatusBadge } from "@/components/admin/AdminForm";
@@ -160,7 +160,7 @@ export default function AdminUsersPage() {
       key: "xp",
       label: "XP",
       sortable: true,
-      render: (user: AdminUser) => <span className="font-mono text-sm text-slate-700">{user.xp.toLocaleString()}</span>,
+      render: (user: AdminUser) => <span className="font-mono text-sm text-slate-700">{(user.xp || 0).toLocaleString()}</span>,
     },
     {
       key: "level",

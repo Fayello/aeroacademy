@@ -14,5 +14,6 @@ export function logout() {
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("user");
   Cookies.remove("token");
+  Cookies.remove("refresh_token");
   window.location.href = "/login";
 }

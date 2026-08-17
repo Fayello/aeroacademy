@@ -50,7 +50,8 @@ export function getCourseLock(sectionTitle: string, level: number): LevelGate {
 }
 
 export function getLabLock(difficulty: number, level: number): LevelGate {
-  const gate = LAB_DIFFICULTY_GATES.find((g) => difficulty <= g.maxDifficulty)!;
+  const safeDifficulty = Number.isFinite(difficulty) ? difficulty : 1200;
+  const gate = LAB_DIFFICULTY_GATES.find((g) => safeDifficulty <= g.maxDifficulty) || LAB_DIFFICULTY_GATES[LAB_DIFFICULTY_GATES.length - 1];
   return {
     requiredLevel: gate.requiredLevel,
     locked: level < gate.requiredLevel,

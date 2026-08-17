@@ -94,23 +94,23 @@ export class RecruitmentService {
   }
 
   async toggleShortlist(recruiterId: string, studentId: string) {
-    const existing = await this.prisma.shortlist.findUnique({
-      where: {
-        recruiterId_studentId: { recruiterId, studentId },
-      },
-    });
-
-    if (existing) {
-      await this.prisma.shortlist.delete({
-        where: { id: existing.id },
+    return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.shortlist.findUnique({
+        where: {
+          recruiterId_studentId: { recruiterId, studentId },
+        },
       });
-      return { shortlisted: false };
-    }
 
-    await this.prisma.shortlist.create({
-      data: { recruiterId, studentId },
+      if (existing) {
+        await tx.shortlist.delete({ where: { id: existing.id } });
+        return { shortlisted: false };
+      }
+
+      await tx.shortlist.create({
+        data: { recruiterId, studentId },
+      });
+      return { shortlisted: true };
     });
-    return { shortlisted: true };
   }
 
   async getShortlistedCandidates(recruiterId: string) {

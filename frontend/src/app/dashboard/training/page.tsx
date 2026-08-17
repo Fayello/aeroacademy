@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, ArrowRight, Loader2, BookOpen, Award } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import toast from "@/lib/toast";
+import PageHeader from "@/components/ui/PageHeader";
 import type { Trainer } from "@/types/api";
 
 export default function TrainingPage() {
@@ -11,37 +13,49 @@ export default function TrainingPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     fetchApi("/training/trainers")
-      .then((data) => setTrainers(Array.isArray(data) ? data : data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled) setTrainers(Array.isArray(data) ? data : data.data || []);
+      })
+      .catch(() => { if (!cancelled) toast.error("Failed to load trainers"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Hero Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Training</h1>
-          <p className="text-sm text-slate-500 mt-1">Book private sessions with expert trainers</p>
-        </div>
-        <Link href="/dashboard/training/bookings" className="bg-slate-900 text-white hover:bg-slate-800 font-medium py-2.5 px-5 rounded-lg transition-all duration-150 text-sm inline-flex items-center justify-center gap-2">
-          <BookOpen size={16} /> My Bookings
-        </Link>
-      </div>
+      <PageHeader
+        title="Training"
+        description="Book private sessions with expert trainers"
+        action={
+          <Link href="/dashboard/training/bookings" className="bg-slate-900 text-white hover:bg-slate-800 font-medium py-2.5 px-5 rounded-lg transition-all duration-150 text-sm inline-flex items-center justify-center gap-2">
+            <BookOpen size={16} /> My Bookings
+          </Link>
+        }
+      />
 
       {/* Trainers Grid */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2].map((id) => (
+            <div key={id} className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-slate-200 animate-pulse" />
+                <div className="space-y-2">
+                  <div className="h-5 w-32 bg-slate-200 rounded animate-pulse" />
+                  <div className="h-4 w-40 bg-slate-200 rounded animate-pulse" />
+                </div>
+              </div>
+              <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
+            </div>
+          ))}
         </div>
       ) : trainers.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-            <Calendar size={28} className="text-slate-400" />
-          </div>
-          <h3 className="text-lg font-medium text-slate-900 mb-2">No trainers available</h3>
-          <p className="text-sm text-slate-500">Check back later for trainer availability.</p>
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <Calendar size={40} className="mx-auto mb-3 text-slate-300" />
+          <h3 className="text-sm font-medium text-slate-500 mb-1">No trainers available</h3>
+          <p className="text-xs text-slate-400">Check back later for trainer availability.</p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -49,7 +63,7 @@ export default function TrainingPage() {
             <Link
               key={trainer.id}
               href={`/dashboard/training/${trainer.id}`}
-              className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:shadow-lg hover:border-amber-300 transition-all duration-300"
+              className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300"
             >
               {/* Avatar Section */}
               <div className="p-6 pb-4">
@@ -58,7 +72,7 @@ export default function TrainingPage() {
                     {(trainer.user?.name || "T").charAt(0)}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors text-lg">{trainer.user?.name}</h3>
+                    <h3 className="font-bold text-slate-900 group-hover:text-slate-700 transition-colors text-lg">{trainer.user?.name}</h3>
                     <div className="text-sm text-slate-500">{trainer.specialties?.join(", ") || "General"}</div>
                   </div>
                 </div>

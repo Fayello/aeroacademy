@@ -161,7 +161,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetchApi("/dashboard/public-stats")
-      .then(setStats)
+      .then((data) => {
+        if (data && typeof data === "object" && !Array.isArray(data)) setStats(data);
+      })
       .catch(() => {});
     fetchApi("/master-classes?status=UPCOMING&limit=3")
       .then((data) => setMasterClasses(Array.isArray(data) ? data : data.data || []))

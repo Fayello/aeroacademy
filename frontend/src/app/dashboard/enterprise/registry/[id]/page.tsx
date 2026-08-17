@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Shield, Award, CheckCircle, Target, Trophy, Loader2, MapPin, GraduationCap, ChevronLeft, Mail } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import Link from "next/link";
 
 interface CandidateProfile {
@@ -62,7 +62,7 @@ export default function CandidateRegistry() {
       </Link>
 
       {/* Header */}
-      <div className="card p-6 flex flex-col sm:flex-row items-start gap-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col sm:flex-row items-start gap-6">
         <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-2xl font-bold text-emerald-700 shrink-0">
           {profile.name?.[0] || '?'}
         </div>
@@ -86,7 +86,7 @@ export default function CandidateRegistry() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Stats */}
         <div className="space-y-4">
-          <div className="card p-6 text-center">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
               <Shield size={28} className="text-emerald-600" />
             </div>
@@ -94,7 +94,7 @@ export default function CandidateRegistry() {
             <p className="text-xs text-slate-500">{profile.clearance}</p>
           </div>
 
-          <div className="card p-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">Metrics</h3>
             <div className="space-y-2">
               {[

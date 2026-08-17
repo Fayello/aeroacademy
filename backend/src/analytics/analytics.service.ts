@@ -70,6 +70,10 @@ export class AnalyticsService {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
+    const safeCount = (p: Promise<number>) => p.catch(() => 0);
+    const safeFindMany = <T>(p: Promise<T[]>): Promise<T[]> => p.catch(() => []);
+    const safeGroupBy = <T>(p: Promise<T[]>): Promise<T[]> => p.catch(() => []);
+
     const [
       userCount,
       studentCount,
@@ -101,67 +105,67 @@ export class AnalyticsService {
       flagSolvers,
       topPerformers,
     ] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.user.count({ where: { role: 'STUDENT' } }),
-      this.prisma.course.count(),
-      this.prisma.lesson.count(),
-      this.prisma.lab.count(),
-      this.prisma.masterClass.count(),
-      this.prisma.trainer.count(),
-      this.prisma.team.count(),
-      this.prisma.organization.count(),
-      this.prisma.progress.count({ where: { completed: true } }),
-      this.prisma.quizSubmission.count(),
-      this.prisma.quizSubmission.count({ where: { passed: true } }),
-      this.prisma.labSubmission.count({ where: { isCorrect: true } }),
-      this.prisma.labSubmission.count({ where: { isCorrect: false } }),
-      this.prisma.user.findMany({
+      safeCount(this.prisma.user.count()),
+      safeCount(this.prisma.user.count({ where: { role: 'STUDENT' } })),
+      safeCount(this.prisma.course.count()),
+      safeCount(this.prisma.lesson.count()),
+      safeCount(this.prisma.lab.count()),
+      safeCount(this.prisma.masterClass.count()),
+      safeCount(this.prisma.trainer.count()),
+      safeCount(this.prisma.team.count()),
+      safeCount(this.prisma.organization.count()),
+      safeCount(this.prisma.progress.count({ where: { completed: true } })),
+      safeCount(this.prisma.quizSubmission.count()),
+      safeCount(this.prisma.quizSubmission.count({ where: { passed: true } })),
+      safeCount(this.prisma.labSubmission.count({ where: { isCorrect: true } })),
+      safeCount(this.prisma.labSubmission.count({ where: { isCorrect: false } })),
+      safeFindMany(this.prisma.user.findMany({
         where: { createdAt: { gte: thirtyDaysAgo } },
         select: { createdAt: true },
-      }),
-      this.prisma.progress.findMany({
+      })),
+      safeFindMany(this.prisma.progress.findMany({
         where: { completed: true, updatedAt: { gte: fourteenDaysAgo } },
         select: { updatedAt: true },
-      }),
-      this.prisma.labSubmission.findMany({
+      })),
+      safeFindMany(this.prisma.labSubmission.findMany({
         where: { isCorrect: true, createdAt: { gte: fourteenDaysAgo } },
         select: { createdAt: true },
-      }),
-      this.prisma.quizSubmission.findMany({
+      })),
+      safeFindMany(this.prisma.quizSubmission.findMany({
         where: { createdAt: { gte: fourteenDaysAgo } },
         select: { createdAt: true },
-      }),
-      this.prisma.user.groupBy({ by: ['role'], _count: { _all: true } }),
-      this.prisma.user.groupBy({ by: ['division'], _count: { _all: true } }),
-      this.prisma.user.findMany({ select: { xp: true } }),
-      this.prisma.course.findMany({
+      })),
+      safeGroupBy(this.prisma.user.groupBy({ by: ['role'], _count: { _all: true } })),
+      safeGroupBy(this.prisma.user.groupBy({ by: ['division'], _count: { _all: true } })),
+      safeFindMany(this.prisma.user.findMany({ select: { xp: true } })),
+      safeFindMany(this.prisma.course.findMany({
         include: {
           sections: { include: { lessons: { select: { id: true } } } },
         },
-      }),
-      this.prisma.progress.findMany({
+      })),
+      safeFindMany(this.prisma.progress.findMany({
         where: { completed: true },
         select: { lessonId: true, userId: true },
-      }),
-      this.prisma.lab.findMany({
+      })),
+      safeFindMany(this.prisma.lab.findMany({
         select: { id: true, title: true, difficulty: true },
-      }),
-      this.prisma.labInstance.groupBy({
+      })),
+      safeGroupBy(this.prisma.labInstance.groupBy({
         by: ['labId'],
         _count: { _all: true },
-      }),
-      this.prisma.labFlag.findMany({ select: { id: true, labId: true } }),
-      this.prisma.labSubmission.groupBy({
+      })),
+      safeFindMany(this.prisma.labFlag.findMany({ select: { id: true, labId: true } })),
+      safeGroupBy(this.prisma.labSubmission.groupBy({
         by: ['flagId'],
         where: { isCorrect: true },
         _count: { _all: true },
-      }),
-      this.prisma.labSubmission.groupBy({
+      })),
+      safeGroupBy(this.prisma.labSubmission.groupBy({
         by: ['flagId', 'userId'],
         where: { isCorrect: true },
         _count: { _all: true },
-      }),
-      this.prisma.user.findMany({
+      })),
+      safeFindMany(this.prisma.user.findMany({
         where: { role: 'STUDENT' },
         orderBy: { xp: 'desc' },
         take: 10,
@@ -181,7 +185,7 @@ export class AnalyticsService {
             },
           },
         },
-      }),
+      })),
     ]);
 
     // === Level distribution (from XP) ===

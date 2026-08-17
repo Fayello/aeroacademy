@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Play, Square, Activity, Shield, Loader2, CheckCircle } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 
 interface Team {
   id: string;
@@ -65,10 +65,12 @@ export default function ClassroomCommand() {
       try {
         const [teamsData, labsData] = await Promise.all([fetchApi("/admin/teams"), fetchApi("/labs")]);
         if (cancelled) return;
-        setTeams(teamsData);
-        setLabs(labsData);
-        if (teamsData.length > 0) setSelectedTeam(teamsData[0].id);
-        if (labsData.length > 0) setSelectedLab(labsData[0].id);
+        const safeTeams = Array.isArray(teamsData) ? teamsData : [];
+        const safeLabs = Array.isArray(labsData) ? labsData : [];
+        setTeams(safeTeams);
+        setLabs(safeLabs);
+        if (safeTeams.length > 0) setSelectedTeam(safeTeams[0].id);
+        if (safeLabs.length > 0) setSelectedLab(safeLabs[0].id);
       } catch {
         toast.error("Failed to load data.");
       } finally {

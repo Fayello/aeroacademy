@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboard } from "@/hooks/useDashboard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import { CertificationsSkeleton } from "@/components/Skeleton";
@@ -20,18 +20,33 @@ interface Certification {
 export default function CertificationsPage() {
   const { userMetrics } = useDashboard();
   const [generating, setGenerating] = useState<string | null>(null);
-  const [user] = useState<User | null>(() => {
+  const [user, setUser] = useState<User | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
     try {
-      if (typeof window === "undefined") return null;
       const stored = localStorage.getItem("user");
-      return stored ? JSON.parse(stored) : null;
+      setUser(stored ? JSON.parse(stored) : null);
     } catch {
-      return null;
+      setUser(null);
     }
-  });
+    const timer = setTimeout(() => setTimedOut(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!userMetrics && !timedOut) {
+    return <CertificationsSkeleton />;
+  }
 
   if (!userMetrics) {
-    return <CertificationsSkeleton />;
+    return (
+      <div className="space-y-6 animate-in fade-in duration-500">
+        <PageHeader title="Certifications" description="Your verified credentials and achievements." />
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Unable to load user data. Please refresh the page.
+        </div>
+      </div>
+    );
   }
 
   const generatePDF = async (cert: Certification) => {
@@ -93,7 +108,7 @@ export default function CertificationsPage() {
         {certifications.map((cert) => {
           const Icon = cert.unlocked ? cert.icon : Lock;
           return (
-            <div key={cert.id} className={`card p-6 flex items-start justify-between ${!cert.unlocked ? "opacity-60" : ""}`}>
+            <div key={cert.id} className={`bg-white rounded-xl border border-slate-200 p-6 flex items-start justify-between ${!cert.unlocked ? "opacity-60" : ""}`}>
               <div className="space-y-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${cert.unlocked ? cert.color : "bg-slate-100 text-slate-400"}`}>
                   <Icon size={22} />

@@ -43,7 +43,7 @@ export class MasterClassesController {
     return this.masterClassesService.findAll({
       category: query.category,
       status: query.status,
-      limit: query.limit ? parseInt(query.limit) : undefined,
+      limit: query.limit ? Math.max(1, parseInt(query.limit) || 20) : undefined,
     });
   }
 
@@ -89,7 +89,7 @@ export class MasterClassesController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('MASTERCLASS_UPDATED')
-  async update(@Param('id') id: string, @Body() body: Record<string, any>) {
+  async update(@Param('id') id: string, @Body() body: { title?: string; description?: string; instructorName?: string; instructorBio?: string; category?: string; scheduledAt?: string; duration?: number; maxParticipants?: number; isLive?: boolean; status?: string }) {
     return this.masterClassesService.update(id, body);
   }
 

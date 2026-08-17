@@ -139,7 +139,18 @@ export default function Modal({
           </button>
           {onConfirm && (
             <button
-              onClick={() => { onConfirm(); onClose(); }}
+              onClick={() => {
+                try {
+                  const result = (onConfirm as () => unknown)();
+                  if (result && typeof (result as Promise<unknown>).then === "function") {
+                    (result as Promise<unknown>).catch(() => {}).finally(() => onClose());
+                  } else {
+                    onClose();
+                  }
+                } catch {
+                  onClose();
+                }
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${confirmStyles[type]}`}
             >
               {confirmText}

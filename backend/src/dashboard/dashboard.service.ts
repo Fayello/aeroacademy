@@ -6,6 +6,8 @@ import * as os from 'os';
 @Injectable()
 export class DashboardService implements OnModuleInit {
   private docker: Docker;
+  private dockerStatsCache: { data: { containerId: string; labName: string; cpu: number; memory: number; network: number; status: string }[]; timestamp: number } | null = null;
+  private readonly DOCKER_STATS_TTL_MS = 8000;
 
   constructor(private prisma: PrismaService) {
     this.docker = new Docker();
@@ -39,7 +41,7 @@ export class DashboardService implements OnModuleInit {
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: {
-        user: { select: { name: true } },
+        user: { select: { name: true, email: true } },
         flag: { select: { title: true } },
       },
     });
@@ -54,7 +56,7 @@ export class DashboardService implements OnModuleInit {
       ...latestSubmissions.map((s) => ({
         id: `s-${s.id}`,
         type: s.isCorrect ? 'SUCCESS' : ('ERROR' as const),
-        msg: `Operator ${s.user.name} ${s.isCorrect ? 'captured' : 'failed'} objective: ${s.flag.title}`,
+        msg: `Operator ${s.user.name || s.user.email} ${s.isCorrect ? 'captured' : 'failed'} objective: ${s.flag.title}`,
         time: s.createdAt,
       })),
     ]
@@ -138,7 +140,7 @@ export class DashboardService implements OnModuleInit {
 
       // Calculate real network load from lab containers
       let totalRxBytes = 0;
-      for (const container of labContainers.slice(0, 5)) {
+      for (const container of labContainers) {
         try {
           const stats = await this.docker
             .getContainer(container.Id)
@@ -180,6 +182,10 @@ export class DashboardService implements OnModuleInit {
   }
 
   async getLabTelemetry() {
+    if (this.dockerStatsCache && Date.now() - this.dockerStatsCache.timestamp < this.DOCKER_STATS_TTL_MS) {
+      return this.dockerStatsCache.data;
+    }
+
     try {
       const containers = await this.docker.listContainers();
       const labContainers = containers.filter((c) =>
@@ -188,36 +194,46 @@ export class DashboardService implements OnModuleInit {
 
       const telemetry = await Promise.all(
         labContainers.map(async (container) => {
-          const stats = await this.docker
-            .getContainer(container.Id)
-            .stats({ stream: false });
+          try {
+            const stats = await this.docker
+              .getContainer(container.Id)
+              .stats({ stream: false });
 
-          // Calculate CPU percentage
-          const cpuDelta =
-            stats.cpu_stats.cpu_usage.total_usage -
-            stats.precpu_stats.cpu_usage.total_usage;
-          const systemDelta =
-            stats.cpu_stats.system_cpu_usage -
-            stats.precpu_stats.system_cpu_usage;
-          const cpuPercent =
-            (cpuDelta / systemDelta) * stats.cpu_stats.online_cpus * 100.0;
+            const cpuDelta =
+              stats.cpu_stats.cpu_usage.total_usage -
+              stats.precpu_stats.cpu_usage.total_usage;
+            const systemDelta =
+              stats.cpu_stats.system_cpu_usage -
+              stats.precpu_stats.system_cpu_usage;
+            const cpuPercent =
+              (cpuDelta / systemDelta) * stats.cpu_stats.online_cpus * 100.0;
 
-          // Calculate Memory percentage
-          const memPercent =
-            (stats.memory_stats.usage / stats.memory_stats.limit) * 100.0;
+            const memPercent =
+              (stats.memory_stats.usage / stats.memory_stats.limit) * 100.0;
 
-          return {
-            containerId: container.Id,
-            labName: container.Names[0].split('-')[1], // Extract labId from 'lab-labId-userId-timestamp'
-            cpu: Math.min(Math.round(cpuPercent || 0), 100),
-            memory: Math.round(memPercent || 0),
-            network:
-              Math.round((stats.networks?.eth0?.rx_bytes || 0) / 1024) || 0, // KB
-            status: container.Status,
-          };
+            return {
+              containerId: container.Id,
+              labName: container.Names[0].split('-')[1],
+              cpu: Math.min(Math.round(cpuPercent || 0), 100),
+              memory: Math.round(memPercent || 0),
+              network:
+                Math.round((stats.networks?.eth0?.rx_bytes || 0) / 1024) || 0,
+              status: container.Status,
+            };
+          } catch {
+            return {
+              containerId: container.Id,
+              labName: container.Names[0].split('-')[1],
+              cpu: 0,
+              memory: 0,
+              network: 0,
+              status: container.Status,
+            };
+          }
         }),
       );
 
+      this.dockerStatsCache = { data: telemetry, timestamp: Date.now() };
       return telemetry;
     } catch {
       return [];
@@ -297,7 +313,7 @@ export class DashboardService implements OnModuleInit {
       streak,
       division: user?.division || 'BRONZE',
       rank: user?.rank || 1200,
-      clearance: level > 10 ? 'CERTIFIED_L2' : 'STUDENT_L1',
+      clearance: level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1',
       latestProgress,
       courseProgress:
         totalLessonsInCourse > 0

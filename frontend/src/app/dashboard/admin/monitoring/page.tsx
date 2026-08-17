@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Activity, Users, Container, Gauge, Clock, Loader2, Square, RefreshCw, Monitor } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import { AdminStatusBadge } from "@/components/admin/AdminForm";
 

@@ -42,38 +42,55 @@ export function useNotifications() {
   useEffect(() => {
     mountedRef.current = true;
     if (typeof window === "undefined") return;
-    const token = localStorage.getItem("token");
+    let token = localStorage.getItem("token");
     if (!token) return;
 
-    if (!globalSocket) {
+    function connectSocket(authToken: string) {
+      if (globalSocket) {
+        globalSocket.close();
+        globalSocket = null;
+      }
       globalSocket = io(`${API_URL}/notifications`, {
-        auth: { token },
+        auth: { token: authToken },
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 2000,
         timeout: 10000,
       });
+      globalSocket.on("connect", () => setIsConnected(true));
+      globalSocket.on("disconnect", () => setIsConnected(false));
+      globalSocket.on("notification:new", (n: NotificationItem) => {
+        setNotifications((prev) => [n, ...prev].slice(0, 200));
+        if (!n.read) setUnread((u) => u + 1);
+      });
     }
 
+    connectSocket(token);
+
+    function onTokenRefreshed() {
+      const newToken = localStorage.getItem("token");
+      if (newToken) {
+        token = newToken;
+        connectSocket(newToken);
+      }
+    }
+    window.addEventListener("token-refreshed", onTokenRefreshed);
+
     globalListeners++;
-    const s = globalSocket;
-
-    s.on("connect", () => setIsConnected(true));
-    s.on("disconnect", () => setIsConnected(false));
-    s.on("notification:new", (n: NotificationItem) => {
-      setNotifications((prev) => [n, ...prev].slice(0, 200));
-      setUnread((u) => u + 1);
-    });
-
     const timer = setTimeout(() => void refresh(), 0);
 
     return () => {
       clearTimeout(timer);
       mountedRef.current = false;
+      window.removeEventListener("token-refreshed", onTokenRefreshed);
       globalListeners--;
-      if (globalListeners === 0 && globalSocket) {
-        globalSocket.close();
-        globalSocket = null;
+      if (globalListeners <= 0) {
+        globalListeners = 0;
+        if (globalSocket) {
+          globalSocket.removeAllListeners();
+          globalSocket.close();
+          globalSocket = null;
+        }
       }
     };
   }, [refresh]);
@@ -81,10 +98,13 @@ export function useNotifications() {
   const markRead = useCallback(async (id: string) => {
     try {
       await fetchApi(`/notifications/${id}/read`, { method: "PATCH" });
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      );
-      setUnread((u) => Math.max(0, u - 1));
+      let shouldDecrement = false;
+      setNotifications((prev) => {
+        const target = prev.find((n) => n.id === id);
+        if (target && !target.read) shouldDecrement = true;
+        return prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      });
+      if (shouldDecrement) setUnread((u) => Math.max(0, u - 1));
     } catch {}
   }, []);
 
@@ -99,7 +119,13 @@ export function useNotifications() {
   const remove = useCallback(async (id: string) => {
     try {
       await fetchApi(`/notifications/${id}`, { method: "DELETE" });
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      let shouldDecrement = false;
+      setNotifications((prev) => {
+        const removed = prev.find((n) => n.id === id);
+        if (removed && !removed.read) shouldDecrement = true;
+        return prev.filter((n) => n.id !== id);
+      });
+      if (shouldDecrement) setUnread((u) => Math.max(0, u - 1));
       setTotal((t) => Math.max(0, t - 1));
     } catch {}
   }, []);

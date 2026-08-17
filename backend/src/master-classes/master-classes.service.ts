@@ -68,6 +68,29 @@ export class MasterClassesService {
     });
     if (existing) throw new BadRequestException('Already registered');
 
+    if (mc.maxParticipants) {
+      return this.prisma.$transaction(async (tx) => {
+        const count = await tx.masterClassRegistration.count({
+          where: { masterClassId },
+        });
+        if (mc.maxParticipants != null && count >= mc.maxParticipants)
+          throw new BadRequestException('Master class is full');
+
+        const registration = await tx.masterClassRegistration.create({
+          data: { masterClassId, userId },
+        });
+
+        this.eventsService.emit('MASTERCLASS_REGISTERED', {
+          userId,
+          title: mc.title,
+          message: `You registered for "${mc.title}".`,
+          link: '/dashboard/master-classes',
+        });
+
+        return registration;
+      });
+    }
+
     const registration = await this.prisma.masterClassRegistration.create({
       data: { masterClassId, userId },
     });
@@ -135,15 +158,19 @@ export class MasterClassesService {
     });
   }
 
-  async update(id: string, data: Record<string, any>) {
+  async update(id: string, data: { title?: string; description?: string; category?: string; scheduledAt?: string | Date; maxParticipants?: number | null; imageUrl?: string }) {
     const mc = await this.prisma.masterClass.findUnique({ where: { id } });
     if (!mc) throw new NotFoundException('Master class not found');
 
-    if (typeof data.scheduledAt === 'string') {
-      data.scheduledAt = new Date(data.scheduledAt);
-    }
+    const updateData: Record<string, unknown> = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.category !== undefined) updateData.category = data.category;
+    if (data.scheduledAt !== undefined) updateData.scheduledAt = new Date(data.scheduledAt);
+    if (data.maxParticipants !== undefined) updateData.maxParticipants = data.maxParticipants;
+    if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
 
-    return this.prisma.masterClass.update({ where: { id }, data });
+    return this.prisma.masterClass.update({ where: { id }, data: updateData });
   }
 
   async remove(id: string) {

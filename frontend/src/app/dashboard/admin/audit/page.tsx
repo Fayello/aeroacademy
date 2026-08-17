@@ -67,8 +67,10 @@ export default function AdminAuditPage() {
   }, [fetchLogs, applyLogs]);
 
   useEffect(() => {
+    let cancelled = false;
     loadSummary();
-    fetchLogs(1, "", "").then(applyLogs);
+    fetchLogs(1, "", "").then((data) => { if (!cancelled) applyLogs(data); });
+    return () => { cancelled = true; };
   }, [loadSummary, fetchLogs, applyLogs]);
 
   const totalPages = Math.max(Math.ceil(total / PAGE_SIZE), 1);

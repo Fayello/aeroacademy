@@ -9,7 +9,7 @@ import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
 import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import Modal from "@/components/Modal";
@@ -88,14 +88,7 @@ export default function LabWorkspace() {
   const [now, setNow] = useState<Date>(new Date());
   const expiredHandledRef = useRef(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [fontSize, setFontSize] = useState(() => {
-    if (typeof window === "undefined") return 14;
-    try {
-      const saved = parseInt(window.localStorage.getItem("xterm:fontSize") || "", 10);
-      if (saved >= MIN_FONT_SIZE && saved <= MAX_FONT_SIZE) return saved;
-    } catch {}
-    return 14;
-  });
+  const [fontSize, setFontSize] = useState(14);
   const [selection, setSelection] = useState("");
   const [autoReconnecting, setAutoReconnecting] = useState(false);
   const [reconnectTick, setReconnectTick] = useState(0);
@@ -190,10 +183,9 @@ export default function LabWorkspace() {
     }
   };
 
-  const currentLabTitle = lab?.title?.toLowerCase().replace(/\s+/g, "-");
   const telemetry =
-    labTelemetry.find(
-      (t: LabTelemetry) => t.labName?.toLowerCase() === currentLabTitle,
+    (labTelemetry || []).find(
+      (t: LabTelemetry) => t.labName === id,
     ) || null;
 
   const isExpired = !!instance?.expiresAt && new Date(instance.expiresAt).getTime() <= now.getTime();
@@ -207,6 +199,13 @@ export default function LabWorkspace() {
       : minutesRemaining < 30
         ? "bg-amber-50 text-amber-600"
         : "bg-emerald-50 text-emerald-600";
+
+  useEffect(() => {
+    try {
+      const saved = parseInt(window.localStorage.getItem("xterm:fontSize") || "", 10);
+      if (saved >= MIN_FONT_SIZE && saved <= MAX_FONT_SIZE) setFontSize(saved);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (instance?.status !== "RUNNING" || !instance?.expiresAt) return;
@@ -235,6 +234,7 @@ export default function LabWorkspace() {
   }, [isExpired, instance?.status, clearReconnectTimer]);
 
   useEffect(() => {
+    let cancelled = false;
     const levelTimer = setTimeout(() => {
       try {
         const xp = parseInt(localStorage.getItem("xp") || "0", 10);
@@ -245,13 +245,13 @@ export default function LabWorkspace() {
     async function loadLab() {
       try {
         const labData = await fetchApi(`/labs/definition/${id}`);
-        setLab(labData);
+        if (!cancelled) setLab(labData);
         const status = await fetchApi(`/labs/status/${id}`);
-        setInstance(status);
+        if (!cancelled) setInstance(status);
       } catch {
         // silently fail
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     loadLab();
@@ -259,13 +259,19 @@ export default function LabWorkspace() {
     const pollInterval = setInterval(async () => {
       try {
         const status = await fetchApi(`/labs/status/${id}`);
-        setInstance(status);
+        if (!cancelled) {
+          setInstance(status);
+          if (status && (status.status === "STOPPED" || (status.expiresAt && new Date(status.expiresAt).getTime() <= Date.now()))) {
+            clearInterval(pollInterval);
+          }
+        }
       } catch {
-        setInstance(null);
+        if (!cancelled) setInstance(null);
       }
     }, 5000);
 
     return () => {
+      cancelled = true;
       clearTimeout(levelTimer);
       clearInterval(pollInterval);
     };

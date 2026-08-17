@@ -11,7 +11,7 @@ import { CAMEROON_CITIES } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { User, Save, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -32,22 +32,24 @@ export default function ProfileEditPage() {
   });
 
   useEffect(() => {
+    let cancelled = false;
     async function loadData() {
       try {
         const storedUser = localStorage.getItem("user");
         const orgs = await fetchApi("/auth/organizations");
-        setOrganizations(orgs);
+        if (!cancelled) setOrganizations(orgs);
         if (storedUser) {
           const u = JSON.parse(storedUser);
           reset({ name: u.name || "", bio: u.bio || "", city: u.city || "", organizationId: u.organizationId || "" });
         }
       } catch {
-        toast.error("Failed to load profile data");
+        if (!cancelled) toast.error("Failed to load profile data");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     loadData();
+    return () => { cancelled = true; };
   }, [reset]);
 
   const onSubmit = async (values: ProfileValues) => {

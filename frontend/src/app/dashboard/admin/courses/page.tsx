@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, Plus, Pencil, Trash2, ArrowLeft, Loader2, CheckSquare, Square, X } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminNumber, AdminSelect } from "@/components/admin/AdminForm";
 
@@ -172,9 +172,10 @@ export default function AdminCoursesPage() {
   // === Section CRUD ===
   const handleSaveSection = async () => {
     if (!sectionForm.title.trim()) { toast.error("Title is required"); return; }
+    if (!selectedCourse) return;
     setSaving(true);
     try {
-      const courseId = selectedCourse!.id;
+      const courseId = selectedCourse.id;
       if (sectionModal.editing) {
         await fetchApi(`/courses/${courseId}/sections/${sectionModal.editing.id}`, { method: "PATCH", body: JSON.stringify(sectionForm) });
         toast.success("Section updated");
@@ -190,11 +191,11 @@ export default function AdminCoursesPage() {
   const handleDeleteSection = async () => {
     setSaving(true);
     try {
-      if (!deleteDialog.item || deleteDialog.type !== "section") return;
-      await fetchApi(`/courses/${selectedCourse!.id}/sections/${deleteDialog.item.id}`, { method: "DELETE" });
+      if (!deleteDialog.item || deleteDialog.type !== "section" || !selectedCourse) return;
+      await fetchApi(`/courses/${selectedCourse.id}/sections/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Section deleted");
       setDeleteDialog({ open: false, type: "", item: null });
-      loadCourseDetail(selectedCourse!.id);
+      loadCourseDetail(selectedCourse.id);
     } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
@@ -203,7 +204,8 @@ export default function AdminCoursesPage() {
     if (!lessonForm.title.trim()) { toast.error("Title is required"); return; }
     setSaving(true);
     try {
-      const { courseId, sectionId } = { courseId: selectedCourse!.id, sectionId: selectedSection!.id };
+      if (!selectedCourse || !selectedSection) { setSaving(false); return; }
+      const { courseId, sectionId } = { courseId: selectedCourse.id, sectionId: selectedSection.id };
       const payload = { ...lessonForm, labId: lessonForm.labId || null, videoUrl: lessonForm.videoUrl || null, content: lessonForm.content || null };
       if (lessonModal.editing) {
         await fetchApi(`/courses/${courseId}/sections/${sectionId}/lessons/${lessonModal.editing.id}`, { method: "PATCH", body: JSON.stringify(payload) });
@@ -220,11 +222,11 @@ export default function AdminCoursesPage() {
   const handleDeleteLesson = async () => {
     setSaving(true);
     try {
-      if (!deleteDialog.item || !deleteDialog.type.startsWith("lesson")) return;
-      await fetchApi(`/courses/${selectedCourse!.id}/sections/${selectedSection!.id}/lessons/${deleteDialog.item.id}`, { method: "DELETE" });
+      if (!deleteDialog.item || !deleteDialog.type.startsWith("lesson") || !selectedCourse || !selectedSection) return;
+      await fetchApi(`/courses/${selectedCourse.id}/sections/${selectedSection.id}/lessons/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Lesson deleted");
       setDeleteDialog({ open: false, type: "", item: null });
-      loadCourseDetail(selectedCourse!.id);
+      loadCourseDetail(selectedCourse.id);
     } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
@@ -238,10 +240,11 @@ export default function AdminCoursesPage() {
     }
     setSaving(true);
     try {
-      const { courseId, sectionId, lessonId } = { courseId: selectedCourse!.id, sectionId: selectedSection!.id, lessonId: quizModal.lesson!.id };
+      if (!selectedCourse || !selectedSection || !quizModal.lesson) { setSaving(false); return; }
+      const { courseId, sectionId, lessonId } = { courseId: selectedCourse.id, sectionId: selectedSection.id, lessonId: quizModal.lesson.id };
       const existingQuiz = selectedLesson?.quiz;
       const url = existingQuiz
-        ? `/courses/${courseId}/sections/${sectionId}/lessons/${lessonId}/quiz/${existingQuiz!.id}`
+        ? `/courses/${courseId}/sections/${sectionId}/lessons/${lessonId}/quiz/${existingQuiz.id}`
         : `/courses/${courseId}/sections/${sectionId}/lessons/${lessonId}/quiz`;
       const method = existingQuiz ? "PATCH" : "POST";
       await fetchApi(url, { method, body: JSON.stringify({ questions: quizForm }) });
@@ -384,19 +387,19 @@ export default function AdminCoursesPage() {
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button onClick={() => { setSelectedCourse(null); setSelectedSection(null); }} className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-all"><ArrowLeft size={20} /></button>
-              <div>
-                <h1 className="text-2xl font-bold">{selectedCourse!.title}</h1>
-                <p className="text-violet-100 text-sm">{selectedCourse!.sections?.length || 0} sections</p>
+               <div>
+                <h1 className="text-2xl font-bold">{selectedCourse?.title}</h1>
+                <p className="text-violet-100 text-sm">{selectedCourse?.sections?.length || 0} sections</p>
               </div>
             </div>
-            <button onClick={() => { setSectionForm({ title: "", order: selectedCourse!.sections?.length || 0 }); setSectionModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
+            <button onClick={() => { setSectionForm({ title: "", order: selectedCourse?.sections?.length || 0 }); setSectionModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
               <Plus size={16} /> New Section
             </button>
           </div>
         </div>
 
         <div className="grid gap-4">
-          {selectedCourse!.sections?.map((section) => (
+          {selectedCourse?.sections?.map((section) => (
             <div key={section.id} onClick={() => setSelectedSection(section)} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-violet-300 cursor-pointer transition-all group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -441,18 +444,18 @@ export default function AdminCoursesPage() {
           <div className="flex items-center gap-4">
             <button onClick={() => { setSelectedSection(null); setSelectedLesson(null); }} className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-all"><ArrowLeft size={20} /></button>
             <div>
-              <h1 className="text-2xl font-bold">{selectedSection!.title}</h1>
-              <p className="text-emerald-100 text-sm">{selectedSection!.lessons?.length || 0} lessons</p>
+              <h1 className="text-2xl font-bold">{selectedSection?.title}</h1>
+              <p className="text-emerald-100 text-sm">{selectedSection?.lessons?.length || 0} lessons</p>
             </div>
           </div>
-          <button onClick={() => { setLessonForm({ title: "", videoUrl: "", content: "", labId: "", order: selectedSection!.lessons?.length || 0 }); setLessonModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
+          <button onClick={() => { setLessonForm({ title: "", videoUrl: "", content: "", labId: "", order: selectedSection?.lessons?.length || 0 }); setLessonModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
             <Plus size={16} /> New Lesson
           </button>
         </div>
       </div>
 
       <div className="grid gap-4">
-        {selectedSection!.lessons?.map((lesson) => (
+        {selectedSection?.lessons?.map((lesson) => (
           <div key={lesson.id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">

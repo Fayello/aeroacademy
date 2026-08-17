@@ -80,11 +80,39 @@ export class UsersService {
   async remove(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
+
+    await this.prisma.$transaction([
+      this.prisma.activityEvent.deleteMany({ where: { userId: id } }),
+      this.prisma.shortlist.deleteMany({ where: { OR: [{ recruiterId: id }, { studentId: id }] } }),
+      this.prisma.labSubmission.deleteMany({ where: { userId: id } }),
+      this.prisma.labInstance.deleteMany({ where: { userId: id } }),
+      this.prisma.quizSubmission.deleteMany({ where: { userId: id } }),
+      this.prisma.userAchievement.deleteMany({ where: { userId: id } }),
+      this.prisma.progress.deleteMany({ where: { userId: id } }),
+      this.prisma.notification.deleteMany({ where: { userId: id } }),
+      this.prisma.booking.deleteMany({ where: { studentId: id } }),
+      this.prisma.refreshToken.deleteMany({ where: { userId: id } }),
+    ]);
+
     return this.prisma.user.delete({ where: { id } });
   }
 
   async batchRemove(ids: string[], actorId?: string) {
     const targetIds = actorId ? ids.filter((id) => id !== actorId) : ids;
+
+    await this.prisma.$transaction([
+      this.prisma.activityEvent.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.shortlist.deleteMany({ where: { OR: [{ recruiterId: { in: targetIds } }, { studentId: { in: targetIds } }] } }),
+      this.prisma.labSubmission.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.labInstance.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.quizSubmission.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.userAchievement.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.progress.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.notification.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.booking.deleteMany({ where: { studentId: { in: targetIds } } }),
+      this.prisma.refreshToken.deleteMany({ where: { userId: { in: targetIds } } }),
+    ]);
+
     const result = await this.prisma.user.deleteMany({
       where: { id: { in: targetIds } },
     });

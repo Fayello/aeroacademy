@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class EventsService {
-  private eventSubject = new Subject<{ type: string; payload: any }>();
+  private eventSubject = new Subject<{ type: string; payload: unknown }>();
   events$ = this.eventSubject.asObservable();
 
   emit(type: string, payload: unknown) {

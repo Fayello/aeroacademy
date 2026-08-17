@@ -9,6 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('HTTP');
 
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', 1);
+
   // Security headers
   app.use(
     helmet({
@@ -50,30 +53,32 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger API documentation
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('AEROACADEMY API')
-    .setDescription(
-      'Full-stack cybersecurity and technology training platform API',
-    )
-    .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter your access token',
-        in: 'header',
-      },
-      'JWT-auth',
-    )
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: { persistAuthorization: true, docExpansion: 'none' },
-  });
-  logger.log('Swagger documentation available at /api/docs');
+  // Swagger API documentation (dev only, gated by ENABLE_SWAGGER env)
+  if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_SWAGGER !== 'false') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('AEROACADEMY API')
+      .setDescription(
+        'Full-stack cybersecurity and technology training platform API',
+      )
+      .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter your access token',
+          in: 'header',
+        },
+        'JWT-auth',
+      )
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document, {
+      swaggerOptions: { persistAuthorization: true, docExpansion: 'none' },
+    });
+    logger.log('Swagger documentation available at /api/docs');
+  }
 
   // Graceful shutdown
   app.enableShutdownHooks();

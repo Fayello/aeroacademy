@@ -5,6 +5,8 @@ import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import NotificationBell from "@/components/NotificationBell";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
+import { DashboardSocketProvider } from "@/hooks/DashboardSocketContext";
+import { initTokenRefresh } from "@/lib/api";
 
 interface JwtPayload {
   sub: string;
@@ -24,6 +26,8 @@ function decodeJwtPayload(token: string): JwtPayload | null {
 
 function TokenHandler() {
   useEffect(() => {
+    initTokenRefresh();
+
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (!token) return;
@@ -66,18 +70,20 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <TokenHandler />
-      <Sidebar />
-      <NotificationBell />
-      <main className="pb-20 md:pb-0 md:pl-64 min-h-screen">
-        <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
-          <PageErrorBoundary>
-            {children}
-          </PageErrorBoundary>
-        </div>
-      </main>
-      <BottomNav />
-    </div>
+    <DashboardSocketProvider>
+      <div className="min-h-screen bg-slate-50">
+        <TokenHandler />
+        <Sidebar />
+        <NotificationBell />
+        <main className="pb-20 md:pb-0 md:pl-64 min-h-screen">
+          <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
+            <PageErrorBoundary>
+              {children}
+            </PageErrorBoundary>
+          </div>
+        </main>
+        <BottomNav />
+      </div>
+    </DashboardSocketProvider>
   );
 }

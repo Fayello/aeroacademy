@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star } from "lucide-react";
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -25,16 +25,17 @@ const LEVEL_UNLOCKS = [
 ];
 
 export default function ProfilePage() {
-  const [user] = useState<User | null>(() => {
-    try {
-      if (typeof window === "undefined") return null;
-      const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState<User | null>(null);
   const { userMetrics } = useDashboard();
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    } catch {
+      setUser(null);
+    }
+  }, []);
 
   if (!user) return null;
 
@@ -47,7 +48,7 @@ export default function ProfilePage() {
   const rank = userMetrics?.rank || 1200;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Profile Header */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex flex-col sm:flex-row items-start gap-5">

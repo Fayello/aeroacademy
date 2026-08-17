@@ -12,11 +12,9 @@ import {
   Layers,
   Lock,
   Search,
-  Rocket,
-  Shield,
-  Cpu,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import PageHeader from "@/components/ui/PageHeader";
+import toast from "@/lib/toast";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
 import type { Course, Section } from "@/types/api";
 
@@ -76,30 +74,33 @@ function ShimmerSkeleton() {
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [level] = useState(() => {
-    try {
-      if (typeof window === "undefined") return 1;
-      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
-    } catch {
-      return 1;
-    }
-  });
+  const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
 
   useEffect(() => {
+    try {
+      setLevel(getLevel(parseInt(localStorage.getItem("xp") || "0", 10)));
+    } catch {
+      setLevel(1);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     async function loadCourses() {
       try {
         const data = await fetchApi("/courses");
-        setCourses(data);
+        if (!cancelled) setCourses(data);
       } catch {
-        toast.error("Failed to load courses");
+        if (!cancelled) toast.error("Failed to load courses");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     loadCourses();
+    return () => { cancelled = true; };
   }, []);
 
   const filteredCourses = courses.filter((course: Course) => {
@@ -121,17 +122,15 @@ export default function CoursesPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-40 bg-slate-200 rounded animate-pulse" />
-            <div className="h-6 w-10 bg-slate-200 rounded-full animate-pulse" />
-          </div>
-          <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
-          <div className="flex gap-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />
-            ))}
-          </div>
+        <div className="space-y-2">
+          <div className="h-8 w-40 bg-slate-200 rounded animate-pulse" />
+          <div className="h-4 w-60 bg-slate-200 rounded animate-pulse" />
+        </div>
+        <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
+        <div className="flex gap-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />
+          ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((id) => (
@@ -144,68 +143,55 @@ export default function CoursesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Page Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Courses</h1>
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-200 tabular-nums">
-            {courses.length}
-          </span>
-        </div>
+      <PageHeader
+        title="Courses"
+        description={`${courses.length} course${courses.length !== 1 ? "s" : ""} available`}
+      />
 
-        {/* Search Bar */}
+      {/* Search & Filters */}
+      <div className="space-y-4">
         <div className="relative max-w-md">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
           />
         </div>
 
-        {/* Category Filter */}
-        {activeCategories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                !selectedCategory
-                  ? "bg-blue-50 text-blue-600 border-blue-200"
-                  : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              All
-            </button>
-            {activeCategories.map((cat) => {
-              const style = getCategoryStyle(cat);
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                    selectedCategory === cat
-                      ? `${style.bg} ${style.color}`
-                      : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {style.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+              !selectedCategory
+                ? "bg-slate-800 text-white border-slate-800"
+                : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+            }`}
+          >
+            All
+          </button>
+          {activeCategories.map((cat) => {
+            const style = getCategoryStyle(cat);
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                  selectedCategory === cat
+                    ? `${style.bg} ${style.color}`
+                    : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                {style.label}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Difficulty Filter */}
         {courses.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Difficulty
-            </span>
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedDifficulty(null)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
@@ -237,43 +223,30 @@ export default function CoursesPage() {
 
       {/* Courses Grid */}
       {filteredCourses.length === 0 ? (
-        <div className="relative overflow-hidden rounded-xl bg-slate-50 border border-slate-200">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_70%)]" />
-          <div className="relative flex flex-col items-center justify-center py-24 px-6 text-center">
-            <div className="relative mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-slate-200 border border-slate-300 flex items-center justify-center">
-                <Rocket size={32} className="text-blue-500" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
-                <Cpu size={12} className="text-slate-400" />
-              </div>
-              <div className="absolute -bottom-1 -left-1 w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
-                <Shield size={12} className="text-slate-400" />
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold text-slate-700 mb-2">
-              {searchQuery || selectedCategory || selectedDifficulty
-                ? "No matching courses"
-                : "No courses available"}
-            </h3>
-            <p className="text-sm text-slate-500 max-w-sm mb-6">
-              {searchQuery || selectedCategory || selectedDifficulty
-                ? "Try adjusting your search or filter criteria."
-                : "Training modules will appear here once published by your administrator."}
-            </p>
-            {(searchQuery || selectedCategory || selectedDifficulty) && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory(null);
-                  setSelectedDifficulty(null);
-                }}
-                className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-all"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <BookOpen size={40} className="mx-auto mb-3 text-slate-300" />
+          <h3 className="text-sm font-medium text-slate-500 mb-1">
+            {searchQuery || selectedCategory || selectedDifficulty
+              ? "No matching courses"
+              : "No courses available"}
+          </h3>
+          <p className="text-xs text-slate-400">
+            {searchQuery || selectedCategory || selectedDifficulty
+              ? "Try adjusting your search or filter criteria."
+              : "Training modules will appear here once published by your administrator."}
+          </p>
+          {(searchQuery || selectedCategory || selectedDifficulty) && (
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory(null);
+                setSelectedDifficulty(null);
+              }}
+              className="mt-4 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -309,7 +282,7 @@ export default function CoursesPage() {
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
                       <GraduationCap
                         size={40}
-                        className="text-blue-300 group-hover:text-blue-500 transition-colors"
+                        className="text-slate-300 group-hover:text-slate-400 transition-colors"
                       />
                     </div>
                   )}
@@ -341,7 +314,7 @@ export default function CoursesPage() {
                       className={`text-base font-semibold line-clamp-2 mb-1.5 ${
                         isLocked
                           ? "text-slate-400"
-                          : "text-slate-900 group-hover:text-blue-600 transition-colors"
+                          : "text-slate-900 group-hover:text-slate-700 transition-colors"
                       }`}
                     >
                       {course.title}
@@ -362,7 +335,7 @@ export default function CoursesPage() {
                           key={dot}
                           className={`w-1.5 h-1.5 rounded-full ${
                             dot <= difficulty.dots
-                              ? "bg-blue-500"
+                              ? "bg-slate-800"
                               : "bg-slate-300"
                           }`}
                         />
@@ -393,7 +366,7 @@ export default function CoursesPage() {
                     className={`pt-2 border-t flex items-center justify-between text-sm font-medium ${
                       isLocked
                         ? "border-slate-200 text-slate-400"
-                        : "border-slate-200 text-blue-600 group-hover:text-blue-500"
+                        : "border-slate-200 text-slate-600 group-hover:text-slate-900"
                     }`}
                   >
                     <span>{isLocked ? "Locked" : "Begin training"}</span>
@@ -429,7 +402,7 @@ export default function CoursesPage() {
               <Link
                 key={course.id}
                 href={`/dashboard/courses/${course.id}`}
-                className={`${baseClasses} hover:border-blue-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.08)]`}
+                className={`${baseClasses} hover:border-slate-300 hover:shadow-md`}
               >
                 {cardContent}
               </Link>

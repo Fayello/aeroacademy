@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Video, Calendar, Clock, UserCheck, ArrowLeft, Loader2, Users } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import type { MasterClass, MasterClassRegistration } from "@/types/api";
 
 export default function MasterClassDetailPage() {
@@ -17,14 +17,17 @@ export default function MasterClassDetailPage() {
   const [isRegistered, setIsRegistered] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetchApi(`/master-classes/${params.id}`)
       .then((data) => {
+        if (cancelled) return;
         setMc(data);
         const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
         setIsRegistered(data.registrations?.some((r: MasterClassRegistration) => r.userId === userId) || false);
       })
-      .catch(() => toast.error("Failed to load master class"))
-      .finally(() => setLoading(false));
+      .catch(() => { if (!cancelled) toast.error("Failed to load master class"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [params.id]);
 
   const handleRegister = async () => {

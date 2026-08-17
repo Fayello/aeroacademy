@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LabsService } from '../labs/labs.service';
 
@@ -24,14 +24,20 @@ export class AdminService {
     });
   }
 
-  async addMemberToTeam(teamId: string, userId: string) {
+  async addMemberToTeam(teamId: string, userId: string, requesterId: string) {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    if (!team) throw new NotFoundException('Team not found');
+    if (team.ownerId !== requesterId) throw new ForbiddenException('You do not own this team');
     return this.prisma.team.update({
       where: { id: teamId },
       data: { members: { connect: { id: userId } } },
     });
   }
 
-  async getTeamProgress(teamId: string) {
+  async getTeamProgress(teamId: string, requesterId: string) {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    if (!team) throw new NotFoundException('Team not found');
+    if (team.ownerId !== requesterId) throw new ForbiddenException('You do not own this team');
     return this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -62,29 +68,18 @@ export class AdminService {
 
     if (!team) throw new NotFoundException('Team not found');
 
-    const results: {
-      userId: string;
-      status: 'SUCCESS' | 'FAILED';
-      instanceId?: string;
-      error?: string;
-    }[] = [];
-    for (const member of team.members) {
-      try {
+    const results = await Promise.allSettled(
+      team.members.map(async (member) => {
         const instance = await this.labsService.startLab(member.id, labId);
-        results.push({
-          userId: member.id,
-          status: 'SUCCESS',
-          instanceId: instance.id,
-        });
-      } catch (err: unknown) {
-        results.push({
-          userId: member.id,
-          status: 'FAILED',
-          error: err instanceof Error ? err.message : String(err),
-        });
-      }
-    }
-    return results;
+        return { userId: member.id, status: 'SUCCESS' as const, instanceId: instance.id };
+      }),
+    );
+
+    return results.map((r, i) =>
+      r.status === 'fulfilled'
+        ? r.value
+        : { userId: team.members[i].id, status: 'FAILED' as const, error: r.reason?.message || String(r.reason) },
+    );
   }
 
   /**

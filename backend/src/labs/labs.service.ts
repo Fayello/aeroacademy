@@ -162,22 +162,6 @@ export class LabsService implements OnModuleInit {
       );
     }
 
-    const runningCount = await this.prisma.labInstance.count({
-      where: { status: 'RUNNING' },
-    });
-    if (runningCount >= MAX_CONCURRENT_LABS) {
-      throw new BadRequestException('Lab capacity reached. Try again later.');
-    }
-
-    const userRunningCount = await this.prisma.labInstance.count({
-      where: { userId, status: 'RUNNING' },
-    });
-    if (userRunningCount >= MAX_LABS_PER_USER) {
-      throw new BadRequestException(
-        `You can only run ${MAX_LABS_PER_USER} labs at a time. Stop a running lab first.`,
-      );
-    }
-
     const existing = await this.prisma.labInstance.findFirst({
       where: { userId, labId, status: 'RUNNING' },
     });
@@ -186,15 +170,35 @@ export class LabsService implements OnModuleInit {
     const port = await this.getAvailablePort();
     if (!port) throw new BadRequestException('No available ports');
 
-    const instance = await this.prisma.labInstance.create({
-      data: {
-        userId,
-        labId,
-        port,
-        status: 'PROVISIONING',
-        expiresAt: new Date(Date.now() + LAB_EXPIRY_HOURS * 60 * 60 * 1000),
-      },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const runningCount = await tx.labInstance.count({
+        where: { status: 'RUNNING' },
+      });
+      if (runningCount >= MAX_CONCURRENT_LABS) {
+        throw new BadRequestException('Lab capacity reached. Try again later.');
+      }
+
+      const userRunningCount = await tx.labInstance.count({
+        where: { userId, status: 'RUNNING' },
+      });
+      if (userRunningCount >= MAX_LABS_PER_USER) {
+        throw new BadRequestException(
+          `You can only run ${MAX_LABS_PER_USER} labs at a time. Stop a running lab first.`,
+        );
+      }
+
+      return tx.labInstance.create({
+        data: {
+          userId,
+          labId,
+          port,
+          status: 'PROVISIONING',
+          expiresAt: new Date(Date.now() + LAB_EXPIRY_HOURS * 60 * 60 * 1000),
+        },
+      });
     });
+
+    const instance = result;
 
     try {
       const imageName = await this.resolveLocalImage(lab.dockerImage);
@@ -310,8 +314,7 @@ export class LabsService implements OnModuleInit {
       .update({
         where: { id: instance.id },
         data: { status: 'STOPPED' },
-      })
-      .catch(() => {});
+      });
 
     const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
     await this.activityService
@@ -420,8 +423,10 @@ export class LabsService implements OnModuleInit {
     });
   }
 
-  async findAll() {
+  async findAll(opts?: { skip?: number; take?: number }) {
     return this.prisma.lab.findMany({
+      skip: opts?.skip ?? 0,
+      take: opts?.take ?? 50,
       include: {
         flags: {
           include: {
@@ -441,6 +446,13 @@ export class LabsService implements OnModuleInit {
     });
     if (!flag) throw new NotFoundException('Flag not found');
 
+    const activeInstance = await this.prisma.labInstance.findFirst({
+      where: { userId, labId: flag.labId, status: 'RUNNING' },
+    });
+    if (!activeInstance) {
+      throw new BadRequestException('You must have an active lab instance to submit flags.');
+    }
+
     const existingCorrect = await this.prisma.labSubmission.findFirst({
       where: { userId, flagId, isCorrect: true },
     });
@@ -455,16 +467,20 @@ export class LabsService implements OnModuleInit {
 
     const isCorrect = await verifyAnswer(answer, flag.correctAnswer);
 
-    await this.prisma.labSubmission.create({
-      data: { userId, flagId, answer: '[REDACTED]', isCorrect },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.labSubmission.create({
+        data: { userId, flagId, answer: '[REDACTED]', isCorrect },
+      });
+
+      if (isCorrect) {
+        await tx.user.update({
+          where: { id: userId },
+          data: { xp: { increment: flag.points } },
+        });
+      }
     });
 
     if (isCorrect) {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { xp: { increment: flag.points } },
-      });
-
       const lab = await this.prisma.lab.findUnique({
         where: { id: flag.labId },
       });
@@ -504,7 +520,7 @@ export class LabsService implements OnModuleInit {
     };
   }
 
-  async getLabDefinition(id: string) {
+  async getLabDefinition(id: string, userId?: string, userRole?: string) {
     const lab = await this.prisma.lab.findUnique({
       where: { id },
       include: {
@@ -524,6 +540,10 @@ export class LabsService implements OnModuleInit {
           credentials = [];
         }
       }
+    }
+
+    if (userRole !== 'ADMIN') {
+      return { ...lab, credentials: null };
     }
 
     return { ...lab, credentials };
@@ -560,7 +580,7 @@ export class LabsService implements OnModuleInit {
     return this.prisma.lab.create({ data });
   }
 
-  async update(id: string, data: Record<string, any>) {
+  async update(id: string, data: { title?: string; description?: string; dockerImage?: string; difficulty?: number; briefing?: string; imageUrl?: string }) {
     const lab = await this.prisma.lab.findUnique({ where: { id } });
     if (!lab) throw new NotFoundException('Lab not found');
     return this.prisma.lab.update({ where: { id }, data });
@@ -569,10 +589,39 @@ export class LabsService implements OnModuleInit {
   async remove(id: string) {
     const lab = await this.prisma.lab.findUnique({ where: { id } });
     if (!lab) throw new NotFoundException('Lab not found');
+
+    const instances = await this.prisma.labInstance.findMany({ where: { labId: id, containerId: { not: null } } });
+    for (const instance of instances) {
+      try {
+        const container = this.docker.getContainer(instance.containerId!);
+        await container.stop().catch(() => {});
+        await container.remove().catch(() => {});
+      } catch {}
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.labSubmission.deleteMany({ where: { flag: { labId: id } } }),
+      this.prisma.labFlag.deleteMany({ where: { labId: id } }),
+      this.prisma.labInstance.deleteMany({ where: { labId: id } }),
+    ]);
+
     return this.prisma.lab.delete({ where: { id } });
   }
 
   async batchRemove(ids: string[]) {
+    const instances = await this.prisma.labInstance.findMany({ where: { labId: { in: ids }, containerId: { not: null } } });
+    for (const instance of instances) {
+      try {
+        const container = this.docker.getContainer(instance.containerId!);
+        await container.stop().catch(() => {});
+        await container.remove().catch(() => {});
+      } catch {}
+    }
+    await this.prisma.$transaction([
+      this.prisma.labSubmission.deleteMany({ where: { flag: { labId: { in: ids } } } }),
+      this.prisma.labFlag.deleteMany({ where: { labId: { in: ids } } }),
+      this.prisma.labInstance.deleteMany({ where: { labId: { in: ids } } }),
+    ]);
     return this.prisma.lab.deleteMany({ where: { id: { in: ids } } });
   }
 
@@ -646,6 +695,7 @@ export class LabsService implements OnModuleInit {
   ) {
     const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
     if (!lab) throw new NotFoundException('Lab not found');
+    const points = Math.max(1, Math.round(data.points ?? 100));
     const hashedAnswer = await bcrypt.hash(
       data.correctAnswer.trim().toLowerCase(),
       10,
@@ -655,7 +705,7 @@ export class LabsService implements OnModuleInit {
         labId,
         title: data.title,
         description: data.description,
-        points: data.points || 100,
+        points,
         correctAnswer: hashedAnswer,
       },
     });
@@ -680,6 +730,9 @@ export class LabsService implements OnModuleInit {
       points?: number;
       correctAnswer?: string;
     } = { ...data };
+    if (data.points !== undefined) {
+      updateData.points = Math.max(1, Math.round(data.points));
+    }
     if (data.correctAnswer) {
       updateData.correctAnswer = await bcrypt.hash(
         data.correctAnswer.trim().toLowerCase(),

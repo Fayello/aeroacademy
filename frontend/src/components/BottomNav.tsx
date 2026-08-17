@@ -28,7 +28,7 @@ export default function BottomNav() {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
-  const [level] = useState(() => {
+  const [level, setLevel] = useState(() => {
     try {
       if (typeof window === "undefined") return 1;
       return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
@@ -36,6 +36,13 @@ export default function BottomNav() {
       return 1;
     }
   });
+
+  useEffect(() => {
+    try {
+      const xp = parseInt(localStorage.getItem("xp") || "0", 10);
+      setLevel(getLevel(xp));
+    } catch {}
+  }, [pathname]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

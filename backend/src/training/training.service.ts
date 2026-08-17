@@ -76,42 +76,58 @@ export class TrainingService {
       where: { id: data.trainerId },
     });
     if (!trainer) throw new NotFoundException('Trainer not found');
-
+    if (!trainer.isActive) throw new BadRequestException('Trainer is not currently available');
     const d = new Date(data.date);
-    const existing = await this.prisma.booking.findFirst({
-      where: {
-        trainerId: data.trainerId,
-        date: d,
-        startTime: data.startTime,
-        status: { not: 'CANCELLED' },
-      },
-    });
-    if (existing) throw new BadRequestException('This slot is already booked');
+    if (isNaN(d.getTime())) throw new BadRequestException('Invalid date format');
+    if (d.getTime() < Date.now() - 86400000) throw new BadRequestException('Cannot book sessions in the past');
 
-    const booking = await this.prisma.booking.create({
-      data: {
-        trainerId: data.trainerId,
-        studentId: data.studentId,
-        slotId: data.slotId,
-        date: d,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        topic: data.topic,
-        notes: data.notes,
-        status: 'CONFIRMED',
-      },
-      include: {
-        trainer: { include: { user: { select: { name: true } } } },
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      if (data.slotId) {
+        const slot = await tx.trainingSlot.findUnique({ where: { id: data.slotId } });
+        if (!slot || slot.trainerId !== data.trainerId) throw new BadRequestException('Invalid training slot');
+      }
 
-    this.eventsService.emit('BOOKING_CONFIRMED', {
-      userId: data.studentId,
-      message: `Your training session on ${data.date} at ${data.startTime} has been confirmed.`,
-      trainerName: booking.trainer?.user?.name,
-    });
+      const existingBookings = await tx.booking.findMany({
+        where: {
+          trainerId: data.trainerId,
+          date: d,
+          status: { not: 'CANCELLED' },
+        },
+        select: { startTime: true, endTime: true },
+      });
 
-    return booking;
+      const hasOverlap = existingBookings.some((b) => {
+        const aStart = data.startTime;
+        const aEnd = data.endTime;
+        return aStart < b.endTime && aEnd > b.startTime;
+      });
+      if (hasOverlap) throw new BadRequestException('This time slot overlaps with an existing booking');
+
+      const booking = await tx.booking.create({
+        data: {
+          trainerId: data.trainerId,
+          studentId: data.studentId,
+          slotId: data.slotId,
+          date: d,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          topic: data.topic,
+          notes: data.notes,
+          status: 'CONFIRMED',
+        },
+        include: {
+          trainer: { include: { user: { select: { name: true } } } },
+        },
+      });
+
+      this.eventsService.emit('BOOKING_CONFIRMED', {
+        userId: data.studentId,
+        message: `Your training session on ${data.date} at ${data.startTime} has been confirmed.`,
+        trainerName: booking.trainer?.user?.name,
+      });
+
+      return booking;
+    });
   }
 
   async cancelBooking(bookingId: string, userId: string) {
@@ -179,6 +195,8 @@ export class TrainingService {
   }
 
   async removeSlot(slotId: string) {
+    const slot = await this.prisma.trainingSlot.findUnique({ where: { id: slotId } });
+    if (!slot) throw new NotFoundException('Slot not found');
     return this.prisma.trainingSlot.delete({ where: { id: slotId } });
   }
 
@@ -197,7 +215,14 @@ export class TrainingService {
     const trainer = await this.prisma.trainer.findUnique({ where: { id } });
     if (!trainer) throw new NotFoundException('Trainer not found');
 
-    await this.prisma.trainingSlot.deleteMany({ where: { trainerId: id } });
+    await this.prisma.$transaction([
+      this.prisma.booking.updateMany({
+        where: { trainerId: id, status: { not: 'CANCELLED' }, date: { gte: new Date() } },
+        data: { status: 'CANCELLED' },
+      }),
+      this.prisma.trainingSlot.deleteMany({ where: { trainerId: id } }),
+    ]);
+
     return this.prisma.trainer.delete({ where: { id } });
   }
 
@@ -207,10 +232,16 @@ export class TrainingService {
       select: { id: true },
     });
     const found = existing.map((t) => t.id);
-    await this.prisma.trainingSlot.deleteMany({
-      where: { trainerId: { in: found } },
-    });
-    await this.prisma.trainer.deleteMany({ where: { id: { in: found } } });
+
+    await this.prisma.$transaction([
+      this.prisma.booking.updateMany({
+        where: { trainerId: { in: found }, status: { not: 'CANCELLED' }, date: { gte: new Date() } },
+        data: { status: 'CANCELLED' },
+      }),
+      this.prisma.trainingSlot.deleteMany({ where: { trainerId: { in: found } } }),
+      this.prisma.trainer.deleteMany({ where: { id: { in: found } } }),
+    ]);
+
     return { deleted: found.length };
   }
 }

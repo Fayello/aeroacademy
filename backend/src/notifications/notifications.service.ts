@@ -39,43 +39,43 @@ export class NotificationsService implements OnModuleInit {
 
       switch (type) {
         case 'ACHIEVEMENT_UNLOCKED':
-          void this.create({
+          this.create({
             userId: p.userId,
             title: 'Achievement Unlocked',
             message: `You unlocked "${p.title ?? 'a new achievement'}" and earned +${p.xpReward ?? 0} XP`,
             type: 'ACHIEVEMENT',
             link: '/dashboard/profile',
-          });
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
         case 'FLAG_CAPTURED':
-          void this.create({
+          this.create({
             userId: p.userId,
             title: 'Flag Captured',
             message: `You solved "${p.flagTitle ?? 'a flag'}" and earned +${p.points ?? 0} XP`,
             type: 'SUCCESS',
             link: '/dashboard/labs',
-          });
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
         case 'BOOKING_CONFIRMED':
-          void this.create({
+          this.create({
             userId: p.userId,
             title: 'Booking Confirmed',
             message: p.message ?? 'Your training session has been confirmed.',
             type: 'BOOKING',
             link: '/dashboard/training/bookings',
-          });
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
         case 'BOOKING_CANCELLED':
-          void this.create({
+          this.create({
             userId: p.userId,
             title: 'Booking Cancelled',
             message: p.message ?? 'A training booking has been cancelled.',
             type: 'WARNING',
             link: '/dashboard/training/bookings',
-          });
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
         case 'MASTERCLASS_REGISTERED':
-          void this.create({
+          this.create({
             userId: p.userId,
             title: 'Master Class Registered',
             message:
@@ -83,10 +83,10 @@ export class NotificationsService implements OnModuleInit {
               `You registered for "${p.title ?? 'a master class'}".`,
             type: 'MASTERCLASS',
             link: p.link ?? '/dashboard/master-classes',
-          });
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
         case 'MASTERCLASS_UNREGISTERED':
-          void this.create({
+          this.create({
             userId: p.userId,
             title: 'Master Class Unregistered',
             message:
@@ -94,7 +94,7 @@ export class NotificationsService implements OnModuleInit {
               `You unregistered from "${p.title ?? 'a master class'}".`,
             type: 'INFO',
             link: p.link ?? '/dashboard/master-classes',
-          });
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
       }
     });
@@ -116,13 +116,14 @@ export class NotificationsService implements OnModuleInit {
 
   async findAll(
     userId: string,
-    opts: { limit?: number; offset?: number; unreadOnly?: boolean },
+    opts: { limit?: number; offset?: number; cursor?: string; unreadOnly?: boolean },
   ) {
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
     const offset = Math.max(opts.offset ?? 0, 0);
     const where: Prisma.NotificationWhereInput = {
       userId,
       ...(opts.unreadOnly ? { read: false } : {}),
+      ...(opts.cursor ? { createdAt: { lt: new Date(opts.cursor) } } : {}),
     };
 
     const [items, total, unread] = await Promise.all([
@@ -130,13 +131,14 @@ export class NotificationsService implements OnModuleInit {
         where,
         orderBy: { createdAt: 'desc' },
         take: limit,
-        skip: offset,
+        ...(opts.cursor ? {} : { skip: offset }),
       }),
-      this.prisma.notification.count({ where }),
+      this.prisma.notification.count({ where: { userId, ...(opts.unreadOnly ? { read: false } : {}) } }),
       this.prisma.notification.count({ where: { userId, read: false } }),
     ]);
 
-    return { items, total, unread, limit, offset };
+    const nextCursor = items.length === limit ? items[items.length - 1].createdAt.toISOString() : null;
+    return { items, total, unread, limit, offset, nextCursor };
   }
 
   async unreadCount(userId: string) {

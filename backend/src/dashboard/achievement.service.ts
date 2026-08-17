@@ -49,12 +49,17 @@ export class AchievementService {
         shouldUnlock = true;
 
       if (shouldUnlock) {
-        await this.prisma.userAchievement.create({
-          data: {
-            userId,
-            achievementId: ach.id,
-          },
-        });
+        try {
+          await this.prisma.userAchievement.create({
+            data: {
+              userId,
+              achievementId: ach.id,
+            },
+          });
+        } catch (e: unknown) {
+          if ((e as { code?: string }).code === 'P2002') continue;
+          throw e;
+        }
 
         // Grant XP reward
         await this.prisma.user.update({

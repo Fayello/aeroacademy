@@ -57,15 +57,16 @@ export class AdminController {
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Audit('TEAM_MEMBER_ADDED')
   async addMember(
+    @Request() req: RequestWithUser,
     @Param('teamId', ParseUUIDPipe) teamId: string,
     @Param('userId', ParseUUIDPipe) userId: string,
   ) {
-    return this.adminService.addMemberToTeam(teamId, userId);
+    return this.adminService.addMemberToTeam(teamId, userId, req.user.id);
   }
 
   @Get('teams/:teamId/progress')
-  async getTeamProgress(@Param('teamId', ParseUUIDPipe) teamId: string) {
-    return this.adminService.getTeamProgress(teamId);
+  async getTeamProgress(@Request() req: RequestWithUser, @Param('teamId', ParseUUIDPipe) teamId: string) {
+    return this.adminService.getTeamProgress(teamId, req.user.id);
   }
 
   @Post('classroom/launch')

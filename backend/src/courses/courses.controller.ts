@@ -28,6 +28,11 @@ export class CoursesController {
     return this.coursesService.findAll();
   }
 
+  @Get('lessons/:id')
+  async findLesson(@Param('id') id: string) {
+    return this.coursesService.findLesson(id);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.coursesService.findOne(id);
@@ -114,11 +119,6 @@ export class CoursesController {
   @Get(':courseId/sections/:sectionId/lessons')
   async findLessons(@Param('sectionId') sectionId: string) {
     return this.coursesService.findLessons(sectionId);
-  }
-
-  @Get('lessons/:id')
-  async findLesson(@Param('id') id: string) {
-    return this.coursesService.findLesson(id);
   }
 
   @Post(':courseId/sections/:sectionId/lessons')

@@ -4,45 +4,63 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { Trophy, Loader2, CheckCircle, TrendingUp, Lock } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { fetchApi } from "@/lib/api";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import Badge from "@/components/ui/Badge";
 import { DIVISION_COLORS } from "@/lib/constants";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import type { LeaderboardEntry, LeagueStats } from "@/types/api";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default function LeaderboardPage() {
-  const { socket, userMetrics } = useDashboard();
+  const { socket, leaderboard: contextLeaderboard, userMetrics, isConnected } = useDashboard();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId] = useState<string | null>(() => {
-    try {
-      if (typeof window === "undefined") return null;
-      const user = localStorage.getItem("user");
-      return user ? JSON.parse(user).id ?? null : null;
-    } catch {
-      return null;
-    }
-  });
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [activeLeague, setActiveLeague] = useState<"GLOBAL" | "REGIONAL" | "UNIVERSITY">("GLOBAL");
   const [filter, setFilter] = useState("");
   const [leagueStats, setLeagueStats] = useState<LeagueStats>({ regional: [], university: [], season: null });
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   useEffect(() => {
+    try {
+      const user = localStorage.getItem("user");
+      setCurrentUserId(user ? JSON.parse(user).id ?? null : null);
+    } catch {
+      setCurrentUserId(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     const fetchLeagues = async () => {
       try {
         const data = await fetchApi("/dashboard/leagues");
-        setLeagueStats(data);
-        if (data.regional?.length > 0) setSelectedCity(data.regional[0].name);
+        if (!cancelled) {
+          setLeagueStats(data);
+          if (data.regional?.length > 0) setSelectedCity(data.regional[0].name);
+        }
       } catch {
-        toast.error("Failed to load league data");
+        if (!cancelled) toast.error("Failed to load league data");
       }
     };
     fetchLeagues();
+    return () => { cancelled = true; };
+  }, []);
 
+  useEffect(() => {
+    if (contextLeaderboard.length > 0) {
+      setLeaderboard(contextLeaderboard);
+      setLoading(false);
+    } else if (isConnected) {
+      setLoading(false);
+    }
+  }, [contextLeaderboard, isConnected]);
+
+  useEffect(() => {
     if (!socket) return;
-    socket.on("leaderboard_update", (data: LeaderboardEntry[]) => { setLeaderboard(data); setLoading(false); });
-    return () => { socket.off("leaderboard_update"); };
+    const handleLeaderboard = (data: LeaderboardEntry[]) => { setLeaderboard(data); setLoading(false); };
+    socket.on("leaderboard_update", handleLeaderboard);
+    return () => { socket.off("leaderboard_update", handleLeaderboard); };
   }, [socket]);
 
   const filteredOperators = useMemo(() => {
@@ -58,18 +76,40 @@ export default function LeaderboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 className="animate-spin text-slate-400" size={32} />
-        <p className="text-sm text-slate-500">Loading leaderboard...</p>
+      <div className="space-y-6">
+        <div className="h-8 w-40 bg-slate-200 rounded animate-pulse" />
+        <div className="flex gap-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-10 w-28 bg-slate-200 rounded-lg animate-pulse" />
+          ))}
+        </div>
+        <div className="h-10 w-full max-w-xs bg-slate-200 rounded-lg animate-pulse" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map((id) => (
+            <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
+              <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
+              <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
+                <div className="h-3 w-48 bg-slate-200 rounded animate-pulse" />
+              </div>
+              <div className="text-right space-y-1">
+                <div className="h-6 w-12 bg-slate-200 rounded animate-pulse ml-auto" />
+                <div className="h-3 w-16 bg-slate-200 rounded animate-pulse ml-auto" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Leaderboard</h1>
-      </div>
+      <PageHeader
+        title="Leaderboard"
+        description="Global rankings and competition"
+      />
 
       <div className="flex gap-2">
         {(["GLOBAL", "REGIONAL", "UNIVERSITY"] as const).map((league) => (
@@ -77,7 +117,7 @@ export default function LeaderboardPage() {
             key={league}
             onClick={() => setActiveLeague(league)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeLeague === league ? "bg-orange-100 text-orange-700 border border-orange-200" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              activeLeague === league ? "bg-slate-800 text-white border border-slate-800" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
             }`}
           >
             {league}
@@ -92,7 +132,7 @@ export default function LeaderboardPage() {
           placeholder="Search by name..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full max-w-xs px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+          className="w-full max-w-xs px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
         />
         {activeLeague === "REGIONAL" && (
           <div className="flex gap-2 flex-wrap">
@@ -100,8 +140,8 @@ export default function LeaderboardPage() {
               <button
                 key={city.name}
                 onClick={() => setSelectedCity(city.name)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  selectedCity === city.name ? "bg-orange-100 text-orange-700 border border-orange-200" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  selectedCity === city.name ? "bg-slate-800 text-white border border-slate-800" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 {city.name}
@@ -142,17 +182,17 @@ export default function LeaderboardPage() {
         return (
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <TrendingUp size={22} className="text-emerald-600" />
+              <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
+                <TrendingUp size={22} className="text-slate-600" />
               </div>
               <div>
                 <p className="text-lg font-semibold text-slate-900">Level {currentLevel} — {userMetrics.division}</p>
                 <p className="text-sm text-slate-500">{xpNeeded} XP to Level {currentLevel + 1}</p>
               </div>
             </div>
-            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+                className="h-full bg-slate-800 rounded-full transition-all duration-500"
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
@@ -176,15 +216,15 @@ export default function LeaderboardPage() {
           <div
             key={op.id}
             className={`bg-white rounded-xl border p-5 flex items-center gap-4 transition-all hover:shadow-md ${
-              op.id === currentUserId ? "border-emerald-300 bg-emerald-50/50 shadow-md" :
-              idx < 3 ? "border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50" : "border-slate-200"
+              op.id === currentUserId ? "border-slate-400 bg-slate-50 shadow-md" :
+              idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
             }`}
           >
             {/* Rank */}
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-              idx === 0 ? "bg-amber-100 text-amber-600" : 
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+              idx === 0 ? "bg-slate-100 text-slate-700" : 
               idx === 1 ? "bg-slate-100 text-slate-500" : 
-              idx === 2 ? "bg-orange-100 text-orange-600" : 
+              idx === 2 ? "bg-slate-100 text-slate-600" : 
               "bg-slate-50 text-slate-400"
             }`}>
               {idx < 3 ? <Trophy size={18} /> : idx + 1}
@@ -192,9 +232,9 @@ export default function LeaderboardPage() {
 
             {/* Avatar */}
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
-              idx === 0 ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white" :
-              idx === 1 ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white" :
-              idx === 2 ? "bg-gradient-to-br from-orange-400 to-red-500 text-white" :
+              idx === 0 ? "bg-slate-800 text-white" :
+              idx === 1 ? "bg-slate-600 text-white" :
+              idx === 2 ? "bg-slate-500 text-white" :
               "bg-slate-100 text-slate-600"
             }`}>
               {op.name?.[0] || '?'}
@@ -204,11 +244,11 @@ export default function LeaderboardPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-base font-semibold text-slate-900 truncate">{op.name}</p>
-                <Badge variant={DIVISION_COLORS[op.division] ? undefined : "slate"} className={DIVISION_COLORS[op.division] || ""}>
+                <Badge variant={(DIVISION_COLORS[op.division] as "emerald" | "blue" | "amber" | "red" | "slate") || "slate"}>
                   {op.division}
                 </Badge>
                 {op.xp > 2500 && (
-                  <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200 flex items-center gap-0.5">
+                  <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-0.5">
                     <CheckCircle size={10} /> Top talent
                   </span>
                 )}
@@ -224,10 +264,10 @@ export default function LeaderboardPage() {
               <p className="text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
-        )) : (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <Trophy size={40} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No results found.</p>
+        )        ) : (
+          <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+            <Trophy size={40} className="mx-auto mb-3 text-slate-300" />
+            <p className="text-sm font-medium text-slate-500">No results found.</p>
           </div>
         )}
       </div>

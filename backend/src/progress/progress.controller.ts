@@ -22,6 +22,18 @@ import type { RequestWithUser } from '../common/request-with-user';
 export class ProgressController {
   constructor(private progressService: ProgressService) {}
 
+  @Post('start')
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  async startLesson(
+    @Request() req: RequestWithUser,
+    @Body() completeLessonDto: CompleteLessonDto,
+  ) {
+    return this.progressService.startLesson(
+      req.user.id,
+      completeLessonDto.lessonId,
+    );
+  }
+
   @Post('complete')
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Audit('LESSON_COMPLETED')

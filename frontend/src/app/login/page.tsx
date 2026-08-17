@@ -8,7 +8,8 @@ import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Cookies from "js-cookie";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
+import { initTokenRefresh } from "@/lib/api";
 import { Mail, Lock, LogIn, Loader2, Shield, Terminal, Microscope, Award, BookOpen } from "lucide-react";
 
 const loginSchema = z.object({
@@ -37,7 +38,8 @@ export default function LoginPage() {
       localStorage.setItem("token", res.access_token);
       localStorage.setItem("refresh_token", res.refresh_token);
       localStorage.setItem("user", JSON.stringify(res.user));
-      Cookies.set("token", res.access_token, { expires: 1 });
+      Cookies.set("token", res.access_token, { expires: 7, path: "/" });
+      initTokenRefresh();
       toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (err) {

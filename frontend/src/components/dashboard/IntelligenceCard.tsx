@@ -27,7 +27,7 @@ export default function IntelligenceCard({ latestProgress, courseProgress }: Int
           <div className="space-y-3">
             <div>
               <p className="text-xs font-medium text-emerald-600 mb-1">Active Course</p>
-              <p className="text-sm font-medium text-slate-900 line-clamp-2">{latestProgress.lesson.section?.course?.title || 'Course'}</p>
+              <p className="text-sm font-medium text-slate-900 line-clamp-2">{latestProgress.lesson.section?.course?.title || latestProgress.lesson.section?.title || 'Course'}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 mb-1">Current Lesson</p>

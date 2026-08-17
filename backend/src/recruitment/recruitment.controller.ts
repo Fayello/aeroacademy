@@ -32,10 +32,11 @@ export class RecruitmentController {
     @Query('organizationId') organizationId?: string,
     @Query('minXp') minXp?: string,
   ) {
+    const parsedXp = minXp ? parseInt(minXp) : 0;
     return this.recruitmentService.getTalentPool({
       city,
       organizationId,
-      minXp: minXp ? parseInt(minXp) : 0,
+      minXp: Number.isFinite(parsedXp) ? parsedXp : 0,
     });
   }
 

@@ -42,29 +42,36 @@ export class AuthService {
   }
 
   async refreshTokens(refreshToken: string) {
-    const record = await this.prisma.refreshToken.findUnique({
-      where: { token: refreshToken },
-      include: { user: true },
+    return this.prisma.$transaction(async (tx) => {
+      const record = await tx.refreshToken.findUnique({
+        where: { token: refreshToken },
+        include: { user: true },
+      });
+
+      if (!record || record.expiresAt < new Date()) {
+        if (record) await tx.refreshToken.delete({ where: { id: record.id } });
+        throw new UnauthorizedException('Invalid or expired refresh token');
+      }
+
+      // Rotate: delete old, issue new — all inside transaction
+      await tx.refreshToken.delete({ where: { id: record.id } });
+
+      const user = record.user;
+      const payload = { email: user.email, sub: user.id, role: user.role };
+      const newAccessToken = this.jwtService.sign(payload);
+
+      const newToken = crypto.randomBytes(40).toString('hex');
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_DAYS);
+      await tx.refreshToken.create({
+        data: { userId: user.id, token: newToken, expiresAt },
+      });
+
+      return {
+        access_token: newAccessToken,
+        refresh_token: newToken,
+      };
     });
-
-    if (!record || record.expiresAt < new Date()) {
-      if (record)
-        await this.prisma.refreshToken.delete({ where: { id: record.id } });
-      throw new UnauthorizedException('Invalid or expired refresh token');
-    }
-
-    // Rotate: delete old, issue new
-    await this.prisma.refreshToken.delete({ where: { id: record.id } });
-
-    const user = record.user;
-    const payload = { email: user.email, sub: user.id, role: user.role };
-    const newAccessToken = this.jwtService.sign(payload);
-    const newRefreshToken = await this.generateRefreshToken(user.id);
-
-    return {
-      access_token: newAccessToken,
-      refresh_token: newRefreshToken,
-    };
   }
 
   async logout(refreshToken: string) {

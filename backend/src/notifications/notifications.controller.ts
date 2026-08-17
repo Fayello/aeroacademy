@@ -31,9 +31,11 @@ export class NotificationsController {
     @Query('offset') offset?: string,
     @Query('unreadOnly') unreadOnly?: string,
   ) {
+    const parsedLimit = limit ? parseInt(limit, 10) : undefined;
+    const parsedOffset = offset ? parseInt(offset, 10) : undefined;
     return this.notificationsService.findAll(req.user.id, {
-      limit: limit ? parseInt(limit, 10) : undefined,
-      offset: offset ? parseInt(offset, 10) : undefined,
+      limit: Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+      offset: Number.isFinite(parsedOffset) ? parsedOffset : undefined,
       unreadOnly: unreadOnly === 'true',
     });
   }

@@ -18,7 +18,7 @@ export class LeaderboardService {
     const users = await this.prisma.user.findMany({
       where,
       take: limit,
-      orderBy: { rank: 'desc' }, // Order by ELO
+      orderBy: { xp: 'desc' }, // XP is the primary measure
       select: {
         id: true,
         name: true,

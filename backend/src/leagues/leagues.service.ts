@@ -23,7 +23,7 @@ export class LeaguesService {
     });
     const multiplier = activeSeason ? 1.2 : 1.0; // Seasonal bonus
 
-    const oldRating = user.rank || 1200;
+    const oldRating = user.rank ?? 1200;
     const expectedScore =
       1 / (1 + Math.pow(10, (labDifficulty - oldRating) / 400));
     const actualScore = isCorrect ? 1 : 0;

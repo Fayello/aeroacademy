@@ -34,7 +34,7 @@ const links: NavLink[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [userRole, setUserRole] = useState<string>("STUDENT");
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [level, setLevel] = useState(1);
   const { t } = useI18n();
 
@@ -43,14 +43,17 @@ export default function Sidebar() {
       try {
         const stored = localStorage.getItem("user");
         if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
+        else setUserRole("STUDENT");
         const xp = parseInt(localStorage.getItem("xp") || "0", 10);
         setLevel(getLevel(xp));
-      } catch {}
+      } catch {
+        setUserRole("STUDENT");
+      }
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [pathname]);
 
-  const filteredLinks = links.filter(link => !link.roles || link.roles.includes(userRole));
+  const filteredLinks = userRole === null ? [] : links.filter(link => !link.roles || link.roles.includes(userRole));
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">

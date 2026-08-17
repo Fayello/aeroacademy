@@ -17,7 +17,7 @@ type ReactPlayerComponent = React.ComponentType<{
   onPause?: () => void;
 }>;
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as unknown as ReactPlayerComponent;
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
@@ -46,17 +46,25 @@ export default function LessonPage() {
   }>({ isOpen: false, title: "", message: "", type: "info" });
 
   useEffect(() => {
+    let cancelled = false;
     async function loadLesson() {
       try {
         const data = await fetchApi(`/courses/lessons/${id}`);
-        setLesson(data as Lesson);
+        if (!cancelled) {
+          setLesson(data as Lesson);
+          fetchApi("/progress/start", {
+            method: "POST",
+            body: JSON.stringify({ lessonId: id }),
+          }).catch(() => {});
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : String(err));
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     loadLesson();
+    return () => { cancelled = true; };
   }, [id]);
 
   const handleMarkComplete = async () => {
@@ -290,7 +298,7 @@ export default function LessonPage() {
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           {lesson.labId && (
-            <div className="card p-6 border-blue-200 bg-blue-50/50">
+            <div className="bg-white rounded-xl border border-slate-200 p-6 border-blue-200 bg-blue-50/50">
               <div className="flex items-center gap-2 text-blue-700 mb-3">
                 <Microscope size={18} />
                 <h3 className="text-sm font-semibold">Practice Lab</h3>
@@ -307,7 +315,7 @@ export default function LessonPage() {
             </div>
           )}
 
-          <div className="card p-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">Lesson Info</h3>
             <div className="space-y-2 text-sm text-slate-600">
               <div className="flex justify-between">

@@ -64,11 +64,15 @@ export class DashboardController {
     return this.activityService.getUserStats(req.user.id);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('global-activity')
   async getGlobalActivity() {
     return this.activityService.getRecentActivity(30);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('active-users')
   async getActiveLabUsers() {
     return this.activityService.getActiveLabUsers();

@@ -4,14 +4,14 @@ export const CAMEROON_CITIES = [
 ] as const;
 
 export const DIVISION_COLORS: Record<string, string> = {
-  TITAN: "indigo",
+  TITAN: "red",
   DIAMOND: "blue",
   PLATINUM: "emerald",
   GOLD: "amber",
 };
 
 export const DIVISION_TEXT_COLORS: Record<string, string> = {
-  TITAN: "text-indigo-600",
+  TITAN: "text-red-600",
   DIAMOND: "text-blue-600",
   PLATINUM: "text-emerald-600",
   GOLD: "text-amber-600",

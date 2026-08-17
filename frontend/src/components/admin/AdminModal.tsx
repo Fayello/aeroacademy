@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { X, Loader2, Trash2, AlertTriangle, Info } from "lucide-react";
 
 interface AdminModalProps {
@@ -17,10 +17,14 @@ interface AdminModalProps {
 export default function AdminModal({ isOpen, onClose, title, children, size = "md", footer, loading = false, preventClose = false }: AdminModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  const stableClose = useCallback(() => onCloseRef.current(), []);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !preventClose) onClose();
+      if (e.key === "Escape" && !preventClose) stableClose();
     };
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
@@ -30,7 +34,7 @@ export default function AdminModal({ isOpen, onClose, title, children, size = "m
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
     };
-  }, [isOpen, onClose, preventClose]);
+  }, [isOpen, stableClose, preventClose]);
 
   useEffect(() => {
     if (isOpen && contentRef.current) {
@@ -66,7 +70,7 @@ export default function AdminModal({ isOpen, onClose, title, children, size = "m
             </div>
           ) : (
             <button
-              onClick={preventClose ? undefined : onClose}
+        onClick={preventClose ? undefined : stableClose}
               className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
               aria-label="Close modal"
             >

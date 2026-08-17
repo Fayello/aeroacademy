@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { Microscope, Shield, Plus, Pencil, Trash2, ChevronRight, ArrowLeft } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
@@ -115,28 +115,29 @@ export default function AdminLabsPage() {
   const handleSaveFlag = async () => {
     if (!flagForm.title.trim()) { toast.error("Flag title is required"); return; }
     if (!flagModal.editing && !flagForm.correctAnswer.trim()) { toast.error("Correct answer is required"); return; }
+    if (!selectedLab) return;
     setSaving(true);
     try {
       if (flagModal.editing) {
         await fetchApi(`/labs/flags/${flagModal.editing.id}`, { method: "PATCH", body: JSON.stringify(flagForm) });
         toast.success("Flag updated");
       } else {
-        await fetchApi(`/labs/${selectedLab!.id}/flags`, { method: "POST", body: JSON.stringify(flagForm) });
+        await fetchApi(`/labs/${selectedLab.id}/flags`, { method: "POST", body: JSON.stringify(flagForm) });
         toast.success("Flag created");
       }
       setFlagModal({ open: false, editing: null });
-      loadLabDetail(selectedLab!.id);
+      loadLabDetail(selectedLab.id);
     } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
   const handleDeleteFlag = async () => {
-    if (!deleteDialog.item || deleteDialog.type !== "flag") return;
+    if (!deleteDialog.item || deleteDialog.type !== "flag" || !selectedLab) return;
     setSaving(true);
     try {
       await fetchApi(`/labs/flags/${deleteDialog.item.id}`, { method: "DELETE" });
       toast.success("Flag deleted");
       setDeleteDialog({ open: false, type: "", item: null });
-      loadLabDetail(selectedLab!.id);
+      loadLabDetail(selectedLab.id);
     } catch (err) { toast.error(getErrorMessage(err)); } finally { setSaving(false); }
   };
 
@@ -213,7 +214,7 @@ export default function AdminLabsPage() {
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
         <button onClick={() => setSelectedLab(null)} className="hover:text-emerald-600 transition-colors">Labs</button>
         <ChevronRight size={14} />
-        <span className="text-slate-900 font-medium">{selectedLab!.title}</span>
+        <span className="text-slate-900 font-medium">{selectedLab?.title}</span>
       </div>
 
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 p-8 text-white">

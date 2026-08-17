@@ -76,10 +76,12 @@ export default function AdminAnalyticsPage() {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetchApi("/admin/analytics/overview")
-      .then(setData)
+      .then((d) => { if (!cancelled) setData(d); })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const growthData = useMemo(() => (data?.userGrowth || []).map((d) => ({ label: d.date.slice(5), value: d.count })), [data]);

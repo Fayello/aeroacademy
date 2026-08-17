@@ -7,7 +7,7 @@ import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import type { TrainingBooking } from "@/types/api";
 import PageHeader from "@/components/ui/PageHeader";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 
 export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<TrainingBooking[]>([]);
@@ -15,10 +15,14 @@ export default function MyBookingsPage() {
   const [cancelling, setCancelling] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     fetchApi("/training/bookings")
-      .then((data) => setBookings(Array.isArray(data) ? data : data.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled) setBookings(Array.isArray(data) ? data : data.data || []);
+      })
+      .catch(() => { if (!cancelled) toast.error("Failed to load bookings"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const handleCancel = async (id: string) => {

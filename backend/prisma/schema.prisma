@@ -42,7 +42,6 @@ model User {
   auditLogs       AuditLog[]
   notifications   Notification[]
 
-  @@index([email])
   @@index([googleId])
   @@index([role])
   @@index([xp])
@@ -94,7 +93,7 @@ model Section {
   title    String
   order    Int      @default(0)
   lessons  Lesson[]
-  course   Course   @relation(fields: [courseId], references: [id])
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Lesson {
@@ -105,8 +104,8 @@ model Lesson {
   videoUrl  String?
   content   String?
   labId     String?    @unique
-  lab       Lab?       @relation(fields: [labId], references: [id])
-  section   Section    @relation(fields: [sectionId], references: [id])
+  lab       Lab?       @relation(fields: [labId], references: [id], onDelete: SetNull)
+  section   Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   progress  Progress[]
   quiz      Quiz?
 }
@@ -174,6 +173,8 @@ model LabFlag {
   correctAnswer String
   lab           Lab             @relation(fields: [labId], references: [id])
   submissions   LabSubmission[]
+
+  @@index([labId])
 }
 
 model LabSubmission {
@@ -213,7 +214,6 @@ model LabInstance {
   lab         Lab       @relation(fields: [labId], references: [id])
   user        User      @relation(fields: [userId], references: [id])
 
-  @@index([status])
   @@index([userId, status])
 }
 
@@ -329,6 +329,7 @@ model TrainingSlot {
   trainer   Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
   @@index([trainerId])
+  @@index([trainerId, dayOfWeek, isActive])
 }
 
 model Booking {
@@ -348,6 +349,7 @@ model Booking {
 
   @@index([studentId])
   @@index([trainerId])
+  @@index([trainerId, date])
 }
 
 enum MasterClassStatus {

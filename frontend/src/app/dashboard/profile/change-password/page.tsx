@@ -8,7 +8,7 @@ import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import { Lock, Save, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import toast from "@/lib/toast";
 
 const schema = z.object({
   oldPassword: z.string().min(1, "Current password is required"),
