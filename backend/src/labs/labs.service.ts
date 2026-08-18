@@ -276,6 +276,14 @@ export class LabsService implements OnModuleInit {
         data: { containerId: container.id, status: 'RUNNING' },
       });
 
+      // Check if first lab
+      const priorLabCount = await this.prisma.labInstance.count({
+        where: { userId, id: { not: instance.id } },
+      });
+      if (priorLabCount === 0) {
+        this.emailService.sendFirstLabLaunched(user.email, user.name).catch(() => {});
+      }
+
       logger.info(`Lab started on ${serverId}: ${lab.title} for user ${userId}`);
 
       await this.activityService
@@ -538,6 +546,17 @@ export class LabsService implements OnModuleInit {
           lab.difficulty,
           true,
         );
+
+      // Check if first flag (submission already created in transaction above)
+      const priorCorrectCount = await this.prisma.labSubmission.count({
+        where: { userId, isCorrect: true },
+      });
+      if (priorCorrectCount === 1) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (user) {
+          this.emailService.sendFirstFlagCaptured(user.email, user.name, lab?.title || 'Unknown Lab', flag.points).catch(() => {});
+        }
+      }
 
       await this.achievementService.checkAndUnlockAchievements(userId);
 

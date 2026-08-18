@@ -59,7 +59,8 @@ export default function RegisterPage() {
 
   const onSubmit = async (values: RegisterValues) => {
     try {
-      await auth.register({ email: values.email, password: values.password, name: values.name });
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+      await auth.register({ email: values.email, password: values.password, name: values.name, timezone });
       toast.success("Account created! Check your email for the verification code.");
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (err) {

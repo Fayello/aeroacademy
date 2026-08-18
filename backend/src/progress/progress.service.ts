@@ -125,6 +125,9 @@ export class ProgressService {
       }
     }
 
+    // Capture old XP for level up detection
+    const oldLevel = getLevel(user.xp);
+
     const progress = await this.prisma.$transaction(async (tx) => {
       const existingProgress = await tx.progress.findUnique({
         where: { userId_lessonId: { userId, lessonId } },
@@ -155,6 +158,26 @@ export class ProgressService {
 
       // Check milestones
       await this.checkMilestones(userId, lesson.section.courseId);
+
+      // Level up detection
+      const freshUser = await this.prisma.user.findUnique({ where: { id: userId } });
+      if (freshUser) {
+        const newLevel = getLevel(freshUser.xp);
+        if (newLevel > oldLevel) {
+          this.emailService.sendLevelUp(freshUser.email, freshUser.name, newLevel).catch(() => {});
+        }
+
+        // Lesson completion confirmation (with progress %)
+        const courseProgress = await this.getCourseProgress(userId, lesson.section.courseId);
+        this.emailService.sendLessonCompleted(
+          freshUser.email,
+          freshUser.name,
+          lesson.title,
+          lesson.section.course.title,
+          lesson.section.courseId,
+          courseProgress.percentage,
+        ).catch(() => {});
+      }
     }
 
     return progress.progress;

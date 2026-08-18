@@ -27,6 +27,8 @@ model User {
   currentStreak            Int                       @default(0)
   longestStreak            Int                       @default(0)
   lastActivityDate         DateTime?
+  welcomeDripSent          Json                      @default("[]")
+  lastEmailSentAt          DateTime?
   timezone                 String?                   @default("UTC")
   teamId                   String?
   team                     Team?                     @relation(fields: [teamId], references: [id])

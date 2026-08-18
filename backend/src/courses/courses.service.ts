@@ -439,7 +439,7 @@ export class CoursesService {
         ],
       },
       include: {
-        user: { select: { id: true, email: true, name: true } },
+        user: { select: { id: true, email: true, name: true, timezone: true } },
         course: { select: { id: true, title: true } },
       },
     });

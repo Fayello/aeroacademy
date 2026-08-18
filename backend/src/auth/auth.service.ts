@@ -80,7 +80,7 @@ export class AuthService {
     });
   }
 
-  async register(email: string, password: string, name?: string) {
+  async register(email: string, password: string, name?: string, timezone?: string) {
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -94,6 +94,7 @@ export class AuthService {
         email,
         passwordHash,
         name: name || null,
+        timezone: timezone || 'UTC',
       },
     });
 

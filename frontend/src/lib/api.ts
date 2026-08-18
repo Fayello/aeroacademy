@@ -190,7 +190,7 @@ export function initTokenRefresh() {
 }
 
 export const auth = {
-  register: (data: { email: string; password: string; name?: string }) =>
+  register: (data: { email: string; password: string; name?: string; timezone?: string }) =>
     fetchApi('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data: { email: string; password: string }) =>
     fetchApi('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
