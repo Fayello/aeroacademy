@@ -42,8 +42,8 @@ export class LabsController {
   @ApiBearerAuth('JWT-auth')
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findAll() {
-    return this.labsService.findAll();
+  async findAll(@Request() req: RequestWithUser) {
+    return this.labsService.findAll({ userId: req.user.id, userRole: req.user.role });
   }
 
   @ApiBearerAuth('JWT-auth')

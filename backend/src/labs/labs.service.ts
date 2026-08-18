@@ -456,8 +456,8 @@ export class LabsService implements OnModuleInit {
     });
   }
 
-  async findAll(opts?: { skip?: number; take?: number }) {
-    return this.prisma.lab.findMany({
+  async findAll(opts?: { skip?: number; take?: number; userId?: string; userRole?: string }) {
+    const labs = await this.prisma.lab.findMany({
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 50,
       include: {
@@ -471,6 +471,26 @@ export class LabsService implements OnModuleInit {
         },
       },
     });
+
+    if (opts?.userRole === 'ADMIN') return labs;
+
+    if (opts?.userId) {
+      const user = await this.prisma.user.findUnique({ where: { id: opts.userId } });
+      if (user) {
+        const userLevel = getLevel(user.xp);
+        return labs.map((lab) => {
+          const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
+          const locked = userLevel < requiredLevel;
+          return {
+            ...lab,
+            locked,
+            flags: locked ? undefined : lab.flags,
+          };
+        });
+      }
+    }
+
+    return labs;
   }
 
   async submitFlag(userId: string, flagId: string, answer: string) {
@@ -561,6 +581,19 @@ export class LabsService implements OnModuleInit {
       },
     });
     if (!lab) throw new NotFoundException('Lab not found');
+
+    if (userRole !== 'ADMIN' && userId) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      if (user) {
+        const userLevel = getLevel(user.xp);
+        const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
+        if (userLevel < requiredLevel) {
+          throw new ForbiddenException(
+            `Level ${requiredLevel} required to access this lab. Your level: ${userLevel}`,
+          );
+        }
+      }
+    }
 
     let credentials = lab.credentials;
     if (typeof credentials === 'string') {
