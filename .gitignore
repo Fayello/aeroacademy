@@ -25,3 +25,11 @@ nginx-*.conf
 f2b-*.conf
 jail.local
 setenv_orig.sh
+AD_full_resource.json
+ad.json
+ad_create.json
+ad_full.json
+ad_noconfig.json
+ad_resource.json
+camlight_resource.json
+connector_full.json
