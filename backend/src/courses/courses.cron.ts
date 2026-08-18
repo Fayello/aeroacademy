@@ -2,15 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CoursesService } from './courses.service';
 import { EmailService } from '../email/email.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CoursesCron {
   private readonly logger = new Logger(CoursesCron.name);
   private reminderRunning = false;
+  private digestRunning = false;
 
   constructor(
     private readonly coursesService: CoursesService,
     private readonly emailService: EmailService,
+    private readonly prisma: PrismaService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
@@ -64,6 +67,90 @@ export class CoursesCron {
       this.logger.error(`Inactivity check failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       this.reminderRunning = false;
+    }
+  }
+
+  @Cron('0 9 * * 1')
+  async handleWeeklyDigest() {
+    if (this.digestRunning) return;
+    this.digestRunning = true;
+
+    try {
+      this.logger.log('Sending weekly digest emails...');
+
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      const activeUsers = await this.prisma.user.findMany({
+        where: {
+          role: 'STUDENT',
+          emailVerified: { not: null },
+          lastActivityDate: { gte: oneWeekAgo },
+        },
+        select: { id: true, email: true, name: true, currentStreak: true, rank: true },
+      });
+
+      let sent = 0;
+      for (const user of activeUsers) {
+        if (!user.email) continue;
+
+        try {
+          const [lessonsCompleted, enrollments] = await Promise.all([
+            this.prisma.progress.count({
+              where: {
+                userId: user.id,
+                completed: true,
+                updatedAt: { gte: oneWeekAgo },
+              },
+            }),
+            this.prisma.courseEnrollment.findMany({
+              where: { userId: user.id },
+              include: { course: { select: { id: true, title: true } } },
+            }),
+          ]);
+
+          const xpEarned = lessonsCompleted * 100;
+
+          const coursesInProgress: { title: string; progressPct: number }[] = [];
+          for (const enrollment of enrollments) {
+            const total = await this.prisma.lesson.count({
+              where: { section: { courseId: enrollment.courseId } },
+            });
+            const completed = await this.prisma.progress.count({
+              where: {
+                userId: user.id,
+                completed: true,
+                lesson: { section: { courseId: enrollment.courseId } },
+              },
+            });
+            if (completed > 0 && completed < total) {
+              coursesInProgress.push({
+                title: enrollment.course.title,
+                progressPct: total > 0 ? Math.round((completed / total) * 100) : 0,
+              });
+            }
+          }
+
+          if (lessonsCompleted > 0 || coursesInProgress.length > 0) {
+            await this.emailService.sendWeeklyDigest(user.email, user.name, {
+              lessonsCompleted,
+              xpEarned,
+              streakDays: user.currentStreak,
+              coursesInProgress,
+              leaderboardPosition: user.rank || undefined,
+            });
+            sent++;
+          }
+        } catch (err) {
+          this.logger.error(`Failed to send digest to ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+
+      this.logger.log(`Weekly digest sent to ${sent} user(s).`);
+    } catch (err) {
+      this.logger.error(`Weekly digest failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      this.digestRunning = false;
     }
   }
 }

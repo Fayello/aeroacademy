@@ -24,6 +24,10 @@ model User {
   rank                     Int                       @default(0)
   division                 String                    @default("BRONZE")
   clearanceLevel           Int                       @default(1)
+  currentStreak            Int                       @default(0)
+  longestStreak            Int                       @default(0)
+  lastActivityDate         DateTime?
+  timezone                 String?                   @default("UTC")
   teamId                   String?
   team                     Team?                     @relation(fields: [teamId], references: [id])
   ownedTeams               Team[]                    @relation("TeamOwner")
@@ -444,13 +448,14 @@ model Notification {
 }
 
 model CourseEnrollment {
-  userId             String
-  courseId           String
-  enrolledAt         DateTime  @default(now())
-  lastActivityAt     DateTime  @default(now())
+  userId           String
+  courseId         String
+  enrolledAt      DateTime @default(now())
+  lastActivityAt  DateTime @default(now())
   lastReminderSentAt DateTime?
-  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course             Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  milestonesSent  Json     @default("[]")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@id([userId, courseId])
   @@index([userId])

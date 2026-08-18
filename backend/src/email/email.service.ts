@@ -513,17 +513,110 @@ export class EmailService implements OnModuleInit {
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
   <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:32px;text-align:center;">
-    <h1 style="color:#fff;margin:0;font-size:24px;">${milestone}!</h1>
+    <h1 style="color:#fff;margin:0;font-size:24px;">${milestone}</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">You've hit a milestone in <strong>${courseTitle}</strong> — ${milestone}!</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">You've hit a milestone in <strong>${courseTitle}</strong> — ${milestone}</p>
     <div style="background:#fefce8;border-left:4px solid #f59e0b;padding:16px;margin:20px 0;border-radius:4px;">
       <p style="color:#334155;margin:0;font-size:14px;">Keep going — you're building real skills that matter.</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
       <a href="${courseUrl}" style="background:#f59e0b;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Keep Learning</a>
     </div>
+  </div>
+  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
+
+  async sendWeeklyDigest(
+    email: string,
+    name: string | null,
+    stats: {
+      lessonsCompleted: number;
+      xpEarned: number;
+      streakDays: number;
+      coursesInProgress: { title: string; progressPct: number }[];
+      leaderboardPosition?: number;
+    },
+  ) {
+    const displayName = name || 'there';
+    const dashboardUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard`;
+    const coursesHtml = stats.coursesInProgress
+      .map(
+        (c) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+          <div>
+            <p style="color:#334155;font-size:14px;font-weight:600;margin:0;">${c.title}</p>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">${c.progressPct}% complete</p>
+          </div>
+          <div style="width:48px;height:48px;">
+            <svg viewBox="0 0 48 48" style="transform:rotate(-90deg);">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="4"
+                stroke-dasharray="${2 * Math.PI * 20}"
+                stroke-dashoffset="${2 * Math.PI * 20 * (1 - c.progressPct / 100)}"
+                stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>`,
+      )
+      .join('');
+
+    return this.send({
+      to: email,
+      from: 'info',
+      subject: `Your Weekly Learning Report — ${stats.lessonsCompleted} lessons completed`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+    <h1 style="color:#fff;margin:0;font-size:24px;">Your Weekly Report</h1>
+    <p style="color:#c4b5fd;margin:8px 0 0;font-size:14px;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+  </div>
+  <div style="padding:32px;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Here's what you accomplished this week:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0;">
+      <div style="background:#f0fdf4;border-radius:8px;padding:16px;text-align:center;">
+        <p style="color:#10b981;font-size:28px;font-weight:700;margin:0;">${stats.lessonsCompleted}</p>
+        <p style="color:#64748b;font-size:12px;margin:4px 0 0;">Lessons Completed</p>
+      </div>
+      <div style="background:#eff6ff;border-radius:8px;padding:16px;text-align:center;">
+        <p style="color:#3b82f6;font-size:28px;font-weight:700;margin:0;">${stats.xpEarned}</p>
+        <p style="color:#64748b;font-size:12px;margin:4px 0 0;">XP Earned</p>
+      </div>
+      <div style="background:#fefce8;border-radius:8px;padding:16px;text-align:center;">
+        <p style="color:#f59e0b;font-size:28px;font-weight:700;margin:0;">${stats.streakDays}</p>
+        <p style="color:#64748b;font-size:12px;margin:4px 0 0;">Day Streak</p>
+      </div>
+      ${stats.leaderboardPosition ? `
+      <div style="background:#faf5ff;border-radius:8px;padding:16px;text-align:center;">
+        <p style="color:#a855f7;font-size:28px;font-weight:700;margin:0;">#${stats.leaderboardPosition}</p>
+        <p style="color:#64748b;font-size:12px;margin:4px 0 0;">Leaderboard</p>
+      </div>` : ''}
+    </div>
+
+    ${stats.coursesInProgress.length > 0 ? `
+    <p style="color:#334155;font-size:14px;font-weight:600;margin:0 0 12px;">Courses in Progress</p>
+    <div style="margin-bottom:24px;">
+      ${coursesHtml}
+    </div>` : ''}
+
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${dashboardUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
+    </div>
+
+    <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0;">Consistency builds expertise. See you next week!</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
     <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>

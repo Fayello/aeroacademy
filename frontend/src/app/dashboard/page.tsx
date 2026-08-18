@@ -20,12 +20,15 @@ import {
   Flag,
   Target,
   Circle,
+  Flame,
 } from "lucide-react";
 
 interface User {
   id: string;
   email: string;
   name?: string;
+  currentStreak?: number;
+  longestStreak?: number;
 }
 
 interface ActiveLabInstance {
@@ -248,8 +251,21 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{greeting}</h1>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{greeting}</h1>
+        </div>
+        {user.currentStreak != null && user.currentStreak > 0 && (
+          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full px-4 py-2">
+            <Flame size={18} className="text-orange-500" />
+            <div className="text-right">
+              <p className="text-sm font-bold text-amber-700">{user.currentStreak} day streak</p>
+              {user.longestStreak != null && user.longestStreak > user.currentStreak && (
+                <p className="text-[10px] text-amber-500">Best: {user.longestStreak} days</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <StatsGrid

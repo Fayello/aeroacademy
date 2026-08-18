@@ -4,17 +4,30 @@ import {
   ForbiddenException,
   Inject,
   forwardRef,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AchievementService } from '../dashboard/achievement.service';
+import { EmailService } from '../email/email.service';
 import { getLevel, getRequiredSectionLevel } from '../common/level.util';
+
+const MILESTONE_THRESHOLDS = [25, 50, 75, 100];
+const MILESTONE_LABELS: Record<number, string> = {
+  25: '25% Complete — Quarter Way!',
+  50: '50% Complete — Halfway There!',
+  75: '75% Complete — Almost Done!',
+  100: '100% Complete — Course Finished!',
+};
 
 @Injectable()
 export class ProgressService {
+  private readonly logger = new Logger(ProgressService.name);
+
   constructor(
     private prisma: PrismaService,
     @Inject(forwardRef(() => AchievementService))
     private achievementService: AchievementService,
+    private emailService: EmailService,
   ) {}
 
   async startLesson(userId: string, lessonId: string) {
@@ -136,9 +149,98 @@ export class ProgressService {
 
     if (progress.wasNew) {
       await this.achievementService.checkAndUnlockAchievements(userId);
+
+      // Update streak
+      await this.updateStreak(userId);
+
+      // Check milestones
+      await this.checkMilestones(userId, lesson.section.courseId);
     }
 
     return progress.progress;
+  }
+
+  private async updateStreak(userId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return;
+
+    const lastActivity = user.lastActivityDate;
+    if (!lastActivity) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          currentStreak: 1,
+          longestStreak: Math.max(user.longestStreak, 1),
+          lastActivityDate: today,
+        },
+      });
+      return;
+    }
+
+    const lastDay = new Date(lastActivity);
+    lastDay.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return; // Already active today
+
+    const newStreak = diffDays === 1 ? user.currentStreak + 1 : 1;
+    const bonusXp = diffDays === 1 && newStreak % 7 === 0 ? 500 : 0; // 500 bonus every 7-day streak
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        currentStreak: newStreak,
+        longestStreak: Math.max(user.longestStreak, newStreak),
+        lastActivityDate: today,
+        ...(bonusXp > 0 ? { xp: { increment: bonusXp } } : {}),
+      },
+    });
+  }
+
+  private async checkMilestones(userId: string, courseId: string) {
+    const enrollment = await this.prisma.courseEnrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+    if (!enrollment) return;
+
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) return;
+
+    const totalLessons = await this.prisma.lesson.count({
+      where: { section: { courseId } },
+    });
+    if (totalLessons === 0) return;
+
+    const completedLessons = await this.prisma.progress.count({
+      where: { userId, completed: true, lesson: { section: { courseId } } },
+    });
+
+    const percentage = Math.round((completedLessons / totalLessons) * 100);
+    const sentMilestones = (enrollment.milestonesSent as number[]) || [];
+
+    for (const threshold of MILESTONE_THRESHOLDS) {
+      if (percentage >= threshold && !sentMilestones.includes(threshold)) {
+        // Send milestone email
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (user?.email) {
+          this.emailService
+            .sendMilestoneAchieved(user.email, user.name, course.title, courseId, MILESTONE_LABELS[threshold])
+            .catch(() => {});
+        }
+
+        // Record milestone sent
+        sentMilestones.push(threshold);
+        await this.prisma.courseEnrollment.update({
+          where: { userId_courseId: { userId, courseId } },
+          data: { milestonesSent: sentMilestones },
+        });
+
+        this.logger.log(`Milestone ${threshold}% reached for user ${userId} in course "${course.title}"`);
+      }
+    }
   }
 
   async getLatestProgress(userId: string) {
