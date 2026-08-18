@@ -478,14 +478,9 @@ export class LabsService implements OnModuleInit {
       const user = await this.prisma.user.findUnique({ where: { id: opts.userId } });
       if (user) {
         const userLevel = getLevel(user.xp);
-        return labs.map((lab) => {
+        return labs.filter((lab) => {
           const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
-          const locked = userLevel < requiredLevel;
-          return {
-            ...lab,
-            locked,
-            flags: locked ? undefined : lab.flags,
-          };
+          return userLevel >= requiredLevel;
         });
       }
     }
