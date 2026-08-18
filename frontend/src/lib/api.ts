@@ -6,18 +6,21 @@ let refreshRetries = 0;
 const MAX_REFRESH_RETRIES = 3;
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
-function redirectToLogin() {
+async function redirectToLogin() {
+  const refreshToken = localStorage.getItem('refresh_token');
   localStorage.removeItem('token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
   document.cookie = 'token=; path=/; max-age=0';
   document.cookie = 'refresh_token=; path=/; max-age=0';
-  fetch(`${API_URL}/auth/logout`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  }).catch(() => {});
+  try {
+    await fetch(`${API_URL}/auth/logout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ refresh_token: refreshToken || '' }),
+    });
+  } catch {}
   window.location.href = '/login';
 }
 
@@ -44,12 +47,22 @@ async function refreshAccessToken(): Promise<string> {
   const refreshToken = localStorage.getItem('refresh_token');
   const hadLocalRefreshToken = Boolean(refreshToken);
 
-  const res = await fetch(`${API_URL}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(refreshToken ? { refresh_token: refreshToken } : {}),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  let res;
+  try {
+    res = await fetch(`${API_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(refreshToken ? { refresh_token: refreshToken } : {}),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeout);
+    throw err;
+  }
+  clearTimeout(timeout);
 
   if (!res.ok) throw new Error('Refresh failed');
 
@@ -79,11 +92,25 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
     headers['Content-Type'] = 'application/json';
   }
 
-  let response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-    credentials: 'include',
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
+  let response;
+  try {
+    response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers,
+      credentials: 'include',
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error('Request timed out');
+    }
+    throw err;
+  }
+  clearTimeout(timeout);
 
   if (response.status === 401 && typeof window !== 'undefined') {
     if (!endpoint.startsWith('/auth/refresh') && !endpoint.startsWith('/auth/logout')) {
@@ -104,11 +131,18 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
         } else {
           delete headers['Authorization'];
         }
-        response = await fetch(`${API_URL}${endpoint}`, {
-          ...options,
-          headers,
-          credentials: 'include',
-        });
+        const retryController = new AbortController();
+        const retryTimeout = setTimeout(() => retryController.abort(), 15000);
+        try {
+          response = await fetch(`${API_URL}${endpoint}`, {
+            ...options,
+            headers,
+            credentials: 'include',
+            signal: retryController.signal,
+          });
+        } finally {
+          clearTimeout(retryTimeout);
+        }
         isRefreshing = false;
         refreshPromise = null;
       } catch {

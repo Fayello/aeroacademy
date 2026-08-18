@@ -79,16 +79,28 @@ export default function DashboardPage() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      setUser(storedUser ? JSON.parse(storedUser) : null);
-    } catch {
-      setUser(null);
+    let cancelled = false;
+    async function loadUser() {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          const me = await fetchApi<{ id: string; email: string; name?: string }>("/auth/me");
+          if (!cancelled && me) {
+            localStorage.setItem("user", JSON.stringify(me));
+            setUser(me);
+          }
+        }
+      } catch {
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setHydrated(true);
+      }
     }
-    setHydrated(true);
+    loadUser();
+    return () => { cancelled = true; };
   }, []);
-
-  const [loading, setLoading] = useState(true);
 
   const [activeLabs, setActiveLabs] = useState<ActiveLabInstance[]>([]);
   const [activeLabsLoading, setActiveLabsLoading] = useState(true);
@@ -151,7 +163,6 @@ export default function DashboardPage() {
         // silently fail
       } finally {
         if (!cancelled) {
-          setLoading(false);
           setActiveLabsLoading(false);
           setLabActivityLoading(false);
           setCoursesLoading(false);
@@ -169,7 +180,12 @@ export default function DashboardPage() {
     }
   }, [userMetrics?.xp]);
 
-  if (!hydrated || !user) {
+  if (!hydrated) {
+    return <DashboardSkeleton />;
+  }
+
+  if (!user) {
+    if (typeof window !== "undefined") window.location.href = "/login";
     return <DashboardSkeleton />;
   }
 
@@ -241,7 +257,6 @@ export default function DashboardPage() {
         rank={userMetrics?.rank || 1200}
         division={userMetrics?.division || "BRONZE"}
         clearance={userMetrics?.clearance || "STUDENT_L1"}
-        loading={loading}
       />
 
       {/* Active Labs */}
