@@ -7,5 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [BadgesController],
   providers: [BadgesService],
+  exports: [BadgesService],
 })
 export class BadgesModule {}
