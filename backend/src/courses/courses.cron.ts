@@ -11,6 +11,7 @@ export class CoursesCron {
   private digestRunning = false;
   private welcomeDripRunning = false;
   private nudgeRunning = false;
+  private reEngagementRunning = false;
 
   constructor(
     private readonly coursesService: CoursesService,
@@ -61,7 +62,7 @@ export class CoursesCron {
           role: 'STUDENT',
           emailVerified: { not: null },
         },
-        select: { id: true, email: true, name: true, createdAt: true, welcomeDripSent: true, timezone: true, lastEmailSentAt: true },
+        select: { id: true, email: true, name: true, createdAt: true, welcomeDripSent: true, timezone: true, lastEmailSentAt: true, emailPreferences: true },
       });
 
       const now = new Date();
@@ -71,6 +72,9 @@ export class CoursesCron {
         if (!user.email) continue;
         if (!this.isReasonableHour(user.timezone)) continue;
         if (!(await this.canSendEmail(user.id))) continue;
+
+        const prefs = user.emailPreferences as Record<string, boolean> | null;
+        if (!this.emailService.hasPreference(prefs, 'courseUpdates')) continue;
 
         const daysSinceRegistration = Math.floor(
           (now.getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24),
@@ -130,7 +134,7 @@ export class CoursesCron {
           user: { role: 'STUDENT' },
         },
         include: {
-          user: { select: { id: true, email: true, name: true, timezone: true, lastEmailSentAt: true } },
+          user: { select: { id: true, email: true, name: true, timezone: true, lastEmailSentAt: true, emailPreferences: true } },
           course: { select: { id: true, title: true } },
         },
       });
@@ -141,6 +145,9 @@ export class CoursesCron {
         if (!enrollment.user.email) continue;
         if (!this.isReasonableHour(enrollment.user.timezone)) continue;
         if (!(await this.canSendEmail(enrollment.user.id))) continue;
+
+        const prefs = enrollment.user.emailPreferences as Record<string, boolean> | null;
+        if (!this.emailService.hasPreference(prefs, 'nudges')) continue;
 
         const daysSinceEnrolled = Math.floor(
           (now.getTime() - new Date(enrollment.enrolledAt).getTime()) / (1000 * 60 * 60 * 24),
@@ -222,6 +229,9 @@ export class CoursesCron {
         if (!enrollment.user.email) continue;
         if (!this.isReasonableHour(enrollment.user.timezone)) continue;
         if (!(await this.canSendEmail(enrollment.userId))) continue;
+
+        const prefs = enrollment.user.emailPreferences as Record<string, boolean> | null;
+        if (!this.emailService.hasPreference(prefs, 'nudges')) continue;
 
         try {
           const progress = await this.coursesService.getEnrollment(
@@ -339,6 +349,55 @@ export class CoursesCron {
       this.logger.error(`Weekly digest failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       this.digestRunning = false;
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1PM)
+  async handleReEngagement() {
+    if (this.reEngagementRunning) return;
+    this.reEngagementRunning = true;
+
+    try {
+      this.logger.log('Running re-engagement campaign...');
+
+      const fourteenDaysAgo = new Date();
+      fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+      const inactiveUsers = await this.prisma.user.findMany({
+        where: {
+          role: 'STUDENT',
+          emailVerified: { not: null },
+          lastActivityDate: { lt: fourteenDaysAgo },
+        },
+        select: { id: true, email: true, name: true, createdAt: true, lastActivityDate: true, timezone: true, emailPreferences: true },
+      });
+
+      let sent = 0;
+      for (const user of inactiveUsers) {
+        if (!user.email) continue;
+        if (!this.isReasonableHour(user.timezone)) continue;
+        if (!(await this.canSendEmail(user.id))) continue;
+
+        const prefs = user.emailPreferences as Record<string, boolean> | null;
+        if (!this.emailService.hasPreference(prefs, 'reengagement')) continue;
+
+        try {
+          const daysInactive = Math.floor(
+            (Date.now() - new Date(user.lastActivityDate || user.createdAt).getTime()) / (1000 * 60 * 60 * 24),
+          );
+          await this.emailService.sendReEngagement(user.email, user.name, daysInactive);
+          await this.markEmailSent(user.id);
+          sent++;
+        } catch (err) {
+          this.logger.error(`Re-engagement failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+
+      this.logger.log(`Re-engagement complete. Sent ${sent} email(s).`);
+    } catch (err) {
+      this.logger.error(`Re-engagement failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      this.reEngagementRunning = false;
     }
   }
 }

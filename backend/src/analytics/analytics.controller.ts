@@ -1,20 +1,34 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Param } from '@nestjs/common';
+import { AnalyticsService } from './analytics.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { AnalyticsService } from './analytics.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import type { RequestWithUser } from '../common/request-with-user';
 
-@ApiTags('admin-analytics')
+@ApiTags('analytics')
 @ApiBearerAuth('JWT-auth')
-@Controller('admin/analytics')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles('ADMIN')
+@Controller('analytics')
+@UseGuards(AuthGuard('jwt'))
 export class AnalyticsController {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService) {}
 
-  @Get('overview')
-  async getOverview() {
-    return this.analyticsService.getOverview();
+  @Get('email-stats')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  async getEmailStats() {
+    return this.analyticsService.getEmailStats();
+  }
+
+  @Get('learning')
+  async getLearningAnalytics(@Request() req: RequestWithUser) {
+    return this.analyticsService.getLearningAnalytics(req.user.id);
+  }
+
+  @Get('learning/:userId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  async getUserLearningAnalytics(@Param('userId') userId: string) {
+    return this.analyticsService.getLearningAnalytics(userId);
   }
 }

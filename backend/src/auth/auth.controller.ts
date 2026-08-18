@@ -331,6 +331,16 @@ export class AuthController {
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
+  @Patch('email-preferences')
+  async updateEmailPreferences(
+    @Request() req: RequestWithUser,
+    @Body() body: { preferences: Record<string, boolean> },
+  ) {
+    return this.authService.updateEmailPreferences(req.user.id, body.preferences);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Post('change-password')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Audit('AUTH_CHANGE_PASSWORD')

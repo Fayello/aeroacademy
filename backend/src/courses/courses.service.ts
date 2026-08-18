@@ -439,7 +439,7 @@ export class CoursesService {
         ],
       },
       include: {
-        user: { select: { id: true, email: true, name: true, timezone: true } },
+        user: { select: { id: true, email: true, name: true, timezone: true, emailPreferences: true } },
         course: { select: { id: true, title: true } },
       },
     });
@@ -450,5 +450,90 @@ export class CoursesService {
       where: { userId, courseId },
       data: { lastReminderSentAt: new Date() },
     });
+  }
+
+  async getCertificate(userId: string, courseId: string) {
+    const enrollment = await this.prisma.courseEnrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+    if (!enrollment) {
+      return { eligible: false, reason: 'Not enrolled' };
+    }
+
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) return { eligible: false, reason: 'Course not found' };
+
+    const totalLessons = await this.prisma.lesson.count({ where: { section: { courseId } } });
+    const completedLessons = await this.prisma.progress.count({
+      where: { userId, completed: true, lesson: { section: { courseId } } },
+    });
+
+    if (completedLessons < totalLessons) {
+      return { eligible: false, reason: 'Course not complete', completed: completedLessons, total: totalLessons };
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
+    const issuedAt = new Date();
+
+    return {
+      eligible: true,
+      certificate: {
+        id: `CERT-${courseId.slice(0, 8)}-${userId.slice(0, 8)}-${issuedAt.getTime()}`,
+        courseName: course.title,
+        userName: user?.name || user?.email || 'Student',
+        issuedAt: issuedAt.toISOString(),
+        credentialUrl: `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/verify/${courseId}/${userId}`,
+      },
+    };
+  }
+
+  async getRecommendations(userId: string) {
+    const enrollments = await this.prisma.courseEnrollment.findMany({
+      where: { userId },
+      select: { courseId: true },
+    });
+    const enrolledIds = enrollments.map((e) => e.courseId);
+
+    const allCourses = await this.prisma.course.findMany({
+      include: {
+        _count: { select: { enrollments: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const completedCourses: string[] = [];
+    for (const courseId of enrolledIds) {
+      const total = await this.prisma.lesson.count({ where: { section: { courseId } } });
+      const completed = await this.prisma.progress.count({
+        where: { userId, completed: true, lesson: { section: { courseId } } },
+      });
+      if (total > 0 && completed === total) completedCourses.push(courseId);
+    }
+
+    const notEnrolled = allCourses.filter((c) => !enrolledIds.includes(c.id));
+
+    const recommended = notEnrolled
+      .sort((a, b) => (b._count.enrollments || 0) - (a._count.enrollments || 0))
+      .slice(0, 4)
+      .map((c) => ({
+        id: c.id,
+        title: c.title,
+        description: c.description,
+        imageUrl: c.imageUrl,
+        estimatedHours: c.estimatedHours,
+        enrollmentCount: c._count.enrollments,
+        reason: completedCourses.length > 0 ? 'Popular with other students' : 'Recommended for you',
+      }));
+
+    const inProgress = allCourses
+      .filter((c) => enrolledIds.includes(c.id) && !completedCourses.includes(c.id))
+      .slice(0, 2)
+      .map((c) => ({
+        id: c.id,
+        title: c.title,
+        reason: 'Continue where you left off',
+      }));
+
+    return { recommended, inProgress };
   }
 }

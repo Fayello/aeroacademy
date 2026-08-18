@@ -36,6 +36,7 @@ const en: Record<string, string> = {
   "nav.analytics": "Analytics",
   "nav.audit": "Audit Logs",
   "nav.profile": "Profile",
+  "nav.settings": "Settings",
   "nav.main": "Main navigation",
   "nav.mobile": "Mobile navigation",
 };

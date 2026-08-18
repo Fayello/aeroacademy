@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -30,6 +30,7 @@ const links: NavLink[] = [
   { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3, roles: ["ADMIN"] },
   { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText, roles: ["ADMIN"] },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
+  { href: "/dashboard/settings", tKey: "settings", icon: Settings },
 ];
 
 export default function Sidebar() {

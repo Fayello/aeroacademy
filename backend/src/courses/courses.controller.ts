@@ -232,4 +232,17 @@ export class CoursesController {
   async removeQuiz(@Param('quizId') quizId: string) {
     return this.coursesService.removeQuiz(quizId);
   }
+
+  @Get(':courseId/certificate')
+  async getCertificate(
+    @Request() req: RequestWithUser,
+    @Param('courseId') courseId: string,
+  ) {
+    return this.coursesService.getCertificate(req.user.id, courseId);
+  }
+
+  @Get('recommendations')
+  async getRecommendations(@Request() req: RequestWithUser) {
+    return this.coursesService.getRecommendations(req.user.id);
+  }
 }

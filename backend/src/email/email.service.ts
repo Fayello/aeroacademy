@@ -1015,4 +1015,83 @@ export class EmailService implements OnModuleInit {
 </html>`,
     });
   }
+
+  async sendCourseCompleted(email: string, name: string | null, courseTitle: string, courseId: string, totalXp: number) {
+    const displayName = name || 'there';
+    const certificateUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}/certificate`;
+    const coursesUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses`;
+    return this.send({
+      to: email,
+      from: 'labs',
+      subject: `Course complete: ${courseTitle} — Congratulations!`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:40px;text-align:center;">
+    <p style="font-size:48px;margin:0;">🎓</p>
+    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Course Complete!</h1>
+    <p style="color:#fef3c7;margin:8px 0 0;font-size:14px;">${courseTitle}</p>
+  </div>
+  <div style="padding:32px;text-align:center;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">You completed <strong>${courseTitle}</strong> — earning <strong>${totalXp} XP</strong> along the way.</p>
+    <div style="background:#fefce8;border-left:4px solid #f59e0b;padding:16px;margin:20px 0;border-radius:4px;text-align:left;">
+      <p style="color:#334155;margin:0;font-size:14px;">This certificate verifies your completion. You can download it or share it on LinkedIn.</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;display:flex;gap:12px;justify-content:center;">
+      <a href="${certificateUrl}" style="background:#f59e0b;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Certificate</a>
+      <a href="${coursesUrl}" style="background:#fff;color:#f59e0b;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;border:2px solid #f59e0b;">More Courses</a>
+    </div>
+  </div>
+  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
+
+  async sendReEngagement(email: string, name: string | null, daysInactive: number) {
+    const displayName = name || 'there';
+    const dashboardUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard`;
+    return this.send({
+      to: email,
+      from: 'auth',
+      subject: `We miss you — your labs are waiting`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#6366f1,#4f46e5);padding:32px;text-align:center;">
+    <h1 style="color:#fff;margin:0;font-size:24px;">We miss you, ${displayName}</h1>
+    <p style="color:#c7d2fe;margin:8px 0 0;font-size:14px;">It's been ${daysInactive} days since your last visit</p>
+  </div>
+  <div style="padding:32px;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Your progress, labs, and achievements are all saved. Jump back in wherever you left off.</p>
+    <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:16px;margin:20px 0;border-radius:4px;">
+      <p style="color:#334155;margin:0;font-size:14px;"><strong>Tip:</strong> Even 15 minutes of practice keeps your skills sharp. Consistency beats intensity.</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${dashboardUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Return to Dashboard</a>
+    </div>
+  </div>
+  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
+
+  hasPreference(emailPrefs: Record<string, boolean> | null, category: string): boolean {
+    if (!emailPrefs) return true;
+    return emailPrefs[category] !== false;
+  }
 }

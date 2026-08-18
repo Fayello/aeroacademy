@@ -177,6 +177,17 @@ export class ProgressService {
           lesson.section.courseId,
           courseProgress.percentage,
         ).catch(() => {});
+
+        // Course completion detection
+        if (courseProgress.percentage === 100) {
+          this.emailService.sendCourseCompleted(
+            freshUser.email,
+            freshUser.name,
+            lesson.section.course.title,
+            lesson.section.courseId,
+            courseProgress.completed * 100,
+          ).catch(() => {});
+        }
       }
     }
 

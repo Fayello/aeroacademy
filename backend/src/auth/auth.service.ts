@@ -171,6 +171,8 @@ export class AuthService {
         currentStreak: true,
         longestStreak: true,
         lastActivityDate: true,
+        emailPreferences: true,
+        timezone: true,
         organizationId: true,
         teamId: true,
         createdAt: true,
@@ -189,6 +191,13 @@ export class AuthService {
     const clearance =
       level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
     return { ...user, level, clearance };
+  }
+
+  async updateEmailPreferences(userId: string, preferences: Record<string, boolean>) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { emailPreferences: preferences },
+    });
   }
 
   async validateGoogleUser(profile: {
