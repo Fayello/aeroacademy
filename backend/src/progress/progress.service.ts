@@ -9,6 +9,8 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AchievementService } from '../dashboard/achievement.service';
 import { EmailService } from '../email/email.service';
+import { ChallengesService } from '../challenges/challenges.service';
+import { BadgesService } from '../badges/badges.service';
 import { getLevel, getRequiredSectionLevel } from '../common/level.util';
 
 const MILESTONE_THRESHOLDS = [25, 50, 75, 100];
@@ -19,6 +21,8 @@ const MILESTONE_LABELS: Record<number, string> = {
   100: '100% Complete — Course Finished!',
 };
 
+const BASE_LESSON_XP = 100;
+
 @Injectable()
 export class ProgressService {
   private readonly logger = new Logger(ProgressService.name);
@@ -28,6 +32,8 @@ export class ProgressService {
     @Inject(forwardRef(() => AchievementService))
     private achievementService: AchievementService,
     private emailService: EmailService,
+    private challengesService: ChallengesService,
+    private badgesService: BadgesService,
   ) {}
 
   async startLesson(userId: string, lessonId: string) {
@@ -141,9 +147,10 @@ export class ProgressService {
       });
 
       if (!alreadyCompleted) {
+        const xpToAward = this.calculateXpWithMultiplier(userId, BASE_LESSON_XP, { xp: user.xp, currentStreak: user.currentStreak || 0 });
         await tx.user.update({
           where: { id: userId },
-          data: { xp: { increment: 100 } },
+          data: { xp: { increment: xpToAward } },
         });
       }
 
@@ -158,6 +165,12 @@ export class ProgressService {
 
       // Check milestones
       await this.checkMilestones(userId, lesson.section.courseId);
+
+      // Update challenge progress
+      await this.challengesService.updateProgress(userId).catch(() => {});
+
+      // Check and award badges
+      await this.badgesService.checkAndAwardBadges(userId).catch(() => {});
 
       // Level up detection
       const freshUser = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -324,5 +337,20 @@ export class ProgressService {
           ? Math.round((completedLessons / totalLessons) * 100)
           : 0,
     };
+  }
+
+  private calculateXpWithMultiplier(userId: string, baseXp: number, user: { xp: number; currentStreak: number }): number {
+    let multiplier = 1;
+
+    // Streak bonus: +10% per 7-day streak, max +50%
+    const streakBonus = Math.min(Math.floor(user.currentStreak / 7) * 0.1, 0.5);
+    multiplier += streakBonus;
+
+    // First completion bonus: +50% if this is the user's first lesson
+    if (user.xp === 0) {
+      multiplier += 0.5;
+    }
+
+    return Math.round(baseXp * multiplier);
   }
 }

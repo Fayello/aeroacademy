@@ -23,6 +23,9 @@ import { AuditModule } from './audit/audit.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EmailModule } from './email/email.module';
+import { ChallengesModule } from './challenges/challenges.module';
+import { BadgesModule } from './badges/badges.module';
+import { AssessmentsModule } from './assessments/assessments.module';
 
 @Module({
   imports: [
@@ -53,6 +56,9 @@ import { EmailModule } from './email/email.module';
     AuditModule,
     AnalyticsModule,
     NotificationsModule,
+    ChallengesModule,
+    BadgesModule,
+    AssessmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

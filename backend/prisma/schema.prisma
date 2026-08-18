@@ -50,6 +50,9 @@ model User {
   auditLogs                AuditLog[]
   notifications            Notification[]
   enrollments              CourseEnrollment[]
+  challengeParticipations ChallengeParticipant[]
+  badges                   UserBadge[]
+  assessmentResults        AssessmentResult[]
 
   @@index([googleId])
   @@index([role])
@@ -64,6 +67,7 @@ model Team {
   owner       User?    @relation("TeamOwner", fields: [ownerId], references: [id])
   members     User[]
   createdAt   DateTime @default(now())
+  challenges  TeamChallengeParticipant[]
 
   @@index([ownerId])
 }
@@ -464,4 +468,97 @@ model CourseEnrollment {
   @@index([userId])
   @@index([courseId])
   @@index([lastActivityAt])
+}
+
+model Challenge {
+  id          String              @id @default(uuid())
+  title       String
+  description String
+  type        String              @default("INDIVIDUAL") // INDIVIDUAL, TEAM
+  goalType    String              // LESSONS_COMPLETED, FLAGS_CAPTURED, XP_EARNED, STREAK_DAYS
+  goalCount   Int
+  xpReward    Int                 @default(0)
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean             @default(true)
+  createdAt   DateTime            @default(now())
+  participants ChallengeParticipant[]
+  teamParticipants TeamChallengeParticipant[]
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(uuid())
+  challengeId String
+  userId      String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  joinedAt    DateTime  @default(now())
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@index([userId])
+}
+
+model TeamChallengeParticipant {
+  id          String    @id @default(uuid())
+  challengeId String
+  teamId      String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  joinedAt    DateTime  @default(now())
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, teamId])
+  @@index([teamId])
+}
+
+model Badge {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String
+  icon        String
+  category    String      @default("SKILL") // SKILL, MILESTONE, SPECIAL
+  tier        String      @default("BRONZE") // BRONZE, SILVER, GOLD, PLATINUM
+  xpReward    Int         @default(0)
+  requirement String      // e.g. "complete_linux_basics", "capture_10_flags"
+  users       UserBadge[]
+}
+
+model UserBadge {
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, badgeId])
+  @@index([userId])
+}
+
+model SkillAssessment {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  category    String   // LINUX, NETWORKING, WEB_SECURITY, CRYPTO
+  questions   Json     // Array of assessment questions
+  createdAt   DateTime @default(now())
+  results     AssessmentResult[]
+}
+
+model AssessmentResult {
+  id           String          @id @default(uuid())
+  assessmentId String
+  userId       String
+  score        Int
+  maxScore     Int
+  answers      Json
+  recommendedPath Json?       // Recommended courses based on score
+  createdAt    DateTime       @default(now())
+  assessment   SkillAssessment @relation(fields: [assessmentId], references: [id])
+  user         User            @relation(fields: [userId], references: [id])
+
+  @@unique([assessmentId, userId])
+  @@index([userId])
 }
