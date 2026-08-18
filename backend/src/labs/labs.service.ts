@@ -14,6 +14,8 @@ import { AchievementService } from '../dashboard/achievement.service';
 import { LeaguesService } from '../leagues/leagues.service';
 import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
+import { DockerManager } from './docker-manager.service';
+import { EmailService } from '../email/email.service';
 import Docker from 'dockerode';
 import * as net from 'net';
 import * as bcrypt from 'bcrypt';
@@ -28,7 +30,7 @@ const LAB_CPU_QUOTA = parseInt(process.env.LAB_CPU_QUOTA || '100000', 10);
 const PORT_RANGE_START = parseInt(process.env.LAB_PORT_START || '8000', 10);
 const PORT_RANGE_END = parseInt(process.env.LAB_PORT_END || '9000', 10);
 const MAX_CONCURRENT_LABS = parseInt(
-  process.env.LAB_MAX_CONCURRENT || '20',
+  process.env.LAB_MAX_CONCURRENT || '40',
   10,
 );
 const MAX_LABS_PER_USER = parseInt(process.env.MAX_LABS_PER_USER || '3', 10);
@@ -49,14 +51,16 @@ export class LabsService implements OnModuleInit {
     @Inject(forwardRef(() => AchievementService))
     private achievementService: AchievementService,
     private leaguesService: LeaguesService,
+    private dockerManager: DockerManager,
+    private emailService: EmailService,
   ) {
-    this.docker = new Docker();
+    this.docker = dockerManager.getLocalDocker();
   }
 
   async onModuleInit() {
     try {
       await this.docker.ping();
-      logger.info('Connected to Docker daemon');
+      logger.info('Connected to local Docker daemon');
       await this.pruneOrphanedContainers();
     } catch {
       logger.error('Docker daemon unavailable. Labs will not work.');
@@ -119,9 +123,10 @@ export class LabsService implements OnModuleInit {
     }
   }
 
-  private async resolveLocalImage(requestedImage: string): Promise<string> {
+  private async resolveLocalImage(requestedImage: string, docker?: Docker): Promise<string> {
+    const targetDocker = docker || this.docker;
     try {
-      const localImages = await this.docker.listImages();
+      const localImages = await targetDocker.listImages();
       const searchTerms =
         requestedImage.split('/').pop()?.split(':')[0] || requestedImage;
 
@@ -170,6 +175,11 @@ export class LabsService implements OnModuleInit {
     const port = await this.getAvailablePort();
     if (!port) throw new BadRequestException('No available ports');
 
+    // Pick the best server for this lab
+    const serverId = this.dockerManager.pickServer();
+    const targetDocker = this.dockerManager.getDockerForServer(serverId);
+    if (!targetDocker) throw new BadRequestException('No Docker servers available');
+
     const result = await this.prisma.$transaction(async (tx) => {
       const runningCount = await tx.labInstance.count({
         where: { status: 'RUNNING' },
@@ -192,6 +202,7 @@ export class LabsService implements OnModuleInit {
           userId,
           labId,
           port,
+          serverId,
           status: 'PROVISIONING',
           expiresAt: new Date(Date.now() + LAB_EXPIRY_HOURS * 60 * 60 * 1000),
         },
@@ -201,13 +212,13 @@ export class LabsService implements OnModuleInit {
     const instance = result;
 
     try {
-      const imageName = await this.resolveLocalImage(lab.dockerImage);
+      const imageName = await this.resolveLocalImage(lab.dockerImage, targetDocker);
 
       try {
-        await this.docker.getImage(imageName).inspect();
+        await targetDocker.getImage(imageName).inspect();
       } catch {
         await new Promise<void>((resolve, reject) => {
-          void this.docker.pull(
+          void targetDocker.pull(
             imageName,
             (err: Error | null, stream: NodeJS.ReadableStream | undefined) => {
               if (err) {
@@ -215,7 +226,7 @@ export class LabsService implements OnModuleInit {
                 return;
               }
               if (stream) {
-                this.docker.modem.followProgress(stream, (error) => {
+                targetDocker.modem.followProgress(stream, (error) => {
                   if (error) reject(error);
                   else resolve();
                 });
@@ -241,7 +252,7 @@ export class LabsService implements OnModuleInit {
         env.push(`MONGODB_URI=mongodb://tactical-mongo:27017/${dbName}`);
       }
 
-      const container = await this.docker.createContainer({
+      const container = await targetDocker.createContainer({
         Image: imageName,
         name: `lab-${labId.slice(0, 8)}-${userId.slice(0, 8)}-${Date.now()}`,
         ExposedPorts: { [internalPort]: {} },
@@ -258,19 +269,25 @@ export class LabsService implements OnModuleInit {
       });
 
       await container.start();
+      this.dockerManager.incrementLabs(serverId);
 
       const updated = await this.prisma.labInstance.update({
         where: { id: instance.id },
         data: { containerId: container.id, status: 'RUNNING' },
       });
 
+      logger.info(`Lab started on ${serverId}: ${lab.title} for user ${userId}`);
+
       await this.activityService
         .log(userId, 'LAB_STARTED', {
           labId: lab.id,
           labTitle: lab.title,
           instanceId: instance.id,
+          serverId,
         })
         .catch(() => {});
+
+      this.emailService.sendLabStarted(user.email, user.name, lab.title, updated.expiresAt).catch(() => {});
 
       return updated;
     } catch (err) {
@@ -303,9 +320,11 @@ export class LabsService implements OnModuleInit {
     }
 
     try {
-      const container = this.docker.getContainer(instance.containerId);
+      const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+      const container = targetDocker.getContainer(instance.containerId);
       await container.stop().catch(() => {});
       await container.remove().catch(() => {});
+      this.dockerManager.decrementLabs(instance.serverId || 'local');
     } catch {
       /* containers may already be stopped/removed */
     }
@@ -342,15 +361,18 @@ export class LabsService implements OnModuleInit {
       if (!instance.containerId) continue;
 
       try {
-        const container = this.docker.getContainer(instance.containerId);
+        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const container = targetDocker.getContainer(instance.containerId);
         const info = await container.inspect();
         if (!info.State.Running) {
+          this.dockerManager.decrementLabs(instance.serverId || 'local');
           await this.prisma.labInstance.update({
             where: { id: instance.id },
             data: { status: 'STOPPED' },
           });
         }
       } catch {
+        this.dockerManager.decrementLabs(instance.serverId || 'local');
         await this.prisma.labInstance.update({
           where: { id: instance.id },
           data: { status: 'STOPPED' },
@@ -370,14 +392,24 @@ export class LabsService implements OnModuleInit {
     for (const instance of expiredInstances) {
       try {
         if (!instance.containerId) continue;
-        const container = this.docker.getContainer(instance.containerId);
+        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const container = targetDocker.getContainer(instance.containerId);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
+        this.dockerManager.decrementLabs(instance.serverId || 'local');
 
         await this.prisma.labInstance.update({
           where: { id: instance.id },
           data: { status: 'EXPIRED' },
         });
+
+        const labWithUser = await this.prisma.labInstance.findUnique({
+          where: { id: instance.id },
+          include: { lab: { select: { title: true } }, user: { select: { email: true, name: true } } },
+        });
+        if (labWithUser) {
+          this.emailService.sendLabExpired(labWithUser.user.email, labWithUser.user.name, labWithUser.lab.title).catch(() => {});
+        }
       } catch {
         /* container may already be gone */
       }
@@ -393,7 +425,8 @@ export class LabsService implements OnModuleInit {
     for (const instance of staleProvisioning) {
       try {
         if (instance.containerId) {
-          const container = this.docker.getContainer(instance.containerId);
+          const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+          const container = targetDocker.getContainer(instance.containerId);
           await container.stop().catch(() => {});
           await container.remove().catch(() => {});
         }
@@ -593,9 +626,11 @@ export class LabsService implements OnModuleInit {
     const instances = await this.prisma.labInstance.findMany({ where: { labId: id, containerId: { not: null } } });
     for (const instance of instances) {
       try {
-        const container = this.docker.getContainer(instance.containerId!);
+        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const container = targetDocker.getContainer(instance.containerId!);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
+        this.dockerManager.decrementLabs(instance.serverId || 'local');
       } catch {}
     }
 
@@ -612,9 +647,11 @@ export class LabsService implements OnModuleInit {
     const instances = await this.prisma.labInstance.findMany({ where: { labId: { in: ids }, containerId: { not: null } } });
     for (const instance of instances) {
       try {
-        const container = this.docker.getContainer(instance.containerId!);
+        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const container = targetDocker.getContainer(instance.containerId!);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
+        this.dockerManager.decrementLabs(instance.serverId || 'local');
       } catch {}
     }
     await this.prisma.$transaction([

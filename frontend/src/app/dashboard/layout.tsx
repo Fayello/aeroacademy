@@ -8,57 +8,21 @@ import PageErrorBoundary from "@/components/PageErrorBoundary";
 import { DashboardSocketProvider } from "@/hooks/DashboardSocketContext";
 import { initTokenRefresh } from "@/lib/api";
 
-interface JwtPayload {
-  sub: string;
-  email: string;
-  role: string;
-}
-
-function decodeJwtPayload(token: string): JwtPayload | null {
-  try {
-    const base64 = token.split(".")[1];
-    const json = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(json) as JwtPayload;
-  } catch {
-    return null;
-  }
-}
-
 function TokenHandler() {
   useEffect(() => {
     initTokenRefresh();
 
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    if (!token) return;
-
-    const state = params.get("state");
-    const savedState = sessionStorage.getItem("oauth_state");
-    if (state && savedState && state !== savedState) {
-      window.location.href = "/login?error=invalid_state";
-      return;
+    if (params.has("token") || params.has("refresh_token")) {
+      params.delete("token");
+      params.delete("refresh_token");
+      const cleanQuery = params.toString();
+      window.history.replaceState(
+        null,
+        "",
+        cleanQuery ? `/dashboard?${cleanQuery}` : "/dashboard",
+      );
     }
-    sessionStorage.removeItem("oauth_state");
-
-    const payload = decodeJwtPayload(token);
-    if (!payload) {
-      window.location.href = "/login";
-      return;
-    }
-
-    localStorage.setItem("token", token);
-
-    const refreshToken = params.get("refresh_token");
-    if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ id: payload.sub, email: payload.email, role: payload.role })
-    );
-
-    document.cookie = `token=${token}; path=/; max-age=604800; samesite=lax`;
-
-    window.location.replace("/dashboard");
   }, []);
 
   return null;

@@ -129,7 +129,7 @@ const FEATURES = [
 ];
 
 const TESTIMONIALS = [
-  { quote: "AEROACADEMY gave me the hands-on experience I could not get from textbooks. The Docker labs let me practice real attacks in a safe environment.", name: "Amadou T.", role: "Security Engineer, Garoua" },
+  { quote: "XpertClass gave me the hands-on experience I could not get from textbooks. The Docker labs let me practice real attacks in a safe environment.", name: "Amadou T.", role: "Security Engineer, Garoua" },
   { quote: "The Linux curriculum is the best I have seen. It goes from basic commands all the way to kernel internals and Kubernetes.", name: "Fabiola S.", role: "DevOps Intern, Douala" },
   { quote: "As a university instructor, the platform lets me deploy labs for my students without any infrastructure headaches. Game changer.", name: "Dr. Moussa C.", role: "CS Faculty, Maroua" },
 ];
@@ -183,7 +183,7 @@ export default function LandingPage() {
               <div className="bg-emerald-600 p-1.5 rounded-lg">
                 <Shield size={18} className="text-white" />
               </div>
-              <span className="text-lg font-bold text-slate-900 tracking-tight">AEROACADEMY</span>
+              <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (
@@ -565,7 +565,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
-            <p className="text-lg text-slate-500 mt-4">Real feedback from engineers building their skills on AEROACADEMY.</p>
+            <p className="text-lg text-slate-500 mt-4">Real feedback from engineers building their skills on XpertClass.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {TESTIMONIALS.map((t) => (
@@ -633,7 +633,7 @@ export default function LandingPage() {
                 <div className="bg-emerald-600 p-1.5 rounded-lg">
                   <Shield size={18} className="text-white" />
                 </div>
-                <span className="text-lg font-bold text-slate-900 tracking-tight">AEROACADEMY</span>
+                <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
               </Link>
               <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
                 The platform for hands-on training in security, Linux, DevOps, and cloud infrastructure. Built for engineers, by engineers.
@@ -660,7 +660,7 @@ export default function LandingPage() {
               ],
               Company: [
                 { label: "About Us", href: "#" },
-                { label: "Contact", href: "mailto:contact@aeroacademy.org" },
+                { label: "Contact", href: "mailto:contact@xpertclass.academy" },
                 { label: "Privacy Policy", href: "#" },
                 { label: "Terms of Service", href: "#" },
               ],
@@ -688,11 +688,11 @@ export default function LandingPage() {
         </div>
         <div className="border-t border-slate-200 py-6 px-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
-            <p>&copy; 2026 AEROACADEMY. All rights reserved.</p>
+            <p>&copy; 2026 XpertClass. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-slate-600 transition-colors">Privacy</a>
               <a href="#" className="hover:text-slate-600 transition-colors">Terms</a>
-              <a href="mailto:contact@aeroacademy.org" className="hover:text-slate-600 transition-colors">Contact</a>
+              <a href="mailto:contact@xpertclass.academy" className="hover:text-slate-600 transition-colors">Contact</a>
             </div>
           </div>
         </div>

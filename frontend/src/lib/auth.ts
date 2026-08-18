@@ -7,6 +7,7 @@ export function logout() {
     fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ refresh_token: refreshToken }),
     }).catch(() => {});
   }

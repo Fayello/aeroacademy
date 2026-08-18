@@ -12,7 +12,7 @@ export default function GetStartedPage() {
           <div className="bg-emerald-600 p-1.5 rounded-lg">
             <Shield size={18} className="text-white" />
           </div>
-          <span className="text-lg font-bold text-slate-900 tracking-tight">AEROACADEMY</span>
+          <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
         </Link>
       </nav>
 
@@ -21,7 +21,7 @@ export default function GetStartedPage() {
         <div className="max-w-4xl w-full">
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Choose the right AEROACADEMY path for you
+              Choose the right XpertClass path for you
             </h1>
             <p className="text-lg text-slate-500 mt-3">
               Train yourself on the latest technologies, or build and scale engineering teams.
@@ -86,7 +86,7 @@ export default function GetStartedPage() {
                 ))}
               </ul>
               <a
-                href="mailto:enterprise@aeroacademy.org?subject=Enterprise%20Inquiry"
+                href="mailto:enterprise@xpertclass.academy?subject=Enterprise%20Inquiry"
                 className="btn-secondary w-full justify-center text-sm px-6 py-3 border-blue-200 text-blue-700 hover:bg-blue-50"
               >
                 Contact Sales <ArrowRight size={16} />

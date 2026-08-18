@@ -59,14 +59,9 @@ export default function RegisterPage() {
 
   const onSubmit = async (values: RegisterValues) => {
     try {
-      const res = await auth.register({ email: values.email, password: values.password, name: values.name });
-      localStorage.setItem("token", res.access_token);
-      localStorage.setItem("refresh_token", res.refresh_token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      Cookies.set("token", res.access_token, { expires: 7, path: "/" });
-      initTokenRefresh();
-      toast.success("Account created successfully!");
-      router.push("/dashboard");
+      await auth.register({ email: values.email, password: values.password, name: values.name });
+      toast.success("Account created! Check your email for the verification code.");
+      router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (err) {
       toast.error(getErrorMessage(err, "Registration failed"));
     }
@@ -123,7 +118,7 @@ export default function RegisterPage() {
             <div className="bg-emerald-600 p-2 rounded-xl">
               <Shield className="text-white" size={22} />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">AEROACADEMY</span>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
           </Link>
 
           <div className="mb-8">

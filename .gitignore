@@ -11,3 +11,17 @@ frontend/tsconfig.tsbuildinfo
 .DS_Store
 Thumbs.db
 nul
+*.py
+*.xml
+!backend/prisma/**/*.xml
+*.jar
+frontend/next-env.d.ts
+aeroacademy-rules.conf
+anti-obfuscation.conf
+crs-setup.conf
+honeypot-locations.conf
+modsecurity.conf
+nginx-*.conf
+f2b-*.conf
+jail.local
+setenv_orig.sh

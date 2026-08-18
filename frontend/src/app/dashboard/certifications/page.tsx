@@ -63,7 +63,7 @@ export default function CertificationsPage() {
     doc.setTextColor(5, 150, 105);
     doc.setFontSize(32);
     doc.setFont("helvetica", "bold");
-    doc.text("AEROACADEMY", 148.5, 50, { align: "center" });
+    doc.text("XpertClass", 148.5, 50, { align: "center" });
 
     doc.setTextColor(15, 23, 42);
     doc.setFontSize(16);
@@ -87,9 +87,9 @@ export default function CertificationsPage() {
 
     doc.setFontSize(9);
     doc.setTextColor(148, 163, 184);
-    doc.text("AEROACADEMY — Product Security Training Platform", 148.5, 185, { align: "center" });
+    doc.text("XpertClass — Product Security Training Platform", 148.5, 185, { align: "center" });
 
-    doc.save(`AeroAcademy_${cert.id}.pdf`);
+    doc.save(`XpertClass_${cert.id}.pdf`);
     setGenerating(null);
   };
 

@@ -43,7 +43,7 @@ Complete each task below by running the correct commands in the terminal.`,
       tasks: [
         'Navigate to the /etc directory and list its contents',
         'Create a directory called "myproject" in your home directory',
-        'Create a file called "hello.txt" with the content "Hello AEROACADEMY"',
+        'Create a file called "hello.txt" with the content "Hello XpertClass"',
         'Copy hello.txt to /tmp/hello_backup.txt',
         'Find all files in /etc that end with ".conf"',
         'Display the current username, hostname, and current directory',
@@ -129,7 +129,7 @@ Linux is built on text. Mastering text processing tools is the key to becoming e
       credentials: encryptCredentials([{ service: 'SSH', username: 'student', password: 'lab123' }], key),
       flags: [
         { title: 'grep Guru', description: 'Run: grep -c "sshd" /var/log/syslog. Submit the count of SSHD entries.', correctAnswer: '0', points: 100 },
-        { title: 'sed Specialist', description: 'Run: echo "Hello World" | sed "s/World/AEROACADEMY/". Submit the output.', correctAnswer: 'Hello AEROACADEMY', points: 100 },
+        { title: 'sed Specialist', description: 'Run: echo "Hello World" | sed "s/World/XpertClass/". Submit the output.', correctAnswer: 'Hello XpertClass', points: 100 },
         { title: 'awk Architect', description: 'Run: awk -F: "{print $1}" /etc/passwd | head -3. Submit the first 3 usernames.', correctAnswer: 'root daemon bin', points: 150 },
         { title: 'Script Writer', description: 'Create /home/student/count_users.sh that outputs the number of users. Run it and submit the count.', correctAnswer: '35', points: 200 },
         { title: 'Pipeline Master', description: 'Run: cat /etc/passwd | cut -d: -f1 | sort | head -5. Submit the first 5 sorted usernames.', correctAnswer: 'bin daemon games gnats irc', points: 200 },
@@ -218,7 +218,7 @@ A default Debian installation is NOT secure. Your mission is to apply industry-s
     {
       title: 'Server Administration: CentOS/RHEL Management',
       description: 'Master CentOS/RHEL administration: yum/dnf, SELinux, systemd, firewall-cmd, and enterprise package management.',
-      dockerImage: 'centos:stream9',
+      dockerImage: 'quay.io/centos/centos:stream9',
       difficulty: 1250,
       imageUrl: '/images/labs/centos.png',
       briefing: `### Enterprise Linux Administration

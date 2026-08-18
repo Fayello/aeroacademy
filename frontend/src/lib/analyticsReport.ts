@@ -128,7 +128,7 @@ export function downloadAnalyticsCsv(overview: AnalyticsOverview): void {
 
   triggerDownload(
     new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" }),
-    `aeroacademy-analytics-${dateStamp()}.csv`,
+    `xpertclass-analytics-${dateStamp()}.csv`,
   );
 }
 
@@ -217,7 +217,7 @@ export async function downloadAnalyticsPdf(overview: AnalyticsOverview): Promise
   doc.setFont("helvetica", "bold");
   doc.setFontSize(24);
   doc.setTextColor(255, 255, 255);
-  doc.text("AEROACADEMY", margin, 16);
+  doc.text("XpertClass", margin, 16);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
   doc.text("Analytics Report", margin, 25);
@@ -404,9 +404,9 @@ export async function downloadAnalyticsPdf(overview: AnalyticsOverview): Promise
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(slate400[0], slate400[1], slate400[2]);
-    doc.text("AEROACADEMY — Analytics Report", margin, footerY);
+    doc.text("XpertClass — Analytics Report", margin, footerY);
     doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, footerY, { align: "right" });
   }
 
-  doc.save(`aeroacademy-analytics-${dateStamp()}.pdf`);
+  doc.save(`xpertclass-analytics-${dateStamp()}.pdf`);
 }

@@ -1,11 +1,9 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../email/email.service';
+import { OtpService } from './otp.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import createLogger from '../common/logger';
@@ -28,6 +26,8 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private emailService: EmailService,
+    private otpService: OtpService,
   ) {}
 
   private async generateRefreshToken(userId: string): Promise<string> {
@@ -97,7 +97,46 @@ export class AuthService {
       },
     });
 
+    const code = await this.otpService.create(email, 'email_verification');
+    if (code) {
+      this.emailService.sendOtpVerification(email, name || null, code).catch(() => {});
+    }
+
+    return {
+      message: 'Account created. Please check your email for a verification code.',
+      email,
+    };
+  }
+
+  async verifyEmail(email: string, code: string) {
+    const verified = await this.otpService.verify(email, code, 'email_verification');
+    if (!verified) {
+      throw new BadRequestException('Invalid or expired verification code');
+    }
+
+    const user = await this.prisma.user.update({
+      where: { email },
+      data: { emailVerified: new Date() },
+    });
+
     return this.login(user);
+  }
+
+  async resendOtp(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return { message: 'If an account exists, a verification code has been sent.' };
+    }
+    if (user.emailVerified) {
+      return { message: 'Email already verified.' };
+    }
+
+    const code = await this.otpService.create(email, 'email_verification');
+    if (code) {
+      this.emailService.sendOtpVerification(email, user.name, code).catch(() => {});
+    }
+
+    return { message: 'If an account exists, a verification code has been sent.' };
   }
 
   async validateUser(email: string, pass: string) {
@@ -107,6 +146,9 @@ export class AuthService {
       user.passwordHash &&
       (await bcrypt.compare(pass, user.passwordHash))
     ) {
+      if (!user.emailVerified) {
+        throw new UnauthorizedException('Please verify your email before logging in. Check your inbox for the verification code.');
+      }
       return user;
     }
     return null;
@@ -155,25 +197,29 @@ export class AuthService {
       where: { OR: [{ googleId: profile.googleId }, { email: profile.email }] },
     });
 
+    let isNewUser = false;
+
     if (user) {
-      if (!user.googleId) {
+      const updates: Record<string, unknown> = {};
+      if (!user.googleId) updates.googleId = profile.googleId;
+      if (Object.keys(updates).length > 0) {
         user = await this.prisma.user.update({
           where: { id: user.id },
-          data: { googleId: profile.googleId },
+          data: updates,
         });
       }
-      return user;
+    } else {
+      isNewUser = true;
+      user = await this.prisma.user.create({
+        data: {
+          email: profile.email,
+          googleId: profile.googleId,
+          name: profile.name,
+        },
+      });
     }
 
-    user = await this.prisma.user.create({
-      data: {
-        email: profile.email,
-        googleId: profile.googleId,
-        name: profile.name,
-      },
-    });
-
-    return user;
+    return { user, isNewUser };
   }
 
   async login(user: LoginUser) {
@@ -254,24 +300,27 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) return; // Silently return to prevent email enumeration
+    if (!user) return;
 
-    // Invalidate any existing reset tokens for this user
-    await this.prisma.passwordResetToken.deleteMany({
-      where: { userId: user.id },
+    const code = await this.otpService.create(email, 'password_reset');
+    if (code) {
+      this.emailService.sendPasswordResetOtp(email, user.name, code).catch(() => {});
+    }
+  }
+
+  async resetPasswordWithOtp(email: string, code: string, newPassword: string) {
+    const verified = await this.otpService.verify(email, code, 'password_reset');
+    if (!verified) {
+      throw new UnauthorizedException('Invalid or expired verification code');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { email },
+      data: { passwordHash },
     });
 
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + RESET_TOKEN_EXPIRY_MINUTES);
-
-    await this.prisma.passwordResetToken.create({
-      data: { userId: user.id, token, expiresAt },
-    });
-
-    // In production, send this token via email. For now, log at debug level only.
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
-    logger.debug(`Password reset URL for ${email}: ${resetUrl}`);
+    return { message: 'Password has been reset successfully' };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -296,7 +345,6 @@ export class AuthService {
       data: { passwordHash },
     });
 
-    // Delete the used token and all other tokens for this user
     await this.prisma.passwordResetToken.deleteMany({
       where: { userId: record.userId },
     });

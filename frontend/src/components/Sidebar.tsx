@@ -62,7 +62,7 @@ export default function Sidebar() {
           <Shield className="text-white" size={20} />
         </div>
         <div>
-          <h1 className="text-base font-semibold text-slate-900 tracking-tight">AEROACADEMY</h1>
+          <h1 className="text-base font-semibold text-slate-900 tracking-tight">XpertClass</h1>
           <p className="text-[11px] text-slate-400">{t("app.tagline")}</p>
         </div>
       </div>

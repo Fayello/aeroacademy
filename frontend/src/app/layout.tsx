@@ -9,20 +9,20 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "AEROACADEMY | Master Tech Skills with Hands-On Labs",
-    template: "%s | AEROACADEMY",
+    default: "XpertClass | Master Tech Skills with Hands-On Labs",
+    template: "%s | XpertClass",
   },
   description: "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.",
   keywords: ["security training", "linux training", "devops", "cloud", "cybersecurity", "CTF", "labs", "penetration testing", "master classes", "1-on-1 training"],
   openGraph: {
-    title: "AEROACADEMY | Master Tech Skills with Hands-On Labs",
+    title: "XpertClass | Master Tech Skills with Hands-On Labs",
     description: "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure.",
     type: "website",
-    siteName: "AEROACADEMY",
+    siteName: "XpertClass",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AEROACADEMY | Master Tech Skills with Hands-On Labs",
+    title: "XpertClass | Master Tech Skills with Hands-On Labs",
     description: "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure.",
   },
   robots: { index: true, follow: true },

@@ -17,6 +17,18 @@ import createLogger from '../common/logger';
 const logger = createLogger('Dashboard');
 const MAX_CONNECTIONS_PER_USER = 3;
 
+function getCookieValue(cookieHeader: string | undefined, name: string): string | null {
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(';');
+  for (const cookie of cookies) {
+    const [key, ...valueParts] = cookie.trim().split('=');
+    if (key === name) return decodeURIComponent(valueParts.join('='));
+  }
+
+  return null;
+}
+
 interface NotificationPayload {
   userId?: string;
   title?: string;
@@ -87,7 +99,11 @@ export class DashboardGateway
   }
 
   async handleConnection(client: Socket) {
-    const token = client.handshake.auth.token as string;
+    const authToken = client.handshake.auth.token as string | undefined;
+    const cookieToken =
+      getCookieValue(client.handshake.headers.cookie, 'access_token') ||
+      getCookieValue(client.handshake.headers.cookie, 'token');
+    const token = authToken || cookieToken;
     if (!token) {
       client.disconnect();
       return;

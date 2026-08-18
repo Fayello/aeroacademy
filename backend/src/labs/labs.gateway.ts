@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { LabsService } from './labs.service';
+import { DockerManager } from './docker-manager.service';
 import { JwtService } from '@nestjs/jwt';
 import Docker from 'dockerode';
 import { Duplex } from 'stream';
@@ -74,9 +75,10 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
     private readonly labsService: LabsService,
+    private readonly dockerManager: DockerManager,
     private readonly jwtService: JwtService,
   ) {
-    this.docker = new Docker();
+    this.docker = dockerManager.getLocalDocker();
   }
 
   handleConnection(client: Socket) {
@@ -145,7 +147,8 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     try {
-      const container = this.docker.getContainer(instance.containerId);
+      const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+      const container = targetDocker.getContainer(instance.containerId);
       const shells = ['/bin/bash', '/bin/sh', 'sh'];
       let stream: Duplex | null = null;
       let execInstance: Docker.Exec | null = null;

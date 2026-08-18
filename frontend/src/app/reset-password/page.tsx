@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, Lock, CheckCircle, ChevronLeft, Loader2 } from "lucide-react";
-import { fetchApi } from "@/lib/api";
+import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 
 export default function ResetPasswordPage() {
@@ -23,13 +23,33 @@ export default function ResetPasswordPage() {
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get("token");
+  const email = searchParams.get("email") || "";
+  const code = searchParams.get("code") || "";
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  if (!token) {
+  if (token) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-sm text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100 mb-4">
+            <Lock className="text-amber-600" size={24} />
+          </div>
+          <h1 className="text-2xl font-semibold text-slate-900 mb-2">Reset link expired</h1>
+          <p className="text-sm text-slate-500 mb-6">Password reset links have been replaced with a more secure OTP code system.</p>
+          <Link href="/forgot-password" className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm">
+            Request a code instead
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!email || !code) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
         <div className="w-full max-w-sm text-center">
@@ -37,9 +57,9 @@ function ResetPasswordForm() {
             <Lock className="text-red-600" size={24} />
           </div>
           <h1 className="text-2xl font-semibold text-slate-900 mb-2">Invalid reset link</h1>
-          <p className="text-sm text-slate-500 mb-6">This password reset link is invalid or missing a token.</p>
-          <Link href="/forgot-password" className="btn-primary inline-flex">
-            Request a new link
+          <p className="text-sm text-slate-500 mb-6">This password reset link is invalid or expired.</p>
+          <Link href="/forgot-password" className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm">
+            Request a new code
           </Link>
         </div>
       </div>
@@ -62,14 +82,11 @@ function ResetPasswordForm() {
     }
     setLoading(true);
     try {
-      await fetchApi("/auth/reset-password", {
-        method: "POST",
-        body: JSON.stringify({ token, newPassword }),
-      });
+      await auth.resetPasswordOtp(email, code, newPassword);
       setSuccess(true);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Reset failed. The link may have expired.",
+        err instanceof Error ? err.message : "Reset failed. The code may have expired.",
       );
     } finally {
       setLoading(false);
@@ -102,7 +119,7 @@ function ResetPasswordForm() {
                   <input
                     id="newPassword"
                     type="password"
-                    className="input-field pl-10"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Min. 8 characters"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -117,7 +134,7 @@ function ResetPasswordForm() {
                   <input
                     id="confirmPassword"
                     type="password"
-                    className="input-field pl-10"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Repeat your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -125,7 +142,7 @@ function ResetPasswordForm() {
                   />
                 </div>
               </div>
-              <button type="submit" disabled={loading} className="btn-primary w-full">
+              <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? <Loader2 className="animate-spin" size={16} aria-label="Resetting password" /> : "Reset password"}
               </button>
             </form>
@@ -136,7 +153,7 @@ function ResetPasswordForm() {
               </div>
               <h2 className="text-lg font-semibold text-slate-900 mb-2">Password updated</h2>
               <p className="text-sm text-slate-500 mb-6">Your password has been reset successfully.</p>
-              <Link href="/login" className="btn-primary w-full inline-flex">
+              <Link href="/login" className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm w-full">
                 Sign in
               </Link>
             </div>

@@ -56,7 +56,7 @@ async function bootstrap() {
   // Swagger API documentation (dev only, gated by ENABLE_SWAGGER env)
   if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_SWAGGER !== 'false') {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle('AEROACADEMY API')
+      .setTitle('XpertClass API')
       .setDescription(
         'Full-stack cybersecurity and technology training platform API',
       )

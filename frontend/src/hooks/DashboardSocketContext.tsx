@@ -59,12 +59,12 @@ export function DashboardSocketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return;
 
     let s: Socket;
-    function connectSocket(authToken: string) {
+    function connectSocket(authToken?: string | null) {
       s = io(`${API_URL}/dashboard`, {
-        auth: { token: authToken },
+        auth: authToken ? { token: authToken } : {},
+        withCredentials: true,
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 2000,

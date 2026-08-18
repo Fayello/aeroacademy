@@ -13,6 +13,7 @@ model User {
   passwordHash    String?
   googleId        String?           @unique
   role            Role              @default(STUDENT)
+  emailVerified   DateTime?
   createdAt       DateTime          @default(now())
   bio             String?
   name            String?
@@ -207,6 +208,7 @@ model LabInstance {
   userId      String
   labId       String
   containerId String?
+  serverId    String    @default("local")
   port        Int?
   status      LabStatus @default(RUNNING)
   expiresAt   DateTime
@@ -272,6 +274,19 @@ model PasswordResetToken {
 
   @@index([token])
   @@index([userId])
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  purpose   String   @default("email_verification")
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email, purpose])
+  @@index([code])
 }
 
 model MasterClass {

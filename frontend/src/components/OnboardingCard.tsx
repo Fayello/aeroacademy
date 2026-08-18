@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { GraduationCap, Microscope, Trophy, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
 
-const ONBOARDING_KEY = "aeroacademy_onboarded";
+const ONBOARDING_KEY = "xpertclass_onboarded";
 
 const steps = [
   {

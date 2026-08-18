@@ -1,4 +1,4 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL !== undefined ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:4000';
 
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;
@@ -12,6 +12,12 @@ function redirectToLogin() {
   localStorage.removeItem('user');
   document.cookie = 'token=; path=/; max-age=0';
   document.cookie = 'refresh_token=; path=/; max-age=0';
+  fetch(`${API_URL}/auth/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  }).catch(() => {});
   window.location.href = '/login';
 }
 
@@ -36,26 +42,29 @@ function scheduleTokenRefresh(token: string) {
 
 async function refreshAccessToken(): Promise<string> {
   const refreshToken = localStorage.getItem('refresh_token');
-  if (!refreshToken) throw new Error('No refresh token');
+  const hadLocalRefreshToken = Boolean(refreshToken);
 
   const res = await fetch(`${API_URL}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: refreshToken }),
+    credentials: 'include',
+    body: JSON.stringify(refreshToken ? { refresh_token: refreshToken } : {}),
   });
 
   if (!res.ok) throw new Error('Refresh failed');
 
   const data = await res.json();
-  localStorage.setItem('token', data.access_token);
-  localStorage.setItem('refresh_token', data.refresh_token);
-  updateCookie(data.access_token);
-  scheduleTokenRefresh(data.access_token);
+  if (hadLocalRefreshToken && data.access_token && data.refresh_token) {
+    localStorage.setItem('token', data.access_token);
+    localStorage.setItem('refresh_token', data.refresh_token);
+    updateCookie(data.access_token);
+    scheduleTokenRefresh(data.access_token);
+  }
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('token-refreshed'));
   }
   refreshRetries = 0;
-  return data.access_token;
+  return data.access_token || '';
 }
 
 export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -73,11 +82,11 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   let response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
+    credentials: 'include',
   });
 
   if (response.status === 401 && typeof window !== 'undefined') {
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (refreshToken && !endpoint.startsWith('/auth/refresh')) {
+    if (!endpoint.startsWith('/auth/refresh') && !endpoint.startsWith('/auth/logout')) {
       if (refreshRetries >= MAX_REFRESH_RETRIES) {
         redirectToLogin();
         throw new Error('Session expired');
@@ -90,8 +99,16 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
         }
         const newToken = await refreshPromise!;
 
-        headers['Authorization'] = `Bearer ${newToken}`;
-        response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+        if (newToken) {
+          headers['Authorization'] = `Bearer ${newToken}`;
+        } else {
+          delete headers['Authorization'];
+        }
+        response = await fetch(`${API_URL}${endpoint}`, {
+          ...options,
+          headers,
+          credentials: 'include',
+        });
         isRefreshing = false;
         refreshPromise = null;
       } catch {
@@ -143,6 +160,14 @@ export const auth = {
     fetchApi('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data: { email: string; password: string }) =>
     fetchApi('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  verifyEmail: (email: string, code: string) =>
+    fetchApi('/auth/verify-email', { method: 'POST', body: JSON.stringify({ email, code }) }),
+  resendOtp: (email: string) =>
+    fetchApi('/auth/resend-otp', { method: 'POST', body: JSON.stringify({ email }) }),
+  forgotPassword: (email: string) =>
+    fetchApi('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPasswordOtp: (email: string, code: string, newPassword: string) =>
+    fetchApi('/auth/reset-password-otp', { method: 'POST', body: JSON.stringify({ email, code, newPassword }) }),
   getMe: () => fetchApi('/auth/me'),
   updateProfile: (data: { name?: string; bio?: string; city?: string; organizationId?: string }) =>
     fetchApi('/auth/profile', { method: 'PATCH', body: JSON.stringify(data) }),

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,7 +12,7 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import toast from "@/lib/toast";
 import { initTokenRefresh } from "@/lib/api";
-import { Mail, Lock, LogIn, Loader2, Shield, Terminal, Microscope, Award, BookOpen } from "lucide-react";
+import { Mail, Lock, LogIn, Loader2, Shield, Terminal, Microscope, Award, BookOpen, AlertCircle } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -31,6 +33,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
   });
+  const [needsVerification, setNeedsVerification] = useState<string | null>(null);
 
   const onSubmit = async (values: LoginValues) => {
     try {
@@ -43,7 +46,12 @@ export default function LoginPage() {
       toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (err) {
-      toast.error(getErrorMessage(err, "Invalid credentials"));
+      const msg = err instanceof Error ? err.message : "Invalid credentials";
+      if (msg.toLowerCase().includes("verify your email")) {
+        setNeedsVerification(values.email);
+      } else {
+        toast.error(msg);
+      }
     }
   };
 
@@ -63,7 +71,7 @@ export default function LoginPage() {
             <div className="bg-emerald-600 p-2 rounded-xl">
               <Shield className="text-white" size={22} />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">AEROACADEMY</span>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
           </Link>
 
           <div className="mb-8">
@@ -96,6 +104,27 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
+          {needsVerification && (
+            <div className="mb-5 p-4 rounded-xl bg-amber-50 border border-amber-200">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="text-amber-600 mt-0.5 shrink-0" size={18} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-amber-800 font-medium">Email not verified</p>
+                  <p className="text-xs text-amber-600 mt-1">Please verify <span className="font-medium">{needsVerification}</span> before signing in.</p>
+                  <div className="flex gap-2 mt-2">
+                    <Link href={`/verify-email?email=${encodeURIComponent(needsVerification)}`} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
+                      Enter code
+                    </Link>
+                    <span className="text-amber-300">|</span>
+                    <button type="button" onClick={async () => { await auth.resendOtp(needsVerification); toast.success("Code resent!"); }} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
+                      Resend code
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">Email</label>

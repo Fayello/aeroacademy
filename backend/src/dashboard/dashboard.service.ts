@@ -76,7 +76,7 @@ export class DashboardService implements OnModuleInit {
     // 3. System Alerts — computed from real data
     let name = 'Operative';
     let city = 'Yaoundé';
-    let orgName = 'AeroAcademy';
+    let orgName = 'XpertClass';
 
     if (userId) {
       const user = await this.prisma.user.findUnique({
@@ -86,7 +86,7 @@ export class DashboardService implements OnModuleInit {
       if (user) {
         name = user.name?.split(' ')[0] || 'Operative';
         city = user.city || 'Yaoundé';
-        orgName = user.organization?.name || 'AeroAcademy';
+        orgName = user.organization?.name || 'XpertClass';
       }
     }
 

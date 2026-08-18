@@ -8,11 +8,14 @@ import {
   UnauthorizedException,
   Patch,
   Res,
+  Req,
   Query,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
+import { OtpService } from './otp.service';
 import { AuthGuard } from '@nestjs/passport';
+import { EmailService } from '../email/email.service';
 import {
   RegisterDto,
   LoginDto,
@@ -20,7 +23,7 @@ import {
   ChangePasswordDto,
 } from './dto/auth.dto';
 import * as https from 'https';
-import type { Response } from 'express';
+import type { Request as ExpressRequest, Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
@@ -28,6 +31,8 @@ import createLogger from '../common/logger';
 import type { RequestWithUser } from '../common/request-with-user';
 
 const logger = createLogger('Auth');
+const ACCESS_TOKEN_COOKIE_MAX_AGE_MS = 60 * 60 * 1000;
+const REFRESH_TOKEN_COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 interface GoogleCallbackQuery {
   code?: string;
@@ -46,7 +51,65 @@ interface GoogleUserProfile {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private otpService: OtpService,
+    private emailService: EmailService,
+  ) {}
+
+  private getCookieValue(req: ExpressRequest, name: string): string | null {
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) return null;
+
+    const cookies = cookieHeader.split(';');
+    for (const cookie of cookies) {
+      const [key, ...valueParts] = cookie.trim().split('=');
+      if (key === name) return decodeURIComponent(valueParts.join('='));
+    }
+
+    return null;
+  }
+
+  private setAuthCookies(
+    res: Response,
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    const secure = process.env.NODE_ENV === 'production';
+    const common = {
+      httpOnly: true,
+      secure,
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    res.cookie('access_token', accessToken, {
+      ...common,
+      maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE_MS,
+    });
+    res.cookie('refresh_token', refreshToken, {
+      ...common,
+      maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE_MS,
+    });
+    res.cookie('token', accessToken, {
+      ...common,
+      httpOnly: false,
+      maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE_MS,
+    });
+  }
+
+  private clearAuthCookies(res: Response) {
+    const secure = process.env.NODE_ENV === 'production';
+    const common = {
+      secure,
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    res.clearCookie('access_token', common);
+    res.clearCookie('refresh_token', common);
+    res.clearCookie('token', common);
+  }
 
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
@@ -59,10 +122,33 @@ export class AuthController {
     );
   }
 
+  @Post('verify-email')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Audit('AUTH_VERIFY_EMAIL')
+  async verifyEmail(
+    @Body('email') email: string,
+    @Body('code') code: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (!email || !code) {
+      throw new UnauthorizedException('Email and verification code are required');
+    }
+    const result = await this.authService.verifyEmail(email, code);
+    this.setAuthCookies(res, result.access_token, result.refresh_token);
+    return result;
+  }
+
+  @Post('resend-otp')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Audit('AUTH_RESEND_OTP')
+  async resendOtp(@Body('email') email: string) {
+    return this.authService.resendOtp(email);
+  }
+
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Audit('AUTH_LOGIN')
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
@@ -70,7 +156,9 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid security credentials');
     }
-    return this.authService.login(user);
+    const result = await this.authService.login(user);
+    this.setAuthCookies(res, result.access_token, result.refresh_token);
+    return result;
   }
 
   @Get('google')
@@ -108,26 +196,31 @@ export class AuthController {
       const tokenData = await this.exchangeCodeForToken(query.code);
       const profile = await this.getUserProfile(tokenData.access_token);
 
-      const user = await this.authService.validateGoogleUser({
+      const result = await this.authService.validateGoogleUser({
         googleId: profile.id,
         email: profile.email,
         name: profile.name,
         avatar: profile.picture,
       });
 
-      const { access_token, refresh_token } =
-        await this.authService.login(user);
+      if (result.isNewUser || !result.user.emailVerified) {
+        const code = await this.otpService.create(profile.email, 'email_verification');
+        if (code) {
+          this.emailService.sendOtpVerification(profile.email, profile.name, code).catch(() => {});
+        }
+        res.writeHead(302, {
+          Location: `${frontendUrl}/verify-email?email=${encodeURIComponent(profile.email)}`,
+        });
+        res.end();
+        return;
+      }
 
-      // Pass state back to frontend for validation
-      const stateParam = query.state ? `&state=${encodeURIComponent(query.state)}` : '';
-      const isProduction = process.env.NODE_ENV === 'production';
-      const secureFlag = isProduction ? '; Secure' : '';
+      const { access_token, refresh_token } =
+        await this.authService.login(result.user);
+      this.setAuthCookies(res, access_token, refresh_token);
+
       res.writeHead(302, {
-        'Set-Cookie': [
-          `token=${access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=900${secureFlag}`,
-          `refresh_token=${refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureFlag}`,
-        ],
-        Location: `${frontendUrl}/dashboard${stateParam}`,
+        Location: `${frontendUrl}/dashboard`,
       });
       res.end();
     } catch (err: unknown) {
@@ -262,14 +355,33 @@ export class AuthController {
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Audit('AUTH_FORGOT_PASSWORD')
   async forgotPassword(@Body('email') email: string) {
-    // Always return success to prevent email enumeration
     if (email) {
       await this.authService.forgotPassword(email).catch(() => {});
     }
     return {
       message:
-        'If an account exists with that email, a recovery link has been sent.',
+        'If an account exists with that email, a verification code has been sent.',
     };
+  }
+
+  @Post('reset-password-otp')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Audit('AUTH_RESET_PASSWORD_OTP')
+  async resetPasswordOtp(
+    @Body('email') email: string,
+    @Body('code') code: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    if (!email || !code || !newPassword) {
+      throw new UnauthorizedException('Email, verification code, and new password are required');
+    }
+    if (!newPassword || newPassword.length < 8) {
+      throw new UnauthorizedException('Password must be at least 8 characters');
+    }
+    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
+      throw new UnauthorizedException('Password must contain uppercase, lowercase, and a number');
+    }
+    return this.authService.resetPasswordWithOtp(email, code, newPassword);
   }
 
   @Post('reset-password')
@@ -290,17 +402,30 @@ export class AuthController {
 
   @Post('refresh')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async refresh(@Body('refresh_token') refreshToken: string) {
-    if (!refreshToken)
+  async refresh(
+    @Body('refresh_token') refreshToken: string,
+    @Req() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const token = refreshToken || this.getCookieValue(req, 'refresh_token');
+    if (!token)
       throw new UnauthorizedException('Refresh token required');
-    return this.authService.refreshTokens(refreshToken);
+    const result = await this.authService.refreshTokens(token);
+    this.setAuthCookies(res, result.access_token, result.refresh_token);
+    return result;
   }
 
   @Post('logout')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Audit('AUTH_LOGOUT')
-  async logout(@Body('refresh_token') refreshToken: string) {
-    if (refreshToken) await this.authService.logout(refreshToken);
+  async logout(
+    @Body('refresh_token') refreshToken: string,
+    @Req() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const token = refreshToken || this.getCookieValue(req, 'refresh_token');
+    if (token) await this.authService.logout(token);
+    this.clearAuthCookies(res);
     return { message: 'Logged out' };
   }
 }
