@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -15,6 +16,7 @@ import { Roles } from '../auth/roles.decorator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import { BatchIdsDto } from '../common/batch.dto';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('courses')
 @ApiBearerAuth('JWT-auth')
@@ -26,6 +28,21 @@ export class CoursesController {
   @Get()
   async findAll() {
     return this.coursesService.findAll();
+  }
+
+  @Get('my-enrollments')
+  async getMyEnrollments(@Request() req: RequestWithUser) {
+    return this.coursesService.getEnrollmentsForUser(req.user.id);
+  }
+
+  @Post(':id/enroll')
+  async enroll(@Param('id') id: string, @Request() req: RequestWithUser) {
+    return this.coursesService.enroll(req.user.id, id);
+  }
+
+  @Get(':id/enrollment')
+  async getEnrollment(@Param('id') id: string, @Request() req: RequestWithUser) {
+    return this.coursesService.getEnrollment(req.user.id, id);
   }
 
   @Get('lessons/:id')

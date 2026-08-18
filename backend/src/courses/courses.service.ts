@@ -4,10 +4,14 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class CoursesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async findAll(opts?: { skip?: number; take?: number }) {
     return this.prisma.course.findMany({
@@ -376,6 +380,75 @@ export class CoursesService {
     return this.prisma.$transaction(async (tx) => {
       await tx.question.deleteMany({ where: { quizId } });
       return tx.quiz.delete({ where: { id: quizId } });
+    });
+  }
+
+  // === ENROLLMENTS ===
+
+  async enroll(userId: string, courseId: string) {
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) throw new NotFoundException('Course not found');
+
+    const existing = await this.prisma.courseEnrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+    if (existing) return existing;
+
+    const enrollment = await this.prisma.courseEnrollment.create({
+      data: { userId, courseId },
+    });
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user?.email) {
+      this.emailService.sendCourseStarted(user.email, user.name, course.title, courseId).catch(() => {});
+    }
+
+    return enrollment;
+  }
+
+  async getEnrollment(userId: string, courseId: string) {
+    return this.prisma.courseEnrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+  }
+
+  async getEnrollmentsForUser(userId: string) {
+    return this.prisma.courseEnrollment.findMany({
+      where: { userId },
+      select: { courseId: true, enrolledAt: true, lastActivityAt: true },
+    });
+  }
+
+  async touchEnrollment(userId: string, courseId: string) {
+    await this.prisma.courseEnrollment.updateMany({
+      where: { userId, courseId },
+      data: { lastActivityAt: new Date() },
+    });
+  }
+
+  async getInactiveEnrollments(daysInactive: number) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - daysInactive);
+
+    return this.prisma.courseEnrollment.findMany({
+      where: {
+        lastActivityAt: { lt: cutoff },
+        OR: [
+          { lastReminderSentAt: null },
+          { lastReminderSentAt: { lt: cutoff } },
+        ],
+      },
+      include: {
+        user: { select: { id: true, email: true, name: true } },
+        course: { select: { id: true, title: true } },
+      },
+    });
+  }
+
+  async markReminderSent(userId: string, courseId: string) {
+    await this.prisma.courseEnrollment.updateMany({
+      where: { userId, courseId },
+      data: { lastReminderSentAt: new Date() },
     });
   }
 }

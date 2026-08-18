@@ -8,40 +8,41 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  email           String            @unique
-  passwordHash    String?
-  googleId        String?           @unique
-  role            Role              @default(STUDENT)
-  emailVerified   DateTime?
-  createdAt       DateTime          @default(now())
-  bio             String?
-  name            String?
-  city            String?           @default("Yaoundé")
-  organizationId  String?
-  organization    Organization?     @relation(fields: [organizationId], references: [id])
-  xp              Int               @default(0)
-  rank            Int               @default(0)
-  division        String            @default("BRONZE")
-  clearanceLevel  Int               @default(1)
-  teamId          String?
-  team            Team?             @relation(fields: [teamId], references: [id])
-  ownedTeams      Team[]           @relation("TeamOwner")
-  labInstances    LabInstance[]
-  labSubmissions  LabSubmission[]
-  progress        Progress[]
-  quizSubmissions QuizSubmission[]
-  achievements    UserAchievement[]
-  shortlistedBy   Shortlist[]       @relation("StudentShortlisted")
-  shortlistedUsers Shortlist[]      @relation("RecruiterShortlist")
-  refreshTokens   RefreshToken[]
-  passwordResetTokens PasswordResetToken[]
+  id                       String                    @id @default(uuid())
+  email                    String                    @unique
+  passwordHash             String?
+  googleId                 String?                   @unique
+  role                     Role                      @default(STUDENT)
+  emailVerified            DateTime?
+  createdAt                DateTime                  @default(now())
+  bio                      String?
+  name                     String?
+  city                     String?                   @default("Yaoundé")
+  organizationId           String?
+  organization             Organization?             @relation(fields: [organizationId], references: [id])
+  xp                       Int                       @default(0)
+  rank                     Int                       @default(0)
+  division                 String                    @default("BRONZE")
+  clearanceLevel           Int                       @default(1)
+  teamId                   String?
+  team                     Team?                     @relation(fields: [teamId], references: [id])
+  ownedTeams               Team[]                    @relation("TeamOwner")
+  labInstances             LabInstance[]
+  labSubmissions           LabSubmission[]
+  progress                 Progress[]
+  quizSubmissions          QuizSubmission[]
+  achievements             UserAchievement[]
+  shortlistedBy            Shortlist[]               @relation("StudentShortlisted")
+  shortlistedUsers         Shortlist[]               @relation("RecruiterShortlist")
+  refreshTokens            RefreshToken[]
+  passwordResetTokens      PasswordResetToken[]
   masterClassRegistrations MasterClassRegistration[]
-  trainer         Trainer?
-  bookings        Booking[]
-  activityEvents  ActivityEvent[]
-  auditLogs       AuditLog[]
-  notifications   Notification[]
+  trainer                  Trainer?
+  bookings                 Booking[]
+  activityEvents           ActivityEvent[]
+  auditLogs                AuditLog[]
+  notifications            Notification[]
+  enrollments              CourseEnrollment[]
 
   @@index([googleId])
   @@index([role])
@@ -61,12 +62,12 @@ model Team {
 }
 
 model Season {
-  id          String   @id @default(uuid())
-  name        String
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Organization {
@@ -79,13 +80,14 @@ model Organization {
 }
 
 model Course {
-  id              String    @id @default(uuid())
-  title           String
-  description     String
-  imageUrl        String?
-  estimatedHours  Int?
-  createdAt       DateTime  @default(now())
-  sections        Section[]
+  id             String             @id @default(uuid())
+  title          String
+  description    String
+  imageUrl       String?
+  estimatedHours Int?
+  createdAt      DateTime           @default(now())
+  sections       Section[]
+  enrollments    CourseEnrollment[]
 }
 
 model Section {
@@ -149,20 +151,20 @@ model Answer {
 }
 
 model Lab {
-  id              String        @id @default(uuid())
-  title           String
-  description     String
-  dockerImage     String
-  briefing        String?
-  credentials     Json?
-  tasks           Json?
-  basePath        String?       @default("")
-  imageUrl        String?
-  difficulty      Int           @default(1200)
-  estimatedMinutes Int?         @default(60)
-  flags           LabFlag[]
-  instances       LabInstance[]
-  lesson          Lesson?
+  id               String        @id @default(uuid())
+  title            String
+  description      String
+  dockerImage      String
+  briefing         String?
+  credentials      Json?
+  tasks            Json?
+  basePath         String?       @default("")
+  imageUrl         String?
+  difficulty       Int           @default(1200)
+  estimatedMinutes Int?          @default(60)
+  flags            LabFlag[]
+  instances        LabInstance[]
+  lesson           Lesson?
 }
 
 model LabFlag {
@@ -246,8 +248,8 @@ model Shortlist {
   notes       String?
   createdAt   DateTime @default(now())
 
-  recruiter   User     @relation("RecruiterShortlist", fields: [recruiterId], references: [id])
-  student     User     @relation("StudentShortlisted", fields: [studentId], references: [id])
+  recruiter User @relation("RecruiterShortlist", fields: [recruiterId], references: [id])
+  student   User @relation("StudentShortlisted", fields: [studentId], references: [id])
 
   @@unique([recruiterId, studentId])
 }
@@ -290,22 +292,22 @@ model OtpVerification {
 }
 
 model MasterClass {
-  id                String                  @id @default(uuid())
-  title             String
-  description       String
-  instructorName    String?
-  instructorBio     String?
-  instructorAvatar  String?
-  thumbnailUrl      String?
-  category          String                  @default("SECURITY")
-  scheduledAt       DateTime?
-  duration          Int                     @default(60)
-  maxParticipants   Int?
-  isLive            Boolean                 @default(true)
-  recordingUrl      String?
-  status            MasterClassStatus       @default(UPCOMING)
-  createdAt         DateTime                @default(now())
-  registrations     MasterClassRegistration[]
+  id               String                    @id @default(uuid())
+  title            String
+  description      String
+  instructorName   String?
+  instructorBio    String?
+  instructorAvatar String?
+  thumbnailUrl     String?
+  category         String                    @default("SECURITY")
+  scheduledAt      DateTime?
+  duration         Int                       @default(60)
+  maxParticipants  Int?
+  isLive           Boolean                   @default(true)
+  recordingUrl     String?
+  status           MasterClassStatus         @default(UPCOMING)
+  createdAt        DateTime                  @default(now())
+  registrations    MasterClassRegistration[]
 }
 
 model MasterClassRegistration {
@@ -335,13 +337,13 @@ model Trainer {
 }
 
 model TrainingSlot {
-  id        String    @id @default(uuid())
+  id        String  @id @default(uuid())
   trainerId String
   dayOfWeek Int
   startTime String
   endTime   String
-  isActive  Boolean   @default(true)
-  trainer   Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  isActive  Boolean @default(true)
+  trainer   Trainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
   @@index([trainerId])
   @@index([trainerId, dayOfWeek, isActive])
@@ -397,8 +399,8 @@ enum LabStatus {
 model ActivityEvent {
   id        String   @id @default(uuid())
   userId    String
-  type      String   // LAB_STARTED, LAB_STOPPED, FLAG_SOLVED, LESSON_COMPLETED, QUIZ_PASSED, COURSE_COMPLETED
-  metadata  Json?    // { labId, labTitle, flagTitle, lessonId, courseId, etc. }
+  type      String // LAB_STARTED, LAB_STOPPED, FLAG_SOLVED, LESSON_COMPLETED, QUIZ_PASSED, COURSE_COMPLETED
+  metadata  Json? // { labId, labTitle, flagTitle, lessonId, courseId, etc. }
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 
@@ -407,9 +409,9 @@ model ActivityEvent {
 }
 
 model AuditLog {
-  id         String    @id @default(uuid())
-  action     String    // AUTH_LOGIN, COURSE_CREATED, LAB_STARTED, BOOKING_CREATED, etc.
-  actorId    String?   // null for unauthenticated actions (failed login, etc.)
+  id         String   @id @default(uuid())
+  action     String // AUTH_LOGIN, COURSE_CREATED, LAB_STARTED, BOOKING_CREATED, etc.
+  actorId    String? // null for unauthenticated actions (failed login, etc.)
   actorEmail String?
   method     String
   path       String
@@ -417,8 +419,8 @@ model AuditLog {
   ip         String?
   userAgent  String?
   metadata   Json?
-  createdAt  DateTime  @default(now())
-  actor      User?     @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([action])
   @@index([actorId])
@@ -439,4 +441,19 @@ model Notification {
 
   @@index([userId, createdAt])
   @@index([userId, read])
+}
+
+model CourseEnrollment {
+  userId             String
+  courseId           String
+  enrolledAt         DateTime  @default(now())
+  lastActivityAt     DateTime  @default(now())
+  lastReminderSentAt DateTime?
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course             Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([lastActivityAt])
 }

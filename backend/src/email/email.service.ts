@@ -411,4 +411,126 @@ export class EmailService implements OnModuleInit {
 </html>`,
     });
   }
+
+  // ─── COURSE ENGAGEMENT EMAILS ──────────────────────────
+
+  async sendCourseStarted(email: string, name: string | null, courseTitle: string, courseId: string) {
+    const displayName = name || 'there';
+    const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
+    return this.send({
+      to: email,
+      from: 'info',
+      subject: `Your journey begins: ${courseTitle}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px;text-align:center;">
+    <h1 style="color:#fff;margin:0;font-size:24px;">Course Started!</h1>
+  </div>
+  <div style="padding:32px;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">You've started <strong>${courseTitle}</strong>. Great decision! Here's what to expect:</p>
+    <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;margin:20px 0;border-radius:4px;">
+      <p style="color:#334155;margin:0 0 8px;font-size:14px;"><strong>Your learning roadmap:</strong></p>
+      <p style="color:#64748b;margin:0;font-size:13px;">- Start with the first module and work through each lesson</p>
+      <p style="color:#64748b;margin:4px 0 0;font-size:13px;">- Complete quizzes and labs to earn XP</p>
+      <p style="color:#64748b;margin:4px 0 0;font-size:13px;">- Earn your certification when you finish all modules</p>
+    </div>
+    <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:20px 0;text-align:center;">
+      <p style="color:#64748b;margin:0 0 8px;font-size:13px;">Pro tip: Set aside 30 minutes daily for the best results</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${courseUrl}" style="background:#10b981;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
+    </div>
+  </div>
+  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
+
+  async sendCourseReminder(email: string, name: string | null, courseTitle: string, courseId: string, progressPct: number, daysInactive: number) {
+    const displayName = name || 'there';
+    const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
+    const subject = daysInactive <= 7
+      ? `Your course misses you — ${courseTitle}`
+      : `Don't lose your progress — ${courseTitle} is waiting`;
+    return this.send({
+      to: email,
+      from: 'info',
+      subject,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+    <h1 style="color:#fff;margin:0;font-size:24px;">We Miss You!</h1>
+  </div>
+  <div style="padding:32px;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">It's been ${daysInactive} days since you last worked on <strong>${courseTitle}</strong>.</p>
+    <div style="background:#f8fafc;border-radius:8px;padding:20px;margin:20px 0;text-align:center;">
+      <p style="color:#64748b;margin:0 0 8px;font-size:13px;">Your progress</p>
+      <div style="background:#e2e8f0;border-radius:8px;height:8px;margin:0 auto;max-width:300px;">
+        <div style="background:#6366f1;height:8px;border-radius:8px;width:${progressPct}%;"></div>
+      </div>
+      <p style="color:#334155;margin:12px 0 0;font-size:20px;font-weight:700;">${progressPct}% complete</p>
+    </div>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">You're just a few lessons away from making real progress. Pick up right where you left off.</p>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${courseUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
+    </div>
+    <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0;">Consistency is key — even 15 minutes a day adds up fast.</p>
+  </div>
+  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
+
+  async sendMilestoneAchieved(email: string, name: string | null, courseTitle: string, courseId: string, milestone: string) {
+    const displayName = name || 'there';
+    const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
+    return this.send({
+      to: email,
+      from: 'info',
+      subject: `Milestone reached: ${milestone} — ${courseTitle}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:32px;text-align:center;">
+    <h1 style="color:#fff;margin:0;font-size:24px;">${milestone}!</h1>
+  </div>
+  <div style="padding:32px;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">You've hit a milestone in <strong>${courseTitle}</strong> — ${milestone}!</p>
+    <div style="background:#fefce8;border-left:4px solid #f59e0b;padding:16px;margin:20px 0;border-radius:4px;">
+      <p style="color:#334155;margin:0;font-size:14px;">Keep going — you're building real skills that matter.</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${courseUrl}" style="background:#f59e0b;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Keep Learning</a>
+    </div>
+  </div>
+  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
 }

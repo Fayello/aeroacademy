@@ -73,6 +73,7 @@ function ShimmerSkeleton() {
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [enrollments, setEnrollments] = useState<Record<string, { enrolledAt: string; lastActivityAt: string }>>({});
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,8 +92,20 @@ export default function CoursesPage() {
     let cancelled = false;
     async function loadCourses() {
       try {
-        const data = await fetchApi("/courses");
-        if (!cancelled) setCourses(data);
+        const [data, enrollmentsData] = await Promise.all([
+          fetchApi("/courses"),
+          fetchApi("/courses/my-enrollments").catch(() => []),
+        ]);
+        if (!cancelled) {
+          setCourses(data);
+          const enrollMap: Record<string, { enrolledAt: string; lastActivityAt: string }> = {};
+          if (Array.isArray(enrollmentsData)) {
+            for (const e of enrollmentsData) {
+              enrollMap[e.courseId] = { enrolledAt: e.enrolledAt, lastActivityAt: e.lastActivityAt };
+            }
+          }
+          setEnrollments(enrollMap);
+        }
       } catch {
         if (!cancelled) toast.error("Failed to load courses");
       } finally {
@@ -254,6 +267,7 @@ export default function CoursesPage() {
             const firstSectionTitle = course.sections?.[0]?.title || "";
             const gate = getCourseLock(firstSectionTitle, level);
             const isLocked = gate.locked;
+            const isEnrolled = !!enrollments[course.id];
             const sectionCount =
               course._count?.sections || course.sections?.length || 0;
             const lessonCount =
@@ -369,7 +383,7 @@ export default function CoursesPage() {
                         : "border-slate-200 text-slate-600 group-hover:text-slate-900"
                     }`}
                   >
-                    <span>{isLocked ? "Locked" : "Begin training"}</span>
+                    <span>{isLocked ? "Locked" : isEnrolled ? "Resume" : "Begin training"}</span>
                     {!isLocked && (
                       <ChevronRight
                         size={14}

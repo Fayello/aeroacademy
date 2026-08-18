@@ -20,8 +20,15 @@ export class ProgressService {
   async startLesson(userId: string, lessonId: string) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
+      include: { section: { select: { courseId: true } } },
     });
     if (!lesson) throw new BadRequestException('Lesson not found');
+
+    // Touch enrollment lastActivityAt
+    await this.prisma.courseEnrollment.updateMany({
+      where: { userId, courseId: lesson.section.courseId },
+      data: { lastActivityAt: new Date() },
+    }).catch(() => {});
 
     const existing = await this.prisma.progress.findUnique({
       where: { userId_lessonId: { userId, lessonId } },
@@ -36,10 +43,16 @@ export class ProgressService {
   async markAsComplete(userId: string, lessonId: string) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
-      include: { quiz: true, lab: true, section: true },
+      include: { quiz: true, lab: true, section: { include: { course: true } } },
     });
 
     if (!lesson) throw new BadRequestException('Lesson not found');
+
+    // Touch enrollment lastActivityAt
+    await this.prisma.courseEnrollment.updateMany({
+      where: { userId, courseId: lesson.section.courseId },
+      data: { lastActivityAt: new Date() },
+    }).catch(() => {});
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException('User not found');
