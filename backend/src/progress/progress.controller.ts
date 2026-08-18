@@ -53,6 +53,7 @@ export class ProgressController {
   }
 
   @Get('course/:id')
+  @Throttle({ default: { limit: 200, ttl: 60000 } })
   async getCourseProgress(
     @Request() req: RequestWithUser,
     @Param('id') courseId: string,

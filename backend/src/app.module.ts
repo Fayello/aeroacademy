@@ -30,8 +30,9 @@ import { EmailModule } from './email/email.module';
     EmailModule,
     ThrottlerModule.forRoot([
       {
+        name: 'default',
         ttl: 60000,
-        limit: 100,
+        limit: 500,
       },
     ]),
     ScheduleModule.forRoot(),
