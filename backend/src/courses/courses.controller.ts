@@ -35,6 +35,11 @@ export class CoursesController {
     return this.coursesService.getEnrollmentsForUser(req.user.id);
   }
 
+  @Get('recommendations')
+  async getRecommendations(@Request() req: RequestWithUser) {
+    return this.coursesService.getRecommendations(req.user.id);
+  }
+
   @Post(':id/enroll')
   async enroll(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.coursesService.enroll(req.user.id, id);
@@ -231,11 +236,6 @@ export class CoursesController {
   @Audit('QUIZ_DELETED')
   async removeQuiz(@Param('quizId') quizId: string) {
     return this.coursesService.removeQuiz(quizId);
-  }
-
-  @Get('recommendations')
-  async getRecommendations(@Request() req: RequestWithUser) {
-    return this.coursesService.getRecommendations(req.user.id);
   }
 
   @Get(':courseId/certificate')
