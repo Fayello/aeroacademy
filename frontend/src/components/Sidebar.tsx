@@ -79,7 +79,7 @@ export default function Sidebar() {
         <div className="h-px bg-slate-100" />
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1" role="navigation" aria-label={t("nav.main")}>
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto min-h-0" role="navigation" aria-label={t("nav.main")}>
         {filteredLinks.map(({ href, tKey, icon: Icon }) => {
           const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
           const gate = getSidebarItemLock(href, level);
@@ -114,7 +114,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-3 mt-auto space-y-2">
+      <div className="p-3 shrink-0 space-y-2 border-t border-slate-100">
         <LanguageSwitcher />
         <button
           onClick={logout}
