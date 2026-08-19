@@ -35,6 +35,7 @@ const links: NavLink[] = [
   { href: "/dashboard/admin/challenges", tKey: "admin-challenges", icon: Target, roles: ["ADMIN"] },
   { href: "/dashboard/admin/badges", tKey: "admin-badges", icon: Award, roles: ["ADMIN"] },
   { href: "/dashboard/admin/assessments", tKey: "admin-assessments", icon: ClipboardCheck, roles: ["ADMIN"] },
+  { href: "/dashboard/admin/learning-paths", tKey: "admin-learning-paths", icon: Route, roles: ["ADMIN"] },
   { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3, roles: ["ADMIN"] },
   { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText, roles: ["ADMIN"] },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
