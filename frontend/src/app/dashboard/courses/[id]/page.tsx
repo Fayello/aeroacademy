@@ -16,6 +16,8 @@ import {
   Award,
   Target,
   Rocket,
+  Star,
+  Send,
 } from "lucide-react";
 import Link from "next/link";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
@@ -35,6 +37,34 @@ interface CourseProgress {
   percentage: number;
 }
 
+interface ReviewUser {
+  id: string;
+  name: string | null;
+  email: string;
+  division: string;
+}
+
+interface CourseReview {
+  id: string;
+  userId: string;
+  courseId: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  user: ReviewUser;
+}
+
+interface ReviewStats {
+  average: number;
+  total: number;
+  distribution: Record<number, number>;
+}
+
+interface ReviewsData {
+  reviews: CourseReview[];
+  stats: ReviewStats;
+}
+
 export default function CourseBriefingPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -46,6 +76,11 @@ export default function CourseBriefingPage() {
   const [error, setError] = useState("");
   const [level, setLevel] = useState(1);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [reviewsData, setReviewsData] = useState<ReviewsData | null>(null);
+  const [myRating, setMyRating] = useState(0);
+  const [myComment, setMyComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
     try {
@@ -59,15 +94,26 @@ export default function CourseBriefingPage() {
     let cancelled = false;
     async function loadCourse() {
       try {
-        const [courseData, progressData, enrollmentData] = await Promise.all([
-          fetchApi(`/courses/${id}`) as Promise<Course>,
+        const [courseData, progressData, enrollmentData, reviewsResult] = await Promise.all([
+          fetchApi(`/courses/${id}`) as Promise<Course & { reviewStats?: { average: number; total: number } }>,
           fetchApi(`/progress/course/${id}`).catch(() => null),
           fetchApi(`/courses/${id}/enrollment`).catch(() => null),
+          fetchApi(`/courses/${id}/reviews`).catch(() => null),
         ]);
         if (!cancelled) {
           setCourse(courseData);
           setProgress(progressData);
           setEnrollment(enrollmentData);
+          if (reviewsResult) {
+            setReviewsData(reviewsResult as ReviewsData);
+            const existing = (reviewsResult as ReviewsData).reviews?.find(
+              (r: CourseReview) => r.userId === (enrollmentData as Enrollment | null)?.userId,
+            );
+            if (existing) {
+              setMyRating(existing.rating);
+              setMyComment(existing.comment || "");
+            }
+          }
         }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : String(err));
@@ -103,6 +149,23 @@ export default function CourseBriefingPage() {
       }
     }
   }, [course, router]);
+
+  const handleSubmitReview = useCallback(async () => {
+    if (myRating < 1) return;
+    setSubmittingReview(true);
+    try {
+      await fetchApi(`/courses/${id}/reviews`, {
+        method: "POST",
+        body: JSON.stringify({ rating: myRating, comment: myComment || undefined }),
+      });
+      const updated = await fetchApi(`/courses/${id}/reviews`) as ReviewsData;
+      setReviewsData(updated);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
+    }
+  }, [id, myRating, myComment]);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) => {
@@ -177,6 +240,114 @@ export default function CourseBriefingPage() {
           ))}
         </div>
       </div>
+
+      {/* Reviews Section */}
+      {reviewsData && reviewsData.stats.total > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Star size={18} className="text-amber-500" />
+            Student Reviews
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Stats */}
+            <div className="text-center">
+              <div className="text-4xl font-bold text-slate-900">{reviewsData.stats.average.toFixed(1)}</div>
+              <div className="flex items-center justify-center gap-0.5 my-2">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} size={16} className={s <= Math.round(reviewsData.stats.average) ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
+                ))}
+              </div>
+              <p className="text-sm text-slate-500">{reviewsData.stats.total} review{reviewsData.stats.total !== 1 ? "s" : ""}</p>
+            </div>
+            {/* Distribution */}
+            <div className="space-y-1.5">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = reviewsData.stats.distribution[star] || 0;
+                const pct = reviewsData.stats.total > 0 ? (count / reviewsData.stats.total) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-2 text-sm">
+                    <span className="w-3 text-slate-500 text-right">{star}</span>
+                    <Star size={12} className="text-amber-400 fill-amber-400 shrink-0" />
+                    <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-400 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="w-6 text-right text-xs text-slate-400">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Write Review */}
+            {isEnrolled && (
+              <div className="border-l border-slate-100 pl-6">
+                <p className="text-sm font-medium text-slate-700 mb-3">Write a review</p>
+                <div className="flex items-center gap-1 mb-3">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                      key={s}
+                      onMouseEnter={() => setHoverRating(s)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      onClick={() => setMyRating(s)}
+                    >
+                      <Star
+                        size={20}
+                        className={`transition-colors ${
+                          s <= (hoverRating || myRating)
+                            ? "text-amber-400 fill-amber-400"
+                            : "text-slate-200 hover:text-amber-200"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  value={myComment}
+                  onChange={(e) => setMyComment(e.target.value)}
+                  placeholder="Share your experience (optional)"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  rows={3}
+                />
+                <button
+                  onClick={handleSubmitReview}
+                  disabled={myRating < 1 || submittingReview}
+                  className="mt-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                >
+                  {submittingReview ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  {myRating > 0 && reviewsData.reviews.some((r) => r.userId === enrollment?.userId) ? "Update" : "Submit"}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Recent Reviews */}
+          <div className="mt-6 space-y-4">
+            {reviewsData.reviews.slice(0, 5).map((review) => (
+              <div key={review.id} className="border-t border-slate-100 pt-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-sm font-semibold text-emerald-700">
+                    {(review.user.name || review.user.email)[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-800">{review.user.name || review.user.email.split("@")[0]}</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} size={10} className={s <= review.rating ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-slate-400">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {review.comment && (
+                  <p className="text-sm text-slate-600 ml-11">{review.comment}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Modules */}
