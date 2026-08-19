@@ -13,6 +13,8 @@ import {
   GraduationCap,
   Lock,
   CheckCircle2,
+  Search,
+  X,
 } from "lucide-react";
 
 interface Course {
@@ -53,6 +55,7 @@ const difficultyColors: Record<string, string> = {
 export default function LearningPathsPage() {
   const [paths, setPaths] = useState<LearningPath[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchApi("/learning-paths")
@@ -93,8 +96,33 @@ export default function LearningPathsPage() {
           <p className="text-sm text-slate-500">Learning paths will appear here once an admin creates them.</p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-          {paths.map((path) => (
+        <>
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search learning paths..."
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all bg-white"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {paths.filter((p) => !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
+            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
+              <Search size={32} className="mx-auto mb-3 text-slate-300" />
+              <p className="text-sm text-slate-500">No paths match &ldquo;{searchQuery}&rdquo;</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              {paths
+                .filter((p) => !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                .map((path) => (
             <Link
               key={path.id}
               href={`/dashboard/learning-paths/${path.id}`}
@@ -153,6 +181,8 @@ export default function LearningPathsPage() {
             </Link>
           ))}
         </div>
+          )}
+        </>
       )}
     </div>
   );

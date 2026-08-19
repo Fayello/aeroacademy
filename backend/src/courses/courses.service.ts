@@ -513,6 +513,37 @@ export class CoursesService {
     };
   }
 
+  async verifyCertificate(courseId: string, userId: string) {
+    const enrollment = await this.prisma.courseEnrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+    if (!enrollment) return { valid: false, reason: 'No enrollment found' };
+
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) return { valid: false, reason: 'Course not found' };
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
+    if (!user) return { valid: false, reason: 'User not found' };
+
+    const totalLessons = await this.prisma.lesson.count({ where: { section: { courseId } } });
+    const completedLessons = await this.prisma.progress.count({
+      where: { userId, completed: true, lesson: { section: { courseId } } },
+    });
+
+    if (completedLessons < totalLessons) {
+      return { valid: false, reason: 'Course not complete', completed: completedLessons, total: totalLessons };
+    }
+
+    return {
+      valid: true,
+      certificate: {
+        courseName: course.title,
+        userName: user.name || user.email,
+        issuedAt: enrollment.lastActivityAt.toISOString(),
+      },
+    };
+  }
+
   async getRecommendations(userId: string) {
     const enrollments = await this.prisma.courseEnrollment.findMany({
       where: { userId },

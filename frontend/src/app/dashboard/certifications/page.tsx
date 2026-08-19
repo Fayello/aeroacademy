@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2, BookOpen, ExternalLink } from "lucide-react";
+import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2, BookOpen, ExternalLink, Share2 } from "lucide-react";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
@@ -194,6 +194,16 @@ export default function CertificationsPage() {
                     >
                       <ExternalLink size={12} /> View
                     </Link>
+                    <button
+                      onClick={() => {
+                        const url = `${window.location.origin}/verify/${cert.courseId}/${JSON.parse(localStorage.getItem("user") || "{}").id || ""}`;
+                        navigator.clipboard.writeText(url).then(() => toast.success("Verify link copied!"));
+                      }}
+                      className="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1"
+                      title="Copy verification link"
+                    >
+                      <Share2 size={12} /> Share
+                    </button>
                   </div>
                 </div>
                 <div className="text-right">
