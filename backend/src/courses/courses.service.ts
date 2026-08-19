@@ -14,7 +14,7 @@ export class CoursesService {
   ) {}
 
   async findAll(opts?: { skip?: number; take?: number }) {
-    return this.prisma.course.findMany({
+    const courses = await this.prisma.course.findMany({
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 50,
       include: {
