@@ -269,12 +269,21 @@ export default function CourseBriefingPage() {
                 </div>
 
                 {progress && progress.percentage === 100 ? (
-                  <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Award size={16} className="text-emerald-600" />
-                      <p className="text-sm font-medium text-emerald-800">Course Completed!</p>
+                  <div className="space-y-3">
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Award size={16} className="text-emerald-600" />
+                        <p className="text-sm font-medium text-emerald-800">Course Completed!</p>
+                      </div>
+                      <p className="text-xs text-emerald-600">You have earned your certification.</p>
                     </div>
-                    <p className="text-xs text-emerald-600">You have earned your certification.</p>
+                    <Link
+                      href={"/dashboard/courses/" + course.id + "/certificate"}
+                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Award size={14} />
+                      View Certificate
+                    </Link>
                   </div>
                 ) : (
                   <button

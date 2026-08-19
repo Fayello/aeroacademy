@@ -1,11 +1,43 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star } from "lucide-react";
+import { Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star, Award, Flame, Zap, Flag, Target, Crosshair, Crown, Compass, Library, Footprints, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
+import { fetchApi } from "@/lib/api";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import type { User, Achievement } from "@/types/api";
+
+interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  tier: string;
+  xpReward: number;
+}
+
+interface UserBadge {
+  badgeId: string;
+  earnedAt: string;
+  badge: Badge;
+}
+
+const badgeIconMap: Record<string, typeof Trophy> = {
+  Footprints, BookOpen, GraduationCap, Award, Crown,
+  Flag, Target, Crosshair, Trophy,
+  Compass, Library,
+  Flame, Zap,
+  Star, Shield,
+};
+
+const badgeTierBg: Record<string, string> = {
+  BRONZE: "from-amber-500 to-amber-600",
+  SILVER: "from-slate-400 to-slate-500",
+  GOLD: "from-yellow-400 to-yellow-500",
+  PLATINUM: "from-purple-500 to-purple-600",
+};
 
 const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; nextAt: number }> = {
   BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", next: "SILVER", nextAt: 800 },
@@ -26,6 +58,7 @@ const LEVEL_UNLOCKS = [
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
+  const [myBadges, setMyBadges] = useState<UserBadge[]>([]);
   const { userMetrics } = useDashboard();
 
   useEffect(() => {
@@ -35,6 +68,7 @@ export default function ProfilePage() {
     } catch {
       setUser(null);
     }
+    fetchApi<UserBadge[]>("/badges/my").then(setMyBadges).catch(() => {});
   }, []);
 
   if (!user) return null;
@@ -167,6 +201,38 @@ export default function ProfilePage() {
           })}
         </div>
       </div>
+
+      {/* Badges Earned */}
+      {myBadges.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-slate-900">Badges Earned</h2>
+            <Link href="/dashboard/badges" className="text-xs text-blue-600 hover:text-blue-700">
+              View All
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {myBadges.slice(0, 10).map((ub) => {
+              const BIcon = badgeIconMap[ub.badge.icon] || Award;
+              return (
+                <Link
+                  key={ub.badgeId}
+                  href={"/dashboard/badges/" + ub.badgeId}
+                  className="text-center p-3 rounded-xl bg-slate-50 border border-slate-100 hover:shadow-md transition-all"
+                >
+                  <div
+                    className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center bg-gradient-to-br from-amber-500 to-amber-600"
+                  >
+                    <BIcon size={16} className="text-white" />
+                  </div>
+                  <p className="text-[10px] font-semibold text-slate-900 truncate">{ub.badge.name}</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">{new Date(ub.earnedAt).toLocaleDateString()}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Stats & Achievements */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
