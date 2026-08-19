@@ -43,6 +43,7 @@ const en: Record<string, string> = {
   "nav.challenges": "Challenges",
   "nav.badges": "Badges",
   "nav.assessments": "Assessments",
+  "nav.my-analytics": "My Analytics",
   "nav.main": "Main navigation",
   "nav.mobile": "Mobile navigation",
 };
@@ -72,6 +73,7 @@ const fr: Record<string, string> = {
   "nav.admin-badges": "Badges",
   "nav.admin-assessments": "Evaluations",
   "nav.analytics": "Analyses",
+  "nav.my-analytics": "Mes Analyses",
   "nav.audit": "Journaux d'audit",
   "nav.profile": "Profil",
   "nav.main": "Navigation principale",

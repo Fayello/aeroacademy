@@ -25,6 +25,7 @@ const links: NavLink[] = [
   { href: "/dashboard/challenges", tKey: "challenges", icon: Target },
   { href: "/dashboard/badges", tKey: "badges", icon: Award },
   { href: "/dashboard/assessments", tKey: "assessments", icon: ClipboardCheck },
+  { href: "/dashboard/analytics", tKey: "my-analytics", icon: BarChart3 },
   { href: "/dashboard/notifications", tKey: "notifications", icon: Bell },
   { href: "/dashboard/certifications", tKey: "certifications", icon: Award },
   { href: "/dashboard/registry", tKey: "registry", icon: Shield },

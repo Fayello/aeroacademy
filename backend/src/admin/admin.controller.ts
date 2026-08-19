@@ -88,4 +88,9 @@ export class AdminController {
   ) {
     return this.adminService.bulkTerminateLab(teamId, labId);
   }
+
+  @Get('analytics/overview')
+  async getAnalyticsOverview() {
+    return this.adminService.getAnalyticsOverview();
+  }
 }

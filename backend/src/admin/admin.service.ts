@@ -98,4 +98,189 @@ export class AdminService {
     }
     return { success: true, count: team.members.length };
   }
+
+  async getAnalyticsOverview() {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
+    const [
+      totalUsers,
+      totalStudents,
+      totalCourses,
+      totalLessons,
+      totalLabs,
+      totalMasterClasses,
+      totalTrainers,
+      totalTeams,
+      totalOrganizations,
+      lessonsCompleted,
+      quizSubmissions,
+      flagsSolved,
+      activeUsers30d,
+    ] = await Promise.all([
+      this.prisma.user.count(),
+      this.prisma.user.count({ where: { role: 'STUDENT' } }),
+      this.prisma.course.count(),
+      this.prisma.lesson.count(),
+      this.prisma.lab.count(),
+      this.prisma.masterClass.count(),
+      this.prisma.trainer.count(),
+      this.prisma.team.count(),
+      this.prisma.organization.count(),
+      this.prisma.progress.count({ where: { completed: true } }),
+      this.prisma.quizSubmission.count(),
+      this.prisma.labSubmission.count({ where: { isCorrect: true } }),
+      this.prisma.user.count({ where: { lastActivityDate: { gte: thirtyDaysAgo } } }),
+    ]);
+
+    const userGrowthRaw = await this.prisma.user.groupBy({
+      by: ['createdAt'],
+      _count: true,
+      where: { createdAt: { gte: sixtyDaysAgo } },
+      orderBy: { createdAt: 'asc' },
+    });
+    const userGrowthMap: Record<string, number> = {};
+    for (const row of userGrowthRaw) {
+      const date = row.createdAt.toISOString().split('T')[0];
+      userGrowthMap[date] = (userGrowthMap[date] || 0) + row._count;
+    }
+    const userGrowth = Object.entries(userGrowthMap).map(([date, count]) => ({ date, count }));
+
+    const roleDistribution = (await this.prisma.user.groupBy({
+      by: ['role'],
+      _count: true,
+    })).map((r) => ({ role: r.role, count: r._count }));
+
+    const divisionDistribution = (await this.prisma.user.groupBy({
+      by: ['division'],
+      _count: true,
+    })).map((d) => ({ division: d.division || 'UNRANKED', count: d._count }));
+
+    const levelDistributionRaw = await this.prisma.user.findMany({
+      select: { xp: true },
+    });
+    const levelMap: Record<number, number> = {};
+    for (const u of levelDistributionRaw) {
+      const level = Math.floor((u.xp || 0) / 1000) + 1;
+      levelMap[level] = (levelMap[level] || 0) + 1;
+    }
+    const levelDistribution = Object.entries(levelMap)
+      .map(([level, count]) => ({ level: parseInt(level), count }))
+      .sort((a, b) => a.level - b.level);
+
+    const courses = await this.prisma.course.findMany({
+      include: {
+        sections: { include: { lessons: { select: { id: true } } } },
+        enrollments: { select: { userId: true } },
+      },
+    });
+    const courseStats = await Promise.all(
+      courses.slice(0, 20).map(async (c) => {
+        const lessonIds = c.sections.flatMap((s) => s.lessons.map((l) => l.id));
+        const total = lessonIds.length;
+        const completed = total > 0
+          ? await this.prisma.progress.count({
+              where: { completed: true, lessonId: { in: lessonIds } },
+            })
+          : 0;
+        return {
+          courseId: c.id,
+          courseTitle: c.title,
+          totalLessons: total,
+          completed,
+          completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+          students: c.enrollments.length,
+        };
+      }),
+    );
+
+    const labs = await this.prisma.lab.findMany({
+      include: {
+        instances: { select: { id: true, userId: true } },
+        flags: { include: { submissions: { select: { isCorrect: true, userId: true } } } },
+      },
+    });
+    const labStats = labs.slice(0, 20).map((l) => {
+      const allSubmissions = l.flags.flatMap((f) => f.submissions);
+      const solvers = new Set(allSubmissions.filter((s) => s.isCorrect).map((s) => s.userId));
+      return {
+        labId: l.id,
+        labTitle: l.title,
+        difficulty: l.difficulty,
+        starts: l.instances.length,
+        flagsSolved: allSubmissions.filter((s) => s.isCorrect).length,
+        solvers: solvers.size,
+      };
+    });
+
+    const quizStatsRaw = await this.prisma.quizSubmission.findMany({
+      select: { passed: true },
+    });
+    const quizSubs = quizStatsRaw.length;
+    const quizPassed = quizStatsRaw.filter((s) => s.passed).length;
+
+    const flagStatsRaw = await this.prisma.labSubmission.groupBy({
+      by: ['isCorrect'],
+      _count: true,
+    });
+    const flagCorrect = flagStatsRaw.find((f) => f.isCorrect)?._count || 0;
+    const flagIncorrect = flagStatsRaw.find((f) => !f.isCorrect)?._count || 0;
+
+    const topPerformers = await this.prisma.user.findMany({
+      where: { role: 'STUDENT' },
+      orderBy: { xp: 'desc' },
+      take: 10,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        xp: true,
+        division: true,
+        city: true,
+        organization: { select: { name: true } },
+        _count: { select: { achievements: true, labSubmissions: { where: { isCorrect: true } }, progress: { where: { completed: true } } } },
+      },
+    });
+
+    return {
+      totals: {
+        users: totalUsers,
+        students: totalStudents,
+        courses: totalCourses,
+        lessons: totalLessons,
+        labs: totalLabs,
+        masterClasses: totalMasterClasses,
+        trainers: totalTrainers,
+        teams: totalTeams,
+        organizations: totalOrganizations,
+        lessonsCompleted,
+        quizSubmissions,
+        flagsSolved,
+        activeUsers30d,
+      },
+      userGrowth,
+      roleDistribution,
+      divisionDistribution,
+      levelDistribution,
+      courseStats,
+      labStats,
+      quizStats: { submissions: quizSubs, passed: quizPassed, failed: quizSubs - quizPassed, passRate: quizSubs > 0 ? Math.round((quizPassed / quizSubs) * 100) : 0 },
+      flagStats: { correct: flagCorrect, incorrect: flagIncorrect },
+      activity: [],
+      topPerformers: topPerformers.map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        xp: u.xp,
+        level: Math.floor((u.xp || 0) / 1000) + 1,
+        division: u.division || 'UNRANKED',
+        organization: u.organization?.name || null,
+        city: u.city,
+        achievements: u._count.achievements,
+        flagsSolved: u._count.labSubmissions,
+        lessonsCompleted: u._count.progress,
+      })),
+    };
+  }
 }
