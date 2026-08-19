@@ -126,7 +126,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
           <div
             className={`p-6 text-white text-center ${
               passed
-                ? "bg-gradient-to-r from-emerald-500 to-emerald-600"
+                ? "bg-gradient-to-r from-[#229C62] to-[#229C62]"
                 : "bg-gradient-to-r from-amber-500 to-amber-600"
             }`}
           >
@@ -163,7 +163,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                         <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
-                              pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
+                              pct >= 80 ? "bg-[#229C62]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
                             }`}
                             style={{ width: `${pct}%` }}
                           />
@@ -245,7 +245,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                 <div key={q.id} className="border border-slate-200 rounded-lg p-4">
                   <div className="flex items-start gap-2 mb-3">
                     {isCorrect ? (
-                      <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 size={16} className="text-[#229C62] mt-0.5 flex-shrink-0" />
                     ) : (
                       <XCircle size={16} className="text-red-500 mt-0.5 flex-shrink-0" />
                     )}
@@ -262,13 +262,13 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                       const isUser = userAns === opt.key;
                       const isCorrectOpt = opt.key === q.correctAnswer;
                       let style = "bg-slate-50 text-slate-600 border-slate-200";
-                      if (isCorrectOpt) style = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                      if (isCorrectOpt) style = "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20";
                       else if (isUser && !isCorrect) style = "bg-red-50 text-red-700 border-red-200";
 
                       return (
                         <div key={opt.key} className={`text-xs p-2 rounded border ${style}`}>
                           <span className="font-medium mr-1">{opt.key}.</span> {opt.text}
-                          {isCorrectOpt && <CheckCircle2 size={12} className="inline ml-1 text-emerald-500" />}
+                          {isCorrectOpt && <CheckCircle2 size={12} className="inline ml-1 text-[#229C62]" />}
                           {isUser && !isCorrect && <XCircle size={12} className="inline ml-1 text-red-500" />}
                         </div>
                       );
@@ -357,7 +357,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50 transition-colors"
+              className="flex items-center gap-1 text-xs bg-[#229C62] hover:bg-[#0F203A] text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50 transition-colors"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
               {submitting ? "Submitting..." : "Submit"}

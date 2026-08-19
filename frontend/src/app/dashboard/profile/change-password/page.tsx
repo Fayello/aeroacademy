@@ -48,14 +48,14 @@ export default function ChangePasswordPage() {
   return (
     <div className="max-w-lg mx-auto space-y-6 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
-          <Link href="/dashboard/profile" className="inline-flex items-center gap-1 text-sm text-emerald-200 hover:text-white transition-colors mb-4">
+          <Link href="/dashboard/profile" className="inline-flex items-center gap-1 text-sm text-white/80 hover:text-white transition-colors mb-4">
             <ArrowLeft size={16} /> Back to profile
           </Link>
           <h1 className="text-2xl font-bold">Change Password</h1>
-          <p className="text-emerald-100 text-sm mt-1">Update your account password</p>
+          <p className="text-white/80 text-sm mt-1">Update your account password</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export default function ChangePasswordPage() {
                 id="oldPassword"
                 {...register("oldPassword")}
                 type="password"
-                className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.oldPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all`}
+                className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.oldPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all`}
                 placeholder="Enter current password"
               />
             </div>
@@ -84,7 +84,7 @@ export default function ChangePasswordPage() {
                 id="newPassword"
                 {...register("newPassword")}
                 type="password"
-                className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.newPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all`}
+                className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.newPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all`}
                 placeholder="Min. 8 characters"
               />
             </div>
@@ -99,14 +99,14 @@ export default function ChangePasswordPage() {
                 id="confirmPassword"
                 {...register("confirmPassword")}
                 type="password"
-                className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.confirmPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all`}
+                className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.confirmPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all`}
                 placeholder="Repeat new password"
               />
             </div>
             {errors.confirmPassword && <p className="text-xs text-red-600 mt-1.5">{errors.confirmPassword.message}</p>}
           </div>
 
-          <button type="submit" disabled={isSubmitting} className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="submit" disabled={isSubmitting} className="w-full flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-3 px-5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">
             {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
             Update password
           </button>

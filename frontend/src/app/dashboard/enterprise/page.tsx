@@ -26,7 +26,7 @@ interface Talent {
 const divisionBadge: Record<string, string> = {
   TITAN: "bg-indigo-100 text-indigo-700 border-indigo-200",
   DIAMOND: "bg-blue-100 text-blue-700 border-blue-200",
-  PLATINUM: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  PLATINUM: "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20",
   GOLD: "bg-amber-100 text-amber-700 border-amber-200",
 };
 

@@ -27,11 +27,11 @@ export default function AuthCallbackPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-600 mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#229C62] mb-6">
           <Shield className="text-white" size={28} />
         </div>
         <div className="flex items-center gap-3 text-slate-600">
-          <Loader2 className="animate-spin text-emerald-600" size={20} />
+          <Loader2 className="animate-spin text-[#229C62]" size={20} />
           <span className="text-sm font-medium">Signing you in...</span>
         </div>
       </div>

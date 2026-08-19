@@ -69,7 +69,7 @@ export default function BottomNav() {
               aria-current={isActive ? "page" : undefined}
               title={isLocked ? gate.reason : undefined}
               className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-                isLocked ? "text-slate-300" : isActive ? "text-emerald-600" : "text-slate-400 hover:text-slate-600"
+                isLocked ? "text-slate-300" : isActive ? "text-[#229C62]" : "text-slate-400 hover:text-slate-600"
               }`}
               onClick={(e) => { if (isLocked) e.preventDefault(); }}
             >
@@ -86,7 +86,7 @@ export default function BottomNav() {
             onClick={() => setMoreOpen(!moreOpen)}
             aria-label={t("common.moreOptions")}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              moreOpen ? "text-emerald-600" : "text-slate-400 hover:text-slate-600"
+              moreOpen ? "text-[#229C62]" : "text-slate-400 hover:text-slate-600"
             }`}
           >
             <MoreHorizontal size={20} />

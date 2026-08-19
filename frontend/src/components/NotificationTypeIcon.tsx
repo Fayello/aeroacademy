@@ -5,7 +5,7 @@ export function NotificationTypeIcon({ type, size = 16 }: { type: string; size?:
     case "ACHIEVEMENT":
       return <Trophy size={size} className="text-amber-500" />;
     case "SUCCESS":
-      return <Flame size={size} className="text-emerald-600" />;
+      return <Flame size={size} className="text-[#229C62]" />;
     case "BOOKING":
       return <CalendarCheck size={size} className="text-blue-600" />;
     case "WARNING":

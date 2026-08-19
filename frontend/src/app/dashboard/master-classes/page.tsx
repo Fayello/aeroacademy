@@ -115,7 +115,7 @@ export default function MasterClassesPage() {
               className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300"
             >
               {/* Gradient Header */}
-              <div className="h-40 bg-gradient-to-br from-violet-500 via-purple-500 to-emerald-500 flex items-center justify-center relative">
+              <div className="h-40 bg-gradient-to-br from-violet-500 via-purple-500 to-[#229C62] flex items-center justify-center relative">
                 <Video size={36} className="text-white/80" />
                 {mc.status === "LIVE" && (
                   <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
@@ -132,7 +132,7 @@ export default function MasterClassesPage() {
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs text-violet-600 font-semibold">{mc.category}</span>
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                    mc.status === "UPCOMING" ? "bg-emerald-50 text-emerald-700" :
+                    mc.status === "UPCOMING" ? "bg-[#E9F8EE] text-[#0F203A]" :
                     mc.status === "LIVE" ? "bg-red-50 text-red-700" :
                     "bg-slate-100 text-slate-600"
                   }`}>{mc.status}</span>

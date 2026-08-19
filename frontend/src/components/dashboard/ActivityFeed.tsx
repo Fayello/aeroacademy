@@ -17,8 +17,8 @@ export default function ActivityFeed({ feed }: ActivityFeedProps) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-slate-900">Recent Activity</h3>
         {feed.length > 0 && (
-          <span className="flex items-center gap-1.5 text-xs text-emerald-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="flex items-center gap-1.5 text-xs text-[#229C62]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#229C62] animate-pulse" />
             Live
           </span>
         )}
@@ -30,7 +30,7 @@ export default function ActivityFeed({ feed }: ActivityFeedProps) {
             <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
               item.type === "ACHIEVEMENT_UNLOCKED" ? "bg-amber-400" :
               item.type === "FLAG_CAPTURED" ? "bg-blue-400" :
-              "bg-emerald-400"
+              "bg-[#229C62]/60"
             }`} />
             <div className="flex-1 min-w-0">
               <p className="text-sm text-slate-700 leading-snug">{item.message}</p>
@@ -39,7 +39,7 @@ export default function ActivityFeed({ feed }: ActivityFeedProps) {
                   {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
                 {item.points && (
-                  <span className="text-xs font-medium text-emerald-600">+{item.points} XP</span>
+                  <span className="text-xs font-medium text-[#229C62]">+{item.points} XP</span>
                 )}
               </div>
             </div>

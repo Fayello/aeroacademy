@@ -44,7 +44,7 @@ export default function NotificationBell() {
       >
         <Bell size={18} className="text-slate-600" />
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#229C62] text-white text-[10px] font-bold flex items-center justify-center">
             {unread > 99 ? "99+" : unread}
           </span>
         )}
@@ -56,14 +56,14 @@ export default function NotificationBell() {
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
               {unread > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-semibold">
+                <span className="px-1.5 py-0.5 rounded-full bg-[#E9F8EE] text-[#0F203A] text-[10px] font-semibold">
                   {unread} new
                 </span>
               )}
             </div>
             <button
               onClick={() => void markAllRead()}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-emerald-600 font-medium"
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#229C62] font-medium"
             >
               <CheckCheck size={14} />
               Mark all read
@@ -86,7 +86,7 @@ export default function NotificationBell() {
                   key={n.id}
                   onClick={() => handleItemClick(n)}
                   className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 ${
-                    !n.read ? "bg-emerald-50/40" : ""
+                    !n.read ? "bg-[#E9F8EE]/40" : ""
                   }`}
                 >
                   <div className="mt-0.5 shrink-0">
@@ -98,7 +98,7 @@ export default function NotificationBell() {
                         {n.title}
                       </p>
                       {!n.read && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#229C62] shrink-0" />
                       )}
                     </div>
                     <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">
@@ -117,7 +117,7 @@ export default function NotificationBell() {
           <Link
             href="/dashboard/notifications"
             onClick={() => setOpen(false)}
-            className="block text-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 border-t border-slate-100"
+            className="block text-center px-4 py-3 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] border-t border-slate-100"
           >
             View all notifications
           </Link>

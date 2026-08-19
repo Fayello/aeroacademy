@@ -210,7 +210,7 @@ export default function CourseDiscussionsPage() {
         <div>
           <Link
             href={`/dashboard/courses/${courseId}`}
-            className="text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="text-sm text-[#229C62] hover:text-[#0F203A] transition-colors"
           >
             ← Back to course
           </Link>
@@ -223,7 +223,7 @@ export default function CourseDiscussionsPage() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl text-sm font-medium transition-colors"
         >
           <Plus size={16} />
           New Post
@@ -244,7 +244,7 @@ export default function CourseDiscussionsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search discussions..."
-              className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
             />
           </div>
 
@@ -254,7 +254,7 @@ export default function CourseDiscussionsPage() {
               onClick={() => setShowTagDropdown(!showTagDropdown)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm border rounded-lg transition-colors ${
                 selectedTag
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                  ? "border-[#229C62]/30 bg-[#E9F8EE] text-[#0F203A]"
                   : "border-slate-200 text-slate-600 hover:border-slate-300"
               }`}
             >
@@ -270,7 +270,7 @@ export default function CourseDiscussionsPage() {
                     setShowTagDropdown(false);
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 ${
-                    !selectedTag ? "text-emerald-600 font-medium" : "text-slate-600"
+                    !selectedTag ? "text-[#229C62] font-medium" : "text-slate-600"
                   }`}
                 >
                   All Tags
@@ -284,7 +284,7 @@ export default function CourseDiscussionsPage() {
                     }}
                     className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 ${
                       selectedTag === tag
-                        ? "text-emerald-600 font-medium"
+                        ? "text-[#229C62] font-medium"
                         : "text-slate-600"
                     }`}
                   >
@@ -301,7 +301,7 @@ export default function CourseDiscussionsPage() {
               onClick={() => setSortBy("recent")}
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 sortBy === "recent"
-                  ? "bg-emerald-600 text-white"
+                  ? "bg-[#229C62] text-white"
                   : "bg-white text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -311,7 +311,7 @@ export default function CourseDiscussionsPage() {
               onClick={() => setSortBy("popular")}
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 sortBy === "popular"
-                  ? "bg-emerald-600 text-white"
+                  ? "bg-[#229C62] text-white"
                   : "bg-white text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -324,7 +324,7 @@ export default function CourseDiscussionsPage() {
       {/* Posts List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-emerald-600" size={28} />
+          <Loader2 className="animate-spin text-[#229C62]" size={28} />
         </div>
       ) : posts.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
@@ -335,7 +335,7 @@ export default function CourseDiscussionsPage() {
           </p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus size={14} />
             New Post
@@ -357,13 +357,13 @@ export default function CourseDiscussionsPage() {
                       size={16}
                       className={
                         post.userVote === 1
-                          ? "text-emerald-600 fill-emerald-600"
+                          ? "text-[#229C62] fill-[#229C62]"
                           : "text-slate-300"
                       }
                     />
                     <span
                       className={`text-sm font-semibold ${
-                        post.userVote === 1 ? "text-emerald-600" : "text-slate-500"
+                        post.userVote === 1 ? "text-[#229C62]" : "text-slate-500"
                       }`}
                     >
                       {post.upvotes}
@@ -380,7 +380,7 @@ export default function CourseDiscussionsPage() {
                         </span>
                       )}
                       {post.resolved && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#E9F8EE] px-2 py-0.5 rounded-full">
                           <CheckCircle size={10} />
                           Resolved
                         </span>
@@ -398,7 +398,7 @@ export default function CourseDiscussionsPage() {
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Author */}
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-xs font-semibold text-emerald-700 shrink-0">
+                          <div className="w-6 h-6 rounded-full bg-[#E9F8EE] flex items-center justify-center text-xs font-semibold text-[#0F203A] shrink-0">
                             {(post.author.name || post.author.email)[0].toUpperCase()}
                           </div>
                           <span className="text-xs text-slate-500 truncate">
@@ -452,7 +452,7 @@ export default function CourseDiscussionsPage() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-emerald-600 border border-emerald-200 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-[#229C62] border border-[#229C62]/20 hover:bg-[#E9F8EE] rounded-lg transition-colors disabled:opacity-50"
               >
                 {loadingMore ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -497,7 +497,7 @@ export default function CourseDiscussionsPage() {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="What's your question or topic?"
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
                   maxLength={200}
                 />
                 <p className="text-xs text-slate-400 mt-1">
@@ -515,7 +515,7 @@ export default function CourseDiscussionsPage() {
                   onChange={(e) => setNewBody(e.target.value)}
                   placeholder="Describe your question or share your thoughts..."
                   rows={6}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
                 />
               </div>
 
@@ -528,12 +528,12 @@ export default function CourseDiscussionsPage() {
                   {newTags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#E9F8EE] px-2.5 py-1 rounded-full"
                     >
                       {tag}
                       <button
                         onClick={() => removeTag(tag)}
-                        className="hover:text-emerald-900"
+                        className="hover:text-[#0F203A]"
                       >
                         <X size={12} />
                       </button>
@@ -549,7 +549,7 @@ export default function CourseDiscussionsPage() {
                     onKeyDown={handleTagKeyDown}
                     onFocus={() => setShowTagDropdown(true)}
                     placeholder="Type a tag and press Enter..."
-                    className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
                     disabled={newTags.length >= 5}
                   />
                   {showTagDropdown && tagInput && filteredAvailableTags.length > 0 && (
@@ -585,7 +585,7 @@ export default function CourseDiscussionsPage() {
               <button
                 onClick={handleCreatePost}
                 disabled={creating || !newTitle.trim() || !newBody.trim()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 {creating && <Loader2 size={14} className="animate-spin" />}
                 {creating ? "Posting..." : "Post Discussion"}

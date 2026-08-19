@@ -367,7 +367,7 @@ export default function AdminMasterClassesPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
           >
             {saving ? "Saving..." : editing ? "Update Master Class" : "Create Master Class"}
           </button>
@@ -413,7 +413,7 @@ export default function AdminMasterClassesPage() {
           <button
             onClick={confirmBatchStatus}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
           >
             {saving ? "Saving..." : "Apply Status"}
           </button>

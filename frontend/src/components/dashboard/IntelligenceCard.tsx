@@ -14,8 +14,8 @@ export default function IntelligenceCard({ latestProgress, courseProgress }: Int
     <div className="card p-6 flex flex-col justify-between">
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
-            <Play size={16} className="text-emerald-600" fill="currentColor" />
+          <div className="w-9 h-9 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
+            <Play size={16} className="text-[#229C62]" fill="currentColor" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-slate-900">Continue Learning</h3>
@@ -26,7 +26,7 @@ export default function IntelligenceCard({ latestProgress, courseProgress }: Int
         {latestProgress?.lesson ? (
           <div className="space-y-3">
             <div>
-              <p className="text-xs font-medium text-emerald-600 mb-1">Active Course</p>
+              <p className="text-xs font-medium text-[#229C62] mb-1">Active Course</p>
               <p className="text-sm font-medium text-slate-900 line-clamp-2">{latestProgress.lesson.section?.course?.title || latestProgress.lesson.section?.title || 'Course'}</p>
             </div>
             <div>
@@ -36,10 +36,10 @@ export default function IntelligenceCard({ latestProgress, courseProgress }: Int
             <div>
               <div className="flex justify-between text-xs text-slate-500 mb-1">
                 <span>Progress</span>
-                <span className="font-medium text-emerald-600">{courseProgress || 0}%</span>
+                <span className="font-medium text-[#229C62]">{courseProgress || 0}%</span>
               </div>
               <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${courseProgress || 0}%` }} />
+                <div className="h-full bg-[#229C62] rounded-full" style={{ width: `${courseProgress || 0}%` }} />
               </div>
             </div>
           </div>

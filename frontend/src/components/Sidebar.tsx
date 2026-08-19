@@ -101,12 +101,12 @@ export default function Sidebar() {
                 isLocked
                   ? "text-slate-400 cursor-not-allowed opacity-60"
                   : isActive
-                    ? "bg-emerald-50 text-emerald-700"
+                    ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
               onClick={(e) => { if (isLocked) e.preventDefault(); }}
             >
-              <Icon size={18} className={isActive && !isLocked ? "text-emerald-600" : "text-slate-400"} />
+              <Icon size={18} className={isActive && !isLocked ? "text-[#229C62]" : "text-slate-400"} />
               <span className="flex-1">{label}</span>
               {isLocked && (
                 <span className="flex items-center gap-1 text-[10px] text-slate-400">

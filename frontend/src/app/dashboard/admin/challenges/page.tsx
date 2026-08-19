@@ -195,7 +195,7 @@ export default function AdminChallengesPage() {
                     <td className="px-4 py-3">
                       <div className="text-[11px] text-slate-500">
                         <p>{new Date(c.startDate).toLocaleDateString()}</p>
-                        <p className={ended ? "text-slate-400" : "text-emerald-600"}>
+                        <p className={ended ? "text-slate-400" : "text-[#229C62]"}>
                           {ended ? "Ended" : "Active"}
                         </p>
                       </div>
@@ -228,7 +228,7 @@ export default function AdminChallengesPage() {
         footer={
           <div className="flex justify-end gap-2">
             <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center gap-1.5">
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
               {modal.editing ? "Save Changes" : "Create Challenge"}
             </button>

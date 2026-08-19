@@ -198,7 +198,7 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
       </Link>
 
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-8 text-white text-center">
+        <div className="bg-gradient-to-r from-[#229C62] to-[#229C62] p-8 text-white text-center">
           <div className="w-16 h-16 rounded-full bg-white/20 mx-auto mb-3 flex items-center justify-center">
             <Award size={32} />
           </div>
@@ -208,7 +208,7 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
 
         <div className="p-6 space-y-5">
           <div className="text-center">
-            <CheckCircle2 size={40} className="text-emerald-500 mx-auto mb-2" />
+            <CheckCircle2 size={40} className="text-[#229C62] mx-auto mb-2" />
             <h2 className="text-lg font-bold text-slate-900">Congratulations!</h2>
             <p className="text-sm text-slate-600 mt-1">
               You have successfully completed <span className="font-medium">{cert.courseName}</span>.
@@ -244,7 +244,7 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
             <button
               onClick={generatePDF}
               disabled={generating}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-[#229C62] hover:bg-[#0F203A] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
               {generating ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
               {generating ? "Generating..." : "Download PDF"}

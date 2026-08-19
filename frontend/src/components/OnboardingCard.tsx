@@ -13,7 +13,7 @@ const steps = [
     description: "Begin with the basics — complete lessons to earn XP and unlock advanced content.",
     href: "/dashboard/courses",
     cta: "Browse Courses",
-    color: "bg-emerald-100 text-emerald-600",
+    color: "bg-[#E9F8EE] text-[#229C62]",
   },
   {
     icon: Microscope,
@@ -108,7 +108,7 @@ export default function OnboardingCard() {
             onClick={() => setStep(i)}
             aria-label={`Go to step ${i + 1}`}
             className={`h-1 rounded-full transition-all duration-300 ${
-              i === step ? "w-6 bg-emerald-500" : "w-2 bg-slate-200"
+              i === step ? "w-6 bg-[#229C62]" : "w-2 bg-slate-200"
             }`}
           />
         ))}

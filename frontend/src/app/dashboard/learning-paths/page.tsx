@@ -46,7 +46,7 @@ interface LearningPath {
 }
 
 const difficultyColors: Record<string, string> = {
-  BEGINNER: "bg-emerald-100 text-emerald-700",
+  BEGINNER: "bg-[#E9F8EE] text-[#0F203A]",
   INTERMEDIATE: "bg-amber-100 text-amber-700",
   ADVANCED: "bg-red-100 text-red-700",
   EXPERT: "bg-purple-100 text-purple-700",
@@ -67,7 +67,7 @@ export default function LearningPathsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }

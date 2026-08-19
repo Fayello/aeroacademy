@@ -180,7 +180,7 @@ export default function CourseBriefingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }
@@ -195,18 +195,18 @@ export default function CourseBriefingPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
           <Link
             href="/dashboard/courses"
-            className="inline-flex items-center gap-1 text-sm text-emerald-200 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-1 text-sm text-white/80 hover:text-white transition-colors mb-4"
           >
             <ChevronLeft size={16} />
             All courses
           </Link>
           <h1 className="text-3xl font-bold tracking-tight mb-2">{course.title}</h1>
-          <p className="text-emerald-100 leading-relaxed max-w-2xl mb-6">{course.description}</p>
+          <p className="text-white/80 leading-relaxed max-w-2xl mb-6">{course.description}</p>
           <div className="flex flex-wrap gap-4 text-sm">
             {estimatedMinutes > 0 && (
               <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
@@ -229,13 +229,13 @@ export default function CourseBriefingPage() {
       {/* What You'll Learn */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-          <Target size={18} className="text-emerald-600" />
+          <Target size={18} className="text-[#229C62]" />
           What you&apos;ll learn
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {course.sections?.map((section: Section) => (
             <div key={section.id} className="flex items-start gap-2">
-              <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 shrink-0" />
+              <CheckCircle2 size={16} className="text-[#229C62] mt-0.5 shrink-0" />
               <span className="text-sm text-slate-700">{section.title}</span>
             </div>
           ))}
@@ -304,13 +304,13 @@ export default function CourseBriefingPage() {
                   value={myComment}
                   onChange={(e) => setMyComment(e.target.value)}
                   placeholder="Share your experience (optional)"
-                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
                   rows={3}
                 />
                 <button
                   onClick={handleSubmitReview}
                   disabled={myRating < 1 || submittingReview}
-                  className="mt-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                  className="mt-2 px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
                 >
                   {submittingReview ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                   {myRating > 0 && reviewsData.reviews.some((r) => r.userId === enrollment?.userId) ? "Update" : "Submit"}
@@ -324,7 +324,7 @@ export default function CourseBriefingPage() {
             {reviewsData.reviews.slice(0, 5).map((review) => (
               <div key={review.id} className="border-t border-slate-100 pt-4">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-sm font-semibold text-emerald-700">
+                  <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-sm font-semibold text-[#0F203A]">
                     {(review.user.name || review.user.email)[0].toUpperCase()}
                   </div>
                   <div>
@@ -388,7 +388,7 @@ export default function CourseBriefingPage() {
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                       isLocked
                         ? "text-slate-500 bg-slate-100"
-                        : "text-emerald-600 bg-emerald-100"
+                        : "text-[#229C62] bg-[#E9F8EE]"
                     }`}>
                       Module {section.order}
                     </span>
@@ -440,8 +440,8 @@ export default function CourseBriefingPage() {
           <div className="bg-white rounded-xl border border-slate-200 p-6 sticky top-24">
             {isEnrolled ? (
               <>
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
-                  <CheckCircle2 size={24} className="text-emerald-600" />
+                <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mb-4">
+                  <CheckCircle2 size={24} className="text-[#229C62]" />
                 </div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">Course Progress</h3>
                 <p className="text-sm text-slate-500 mb-6">Continue where you left off.</p>
@@ -452,7 +452,7 @@ export default function CourseBriefingPage() {
                     <span className="font-semibold text-slate-900">{progress?.percentage || 0}%</span>
                   </div>
                   <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500" style={{ width: `${progress?.percentage || 0}%` }} />
+                    <div className="h-full bg-gradient-to-r from-[#229C62] to-[#229C62] rounded-full transition-all duration-500" style={{ width: `${progress?.percentage || 0}%` }} />
                   </div>
                   {progress && (
                     <p className="text-xs text-slate-500">{progress.completed} of {progress.total} lessons completed</p>
@@ -461,16 +461,16 @@ export default function CourseBriefingPage() {
 
                 {progress && progress.percentage === 100 ? (
                   <div className="space-y-3">
-                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <div className="p-4 bg-[#E9F8EE] rounded-xl border border-[#229C62]/20">
                       <div className="flex items-center gap-2 mb-1">
-                        <Award size={16} className="text-emerald-600" />
-                        <p className="text-sm font-medium text-emerald-800">Course Completed!</p>
+                        <Award size={16} className="text-[#229C62]" />
+                        <p className="text-sm font-medium text-[#0F203A]">Course Completed!</p>
                       </div>
-                      <p className="text-xs text-emerald-600">You have earned your certification.</p>
+                      <p className="text-xs text-[#229C62]">You have earned your certification.</p>
                     </div>
                     <Link
                       href={"/dashboard/courses/" + course.id + "/certificate"}
-                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2.5 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                     >
                       <Award size={14} />
                       View Certificate
@@ -479,7 +479,7 @@ export default function CourseBriefingPage() {
                 ) : (
                   <button
                     onClick={handleResumeCourse}
-                    className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                   >
                     <Play size={16} />
                     Resume Course
@@ -488,8 +488,8 @@ export default function CourseBriefingPage() {
               </>
             ) : (
               <>
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
-                  <Rocket size={24} className="text-emerald-600" />
+                <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mb-4">
+                  <Rocket size={24} className="text-[#229C62]" />
                 </div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">Ready to start?</h3>
                 <p className="text-sm text-slate-500 mb-6">
@@ -498,15 +498,15 @@ export default function CourseBriefingPage() {
 
                 <div className="space-y-2 mb-6 text-sm text-slate-600">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 size={14} className="text-emerald-500" />
+                    <CheckCircle2 size={14} className="text-[#229C62]" />
                     <span>{totalLessons} lessons with hands-on exercises</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 size={14} className="text-emerald-500" />
+                    <CheckCircle2 size={14} className="text-[#229C62]" />
                     <span>Earn XP and climb the leaderboard</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 size={14} className="text-emerald-500" />
+                    <CheckCircle2 size={14} className="text-[#229C62]" />
                     <span>Certificate upon completion</span>
                   </div>
                 </div>
@@ -514,7 +514,7 @@ export default function CourseBriefingPage() {
                 <button
                   onClick={handleStartCourse}
                   disabled={enrolling}
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   {enrolling ? (
                     <Loader2 size={16} className="animate-spin" />

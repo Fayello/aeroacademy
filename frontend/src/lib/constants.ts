@@ -13,6 +13,6 @@ export const DIVISION_COLORS: Record<string, string> = {
 export const DIVISION_TEXT_COLORS: Record<string, string> = {
   TITAN: "text-red-600",
   DIAMOND: "text-blue-600",
-  PLATINUM: "text-emerald-600",
+  PLATINUM: "text-[#229C62]",
   GOLD: "text-amber-600",
 };

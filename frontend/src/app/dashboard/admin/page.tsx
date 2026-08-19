@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
   }
 
   const cards = [
-    { label: "Students", value: stats?.totalStudents || 0, icon: Users, color: "emerald", bg: "bg-emerald-500" },
+    { label: "Students", value: stats?.totalStudents || 0, icon: Users, color: "emerald", bg: "bg-[#229C62]" },
     { label: "Courses", value: stats?.totalCourses || 0, icon: GraduationCap, color: "blue", bg: "bg-blue-500" },
     { label: "Labs", value: stats?.totalLabs || 0, icon: Microscope, color: "violet", bg: "bg-violet-500" },
     { label: "Master Classes", value: stats?.masterClasses || 0, icon: Video, color: "amber", bg: "bg-amber-500" },

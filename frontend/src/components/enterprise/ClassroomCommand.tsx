@@ -147,7 +147,7 @@ export default function ClassroomCommand() {
       {/* Controls */}
       <div className="card p-6 space-y-5">
         <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-          <Shield size={16} className="text-emerald-600" />
+          <Shield size={16} className="text-[#229C62]" />
           Classroom Control
         </h2>
 
@@ -185,12 +185,12 @@ export default function ClassroomCommand() {
       <div className="lg:col-span-2 card p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-            <Activity size={16} className="text-emerald-600" />
+            <Activity size={16} className="text-[#229C62]" />
             Team Progress
           </h3>
           {teamProgress && (
-            <span className="text-xs text-emerald-600 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs text-[#229C62] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#229C62] animate-pulse" />
               Live
             </span>
           )}
@@ -211,14 +211,14 @@ export default function ClassroomCommand() {
                   </div>
                   <div className="flex items-center gap-3 mt-1.5">
                     <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${isCorrect ? "bg-emerald-500" : "bg-slate-200"}`} style={{ width: isCorrect ? "100%" : "5%" }} />
+                      <div className={`h-full rounded-full ${isCorrect ? "bg-[#229C62]" : "bg-slate-200"}`} style={{ width: isCorrect ? "100%" : "5%" }} />
                     </div>
-                    <span className={`text-xs ${isCorrect ? "text-emerald-600 font-medium" : "text-slate-400"}`}>
+                    <span className={`text-xs ${isCorrect ? "text-[#229C62] font-medium" : "text-slate-400"}`}>
                       {isCorrect ? "Done" : "Pending"}
                     </span>
                   </div>
                 </div>
-                {isCorrect && <CheckCircle size={16} className="text-emerald-500 shrink-0" />}
+                {isCorrect && <CheckCircle size={16} className="text-[#229C62] shrink-0" />}
               </div>
             );
           })}

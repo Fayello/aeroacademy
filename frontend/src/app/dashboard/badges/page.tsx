@@ -154,7 +154,7 @@ export default function BadgesPage() {
                 <p className="text-[10px] font-bold text-amber-600 mt-2">+{badge.xpReward} XP</p>
               )}
               {earned && (
-                <span className="inline-block mt-2 text-[9px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                <span className="inline-block mt-2 text-[9px] font-medium text-[#229C62] bg-[#E9F8EE] px-2 py-0.5 rounded-full">
                   Earned
                 </span>
               )}

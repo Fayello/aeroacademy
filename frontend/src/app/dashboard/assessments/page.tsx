@@ -122,7 +122,7 @@ export default function AssessmentsPage() {
                       <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
+                            pct >= 80 ? "bg-[#229C62]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
                           }`}
                           style={{ width: `${pct}%` }}
                         />

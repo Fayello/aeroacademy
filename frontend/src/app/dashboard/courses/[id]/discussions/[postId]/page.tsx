@@ -313,7 +313,7 @@ export default function DiscussionPostPage() {
           {/* Author Row */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-xs font-semibold text-emerald-700">
+              <div className="w-7 h-7 rounded-full bg-[#E9F8EE] flex items-center justify-center text-xs font-semibold text-[#0F203A]">
                 {(comment.author.name || comment.author.email)[0].toUpperCase()}
               </div>
               <div>
@@ -362,13 +362,13 @@ export default function DiscussionPostPage() {
                 value={editBody}
                 onChange={(e) => setEditBody(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
               />
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleEditComment(comment.id)}
                   disabled={savingEdit || !editBody.trim()}
-                  className="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium text-white bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 rounded-lg transition-colors"
                 >
                   {savingEdit ? "Saving..." : "Save"}
                 </button>
@@ -396,13 +396,13 @@ export default function DiscussionPostPage() {
                 onClick={() => handleVoteComment(comment.id, comment.userVote || 0)}
                 className={`inline-flex items-center gap-1 text-xs transition-colors ${
                   comment.userVote === 1
-                    ? "text-emerald-600 font-medium"
+                    ? "text-[#229C62] font-medium"
                     : "text-slate-400 hover:text-slate-600"
                 }`}
               >
                 <ThumbsUp
                   size={12}
-                  className={comment.userVote === 1 ? "fill-emerald-600" : ""}
+                  className={comment.userVote === 1 ? "fill-[#229C62]" : ""}
                 />
                 {comment.upvotes}
               </button>
@@ -427,14 +427,14 @@ export default function DiscussionPostPage() {
                 onChange={(e) => setReplyBody(e.target.value)}
                 placeholder="Write a reply..."
                 rows={2}
-                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
                 autoFocus
               />
               <div className="flex flex-col gap-1">
                 <button
                   onClick={() => handleCreateReply(comment.id)}
                   disabled={submittingReply || !replyBody.trim()}
-                  className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
+                  className="px-3 py-2 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
                 >
                   {submittingReply ? (
                     <Loader2 size={12} className="animate-spin" />
@@ -469,7 +469,7 @@ export default function DiscussionPostPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }
@@ -481,7 +481,7 @@ export default function DiscussionPostPage() {
         <p className="text-slate-500">Discussion not found.</p>
         <Link
           href={`/dashboard/courses/${courseId}/discussions`}
-          className="mt-4 inline-block text-sm text-emerald-600 hover:text-emerald-700"
+          className="mt-4 inline-block text-sm text-[#229C62] hover:text-[#0F203A]"
         >
           ← Back to discussions
         </Link>
@@ -497,7 +497,7 @@ export default function DiscussionPostPage() {
       {/* Back Link */}
       <Link
         href={`/dashboard/courses/${courseId}/discussions`}
-        className="inline-flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-[#229C62] hover:text-[#0F203A] transition-colors"
       >
         ← Back to discussions
       </Link>
@@ -514,7 +514,7 @@ export default function DiscussionPostPage() {
               </span>
             )}
             {post.resolved && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#E9F8EE] px-2.5 py-1 rounded-full">
                 <CheckCircle size={10} />
                 Resolved
               </span>
@@ -526,7 +526,7 @@ export default function DiscussionPostPage() {
           </h1>
 
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-sm font-semibold text-emerald-700">
+            <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-sm font-semibold text-[#0F203A]">
               {(post.author.name || post.author.email)[0].toUpperCase()}
             </div>
             <div>
@@ -570,13 +570,13 @@ export default function DiscussionPostPage() {
                 onClick={handleVotePost}
                 className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   post.userVote === 1
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    ? "bg-[#E9F8EE] text-[#0F203A] border border-[#229C62]/20"
                     : "text-slate-500 hover:bg-slate-50 border border-slate-200"
                 }`}
               >
                 <ThumbsUp
                   size={16}
-                  className={post.userVote === 1 ? "fill-emerald-600" : ""}
+                  className={post.userVote === 1 ? "fill-[#229C62]" : ""}
                 />
                 {post.upvotes}
               </button>
@@ -595,7 +595,7 @@ export default function DiscussionPostPage() {
                   onClick={handleToggleResolved}
                   className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors border ${
                     post.resolved
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      ? "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20"
                       : "text-slate-500 border-slate-200 hover:bg-slate-50"
                   }`}
                 >
@@ -629,7 +629,7 @@ export default function DiscussionPostPage() {
         {/* New Comment Form */}
         <div className="mb-6 pb-6 border-b border-slate-100">
           <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-sm font-semibold text-emerald-700 shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-sm font-semibold text-[#0F203A] shrink-0">
               {currentUserId
                 ? JSON.parse(localStorage.getItem("user") || "{}")
                     .name?.[0]?.toUpperCase() || "?"
@@ -641,13 +641,13 @@ export default function DiscussionPostPage() {
                 onChange={(e) => setCommentBody(e.target.value)}
                 placeholder="Write a comment..."
                 rows={3}
-                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
               />
               <div className="flex justify-end mt-2">
                 <button
                   onClick={handleCreateComment}
                   disabled={submittingComment || !commentBody.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   {submittingComment && (
                     <Loader2 size={14} className="animate-spin" />

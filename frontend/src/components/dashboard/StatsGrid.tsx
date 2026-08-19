@@ -12,9 +12,9 @@ interface StatsGridProps {
 
 const stats = [
   { key: "xp", label: "Total XP", icon: Trophy, color: "text-amber-600 bg-amber-100" },
-  { key: "rank", label: "Rank (ELO)", icon: Target, color: "text-emerald-600 bg-emerald-100" },
+  { key: "rank", label: "Rank (ELO)", icon: Target, color: "text-[#229C62] bg-[#E9F8EE]" },
   { key: "division", label: "Division", icon: Shield, color: "text-blue-600 bg-blue-100" },
-  { key: "clearance", label: "Clearance", icon: CheckCircle, color: "text-emerald-600 bg-emerald-100" },
+  { key: "clearance", label: "Clearance", icon: CheckCircle, color: "text-[#229C62] bg-[#E9F8EE]" },
 ];
 
 export default function StatsGrid({ xp, rank, division, clearance, loading }: StatsGridProps) {

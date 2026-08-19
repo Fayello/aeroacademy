@@ -187,18 +187,18 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
               <p className="text-[11px] text-slate-500">Earned By</p>
             </div>
             <div className="text-center p-3 bg-slate-50 rounded-lg">
-              <Target size={18} className="text-emerald-500 mx-auto mb-1" />
+              <Target size={18} className="text-[#229C62] mx-auto mb-1" />
               <p className="text-lg font-bold text-slate-900">{badge.tier}</p>
               <p className="text-[11px] text-slate-500">Tier</p>
             </div>
           </div>
 
           {earned ? (
-            <div className="flex items-center gap-2 text-emerald-600 text-sm bg-emerald-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-[#229C62] text-sm bg-[#E9F8EE] p-3 rounded-lg">
               <CheckCircle2 size={16} />
               <span className="font-medium">Badge Earned</span>
               {earnedBadge && (
-                <span className="text-[11px] text-emerald-500 ml-auto">
+                <span className="text-[11px] text-[#229C62] ml-auto">
                   {new Date(earnedBadge.earnedAt).toLocaleDateString()}
                 </span>
               )}

@@ -18,13 +18,13 @@ function ActionBadge({ action }: { action: string }) {
   if (action.startsWith("AUTH_")) return <span className={`${base} bg-blue-50 text-blue-700`}>{action}</span>;
   if (action.startsWith("LAB_") || action.startsWith("FLAG_")) return <span className={`${base} bg-amber-50 text-amber-700`}>{action}</span>;
   if (action.startsWith("QUIZ_") || action.startsWith("LESSON_")) return <span className={`${base} bg-violet-50 text-violet-700`}>{action}</span>;
-  if (action.startsWith("BOOKING_") || action.startsWith("TRAINER_") || action.startsWith("MASTERCLASS_")) return <span className={`${base} bg-emerald-50 text-emerald-700`}>{action}</span>;
+  if (action.startsWith("BOOKING_") || action.startsWith("TRAINER_") || action.startsWith("MASTERCLASS_")) return <span className={`${base} bg-[#E9F8EE] text-[#0F203A]`}>{action}</span>;
   if (action.includes("DELETED") || action.includes("CANCELLED") || action.includes("TERMINATED")) return <span className={`${base} bg-red-50 text-red-700`}>{action}</span>;
   return <span className={`${base} bg-slate-100 text-slate-600`}>{action}</span>;
 }
 
 function StatusBadge({ code }: { code: number }) {
-  if (code < 400) return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-700">{code}</span>;
+  if (code < 400) return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-[#E9F8EE] text-[#0F203A]">{code}</span>;
   if (code < 500) return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-50 text-amber-700">{code}</span>;
   return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-red-50 text-red-700">{code}</span>;
 }
@@ -97,8 +97,8 @@ export default function AdminAuditPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <ScrollText size={24} className="text-emerald-600" />
+            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
+              <ScrollText size={24} className="text-[#229C62]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Audit Logs</h1>
@@ -107,11 +107,11 @@ export default function AdminAuditPage() {
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
             <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
-              <ShieldCheck size={16} className="text-emerald-600" />
+              <ShieldCheck size={16} className="text-[#229C62]" />
               <span className="font-medium">{(summary?.byStatus || []).reduce((acc, s) => acc + s.count, 0)} total events</span>
             </div>
             <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
-              <Activity size={16} className="text-emerald-600" />
+              <Activity size={16} className="text-[#229C62]" />
               <span className="font-medium">{summary?.last24h || 0} in last 24h</span>
             </div>
             <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
@@ -130,7 +130,7 @@ export default function AdminAuditPage() {
             <button
               key={a.action}
               onClick={() => handleFilterChange(a.action, status)}
-              className={`p-4 rounded-xl border text-left transition-all ${action === a.action ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-emerald-300 hover:shadow-sm"}`}
+              className={`p-4 rounded-xl border text-left transition-all ${action === a.action ? "border-[#229C62] bg-[#E9F8EE]" : "border-slate-200 hover:border-[#229C62]/30 hover:shadow-sm"}`}
             >
               <div className="text-xl font-bold text-slate-900">{a.count}</div>
               <div className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide truncate">{a.action}</div>
@@ -185,7 +185,7 @@ export default function AdminAuditPage() {
               {loading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-16 text-center">
-                    <Loader2 className="animate-spin text-emerald-600 mx-auto" size={28} />
+                    <Loader2 className="animate-spin text-[#229C62] mx-auto" size={28} />
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
@@ -219,7 +219,7 @@ export default function AdminAuditPage() {
                     <td className="px-6 py-4"><ActionBadge action={log.action} /></td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1.5 text-xs font-mono text-slate-600">
-                        <span className={`px-1.5 py-0.5 rounded font-bold ${log.method === "GET" ? "bg-blue-50 text-blue-700" : log.method === "POST" ? "bg-emerald-50 text-emerald-700" : log.method === "DELETE" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}>
+                        <span className={`px-1.5 py-0.5 rounded font-bold ${log.method === "GET" ? "bg-blue-50 text-blue-700" : log.method === "POST" ? "bg-[#E9F8EE] text-[#0F203A]" : log.method === "DELETE" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}>
                           {log.method}
                         </span>
                         <span className="truncate max-w-[220px]">{log.path}</span>
@@ -230,7 +230,7 @@ export default function AdminAuditPage() {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => setSelected(log)}
-                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                        className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"
                         title="View details"
                       >
                         <Eye size={16} />

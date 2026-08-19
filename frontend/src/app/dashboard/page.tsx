@@ -224,7 +224,7 @@ export default function DashboardPage() {
       case "LAB_STOPPED":
         return { label: "Lab Stopped", color: "bg-orange-500/20 text-orange-400 border-orange-500/30", icon: FlaskConical, dotColor: "bg-orange-400" };
       case "FLAG_SOLVED":
-        return { label: "Flag Captured", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30", icon: Flag, dotColor: "bg-emerald-400" };
+        return { label: "Flag Captured", color: "bg-[#229C62]/20 text-[#229C62]/60 border-[#229C62]/30", icon: Flag, dotColor: "bg-[#229C62]/60" };
       case "LESSON_COMPLETED":
         return { label: "Lesson Done", color: "bg-violet-500/20 text-violet-400 border-violet-500/30", icon: BookOpen, dotColor: "bg-violet-400" };
       case "QUIZ_PASSED":
@@ -264,7 +264,7 @@ export default function DashboardPage() {
   function getAvatarColor(name: string | null | undefined, email: string): string {
     const hash = (name || email).split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const colors = [
-      "bg-blue-600", "bg-violet-600", "bg-emerald-600", "bg-amber-600",
+      "bg-blue-600", "bg-violet-600", "bg-[#229C62]", "bg-amber-600",
       "bg-rose-600", "bg-cyan-600", "bg-indigo-600", "bg-pink-600",
     ];
     return colors[hash % colors.length];
@@ -307,8 +307,8 @@ export default function DashboardPage() {
           <div className="bg-white rounded-xl border border-slate-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <Star size={16} className="text-emerald-600" />
+                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
+                  <Star size={16} className="text-[#229C62]" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-slate-900">Level {level}</p>
@@ -318,13 +318,13 @@ export default function DashboardPage() {
               {nextUnlock && (
                 <div className="text-right">
                   <p className="text-[11px] text-slate-500">Next lab unlock</p>
-                  <p className="text-sm font-semibold text-emerald-600">Level {nextUnlock.requiredLevel}</p>
+                  <p className="text-sm font-semibold text-[#229C62]">Level {nextUnlock.requiredLevel}</p>
                 </div>
               )}
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-[#229C62] to-[#229C62] rounded-full transition-all duration-500"
                 style={{ width: `${progress * 100}%` }}
               />
             </div>
@@ -343,7 +343,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-slate-900">Start Here</h3>
-              <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Beginner</span>
+              <span className="text-[10px] font-medium text-[#0F203A] bg-[#E9F8EE] px-2 py-0.5 rounded-full">Beginner</span>
             </div>
             <Link
               href="/dashboard/labs"
@@ -375,18 +375,18 @@ export default function DashboardPage() {
                 <Link
                   key={lab.id}
                   href={`/dashboard/labs/${lab.id}`}
-                  className="group p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all duration-200"
+                  className="group p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/50 transition-all duration-200"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0 group-hover:bg-emerald-200 transition-colors">
-                      <FlaskConical size={16} className="text-emerald-600" />
+                    <div className="w-10 h-10 rounded-lg bg-[#E9F8EE] border border-[#229C62]/20 flex items-center justify-center shrink-0 group-hover:bg-[#229C62]/30 transition-colors">
+                      <FlaskConical size={16} className="text-[#229C62]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-[#0F203A] transition-colors">
                         {lab.title}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-medium text-[#0F203A] bg-[#E9F8EE] px-1.5 py-0.5 rounded">
                           {lab.difficulty <= 900 ? "EASY" : lab.difficulty <= 1100 ? "BEGINNER" : "INTERMEDIATE"}
                         </span>
                         {lab.estimatedMinutes && (
@@ -396,7 +396,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-[11px] text-emerald-600 font-medium group-hover:underline flex items-center gap-1">
+                    <span className="text-[11px] text-[#229C62] font-medium group-hover:underline flex items-center gap-1">
                       Launch lab <ChevronRight size={12} />
                     </span>
                   </div>

@@ -141,7 +141,7 @@ export default function AdminUsersPage() {
       sortable: true,
       render: (user: AdminUser) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-sm font-bold">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#229C62] to-teal-600 flex items-center justify-center text-white text-sm font-bold">
             {(user.name || user.email)?.[0]?.toUpperCase()}
           </div>
           <div>
@@ -198,13 +198,13 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center"><Users size={28} /></div>
           <div>
             <h1 className="text-2xl font-bold">Manage Users</h1>
-            <p className="text-emerald-100 text-sm">{stats?.total || 0} total users</p>
+            <p className="text-white/80 text-sm">{stats?.total || 0} total users</p>
           </div>
         </div>
       </div>
@@ -213,7 +213,7 @@ export default function AdminUsersPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><Users size={18} className="text-emerald-600" /></div>
+            <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center"><Users size={18} className="text-[#229C62]" /></div>
             <div><p className="text-lg font-bold text-slate-900">{stats?.total || 0}</p><p className="text-xs text-slate-500">Total</p></div>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function AdminUsersPage() {
           { label: "Delete", icon: <Trash2 size={16} />, variant: "danger", onClick: handleBatchDelete },
         ]}
         filters={
-          <select value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); loadUsers(e.target.value); }} className="px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+          <select value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); loadUsers(e.target.value); }} className="px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#229C62]/20">
             <option value="">All Roles</option>
             <option value="STUDENT">Students</option>
             <option value="ADMIN">Admins</option>
@@ -263,7 +263,7 @@ export default function AdminUsersPage() {
       />
 
       {/* Edit Modal (view-only for users) */}
-      <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Edit User" footer={<div className="flex gap-3 justify-end"><button onClick={() => setModalOpen(false)} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSave} disabled={saving} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+      <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Edit User" footer={<div className="flex gap-3 justify-end"><button onClick={() => setModalOpen(false)} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSave} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
         <div className="space-y-4">
           <AdminInput label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Full name" />
           <AdminInput label="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" required />
@@ -276,7 +276,7 @@ export default function AdminUsersPage() {
 
       <AdminConfirmDialog isOpen={deleteDialog.isOpen} onClose={() => setDeleteDialog({ isOpen: false, item: null })} onConfirm={handleDelete} title="Delete User" message={`Permanently delete "${deleteDialog.item?.email}"? This cannot be undone.`} loading={saving} />
 
-      <AdminModal isOpen={batchRole.open} onClose={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} title="Change User Roles" footer={<div className="flex gap-3 justify-end"><button onClick={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={confirmBatchRole} disabled={saving} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Apply Role"}</button></div>}>
+      <AdminModal isOpen={batchRole.open} onClose={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} title="Change User Roles" footer={<div className="flex gap-3 justify-end"><button onClick={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={confirmBatchRole} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Apply Role"}</button></div>}>
         <p className="text-sm text-slate-600 mb-4">Set the role for <span className="font-semibold text-slate-900">{batchRole.items.length}</span> selected user{batchRole.items.length !== 1 ? "s" : ""}. Your own role cannot be changed.</p>
         <AdminSelect label="Role" value={batchRole.role} onChange={(e) => setBatchRole({ ...batchRole, role: e.target.value })} options={[{ value: "STUDENT", label: "Student" }, { value: "ADMIN", label: "Admin" }, { value: "RECRUITER", label: "Recruiter" }]} />
       </AdminModal>

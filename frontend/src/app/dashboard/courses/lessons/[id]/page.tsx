@@ -109,12 +109,12 @@ export default function LessonPage() {
   return (
     <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-8 text-white mb-6">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white mb-6">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
           <Link
             href={`/dashboard/courses/${lesson.section?.courseId || ""}`}
-            className="inline-flex items-center gap-1 text-sm text-emerald-200 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-1 text-sm text-white/80 hover:text-white transition-colors mb-4"
           >
             <ChevronLeft size={16} />
             Back to course
@@ -123,7 +123,7 @@ export default function LessonPage() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-medium px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full">{lesson.section?.title}</span>
-                <span className="text-xs text-emerald-200">~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read</span>
+                <span className="text-xs text-white/80">~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read</span>
               </div>
               <h1 className="text-2xl font-bold tracking-tight">{lesson.title}</h1>
             </div>
@@ -132,7 +132,7 @@ export default function LessonPage() {
               disabled={saving || completed}
               className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 completed
-                  ? "bg-white text-emerald-600"
+                  ? "bg-white text-[#229C62]"
                   : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
               } disabled:opacity-50`}
             >
@@ -173,7 +173,7 @@ export default function LessonPage() {
                     const isInline = !match;
                     if (isInline) {
                       return (
-                        <code className="bg-slate-100 text-emerald-700 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                        <code className="bg-slate-100 text-[#0F203A] px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
                           {children}
                         </code>
                       );
@@ -184,7 +184,7 @@ export default function LessonPage() {
                           <span className="text-xs font-medium text-slate-500">{match[1]}</span>
                           <button
                             onClick={() => { navigator.clipboard.writeText(String(children).replace(/\n$/, "")); toast.success("Copied!"); }}
-                            className="text-xs text-slate-400 hover:text-emerald-600 transition-colors"
+                            className="text-xs text-slate-400 hover:text-[#229C62] transition-colors"
                           >
                             Copy
                           </button>
@@ -225,9 +225,9 @@ export default function LessonPage() {
                               onClick={() => !quizSubmitted && setQuizAnswer((prev) => ({ ...prev, [question.id]: answer.id }))}
                               className={`w-full p-3 rounded-lg border text-left text-sm font-medium transition-all flex items-center justify-between ${
                                 isSelected && !quizSubmitted
-                                  ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                                  ? "bg-[#E9F8EE] border-[#229C62]/30 text-[#0F203A]"
                                   : wasSelectedAndCorrect
-                                  ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                                  ? "bg-[#E9F8EE] border-[#229C62]/30 text-[#0F203A]"
                                   : wasSelectedAndWrong
                                   ? "bg-red-50 border-red-300 text-red-800"
                                   : quizSubmitted
@@ -237,7 +237,7 @@ export default function LessonPage() {
                               disabled={quizSubmitted}
                             >
                               <span>{answer.text}</span>
-                              {wasSelectedAndCorrect && <CheckCircle size={16} className="text-emerald-600" />}
+                              {wasSelectedAndCorrect && <CheckCircle size={16} className="text-[#229C62]" />}
                               {wasSelectedAndWrong && <span className="text-red-500 text-xs font-medium">Incorrect</span>}
                             </button>
                           );
@@ -278,8 +278,8 @@ export default function LessonPage() {
                     Submit answers
                   </button>
                 ) : (
-                  <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200"}`}>
-                    <p className={`font-medium ${quizCorrect ? "text-emerald-800" : "text-red-800"}`}>
+                  <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-[#E9F8EE] border-[#229C62]/20" : "bg-red-50 border-red-200"}`}>
+                    <p className={`font-medium ${quizCorrect ? "text-[#0F203A]" : "text-red-800"}`}>
                       {quizCorrect ? "Great work! You passed." : "Review the corrections above and try again."}
                     </p>
                     <button
@@ -324,7 +324,7 @@ export default function LessonPage() {
               </div>
               <div className="flex justify-between">
                 <span>Status</span>
-                <span className={`font-medium ${completed ? "text-emerald-600" : "text-slate-500"}`}>
+                <span className={`font-medium ${completed ? "text-[#229C62]" : "text-slate-500"}`}>
                   {completed ? "Completed" : "In progress"}
                 </span>
               </div>

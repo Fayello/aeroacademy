@@ -56,7 +56,7 @@ interface LearningPathDetail {
 }
 
 const difficultyColors: Record<string, string> = {
-  BEGINNER: "bg-emerald-100 text-emerald-700",
+  BEGINNER: "bg-[#E9F8EE] text-[#0F203A]",
   INTERMEDIATE: "bg-amber-100 text-amber-700",
   ADVANCED: "bg-red-100 text-red-700",
   EXPERT: "bg-purple-100 text-purple-700",
@@ -191,20 +191,20 @@ export default function LearningPathDetailPage() {
               key={lpc.id}
               className={`bg-white rounded-xl border p-5 transition-all ${
                 completed
-                  ? "border-emerald-200 bg-emerald-50/30"
+                  ? "border-[#229C62]/20 bg-[#E9F8EE]/30"
                   : "border-slate-200 hover:shadow-md"
               }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                   completed
-                    ? "bg-emerald-100"
+                    ? "bg-[#E9F8EE]"
                     : started
                       ? "bg-violet-100"
                       : "bg-slate-100"
                 }`}>
                   {completed ? (
-                    <CheckCircle2 size={20} className="text-emerald-600" />
+                    <CheckCircle2 size={20} className="text-[#229C62]" />
                   ) : (
                     <span className={`text-sm font-bold ${started ? "text-violet-600" : "text-slate-400"}`}>
                       {i + 1}
@@ -232,7 +232,7 @@ export default function LearningPathDetailPage() {
                       <span className="text-sm font-bold text-slate-900">{progress.percentage}%</span>
                       <div className="w-20 h-1.5 bg-slate-100 rounded-full mt-1">
                         <div
-                          className={`h-full rounded-full ${completed ? "bg-emerald-500" : "bg-violet-500"}`}
+                          className={`h-full rounded-full ${completed ? "bg-[#229C62]" : "bg-violet-500"}`}
                           style={{ width: `${progress.percentage}%` }}
                         />
                       </div>

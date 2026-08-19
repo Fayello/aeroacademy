@@ -25,14 +25,14 @@ const iconColors = {
   info: "text-blue-600 bg-blue-100",
   warning: "text-amber-600 bg-amber-100",
   danger: "text-red-600 bg-red-100",
-  success: "text-emerald-600 bg-emerald-100",
+  success: "text-[#229C62] bg-[#E9F8EE]",
 };
 
 const confirmStyles = {
   info: "bg-blue-600 hover:bg-blue-700 text-white",
   warning: "bg-amber-600 hover:bg-amber-700 text-white",
   danger: "bg-red-600 hover:bg-red-700 text-white",
-  success: "bg-emerald-600 hover:bg-emerald-700 text-white",
+  success: "bg-[#229C62] hover:bg-[#0F203A] text-white",
 };
 
 export default function Modal({

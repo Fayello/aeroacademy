@@ -63,13 +63,13 @@ export default function CandidateRegistry() {
 
       {/* Header */}
       <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col sm:flex-row items-start gap-6">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-2xl font-bold text-emerald-700 shrink-0">
+        <div className="w-16 h-16 rounded-full bg-[#E9F8EE] flex items-center justify-center text-2xl font-bold text-[#0F203A] shrink-0">
           {profile.name?.[0] || '?'}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-semibold text-slate-900">{profile.name}</h1>
-            <CheckCircle size={16} className="text-emerald-500" />
+            <CheckCircle size={16} className="text-[#229C62]" />
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-500">
             <span className="flex items-center gap-1"><MapPin size={14} />{profile.city || "N/A"}</span>
@@ -87,8 +87,8 @@ export default function CandidateRegistry() {
         {/* Stats */}
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-              <Shield size={28} className="text-emerald-600" />
+            <div className="w-16 h-16 rounded-full bg-[#E9F8EE] flex items-center justify-center mx-auto mb-3">
+              <Shield size={28} className="text-[#229C62]" />
             </div>
             <p className="text-lg font-semibold text-slate-900">{profile.division}</p>
             <p className="text-xs text-slate-500">{profile.clearance}</p>

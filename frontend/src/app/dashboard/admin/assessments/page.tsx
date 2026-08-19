@@ -204,7 +204,7 @@ export default function AdminAssessmentsPage() {
                     <p className="text-xs font-medium text-slate-700">{i + 1}. {q.text}</p>
                     <div className="mt-1.5 grid grid-cols-2 gap-1">
                       {q.options.map((opt) => (
-                        <span key={opt.key} className={`text-[10px] px-2 py-0.5 rounded ${opt.key === q.correctAnswer ? "bg-emerald-100 text-emerald-700 font-medium" : "bg-slate-100 text-slate-500"}`}>
+                        <span key={opt.key} className={`text-[10px] px-2 py-0.5 rounded ${opt.key === q.correctAnswer ? "bg-[#E9F8EE] text-[#0F203A] font-medium" : "bg-slate-100 text-slate-500"}`}>
                           {opt.key}. {opt.text}
                         </span>
                       ))}
@@ -227,7 +227,7 @@ export default function AdminAssessmentsPage() {
         footer={
           <div className="flex justify-end gap-2">
             <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center gap-1.5">
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
               {modal.editing ? "Save Changes" : "Create Assessment"}
             </button>
@@ -267,7 +267,7 @@ export default function AdminAssessmentsPage() {
                         value={opt.text}
                         onChange={(e) => updateOption(qi, oi, e.target.value)}
                         placeholder={`Option ${opt.key}`}
-                        className="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        className="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
                       />
                     </div>
                   ))}

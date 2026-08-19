@@ -162,7 +162,7 @@ export default function AdminTable<T extends { id: string }>({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function AdminTable<T extends { id: string }>({
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder={searchPlaceholder}
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm"
             />
           </div>
           {filters}
@@ -215,7 +215,7 @@ export default function AdminTable<T extends { id: string }>({
                       }}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                     >
-                      {hiddenColumns.has(col.key) ? <Square size={14} className="text-slate-400" /> : <CheckSquare size={14} className="text-emerald-600" />}
+                      {hiddenColumns.has(col.key) ? <Square size={14} className="text-slate-400" /> : <CheckSquare size={14} className="text-[#229C62]" />}
                       {col.label}
                     </button>
                   ))}
@@ -224,7 +224,7 @@ export default function AdminTable<T extends { id: string }>({
             </div>
           )}
           {onAdd && (
-            <button onClick={onAdd} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm">
+            <button onClick={onAdd} className="flex items-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm">
               <Plus size={16} /> {addLabel}
             </button>
           )}
@@ -233,8 +233,8 @@ export default function AdminTable<T extends { id: string }>({
 
       {/* Bulk Actions Bar */}
       {bulkActions && bulkActions.length > 0 && selected.size > 0 && (
-        <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-          <span className="text-sm font-medium text-emerald-700">{selected.size} selected</span>
+        <div className="flex items-center gap-3 p-3 bg-[#E9F8EE] rounded-xl border border-[#229C62]/20">
+          <span className="text-sm font-medium text-[#0F203A]">{selected.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
             <button onClick={() => setSelected(new Set())} className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all" aria-label="Clear selection">
               <X size={16} />
@@ -267,9 +267,9 @@ export default function AdminTable<T extends { id: string }>({
               <tr className="border-b border-slate-200 bg-slate-50">
                 {selectable && (
                   <th className="px-4 py-4 w-10">
-                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-emerald-600 transition-colors" aria-label={selected.size === paginated.length && paginated.length > 0 ? "Deselect all rows" : "Select all rows"}>
+                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[#229C62] transition-colors" aria-label={selected.size === paginated.length && paginated.length > 0 ? "Deselect all rows" : "Select all rows"}>
                       {selected.size === paginated.length && paginated.length > 0 ? (
-                        <CheckSquare size={16} className="text-emerald-600" />
+                        <CheckSquare size={16} className="text-[#229C62]" />
                       ) : (
                         <Square size={16} />
                       )}
@@ -287,7 +287,7 @@ export default function AdminTable<T extends { id: string }>({
                         className="flex items-center gap-1 hover:text-slate-900 transition-colors"
                       >
                         {col.label}
-                        <ArrowUpDown size={12} className={sortKey === col.key ? "text-emerald-600" : ""} />
+                        <ArrowUpDown size={12} className={sortKey === col.key ? "text-[#229C62]" : ""} />
                       </button>
                     ) : col.label}
                   </th>
@@ -313,13 +313,13 @@ export default function AdminTable<T extends { id: string }>({
                 paginated.map((item) => (
                   <tr
                     key={item.id}
-                    className={`transition-colors ${onRowClick ? "cursor-pointer hover:bg-emerald-50/50" : "hover:bg-slate-50/50"} ${selected.has(item.id) ? "bg-emerald-50/30" : ""}`}
+                    className={`transition-colors ${onRowClick ? "cursor-pointer hover:bg-[#E9F8EE]/50" : "hover:bg-slate-50/50"} ${selected.has(item.id) ? "bg-[#E9F8EE]/30" : ""}`}
                     onClick={onRowClick ? () => onRowClick(item) : undefined}
                   >
                     {selectable && (
                       <td className="px-4 py-4 w-10">
-                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }} className="text-slate-400 hover:text-emerald-600 transition-colors" aria-label={selected.has(item.id) ? "Deselect row" : "Select row"}>
-                          {selected.has(item.id) ? <CheckSquare size={16} className="text-emerald-600" /> : <Square size={16} />}
+                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }} className="text-slate-400 hover:text-[#229C62] transition-colors" aria-label={selected.has(item.id) ? "Deselect row" : "Select row"}>
+                          {selected.has(item.id) ? <CheckSquare size={16} className="text-[#229C62]" /> : <Square size={16} />}
                         </button>
                       </td>
                     )}
@@ -343,7 +343,7 @@ export default function AdminTable<T extends { id: string }>({
                           {onEdit && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onEdit(item); }}
-                              className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                              className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"
                               title="Edit"
                             >
                               <Pencil size={16} />
@@ -399,7 +399,7 @@ export default function AdminTable<T extends { id: string }>({
                     onClick={() => setPage(p)}
                     className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
                       p === page
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-[#229C62] text-white"
                         : "border border-slate-200 text-slate-600 hover:bg-slate-50"
                     }`}
                   >

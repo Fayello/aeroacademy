@@ -22,7 +22,7 @@ export default function LeaderboardPreview({ leaderboard }: LeaderboardPreviewPr
           <Trophy size={16} className="text-amber-500" />
           <h3 className="text-sm font-semibold text-slate-900">Top Performers</h3>
         </div>
-        <Link href="/dashboard/leaderboard" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+        <Link href="/dashboard/leaderboard" className="text-xs text-[#229C62] hover:text-[#0F203A] font-medium flex items-center gap-1">
           View all <ChevronRight size={12} />
         </Link>
       </div>

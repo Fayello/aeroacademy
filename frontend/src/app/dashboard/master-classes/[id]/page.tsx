@@ -67,7 +67,7 @@ export default function MasterClassDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-emerald-600" size={24} />
+        <Loader2 className="animate-spin text-[#229C62]" size={24} />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function MasterClassDetailPage() {
         <ArrowLeft size={16} /> Back to Master Classes
       </Link>
 
-      <div className="bg-gradient-to-br from-violet-500 to-emerald-600 rounded-2xl p-8 text-white">
+      <div className="bg-gradient-to-br from-violet-500 to-[#229C62] rounded-2xl p-8 text-white">
         <div className="flex items-center gap-2 mb-4">
           <span className="px-2.5 py-1 bg-white/20 rounded-full text-xs font-medium">{mc.category}</span>
           {mc.status === "LIVE" && (
@@ -138,7 +138,7 @@ export default function MasterClassDetailPage() {
               <div className="space-y-2">
                 {mc.registrations.map((r) => (
                   <div key={r.id} className="flex items-center gap-3 text-sm text-slate-600">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-xs">
                       {(r.user?.name || "U").charAt(0)}
                     </div>
                     {r.user?.name || r.user?.email}
@@ -154,7 +154,7 @@ export default function MasterClassDetailPage() {
             {mc.status === "UPCOMING" ? (
               isRegistered ? (
                 <div className="space-y-3">
-                  <div className="text-center text-sm text-emerald-600 font-medium">You are registered!</div>
+                  <div className="text-center text-sm text-[#229C62] font-medium">You are registered!</div>
                   <button onClick={handleUnregister} disabled={registering} className="btn-secondary w-full text-sm">
                     {registering ? <Loader2 className="animate-spin" size={14} /> : "Cancel Registration"}
                   </button>

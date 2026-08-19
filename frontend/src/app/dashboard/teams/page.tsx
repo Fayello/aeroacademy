@@ -80,7 +80,7 @@ export default function TeamsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-emerald-500 animate-spin" />
+        <Loader2 size={20} className="text-[#229C62] animate-spin" />
       </div>
     );
   }
@@ -94,14 +94,14 @@ export default function TeamsPage() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <button
           onClick={() => setSelectedTeam(null)}
-          className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+          className="text-sm text-[#229C62] hover:text-[#0F203A] font-medium"
         >
           &larr; Back to Teams
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-100 p-3 rounded-xl">
-            <Users size={24} className="text-emerald-600" />
+          <div className="bg-[#E9F8EE] p-3 rounded-xl">
+            <Users size={24} className="text-[#229C62]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -151,8 +151,8 @@ export default function TeamsPage() {
                   <span className="text-sm font-bold text-slate-400 w-6 text-center">
                     {idx + 1}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <span className="text-xs font-bold text-emerald-700">
+                  <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
+                    <span className="text-xs font-bold text-[#0F203A]">
                       {member.name?.charAt(0)?.toUpperCase() || "?"}
                     </span>
                   </div>
@@ -189,7 +189,7 @@ export default function TeamsPage() {
                     {course.progress !== undefined && (
                       <div className="mt-1.5 w-full bg-slate-100 rounded-full h-1.5">
                         <div
-                          className="bg-emerald-500 h-1.5 rounded-full transition-all"
+                          className="bg-[#229C62] h-1.5 rounded-full transition-all"
                           style={{ width: `${Math.min(course.progress, 100)}%` }}
                         />
                       </div>
@@ -230,15 +230,15 @@ export default function TeamsPage() {
             <button
               key={team.id}
               onClick={() => openTeam(team)}
-              className="bg-white border border-slate-200 rounded-xl p-5 text-left hover:shadow-md hover:border-emerald-200 transition-all group"
+              className="bg-white border border-slate-200 rounded-xl p-5 text-left hover:shadow-md hover:border-[#229C62]/20 transition-all group"
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="bg-emerald-100 p-2 rounded-lg group-hover:bg-emerald-200 transition-colors">
-                  <Users size={18} className="text-emerald-600" />
+                <div className="bg-[#E9F8EE] p-2 rounded-lg group-hover:bg-[#229C62]/30 transition-colors">
+                  <Users size={18} className="text-[#229C62]" />
                 </div>
                 <ChevronRight
                   size={16}
-                  className="text-slate-300 group-hover:text-emerald-500 transition-colors mt-1"
+                  className="text-slate-300 group-hover:text-[#229C62] transition-colors mt-1"
                 />
               </div>
               <h3 className="text-base font-semibold text-slate-900 mb-1">{team.name}</h3>

@@ -11,7 +11,7 @@ import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/component
 import type { AdminLab, AdminLabFlag } from "@/types/api";
 
 function getDifficultyLabel(d: number) {
-  if (d < 1100) return { label: "Beginner", color: "bg-emerald-100 text-emerald-700" };
+  if (d < 1100) return { label: "Beginner", color: "bg-[#E9F8EE] text-[#0F203A]" };
   if (d < 1300) return { label: "Intermediate", color: "bg-amber-100 text-amber-700" };
   if (d < 1500) return { label: "Advanced", color: "bg-orange-100 text-orange-700" };
   return { label: "Expert", color: "bg-red-100 text-red-700" };
@@ -190,7 +190,7 @@ export default function AdminLabsPage() {
           ]}
         />
 
-        <AdminModal isOpen={labModal.open} onClose={() => setLabModal({ open: false, editing: null })} title={labModal.editing ? "Edit Lab" : "New Lab"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLabModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveLab} disabled={saving} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+        <AdminModal isOpen={labModal.open} onClose={() => setLabModal({ open: false, editing: null })} title={labModal.editing ? "Edit Lab" : "New Lab"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLabModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveLab} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AdminInput label="Title" value={labForm.title} onChange={(e) => setLabForm({ ...labForm, title: e.target.value })} placeholder="Lab title" required />
             <AdminInput label="Docker Image" value={labForm.dockerImage} onChange={(e) => setLabForm({ ...labForm, dockerImage: e.target.value })} placeholder="e.g. vulnerables/web-dvwa" required />
@@ -212,7 +212,7 @@ export default function AdminLabsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-        <button onClick={() => setSelectedLab(null)} className="hover:text-emerald-600 transition-colors">Labs</button>
+        <button onClick={() => setSelectedLab(null)} className="hover:text-[#229C62] transition-colors">Labs</button>
         <ChevronRight size={14} />
         <span className="text-slate-900 font-medium">{selectedLab?.title}</span>
       </div>
@@ -245,8 +245,8 @@ export default function AdminLabsPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-medium">{flag.points} pts</span>
-                <button onClick={() => { setFlagForm({ title: flag.title, description: flag.description || "", points: flag.points, correctAnswer: "" }); setFlagModal({ open: true, editing: flag }); }} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"><Pencil size={16} /></button>
+                <span className="text-xs bg-[#E9F8EE] text-[#0F203A] px-2.5 py-1 rounded-full font-medium">{flag.points} pts</span>
+                <button onClick={() => { setFlagForm({ title: flag.title, description: flag.description || "", points: flag.points, correctAnswer: "" }); setFlagModal({ open: true, editing: flag }); }} className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"><Pencil size={16} /></button>
                 <button onClick={() => setDeleteDialog({ open: true, type: "flag", item: flag })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function AdminLabsPage() {
         )}
       </div>
 
-      <AdminModal isOpen={flagModal.open} onClose={() => setFlagModal({ open: false, editing: null })} title={flagModal.editing ? "Edit Flag" : "New Flag"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setFlagModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveFlag} disabled={saving} className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+      <AdminModal isOpen={flagModal.open} onClose={() => setFlagModal({ open: false, editing: null })} title={flagModal.editing ? "Edit Flag" : "New Flag"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setFlagModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveFlag} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
         <div className="space-y-4">
           <AdminInput label="Flag Title" value={flagForm.title} onChange={(e) => setFlagForm({ ...flagForm, title: e.target.value })} placeholder="e.g. SQL Injection Root Flag" required />
           <AdminInput label="Correct Answer" value={flagForm.correctAnswer} onChange={(e) => setFlagForm({ ...flagForm, correctAnswer: e.target.value })} placeholder="Flag answer (hashed on save)" required={!!!flagModal.editing} hint={flagModal.editing ? "Leave blank to keep current answer" : ""} />

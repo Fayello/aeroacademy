@@ -157,7 +157,7 @@ export default function AdminLearningPathsPage() {
   }
 
   const diffColors: Record<string, string> = {
-    BEGINNER: "bg-emerald-100 text-emerald-700",
+    BEGINNER: "bg-[#E9F8EE] text-[#0F203A]",
     INTERMEDIATE: "bg-amber-100 text-amber-700",
     ADVANCED: "bg-red-100 text-red-700",
     EXPERT: "bg-purple-100 text-purple-700",

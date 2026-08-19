@@ -193,7 +193,7 @@ export default function AdminTeamsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }
@@ -251,8 +251,8 @@ export default function AdminTeamsPage() {
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <Users size={18} className="text-emerald-600" />
+            <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
+              <Users size={18} className="text-[#229C62]" />
             </div>
             <div>
               <p className="text-lg font-bold text-slate-900">

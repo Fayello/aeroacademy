@@ -135,13 +135,13 @@ const TESTIMONIALS = [
 ];
 
 const COLOR_MAP = {
-  emerald: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700", icon: "text-emerald-600 bg-emerald-100", dot: "bg-emerald-500" },
+  emerald: { bg: "bg-[#E9F8EE]", border: "border-[#229C62]/20", text: "text-[#0F203A]", icon: "text-[#229C62] bg-[#E9F8EE]", dot: "bg-[#229C62]" },
   blue: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-600 bg-blue-100", dot: "bg-blue-500" },
   violet: { bg: "bg-violet-50", border: "border-violet-200", text: "text-violet-700", icon: "text-violet-600 bg-violet-100", dot: "bg-violet-500" },
 };
 
 const LEVEL_COLORS: Record<string, string> = {
-  Beginner: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Beginner: "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20",
   Intermediate: "bg-amber-50 text-amber-700 border-amber-200",
   Advanced: "bg-red-50 text-red-700 border-red-200",
 };
@@ -208,12 +208,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6">
                 <CheckCircle2 size={14} />
                 Trusted by engineers across Cameroon
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.1]">
-                Master the <span className="text-emerald-600">technologies</span> that power modern software
+                Master the <span className="text-[#229C62]">technologies</span> that power modern software
               </h1>
               <p className="text-lg text-slate-500 mt-6 leading-relaxed max-w-xl">
                 Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
@@ -229,7 +229,7 @@ export default function LandingPage() {
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-slate-500">
                 {["No credit card required", `${stats.totalLabs || 37}+ hands-on labs`, "Free tier available"].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
-                    <CheckCircle2 size={14} className="text-emerald-500" /> {item}
+                    <CheckCircle2 size={14} className="text-[#229C62]" /> {item}
                   </div>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export default function LandingPage() {
                     { value: stats.totalStudents || "—", label: "Students Training", icon: Users },
                   ].map((stat) => (
                     <div key={stat.label} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                      <stat.icon size={20} className="text-emerald-600 mb-3" />
+                      <stat.icon size={20} className="text-[#229C62] mb-3" />
                       <div className="text-3xl font-bold text-slate-900">{stat.value}{typeof stat.value === 'number' ? '+' : ''}</div>
                       <div className="text-sm text-slate-500 mt-1">{stat.label}</div>
                     </div>
@@ -252,7 +252,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mt-4 bg-white rounded-xl p-4 border border-slate-200 flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {["bg-emerald-500", "bg-blue-500", "bg-violet-500", "bg-amber-500"].map((color, i) => (
+                    {["bg-[#E9F8EE]0", "bg-blue-500", "bg-violet-500", "bg-amber-500"].map((color, i) => (
                       <div key={i} className={`w-8 h-8 rounded-full ${color} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}>
                         {String.fromCharCode(65 + i)}
                       </div>
@@ -264,7 +264,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-emerald-100 rounded-full opacity-50 blur-xl" />
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#E9F8EE] rounded-full opacity-50 blur-xl" />
               <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-100 rounded-full opacity-50 blur-xl" />
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function LandingPage() {
                   <ul className="space-y-2.5 mb-8">
                     {audience.features.map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
-                        <CheckCircle2 size={16} className="text-emerald-500 shrink-0" /> {f}
+                        <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {f}
                       </li>
                     ))}
                   </ul>
@@ -321,7 +321,7 @@ export default function LandingPage() {
               <button
                 key={path.tab}
                 onClick={() => setActiveTab(i)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === i ? "bg-emerald-600 text-white shadow-md" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"}`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === i ? "bg-[#229C62] text-white shadow-md" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"}`}
               >
                 <path.icon size={16} /> {path.tab}
               </button>
@@ -332,7 +332,7 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-3">{LEARNING_PATHS[activeTab].title}</h3>
                 <p className="text-slate-500 leading-relaxed mb-6">{LEARNING_PATHS[activeTab].description}</p>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-8">
                   <Microscope size={14} /> {LEARNING_PATHS[activeTab].labHighlight}
                 </div>
                 <Link href="/register" className="btn-primary text-sm">
@@ -341,7 +341,7 @@ export default function LandingPage() {
               </div>
               <div className="space-y-3">
                 {LEARNING_PATHS[activeTab].courses.map((course) => (
-                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
+                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/50 transition-all">
                     <div>
                       <div className="font-medium text-slate-900 text-sm">{course.name}</div>
                       <div className="text-xs text-slate-500 mt-0.5">{course.lessons} lessons</div>
@@ -367,10 +367,10 @@ export default function LandingPage() {
               <div key={step.number} className="relative">
                 {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-slate-200" />}
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-6">
-                    <step.icon size={28} className="text-emerald-600" />
+                  <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] border border-[#229C62]/20 flex items-center justify-center mb-6">
+                    <step.icon size={28} className="text-[#229C62]" />
                   </div>
-                  <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Step {step.number}</span>
+                  <span className="text-xs font-bold text-[#229C62] uppercase tracking-wider">Step {step.number}</span>
                   <h3 className="text-xl font-bold text-slate-900 mt-2 mb-3">{step.title}</h3>
                   <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
                 </div>
@@ -389,9 +389,9 @@ export default function LandingPage() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature) => (
-              <div key={feature.title} className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md hover:border-emerald-300 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors">
-                  <feature.icon size={22} className="text-emerald-600" />
+              <div key={feature.title} className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md hover:border-[#229C62]/30 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] border border-[#229C62]/20 flex items-center justify-center mb-4 group-hover:bg-[#E9F8EE] transition-colors">
+                  <feature.icon size={22} className="text-[#229C62]" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
@@ -410,7 +410,7 @@ export default function LandingPage() {
                 <Terminal size={14} /> Hands-on Labs
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                Deploy your first lab in <span className="text-emerald-600">30 seconds</span>
+                Deploy your first lab in <span className="text-[#229C62]">30 seconds</span>
               </h2>
               <p className="text-lg text-slate-500 mt-4 leading-relaxed">
                 Each lab spins up an isolated Docker container with a real terminal. No virtual machines, no complicated setup.
@@ -424,7 +424,7 @@ export default function LandingPage() {
                   "Pre-configured vulnerable applications",
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm text-slate-600">
-                    <CheckCircle2 size={16} className="text-emerald-500 shrink-0" /> {item}
+                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {item}
                   </div>
                 ))}
               </div>
@@ -439,7 +439,7 @@ export default function LandingPage() {
                 <div className="w-3 h-3 rounded-full bg-green-500" />
                 <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
               </div>
-              <div className="space-y-2 text-emerald-400">
+              <div className="space-y-2 text-[#229C62]/60">
                 <div><span className="text-slate-500">$</span> docker ps</div>
                 <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
                 <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
@@ -475,7 +475,7 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-3 gap-6">
               {masterClasses.map((mc: MasterClass) => (
                 <div key={mc.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow group">
-                  <div className="h-40 bg-gradient-to-br from-violet-500 to-emerald-600 flex items-center justify-center relative">
+                  <div className="h-40 bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center relative">
                     <Video size={40} className="text-white/80" />
                     {mc.status === "LIVE" && (
                       <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
@@ -490,7 +490,7 @@ export default function LandingPage() {
                   </div>
                   <div className="p-5">
                     <div className="text-xs text-violet-600 font-semibold mb-2">{mc.category || "Security"}</div>
-                    <h3 className="font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">{mc.title}</h3>
+                    <h3 className="font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">{mc.title}</h3>
                     <p className="text-sm text-slate-500 line-clamp-2 mb-3">{mc.description}</p>
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       {mc.instructorName && (
@@ -534,18 +534,18 @@ export default function LandingPage() {
           {trainers.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {trainers.map((trainer: Trainer) => (
-                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all group">
+                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-[#229C62]/30 transition-all group">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-lg">
+                    <div className="w-14 h-14 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-lg">
                       {(trainer.user?.name || "T").charAt(0)}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{trainer.user?.name}</div>
+                      <div className="font-bold text-slate-900 group-hover:text-[#229C62] transition-colors">{trainer.user?.name}</div>
                       <div className="text-xs text-slate-500">{trainer.specialties?.join(", ") || "Security, Linux"}</div>
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 line-clamp-2 mb-4">{trainer.bio || "Expert trainer with years of hands-on experience."}</p>
-                  <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium">
+                  <div className="flex items-center gap-1 text-[#229C62] text-sm font-medium">
                     Book a Session <ArrowRight size={14} />
                   </div>
                 </Link>
@@ -587,7 +587,7 @@ export default function LandingPage() {
       </section>
 
       {/* BIG STATS */}
-      <section className="py-20 px-6 bg-gradient-to-r from-emerald-600 to-emerald-700">
+      <section className="py-20 px-6 bg-gradient-to-r from-[#0F203A] to-[#0F203A]/90">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -598,7 +598,7 @@ export default function LandingPage() {
             ].map((s) => (
               <div key={s.label}>
                 <div className="text-4xl md:text-5xl font-bold text-white">{s.value}</div>
-                <div className="text-emerald-100 text-sm mt-2">{s.label}</div>
+                <div className="text-white/80 text-sm mt-2">{s.label}</div>
               </div>
             ))}
           </div>
@@ -630,7 +630,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
-                <div className="bg-emerald-600 p-1.5 rounded-lg">
+                <div className="bg-[#229C62] p-1.5 rounded-lg">
                   <Shield size={18} className="text-white" />
                 </div>
                 <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
@@ -671,11 +671,11 @@ export default function LandingPage() {
                   {links.map((link) => (
                     <li key={link.label}>
                       {link.href.startsWith("#") ? (
-                        <a href={link.href} className="text-sm text-slate-500 hover:text-emerald-600 transition-colors">
+                        <a href={link.href} className="text-sm text-slate-500 hover:text-[#229C62] transition-colors">
                           {link.label}
                         </a>
                       ) : (
-                        <Link href={link.href} className="text-sm text-slate-500 hover:text-emerald-600 transition-colors">
+                        <Link href={link.href} className="text-sm text-slate-500 hover:text-[#229C62] transition-colors">
                           {link.label}
                         </Link>
                       )}

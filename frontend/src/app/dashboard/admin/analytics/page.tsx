@@ -45,7 +45,7 @@ function BarChart({ data, height = 200, color = "emerald" }: { data: { label: st
 
 function HBar({ label, value, max, color = "emerald" }: { label: string; value: number; max: number; color?: string }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
-  const barColor = color === "emerald" ? "bg-emerald-600" : color === "blue" ? "bg-blue-600" : color === "amber" ? "bg-amber-500" : color === "violet" ? "bg-violet-600" : "bg-emerald-600";
+  const barColor = color === "emerald" ? "bg-[#229C62]" : color === "blue" ? "bg-blue-600" : color === "amber" ? "bg-amber-500" : color === "violet" ? "bg-violet-600" : "bg-[#229C62]";
   return (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
@@ -91,7 +91,7 @@ export default function AdminAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }
@@ -113,8 +113,8 @@ export default function AdminAnalyticsPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <BarChart3 size={24} className="text-emerald-600" />
+            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
+              <BarChart3 size={24} className="text-[#229C62]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Analytics Dashboard</h1>
@@ -123,11 +123,11 @@ export default function AdminAnalyticsPage() {
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
             <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
-              <Users size={16} className="text-emerald-600" />
+              <Users size={16} className="text-[#229C62]" />
               <span className="font-medium">{totals.activeUsers30d} active users (30d)</span>
             </div>
             <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
-              <Target size={16} className="text-emerald-600" />
+              <Target size={16} className="text-[#229C62]" />
               <span className="font-medium">{totals.flagsSolved} flags captured</span>
             </div>
             <div className="flex-1" />
@@ -136,7 +136,7 @@ export default function AdminAnalyticsPage() {
                 onClick={() => downloadAnalyticsCsv(data)}
                 className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow"
               >
-                <Download size={16} className="text-emerald-600" />
+                <Download size={16} className="text-[#229C62]" />
                 CSV
               </button>
               <button
@@ -147,7 +147,7 @@ export default function AdminAnalyticsPage() {
                 disabled={exporting}
                 className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {exporting ? <Loader2 size={16} className="animate-spin text-emerald-600" /> : <FileDown size={16} className="text-emerald-600" />}
+                {exporting ? <Loader2 size={16} className="animate-spin text-[#229C62]" /> : <FileDown size={16} className="text-[#229C62]" />}
                 {exporting ? "Generating..." : "PDF"}
               </button>
             </div>
@@ -157,13 +157,13 @@ export default function AdminAnalyticsPage() {
 
       {/* Totals */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <StatCard label="Total Users" value={totals.users} icon={Users} color="bg-emerald-500" />
+        <StatCard label="Total Users" value={totals.users} icon={Users} color="bg-[#229C62]" />
         <StatCard label="Students" value={totals.students} icon={GraduationCap} color="bg-blue-500" />
         <StatCard label="Courses" value={totals.courses} icon={BookOpen} color="bg-violet-500" />
         <StatCard label="Lessons" value={totals.lessons} icon={Activity} color="bg-amber-500" />
         <StatCard label="Labs" value={totals.labs} icon={Microscope} color="bg-rose-500" />
         <StatCard label="Master Classes" value={totals.masterClasses} icon={Trophy} color="bg-cyan-500" />
-        <StatCard label="Trainers" value={totals.trainers} icon={Award} color="bg-emerald-500" />
+        <StatCard label="Trainers" value={totals.trainers} icon={Award} color="bg-[#229C62]" />
         <StatCard label="Lessons Completed" value={totals.lessonsCompleted} icon={ShieldCheck} color="bg-blue-500" />
         <StatCard label="Quiz Submissions" value={totals.quizSubmissions} icon={Activity} color="bg-violet-500" />
         <StatCard label="Flags Solved" value={totals.flagsSolved} icon={Target} color="bg-amber-500" />
@@ -174,7 +174,7 @@ export default function AdminAnalyticsPage() {
         <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-semibold text-slate-900 flex items-center gap-2"><TrendingUp size={16} className="text-emerald-600" /> User Growth</h3>
+              <h3 className="font-semibold text-slate-900 flex items-center gap-2"><TrendingUp size={16} className="text-[#229C62]" /> User Growth</h3>
               <p className="text-xs text-slate-500 mt-1">New registrations — last 30 days</p>
             </div>
             <div className="text-2xl font-bold text-slate-900">{totals.users}</div>
@@ -191,7 +191,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-sm text-slate-500">Pass rate</span>
-              <span className="text-lg font-bold text-emerald-600">{data.quizStats.passRate}%</span>
+              <span className="text-lg font-bold text-[#229C62]">{data.quizStats.passRate}%</span>
             </div>
           </div>
           <div className="bg-white rounded-xl border border-slate-200 p-6">
@@ -202,7 +202,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-sm text-slate-500">Accuracy</span>
-              <span className="text-lg font-bold text-emerald-600">
+              <span className="text-lg font-bold text-[#229C62]">
                 {data.flagStats.correct + data.flagStats.incorrect > 0
                   ? Math.round((data.flagStats.correct / (data.flagStats.correct + data.flagStats.incorrect)) * 100)
                   : 0}%
@@ -229,7 +229,7 @@ export default function AdminAnalyticsPage() {
                   <span>L{d.lessons} F{d.flags} Q{d.quizzes} R{d.registrations}</span>
                 </div>
                 <div className="w-full flex justify-center gap-[1px]">
-                  <div className="w-[22%] max-w-[7px] rounded-t-sm bg-emerald-500" style={{ height: Math.max((d.lessons / max) * 130, d.lessons ? 3 : 0) }} />
+                  <div className="w-[22%] max-w-[7px] rounded-t-sm bg-[#229C62]" style={{ height: Math.max((d.lessons / max) * 130, d.lessons ? 3 : 0) }} />
                   <div className="w-[22%] max-w-[7px] rounded-t-sm bg-amber-500" style={{ height: Math.max((d.flags / max) * 130, d.flags ? 3 : 0) }} />
                   <div className="w-[22%] max-w-[7px] rounded-t-sm bg-violet-500" style={{ height: Math.max((d.quizzes / max) * 130, d.quizzes ? 3 : 0) }} />
                   <div className="w-[22%] max-w-[7px] rounded-t-sm bg-blue-500" style={{ height: Math.max((d.registrations / max) * 130, d.registrations ? 3 : 0) }} />
@@ -239,7 +239,7 @@ export default function AdminAnalyticsPage() {
           })}
         </div>
         <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-slate-500">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" /> Lessons</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#229C62] inline-block" /> Lessons</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block" /> Flags</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-violet-500 inline-block" /> Quizzes</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block" /> Registrations</span>
@@ -288,7 +288,7 @@ export default function AdminAnalyticsPage() {
                   <span className="text-xs text-slate-500 shrink-0 ml-2">{c.completed}/{c.totalLessons} · {c.students} students</span>
                 </div>
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full rounded-full bg-emerald-600 transition-all duration-500" style={{ width: `${c.completionRate}%` }} />
+                  <div className="h-full rounded-full bg-[#229C62] transition-all duration-500" style={{ width: `${c.completionRate}%` }} />
                 </div>
               </div>
             ))}
@@ -336,7 +336,7 @@ export default function AdminAnalyticsPage() {
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
                 <span className="px-2 py-1 rounded bg-slate-100">{u.division}</span>
                 <span className="px-2 py-1 rounded bg-blue-50 text-blue-700">{u.flagsSolved} flags</span>
-                <span className="px-2 py-1 rounded bg-emerald-50 text-emerald-700">{u.lessonsCompleted} lessons</span>
+                <span className="px-2 py-1 rounded bg-[#E9F8EE] text-[#0F203A]">{u.lessonsCompleted} lessons</span>
               </div>
               <div className="text-right">
                 <p className="font-bold text-slate-900">{u.xp.toLocaleString()}</p>

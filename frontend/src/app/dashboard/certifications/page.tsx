@@ -23,7 +23,7 @@ interface CourseCertificate {
 }
 
 const DIVISION_CERTS = [
-  { id: "APPRENTICE", title: "Certified Apprentice", requirement: "500 XP", color: "text-emerald-500 bg-emerald-100", xp: 500 },
+  { id: "APPRENTICE", title: "Certified Apprentice", requirement: "500 XP", color: "text-[#229C62] bg-[#E9F8EE]", xp: 500 },
   { id: "PROFESSIONAL", title: "Professional Pen-Tester", requirement: "1,000 XP", color: "text-blue-500 bg-blue-100", xp: 1000 },
   { id: "EXPERT", title: "Expert Security Researcher", requirement: "2,500 XP", color: "text-purple-500 bg-purple-100", xp: 2500 },
   { id: "MASTER", title: "Master Cyber Operative", requirement: "5,000 XP", color: "text-amber-500 bg-amber-100", xp: 5000 },
@@ -170,8 +170,8 @@ export default function CertificationsPage() {
             {completedCerts.map((cert) => (
               <div key={cert.courseId} className="bg-white rounded-xl border border-slate-200 p-5 flex items-start justify-between">
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                    <Award size={20} className="text-emerald-600" />
+                  <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
+                    <Award size={20} className="text-[#229C62]" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-slate-900">{cert.courseName}</h3>
@@ -207,7 +207,7 @@ export default function CertificationsPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <CheckCircle size={18} className="text-emerald-500" />
+                  <CheckCircle size={18} className="text-[#229C62]" />
                 </div>
               </div>
             ))}
@@ -265,7 +265,7 @@ export default function CertificationsPage() {
                     <p className="text-[11px] text-slate-500">Requires {cert.requirement}</p>
                   </div>
                   {unlocked ? (
-                    <span className="inline-flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-xs text-[#229C62] bg-[#E9F8EE] px-2 py-0.5 rounded-full">
                       <CheckCircle size={12} /> Unlocked
                     </span>
                   ) : (

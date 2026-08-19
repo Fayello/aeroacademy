@@ -104,7 +104,7 @@ export default function SettingsPage() {
               <button
                 onClick={() => handleToggle(cat.key)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-                  preferences[cat.key] ? "bg-emerald-500" : "bg-slate-300"
+                  preferences[cat.key] ? "bg-[#229C62]" : "bg-slate-300"
                 }`}
               >
                 <span
@@ -122,7 +122,7 @@ export default function SettingsPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
           {saving ? "Saving..." : "Save Preferences"}

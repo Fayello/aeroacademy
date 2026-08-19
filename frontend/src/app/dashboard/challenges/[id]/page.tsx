@@ -222,7 +222,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
             </button>
           )}
           {isParticipant && (
-            <div className="flex items-center gap-2 text-emerald-600 text-sm bg-emerald-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-[#229C62] text-sm bg-[#E9F8EE] p-3 rounded-lg">
               <CheckCircle2 size={16} />
               <span className="font-medium">You&apos;re participating in this challenge</span>
             </div>
@@ -266,7 +266,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                       <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            entry.completed ? "bg-emerald-500" : "bg-blue-500"
+                            entry.completed ? "bg-[#229C62]" : "bg-blue-500"
                           }`}
                           style={{ width: `${pct}%` }}
                         />
@@ -277,7 +277,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                     </div>
                   </div>
                   {entry.completed && (
-                    <CheckCircle2 size={16} className="text-emerald-500 flex-shrink-0" />
+                    <CheckCircle2 size={16} className="text-[#229C62] flex-shrink-0" />
                   )}
                 </div>
               );

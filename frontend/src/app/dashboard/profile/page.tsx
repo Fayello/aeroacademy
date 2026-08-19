@@ -43,7 +43,7 @@ const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; n
   BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", next: "SILVER", nextAt: 800 },
   SILVER:   { color: "text-slate-500", bg: "bg-slate-200", next: "GOLD", nextAt: 1200 },
   GOLD:     { color: "text-amber-600", bg: "bg-amber-100", next: "PLATINUM", nextAt: 1600 },
-  PLATINUM: { color: "text-emerald-600", bg: "bg-emerald-100", next: "DIAMOND", nextAt: 2000 },
+  PLATINUM: { color: "text-[#229C62]", bg: "bg-[#E9F8EE]", next: "DIAMOND", nextAt: 2000 },
   DIAMOND:  { color: "text-blue-600", bg: "bg-blue-100", next: "TITAN", nextAt: 2400 },
   TITAN:    { color: "text-indigo-600", bg: "bg-indigo-100", next: "", nextAt: Infinity },
 };
@@ -86,7 +86,7 @@ export default function ProfilePage() {
       {/* Profile Header */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex flex-col sm:flex-row items-start gap-5">
-          <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
+          <div className="w-16 h-16 rounded-full bg-[#229C62] flex items-center justify-center shrink-0">
             <span className="text-xl font-bold text-white">
               {(user.name || user.email).charAt(0).toUpperCase()}
             </span>
@@ -114,8 +114,8 @@ export default function ProfilePage() {
         {/* Level Progress */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <TrendingUp size={22} className="text-emerald-600" />
+            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
+              <TrendingUp size={22} className="text-[#229C62]" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Level {level}</h2>
@@ -124,7 +124,7 @@ export default function ProfilePage() {
           </div>
           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-[#229C62] to-[#229C62] rounded-full transition-all duration-500"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
@@ -179,21 +179,21 @@ export default function ProfilePage() {
                 key={reqLevel}
                 className={`p-4 rounded-xl border text-center transition-all ${
                   unlocked
-                    ? "bg-emerald-50 border-emerald-200 hover:shadow-md"
+                    ? "bg-[#E9F8EE] border-[#229C62]/20 hover:shadow-md"
                     : "bg-slate-50 border-slate-200 opacity-60"
                 }`}
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2 ${
-                  unlocked ? "bg-emerald-100" : "bg-slate-100"
+                  unlocked ? "bg-[#E9F8EE]" : "bg-slate-100"
                 }`}>
                   {unlocked ? (
-                    <Icon size={18} className="text-emerald-600" />
+                    <Icon size={18} className="text-[#229C62]" />
                   ) : (
                     <Lock size={18} className="text-slate-400" />
                   )}
                 </div>
                 <p className="text-xs font-medium text-slate-700">{label}</p>
-                <p className={`text-[10px] mt-1 ${unlocked ? "text-emerald-600" : "text-slate-400"}`}>
+                <p className={`text-[10px] mt-1 ${unlocked ? "text-[#229C62]" : "text-slate-400"}`}>
                   {unlocked ? "Unlocked" : `Lv.${reqLevel}`}
                 </p>
               </div>
@@ -251,7 +251,7 @@ export default function ProfilePage() {
                   <span className="font-medium text-slate-900">{skill.progress}%</span>
                 </div>
                 <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full" style={{ width: `${skill.progress}%` }} />
+                  <div className="h-full bg-gradient-to-r from-[#229C62] to-[#229C62] rounded-full" style={{ width: `${skill.progress}%` }} />
                 </div>
               </div>
             ))}

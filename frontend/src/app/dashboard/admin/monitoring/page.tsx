@@ -131,7 +131,7 @@ export default function AdminMonitoringPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-emerald-600" size={32} />
+        <Loader2 className="animate-spin text-[#229C62]" size={32} />
       </div>
     );
   }
@@ -144,8 +144,8 @@ export default function AdminMonitoringPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 backdrop-blur-sm flex items-center justify-center">
-              <Monitor size={24} className="text-emerald-400" />
+            <div className="w-12 h-12 rounded-xl bg-[#229C62]/20 backdrop-blur-sm flex items-center justify-center">
+              <Monitor size={24} className="text-[#229C62]/60" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">Lab Monitoring</h1>
@@ -154,11 +154,11 @@ export default function AdminMonitoringPage() {
           </div>
           <div className="flex flex-wrap gap-4 mt-6">
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-              <Activity size={16} className="text-emerald-400" />
+              <Activity size={16} className="text-[#229C62]/60" />
               <span className="text-sm font-medium">{instances.length} Active Session{instances.length !== 1 ? "s" : ""}</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-              <Users size={16} className="text-emerald-400" />
+              <Users size={16} className="text-[#229C62]/60" />
               <span className="text-sm font-medium">{stats?.activeUsers || 0} Users Online</span>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function AdminMonitoringPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Active Containers", value: stats?.activeContainers || 0, icon: Container, bg: "bg-emerald-500", color: "text-emerald-600" },
+          { label: "Active Containers", value: stats?.activeContainers || 0, icon: Container, bg: "bg-[#229C62]", color: "text-[#229C62]" },
           { label: "Active Users", value: stats?.activeUsers || 0, icon: Users, bg: "bg-blue-500", color: "text-blue-600" },
           { label: "Capacity Used", value: `${capacityPercent}%`, icon: Gauge, bg: "bg-amber-500", color: "text-amber-600" },
           { label: "Max Capacity", value: stats?.maxCapacity || 0, icon: Activity, bg: "bg-violet-500", color: "text-violet-600" },
@@ -255,8 +255,8 @@ export default function AdminMonitoringPage() {
             {instances.map((instance) => (
               <div key={`${instance.labId}-${instance.userId}`} className="px-6 py-3 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                    <Users size={14} className="text-emerald-600" />
+                  <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
+                    <Users size={14} className="text-[#229C62]" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-900">{instance.user?.name} &middot; {instance.lab?.title}</p>

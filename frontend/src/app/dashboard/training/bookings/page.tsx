@@ -50,7 +50,7 @@ export default function MyBookingsPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-emerald-600" size={24} />
+          <Loader2 className="animate-spin text-[#229C62]" size={24} />
         </div>
       ) : bookings.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
@@ -72,7 +72,7 @@ export default function MyBookingsPage() {
                         with {b.trainer?.user?.name || "Trainer"} | {new Date(b.date).toLocaleDateString()} | {b.startTime} - {b.endTime}
                       </div>
                       <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${
-                        b.status === "CONFIRMED" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                        b.status === "CONFIRMED" ? "bg-[#E9F8EE] text-[#0F203A]" : "bg-amber-50 text-amber-700"
                       }`}>{b.status}</span>
                     </div>
                     <button

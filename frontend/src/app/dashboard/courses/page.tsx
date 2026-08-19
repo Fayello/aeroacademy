@@ -22,7 +22,7 @@ const CATEGORIES: Record<string, { label: string; color: string; bg: string }> =
   aerodynamics: { label: "Aerodynamics", color: "text-sky-600", bg: "bg-sky-50 border-sky-200" },
   structures: { label: "Structures", color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
   propulsion: { label: "Propulsion", color: "text-rose-600", bg: "bg-rose-50 border-rose-200" },
-  avionics: { label: "Avionics", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+  avionics: { label: "Avionics", color: "text-[#229C62]", bg: "bg-[#E9F8EE] border-[#229C62]/20" },
   controls: { label: "Controls", color: "text-violet-600", bg: "bg-violet-50 border-violet-200" },
   composites: { label: "Composites", color: "text-cyan-600", bg: "bg-cyan-50 border-cyan-200" },
   default: { label: "Core", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },

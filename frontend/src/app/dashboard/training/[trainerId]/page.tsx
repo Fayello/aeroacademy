@@ -93,7 +93,7 @@ export default function TrainerProfilePage() {
   const weekDates = getNextWeekDates();
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-emerald-600" size={24} /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#229C62]" size={24} /></div>;
   }
 
   if (!trainer) {
@@ -113,14 +113,14 @@ export default function TrainerProfilePage() {
 
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-2xl">
+          <div className="w-20 h-20 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-2xl">
             {(trainer.user?.name || "T").charAt(0)}
           </div>
           <div>
             <h1 className="text-2xl font-bold text-slate-900">{trainer.user?.name}</h1>
             <div className="text-sm text-slate-500 mt-1">{trainer.specialties?.join(", ") || "General"}</div>
             {trainer.hourlyRate && (
-              <div className="text-sm font-medium text-emerald-600 mt-1">{trainer.hourlyRate.toLocaleString()} XAF/hr</div>
+              <div className="text-sm font-medium text-[#229C62] mt-1">{trainer.hourlyRate.toLocaleString()} XAF/hr</div>
             )}
           </div>
         </div>
@@ -140,9 +140,9 @@ export default function TrainerProfilePage() {
                   onClick={() => setSelectedDate(d)}
                   className={`flex flex-col items-center p-2 rounded-lg text-xs transition-all ${
                     isSelected
-                      ? "bg-emerald-600 text-white"
+                      ? "bg-[#229C62] text-white"
                       : isToday
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        ? "bg-[#E9F8EE] text-[#0F203A] border border-[#229C62]/20"
                         : "hover:bg-slate-50 text-slate-600"
                   }`}
                 >
@@ -169,9 +169,9 @@ export default function TrainerProfilePage() {
                   onClick={() => setSelectedSlot(slot)}
                   className={`w-full flex items-center justify-between p-3 rounded-lg border text-sm transition-all ${
                     selectedSlot?.id === slot.id
-                      ? "border-emerald-500 bg-emerald-50"
+                      ? "border-[#229C62] bg-[#E9F8EE]"
                       : slot.available
-                        ? "border-slate-200 hover:border-emerald-300"
+                        ? "border-slate-200 hover:border-[#229C62]/30"
                         : "border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed"
                   }`}
                 >
@@ -179,7 +179,7 @@ export default function TrainerProfilePage() {
                     <Clock size={14} className="text-slate-400" />
                     {slot.startTime} - {slot.endTime}
                   </span>
-                  {selectedSlot?.id === slot.id && <Check size={14} className="text-emerald-600" />}
+                  {selectedSlot?.id === slot.id && <Check size={14} className="text-[#229C62]" />}
                   {!slot.available && <span className="text-xs text-slate-400">Booked</span>}
                 </button>
               ))}
