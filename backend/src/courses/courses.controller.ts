@@ -245,4 +245,25 @@ export class CoursesController {
   ) {
     return this.coursesService.getCertificate(req.user.id, courseId);
   }
+
+  // === REVIEWS ===
+
+  @Get(':courseId/reviews')
+  async getCourseReviews(@Param('courseId') courseId: string) {
+    return this.coursesService.getCourseReviews(courseId);
+  }
+
+  @Post(':courseId/reviews')
+  async createReview(
+    @Request() req: RequestWithUser,
+    @Param('courseId') courseId: string,
+    @Body() body: { rating: number; comment?: string },
+  ) {
+    return this.coursesService.createReview(req.user.id, courseId, body.rating, body.comment);
+  }
+
+  @Get('my-reviews')
+  async getMyReviews(@Request() req: RequestWithUser) {
+    return this.coursesService.getMyReviews(req.user.id);
+  }
 }

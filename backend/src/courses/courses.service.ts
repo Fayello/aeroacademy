@@ -18,7 +18,7 @@ export class CoursesService {
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 50,
       include: {
-        _count: { select: { sections: true } },
+        _count: { select: { sections: true, enrollments: true, reviews: true } },
         sections: {
           include: {
             _count: { select: { lessons: true } },
@@ -27,6 +27,18 @@ export class CoursesService {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    const coursesWithRatings = await Promise.all(
+      courses.map(async (c) => {
+        const agg = await this.prisma.courseReview.aggregate({
+          where: { courseId: c.id },
+          _avg: { rating: true },
+        });
+        return { ...c, averageRating: agg._avg.rating || 0 };
+      }),
+    );
+
+    return coursesWithRatings;
   }
 
   async findOne(id: string) {
@@ -45,10 +57,24 @@ export class CoursesService {
             },
           },
         },
+        _count: { select: { enrollments: true, reviews: true } },
       },
     });
     if (!course) throw new NotFoundException('Course not found');
-    return course;
+
+    const reviewStats = await this.prisma.courseReview.aggregate({
+      where: { courseId: id },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    return {
+      ...course,
+      reviewStats: {
+        average: reviewStats._avg.rating || 0,
+        total: reviewStats._count.rating,
+      },
+    };
   }
 
   async findLesson(id: string) {
@@ -535,5 +561,66 @@ export class CoursesService {
       }));
 
     return { recommended, inProgress };
+  }
+
+  async getCourseReviews(courseId: string) {
+    const reviews = await this.prisma.courseReview.findMany({
+      where: { courseId },
+      include: { user: { select: { id: true, name: true, email: true, division: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const stats = await this.prisma.courseReview.aggregate({
+      where: { courseId },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    const distribution = await this.prisma.courseReview.groupBy({
+      by: ['rating'],
+      where: { courseId },
+      _count: { rating: true },
+    });
+
+    return {
+      reviews,
+      stats: {
+        average: stats._avg.rating || 0,
+        total: stats._count.rating,
+        distribution: distribution.reduce((acc, d) => {
+          acc[d.rating] = d._count.rating;
+          return acc;
+        }, {} as Record<number, number>),
+      },
+    };
+  }
+
+  async createReview(userId: string, courseId: string, rating: number, comment?: string) {
+    if (rating < 1 || rating > 5) {
+      throw new Error('Rating must be between 1 and 5');
+    }
+
+    const enrollment = await this.prisma.courseEnrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+    if (!enrollment) {
+      throw new Error('You must be enrolled to review this course');
+    }
+
+    return this.prisma.courseReview.upsert({
+      where: { userId_courseId: { userId, courseId } },
+      update: { rating, comment },
+      create: { userId, courseId, rating, comment },
+    });
+  }
+
+  async getMyReviews(userId: string) {
+    return this.prisma.courseReview.findMany({
+      where: { userId },
+      include: {
+        course: { select: { id: true, title: true, imageUrl: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }
