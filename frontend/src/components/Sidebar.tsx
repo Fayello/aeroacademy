@@ -74,7 +74,7 @@ export default function Sidebar() {
         <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
         <div>
           <h1 className="text-base font-semibold tracking-tight">
-            <span className="text-[#0F1B2D]">Xpert</span><span className="text-[#059669]">Class</span>
+            <span className="text-[#0F203A]">Xpert</span><span className="text-[#229C62]">Class</span>
           </h1>
           <p className="text-[11px] text-slate-400">{t("app.tagline")}</p>
         </div>

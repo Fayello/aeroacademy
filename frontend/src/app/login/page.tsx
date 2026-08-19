@@ -70,7 +70,7 @@ export default function LoginPage() {
           <Link href="/" className="flex items-center gap-2.5 mb-10">
             <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
             <span className="text-xl font-bold tracking-tight">
-              <span className="text-[#0F1B2D]">Xpert</span><span className="text-[#059669]">Class</span>
+              <span className="text-[#0F203A]">Xpert</span><span className="text-[#229C62]">Class</span>
             </span>
           </Link>
 

@@ -182,7 +182,7 @@ export default function LandingPage() {
             <Link href="/" className="flex items-center gap-2.5">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
               <span className="text-lg font-bold tracking-tight">
-                <span className="text-[#0F1B2D]">Xpert</span><span className="text-[#059669]">Class</span>
+                <span className="text-[#0F203A]">Xpert</span><span className="text-[#229C62]">Class</span>
               </span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">

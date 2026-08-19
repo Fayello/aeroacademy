@@ -12,7 +12,7 @@ function maxOf(values: number[]): number {
 
 function BarChart({ data, height = 200, color = "emerald" }: { data: { label: string; value: number }[]; height?: number; color?: string }) {
   const max = maxOf(data.map((d) => d.value));
-  const barColor = color === "emerald" ? "#059669" : color === "blue" ? "#2563eb" : color === "amber" ? "#d97706" : color === "violet" ? "#7c3aed" : "#059669";
+  const barColor = color === "emerald" ? "#229C62" : color === "blue" ? "#2563eb" : color === "amber" ? "#d97706" : color === "violet" ? "#7c3aed" : "#229C62";
 
   return (
     <div>

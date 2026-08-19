@@ -298,7 +298,7 @@ export default function LabWorkspace() {
       theme: {
         background: "#0f172a",
         foreground: "#94a3b8",
-        cursor: "#059669",
+        cursor: "#229C62",
         cursorAccent: "#0f172a",
         selectionBackground: "rgba(5, 150, 105, 0.3)",
       },

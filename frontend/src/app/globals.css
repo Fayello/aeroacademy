@@ -6,10 +6,10 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
-  --brand-navy: #0F1B2D;
-  --brand-green: #059669;
-  --brand-green-light: #10B981;
-  --brand-lime: #84CC16;
+  --brand-navy: #0F203A;
+  --brand-green: #229C62;
+  --brand-green-light: #2ECC71;
+  --brand-lime: #7AD62A;
 }
 
 .dark {
@@ -64,15 +64,15 @@ body {
     --tw-prose-body: #334155;
     --tw-prose-headings: #0f172a;
     --tw-prose-lead: #475569;
-    --tw-prose-links: #059669;
+    --tw-prose-links: #229C62;
     --tw-prose-bold: #0f172a;
     --tw-prose-counters: #64748b;
-    --tw-prose-bullets: #059669;
+    --tw-prose-bullets: #229C62;
     --tw-prose-hr: #e2e8f0;
     --tw-prose-quotes: #0f172a;
-    --tw-prose-quote-borders: #059669;
+    --tw-prose-quote-borders: #229C62;
     --tw-prose-captions: #64748b;
-    --tw-prose-code: #059669;
+    --tw-prose-code: #229C62;
     --tw-prose-pre-code: #e2e8f0;
     --tw-prose-pre-bg: #f8fafc;
     --tw-prose-th-borders: #e2e8f0;

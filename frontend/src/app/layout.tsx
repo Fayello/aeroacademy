@@ -38,7 +38,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0F1B2D" />
+        <meta name="theme-color" content="#0F203A" />
       </head>
       <body className={inter.className}>
         <RootErrorBoundary>
@@ -58,7 +58,7 @@ export default function RootLayout({
               fontSize: "14px",
             },
             success: {
-              iconTheme: { primary: "#059669", secondary: "#ffffff" },
+              iconTheme: { primary: "#229C62", secondary: "#ffffff" },
             },
             error: {
               iconTheme: { primary: "#dc2626", secondary: "#ffffff" },

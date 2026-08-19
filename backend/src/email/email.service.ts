@@ -87,14 +87,14 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+  <div style="background:#0F203A;padding:32px;text-align:center;">
     <img src="https://xpertclass.academy/logo-full-dark.svg" alt="XpertClass" style="height:36px;" />
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">Your account is ready. Start exploring hands-on cybersecurity labs, earn XP, and climb the leaderboard.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/login" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Log In to XpertClass</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/login" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Log In to XpertClass</a>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">If you didn't create this account, please ignore this email.</p>
   </div>
@@ -119,7 +119,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+  <div style="background:#0F203A;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Verify Your Account</h1>
   </div>
   <div style="padding:32px;">
@@ -127,7 +127,7 @@ export class EmailService implements OnModuleInit {
     <p style="color:#334155;font-size:16px;line-height:1.6;">Use the code below to verify your email address and activate your XpertClass account.</p>
     <div style="text-align:center;margin:28px 0;">
       <div style="background:#f1f5f9;border-radius:12px;padding:20px 40px;display:inline-block;">
-        <span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#059669;font-family:monospace;">${code}</span>
+        <span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#229C62;font-family:monospace;">${code}</span>
       </div>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">This code expires in 10 minutes. If you didn't create this account, please ignore this email.</p>
@@ -187,13 +187,13 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+  <div style="background:#0F203A;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Password Reset</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">We received a request to reset your password.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${resetUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Reset Password</a>
+      <a href="${resetUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Reset Password</a>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p>
   </div>
@@ -221,17 +221,17 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#229C62,#229C62);padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Lab Environment Ready</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">Your lab <strong>${labTitle}</strong> is now running.</p>
-    <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;margin:20px 0;border-radius:4px;">
+    <div style="background:#f0fdf4;border-left:4px solid #229C62;padding:16px;margin:20px 0;border-radius:4px;">
       <p style="color:#334155;margin:0;font-size:14px;"><strong>Expires:</strong> ${expiry} (UTC)</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#10b981;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Open Lab</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Open Lab</a>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">Save your work before the lab expires. Stopping the lab early frees resources for other students.</p>
   </div>
@@ -298,7 +298,7 @@ export class EmailService implements OnModuleInit {
     <p style="color:#334155;font-size:16px;line-height:1.6;">Your lab <strong>${labTitle}</strong> has expired and the environment has been stopped.</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">Any unsaved work in the lab has been lost.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Another Lab</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Another Lab</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -359,14 +359,14 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+  <div style="background:#0F203A;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Course Enrolled</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You've been enrolled in <strong>${courseTitle}</strong>. Start learning at your own pace.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Learning</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Learning</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -427,13 +427,13 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#229C62,#229C62);padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Course Started!</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You've started <strong>${courseTitle}</strong>. Great decision! Here's what to expect:</p>
-    <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;margin:20px 0;border-radius:4px;">
+    <div style="background:#f0fdf4;border-left:4px solid #229C62;padding:16px;margin:20px 0;border-radius:4px;">
       <p style="color:#334155;margin:0 0 8px;font-size:14px;"><strong>Your learning roadmap:</strong></p>
       <p style="color:#64748b;margin:0;font-size:13px;">- Start with the first module and work through each lesson</p>
       <p style="color:#64748b;margin:4px 0 0;font-size:13px;">- Complete quizzes and labs to earn XP</p>
@@ -443,7 +443,7 @@ export class EmailService implements OnModuleInit {
       <p style="color:#64748b;margin:0 0 8px;font-size:13px;">Pro tip: Set aside 30 minutes daily for the best results</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${courseUrl}" style="background:#10b981;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
+      <a href="${courseUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -471,7 +471,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+  <div style="background:#0F203A;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">We Miss You!</h1>
   </div>
   <div style="padding:32px;">
@@ -480,13 +480,13 @@ export class EmailService implements OnModuleInit {
     <div style="background:#f8fafc;border-radius:8px;padding:20px;margin:20px 0;text-align:center;">
       <p style="color:#64748b;margin:0 0 8px;font-size:13px;">Your progress</p>
       <div style="background:#e2e8f0;border-radius:8px;height:8px;margin:0 auto;max-width:300px;">
-        <div style="background:#059669;height:8px;border-radius:8px;width:${progressPct}%;"></div>
+        <div style="background:#229C62;height:8px;border-radius:8px;width:${progressPct}%;"></div>
       </div>
       <p style="color:#334155;margin:12px 0 0;font-size:20px;font-weight:700;">${progressPct}% complete</p>
     </div>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You're just a few lessons away from making real progress. Pick up right where you left off.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${courseUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
+      <a href="${courseUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
     </div>
     <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0;">Consistency is key — even 15 minutes a day adds up fast.</p>
   </div>
@@ -558,7 +558,7 @@ export class EmailService implements OnModuleInit {
           <div style="width:48px;height:48px;">
             <svg viewBox="0 0 48 48" style="transform:rotate(-90deg);">
               <circle cx="24" cy="24" r="20" fill="none" stroke="#e2e8f0" stroke-width="4"/>
-              <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="4"
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#229C62" stroke-width="4"
                 stroke-dasharray="${2 * Math.PI * 20}"
                 stroke-dashoffset="${2 * Math.PI * 20 * (1 - c.progressPct / 100)}"
                 stroke-linecap="round"/>
@@ -578,7 +578,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+  <div style="background:#0F203A;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Your Weekly Report</h1>
     <p style="color:#c4b5fd;margin:8px 0 0;font-size:14px;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
   </div>
@@ -588,7 +588,7 @@ export class EmailService implements OnModuleInit {
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0;">
       <div style="background:#f0fdf4;border-radius:8px;padding:16px;text-align:center;">
-        <p style="color:#10b981;font-size:28px;font-weight:700;margin:0;">${stats.lessonsCompleted}</p>
+        <p style="color:#229C62;font-size:28px;font-weight:700;margin:0;">${stats.lessonsCompleted}</p>
         <p style="color:#64748b;font-size:12px;margin:4px 0 0;">Lessons Completed</p>
       </div>
       <div style="background:#eff6ff;border-radius:8px;padding:16px;text-align:center;">
@@ -613,7 +613,7 @@ export class EmailService implements OnModuleInit {
     </div>` : ''}
 
     <div style="text-align:center;margin:28px 0;">
-      <a href="${dashboardUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
+      <a href="${dashboardUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
     </div>
 
     <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0;">Consistency builds expertise. See you next week!</p>
@@ -642,7 +642,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#229C62,#229C62);padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Welcome aboard, ${displayName}</h1>
     <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">Your cybersecurity training starts now</p>
   </div>
@@ -661,7 +661,7 @@ export class EmailService implements OnModuleInit {
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
         <div style="width:32px;height:32px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <span style="color:#10b981;font-weight:700;font-size:14px;">2</span>
+          <span style="color:#229C62;font-weight:700;font-size:14px;">2</span>
         </div>
         <div>
           <p style="color:#334155;font-size:14px;font-weight:600;margin:0;">Launch Labs</p>
@@ -680,10 +680,10 @@ export class EmailService implements OnModuleInit {
     </div>
 
     <div style="text-align:center;margin:28px 0;">
-      <a href="${coursesUrl}" style="background:#10b981;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Explore Courses</a>
+      <a href="${coursesUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Explore Courses</a>
     </div>
     <div style="text-align:center;margin-bottom:12px;">
-      <a href="${labsUrl}" style="color:#10b981;font-size:14px;text-decoration:none;font-weight:500;">Or jump into a lab →</a>
+      <a href="${labsUrl}" style="color:#229C62;font-size:14px;text-decoration:none;font-weight:500;">Or jump into a lab →</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -716,22 +716,22 @@ export class EmailService implements OnModuleInit {
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You signed up a couple of days ago — here are some recommended first steps:</p>
 
-    <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;margin:20px 0;border-radius:4px;">
+    <div style="background:#f0fdf4;border-left:4px solid #229C62;padding:16px;margin:20px 0;border-radius:4px;">
       <p style="color:#334155;margin:0;font-size:14px;"><strong>Recommended:</strong> Start with "Linux Fundamentals" — it builds the foundation for everything else on the platform.</p>
     </div>
 
     <div style="background:#f8fafc;border-radius:8px;padding:20px;margin:20px 0;">
       <p style="color:#334155;font-size:14px;font-weight:600;margin:0 0 12px;">Quick wins to try:</p>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:#10b981;font-size:14px;">✓</span>
+        <span style="color:#229C62;font-size:14px;">✓</span>
         <span style="color:#64748b;font-size:13px;">Complete your first lesson</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:#10b981;font-size:14px;">✓</span>
+        <span style="color:#229C62;font-size:14px;">✓</span>
         <span style="color:#64748b;font-size:13px;">Launch a practice lab</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <span style="color:#10b981;font-size:14px;">✓</span>
+        <span style="color:#229C62;font-size:14px;">✓</span>
         <span style="color:#64748b;font-size:13px;">Capture your first flag</span>
       </div>
     </div>
@@ -845,7 +845,7 @@ export class EmailService implements OnModuleInit {
       <p style="color:#334155;margin:0;font-size:14px;">Consistency matters more than speed. Even one lesson today keeps your momentum going.</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${courseUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
+      <a href="${courseUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -870,18 +870,18 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#229C62,#229C62);padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Lab launched!</h1>
     <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">You've entered the arena</p>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You just launched your first hands-on lab — that's how real skills are built.</p>
-    <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;margin:20px 0;border-radius:4px;">
+    <div style="background:#f0fdf4;border-left:4px solid #229C62;padding:16px;margin:20px 0;border-radius:4px;">
       <p style="color:#334155;margin:0;font-size:14px;"><strong>What's next:</strong> Explore the environment, look for vulnerabilities, and capture flags to earn XP.</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${labsUrl}" style="background:#10b981;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">View My Labs</a>
+      <a href="${labsUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">View My Labs</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -989,7 +989,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#10b981,#059669);padding:24px;text-align:center;">
+  <div style="background:linear-gradient(135deg,#229C62,#229C62);padding:24px;text-align:center;">
     <p style="color:#fff;margin:0;font-size:32px;">✓</p>
     <h1 style="color:#fff;margin:8px 0 0;font-size:20px;">Lesson Complete</h1>
   </div>
@@ -999,12 +999,12 @@ export class EmailService implements OnModuleInit {
     <div style="background:#f0fdf4;border-radius:8px;padding:16px;margin:20px 0;text-align:center;">
       <p style="color:#334155;font-size:14px;margin:0 0 8px;">Course Progress</p>
       <div style="background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;">
-        <div style="background:#10b981;height:100%;width:${progressPct}%;border-radius:4px;"></div>
+        <div style="background:#229C62;height:100%;width:${progressPct}%;border-radius:4px;"></div>
       </div>
       <p style="color:#64748b;font-size:12px;margin:8px 0 0;">${progressPct}% complete</p>
     </div>
     <div style="text-align:center;margin:24px 0;">
-      <a href="${courseUrl}" style="background:#10b981;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Continue Course</a>
+      <a href="${courseUrl}" style="background:#229C62;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Continue Course</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
@@ -1078,7 +1078,7 @@ export class EmailService implements OnModuleInit {
       <p style="color:#334155;margin:0;font-size:14px;"><strong>Tip:</strong> Even 15 minutes of practice keeps your skills sharp. Consistency beats intensity.</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${dashboardUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Return to Dashboard</a>
+      <a href="${dashboardUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Return to Dashboard</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
