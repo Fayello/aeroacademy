@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function AuthCallbackPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#229C62] mb-6">
-          <Shield className="text-white" size={28} />
+          <img src="/logo-icon.svg" alt="XpertClass" className="w-10 h-10" />
         </div>
         <div className="flex items-center gap-3 text-slate-600">
           <Loader2 className="animate-spin text-[#229C62]" size={20} />

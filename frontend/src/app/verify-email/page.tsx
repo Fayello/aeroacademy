@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
-import { Shield, CheckCircle2, Loader2, ArrowLeft, Mail } from "lucide-react";
+import { CheckCircle2, Loader2, ArrowLeft, Mail } from "lucide-react";
 
 function VerifyEmailForm() {
   const router = useRouter();
@@ -118,7 +118,7 @@ function VerifyEmailForm() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="bg-emerald-600 p-2 rounded-xl">
-              <Shield className="text-white" size={22} />
+              <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
           </div>

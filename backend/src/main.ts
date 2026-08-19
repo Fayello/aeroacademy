@@ -58,7 +58,7 @@ async function bootstrap() {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('XpertClass API')
       .setDescription(
-        'Full-stack cybersecurity and technology training platform API',
+        'Full-stack training platform API — cybersecurity, IT, DevOps, and more',
       )
       .setVersion('1.0')
       .addBearerAuth(

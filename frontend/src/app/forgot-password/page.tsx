@@ -7,7 +7,7 @@ import * as z from "zod";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 import Link from "next/link";
-import { Shield, ArrowLeft, Mail, Loader2, KeyRound } from "lucide-react";
+import { ArrowLeft, Mail, Loader2, KeyRound } from "lucide-react";
 
 const emailSchema = z.object({ email: z.string().email("Invalid email") });
 type EmailValues = z.infer<typeof emailSchema>;
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="bg-emerald-600 p-2 rounded-xl">
-              <Shield className="text-white" size={22} />
+              <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
           </div>

@@ -186,7 +186,7 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-12 py-12">
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Start your journey in cybersecurity, Linux & DevOps
+              Start your journey in security, Linux & DevOps
             </h2>
             <p className="text-emerald-100 text-lg mb-10">
               Join thousands of engineers across Cameroon building real skills through hands-on labs and structured courses.

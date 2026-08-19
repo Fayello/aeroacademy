@@ -253,7 +253,7 @@ export default function AdminLearningPathsPage() {
         }
       >
         <div className="space-y-4">
-          <AdminInput label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Cybersecurity Fundamentals" required />
+          <AdminInput label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Training Fundamentals" required />
           <AdminTextarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the learning path..." rows={3} required />
           <AdminInput label="Image URL (optional)" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://..." />
           <AdminSelect

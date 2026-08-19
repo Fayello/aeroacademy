@@ -83,7 +83,7 @@ export default function LearningPathsPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Learning Paths</h1>
-              <p className="text-violet-200 text-sm">Structured curricula to master cybersecurity</p>
+              <p className="text-violet-200 text-sm">Structured curricula to master technical skills</p>
             </div>
           </div>
         </div>

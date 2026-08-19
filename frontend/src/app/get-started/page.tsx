@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Users, BookOpen, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Users, BookOpen, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function GetStartedPage() {
   return (
@@ -9,9 +9,7 @@ export default function GetStartedPage() {
       {/* Minimal nav */}
       <nav className="w-full px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="bg-emerald-600 p-1.5 rounded-lg">
-            <Shield size={18} className="text-white" />
-          </div>
+          <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
           <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
         </Link>
       </nav>
@@ -30,8 +28,8 @@ export default function GetStartedPage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Individual Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-emerald-300 transition-all group">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-[#229C62]/30 transition-all group">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6">
                 <BookOpen size={14} /> FOR INDIVIDUALS
               </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-3">Start learning immediately for free</h2>
@@ -48,7 +46,7 @@ export default function GetStartedPage() {
                   "Earn certifications",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600">
-                    <CheckCircle2 size={16} className="text-emerald-500 shrink-0" /> {item}
+                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {item}
                   </li>
                 ))}
               </ul>
@@ -99,7 +97,7 @@ export default function GetStartedPage() {
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Already have an account?{" "}
-            <Link href="/login" className="text-emerald-600 hover:text-emerald-700 font-medium">
+            <Link href="/login" className="text-[#229C62] hover:text-[#0F203A] font-medium">
               Sign in
             </Link>
           </p>

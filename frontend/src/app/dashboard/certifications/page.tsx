@@ -137,7 +137,7 @@ export default function CertificationsPage() {
       doc.setTextColor(148, 163, 184);
       doc.text("Credential ID: " + cert.certificate.id, 148.5, 175, { align: "center" });
       doc.text("Verify: " + cert.certificate.credentialUrl, 148.5, 182, { align: "center" });
-      doc.text("XpertClass - Cybersecurity Training Platform", 148.5, 192, { align: "center" });
+      doc.text("XpertClass - Training Platform", 148.5, 192, { align: "center" });
 
       doc.save("XpertClass_" + cert.certificate.courseName.replace(/\s+/g, "_") + ".pdf");
       toast.success("Certificate downloaded!");

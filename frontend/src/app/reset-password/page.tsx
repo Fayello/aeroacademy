@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Lock, CheckCircle, ChevronLeft, Loader2 } from "lucide-react";
+import { Lock, CheckCircle, ChevronLeft, Loader2 } from "lucide-react";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 
@@ -103,7 +103,7 @@ function ResetPasswordForm() {
 
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-600 mb-4">
-            <Shield className="text-white" size={24} />
+            <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-semibold text-slate-900">Set new password</h1>
           <p className="text-sm text-slate-500 mt-1">Choose a strong password for your account</p>

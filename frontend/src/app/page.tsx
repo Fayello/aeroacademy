@@ -631,7 +631,7 @@ export default function LandingPage() {
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
                 <div className="bg-[#229C62] p-1.5 rounded-lg">
-                  <Shield size={18} className="text-white" />
+                  <img src="/logo-icon.svg" alt="XpertClass" className="w-6 h-6" />
                 </div>
                 <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
               </Link>
