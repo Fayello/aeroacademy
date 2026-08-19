@@ -18,6 +18,7 @@ const links = [
 
 const moreLinks = [
   { href: "/dashboard/labs", tKey: "labs" },
+  { href: "/dashboard/learning-paths", tKey: "learning-paths" },
   { href: "/dashboard/master-classes", tKey: "master-classes" },
   { href: "/dashboard/training", tKey: "training" },
   { href: "/dashboard/registry", tKey: "registry" },

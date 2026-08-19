@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -18,6 +18,7 @@ interface NavLink {
 const links: NavLink[] = [
   { href: "/dashboard", tKey: "dashboard", icon: LayoutDashboard },
   { href: "/dashboard/courses", tKey: "courses", icon: GraduationCap },
+  { href: "/dashboard/learning-paths", tKey: "learning-paths", icon: Route },
   { href: "/dashboard/labs", tKey: "labs", icon: Microscope },
   { href: "/dashboard/master-classes", tKey: "master-classes", icon: Video },
   { href: "/dashboard/training", tKey: "training", icon: Calendar },

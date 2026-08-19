@@ -54,6 +54,7 @@ model User {
   badges                   UserBadge[]
   assessmentResults        AssessmentResult[]
   reviews                  CourseReview[]
+  learningPathEnrollments  LearningPathEnrollment[]
 
   @@index([googleId])
   @@index([role])
@@ -92,15 +93,16 @@ model Organization {
 }
 
 model Course {
-  id             String             @id @default(uuid())
+  id             String               @id @default(uuid())
   title          String
   description    String
   imageUrl       String?
   estimatedHours Int?
-  createdAt      DateTime           @default(now())
+  createdAt      DateTime             @default(now())
   sections       Section[]
   enrollments    CourseEnrollment[]
   reviews        CourseReview[]
+  learningPaths  LearningPathCourse[]
 }
 
 model Section {
@@ -486,6 +488,45 @@ model CourseReview {
   @@unique([userId, courseId])
   @@index([courseId])
   @@index([rating])
+}
+
+model LearningPath {
+  id          String              @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String?
+  difficulty  String              @default("BEGINNER")
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  courses     LearningPathCourse[]
+  enrollments LearningPathEnrollment[]
+}
+
+model LearningPathCourse {
+  id             String         @id @default(uuid())
+  learningPathId String
+  courseId        String
+  order          Int            @default(0)
+  learningPath   LearningPath   @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  course         Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([learningPathId, courseId])
+  @@index([learningPathId])
+  @@index([courseId])
+}
+
+model LearningPathEnrollment {
+  id             String      @id @default(uuid())
+  userId         String
+  learningPathId String
+  enrolledAt     DateTime    @default(now())
+  completedAt    DateTime?
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, learningPathId])
+  @@index([userId])
+  @@index([learningPathId])
 }
 
 model Challenge {

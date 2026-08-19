@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
-import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, Plus, Pencil, Trash2, ArrowLeft, Loader2, CheckSquare, Square, X } from "lucide-react";
+import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, Plus, Pencil, Trash2, ArrowLeft, Loader2, CheckSquare, Square, X, Search } from "lucide-react";
 import toast from "@/lib/toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminNumber, AdminSelect } from "@/components/admin/AdminForm";
@@ -75,6 +75,7 @@ export default function AdminCoursesPage() {
   const [quizForm, setQuizForm] = useState<QuizQuestion[]>([]);
   const [saving, setSaving] = useState(false);
   const [labs, setLabs] = useState<{ id: string; title: string }[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadCourses = useCallback(async () => {
     try {
@@ -328,8 +329,30 @@ export default function AdminCoursesPage() {
           </div>
         )}
 
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search courses..."
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
         <div className="grid gap-4">
-          {courses.map((course) => (
+          {courses
+            .filter((c) => {
+              if (!searchQuery) return true;
+              const q = searchQuery.toLowerCase();
+              return c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
+            })
+            .map((course) => (
             <div key={course.id} onClick={() => loadCourseDetail(course.id)} className={`bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group ${selectedCourses.has(course.id) ? "border-emerald-400 ring-1 ring-emerald-400/40" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">

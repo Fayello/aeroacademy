@@ -26,6 +26,7 @@ import { EmailModule } from './email/email.module';
 import { ChallengesModule } from './challenges/challenges.module';
 import { BadgesModule } from './badges/badges.module';
 import { AssessmentsModule } from './assessments/assessments.module';
+import { LearningPathsModule } from './learning-paths/learning-paths.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { AssessmentsModule } from './assessments/assessments.module';
     ChallengesModule,
     BadgesModule,
     AssessmentsModule,
+    LearningPathsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
