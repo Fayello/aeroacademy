@@ -18,6 +18,7 @@ import {
   Rocket,
   Star,
   Send,
+  MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
@@ -347,6 +348,25 @@ export default function CourseBriefingPage() {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Discussions Link */}
+      {isEnrolled && (
+        <Link
+          href={`/dashboard/courses/${course.id}/discussions`}
+          className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between hover:shadow-md transition-all group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+              <MessageSquare size={20} className="text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Course Discussions</h3>
+              <p className="text-xs text-slate-500">Ask questions, share tips, and help other students</p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+        </Link>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

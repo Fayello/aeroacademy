@@ -46,6 +46,9 @@ const en: Record<string, string> = {
   "nav.badges": "Badges",
   "nav.assessments": "Assessments",
   "nav.my-analytics": "My Analytics",
+  "nav.my-teams": "My Teams",
+  "nav.admin-teams": "Teams",
+  "nav.discussions": "Discussions",
   "nav.main": "Main navigation",
   "nav.mobile": "Mobile navigation",
 };
@@ -80,6 +83,9 @@ const fr: Record<string, string> = {
   "nav.my-analytics": "Mes Analyses",
   "nav.audit": "Journaux d'audit",
   "nav.profile": "Profil",
+  "nav.my-teams": "Mes Équipes",
+  "nav.admin-teams": "Équipes",
+  "nav.discussions": "Discussions",
   "nav.main": "Navigation principale",
   "nav.mobile": "Navigation mobile",
 };

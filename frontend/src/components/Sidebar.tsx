@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route, Users } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface NavLink {
   href: string;
@@ -23,6 +24,7 @@ const links: NavLink[] = [
   { href: "/dashboard/master-classes", tKey: "master-classes", icon: Video },
   { href: "/dashboard/training", tKey: "training", icon: Calendar },
   { href: "/dashboard/leaderboard", tKey: "leaderboard", icon: Trophy },
+  { href: "/dashboard/teams", tKey: "my-teams", icon: Users },
   { href: "/dashboard/challenges", tKey: "challenges", icon: Target },
   { href: "/dashboard/badges", tKey: "badges", icon: Award },
   { href: "/dashboard/assessments", tKey: "assessments", icon: ClipboardCheck },
@@ -36,6 +38,7 @@ const links: NavLink[] = [
   { href: "/dashboard/admin/badges", tKey: "admin-badges", icon: Award, roles: ["ADMIN"] },
   { href: "/dashboard/admin/assessments", tKey: "admin-assessments", icon: ClipboardCheck, roles: ["ADMIN"] },
   { href: "/dashboard/admin/learning-paths", tKey: "admin-learning-paths", icon: Route, roles: ["ADMIN"] },
+  { href: "/dashboard/admin/teams", tKey: "admin-teams", icon: Users, roles: ["ADMIN"] },
   { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3, roles: ["ADMIN"] },
   { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText, roles: ["ADMIN"] },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
@@ -117,7 +120,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-3 shrink-0 space-y-2 border-t border-slate-100">
-        <LanguageSwitcher />
+        <div className="flex items-center justify-between">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
         <button
           onClick={logout}
           aria-label={t("common.logout")}

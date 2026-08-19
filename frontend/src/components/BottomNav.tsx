@@ -22,6 +22,7 @@ const moreLinks = [
   { href: "/dashboard/master-classes", tKey: "master-classes" },
   { href: "/dashboard/training", tKey: "training" },
   { href: "/dashboard/registry", tKey: "registry" },
+  { href: "/dashboard/teams", tKey: "my-teams" },
 ];
 
 export default function BottomNav() {

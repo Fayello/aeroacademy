@@ -55,6 +55,9 @@ model User {
   assessmentResults        AssessmentResult[]
   reviews                  CourseReview[]
   learningPathEnrollments  LearningPathEnrollment[]
+  discussionPosts          DiscussionPost[]
+  discussionComments       DiscussionComment[]
+  discussionVotes          DiscussionVote[]
 
   @@index([googleId])
   @@index([role])
@@ -70,6 +73,7 @@ model Team {
   members     User[]
   createdAt   DateTime @default(now())
   challenges  TeamChallengeParticipant[]
+  courseEnrollments TeamCourseEnrollment[]
 
   @@index([ownerId])
 }
@@ -103,6 +107,8 @@ model Course {
   enrollments    CourseEnrollment[]
   reviews        CourseReview[]
   learningPaths  LearningPathCourse[]
+  discussions    DiscussionPost[]
+  teamEnrollments TeamCourseEnrollment[]
 }
 
 model Section {
@@ -620,4 +626,89 @@ model AssessmentResult {
 
   @@unique([assessmentId, userId])
   @@index([userId])
+}
+
+model DiscussionPost {
+  id           String              @id @default(uuid())
+  courseId     String
+  userId       String
+  title        String
+  body         String
+  isPinned     Boolean             @default(false)
+  isResolved   Boolean             @default(false)
+  tags         String[]            @default([])
+  upvotes      Int                 @default(0)
+  commentCount Int                 @default(0)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  course       Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments     DiscussionComment[]
+  votes        DiscussionVote[]
+
+  @@index([courseId, createdAt])
+  @@index([courseId, isPinned])
+  @@index([userId])
+}
+
+model DiscussionComment {
+  id        String           @id @default(uuid())
+  postId    String
+  userId    String
+  body      String
+  parentId  String?
+  upvotes   Int              @default(0)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  post      DiscussionPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    DiscussionComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   DiscussionComment[] @relation("CommentReplies")
+  votes     DiscussionVote[]
+
+  @@index([postId, createdAt])
+  @@index([userId])
+}
+
+model DiscussionVote {
+  id        String           @id @default(uuid())
+  userId    String
+  postId    String?
+  commentId String?
+  value     Int              @default(1) // 1 = upvote, -1 = downvote
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      DiscussionPost?  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment   DiscussionComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+  @@index([postId])
+  @@index([commentId])
+}
+
+model CourseReorderHistory {
+  id        String   @id @default(uuid())
+  courseId   String
+  entityType String  // SECTION, LESSON
+  entityId   String
+  oldOrder   Int
+  newOrder   Int
+  actorId    String
+  createdAt  DateTime @default(now())
+
+  @@index([courseId])
+}
+
+model TeamCourseEnrollment {
+  id        String   @id @default(uuid())
+  teamId    String
+  courseId  String
+  enrolledAt DateTime @default(now())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, courseId])
+  @@index([teamId])
+  @@index([courseId])
 }

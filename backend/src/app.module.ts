@@ -28,6 +28,9 @@ import { BadgesModule } from './badges/badges.module';
 import { AssessmentsModule } from './assessments/assessments.module';
 import { LearningPathsModule } from './learning-paths/learning-paths.module';
 import { VerifyModule } from './verify/verify.module';
+import { DiscussionsModule } from './discussions/discussions.module';
+import { TeamEnrollmentsModule } from './team-enrollments/team-enrollments.module';
+import { CourseAdminModule } from './course-admin/course-admin.module';
 
 @Module({
   imports: [
@@ -63,6 +66,9 @@ import { VerifyModule } from './verify/verify.module';
     AssessmentsModule,
     LearningPathsModule,
     VerifyModule,
+    DiscussionsModule,
+    TeamEnrollmentsModule,
+    CourseAdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
