@@ -68,10 +68,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 mb-10">
-            <div className="bg-emerald-600 p-2 rounded-xl">
-              <Shield className="text-white" size={22} />
-            </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
+            <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
+            <span className="text-xl font-bold tracking-tight">
+              <span className="text-[#0F1B2D]">Xpert</span><span className="text-[#059669]">Class</span>
+            </span>
           </Link>
 
           <div className="mb-8">

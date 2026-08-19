@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Navy left side -->
+  <path d="M4 4 L24 4 L14 14 L4 4Z" fill="#0F1B2D"/>
+  <path d="M4 4 L4 24 L14 14 L4 4Z" fill="#0F1B2D"/>
+  <path d="M4 4 L34 34 L24 34 L4 4Z" fill="#0F1B2D"/>
+  <path d="M4 4 L4 34 L14 24 L4 4Z" fill="#0F1B2D"/>
+  <!-- Green right side -->
+  <path d="M34 4 L44 4 L44 14 L34 4Z" fill="#059669"/>
+  <path d="M34 4 L44 14 L34 24 L34 4Z" fill="#059669"/>
+  <path d="M34 4 L44 4 L44 34 L34 34Z" fill="#059669"/>
+  <path d="M14 14 L34 4 L34 14 L14 14Z" fill="#059669"/>
+  <!-- Pixel dissolution -->
+  <rect x="38" y="1" width="4" height="4" rx="0.5" fill="#059669" opacity="0.8"/>
+  <rect x="43" y="4" width="3" height="3" rx="0.5" fill="#059669" opacity="0.6"/>
+  <rect x="40" y="7" width="2.5" height="2.5" rx="0.5" fill="#059669" opacity="0.5"/>
+  <rect x="45" y="0" width="2" height="2" rx="0.5" fill="#10B981" opacity="0.4"/>
+  <rect x="42" y="-1" width="1.5" height="1.5" rx="0.5" fill="#10B981" opacity="0.3"/>
+  <!-- Lime accent -->
+  <path d="M4 28 L10 34 L4 34Z" fill="#84CC16"/>
+</svg>

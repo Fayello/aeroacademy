@@ -180,10 +180,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="bg-emerald-600 p-1.5 rounded-lg">
-                <Shield size={18} className="text-white" />
-              </div>
-              <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
+              <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+              <span className="text-lg font-bold tracking-tight">
+                <span className="text-[#0F1B2D]">Xpert</span><span className="text-[#059669]">Class</span>
+              </span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (

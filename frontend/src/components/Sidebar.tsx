@@ -71,11 +71,11 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">
       <div className="p-6 flex items-center gap-3">
-        <div className="bg-emerald-600 p-2 rounded-lg">
-          <Shield className="text-white" size={20} />
-        </div>
+        <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
         <div>
-          <h1 className="text-base font-semibold text-slate-900 tracking-tight">XpertClass</h1>
+          <h1 className="text-base font-semibold tracking-tight">
+            <span className="text-[#0F1B2D]">Xpert</span><span className="text-[#059669]">Class</span>
+          </h1>
           <p className="text-[11px] text-slate-400">{t("app.tagline")}</p>
         </div>
       </div>

@@ -80,26 +80,26 @@ export class EmailService implements OnModuleInit {
     return this.send({
       to: email,
       from: 'auth',
-      subject: 'Welcome to XpertClass — Your Cybersecurity Journey Begins',
+      subject: 'Welcome to XpertClass — Your Training Journey Begins',
       html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
-    <h1 style="color:#fff;margin:0;font-size:24px;">Welcome to XpertClass</h1>
+  <div style="background:#0F1B2D;padding:32px;text-align:center;">
+    <img src="https://xpertclass.academy/logo-full-dark.svg" alt="XpertClass" style="height:36px;" />
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">Your account is ready. Start exploring hands-on cybersecurity labs, earn XP, and climb the leaderboard.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/login" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Log In to XpertClass</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/login" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Log In to XpertClass</a>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">If you didn't create this account, please ignore this email.</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -119,7 +119,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+  <div style="background:#0F1B2D;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Verify Your Account</h1>
   </div>
   <div style="padding:32px;">
@@ -127,13 +127,13 @@ export class EmailService implements OnModuleInit {
     <p style="color:#334155;font-size:16px;line-height:1.6;">Use the code below to verify your email address and activate your XpertClass account.</p>
     <div style="text-align:center;margin:28px 0;">
       <div style="background:#f1f5f9;border-radius:12px;padding:20px 40px;display:inline-block;">
-        <span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#6366f1;font-family:monospace;">${code}</span>
+        <span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#059669;font-family:monospace;">${code}</span>
       </div>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">This code expires in 10 minutes. If you didn't create this account, please ignore this email.</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -167,7 +167,7 @@ export class EmailService implements OnModuleInit {
     <p style="color:#64748b;font-size:14px;line-height:1.6;">This code expires in 10 minutes. If you didn't request this, please ignore this email.</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -187,18 +187,18 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+  <div style="background:#0F1B2D;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Password Reset</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">We received a request to reset your password.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${resetUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Reset Password</a>
+      <a href="${resetUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Reset Password</a>
     </div>
     <p style="color:#64748b;font-size:14px;line-height:1.6;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -236,7 +236,7 @@ export class EmailService implements OnModuleInit {
     <p style="color:#64748b;font-size:14px;line-height:1.6;">Save your work before the lab expires. Stopping the lab early frees resources for other students.</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -270,7 +270,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -298,11 +298,11 @@ export class EmailService implements OnModuleInit {
     <p style="color:#334155;font-size:16px;line-height:1.6;">Your lab <strong>${labTitle}</strong> has expired and the environment has been stopped.</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">Any unsaved work in the lab has been lost.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Another Lab</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Another Lab</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -337,7 +337,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -359,18 +359,18 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+  <div style="background:#0F1B2D;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Course Enrolled</h1>
   </div>
   <div style="padding:32px;">
     <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You've been enrolled in <strong>${courseTitle}</strong>. Start learning at your own pace.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Learning</a>
+      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Learning</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -404,7 +404,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -447,7 +447,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -471,7 +471,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+  <div style="background:#0F1B2D;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">We Miss You!</h1>
   </div>
   <div style="padding:32px;">
@@ -480,18 +480,18 @@ export class EmailService implements OnModuleInit {
     <div style="background:#f8fafc;border-radius:8px;padding:20px;margin:20px 0;text-align:center;">
       <p style="color:#64748b;margin:0 0 8px;font-size:13px;">Your progress</p>
       <div style="background:#e2e8f0;border-radius:8px;height:8px;margin:0 auto;max-width:300px;">
-        <div style="background:#6366f1;height:8px;border-radius:8px;width:${progressPct}%;"></div>
+        <div style="background:#059669;height:8px;border-radius:8px;width:${progressPct}%;"></div>
       </div>
       <p style="color:#334155;margin:12px 0 0;font-size:20px;font-weight:700;">${progressPct}% complete</p>
     </div>
     <p style="color:#334155;font-size:16px;line-height:1.6;">You're just a few lessons away from making real progress. Pick up right where you left off.</p>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${courseUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
+      <a href="${courseUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
     </div>
     <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0;">Consistency is key — even 15 minutes a day adds up fast.</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -526,7 +526,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -578,7 +578,7 @@ export class EmailService implements OnModuleInit {
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;">
+  <div style="background:#0F1B2D;padding:32px;text-align:center;">
     <h1 style="color:#fff;margin:0;font-size:24px;">Your Weekly Report</h1>
     <p style="color:#c4b5fd;margin:8px 0 0;font-size:14px;">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
   </div>
@@ -613,13 +613,13 @@ export class EmailService implements OnModuleInit {
     </div>` : ''}
 
     <div style="text-align:center;margin:28px 0;">
-      <a href="${dashboardUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
+      <a href="${dashboardUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
     </div>
 
     <p style="color:#94a3b8;font-size:12px;text-align:center;margin:0;">Consistency builds expertise. See you next week!</p>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -687,7 +687,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -741,7 +741,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -779,7 +779,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -814,7 +814,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -845,11 +845,11 @@ export class EmailService implements OnModuleInit {
       <p style="color:#334155;margin:0;font-size:14px;">Consistency matters more than speed. Even one lesson today keeps your momentum going.</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${courseUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
+      <a href="${courseUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Resume Course</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -885,7 +885,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -921,7 +921,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -968,7 +968,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -1008,7 +1008,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -1047,7 +1047,7 @@ export class EmailService implements OnModuleInit {
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
@@ -1078,11 +1078,11 @@ export class EmailService implements OnModuleInit {
       <p style="color:#334155;margin:0;font-size:14px;"><strong>Tip:</strong> Even 15 minutes of practice keeps your skills sharp. Consistency beats intensity.</p>
     </div>
     <div style="text-align:center;margin:28px 0;">
-      <a href="${dashboardUrl}" style="background:#6366f1;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Return to Dashboard</a>
+      <a href="${dashboardUrl}" style="background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Return to Dashboard</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Cybersecurity Training Platform</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
   </div>
 </div>
 </body>
