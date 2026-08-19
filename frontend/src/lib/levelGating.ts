@@ -32,7 +32,7 @@ const LAB_DIFFICULTY_GATES: { maxDifficulty: number; requiredLevel: number }[] =
 const SIDEBAR_GATES: Record<string, number> = {
   "/dashboard": 1,
   "/dashboard/courses": 1,
-  "/dashboard/labs": 3,
+  "/dashboard/labs": 1,
   "/dashboard/leaderboard": 1,
   "/dashboard/certifications": 10,
   "/dashboard/registry": 5,
@@ -75,3 +75,15 @@ export function getCertificationLock(level: number): LevelGate {
     reason: level < 10 ? "Reach Level 10 to earn certifications" : "",
   };
 }
+
+export function getNextLabUnlock(currentLevel: number): { requiredLevel: number; xpNeeded: number } | null {
+  const gates = [1, 4, 7, 10];
+  for (const g of gates) {
+    if (currentLevel < g) {
+      return { requiredLevel: g, xpNeeded: (g - 1) * 1000 - (currentLevel - 1) * 1000 };
+    }
+  }
+  return null;
+}
+
+export const LAB_DIFFICULTY_GATES_EXPORT = LAB_DIFFICULTY_GATES;

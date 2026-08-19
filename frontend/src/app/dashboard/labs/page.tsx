@@ -209,20 +209,25 @@ export default function LabsCatalog() {
             const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;
 
             if (isLocked) {
+              const xpNeeded = gate.requiredLevel * 1000 - level * 1000;
               return (
                 <div
                   key={lab.id}
-                  className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden cursor-not-allowed opacity-50"
-                  aria-disabled="true"
+                  className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden"
                   aria-label={`${lab.title} — locked, requires level ${gate.requiredLevel}`}
                 >
                   <div className="absolute inset-0 z-20 backdrop-blur-md bg-white/80 flex flex-col items-center justify-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
-                      <Lock size={20} className="text-slate-400" />
+                    <div className="w-12 h-12 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center">
+                      <Lock size={20} className="text-amber-500" />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-mono text-slate-500 mb-1">LEVEL {gate.requiredLevel} REQUIRED</p>
-                      <p className="text-[11px] text-slate-400">Level up to unlock this lab</p>
+                      <p className="text-xs font-mono text-slate-700 mb-1">LEVEL {gate.requiredLevel} REQUIRED</p>
+                      <p className="text-[11px] text-slate-500 mb-2">
+                        {diff.label} Lab
+                      </p>
+                      <div className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+                        Earn {xpNeeded > 0 ? xpNeeded : 500} more XP to unlock
+                      </div>
                     </div>
                   </div>
 

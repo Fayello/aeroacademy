@@ -21,7 +21,11 @@ import {
   Target,
   Circle,
   Flame,
+  Lock,
+  Star,
+  ChevronRight,
 } from "lucide-react";
+import { getLevel, getLevelProgress, getNextLabUnlock } from "@/lib/levelGating";
 
 interface User {
   id: string;
@@ -119,6 +123,9 @@ export default function DashboardPage() {
   const [globalActivity, setGlobalActivity] = useState<GlobalActivityEvent[]>([]);
   const [globalActivityLoading, setGlobalActivityLoading] = useState(true);
 
+  const [beginnerLabs, setBeginnerLabs] = useState<any[]>([]);
+  const [beginnerLabsLoading, setBeginnerLabsLoading] = useState(true);
+
   const { userMetrics, feed, leaderboard } = useDashboard();
 
   useEffect(() => {
@@ -131,18 +138,31 @@ export default function DashboardPage() {
           stats,
           coursesData,
           globalActivityData,
+          allLabs,
         ] = await Promise.allSettled([
           fetchApi("/dashboard/active-labs"),
           fetchApi("/dashboard/activity"),
           fetchApi("/dashboard/user-stats"),
           fetchApi("/courses"),
           fetchApi("/dashboard/global-activity"),
+          fetchApi("/labs"),
         ]);
 
         if (labs.status === "fulfilled" && !cancelled) setActiveLabs(labs.value as ActiveLabInstance[]);
         if (activity.status === "fulfilled" && !cancelled) setLabActivity(activity.value as ActivityEvent[]);
         if (stats.status === "fulfilled" && !cancelled) setUserStats(stats.value as UserLabStats);
         if (globalActivityData.status === "fulfilled" && !cancelled) setGlobalActivity(globalActivityData.value as GlobalActivityEvent[]);
+
+        if (allLabs.status === "fulfilled" && !cancelled) {
+          const xp = userMetrics?.xp || parseInt(localStorage.getItem("xp") || "0");
+          const lvl = getLevel(xp);
+          const labList = allLabs.value as any[];
+          const beginner = labList.filter((l: any) => {
+            const diff = l.difficulty || 1200;
+            return diff <= 1100 || lvl >= 4;
+          }).slice(0, 4);
+          setBeginnerLabs(beginner);
+        }
 
         if (coursesData.status === "fulfilled" && !cancelled) {
           const courseList = coursesData.value as CourseWithProgress[];
@@ -170,6 +190,7 @@ export default function DashboardPage() {
           setLabActivityLoading(false);
           setCoursesLoading(false);
           setGlobalActivityLoading(false);
+          setBeginnerLabsLoading(false);
         }
       }
     }
@@ -274,6 +295,117 @@ export default function DashboardPage() {
         division={userMetrics?.division || "BRONZE"}
         clearance={userMetrics?.clearance || "STUDENT_L1"}
       />
+
+      {/* XP Progress + Next Unlock */}
+      {(() => {
+        const xp = userMetrics?.xp || 0;
+        const level = getLevel(xp);
+        const progress = getLevelProgress(xp);
+        const nextUnlock = getNextLabUnlock(level);
+
+        return (
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                  <Star size={16} className="text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Level {level}</p>
+                  <p className="text-[11px] text-slate-500">{xp} total XP</p>
+                </div>
+              </div>
+              {nextUnlock && (
+                <div className="text-right">
+                  <p className="text-[11px] text-slate-500">Next lab unlock</p>
+                  <p className="text-sm font-semibold text-emerald-600">Level {nextUnlock.requiredLevel}</p>
+                </div>
+              )}
+            </div>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+                style={{ width: `${progress * 100}%` }}
+              />
+            </div>
+            {nextUnlock && (
+              <p className="text-[11px] text-slate-400 mt-1.5">
+                {nextUnlock.xpNeeded} XP to unlock Level {nextUnlock.requiredLevel} labs
+              </p>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Start Here — Beginner Labs */}
+      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900">Start Here</h3>
+              <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Beginner</span>
+            </div>
+            <Link
+              href="/dashboard/labs"
+              className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
+            >
+              View all <ArrowRight size={12} />
+            </Link>
+          </div>
+
+          {beginnerLabsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 size={20} className="text-blue-500 animate-spin" />
+            </div>
+          ) : beginnerLabs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <FlaskConical size={24} className="text-slate-300 mb-2" />
+              <p className="text-sm text-slate-500 mb-1">No beginner labs available yet</p>
+              <p className="text-xs text-slate-400 mb-4">Complete lessons to unlock more labs</p>
+              <Link
+                href="/dashboard/courses"
+                className="text-xs py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+              >
+                Start a Course <ArrowRight size={14} className="inline ml-1" />
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {beginnerLabs.map((lab: any) => (
+                <Link
+                  key={lab.id}
+                  href={`/dashboard/labs/${lab.id}`}
+                  className="group p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all duration-200"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0 group-hover:bg-emerald-200 transition-colors">
+                      <FlaskConical size={16} className="text-emerald-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                        {lab.title}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                          {lab.difficulty <= 900 ? "EASY" : lab.difficulty <= 1100 ? "BEGINNER" : "INTERMEDIATE"}
+                        </span>
+                        {lab.estimatedMinutes && (
+                          <span className="text-[10px] text-slate-400">~{lab.estimatedMinutes}m</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-[11px] text-emerald-600 font-medium group-hover:underline flex items-center gap-1">
+                      Launch lab <ChevronRight size={12} />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Active Labs */}
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">

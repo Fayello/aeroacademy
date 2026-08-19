@@ -486,19 +486,43 @@ export default function LabWorkspace() {
   if (lab) {
     const gate = getLabLock(lab.difficulty || 1200, level);
     if (gate.locked) {
+      const xpNeeded = gate.requiredLevel * 1000 - level * 1000;
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-in fade-in duration-500">
-          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
-            <Lock size={28} className="text-slate-400" />
+          <div className="w-16 h-16 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center">
+            <Lock size={28} className="text-amber-500" />
           </div>
-          <div className="text-center">
+          <div className="text-center max-w-sm">
             <h2 className="text-lg font-semibold text-slate-900">Lab Locked</h2>
             <p className="text-sm text-slate-500 mt-1">{gate.reason}</p>
-            <p className="text-xs text-slate-400 mt-2">Complete more lessons and labs to earn XP and level up.</p>
+            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-600">Your level</span>
+                <span className="font-semibold text-slate-900">Level {level}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-600">Required</span>
+                <span className="font-semibold text-emerald-600">Level {gate.requiredLevel}</span>
+              </div>
+              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all"
+                  style={{ width: `${Math.min(((level - 1) / (gate.requiredLevel - 1)) * 100, 100)}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Earn <span className="font-semibold text-emerald-600">{xpNeeded} more XP</span> to unlock
+              </p>
+            </div>
+            <div className="mt-4 flex items-center gap-3">
+              <Link href="/dashboard/labs" className="btn-primary text-sm">
+                Browse Labs
+              </Link>
+              <Link href="/dashboard/courses" className="text-sm text-slate-600 hover:text-slate-800 font-medium">
+                Take a Course
+              </Link>
+            </div>
           </div>
-          <Link href="/dashboard/labs" className="btn-primary text-sm">
-            Back to Labs
-          </Link>
         </div>
       );
     }
