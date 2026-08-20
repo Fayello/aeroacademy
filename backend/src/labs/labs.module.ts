@@ -17,7 +17,7 @@ import { ProgressModule } from '../progress/progress.module';
     AuthModule,
     forwardRef(() => DashboardModule),
     LeaguesModule,
-    ProgressModule,
+    forwardRef(() => ProgressModule),
   ],
   controllers: [LabsController],
   providers: [DockerManager, LabsService, LabsGateway, LabsCron],
