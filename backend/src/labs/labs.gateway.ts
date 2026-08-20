@@ -182,6 +182,23 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
       const container = targetDocker.getContainer(instance.containerId);
+
+      try {
+        const ensureUser = await container.exec({
+          AttachStdin: false,
+          AttachStdout: true,
+          AttachStderr: true,
+          Tty: true,
+          Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
+        });
+        const ensureStream = await ensureUser.start({ hijack: false });
+        await new Promise<void>((resolve) => {
+          ensureStream.on('end', () => resolve());
+          ensureStream.on('error', () => resolve());
+          setTimeout(() => { ensureStream.destroy(); resolve(); }, 5000);
+        });
+      } catch {}
+
       const shells = ['/bin/bash', '/bin/sh', 'sh'];
       let stream: Duplex | null = null;
       let execInstance: Docker.Exec | null = null;
@@ -192,26 +209,6 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (stream) break;
         for (const shell of shells) {
           try {
-            const verifyExec = await container.exec({
-              AttachStdout: true,
-              AttachStderr: true,
-              Tty: true,
-              Cmd: ['whoami'],
-              User: user,
-            });
-            const verifyStream = await verifyExec.start({ hijack: false, stdin: false });
-            const whoamiResult = await new Promise<string>((resolve) => {
-              let buf = '';
-              verifyStream.on('data', (chunk: Buffer) => { buf += chunk.toString(); });
-              verifyStream.on('end', () => resolve(buf.trim()));
-              verifyStream.on('error', () => resolve(''));
-              setTimeout(() => { verifyStream.destroy(); resolve(buf.trim()); }, 3000);
-            });
-            if (whoamiResult !== user) {
-              logger.warn(`User mismatch: requested=${user}, got=${whoamiResult}`);
-              continue;
-            }
-
             const exec = await container.exec({
               AttachStdin: true,
               AttachStdout: true,
@@ -223,13 +220,12 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             const nextStream = await exec.start({ hijack: true, stdin: true });
 
-            const isAlive = await new Promise<boolean>((resolve) => {
-              const timeout = setTimeout(() => resolve(true), 500);
+            const probe = await new Promise<boolean>((resolve) => {
+              const timeout = setTimeout(() => resolve(true), 1000);
               nextStream.once('data', (chunk: Buffer) => {
                 clearTimeout(timeout);
                 const text = chunk.toString();
                 if (text.includes('not found') || text.includes('unable to find user') || text.includes('no such user')) {
-                  logger.warn(`User ${user} does not exist in container`);
                   nextStream.resume();
                   resolve(false);
                 } else {
@@ -239,14 +235,15 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
               nextStream.once('end', () => { clearTimeout(timeout); resolve(false); });
             });
 
-            if (isAlive) {
-              logger.info(`Terminal attached: user=${user}, shell=${shell}, client=${client.id}`);
-              execInstance = exec;
-              stream = nextStream;
-              break;
-            } else {
+            if (!probe) {
               nextStream.destroy();
+              continue;
             }
+
+            logger.info(`Terminal attached: user=${user}, shell=${shell}, client=${client.id}`);
+            execInstance = exec;
+            stream = nextStream;
+            break;
           } catch (err) {
             logger.warn(`Exec failed: user=${user}, shell=${shell}: ${err instanceof Error ? err.message : String(err)}`);
             continue;
