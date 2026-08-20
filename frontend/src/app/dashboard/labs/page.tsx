@@ -204,24 +204,24 @@ export default function LabsCatalog() {
             const diff = getDifficultyStyle(lab.difficulty || 1200);
             const flags = lab.flags?.length || 0;
             const solvedFlags = getSolvedCount(lab.flags);
-            const gate = getLabLock(lab.difficulty || 1200, level);
-            const isLocked = gate.locked;
+            const isLocked = lab.isLocked ?? false;
+            const requiredLevel = lab.requiredLevel ?? 1;
             const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;
 
             if (isLocked) {
-              const xpNeeded = gate.requiredLevel * 1000 - level * 1000;
+              const xpNeeded = requiredLevel * 1000 - level * 1000;
               return (
                 <div
                   key={lab.id}
                   className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden"
-                  aria-label={`${lab.title} — locked, requires level ${gate.requiredLevel}`}
+                  aria-label={`${lab.title} — locked, requires level ${requiredLevel}`}
                 >
                   <div className="absolute inset-0 z-20 backdrop-blur-md bg-white/80 flex flex-col items-center justify-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center">
                       <Lock size={20} className="text-amber-500" />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-mono text-slate-700 mb-1">LEVEL {gate.requiredLevel} REQUIRED</p>
+                      <p className="text-xs font-mono text-slate-700 mb-1">LEVEL {requiredLevel} REQUIRED</p>
                       <p className="text-[11px] text-slate-500 mb-2">
                         {diff.label} Lab
                       </p>

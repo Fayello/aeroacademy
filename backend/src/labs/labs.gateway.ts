@@ -19,6 +19,7 @@ const logger = createLogger('LabsGateway');
 const MAX_INPUT_SIZE = 4096;
 const MAX_CONNECTIONS_PER_USER = 3;
 const TERMINAL_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const JOIN_TIMEOUT_MS = 30 * 1000;
 const INPUT_RATE_LIMIT = 100; // max messages per second
 const INPUT_RATE_WINDOW_MS = 1000;
 const ALLOWED_CONTROL_CHARS = new Set([
@@ -47,6 +48,7 @@ interface JwtPayload {
 
 interface SocketData {
   user?: JwtPayload;
+  joinTimer?: NodeJS.Timeout;
 }
 
 interface TerminalSession {
@@ -100,6 +102,14 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
       this.userConnections.set(userId, currentConnections + 1);
+
+      const joinTimer = setTimeout(() => {
+        if (!this.activeSessions.has(client.id)) {
+          client.emit('error', 'Terminal session timed out');
+          client.disconnect();
+        }
+      }, JOIN_TIMEOUT_MS);
+      (client.data as SocketData).joinTimer = joinTimer;
     } catch {
       client.disconnect();
     }
@@ -112,6 +122,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       session.stream.end();
       this.activeSessions.delete(client.id);
     }
+
+    const joinTimer = (client.data as SocketData).joinTimer;
+    if (joinTimer) clearTimeout(joinTimer);
 
     const user = (client.data as SocketData).user;
     if (user) {
@@ -153,7 +166,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       let stream: Duplex | null = null;
       let execInstance: Docker.Exec | null = null;
 
-      const users = ['student', 'root'];
+      const users = ['student', 'kali', 'user', 'root'];
 
       for (const user of users) {
         if (stream) break;
@@ -209,6 +222,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       };
 
       this.activeSessions.set(client.id, session);
+
+      const joinTimer = (client.data as SocketData).joinTimer;
+      if (joinTimer) clearTimeout(joinTimer);
 
       stream.on('data', (chunk: Buffer) => {
         client.emit('output', chunk.toString());

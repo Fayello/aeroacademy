@@ -82,74 +82,86 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
   }
 
   async addRemoteServer(config: Omit<DockerServer, 'docker' | 'sshClient' | 'tunnelPort' | 'isActive' | 'labCount'>) {
-    try {
-      // Create SSH tunnel to remote Docker socket
-      const tunnelPort = this.nextTunnelPort++;
-      const sshClient = new SSHClient();
+    const connect = async (attempt: number) => {
+      try {
+        const tunnelPort = this.nextTunnelPort++;
+        const sshClient = new SSHClient();
 
-      await new Promise<void>((resolve, reject) => {
-        sshClient
-          .on('ready', () => {
-            logger.log(`SSH connected to ${config.host}`);
+        await new Promise<void>((resolve, reject) => {
+          sshClient
+            .on('ready', () => {
+              logger.log(`SSH connected to ${config.host}`);
 
-            // Create a TCP tunnel from local port to remote Docker socket
-            const server = net.createServer((socket) => {
-              sshClient.forwardOut(
-                '127.0.0.1',
-                0,
-                '127.0.0.1',
-                2375,
-                (err, stream) => {
-                  if (err) {
-                    socket.end();
-                    return;
-                  }
-                  socket.pipe(stream);
-                  stream.pipe(socket);
-                },
-              );
+              const server = net.createServer((socket) => {
+                sshClient.forwardOut(
+                  '127.0.0.1',
+                  0,
+                  '127.0.0.1',
+                  2375,
+                  (err, stream) => {
+                    if (err) {
+                      socket.end();
+                      return;
+                    }
+                    socket.pipe(stream);
+                    stream.pipe(socket);
+                  },
+                );
+              });
+
+              server.listen(tunnelPort, '127.0.0.1', () => {
+                logger.log(`Docker tunnel established on 127.0.0.1:${tunnelPort}`);
+                this.tunnelServers.push(server);
+                resolve();
+              });
+            })
+            .on('error', (err) => {
+              logger.error(`SSH connection failed to ${config.host}: ${err.message}`);
+              reject(err);
+            })
+            .on('close', () => {
+              logger.warn(`SSH connection to ${config.host} closed, reconnecting...`);
+              const existing = this.servers.get(config.id);
+              if (existing) {
+                existing.isActive = false;
+              }
+              setTimeout(() => connect(attempt + 1), Math.min(30000, 1000 * Math.pow(2, attempt)));
+            })
+            .connect({
+              host: config.host,
+              port: config.port,
+              username: config.username,
+              privateKey: fs.readFileSync(config.keyPath),
+              readyTimeout: 10000,
             });
+        });
 
-            server.listen(tunnelPort, '127.0.0.1', () => {
-              logger.log(`Docker tunnel established on 127.0.0.1:${tunnelPort}`);
-              this.tunnelServers.push(server);
-              resolve();
-            });
-          })
-          .on('error', (err) => {
-            logger.error(`SSH connection failed to ${config.host}: ${err.message}`);
-            reject(err);
-          })
-          .connect({
-            host: config.host,
-            port: config.port,
-            username: config.username,
-            privateKey: fs.readFileSync(config.keyPath),
-            readyTimeout: 10000,
-          });
-      });
+        const docker = new Docker({
+          host: '127.0.0.1',
+          port: tunnelPort,
+          protocol: 'http',
+        });
 
-      const docker = new Docker({
-        host: '127.0.0.1',
-        port: tunnelPort,
-        protocol: 'http',
-      });
+        await docker.ping();
+        logger.log(`Docker daemon verified on ${config.host}`);
 
-      // Verify Docker connectivity
-      await docker.ping();
-      logger.log(`Docker daemon verified on ${config.host}`);
+        this.servers.set(config.id, {
+          ...config,
+          docker,
+          sshClient,
+          tunnelPort,
+          isActive: true,
+          labCount: 0,
+        });
+      } catch (err) {
+        logger.error(`Failed to add remote server ${config.id} (attempt ${attempt}): ${err instanceof Error ? err.message : String(err)}`);
+        if (attempt < 5) {
+          setTimeout(() => connect(attempt + 1), Math.min(30000, 1000 * Math.pow(2, attempt)));
+        }
+      }
+    };
 
-      this.servers.set(config.id, {
-        ...config,
-        docker,
-        sshClient,
-        tunnelPort,
-        isActive: true,
-        labCount: 0,
-      });
-    } catch (err) {
-      logger.error(`Failed to add remote server ${config.id}: ${err instanceof Error ? err.message : String(err)}`);
-    }
+    await connect(0);
   }
 
   getServer(id: string): DockerServer | undefined {

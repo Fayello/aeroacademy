@@ -69,19 +69,27 @@ export class LabsService implements OnModuleInit {
 
   private async pruneOrphanedContainers() {
     try {
+      const runningInstances = await this.prisma.labInstance.findMany({
+        where: { status: 'RUNNING' },
+        select: { containerId: true },
+      });
+      const activeContainerIds = new Set(runningInstances.map((i) => i.containerId).filter(Boolean));
+
       const containers = await this.docker.listContainers({ all: true });
       const labContainers = containers.filter((c) =>
         c.Names.some((name) => name.includes('/lab-')),
       );
 
       for (const c of labContainers) {
+        if (activeContainerIds.has(c.Id)) continue;
         const container = this.docker.getContainer(c.Id);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
       }
 
+      const nonRunningStatuses = ['STOPPED', 'EXPIRED', 'FAILED'];
       await this.prisma.labInstance.updateMany({
-        where: { status: 'RUNNING' },
+        where: { status: { in: nonRunningStatuses } },
         data: { status: 'STOPPED' },
       });
 
@@ -105,6 +113,7 @@ export class LabsService implements OnModuleInit {
                 NetworkMode: 'tactical-net',
                 Memory: 2 * 1024 * 1024 * 1024,
                 CpuQuota: 200000,
+                RestartPolicy: { Name: 'unless-stopped' },
               },
             })
             .then((c) => c.start());
@@ -272,7 +281,7 @@ export class LabsService implements OnModuleInit {
       };
 
       if (!isServiceImage) {
-        containerOpts.Cmd = ['sleep', 'infinity'];
+        containerOpts.Cmd = ['tail', '-f', '/dev/null'];
       }
 
       const container = await targetDocker.createContainer(containerOpts);
@@ -502,20 +511,24 @@ export class LabsService implements OnModuleInit {
       },
     });
 
-    if (opts?.userRole === 'ADMIN') return labs;
-
     if (opts?.userId) {
       const user = await this.prisma.user.findUnique({ where: { id: opts.userId } });
-      if (user) {
-        const userLevel = getLevel(user.xp);
-        return labs.filter((lab) => {
-          const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
-          return userLevel >= requiredLevel;
-        });
-      }
+      const userLevel = user ? getLevel(user.xp) : 1;
+      return labs.map((lab) => {
+        const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
+        return {
+          ...lab,
+          isLocked: userLevel < requiredLevel,
+          requiredLevel,
+        };
+      });
     }
 
-    return labs;
+    return labs.map((lab) => ({
+      ...lab,
+      isLocked: false,
+      requiredLevel: getRequiredLabLevel(lab.difficulty || 1200),
+    }));
   }
 
   async submitFlag(userId: string, flagId: string, answer: string) {

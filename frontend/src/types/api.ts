@@ -105,6 +105,8 @@ export interface Lab {
   difficulty: number;
   basePath: string | null;
   flags: LabFlag[];
+  isLocked?: boolean;
+  requiredLevel?: number;
 }
 
 export interface LabFlag {
