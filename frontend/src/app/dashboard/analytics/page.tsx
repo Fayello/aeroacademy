@@ -41,6 +41,7 @@ interface LearningData {
     totalFlagsCaptured: number;
     currentStreak: number;
     longestStreak: number;
+    daysActive: number;
   };
   weeklyActivity: Record<string, number>;
 }
