@@ -618,18 +618,21 @@ export class LabsService implements OnModuleInit {
       await this.achievementService.checkAndUnlockAchievements(userId);
 
       // Check if lab is now fully complete (all flags captured)
-      const [totalFlagsInLab, capturedFlags] = await Promise.all([
-        this.prisma.labFlag.count({ where: { labId: flag.labId } }),
-        this.prisma.labSubmission.count({ where: { userId, labId: flag.labId, isCorrect: true }, distinct: ['flagId'] }),
-      ]);
-      if (capturedFlags >= totalFlagsInLab && totalFlagsInLab > 0) {
+      const totalFlagsInLab = await this.prisma.labFlag.count({ where: { labId: flag.labId } });
+      const capturedFlagIds = await this.prisma.labSubmission.findMany({
+        where: { userId, isCorrect: true, flag: { labId: flag.labId } },
+        select: { flagId: true },
+        distinct: ['flagId'],
+      });
+      if (capturedFlagIds.length >= totalFlagsInLab && totalFlagsInLab > 0) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (user) {
-          const totalXp = await this.prisma.labSubmission.aggregate({
-            where: { userId, labId: flag.labId, isCorrect: true },
-            _sum: { xpAwarded: true },
+          const flagPoints = await this.prisma.labFlag.findMany({
+            where: { labId: flag.labId },
+            select: { points: true },
           });
-          this.emailService.sendLabCompleted(user.email, user.name, lab?.title || 'Unknown Lab', totalXp._sum.xpAwarded || 0, totalFlagsInLab).catch(() => {});
+          const totalXp = flagPoints.reduce((sum, f) => sum + f.points, 0);
+          this.emailService.sendLabCompleted(user.email, user.name, lab?.title || 'Unknown Lab', totalXp, totalFlagsInLab).catch(() => {});
         }
         this.eventsService.emit('LAB_COMPLETED', { userId, labId: flag.labId, labTitle: lab?.title, timestamp: new Date() });
       }

@@ -431,9 +431,7 @@ export class CoursesCron {
 
         try {
           await this.emailService.sendStreakReminder(user.email, user.name, user.currentStreak);
-          await this.prisma.emailLog.create({
-            data: { userId: user.id, type: 'streak_reminder', sentAt: new Date() },
-          });
+          await this.markEmailSent(user.id);
           sent++;
         } catch (err) {
           this.logger.error(`Streak reminder failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
