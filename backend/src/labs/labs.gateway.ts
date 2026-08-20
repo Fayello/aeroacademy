@@ -23,7 +23,7 @@ const JOIN_TIMEOUT_MS = 30 * 1000;
 const INPUT_RATE_LIMIT = 100; // max messages per second
 const INPUT_RATE_WINDOW_MS = 1000;
 const ALLOWED_CONTROL_CHARS = new Set([
-  9, 10, 13, 27, // tab, newline, carriage return, ESC (ANSI)
+  8, 9, 10, 13, 27, 127, // backspace, tab, newline, carriage return, ESC, DEL
 ]);
 
 function sanitizeInput(data: string): string {
