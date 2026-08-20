@@ -86,6 +86,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket) {
     const token = client.handshake.auth?.token as string | undefined;
     if (!token) {
+      logger.warn(`Terminal connection rejected: no token provided (client ${client.id})`);
       client.disconnect();
       return;
     }
@@ -97,20 +98,24 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const userId = payload.sub;
       const currentConnections = this.userConnections.get(userId) || 0;
       if (currentConnections >= MAX_CONNECTIONS_PER_USER) {
+        logger.warn(`Terminal connection rejected: max connections for user ${userId}`);
         client.emit('error', 'Maximum terminal connections reached');
         client.disconnect();
         return;
       }
       this.userConnections.set(userId, currentConnections + 1);
+      logger.info(`Terminal client connected: ${client.id} (user ${userId})`);
 
       const joinTimer = setTimeout(() => {
         if (!this.activeSessions.has(client.id)) {
+          logger.warn(`Terminal join timeout for client ${client.id}`);
           client.emit('error', 'Terminal session timed out');
           client.disconnect();
         }
       }, JOIN_TIMEOUT_MS);
       (client.data as SocketData).joinTimer = joinTimer;
-    } catch {
+    } catch (err) {
+      logger.warn(`Terminal connection rejected: invalid token (client ${client.id}): ${err instanceof Error ? err.message : String(err)}`);
       client.disconnect();
     }
   }
@@ -145,16 +150,20 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const userId = (client.data as SocketData).user?.sub;
     if (!userId) {
+      logger.warn(`Terminal join rejected: not authenticated (client ${client.id})`);
       client.emit('error', 'Not authenticated');
       return;
     }
     if (!data?.labId || typeof data.labId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.labId)) {
+      logger.warn(`Terminal join rejected: invalid lab ID (client ${client.id})`);
       client.emit('error', 'Invalid lab ID');
       return;
     }
+    logger.info(`Terminal join request: user ${userId}, lab ${data.labId}, client ${client.id}`);
     const instance = await this.labsService.getLabStatus(userId, data.labId);
 
     if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
+      logger.warn(`Terminal join rejected: no active instance (user ${userId}, lab ${data.labId}, status: ${instance?.status})`);
       client.emit('error', 'No active lab instance found');
       return;
     }
@@ -172,6 +181,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (stream) break;
         for (const shell of shells) {
           try {
+            logger.info(`Trying exec: user=${user}, shell=${shell}, container=${instance.containerId}`);
             const exec = await container.exec({
               AttachStdin: true,
               AttachStdout: true,
@@ -192,13 +202,16 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             ]);
 
             if (isAlive) {
+              logger.info(`Terminal attached: user=${user}, shell=${shell}, client=${client.id}`);
               execInstance = exec;
               stream = nextStream;
               break;
             } else {
+              logger.warn(`Shell ${shell} exited immediately for user ${user}`);
               nextStream.end();
             }
-          } catch {
+          } catch (err) {
+            logger.warn(`Exec failed: user=${user}, shell=${shell}: ${err instanceof Error ? err.message : String(err)}`);
             continue;
           }
         }
@@ -232,6 +245,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
 
       stream.on('end', () => {
+        logger.warn(`Terminal stream ended for client ${client.id}`);
         this.cleanupSession(client.id);
         client.emit('exit', 'Session closed');
       });
