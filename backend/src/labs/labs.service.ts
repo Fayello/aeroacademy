@@ -617,6 +617,23 @@ export class LabsService implements OnModuleInit {
 
       await this.achievementService.checkAndUnlockAchievements(userId);
 
+      // Check if lab is now fully complete (all flags captured)
+      const [totalFlagsInLab, capturedFlags] = await Promise.all([
+        this.prisma.labFlag.count({ where: { labId: flag.labId } }),
+        this.prisma.labSubmission.count({ where: { userId, labId: flag.labId, isCorrect: true }, distinct: ['flagId'] }),
+      ]);
+      if (capturedFlags >= totalFlagsInLab && totalFlagsInLab > 0) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (user) {
+          const totalXp = await this.prisma.labSubmission.aggregate({
+            where: { userId, labId: flag.labId, isCorrect: true },
+            _sum: { xpAwarded: true },
+          });
+          this.emailService.sendLabCompleted(user.email, user.name, lab?.title || 'Unknown Lab', totalXp._sum.xpAwarded || 0, totalFlagsInLab).catch(() => {});
+        }
+        this.eventsService.emit('LAB_COMPLETED', { userId, labId: flag.labId, labTitle: lab?.title, timestamp: new Date() });
+      }
+
       await this.activityService
         .log(userId, 'FLAG_SOLVED', {
           labId: flag.labId,

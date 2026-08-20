@@ -1016,6 +1016,47 @@ export class EmailService implements OnModuleInit {
     });
   }
 
+  async sendLabCompleted(email: string, name: string | null, labTitle: string, totalXp: number, totalFlags: number) {
+    const displayName = name || 'there';
+    const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
+    return this.send({
+      to: email,
+      from: 'labs',
+      subject: `Lab complete: ${labTitle} — ${totalFlags} flags captured!`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:#0F203A;padding:40px;text-align:center;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
+      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
+      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
+    </svg>
+    <p style="font-size:48px;margin:12px 0 0;">🏆</p>
+    <h1 style="color:#fff;margin:8px 0 0;font-size:24px;">Lab Complete!</h1>
+    <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">${labTitle}</p>
+  </div>
+  <div style="padding:32px;text-align:center;">
+    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
+    <p style="color:#334155;font-size:16px;line-height:1.6;">You completed <strong>${labTitle}</strong> — capturing all <strong>${totalFlags} flags</strong> and earning <strong>${totalXp} XP</strong>.</p>
+    <div style="background:#E9F8EE;border-left:4px solid #229C62;padding:16px;margin:20px 0;border-radius:4px;text-align:left;">
+      <p style="color:#334155;margin:0;font-size:14px;">That's real skill. Every flag means you understood the material well enough to prove it. You're leveling up.</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${labsUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Try Another Lab</a>
+    </div>
+  </div>
+  <div style="background:#f8faffc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
+  </div>
+</div>
+</body>
+</html>`,
+    });
+  }
+
   async sendLevelUp(email: string, name: string | null, newLevel: number) {
     const displayName = name || 'there';
     const dashboardUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard`;
