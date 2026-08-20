@@ -153,36 +153,41 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       let stream: Duplex | null = null;
       let execInstance: Docker.Exec | null = null;
 
-      for (const shell of shells) {
-        try {
-          const exec = await container.exec({
-            AttachStdin: true,
-            AttachStdout: true,
-            AttachStderr: true,
-            Tty: true,
-            Cmd: [shell],
-            User: 'student',
-          });
+      const users = ['student', 'root'];
 
-          const nextStream = await exec.start({ hijack: true, stdin: true });
+      for (const user of users) {
+        if (stream) break;
+        for (const shell of shells) {
+          try {
+            const exec = await container.exec({
+              AttachStdin: true,
+              AttachStdout: true,
+              AttachStderr: true,
+              Tty: true,
+              Cmd: [shell],
+              User: user,
+            });
 
-          const isAlive = await Promise.race([
-            new Promise<boolean>((r) => {
-              nextStream.once('data', () => r(true));
-              nextStream.once('end', () => r(false));
-              setTimeout(() => r(true), 500);
-            }),
-          ]);
+            const nextStream = await exec.start({ hijack: true, stdin: true });
 
-          if (isAlive) {
-            execInstance = exec;
-            stream = nextStream;
-            break;
-          } else {
-            nextStream.end();
+            const isAlive = await Promise.race([
+              new Promise<boolean>((r) => {
+                nextStream.once('data', () => r(true));
+                nextStream.once('end', () => r(false));
+                setTimeout(() => r(true), 500);
+              }),
+            ]);
+
+            if (isAlive) {
+              execInstance = exec;
+              stream = nextStream;
+              break;
+            } else {
+              nextStream.end();
+            }
+          } catch {
+            continue;
           }
-        } catch {
-          continue;
         }
       }
 

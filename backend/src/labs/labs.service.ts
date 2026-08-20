@@ -252,7 +252,10 @@ export class LabsService implements OnModuleInit {
         env.push(`MONGODB_URI=mongodb://tactical-mongo:27017/${dbName}`);
       }
 
-      const container = await targetDocker.createContainer({
+      const serviceImages = ['juice-shop', 'webgoat', 'nodegoat', 'webgoat', 'dvwa', 'vapi'];
+      const isServiceImage = serviceImages.some(name => imageName.toLowerCase().includes(name));
+
+      const containerOpts: any = {
         Image: imageName,
         name: `lab-${labId.slice(0, 8)}-${userId.slice(0, 8)}-${Date.now()}`,
         ExposedPorts: { [internalPort]: {} },
@@ -266,7 +269,13 @@ export class LabsService implements OnModuleInit {
         NetworkingConfig: {
           EndpointsConfig: { 'tactical-net': {} },
         },
-      });
+      };
+
+      if (!isServiceImage) {
+        containerOpts.Cmd = ['sleep', 'infinity'];
+      }
+
+      const container = await targetDocker.createContainer(containerOpts);
 
       await container.start();
       this.dockerManager.incrementLabs(serverId);
@@ -276,11 +285,12 @@ export class LabsService implements OnModuleInit {
           AttachStdin: false,
           AttachStdout: false,
           AttachStderr: false,
-          Cmd: ['bash', '-c', 'useradd -m -s /bin/bash student 2>/dev/null; echo "student:lab123" | chpasswd 2>/dev/null; echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student 2>/dev/null; chmod 0440 /etc/sudoers.d/student 2>/dev/null; exit 0'],
+          Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
         });
         await setupExec.start({ hijack: false });
-      } catch {
-        logger.warn('Could not create student user (non-critical)');
+        logger.info('Student user setup complete');
+      } catch (err) {
+        logger.warn(`Student user setup failed: ${err instanceof Error ? err.message : String(err)}`);
       }
 
       const updated = await this.prisma.labInstance.update({
