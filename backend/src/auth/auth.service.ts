@@ -3,7 +3,6 @@ import { Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
-import { ProgressService } from '../progress/progress.service';
 import { OtpService } from './otp.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -29,7 +28,6 @@ export class AuthService {
     private jwtService: JwtService,
     private emailService: EmailService,
     private otpService: OtpService,
-    private progressService: ProgressService,
   ) {}
 
   private async generateRefreshToken(userId: string): Promise<string> {
@@ -243,7 +241,6 @@ export class AuthService {
   async login(user: LoginUser) {
     const payload = { email: user.email, sub: user.id, role: user.role };
     const refreshToken = await this.generateRefreshToken(user.id);
-    this.progressService.updateStreak(user.id).catch(() => {});
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: refreshToken,

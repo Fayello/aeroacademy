@@ -16,7 +16,6 @@ import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
 import { DockerManager } from './docker-manager.service';
 import { EmailService } from '../email/email.service';
-import { ProgressService } from '../progress/progress.service';
 import Docker from 'dockerode';
 import * as net from 'net';
 import * as bcrypt from 'bcrypt';
@@ -54,7 +53,6 @@ export class LabsService implements OnModuleInit {
     private leaguesService: LeaguesService,
     private dockerManager: DockerManager,
     private emailService: EmailService,
-    private progressService: ProgressService,
   ) {
     this.docker = dockerManager.getLocalDocker();
   }
@@ -66,6 +64,28 @@ export class LabsService implements OnModuleInit {
       await this.pruneOrphanedContainers();
     } catch {
       logger.error('Docker daemon unavailable. Labs will not work.');
+    }
+  }
+
+  private async updateStreak(userId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return;
+    const lastActivity = user.lastActivityDate;
+    if (!lastActivity) {
+      await this.prisma.user.update({ where: { id: userId }, data: { currentStreak: 1, longestStreak: Math.max(1, user.longestStreak), lastActivityDate: today } });
+      return;
+    }
+    const lastDay = new Date(lastActivity);
+    lastDay.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / 86400000);
+    if (diffDays === 0) return;
+    if (diffDays === 1) {
+      const newStreak = user.currentStreak + 1;
+      await this.prisma.user.update({ where: { id: userId }, data: { currentStreak: newStreak, longestStreak: Math.max(newStreak, user.longestStreak), lastActivityDate: today } });
+    } else {
+      await this.prisma.user.update({ where: { id: userId }, data: { currentStreak: 1, lastActivityDate: today } });
     }
   }
 
@@ -607,7 +627,7 @@ export class LabsService implements OnModuleInit {
         })
         .catch(() => {});
 
-      await this.progressService.updateStreak(userId).catch(() => {});
+      await this.updateStreak(userId).catch(() => {});
 
       this.eventsService.emit('FLAG_CAPTURED', {
         userId,
