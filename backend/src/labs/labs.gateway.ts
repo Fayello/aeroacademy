@@ -40,6 +40,12 @@ function sanitizeInput(data: string): string {
   return filtered.join('');
 }
 
+function getCookieValue(cookieHeader: string | undefined, name: string): string | null {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 interface JwtPayload {
   email: string;
   sub: string;
@@ -84,14 +90,13 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleConnection(client: Socket) {
-    const authKeys = Object.keys(client.handshake?.auth || {});
-    const hasToken = !!client.handshake?.auth?.token;
-    const queryKeys = Object.keys(client.handshake?.query || {});
-    logger.info(`Terminal WS connection: client=${client.id}, namespace=${client.nsp?.name}, authKeys=[${authKeys}], hasToken=${hasToken}, queryKeys=[${queryKeys}], transport=${client.conn?.transport?.name || 'unknown'}`);
-
-    const token = client.handshake.auth?.token as string | undefined;
+    const authToken = client.handshake.auth?.token as string | undefined;
+    const cookieToken =
+      getCookieValue(client.handshake.headers.cookie, 'access_token') ||
+      getCookieValue(client.handshake.headers.cookie, 'token');
+    const token = authToken || cookieToken;
     if (!token) {
-      logger.warn(`Terminal connection rejected: no token provided (client ${client.id}) auth=${JSON.stringify(client.handshake?.auth)} query=${JSON.stringify(client.handshake?.query)}`);
+      logger.warn(`Terminal connection rejected: no token (client ${client.id})`);
       client.disconnect();
       return;
     }

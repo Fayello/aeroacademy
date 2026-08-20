@@ -320,7 +320,7 @@ export default function LabWorkspace() {
     window.addEventListener("resize", handleResize);
 
     const token = localStorage.getItem("token");
-    const socket = io(`${API_URL}/terminal`, { auth: { token } });
+    const socket = io(`${API_URL}/terminal`, { auth: { token }, withCredentials: true });
 
     socket.on("connect", () => {
       if (socketRef.current !== socket) return;
