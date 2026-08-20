@@ -87,7 +87,7 @@ export class LabsService implements OnModuleInit {
         await container.remove().catch(() => {});
       }
 
-      const nonRunningStatuses = ['STOPPED', 'EXPIRED', 'FAILED'];
+      const nonRunningStatuses: any[] = ['STOPPED', 'EXPIRED'];
       await this.prisma.labInstance.updateMany({
         where: { status: { in: nonRunningStatuses } },
         data: { status: 'STOPPED' },
