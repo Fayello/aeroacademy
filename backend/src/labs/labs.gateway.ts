@@ -184,19 +184,13 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const container = targetDocker.getContainer(instance.containerId);
 
       try {
-        const ensureUser = await container.exec({
+        const ensureExec = await container.exec({
           AttachStdin: false,
-          AttachStdout: true,
-          AttachStderr: true,
-          Tty: true,
+          AttachStdout: false,
+          AttachStderr: false,
           Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
         });
-        const ensureStream = await ensureUser.start({ hijack: false });
-        await new Promise<void>((resolve) => {
-          ensureStream.on('end', () => resolve());
-          ensureStream.on('error', () => resolve());
-          setTimeout(() => { ensureStream.destroy(); resolve(); }, 5000);
-        });
+        await ensureExec.start({ hijack: false, stdin: false });
       } catch {}
 
       const shells = ['/bin/bash', '/bin/sh', 'sh'];
