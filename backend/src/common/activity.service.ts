@@ -56,7 +56,7 @@ export class ActivityService {
   }
 
   async getUserStats(userId: string) {
-    const [totalSessions, activeSessions, flagsSolved] = await Promise.all([
+    const [totalSessions, activeSessions, flagsSolved, distinctDays] = await Promise.all([
       this.prisma.activityEvent.count({
         where: { userId, type: 'LAB_STARTED' },
       }),
@@ -64,7 +64,12 @@ export class ActivityService {
       this.prisma.activityEvent.count({
         where: { userId, type: 'FLAG_SOLVED' },
       }),
+      this.prisma.$queryRaw<[{count: bigint}]>`
+        SELECT COUNT(DISTINCT DATE("createdAt")) as count
+        FROM "ActivityEvent"
+        WHERE "userId" = ${userId}
+      `.then(r => Number(r[0]?.count || 0)),
     ]);
-    return { totalSessions, activeSessions, flagsSolved };
+    return { totalSessions, activeSessions, flagsSolved, daysActive: distinctDays };
   }
 }

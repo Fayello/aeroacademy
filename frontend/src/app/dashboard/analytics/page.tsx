@@ -88,8 +88,6 @@ export default function StudentAnalyticsPage() {
   const completedCourses = data.courseProgress.filter((c) => c.percentage === 100);
   const inProgressCourses = data.courseProgress.filter((c) => c.percentage < 100);
 
-  const memberDays = Math.max(1, Math.floor((Date.now() - new Date(data.user.createdAt).getTime()) / 86400000));
-
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div>
@@ -190,7 +188,7 @@ export default function StudentAnalyticsPage() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">Days Active</span>
-              <span className="text-sm font-medium text-slate-700">{memberDays} days</span>
+              <span className="text-sm font-medium text-slate-700">{data.stats.daysActive || 1} days</span>
             </div>
           </div>
         </div>
