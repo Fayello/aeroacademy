@@ -12,6 +12,7 @@ export class CoursesCron {
   private welcomeDripRunning = false;
   private nudgeRunning = false;
   private reEngagementRunning = false;
+  private streakReminderRunning = false;
 
   constructor(
     private readonly coursesService: CoursesService,
@@ -398,6 +399,52 @@ export class CoursesCron {
       this.logger.error(`Re-engagement failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       this.reEngagementRunning = false;
+    }
+  }
+
+  @Cron('0 18 * * *')
+  async handleStreakReminder() {
+    if (this.streakReminderRunning) return;
+    this.streakReminderRunning = true;
+
+    try {
+      this.logger.log('Running streak reminder...');
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const usersWithStreak = await this.prisma.user.findMany({
+        where: {
+          role: 'STUDENT',
+          emailVerified: { not: null },
+          currentStreak: { gte: 2 },
+          lastActivityDate: { lt: today },
+        },
+        select: { id: true, email: true, name: true, currentStreak: true, timezone: true, emailPreferences: true },
+      });
+
+      let sent = 0;
+      for (const user of usersWithStreak) {
+        if (!user.email) continue;
+        if (!(await this.canSendEmail(user.id))) continue;
+        if (user.emailPreferences && user.emailPreferences['streaks'] === false) continue;
+
+        try {
+          await this.emailService.sendStreakReminder(user.email, user.name, user.currentStreak);
+          await this.prisma.emailLog.create({
+            data: { userId: user.id, type: 'streak_reminder', sentAt: new Date() },
+          });
+          sent++;
+        } catch (err) {
+          this.logger.error(`Streak reminder failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+
+      this.logger.log(`Streak reminder complete. Sent ${sent} email(s).`);
+    } catch (err) {
+      this.logger.error(`Streak reminder failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      this.streakReminderRunning = false;
     }
   }
 }

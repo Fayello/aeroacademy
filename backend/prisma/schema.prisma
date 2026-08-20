@@ -29,7 +29,7 @@ model User {
   lastActivityDate         DateTime?
   welcomeDripSent          Json                      @default("[]")
   lastEmailSentAt          DateTime?
-  emailPreferences         Json                      @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true}")
+  emailPreferences         Json                      @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true,\"streaks\":true,\"labCompletions\":true}")
   timezone                 String?                   @default("UTC")
   teamId                   String?
   team                     Team?                     @relation(fields: [teamId], references: [id])
