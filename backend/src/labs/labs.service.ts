@@ -16,6 +16,7 @@ import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
 import { DockerManager } from './docker-manager.service';
 import { EmailService } from '../email/email.service';
+import { ProgressService } from '../progress/progress.service';
 import Docker from 'dockerode';
 import * as net from 'net';
 import * as bcrypt from 'bcrypt';
@@ -53,6 +54,7 @@ export class LabsService implements OnModuleInit {
     private leaguesService: LeaguesService,
     private dockerManager: DockerManager,
     private emailService: EmailService,
+    private progressService: ProgressService,
   ) {
     this.docker = dockerManager.getLocalDocker();
   }
@@ -604,6 +606,8 @@ export class LabsService implements OnModuleInit {
           points: flag.points,
         })
         .catch(() => {});
+
+      await this.progressService.updateStreak(userId).catch(() => {});
 
       this.eventsService.emit('FLAG_CAPTURED', {
         userId,

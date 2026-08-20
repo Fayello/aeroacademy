@@ -9,6 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
 
 import { LeaguesModule } from '../leagues/leagues.module';
+import { ProgressModule } from '../progress/progress.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { LeaguesModule } from '../leagues/leagues.module';
     AuthModule,
     forwardRef(() => DashboardModule),
     LeaguesModule,
+    ProgressModule,
   ],
   controllers: [LabsController],
   providers: [DockerManager, LabsService, LabsGateway, LabsCron],

@@ -10,5 +10,6 @@ import { BadgesModule } from '../badges/badges.module';
   imports: [PrismaModule, DashboardModule, ChallengesModule, BadgesModule],
   providers: [ProgressService],
   controllers: [ProgressController],
+  exports: [ProgressService],
 })
 export class ProgressModule {}

@@ -6,10 +6,12 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OtpService } from './otp.service';
+import { ProgressModule } from '../progress/progress.module';
 
 @Module({
   imports: [
     PassportModule,
+    ProgressModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

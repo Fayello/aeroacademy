@@ -207,7 +207,7 @@ export class ProgressService {
     return progress.progress;
   }
 
-  private async updateStreak(userId: string) {
+  async updateStreak(userId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
