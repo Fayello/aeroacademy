@@ -120,6 +120,9 @@ export class AuthService {
       data: { emailVerified: new Date() },
     });
 
+    this.emailService.sendWelcome(email, user.name).catch(() => {});
+    this.emailService.sendWelcomeDay1(email, user.name).catch(() => {});
+
     return this.login(user);
   }
 

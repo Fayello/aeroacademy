@@ -161,6 +161,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             AttachStderr: true,
             Tty: true,
             Cmd: [shell],
+            User: 'student',
           });
 
           const nextStream = await exec.start({ hijack: true, stdin: true });

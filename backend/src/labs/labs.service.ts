@@ -271,6 +271,18 @@ export class LabsService implements OnModuleInit {
       await container.start();
       this.dockerManager.incrementLabs(serverId);
 
+      try {
+        const setupExec = await container.exec({
+          AttachStdin: false,
+          AttachStdout: false,
+          AttachStderr: false,
+          Cmd: ['bash', '-c', 'useradd -m -s /bin/bash student 2>/dev/null; echo "student:lab123" | chpasswd 2>/dev/null; echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student 2>/dev/null; chmod 0440 /etc/sudoers.d/student 2>/dev/null; exit 0'],
+        });
+        await setupExec.start({ hijack: false });
+      } catch {
+        this.logger.warn('Could not create student user (non-critical)');
+      }
+
       const updated = await this.prisma.labInstance.update({
         where: { id: instance.id },
         data: { containerId: container.id, status: 'RUNNING' },

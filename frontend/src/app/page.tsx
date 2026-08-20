@@ -630,9 +630,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
-                <div className="bg-[#229C62] p-1.5 rounded-lg">
-                  <img src="/logo-icon.svg" alt="XpertClass" className="w-6 h-6" />
-                </div>
+                <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
                 <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
               </Link>
               <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
