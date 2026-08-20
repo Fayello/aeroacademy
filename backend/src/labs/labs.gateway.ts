@@ -192,7 +192,26 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (stream) break;
         for (const shell of shells) {
           try {
-            logger.info(`Trying exec: user=${user}, shell=${shell}, container=${instance.containerId}`);
+            const verifyExec = await container.exec({
+              AttachStdout: true,
+              AttachStderr: true,
+              Tty: true,
+              Cmd: ['whoami'],
+              User: user,
+            });
+            const verifyStream = await verifyExec.start({ hijack: false, stdin: false });
+            const whoamiResult = await new Promise<string>((resolve) => {
+              let buf = '';
+              verifyStream.on('data', (chunk: Buffer) => { buf += chunk.toString(); });
+              verifyStream.on('end', () => resolve(buf.trim()));
+              verifyStream.on('error', () => resolve(''));
+              setTimeout(() => { verifyStream.destroy(); resolve(buf.trim()); }, 3000);
+            });
+            if (whoamiResult !== user) {
+              logger.warn(`User mismatch: requested=${user}, got=${whoamiResult}`);
+              continue;
+            }
+
             const exec = await container.exec({
               AttachStdin: true,
               AttachStdout: true,
@@ -204,13 +223,21 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             const nextStream = await exec.start({ hijack: true, stdin: true });
 
-            const isAlive = await Promise.race([
-              new Promise<boolean>((r) => {
-                nextStream.once('data', () => r(true));
-                nextStream.once('end', () => r(false));
-                setTimeout(() => r(true), 500);
-              }),
-            ]);
+            const isAlive = await new Promise<boolean>((resolve) => {
+              const timeout = setTimeout(() => resolve(true), 500);
+              nextStream.once('data', (chunk: Buffer) => {
+                clearTimeout(timeout);
+                const text = chunk.toString();
+                if (text.includes('not found') || text.includes('unable to find user') || text.includes('no such user')) {
+                  logger.warn(`User ${user} does not exist in container`);
+                  nextStream.resume();
+                  resolve(false);
+                } else {
+                  resolve(true);
+                }
+              });
+              nextStream.once('end', () => { clearTimeout(timeout); resolve(false); });
+            });
 
             if (isAlive) {
               logger.info(`Terminal attached: user=${user}, shell=${shell}, client=${client.id}`);
@@ -218,8 +245,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
               stream = nextStream;
               break;
             } else {
-              logger.warn(`Shell ${shell} exited immediately for user ${user}`);
-              nextStream.end();
+              nextStream.destroy();
             }
           } catch (err) {
             logger.warn(`Exec failed: user=${user}, shell=${shell}: ${err instanceof Error ? err.message : String(err)}`);
