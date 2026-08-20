@@ -84,9 +84,14 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleConnection(client: Socket) {
+    const authKeys = Object.keys(client.handshake?.auth || {});
+    const hasToken = !!client.handshake?.auth?.token;
+    const queryKeys = Object.keys(client.handshake?.query || {});
+    logger.info(`Terminal WS connection: client=${client.id}, namespace=${client.nsp?.name}, authKeys=[${authKeys}], hasToken=${hasToken}, queryKeys=[${queryKeys}], transport=${client.conn?.transport?.name || 'unknown'}`);
+
     const token = client.handshake.auth?.token as string | undefined;
     if (!token) {
-      logger.warn(`Terminal connection rejected: no token provided (client ${client.id})`);
+      logger.warn(`Terminal connection rejected: no token provided (client ${client.id}) auth=${JSON.stringify(client.handshake?.auth)} query=${JSON.stringify(client.handshake?.query)}`);
       client.disconnect();
       return;
     }
@@ -121,6 +126,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket) {
+    logger.info(`Terminal client disconnected: ${client.id}`);
     const session = this.activeSessions.get(client.id);
     if (session) {
       clearTimeout(session.idleTimer);
