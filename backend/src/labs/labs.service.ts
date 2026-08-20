@@ -280,7 +280,7 @@ export class LabsService implements OnModuleInit {
         });
         await setupExec.start({ hijack: false });
       } catch {
-        this.logger.warn('Could not create student user (non-critical)');
+        logger.warn('Could not create student user (non-critical)');
       }
 
       const updated = await this.prisma.labInstance.update({
