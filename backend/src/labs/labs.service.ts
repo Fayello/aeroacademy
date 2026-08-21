@@ -546,7 +546,7 @@ export class LabsService implements OnModuleInit {
         flags: {
           include: {
             submissions: {
-              where: { isCorrect: true },
+              where: opts?.userId ? { isCorrect: true, userId: opts.userId } : { isCorrect: true },
               select: { userId: true },
             },
           },
@@ -691,7 +691,7 @@ export class LabsService implements OnModuleInit {
     const lab = await this.prisma.lab.findUnique({
       where: { id },
       include: {
-        flags: { include: { submissions: { where: { isCorrect: true } } } },
+        flags: { include: { submissions: { where: userId ? { isCorrect: true, userId } : { isCorrect: true } } } },
       },
     });
     if (!lab) throw new NotFoundException('Lab not found');
