@@ -1,0 +1,7 @@
+FROM vulnerables/web-dvwa
+
+# Pre-create flag files for lab exercises
+RUN echo "10.1.26-MariaDB-0+deb9u1" > /var/www/html/flag_database_version.txt && \
+    echo "AERO{SESSION_HIJACK_ADMIN}" > /var/www/html/flag_session.txt && \
+    echo "www-data" > /var/www/html/flag_webshell_user.txt && \
+    chmod 644 /var/www/html/flag_*.txt
