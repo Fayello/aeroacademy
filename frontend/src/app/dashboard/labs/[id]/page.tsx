@@ -544,7 +544,7 @@ export default function LabWorkspace() {
 
         <div className="flex items-center gap-3">
           <Link
-            href={`/dashboard/labs/${labId}/discussions`}
+            href={`/dashboard/labs/${id}/discussions`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium transition-colors border border-slate-200"
           >
             <MessageSquare size={14} />
