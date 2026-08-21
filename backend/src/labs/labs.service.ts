@@ -306,7 +306,15 @@ export class LabsService implements OnModuleInit {
         containerOpts.Cmd = ['tail', '-f', '/dev/null'];
       }
 
-      const container = await targetDocker.createContainer(containerOpts);
+      let container;
+      try {
+        container = await targetDocker.createContainer(containerOpts);
+      } catch (netErr) {
+        logger.warn(`Overlay network failed, falling back to bridge: ${netErr instanceof Error ? netErr.message : String(netErr)}`);
+        containerOpts.HostConfig.NetworkMode = 'aeroacademy_labs';
+        containerOpts.NetworkingConfig = { EndpointsConfig: { 'aeroacademy_labs': {} } };
+        container = await targetDocker.createContainer(containerOpts);
+      }
 
       await container.start();
       this.dockerManager.incrementLabs(serverId);
