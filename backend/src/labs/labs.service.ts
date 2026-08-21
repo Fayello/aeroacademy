@@ -324,7 +324,7 @@ export class LabsService implements OnModuleInit {
           AttachStdin: false,
           AttachStdout: false,
           AttachStderr: false,
-          Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
+          Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq sudo > /dev/null 2>&1 && useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
         });
         await setupExec.start({ hijack: false });
         logger.info('Student user setup complete');
@@ -337,7 +337,7 @@ export class LabsService implements OnModuleInit {
         const image = (lab.dockerImage || '').toLowerCase();
         let pkgCmd = '';
         if (image.includes('ubuntu') || image.includes('debian')) {
-          pkgCmd = 'apt-get update -qq && apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban-client net-tools iputils-ping curl wget > /dev/null 2>&1; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
+          pkgCmd = 'apt-get update -qq && apt-get install -y -qq acl rsyslog openssh-server cron aide iptables fail2ban-client net-tools iputils-ping curl wget > /dev/null 2>&1; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
         } else if (image.includes('centos') || image.includes('rhel')) {
           pkgCmd = 'dnf install -y -q acl rsyslog openssh-server cronie aide iptables-regs net-tools iputils curl wget > /dev/null 2>&1; systemctl start rsyslog 2>/dev/null; systemctl start crond 2>/dev/null; systemctl start sshd 2>/dev/null; exit 0';
         }
