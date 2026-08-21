@@ -8,7 +8,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare } from "lucide-react";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -543,6 +543,13 @@ export default function LabWorkspace() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            href={`/dashboard/labs/${labId}/discussions`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium transition-colors border border-slate-200"
+          >
+            <MessageSquare size={14} />
+            Discussions
+          </Link>
           {isFullscreen && (
             <button
               onClick={() => setIsFullscreen(false)}

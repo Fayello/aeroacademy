@@ -25,9 +25,33 @@ export class DiscussionsController {
     });
   }
 
+  @Get('lab/:labId')
+  getLabPosts(
+    @Param('labId') labId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('tag') tag?: string,
+    @Query('sort') sort?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.discussionsService.getPosts(null, {
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 20,
+      tag,
+      sort,
+      search,
+      labId,
+    });
+  }
+
   @Get('course/:courseId/stats')
   getStats(@Param('courseId') courseId: string) {
     return this.discussionsService.getStats(courseId);
+  }
+
+  @Get('lab/:labId/stats')
+  getLabStats(@Param('labId') labId: string) {
+    return this.discussionsService.getStats(null, labId);
   }
 
   @Get('course/:courseId/tags')
@@ -35,18 +59,37 @@ export class DiscussionsController {
     return this.discussionsService.getTags(courseId);
   }
 
+  @Get('lab/:labId/tags')
+  getLabTags(@Param('labId') labId: string) {
+    return this.discussionsService.getTags(null, labId);
+  }
+
   @Get(':postId')
   getPost(@Param('postId') postId: string, @Req() req: any) {
     return this.discussionsService.getPost(postId, req.user.id);
   }
 
+  @Get(':postId/comments')
+  getPostComments(@Param('postId') postId: string) {
+    return this.discussionsService.getPostComments(postId);
+  }
+
   @Post('course/:courseId')
-  createPost(
+  createCoursePost(
     @Req() req: any,
     @Param('courseId') courseId: string,
     @Body() body: { title: string; body: string; tags?: string[] },
   ) {
-    return this.discussionsService.createPost(req.user.id, courseId, body);
+    return this.discussionsService.createPost(req.user.id, { ...body, courseId });
+  }
+
+  @Post('lab/:labId')
+  createLabPost(
+    @Req() req: any,
+    @Param('labId') labId: string,
+    @Body() body: { title: string; body: string; tags?: string[] },
+  ) {
+    return this.discussionsService.createPost(req.user.id, { ...body, labId });
   }
 
   @Patch(':postId')
@@ -67,7 +110,7 @@ export class DiscussionsController {
   createComment(
     @Req() req: any,
     @Param('postId') postId: string,
-    @Body() body: { body: string; parentId?: string },
+    @Body() body: { body: string; parentCommentId?: string },
   ) {
     return this.discussionsService.createComment(req.user.id, postId, body);
   }
@@ -77,8 +120,13 @@ export class DiscussionsController {
     return this.discussionsService.deleteComment(req.user.id, commentId);
   }
 
-  @Post('vote')
-  vote(@Req() req: any, @Body() body: { postId?: string; commentId?: string; value: 1 | -1 }) {
-    return this.discussionsService.vote(req.user.id, body);
+  @Post(':postId/vote')
+  votePost(@Req() req: any, @Param('postId') postId: string, @Body() body: { value: 1 | -1 }) {
+    return this.discussionsService.vote(req.user.id, { postId, value: body.value });
+  }
+
+  @Post('comments/:commentId/vote')
+  voteComment(@Req() req: any, @Param('commentId') commentId: string, @Body() body: { value: 1 | -1 }) {
+    return this.discussionsService.vote(req.user.id, { commentId, value: body.value });
   }
 }

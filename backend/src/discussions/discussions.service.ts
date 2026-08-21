@@ -5,12 +5,15 @@ import { PrismaService } from '../prisma/prisma.service';
 export class DiscussionsService {
   constructor(private prisma: PrismaService) {}
 
-  async getPosts(courseId: string, query: { page?: number; limit?: number; tag?: string; sort?: string; search?: string }) {
+  async getPosts(courseId: string | null, query: { page?: number; limit?: number; tag?: string; sort?: string; search?: string; labId?: string }) {
     const page = query.page || 1;
     const limit = Math.min(query.limit || 20, 50);
     const skip = (page - 1) * limit;
 
-    const where: any = { courseId };
+    const where: any = {};
+    if (query.labId) where.labId = query.labId;
+    else if (courseId) where.courseId = courseId;
+
     if (query.tag) where.tags = { has: query.tag };
     if (query.search) {
       where.OR = [
@@ -47,6 +50,8 @@ export class DiscussionsService {
       where: { id: postId },
       include: {
         user: { select: { id: true, name: true, xp: true, division: true } },
+        lab: { select: { id: true, title: true } },
+        course: { select: { id: true, title: true } },
         comments: {
           where: { parentId: null },
           orderBy: { createdAt: 'asc' },
@@ -79,7 +84,39 @@ export class DiscussionsService {
     return { ...post, myVote };
   }
 
-  async createPost(userId: string, courseId: string, data: { title: string; body: string; tags?: string[] }) {
+  async getPostComments(postId: string) {
+    const comments = await this.prisma.discussionComment.findMany({
+      where: { postId, parentId: null },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        user: { select: { id: true, name: true, xp: true } },
+        replies: {
+          orderBy: { createdAt: 'asc' },
+          include: {
+            user: { select: { id: true, name: true, xp: true } },
+          },
+        },
+        votes: true,
+      },
+    });
+    return comments;
+  }
+
+  async createPost(userId: string, data: { title: string; body: string; tags?: string[]; courseId?: string; labId?: string }) {
+    if (data.labId) {
+      return this.prisma.discussionPost.create({
+        data: {
+          labId: data.labId,
+          userId,
+          title: data.title,
+          body: data.body,
+          tags: data.tags || [],
+        },
+        include: { user: { select: { id: true, name: true } } },
+      });
+    }
+
+    const courseId = data.courseId!;
     const enrollment = await this.prisma.courseEnrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
@@ -118,7 +155,7 @@ export class DiscussionsService {
     return { success: true };
   }
 
-  async createComment(userId: string, postId: string, data: { body: string; parentId?: string }) {
+  async createComment(userId: string, postId: string, data: { body: string; parentId?: string; parentCommentId?: string }) {
     const post = await this.prisma.discussionPost.findUnique({ where: { id: postId } });
     if (!post) throw new NotFoundException('Post not found');
 
@@ -127,7 +164,7 @@ export class DiscussionsService {
         postId,
         userId,
         body: data.body,
-        parentId: data.parentId || null,
+        parentId: data.parentId || data.parentCommentId || null,
       },
       include: { user: { select: { id: true, name: true } } },
     });
@@ -227,18 +264,21 @@ export class DiscussionsService {
     throw new ForbiddenException('Provide postId or commentId');
   }
 
-  async getStats(courseId: string) {
+  async getStats(courseId: string | null, labId?: string) {
+    const where: any = labId ? { labId } : { courseId };
+    const postWhere: any = labId ? { labId } : { courseId };
     const [totalPosts, totalComments, resolvedCount] = await Promise.all([
-      this.prisma.discussionPost.count({ where: { courseId } }),
-      this.prisma.discussionComment.count({ where: { post: { courseId } } }),
-      this.prisma.discussionPost.count({ where: { courseId, isResolved: true } }),
+      this.prisma.discussionPost.count({ where: postWhere }),
+      this.prisma.discussionComment.count({ where: { post: postWhere } }),
+      this.prisma.discussionPost.count({ where: { ...postWhere, isResolved: true } }),
     ]);
     return { totalPosts, totalComments, resolvedCount };
   }
 
-  async getTags(courseId: string) {
+  async getTags(courseId: string | null, labId?: string) {
+    const where: any = labId ? { labId } : { courseId };
     const posts = await this.prisma.discussionPost.findMany({
-      where: { courseId },
+      where,
       select: { tags: true },
     });
     const tagMap = new Map<string, number>();
