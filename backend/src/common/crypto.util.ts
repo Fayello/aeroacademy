@@ -15,15 +15,19 @@ if (!process.env.LAB_ENCRYPTION_KEY) {
 const IV_LENGTH = 16;
 const ALGORITHM = 'aes-256-cbc';
 
+function normalizeAnswer(answer: string): string {
+  return answer.trim().toLowerCase().replace(/[\s,;]+/g, ' ').trim();
+}
+
 export async function hashAnswer(answer: string): Promise<string> {
-  return bcrypt.hash(answer.trim().toLowerCase(), SALT_ROUNDS);
+  return bcrypt.hash(normalizeAnswer(answer), SALT_ROUNDS);
 }
 
 export async function verifyAnswer(
   answer: string,
   hash: string,
 ): Promise<boolean> {
-  return bcrypt.compare(answer.trim().toLowerCase(), hash);
+  return bcrypt.compare(normalizeAnswer(answer), hash);
 }
 
 export function encryptData(plaintext: string): string {
