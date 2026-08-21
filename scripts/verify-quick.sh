@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "=== LAB ANSWER VERIFICATION ==="
+echo "PID1: $(cat /proc/1/comm)"
+echo "SOFT_LIMIT: $(cat /proc/1/limits | grep 'Max open files' | awk '{print $4}')"
+echo "HARD_LIMIT: $(cat /proc/1/limits | grep 'Max open files' | awk '{print $5}')"
+echo "PROC_COUNT: $(ps aux | wc -l)"
+echo "FD_COUNT: $(ls /proc/self/fd/ | wc -l)"
+echo "KILL_TEST: $(kill -0 1 2>&1; echo $?)"
+echo "USR1_TEST: $(kill -USR1 1 2>&1; echo $?)"
+echo "GREP_ROOT: $(grep -c root /etc/passwd)"
+echo "SED_TEST: $(echo 'Hello World' | sed 's/World/AEROACADEMY/')"
+echo "WORD_COUNT: $(echo 'the cat sat on the mat' | wc -w)"
+echo "SORT_TEST: $(echo -e 'banana\napple\ncherry' | sort | head -1)"

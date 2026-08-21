@@ -186,6 +186,7 @@ model Lab {
   flags            LabFlag[]
   instances        LabInstance[]
   lesson           Lesson?
+  discussions     DiscussionPost[]
 }
 
 model LabFlag {
@@ -630,7 +631,8 @@ model AssessmentResult {
 
 model DiscussionPost {
   id           String              @id @default(uuid())
-  courseId     String
+  courseId     String?
+  labId        String?
   userId       String
   title        String
   body         String
@@ -641,13 +643,16 @@ model DiscussionPost {
   commentCount Int                 @default(0)
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
-  course       Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course       Course?             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lab          Lab?                @relation(fields: [labId], references: [id], onDelete: Cascade)
   user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments     DiscussionComment[]
   votes        DiscussionVote[]
 
   @@index([courseId, createdAt])
   @@index([courseId, isPinned])
+  @@index([labId, createdAt])
+  @@index([labId, isPinned])
   @@index([userId])
 }
 
