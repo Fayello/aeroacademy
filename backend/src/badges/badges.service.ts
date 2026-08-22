@@ -1,11 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProgressionService } from '../common/progression.service';
 
 @Injectable()
 export class BadgesService {
   private readonly logger = new Logger(BadgesService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private progressionService: ProgressionService,
+  ) {}
 
   async getAllBadges() {
     return this.prisma.badge.findMany({
@@ -98,10 +102,11 @@ export class BadgesService {
         });
 
         if (badge.xpReward > 0) {
-          await this.prisma.user.update({
-            where: { id: userId },
-            data: { xp: { increment: badge.xpReward } },
-          });
+          await this.progressionService.awardXP(userId, {
+            amount: badge.xpReward,
+            source: 'BADGE_EARNED',
+            sourceId: badge.id,
+          }).catch((err) => this.logger.error('ProgressionService.awardXP failed for badge', err));
         }
 
         this.logger.log(`Awarded badge "${badge.name}" to user ${userId}`);

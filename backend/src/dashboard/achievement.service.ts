@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsService } from '../common/events.service';
+import { ProgressionService } from '../common/progression.service';
 import createLogger from '../common/logger';
 
 const logger = createLogger('Achievements');
@@ -10,6 +11,7 @@ export class AchievementService {
   constructor(
     private prisma: PrismaService,
     private eventsService: EventsService,
+    private progressionService: ProgressionService,
   ) {}
 
   async checkAndUnlockAchievements(userId: string) {
@@ -61,11 +63,14 @@ export class AchievementService {
           throw e;
         }
 
-        // Grant XP reward
-        await this.prisma.user.update({
-          where: { id: userId },
-          data: { xp: { increment: ach.xpReward } },
-        });
+        // Grant XP reward through the progression engine
+        if (ach.xpReward > 0) {
+          await this.progressionService.awardXP(userId, {
+            amount: ach.xpReward,
+            source: 'ACHIEVEMENT_UNLOCKED',
+            sourceId: ach.id,
+          }).catch((err) => logger.error('ProgressionService.awardXP failed for achievement', err));
+        }
 
         logger.info(`Unlocked "${ach.title}" for user ${userId}`);
 

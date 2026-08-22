@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import { OtpService } from './otp.service';
 import { EventsService } from '../common/events.service';
+import { ProgressionService } from '../common/progression.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import createLogger from '../common/logger';
@@ -33,6 +34,7 @@ export class AuthService {
     private emailService: EmailService,
     private otpService: OtpService,
     private eventsService: EventsService,
+    private progressionService: ProgressionService,
   ) {}
 
   private generateReferralCode(): string {
@@ -81,15 +83,19 @@ export class AuthService {
         where: { id: userId },
         data: { referredBy: code },
       });
-      await tx.user.update({
-        where: { id: referrer.id },
-        data: { xp: { increment: REFERRAL_XP_REWARD } },
-      });
-      await tx.user.update({
-        where: { id: userId },
-        data: { xp: { increment: REFERRAL_XP_REWARD } },
-      });
     });
+
+    await this.progressionService.awardXP(referrer.id, {
+      amount: REFERRAL_XP_REWARD,
+      source: 'REFERRAL_GIVEN',
+      sourceId: userId,
+    }).catch((err) => logger.error('ProgressionService.awardXP failed for referrer', err));
+
+    await this.progressionService.awardXP(userId, {
+      amount: REFERRAL_XP_REWARD,
+      source: 'REFERRAL_USED',
+      sourceId: referrer.id,
+    }).catch((err) => logger.error('ProgressionService.awardXP failed for referee', err));
 
     return { message: 'Referral applied successfully', xpAwarded: REFERRAL_XP_REWARD };
   }

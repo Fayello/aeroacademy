@@ -243,9 +243,15 @@ export class ProgressService {
         currentStreak: newStreak,
         longestStreak: Math.max(user.longestStreak, newStreak),
         lastActivityDate: today,
-        ...(bonusXp > 0 ? { xp: { increment: bonusXp } } : {}),
       },
     });
+
+    if (bonusXp > 0) {
+      await this.progressionService.awardXP(userId, {
+        amount: bonusXp,
+        source: 'STREAK_BONUS',
+      }).catch((err) => this.logger.error('ProgressionService.awardXP failed for streak bonus', err));
+    }
   }
 
   private async checkMilestones(userId: string, courseId: string) {

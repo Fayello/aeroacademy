@@ -83,6 +83,17 @@ export class ProgressionService {
               data: { userId, skillId: skill.id, xp: skillXp, level: skillLevel },
             });
           }
+
+          await this.prisma.progressionEvent.create({
+            data: {
+              userId,
+              type: 'SKILL_XP_AWARDED',
+              amount,
+              source,
+              sourceId: sourceId ?? null,
+              metadata: { domain, skillName, skillId: skill.id },
+            },
+          });
         }
       } catch (error) {
         this.logger.warn(

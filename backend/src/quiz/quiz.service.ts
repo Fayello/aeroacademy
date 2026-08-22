@@ -1,12 +1,21 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProgressionService } from '../common/progression.service';
+import { MissionService } from '../challenges/mission.service';
+
+const QUIZ_XP_REWARD = 150;
 
 @Injectable()
 export class QuizService {
   private recentSubmissions = new Map<string, number>();
   private readonly QUIZ_SUBMISSION_COOLDOWN_MS = 10000;
+  private readonly logger = new Logger(QuizService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private progressionService: ProgressionService,
+    private missionService: MissionService,
+  ) {}
 
   async getQuizByLesson(lessonId: string) {
     const quiz = await this.prisma.quiz.findUnique({
@@ -103,6 +112,16 @@ export class QuizService {
     });
 
     this.recentSubmissions.set(`${userId}:${quizId}`, Date.now());
+
+    if (passed && !existingPassed) {
+      await this.progressionService.awardXP(userId, {
+        amount: QUIZ_XP_REWARD,
+        source: 'QUIZ_PASSED',
+        sourceId: quizId,
+      }).catch((err) => this.logger.error('ProgressionService.awardXP failed for quiz', err));
+
+      await this.missionService.checkProgress(userId, 'QUIZ_COMPLETIONS', quizId).catch((err) => this.logger.error('MissionService.checkProgress failed for quiz', err));
+    }
 
     return {
       submission,

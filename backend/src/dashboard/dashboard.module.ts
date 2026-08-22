@@ -7,9 +7,10 @@ import { AchievementService } from './achievement.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { LabsModule } from '../labs/labs.module';
 import { AuthModule } from '../auth/auth.module';
+import { EventsModule } from '../common/events.module';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => LabsModule), AuthModule],
+  imports: [PrismaModule, forwardRef(() => LabsModule), AuthModule, EventsModule],
   controllers: [DashboardController],
   providers: [
     DashboardService,
