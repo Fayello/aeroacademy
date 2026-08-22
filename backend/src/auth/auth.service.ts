@@ -317,6 +317,7 @@ export class AuthService {
       city?: string;
       timezone?: string;
       organizationId?: string;
+      avatarUrl?: string;
     },
   ) {
     if (data.email) {
@@ -344,6 +345,7 @@ export class AuthService {
     if (data.bio !== undefined) updateData.bio = data.bio;
     if (data.city !== undefined) updateData.city = data.city;
     if (data.timezone !== undefined) updateData.timezone = data.timezone;
+    if (data.avatarUrl !== undefined) updateData.avatarUrl = data.avatarUrl;
 
     if (data.organizationId) {
       const org = await this.prisma.organization.findUnique({
