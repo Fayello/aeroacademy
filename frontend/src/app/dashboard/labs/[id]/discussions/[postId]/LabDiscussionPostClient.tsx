@@ -75,11 +75,54 @@ export default function LabDiscussionPostClient() {
   const fetchData = useCallback(async () => {
     try {
       const [postData, commentsData] = await Promise.all([
-        fetchApi(`/discussions/${postId}`),
-        fetchApi(`/discussions/${postId}/comments`),
+        fetchApi<any>(`/discussions/${postId}`),
+        fetchApi<any[]>(`/discussions/${postId}/comments`),
       ]);
-      setPost(postData as DiscussionPost);
-      setComments(commentsData as DiscussionComment[]);
+
+      const mappedPost: DiscussionPost = {
+        id: postData.id,
+        labId: postData.labId,
+        userId: postData.userId,
+        title: postData.title,
+        body: postData.body,
+        tags: postData.tags || [],
+        pinned: postData.isPinned ?? postData.pinned ?? false,
+        resolved: postData.isResolved ?? postData.resolved ?? false,
+        upvotes: postData.upvotes ?? 0,
+        commentCount: postData.commentCount ?? postData._count?.comments ?? 0,
+        createdAt: postData.createdAt,
+        updatedAt: postData.updatedAt,
+        author: postData.author ?? { id: postData.user?.id || postData.userId, name: postData.user?.name || null, email: "", division: "" },
+        userVote: postData.userVote ?? postData.myVote ?? 0,
+      };
+      setPost(mappedPost);
+
+      const mappedComments: DiscussionComment[] = (commentsData || []).map((c: any) => ({
+        id: c.id,
+        postId: c.postId,
+        userId: c.userId,
+        body: c.body,
+        parentCommentId: c.parentCommentId ?? c.parentId ?? null,
+        upvotes: c.upvotes ?? 0,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+        author: c.author ?? { id: c.user?.id || c.userId, name: c.user?.name || null, email: "", division: "" },
+        userVote: c.userVote ?? 0,
+        replies: (c.replies || []).map((r: any) => ({
+          id: r.id,
+          postId: r.postId,
+          userId: r.userId,
+          body: r.body,
+          parentCommentId: r.parentCommentId ?? r.parentId ?? null,
+          upvotes: r.upvotes ?? 0,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          author: r.author ?? { id: r.user?.id || r.userId, name: r.user?.name || null, email: "", division: "" },
+          userVote: r.userVote ?? 0,
+          replies: [],
+        })),
+      }));
+      setComments(mappedComments);
 
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}");

@@ -117,13 +117,30 @@ export default function LabDiscussionsList() {
         if (debouncedSearch) params.set("search", debouncedSearch);
         if (selectedTag) params.set("tag", selectedTag);
 
-        const data = (await fetchApi(
+        const raw = (await fetchApi(
           `/discussions/lab/${labId}?${params.toString()}`
-        )) as DiscussionsResponse;
+        )) as any;
 
-        setPosts((prev) => (append ? [...prev, ...data.posts] : data.posts));
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
+        const mapped: DiscussionPost[] = (raw.posts || []).map((p: any) => ({
+          id: p.id,
+          labId: p.labId,
+          userId: p.userId,
+          title: p.title,
+          body: p.body,
+          tags: p.tags || [],
+          pinned: p.isPinned ?? p.pinned ?? false,
+          resolved: p.isResolved ?? p.resolved ?? false,
+          upvotes: p.upvotes ?? 0,
+          commentCount: p.commentCount ?? p._count?.comments ?? 0,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+          author: p.author ?? { id: p.user?.id || p.userId, name: p.user?.name || null, email: "", division: "" },
+          userVote: p.userVote ?? p.myVote ?? 0,
+        }));
+
+        setPosts((prev) => (append ? [...prev, ...mapped] : mapped));
+        setTotalPages(raw.totalPages ?? raw.pages ?? 1);
+        setTotal(raw.total ?? 0);
       } catch (err) {
         toast.error(
           err instanceof Error ? err.message : "Failed to load discussions"
