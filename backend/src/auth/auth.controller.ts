@@ -10,6 +10,7 @@ import {
   Res,
   Req,
   Query,
+  Param,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -317,6 +318,13 @@ export class AuthController {
   @Get('me')
   async getProfile(@Request() req: RequestWithUser) {
     return this.authService.getFullProfile(req.user.id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('users/:id/profile')
+  async getPublicProfile(@Param('id') id: string) {
+    return this.authService.getPublicProfile(id);
   }
 
   @ApiBearerAuth('JWT-auth')

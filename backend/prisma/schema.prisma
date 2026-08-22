@@ -15,6 +15,7 @@ model User {
   role                     Role                      @default(STUDENT)
   emailVerified            DateTime?
   createdAt                DateTime                  @default(now())
+  username                 String?                   @unique
   bio                      String?
   name                     String?
   city                     String?                   @default("Yaoundé")

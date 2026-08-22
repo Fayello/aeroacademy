@@ -165,6 +165,7 @@ export class AuthService {
         id: true,
         email: true,
         name: true,
+        username: true,
         bio: true,
         city: true,
         role: true,
@@ -180,6 +181,7 @@ export class AuthService {
         teamId: true,
         createdAt: true,
         organization: { select: { id: true, name: true, type: true } },
+        team: { select: { id: true, name: true, description: true } },
         _count: {
           select: {
             achievements: true,
@@ -194,6 +196,38 @@ export class AuthService {
     const clearance =
       level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
     return { ...user, level, clearance };
+  }
+
+  async getPublicProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        bio: true,
+        city: true,
+        xp: true,
+        rank: true,
+        division: true,
+        currentStreak: true,
+        longestStreak: true,
+        createdAt: true,
+        organization: { select: { name: true } },
+        team: { select: { name: true } },
+        _count: {
+          select: {
+            achievements: true,
+            progress: { where: { completed: true } },
+            labSubmissions: { where: { isCorrect: true } },
+            badges: true,
+          },
+        },
+      },
+    });
+    if (!user) throw new UnauthorizedException('User not found');
+    const level = Math.floor(user.xp / 1000) + 1;
+    return { ...user, level };
   }
 
   async updateEmailPreferences(userId: string, preferences: Record<string, boolean>) {
@@ -259,8 +293,10 @@ export class AuthService {
     data: {
       email?: string;
       name?: string;
+      username?: string;
       bio?: string;
       city?: string;
+      timezone?: string;
       organizationId?: string;
     },
   ) {
@@ -273,11 +309,22 @@ export class AuthService {
       }
     }
 
+    if (data.username) {
+      const existingUsername = await this.prisma.user.findUnique({
+        where: { username: data.username },
+      });
+      if (existingUsername && existingUsername.id !== userId) {
+        throw new ConflictException('Username already taken');
+      }
+    }
+
     const updateData: Prisma.UserUncheckedUpdateInput = {};
     if (data.email !== undefined) updateData.email = data.email;
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.username !== undefined) updateData.username = data.username;
     if (data.bio !== undefined) updateData.bio = data.bio;
     if (data.city !== undefined) updateData.city = data.city;
+    if (data.timezone !== undefined) updateData.timezone = data.timezone;
 
     if (data.organizationId) {
       const org = await this.prisma.organization.findUnique({

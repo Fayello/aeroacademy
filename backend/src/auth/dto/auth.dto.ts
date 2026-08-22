@@ -55,6 +55,11 @@ export class UpdateProfileDto {
 
   @IsString()
   @IsOptional()
+  @MaxLength(30)
+  username?: string;
+
+  @IsString()
+  @IsOptional()
   @MaxLength(500)
   bio?: string;
 
@@ -62,6 +67,11 @@ export class UpdateProfileDto {
   @IsOptional()
   @MaxLength(100)
   city?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  timezone?: string;
 
   @IsString()
   @IsOptional()
