@@ -1,15 +1,22 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger, OnModuleInit } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
 
 @Injectable()
-export class MissionService {
+export class MissionService implements OnModuleInit {
   private readonly logger = new Logger(MissionService.name);
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly progressionService: ProgressionService,
   ) {}
+
+  async onModuleInit() {
+    await this.generateDailyMissions().catch((err) =>
+      this.logger.error('Failed to generate daily missions on startup', err),
+    );
+  }
 
   async getDailyMissions(userId: string) {
     const now = new Date();
@@ -57,6 +64,7 @@ export class MissionService {
         xpReward: challenge.xpReward,
         domain: challenge.domainId,
         skill: challenge.skillId,
+        labId: (challenge.metadata as any)?.labId ?? null,
         progress: userChallenge.progress,
         completed: userChallenge.completed,
         claimedAt: userChallenge.claimedAt,
@@ -180,7 +188,9 @@ export class MissionService {
     return newlyCompleted;
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async generateDailyMissions() {
+    this.logger.log('Running daily mission generation cron...');
     const now = new Date();
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
@@ -245,6 +255,7 @@ export class MissionService {
         xpReward: 50,
         startAt: startOfDay,
         endAt: endOfDay,
+        metadata: { labId: warmupLab.id },
       },
       {
         type: 'DAILY_SKILL',
@@ -258,6 +269,7 @@ export class MissionService {
         xpReward: 150,
         startAt: startOfDay,
         endAt: endOfDay,
+        metadata: { labId: skillLab.id },
       },
       {
         type: 'DAILY_BOSS',
@@ -271,6 +283,7 @@ export class MissionService {
         xpReward: 500,
         startAt: startOfDay,
         endAt: endOfDay,
+        metadata: { labId: bossLab.id },
       },
     ];
 

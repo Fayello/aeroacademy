@@ -15,6 +15,7 @@ interface Mission {
   xpReward: number;
   domain: string | null;
   skill: string | null;
+  labId: string | null;
   progress: number;
   completed: boolean;
   claimedAt: string | null;
@@ -168,10 +169,10 @@ export default function DailyMissions() {
                     </div>
                   ) : (
                     <a
-                      href="/dashboard/labs"
-                      className="flex-shrink-0 px-3 py-1.5 border border-white/20 text-white/60 text-xs rounded-lg hover:border-white/40 hover:text-white/80 transition-colors"
+                      href={mission.labId ? `/dashboard/labs/${mission.labId}` : '/dashboard/labs'}
+                      className="flex-shrink-0 px-3 py-1.5 border border-white/20 text-white/60 text-xs rounded-lg hover:border-white/40 hover:text-white/80 transition-colors flex items-center gap-1"
                     >
-                      <ChevronRight className="w-3 h-3" />
+                      Go <ChevronRight className="w-3 h-3" />
                     </a>
                   )}
                 </div>
