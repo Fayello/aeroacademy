@@ -36,6 +36,7 @@ interface UserProfile extends User {
   lastActivityDate?: string | null;
   timezone?: string;
   organization?: { id: string; name: string; type: string } | null;
+  team?: { id: string; name: string; description?: string | null } | null;
   level?: number;
   clearance?: string;
   _count?: {
@@ -268,8 +269,9 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Profile Header */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <div className="flex flex-col sm:flex-row items-start gap-5">
+      <div className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-6">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#E9F8EE] to-transparent rounded-bl-full opacity-60" />
+        <div className="flex flex-col sm:flex-row items-start gap-5 relative">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg">
             <span className="text-2xl font-bold text-white">
               {(user.name || user.email).charAt(0).toUpperCase()}
@@ -290,18 +292,24 @@ export default function ProfilePage() {
               )}
             </div>
             <div className="flex items-center gap-3 mt-1.5 text-sm text-slate-500 flex-wrap">
+              {user.username && (
+                <span className="flex items-center gap-1 text-[#229C62] font-medium">@{user.username}</span>
+              )}
               <span>{user.email}</span>
               <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">{user.role}</span>
             </div>
-            {(user.bio || user.city || user.organization) && (
+            {(user.bio || user.city || user.organization || user.team) && (
               <div className="mt-3 space-y-1">
                 {user.bio && <p className="text-sm text-slate-600">{user.bio}</p>}
-                <div className="flex items-center gap-4 text-xs text-slate-400">
+                <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
                   {user.city && (
                     <span className="flex items-center gap-1"><MapPin size={12} />{user.city}</span>
                   )}
                   {user.organization && (
                     <span className="flex items-center gap-1"><Building2 size={12} />{user.organization.name}</span>
+                  )}
+                  {user.team && (
+                    <span className="flex items-center gap-1 text-[#229C62] font-medium"><Users size={12} />{user.team.name}</span>
                   )}
                   <span className="flex items-center gap-1">
                     <Calendar size={12} />Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
@@ -311,11 +319,20 @@ export default function ProfilePage() {
             )}
           </div>
           <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/dashboard/profile/${user.id}`;
+                navigator.clipboard.writeText(url);
+                toast.success("Profile link copied!");
+              }}
+              className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium py-2 px-3 rounded-lg text-sm transition-all flex items-center gap-1.5"
+              title="Copy profile link"
+            >
+              <ExternalLink size={14} />
+              Share
+            </button>
             <Link href="/dashboard/profile/edit" className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium py-2 px-4 rounded-lg text-sm transition-all">
               Edit profile
-            </Link>
-            <Link href="/dashboard/profile/change-password" className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium py-2 px-4 rounded-lg text-sm transition-all">
-              Change password
             </Link>
           </div>
         </div>

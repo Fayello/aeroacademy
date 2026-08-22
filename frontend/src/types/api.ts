@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string | null;
+  username: string | null;
   bio: string | null;
   city: string | null;
   role: "STUDENT" | "ADMIN" | "RECRUITER";
