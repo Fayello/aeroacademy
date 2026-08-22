@@ -16,6 +16,8 @@ model User {
   emailVerified            DateTime?
   createdAt                DateTime                  @default(now())
   username                 String?                   @unique
+  avatarUrl                String?
+  pinnedBadges             Json                      @default("[]")
   bio                      String?
   name                     String?
   city                     String?                   @default("Yaoundé")

@@ -22,6 +22,8 @@ export class LeaderboardService {
       select: {
         id: true,
         name: true,
+        username: true,
+        avatarUrl: true,
         xp: true,
         rank: true,
         division: true,
@@ -41,7 +43,9 @@ export class LeaderboardService {
     return users.map((user, index) => ({
       position: index + 1,
       id: user.id,
-      name: user.name || 'Operative',
+      name: user.username || user.name || 'Operative',
+      username: user.username,
+      avatarUrl: user.avatarUrl,
       xp: user.xp,
       rank: user.rank || 1200,
       level: Math.floor(user.xp / 1000) + 1,

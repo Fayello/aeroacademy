@@ -72,4 +72,24 @@ export class ActivityService {
     ]);
     return { totalSessions, activeSessions, flagsSolved, daysActive: distinctDays };
   }
+
+  async getYearlyActivity(userId: string) {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    const rows = await this.prisma.$queryRaw<{ day: string; count: bigint }[]>`
+      SELECT DATE("createdAt") as day, COUNT(*)::int as count
+      FROM "ActivityEvent"
+      WHERE "userId" = ${userId} AND "createdAt" >= ${oneYearAgo}
+      GROUP BY DATE("createdAt")
+      ORDER BY day
+    `;
+
+    const heatmap: Record<string, number> = {};
+    for (const row of rows) {
+      const dateStr = typeof row.day === 'string' ? row.day.substring(0, 10) : String(row.day).substring(0, 10);
+      heatmap[dateStr] = Number(row.count);
+    }
+    return heatmap;
+  }
 }

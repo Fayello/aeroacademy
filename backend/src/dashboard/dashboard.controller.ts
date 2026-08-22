@@ -38,6 +38,13 @@ export class DashboardController {
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
+  @Get('activity/yearly')
+  async getYearlyActivity(@Request() req: RequestWithUser) {
+    return this.activityService.getYearlyActivity(req.user.id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('active-labs')
   async getMyActiveLabs(@Request() req: RequestWithUser) {
     return this.prisma.labInstance.findMany({

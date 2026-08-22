@@ -349,6 +349,26 @@ export class AuthController {
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
+  @Patch('avatar')
+  async updateAvatar(
+    @Request() req: RequestWithUser,
+    @Body() body: { avatarUrl: string | null },
+  ) {
+    return this.authService.updateAvatar(req.user.id, body.avatarUrl);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('pinned-badges')
+  async updatePinnedBadges(
+    @Request() req: RequestWithUser,
+    @Body() body: { badgeIds: string[] },
+  ) {
+    return this.authService.updatePinnedBadges(req.user.id, body.badgeIds);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Post('change-password')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Audit('AUTH_CHANGE_PASSWORD')

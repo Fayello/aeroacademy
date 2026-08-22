@@ -166,6 +166,8 @@ export class AuthService {
         email: true,
         name: true,
         username: true,
+        avatarUrl: true,
+        pinnedBadges: true,
         bio: true,
         city: true,
         role: true,
@@ -205,6 +207,8 @@ export class AuthService {
         id: true,
         name: true,
         username: true,
+        avatarUrl: true,
+        pinnedBadges: true,
         bio: true,
         city: true,
         xp: true,
@@ -234,6 +238,21 @@ export class AuthService {
     return this.prisma.user.update({
       where: { id: userId },
       data: { emailPreferences: preferences },
+    });
+  }
+
+  async updateAvatar(userId: string, avatarUrl: string | null) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { avatarUrl },
+    });
+  }
+
+  async updatePinnedBadges(userId: string, badgeIds: string[]) {
+    const pinned = badgeIds.slice(0, 5);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { pinnedBadges: pinned },
     });
   }
 
