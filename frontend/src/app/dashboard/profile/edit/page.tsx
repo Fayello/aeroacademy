@@ -108,7 +108,6 @@ export default function ProfileEditPage() {
           city: u.city || "",
           timezone: u.timezone || "UTC",
           organizationId: u.organizationId || "",
-          avatarUrl: u.avatarUrl || "from-[#229C62] to-[#7AD62A]",
         });
         if (u.emailPreferences && typeof u.emailPreferences === "object") {
           setEmailPrefs(u.emailPreferences as Record<string, boolean>);
@@ -118,7 +117,7 @@ export default function ProfileEditPage() {
         if (storedUser) {
           const u = JSON.parse(storedUser);
           if (u.avatarUrl) setSelectedAvatar(u.avatarUrl);
-          reset({ name: u.name || "", username: u.username || "", bio: u.bio || "", city: u.city || "", timezone: u.timezone || "UTC", organizationId: u.organizationId || "", avatarUrl: u.avatarUrl || "from-[#229C62] to-[#7AD62A]" });
+          reset({ name: u.name || "", username: u.username || "", bio: u.bio || "", city: u.city || "", timezone: u.timezone || "UTC", organizationId: u.organizationId || "" });
         }
       }
     } catch {

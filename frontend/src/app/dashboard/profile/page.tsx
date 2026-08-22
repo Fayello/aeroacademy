@@ -40,6 +40,7 @@ interface UserProfile extends User {
   team?: { id: string; name: string; description?: string | null } | null;
   level?: number;
   clearance?: string;
+  pinnedBadges?: string[];
   _count?: {
     achievements: number;
     progress: number;
@@ -249,7 +250,7 @@ export default function ProfilePage() {
     setPinnedBadgeIds(newIds);
     setPinning(true);
     try {
-      await fetchApi("/auth/pinned-badges", { method: "PATCH", body: { badgeIds: newIds } });
+      await fetchApi("/auth/pinned-badges", { method: "PATCH", body: JSON.stringify({ badgeIds: newIds }) });
     } catch {
       setPinnedBadgeIds(isPinned ? [...pinnedBadgeIds] : pinnedBadgeIds.filter((id) => id !== badgeId));
     } finally {
