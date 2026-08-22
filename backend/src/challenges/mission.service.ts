@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
 import { EventsService } from '../common/events.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class MissionService implements OnModuleInit {
@@ -12,6 +13,7 @@ export class MissionService implements OnModuleInit {
     private readonly prisma: PrismaService,
     private readonly progressionService: ProgressionService,
     private readonly eventsService: EventsService,
+    private readonly emailService: EmailService,
   ) {}
 
   async onModuleInit() {
@@ -200,6 +202,16 @@ export class MissionService implements OnModuleInit {
           title: uc.challenge.title,
           xpReward: uc.challenge.xpReward,
         });
+
+        this.prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } })
+          .then((user) => {
+            if (user) {
+              this.emailService.sendMissionCompleted(
+                user.email, user.name, uc.challenge.title, uc.challenge.xpReward, uc.challenge.type,
+              ).catch((err) => this.logger.error(`Mission completion email failed: ${err.message}`));
+            }
+          })
+          .catch(() => {});
       } else if (newProgress !== uc.progress) {
         await this.prisma.userChallenge.update({
           where: { id: uc.id },
