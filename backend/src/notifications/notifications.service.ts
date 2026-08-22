@@ -96,6 +96,15 @@ export class NotificationsService implements OnModuleInit {
             link: p.link ?? '/dashboard/master-classes',
           }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
           break;
+        case 'MISSION_COMPLETED':
+          this.create({
+            userId: p.userId,
+            title: 'Mission Completed',
+            message: `You completed "${p.title ?? 'a mission'}" and earned +${p.xpReward ?? 0} XP. Claim your reward!`,
+            type: 'SUCCESS',
+            link: '/dashboard',
+          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          break;
       }
     });
   }

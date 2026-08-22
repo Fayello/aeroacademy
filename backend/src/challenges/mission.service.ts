@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, Logger, OnModuleInit } from '@nestjs/c
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
+import { EventsService } from '../common/events.service';
 
 @Injectable()
 export class MissionService implements OnModuleInit {
@@ -10,6 +11,7 @@ export class MissionService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly progressionService: ProgressionService,
+    private readonly eventsService: EventsService,
   ) {}
 
   async onModuleInit() {
@@ -193,6 +195,11 @@ export class MissionService implements OnModuleInit {
         this.logger.log(
           `User ${userId} completed mission "${uc.challenge.title}"`,
         );
+        this.eventsService.emit('MISSION_COMPLETED', {
+          userId,
+          title: uc.challenge.title,
+          xpReward: uc.challenge.xpReward,
+        });
       } else if (newProgress !== uc.progress) {
         await this.prisma.userChallenge.update({
           where: { id: uc.id },
