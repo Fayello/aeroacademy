@@ -26,6 +26,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getLevel, getLevelProgress, getNextLabUnlock } from "@/lib/levelGating";
+import DailyMissions from "@/components/dashboard/DailyMissions";
 
 interface User {
   id: string;
@@ -336,6 +337,9 @@ export default function DashboardPage() {
           </div>
         );
       })()}
+
+      {/* Daily Missions */}
+      <DailyMissions />
 
       {/* Start Here — Beginner Labs */}
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">

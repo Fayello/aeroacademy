@@ -14,6 +14,7 @@ import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import type { User, Achievement } from "@/types/api";
+import SkillProfile from "@/components/dashboard/SkillProfile";
 
 interface Badge {
   id: string;
@@ -931,6 +932,9 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Skill Profile */}
+      <SkillProfile />
     </div>
   );
 }
