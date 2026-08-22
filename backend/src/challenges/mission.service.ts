@@ -115,6 +115,18 @@ export class MissionService implements OnModuleInit {
   }
 
   async checkProgress(userId: string, eventType: string, entityId?: string) {
+    const activeChallenges = await this.prisma.challenge.findMany({
+      where: { isActive: true, objectiveType: eventType, type: { startsWith: 'DAILY' } },
+    });
+
+    for (const ch of activeChallenges) {
+      await this.prisma.userChallenge.upsert({
+        where: { userId_challengeId: { userId, challengeId: ch.id } },
+        update: {},
+        create: { userId, challengeId: ch.id, target: ch.objectiveTarget },
+      });
+    }
+
     const userChallenges = await this.prisma.userChallenge.findMany({
       where: {
         userId,

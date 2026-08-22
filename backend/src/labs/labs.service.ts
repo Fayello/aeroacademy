@@ -678,6 +678,8 @@ export class LabsService implements OnModuleInit {
           this.emailService.sendLabCompleted(user.email, user.name, lab?.title || 'Unknown Lab', totalXp, totalFlagsInLab).catch(() => {});
         }
         this.eventsService.emit('LAB_COMPLETED', { userId, labId: flag.labId, labTitle: lab?.title, timestamp: new Date() });
+
+        await this.missionService.checkProgress(userId, 'LAB_COMPLETIONS', flag.labId).catch((err) => logger.error('MissionService.checkProgress LAB_COMPLETIONS failed', err));
       }
 
       await this.activityService
