@@ -311,7 +311,7 @@ export class MissionService implements OnModuleInit {
     return created;
   }
 
-  @Cron(CronExpression.EVERY_MONDAY_AT_MIDNIGHT)
+  @Cron('0 0 * * 1')
   async generateWeeklyMissions() {
     this.logger.log('Running weekly mission generation cron...');
     const now = new Date();
@@ -371,7 +371,7 @@ export class MissionService implements OnModuleInit {
     return created;
   }
 
-  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  @Cron('0 0 1 * *')
   async generateMonthlyMissions() {
     this.logger.log('Running monthly mission generation cron...');
     const now = new Date();
