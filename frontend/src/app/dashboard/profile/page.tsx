@@ -702,9 +702,9 @@ export default function ProfilePage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-slate-700">
                         {formatActivityType(evt.type)}
-                        {meta.lessonTitle && <span className="font-medium"> {(meta.lessonTitle as string).substring(0, 40)}</span>}
-                        {meta.labTitle && <span className="font-medium"> {(meta.labTitle as string).substring(0, 40)}</span>}
-                        {meta.flagName && <span className="text-[#229C62] font-medium"> &quot;{(meta.flagName as string).substring(0, 30)}&quot;</span>}
+                        {typeof meta.lessonTitle === "string" && <span className="font-medium"> {meta.lessonTitle.substring(0, 40)}</span>}
+                        {typeof meta.labTitle === "string" && <span className="font-medium"> {meta.labTitle.substring(0, 40)}</span>}
+                        {typeof meta.flagName === "string" && <span className="text-[#229C62] font-medium"> &quot;{meta.flagName.substring(0, 30)}&quot;</span>}
                       </p>
                       <p className="text-[11px] text-slate-400 mt-0.5">
                         {new Date(evt.createdAt).toLocaleDateString()} {new Date(evt.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
