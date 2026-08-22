@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import { OtpService } from './otp.service';
+import { EventsService } from '../common/events.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import createLogger from '../common/logger';
@@ -31,6 +32,7 @@ export class AuthService {
     private jwtService: JwtService,
     private emailService: EmailService,
     private otpService: OtpService,
+    private eventsService: EventsService,
   ) {}
 
   private generateReferralCode(): string {
@@ -215,7 +217,7 @@ export class AuthService {
       data: { emailVerified: new Date() },
     });
 
-    this.emailService.sendWelcome(email, user.name).catch(() => {});
+    this.eventsService.emit('USER_REGISTERED', { email, name: user.name });
 
     return this.login(user);
   }
@@ -236,7 +238,7 @@ export class AuthService {
       data: { emailVerified: new Date(), verificationToken: null },
     });
 
-    this.emailService.sendWelcome(user.email, user.name).catch(() => {});
+    this.eventsService.emit('USER_REGISTERED', { email: user.email, name: user.name });
 
     return this.login(user);
   }

@@ -79,7 +79,7 @@ export class EmailService implements OnModuleInit {
     const displayName = name || 'there';
     return this.send({
       to: email,
-      from: 'auth',
+      from: 'info',
       subject: 'Welcome to XpertClass — Your Training Journey Begins',
       html: `
 <!DOCTYPE html>
