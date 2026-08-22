@@ -42,7 +42,7 @@ const links: NavLink[] = [
   { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3, roles: ["ADMIN"] },
   { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText, roles: ["ADMIN"] },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
-  { href: "/dashboard/settings", tKey: "settings", icon: Settings },
+  { href: "/dashboard/profile/edit", tKey: "settings", icon: Settings },
 ];
 
 export default function Sidebar() {
