@@ -10,6 +10,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
 RUN npm run build
+RUN npx tsc prisma/seed.ts prisma/seed-linux-labs.ts prisma/seed-linux-courses.ts prisma/seed-linux-courses-part2.ts prisma/seed-linux-courses-part3.ts prisma/seed-master-classes.ts prisma/seed-trainers.ts --outDir dist/prisma --esModuleInterop --resolveJsonModule --skipLibCheck
 
 FROM base AS runner
 RUN addgroup -g 1001 -S nestjs && adduser -S nestjs -u 1001
