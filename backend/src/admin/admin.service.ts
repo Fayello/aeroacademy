@@ -99,6 +99,101 @@ export class AdminService {
     return { success: true, count: team.members.length };
   }
 
+  async createChallenge(data: {
+    type: string;
+    title: string;
+    description: string;
+    difficulty: string;
+    objectiveType: string;
+    objectiveTarget: number;
+    xpReward: number;
+    startAt: string;
+    endAt: string;
+    domainId?: string;
+    skillId?: string;
+    metadata?: any;
+  }) {
+    return this.prisma.challenge.create({
+      data: {
+        type: data.type,
+        title: data.title,
+        description: data.description,
+        difficulty: data.difficulty,
+        objectiveType: data.objectiveType,
+        objectiveTarget: data.objectiveTarget,
+        xpReward: data.xpReward,
+        startAt: new Date(data.startAt),
+        endAt: new Date(data.endAt),
+        domainId: data.domainId || null,
+        skillId: data.skillId || null,
+        metadata: data.metadata || null,
+      },
+    });
+  }
+
+  async updateChallenge(
+    id: string,
+    data: {
+      type?: string;
+      title?: string;
+      description?: string;
+      difficulty?: string;
+      objectiveType?: string;
+      objectiveTarget?: number;
+      xpReward?: number;
+      startAt?: string;
+      endAt?: string;
+      isActive?: boolean;
+      domainId?: string;
+      skillId?: string;
+      metadata?: any;
+    },
+  ) {
+    const existing = await this.prisma.challenge.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Challenge not found');
+
+    return this.prisma.challenge.update({
+      where: { id },
+      data: {
+        ...(data.type !== undefined && { type: data.type }),
+        ...(data.title !== undefined && { title: data.title }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.difficulty !== undefined && { difficulty: data.difficulty }),
+        ...(data.objectiveType !== undefined && { objectiveType: data.objectiveType }),
+        ...(data.objectiveTarget !== undefined && { objectiveTarget: data.objectiveTarget }),
+        ...(data.xpReward !== undefined && { xpReward: data.xpReward }),
+        ...(data.startAt !== undefined && { startAt: new Date(data.startAt) }),
+        ...(data.endAt !== undefined && { endAt: new Date(data.endAt) }),
+        ...(data.isActive !== undefined && { isActive: data.isActive }),
+        ...(data.domainId !== undefined && { domainId: data.domainId || null }),
+        ...(data.skillId !== undefined && { skillId: data.skillId || null }),
+        ...(data.metadata !== undefined && { metadata: data.metadata }),
+      },
+    });
+  }
+
+  async deleteChallenge(id: string) {
+    const existing = await this.prisma.challenge.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Challenge not found');
+
+    return this.prisma.challenge.update({
+      where: { id },
+      data: { isActive: false },
+    });
+  }
+
+  async getAllChallenges(type?: string) {
+    return this.prisma.challenge.findMany({
+      where: type ? { type } : {},
+      include: {
+        domain: { select: { id: true, name: true, displayName: true } },
+        skill: { select: { id: true, name: true, displayName: true } },
+        _count: { select: { userChallenges: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async getAnalyticsOverview() {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);

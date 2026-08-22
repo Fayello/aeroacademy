@@ -20,6 +20,8 @@ export default function LeaderboardPage() {
   const [filter, setFilter] = useState("");
   const [leagueStats, setLeagueStats] = useState<LeagueStats>({ regional: [], university: [], season: null });
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [timeFilter, setTimeFilter] = useState<"all" | "month" | "week">("all");
+  const [domainFilter, setDomainFilter] = useState<"all" | "SECURITY" | "NETWORKING" | "DEVOPS" | "DATABASES" | "SYSTEMS" | "QA">("all");
 
   useEffect(() => {
     try {
@@ -62,6 +64,29 @@ export default function LeaderboardPage() {
     socket.on("leaderboard_update", handleLeaderboard);
     return () => { socket.off("leaderboard_update", handleLeaderboard); };
   }, [socket]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchFiltered = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        if (timeFilter !== "all") params.set("time", timeFilter);
+        if (domainFilter !== "all") params.set("domain", domainFilter);
+        params.set("limit", "50");
+        const qs = params.toString();
+        const data = await fetchApi<LeaderboardEntry[]>(`/dashboard/leaderboard${qs ? `?${qs}` : ""}`);
+        if (!cancelled) {
+          setLeaderboard(data);
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchFiltered();
+    return () => { cancelled = true; };
+  }, [timeFilter, domainFilter]);
 
   const filteredOperators = useMemo(() => {
     return leaderboard
@@ -123,6 +148,45 @@ export default function LeaderboardPage() {
             {league}
           </button>
         ))}
+      </div>
+
+      {/* Time & Domain Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Segmented time filter */}
+        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
+          {([
+            { key: "all" as const, label: "All Time" },
+            { key: "month" as const, label: "This Month" },
+            { key: "week" as const, label: "This Week" },
+          ]).map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setTimeFilter(key)}
+              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                timeFilter === key
+                  ? "bg-[#229C62] text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Domain dropdown */}
+        <select
+          value={domainFilter}
+          onChange={(e) => setDomainFilter(e.target.value as typeof domainFilter)}
+          className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
+        >
+          <option value="all">All Domains</option>
+          <option value="SECURITY">Security</option>
+          <option value="NETWORKING">Networking</option>
+          <option value="DEVOPS">DevOps</option>
+          <option value="DATABASES">Databases</option>
+          <option value="SYSTEMS">Systems</option>
+          <option value="QA">QA</option>
+        </select>
       </div>
 
       {/* Filters */}

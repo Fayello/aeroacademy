@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route, Users } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route, Users, Medal, UserPlus } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -30,7 +30,8 @@ const links: NavLink[] = [
   { href: "/dashboard/assessments", tKey: "assessments", icon: ClipboardCheck },
   { href: "/dashboard/analytics", tKey: "my-analytics", icon: BarChart3 },
   { href: "/dashboard/notifications", tKey: "notifications", icon: Bell },
-  { href: "/dashboard/certifications", tKey: "certifications", icon: Award },
+  { href: "/dashboard/certifications", tKey: "certifications", icon: Medal },
+  { href: "/dashboard/referrals", tKey: "referrals", icon: UserPlus },
   { href: "/dashboard/registry", tKey: "registry", icon: Shield },
   { href: "/dashboard/enterprise", tKey: "enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
   { href: "/dashboard/admin", tKey: "admin", icon: Award, roles: ["ADMIN"] },

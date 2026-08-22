@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Award, User, Trophy, MoreHorizontal, Lock } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Award, User, Trophy, MoreHorizontal, Lock, Medal } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useRef, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -12,7 +12,7 @@ const links = [
   { href: "/dashboard", tKey: "home", icon: LayoutDashboard },
   { href: "/dashboard/courses", tKey: "courses", icon: GraduationCap },
   { href: "/dashboard/leaderboard", tKey: "ranks", icon: Trophy },
-  { href: "/dashboard/certifications", tKey: "certs", icon: Award },
+  { href: "/dashboard/certifications", tKey: "certs", icon: Medal },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
 ];
 

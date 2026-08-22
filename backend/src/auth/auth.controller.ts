@@ -130,8 +130,14 @@ export class AuthController {
   async verifyEmail(
     @Body('email') email: string,
     @Body('code') code: string,
+    @Body('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (token) {
+      const result = await this.authService.verifyEmailByToken(token);
+      this.setAuthCookies(res, result.access_token, result.refresh_token);
+      return result;
+    }
     if (!email || !code) {
       throw new UnauthorizedException('Email and verification code are required');
     }
@@ -311,6 +317,28 @@ export class AuthController {
       req.on('error', reject);
       req.end();
     });
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Post('referral')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Audit('AUTH_REFERRAL')
+  async applyReferral(
+    @Request() req: RequestWithUser,
+    @Body('code') code: string,
+  ) {
+    if (!code) {
+      throw new UnauthorizedException('Referral code is required');
+    }
+    return this.authService.applyReferral(req.user.id, code);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me/referrals')
+  async getMyReferrals(@Request() req: RequestWithUser) {
+    return this.authService.getReferrals(req.user.id);
   }
 
   @ApiBearerAuth('JWT-auth')

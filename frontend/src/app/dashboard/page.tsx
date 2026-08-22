@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { getLevel, getLevelProgress, getNextLabUnlock } from "@/lib/levelGating";
 import DailyMissions from "@/components/dashboard/DailyMissions";
+import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 interface User {
   id: string;
@@ -85,6 +86,7 @@ interface CourseWithProgress {
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -205,6 +207,18 @@ export default function DashboardPage() {
     }
   }, [userMetrics?.xp]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      const alreadyOnboarded = localStorage.getItem("onboardingComplete");
+      if (!alreadyOnboarded && (userMetrics?.xp ?? 0) === 0) {
+        setShowOnboarding(true);
+      }
+    } catch {
+      // localStorage unavailable
+    }
+  }, [hydrated, userMetrics?.xp]);
+
   if (!hydrated) {
     return <DashboardSkeleton />;
   }
@@ -273,6 +287,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      {showOnboarding && <OnboardingOverlay onComplete={() => setShowOnboarding(false)} />}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{greeting}</h1>

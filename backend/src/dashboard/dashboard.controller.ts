@@ -1,10 +1,11 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LeaderboardService } from './leaderboard.service';
+import type { TimeFilter, DomainFilter } from './leaderboard.service';
 import { DashboardService } from './dashboard.service';
 import { ActivityService } from '../common/activity.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('dashboard')
@@ -20,6 +21,24 @@ export class DashboardController {
   @Get('public-stats')
   async getPublicStats() {
     return this.dashboardService.getPublicStats();
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('leaderboard')
+  @ApiQuery({ name: 'time', required: false, enum: ['all', 'month', 'week'] })
+  @ApiQuery({ name: 'domain', required: false, enum: ['all', 'SECURITY', 'NETWORKING', 'DEVOPS', 'DATABASES', 'SYSTEMS', 'QA'] })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getLeaderboard(
+    @Query('time') time?: TimeFilter,
+    @Query('domain') domain?: DomainFilter,
+    @Query('limit') limit?: string,
+  ) {
+    return this.leaderboardService.getFilteredLeaderboard({
+      limit: limit ? parseInt(limit, 10) : 50,
+      time: time || 'all',
+      domain: domain || 'all',
+    });
   }
 
   @ApiBearerAuth('JWT-auth')

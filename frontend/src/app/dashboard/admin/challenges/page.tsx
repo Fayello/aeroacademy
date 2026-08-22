@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
-import { Target, Plus, Pencil, Trash2, Loader2, Users, Trophy, ArrowLeft } from "lucide-react";
+import { Target, Plus, Pencil, Trash2, Loader2, ArrowLeft, Search } from "lucide-react";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
@@ -13,13 +13,78 @@ interface Challenge {
   title: string;
   description: string;
   type: string;
-  goalType: string;
-  goalCount: number;
+  difficulty: string;
+  objectiveType: string;
+  objectiveTarget: number;
   xpReward: number;
-  startDate: string;
-  endDate: string;
+  startAt: string;
+  endAt: string;
   isActive: boolean;
-  _count: { participants: number; teamParticipants: number };
+  domainId: string | null;
+  skillId: string | null;
+  metadata: any;
+  domain: { id: string; name: string; displayName: string } | null;
+  skill: { id: string; name: string; displayName: string } | null;
+  _count: { userChallenges: number };
+}
+
+const TYPE_OPTIONS = [
+  { value: "DAILY_WARMUP", label: "Daily Warmup" },
+  { value: "DAILY_SKILL", label: "Daily Skill" },
+  { value: "DAILY_BOSS", label: "Daily Boss" },
+  { value: "WEEKLY", label: "Weekly" },
+  { value: "MONTHLY", label: "Monthly" },
+  { value: "SEASONAL", label: "Seasonal" },
+  { value: "TEAM_WEEKLY", label: "Team Weekly" },
+];
+
+const DIFFICULTY_OPTIONS = [
+  { value: "EASY", label: "Easy" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HARD", label: "Hard" },
+  { value: "BOSS", label: "Boss" },
+];
+
+const OBJECTIVE_OPTIONS = [
+  { value: "FLAG_COMPLETIONS", label: "Flag Completions" },
+  { value: "LAB_COMPLETIONS", label: "Lab Completions" },
+  { value: "LESSON_COMPLETIONS", label: "Lesson Completions" },
+  { value: "QUIZ_COMPLETIONS", label: "Quiz Completions" },
+  { value: "XP_EARNED", label: "XP Earned" },
+  { value: "SKILL_XP_EARNED", label: "Skill XP Earned" },
+];
+
+const TYPE_COLORS: Record<string, string> = {
+  DAILY_WARMUP: "bg-blue-100 text-blue-700",
+  DAILY_SKILL: "bg-indigo-100 text-indigo-700",
+  DAILY_BOSS: "bg-red-100 text-red-700",
+  WEEKLY: "bg-purple-100 text-purple-700",
+  MONTHLY: "bg-amber-100 text-amber-700",
+  SEASONAL: "bg-teal-100 text-teal-700",
+  TEAM_WEEKLY: "bg-orange-100 text-orange-700",
+};
+
+const DIFFICULTY_COLORS: Record<string, string> = {
+  EASY: "bg-green-100 text-green-700",
+  MEDIUM: "bg-yellow-100 text-yellow-700",
+  HARD: "bg-red-100 text-red-700",
+  BOSS: "bg-purple-100 text-purple-700",
+};
+
+function defaultForm() {
+  return {
+    type: "DAILY_WARMUP",
+    title: "",
+    description: "",
+    difficulty: "EASY",
+    objectiveType: "FLAG_COMPLETIONS",
+    objectiveTarget: 10,
+    xpReward: 100,
+    startAt: new Date().toISOString().slice(0, 16),
+    endAt: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 16),
+    domainId: "",
+    skillId: "",
+  };
 }
 
 export default function AdminChallengesPage() {
@@ -28,55 +93,46 @@ export default function AdminChallengesPage() {
   const [modal, setModal] = useState<{ open: boolean; editing: Challenge | null }>({ open: false, editing: null });
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; item: Challenge | null }>({ open: false, item: null });
   const [saving, setSaving] = useState(false);
-
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    type: "INDIVIDUAL",
-    goalType: "LESSONS_COMPLETED",
-    goalCount: 10,
-    xpReward: 500,
-    startDate: "",
-    endDate: "",
-  });
+  const [filterType, setFilterType] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [form, setForm] = useState(defaultForm());
 
   const load = useCallback(async () => {
     try {
-      const data = await fetchApi<Challenge[]>("/challenges");
+      const params = filterType ? `?type=${filterType}` : "";
+      const data = await fetchApi<Challenge[]>(`/admin/challenges${params}`);
       setChallenges(data);
     } catch {
       toast.error("Failed to load challenges");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filterType]);
 
   useEffect(() => { load(); }, [load]);
 
+  const filtered = challenges.filter((c) =>
+    searchQuery ? c.title.toLowerCase().includes(searchQuery.toLowerCase()) : true,
+  );
+
   const openCreate = () => {
-    setForm({
-      title: "",
-      description: "",
-      type: "INDIVIDUAL",
-      goalType: "LESSONS_COMPLETED",
-      goalCount: 10,
-      xpReward: 500,
-      startDate: new Date().toISOString().slice(0, 16),
-      endDate: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 16),
-    });
+    setForm(defaultForm());
     setModal({ open: true, editing: null });
   };
 
   const openEdit = (c: Challenge) => {
     setForm({
+      type: c.type,
       title: c.title,
       description: c.description,
-      type: c.type,
-      goalType: c.goalType,
-      goalCount: c.goalCount,
+      difficulty: c.difficulty,
+      objectiveType: c.objectiveType,
+      objectiveTarget: c.objectiveTarget,
       xpReward: c.xpReward,
-      startDate: new Date(c.startDate).toISOString().slice(0, 16),
-      endDate: new Date(c.endDate).toISOString().slice(0, 16),
+      startAt: new Date(c.startAt).toISOString().slice(0, 16),
+      endAt: new Date(c.endAt).toISOString().slice(0, 16),
+      domainId: c.domainId || "",
+      skillId: c.skillId || "",
     });
     setModal({ open: true, editing: c });
   };
@@ -88,14 +144,24 @@ export default function AdminChallengesPage() {
     }
     setSaving(true);
     try {
-      await fetchApi("/challenges", {
-        method: "POST",
-        body: JSON.stringify({
-          ...form,
-          startDate: new Date(form.startDate).toISOString(),
-          endDate: new Date(form.endDate).toISOString(),
-        }),
-      });
+      const body: Record<string, unknown> = {
+        type: form.type,
+        title: form.title,
+        description: form.description,
+        difficulty: form.difficulty,
+        objectiveType: form.objectiveType,
+        objectiveTarget: form.objectiveTarget,
+        xpReward: form.xpReward,
+        startAt: new Date(form.startAt).toISOString(),
+        endAt: new Date(form.endAt).toISOString(),
+        domainId: form.domainId || null,
+        skillId: form.skillId || null,
+      };
+      if (modal.editing) {
+        await fetchApi(`/admin/challenges/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
+      } else {
+        await fetchApi("/admin/challenges", { method: "POST", body: JSON.stringify(body) });
+      }
       toast.success(modal.editing ? "Challenge updated" : "Challenge created");
       setModal({ open: false, editing: null });
       load();
@@ -108,8 +174,8 @@ export default function AdminChallengesPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetchApi(`/challenges/${id}`, { method: "DELETE" });
-      toast.success("Challenge deleted");
+      await fetchApi(`/admin/challenges/${id}`, { method: "DELETE" });
+      toast.success("Challenge deactivated");
       setDeleteDialog({ open: false, item: null });
       load();
     } catch {
@@ -117,12 +183,8 @@ export default function AdminChallengesPage() {
     }
   };
 
-  const goalLabels: Record<string, string> = {
-    LESSONS_COMPLETED: "Lessons Completed",
-    FLAGS_CAPTURED: "Flags Captured",
-    XP_EARNED: "XP Earned",
-    STREAK_DAYS: "Streak Days",
-  };
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   if (loading) {
     return (
@@ -139,12 +201,35 @@ export default function AdminChallengesPage() {
           <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
             <ArrowLeft size={14} /> Admin
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Challenges</h1>
-          <p className="text-sm text-slate-500 mt-1">{challenges.length} challenges</p>
+          <h1 className="text-2xl font-bold text-slate-900">Mission Manager</h1>
+          <p className="text-sm text-slate-500 mt-1">{challenges.length} missions</p>
         </div>
         <button onClick={openCreate} className="btn-primary text-xs flex items-center gap-1.5">
-          <Plus size={14} /> Create Challenge
+          <Plus size={14} /> Create Mission
         </button>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+          className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+        >
+          <option value="">All Types</option>
+          {TYPE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        <div className="relative flex-1 max-w-xs">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search by title..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -152,53 +237,53 @@ export default function AdminChallengesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Challenge</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Type</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Goal</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Title</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Difficulty</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Objective</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">XP</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Participants</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Dates</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Start</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">End</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Status</th>
                 <th className="text-right px-4 py-3 text-xs font-medium text-slate-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {challenges.map((c) => {
-                const ended = new Date(c.endDate) < new Date();
+              {filtered.map((c) => {
+                const now = new Date();
+                const start = new Date(c.startAt);
+                const end = new Date(c.endAt);
+                const status = !c.isActive ? "Inactive" : now < start ? "Scheduled" : now > end ? "Ended" : "Active";
+                const statusColor =
+                  status === "Active" ? "text-[#229C62]" :
+                  status === "Scheduled" ? "text-blue-600" :
+                  status === "Ended" ? "text-slate-400" : "text-slate-400";
                 return (
                   <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                          <Target size={14} className="text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-900 truncate max-w-[200px]">{c.title}</p>
-                          <p className="text-[11px] text-slate-400 truncate max-w-[200px]">{c.description}</p>
-                        </div>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${TYPE_COLORS[c.type] || "bg-slate-100 text-slate-600"}`}>
+                        {c.type.replace(/_/g, " ")}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 truncate max-w-[200px]">{c.title}</p>
+                        <p className="text-[11px] text-slate-400 truncate max-w-[200px]">{c.description}</p>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${c.type === "TEAM" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
-                        {c.type}
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[c.difficulty] || "bg-slate-100 text-slate-600"}`}>
+                        {c.difficulty}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-600">
-                      {goalLabels[c.goalType] || c.goalType} ({c.goalCount})
+                      {c.objectiveType.replace(/_/g, " ")} ({c.objectiveTarget})
                     </td>
                     <td className="px-4 py-3 text-xs font-medium text-slate-900">{c.xpReward}</td>
+                    <td className="px-4 py-3 text-[11px] text-slate-500">{formatDate(c.startAt)}</td>
+                    <td className="px-4 py-3 text-[11px] text-slate-500">{formatDate(c.endAt)}</td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1 text-xs text-slate-600">
-                        <Users size={12} />
-                        {c._count.participants + c._count.teamParticipants}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-[11px] text-slate-500">
-                        <p>{new Date(c.startDate).toLocaleDateString()}</p>
-                        <p className={ended ? "text-slate-400" : "text-[#229C62]"}>
-                          {ended ? "Ended" : "Active"}
-                        </p>
-                      </div>
+                      <span className={`text-[11px] font-medium ${statusColor}`}>{status}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
@@ -216,49 +301,81 @@ export default function AdminChallengesPage() {
             </tbody>
           </table>
         </div>
-        {challenges.length === 0 && (
+        {filtered.length === 0 && (
           <div className="py-12 text-center">
             <Target size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No challenges yet</p>
+            <p className="text-sm text-slate-500">No missions found</p>
           </div>
         )}
       </div>
 
-      <AdminModal isOpen={modal.open} onClose={() => setModal({ open: false, editing: null })} title={modal.editing ? "Edit Challenge" : "Create Challenge"} size="lg"
+      <AdminModal
+        isOpen={modal.open}
+        onClose={() => setModal({ open: false, editing: null })}
+        title={modal.editing ? "Edit Mission" : "Create Mission"}
+        size="lg"
         footer={
           <div className="flex justify-end gap-2">
             <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
             <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
-              {modal.editing ? "Save Changes" : "Create Challenge"}
+              {modal.editing ? "Save Changes" : "Create Mission"}
             </button>
           </div>
         }
       >
         <div className="space-y-4">
-          <AdminInput label="Title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Weekly CTF Challenge" />
-          <AdminTextarea label="Description" required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the challenge..." rows={3} />
           <div className="grid grid-cols-2 gap-4">
-            <AdminSelect label="Type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} options={[{ value: "INDIVIDUAL", label: "Individual" }, { value: "TEAM", label: "Team" }]} />
-            <AdminSelect label="Goal Type" value={form.goalType} onChange={(e) => setForm({ ...form, goalType: e.target.value })} options={[
-              { value: "LESSONS_COMPLETED", label: "Lessons Completed" },
-              { value: "FLAGS_CAPTURED", label: "Flags Captured" },
-              { value: "XP_EARNED", label: "XP Earned" },
-              { value: "STREAK_DAYS", label: "Streak Days" },
-            ]} />
+            <AdminSelect
+              label="Type"
+              required
+              value={form.type}
+              onChange={(e) => setForm({ ...form, type: e.target.value })}
+              options={TYPE_OPTIONS}
+            />
+            <AdminSelect
+              label="Difficulty"
+              required
+              value={form.difficulty}
+              onChange={(e) => setForm({ ...form, difficulty: e.target.value })}
+              options={DIFFICULTY_OPTIONS}
+            />
+          </div>
+          <AdminInput label="Title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Daily Flag Hunt" />
+          <AdminTextarea label="Description" required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the mission..." rows={3} />
+          <div className="grid grid-cols-2 gap-4">
+            <AdminSelect
+              label="Objective Type"
+              required
+              value={form.objectiveType}
+              onChange={(e) => setForm({ ...form, objectiveType: e.target.value })}
+              options={OBJECTIVE_OPTIONS}
+            />
+            <AdminNumber label="Objective Target" required value={form.objectiveTarget} onChange={(e) => setForm({ ...form, objectiveTarget: parseInt(e.target.value) || 0 })} min={1} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <AdminNumber label="Goal Count" required value={form.goalCount} onChange={(e) => setForm({ ...form, goalCount: parseInt(e.target.value) || 0 })} min={1} />
             <AdminNumber label="XP Reward" required value={form.xpReward} onChange={(e) => setForm({ ...form, xpReward: parseInt(e.target.value) || 0 })} min={0} />
+            <div />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <AdminDatePicker label="Start Date" required value={form.startDate} onChange={(v) => setForm({ ...form, startDate: v })} />
-            <AdminDatePicker label="End Date" required value={form.endDate} onChange={(v) => setForm({ ...form, endDate: v })} />
+            <AdminDatePicker label="Start At" required value={form.startAt} onChange={(v) => setForm({ ...form, startAt: v })} />
+            <AdminDatePicker label="End At" required value={form.endAt} onChange={(v) => setForm({ ...form, endAt: v })} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <AdminInput label="Domain ID" value={form.domainId} onChange={(e) => setForm({ ...form, domainId: e.target.value })} placeholder="Optional" />
+            <AdminInput label="Skill ID" value={form.skillId} onChange={(e) => setForm({ ...form, skillId: e.target.value })} placeholder="Optional" />
           </div>
         </div>
       </AdminModal>
 
-      <AdminConfirmDialog isOpen={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, item: null })} onConfirm={() => deleteDialog.item && handleDelete(deleteDialog.item.id)} title="Delete Challenge" message={`Are you sure you want to delete "${deleteDialog.item?.title}"? This cannot be undone.`} confirmLabel="Delete" />
+      <AdminConfirmDialog
+        isOpen={deleteDialog.open}
+        onClose={() => setDeleteDialog({ open: false, item: null })}
+        onConfirm={() => deleteDialog.item && handleDelete(deleteDialog.item.id)}
+        title="Deactivate Mission"
+        message={`Are you sure you want to deactivate "${deleteDialog.item?.title}"? It will no longer be active for users.`}
+        confirmLabel="Deactivate"
+      />
     </div>
   );
 }

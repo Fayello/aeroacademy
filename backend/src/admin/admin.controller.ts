@@ -2,8 +2,11 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
+  Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   Request,
   ParseUUIDPipe,
@@ -14,8 +17,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
-import { IsString, MaxLength, IsOptional } from 'class-validator';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { IsString, MaxLength, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import type { RequestWithUser } from '../common/request-with-user';
 
@@ -28,6 +31,94 @@ class CreateTeamDto {
   @IsOptional()
   @MaxLength(500)
   description?: string;
+}
+
+class CreateChallengeDto {
+  @IsString()
+  type: string;
+
+  @IsString()
+  @MaxLength(200)
+  title: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  difficulty: string;
+
+  @IsString()
+  objectiveType: string;
+
+  @IsNumber()
+  objectiveTarget: number;
+
+  @IsNumber()
+  xpReward: number;
+
+  @IsDateString()
+  startAt: string;
+
+  @IsDateString()
+  endAt: string;
+
+  @IsString()
+  @IsOptional()
+  domainId?: string;
+
+  @IsString()
+  @IsOptional()
+  skillId?: string;
+}
+
+class UpdateChallengeDto {
+  @IsString()
+  @IsOptional()
+  type?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  difficulty?: string;
+
+  @IsString()
+  @IsOptional()
+  objectiveType?: string;
+
+  @IsNumber()
+  @IsOptional()
+  objectiveTarget?: number;
+
+  @IsNumber()
+  @IsOptional()
+  xpReward?: number;
+
+  @IsDateString()
+  @IsOptional()
+  startAt?: string;
+
+  @IsDateString()
+  @IsOptional()
+  endAt?: string;
+
+  @IsOptional()
+  isActive?: boolean;
+
+  @IsString()
+  @IsOptional()
+  domainId?: string;
+
+  @IsString()
+  @IsOptional()
+  skillId?: string;
 }
 
 @ApiTags('admin')
@@ -87,6 +178,34 @@ export class AdminController {
     @Body('labId', ParseUUIDPipe) labId: string,
   ) {
     return this.adminService.bulkTerminateLab(teamId, labId);
+  }
+
+  @Post('challenges')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Audit('CHALLENGE_CREATED')
+  async createChallenge(@Body() dto: CreateChallengeDto) {
+    return this.adminService.createChallenge(dto);
+  }
+
+  @Get('challenges')
+  @ApiQuery({ name: 'type', required: false, type: String })
+  async getAllChallenges(@Query('type') type?: string) {
+    return this.adminService.getAllChallenges(type);
+  }
+
+  @Patch('challenges/:id')
+  @Audit('CHALLENGE_UPDATED')
+  async updateChallenge(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateChallengeDto,
+  ) {
+    return this.adminService.updateChallenge(id, dto);
+  }
+
+  @Delete('challenges/:id')
+  @Audit('CHALLENGE_DELETED')
+  async deleteChallenge(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.deleteChallenge(id);
   }
 
   @Get('analytics/overview')

@@ -14,6 +14,7 @@ model User {
   googleId                 String?                   @unique
   role                     Role                      @default(STUDENT)
   emailVerified            DateTime?
+  verificationToken        String?                   @unique
   createdAt                DateTime                  @default(now())
   username                 String?                   @unique
   avatarUrl                String?
@@ -34,6 +35,8 @@ model User {
   lastEmailSentAt          DateTime?
   emailPreferences         Json                      @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true,\"streaks\":true,\"labCompletions\":true}")
   timezone                 String?                   @default("UTC")
+  referralCode             String?                   @unique
+  referredBy               String?
   teamId                   String?
   team                     Team?                     @relation(fields: [teamId], references: [id])
   ownedTeams               Team[]                    @relation("TeamOwner")

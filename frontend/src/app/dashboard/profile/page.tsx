@@ -24,6 +24,7 @@ interface Badge {
   category: string;
   tier: string;
   xpReward: number;
+  _count?: { users: number };
 }
 
 interface UserBadge {

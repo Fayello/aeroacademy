@@ -12,6 +12,9 @@ const logger = createLogger('Auth');
 
 const REFRESH_TOKEN_DAYS = 7;
 const RESET_TOKEN_EXPIRY_MINUTES = 30;
+const REFERRAL_XP_REWARD = 500;
+const REFERRAL_CODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const REFERRAL_CODE_LENGTH = 8;
 
 interface LoginUser {
   id: string;
@@ -29,6 +32,93 @@ export class AuthService {
     private emailService: EmailService,
     private otpService: OtpService,
   ) {}
+
+  private generateReferralCode(): string {
+    let code = '';
+    for (let i = 0; i < REFERRAL_CODE_LENGTH; i++) {
+      code += REFERRAL_CODE_CHARS.charAt(
+        Math.floor(Math.random() * REFERRAL_CODE_CHARS.length),
+      );
+    }
+    return code;
+  }
+
+  private async ensureUniqueReferralCode(): Promise<string> {
+    let code = this.generateReferralCode();
+    let attempts = 0;
+    while (attempts < 10) {
+      const existing = await this.prisma.user.findUnique({
+        where: { referralCode: code },
+      });
+      if (!existing) return code;
+      code = this.generateReferralCode();
+      attempts++;
+    }
+    return code;
+  }
+
+  async applyReferral(userId: string, code: string) {
+    const referrer = await this.prisma.user.findUnique({
+      where: { referralCode: code },
+    });
+    if (!referrer) {
+      throw new BadRequestException('Invalid referral code');
+    }
+    if (referrer.id === userId) {
+      throw new BadRequestException('Cannot refer yourself');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException('User not found');
+    if (user.referredBy) {
+      throw new BadRequestException('Already used a referral code');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: { referredBy: code },
+      });
+      await tx.user.update({
+        where: { id: referrer.id },
+        data: { xp: { increment: REFERRAL_XP_REWARD } },
+      });
+      await tx.user.update({
+        where: { id: userId },
+        data: { xp: { increment: REFERRAL_XP_REWARD } },
+      });
+    });
+
+    return { message: 'Referral applied successfully', xpAwarded: REFERRAL_XP_REWARD };
+  }
+
+  async getReferrals(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { referralCode: true, referredBy: true },
+    });
+    if (!user) throw new BadRequestException('User not found');
+
+    const referrals = await this.prisma.user.findMany({
+      where: { referredBy: user.referralCode || '__none__' },
+      select: { id: true, name: true, email: true, createdAt: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const referralCount = referrals.length;
+    const referralXpEarned = referralCount * REFERRAL_XP_REWARD;
+
+    return {
+      referralCode: user.referralCode,
+      referralCount,
+      referralXpEarned,
+      referrals: referrals.map((r) => ({
+        id: r.id,
+        name: r.name || r.email.split('@')[0],
+        joinDate: r.createdAt,
+      })),
+    };
+  }
 
   private async generateRefreshToken(userId: string): Promise<string> {
     const token = crypto.randomBytes(40).toString('hex');
@@ -89,12 +179,16 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const referralCode = await this.ensureUniqueReferralCode();
     const user = await this.prisma.user.create({
       data: {
         email,
         passwordHash,
         name: name || null,
         timezone: timezone || 'UTC',
+        verificationToken,
+        referralCode,
       },
     });
 
@@ -102,6 +196,7 @@ export class AuthService {
     if (code) {
       this.emailService.sendOtpVerification(email, name || null, code).catch(() => {});
     }
+    this.emailService.sendVerificationEmail(email, name || null, verificationToken).catch(() => {});
 
     return {
       message: 'Account created. Please check your email for a verification code.',
@@ -122,6 +217,28 @@ export class AuthService {
 
     this.emailService.sendWelcome(email, user.name).catch(() => {});
     this.emailService.sendWelcomeDay1(email, user.name).catch(() => {});
+
+    return this.login(user);
+  }
+
+  async verifyEmailByToken(token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { verificationToken: token },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid or expired verification link');
+    }
+    if (user.emailVerified) {
+      return this.login(user);
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerified: new Date(), verificationToken: null },
+    });
+
+    this.emailService.sendWelcome(user.email, user.name).catch(() => {});
+    this.emailService.sendWelcomeDay1(user.email, user.name).catch(() => {});
 
     return this.login(user);
   }
@@ -194,10 +311,21 @@ export class AuthService {
       },
     });
     if (!user) throw new UnauthorizedException('User not found');
+
+    const userBadges = await this.prisma.userBadge.findMany({
+      where: { userId },
+      include: {
+        badge: {
+          include: { _count: { select: { users: true } } },
+        },
+      },
+      orderBy: { earnedAt: 'desc' },
+    });
+
     const level = Math.floor(user.xp / 1000) + 1;
     const clearance =
       level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1';
-    return { ...user, level, clearance };
+    return { ...user, level, clearance, badges: userBadges };
   }
 
   async getPublicProfile(userId: string) {
@@ -230,8 +358,19 @@ export class AuthService {
       },
     });
     if (!user) throw new UnauthorizedException('User not found');
+
+    const userBadges = await this.prisma.userBadge.findMany({
+      where: { userId },
+      include: {
+        badge: {
+          include: { _count: { select: { users: true } } },
+        },
+      },
+      orderBy: { earnedAt: 'desc' },
+    });
+
     const level = Math.floor(user.xp / 1000) + 1;
-    return { ...user, level };
+    return { ...user, level, badges: userBadges };
   }
 
   async updateEmailPreferences(userId: string, preferences: Record<string, boolean>) {
@@ -279,11 +418,13 @@ export class AuthService {
       }
     } else {
       isNewUser = true;
+      const referralCode = await this.ensureUniqueReferralCode();
       user = await this.prisma.user.create({
         data: {
           email: profile.email,
           googleId: profile.googleId,
           name: profile.name,
+          referralCode,
         },
       });
     }
