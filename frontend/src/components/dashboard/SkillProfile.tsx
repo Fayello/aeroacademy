@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { fetchApi } from '@/lib/api';
 import { Layers, Star, Loader2, Lock } from 'lucide-react';
 
 interface SkillItem {
@@ -45,14 +46,7 @@ export default function SkillProfile({ userId }: { userId?: string }) {
 
   async function fetchSkills() {
     try {
-      const url = userId
-        ? `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000'}/challenges/skills`
-        : `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000'}/challenges/skills`;
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      if (!res.ok) throw new Error('Failed');
-      const data = await res.json();
+      const data = await fetchApi<any>('/challenges/skills');
       setUnlocked(data.unlocked !== false);
       setSkills(data.skills || []);
     } catch {

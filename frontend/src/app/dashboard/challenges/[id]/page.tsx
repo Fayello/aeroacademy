@@ -17,7 +17,6 @@ import {
   Crown,
   Medal,
   Award,
-  Zap,
   CheckCircle2,
 } from "lucide-react";
 
@@ -26,45 +25,46 @@ interface ChallengeDetail {
   title: string;
   description: string;
   type: string;
-  goalType: string;
-  goalCount: number;
+  objectiveType: string;
+  objectiveTarget: number;
   xpReward: number;
-  startDate: string;
-  endDate: string;
+  startAt: string;
+  endAt: string;
   isActive: boolean;
-  participants: Array<{
+  difficulty: string;
+  domain: { id: string; name: string } | null;
+  skill: { id: string; name: string } | null;
+  userChallenges: Array<{
     id: string;
     progress: number;
     completed: boolean;
-    user: { id: string; name: string; email: string; xp: number };
-  }>;
-  teamParticipants: Array<{
-    id: string;
-    progress: number;
-    completed: boolean;
-    team: { id: string; name: string };
+    user: { id: string; name: string; xp: number };
   }>;
 }
 
 interface LeaderboardEntry {
   progress: number;
   completed: boolean;
-  user?: { id: string; name: string; email: string; xp: number };
-  team?: { id: string; name: string };
+  user?: { id: string; name: string; xp: number };
 }
 
-const goalIcons: Record<string, typeof Trophy> = {
-  LESSONS_COMPLETED: BookOpen,
-  FLAGS_CAPTURED: Flag,
-  XP_EARNED: Zap,
-  STREAK_DAYS: Flame,
+const objectiveIcons: Record<string, typeof Trophy> = {
+  FLAG_COMPLETIONS: Flag,
+  LAB_COMPLETIONS: Target,
+  LESSON_COMPLETIONS: BookOpen,
 };
 
-const goalLabels: Record<string, string> = {
-  LESSONS_COMPLETED: "lessons completed",
-  FLAGS_CAPTURED: "flags captured",
-  XP_EARNED: "XP earned",
-  STREAK_DAYS: "day streak",
+const objectiveLabels: Record<string, string> = {
+  FLAG_COMPLETIONS: "flags completed",
+  LAB_COMPLETIONS: "labs completed",
+  LESSON_COMPLETIONS: "lessons completed",
+};
+
+const difficultyColors: Record<string, string> = {
+  EASY: "bg-green-100 text-green-700",
+  MEDIUM: "bg-yellow-100 text-yellow-700",
+  HARD: "bg-red-100 text-red-700",
+  BOSS: "bg-purple-100 text-purple-700",
 };
 
 export default function ChallengeDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -72,7 +72,6 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
   const [challenge, setChallenge] = useState<ChallengeDetail | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -91,30 +90,6 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
     }
     load();
   }, [id]);
-
-  const handleJoin = async () => {
-    setJoining(true);
-    try {
-      await fetchApi(`/challenges/${id}/join`, { method: "POST" });
-      toast.success("Joined challenge!");
-      setChallenge((prev) =>
-        prev
-          ? {
-              ...prev,
-              participants: [
-                ...prev.participants,
-                { id: "me", progress: 0, completed: false, user: { id: "me", name: "You", email: "", xp: 0 } },
-              ],
-            }
-          : prev
-      );
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to join";
-      toast.error(msg);
-    } finally {
-      setJoining(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -136,13 +111,11 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
     );
   }
 
-  const GoalIcon = goalIcons[challenge.goalType] || Target;
+  const ObjectiveIcon = objectiveIcons[challenge.objectiveType] || Target;
   const daysLeft = Math.max(
     0,
-    Math.ceil((new Date(challenge.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    Math.ceil((new Date(challenge.endAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
   );
-  const isParticipant = challenge.participants.some((p) => p.user.id === "me" || p.id === "me");
-  const totalParticipants = challenge.participants.length + challenge.teamParticipants.length;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -158,7 +131,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2.5 rounded-lg">
-                <GoalIcon size={24} />
+                <ObjectiveIcon size={24} />
               </div>
               <div>
                 <h1 className="text-xl font-bold">{challenge.title}</h1>
@@ -166,6 +139,11 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                   <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
                     {challenge.type === "TEAM" ? "Team" : "Individual"}
                   </span>
+                  {challenge.difficulty && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${difficultyColors[challenge.difficulty] || "bg-slate-100 text-slate-600"}`}>
+                      {challenge.difficulty}
+                    </span>
+                  )}
                   {daysLeft > 0 ? (
                     <span className="text-xs flex items-center gap-1">
                       <Clock size={12} /> {daysLeft} days left
@@ -191,42 +169,40 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
             <p className="text-sm text-slate-600 leading-relaxed">{challenge.description}</p>
           </div>
 
+          {(challenge.domain || challenge.skill) && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {challenge.domain && (
+                <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                  {challenge.domain.name}
+                </span>
+              )}
+              {challenge.skill && (
+                <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
+                  {challenge.skill.name}
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-3 bg-slate-50 rounded-lg">
               <Target size={18} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{challenge.goalCount}</p>
-              <p className="text-[11px] text-slate-500">{goalLabels[challenge.goalType]}</p>
+              <p className="text-lg font-bold text-slate-900">{challenge.objectiveTarget}</p>
+              <p className="text-[11px] text-slate-500">{objectiveLabels[challenge.objectiveType]}</p>
             </div>
             <div className="text-center p-3 bg-slate-50 rounded-lg">
               <Users size={18} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{totalParticipants}</p>
+              <p className="text-lg font-bold text-slate-900">{challenge.userChallenges.length}</p>
               <p className="text-[11px] text-slate-500">Participants</p>
             </div>
             <div className="text-center p-3 bg-slate-50 rounded-lg">
               <Trophy size={18} className="text-blue-500 mx-auto mb-1" />
               <p className="text-lg font-bold text-slate-900">
-                {challenge.participants.filter((p) => p.completed).length + challenge.teamParticipants.filter((p) => p.completed).length}
+                {challenge.userChallenges.filter((uc) => uc.completed).length}
               </p>
               <p className="text-[11px] text-slate-500">Completed</p>
             </div>
           </div>
-
-          {!isParticipant && challenge.isActive && daysLeft > 0 && (
-            <button
-              onClick={handleJoin}
-              disabled={joining}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
-            >
-              {joining ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
-              {joining ? "Joining..." : "Join Challenge"}
-            </button>
-          )}
-          {isParticipant && (
-            <div className="flex items-center gap-2 text-[#229C62] text-sm bg-[#E9F8EE] p-3 rounded-lg">
-              <CheckCircle2 size={16} />
-              <span className="font-medium">You&apos;re participating in this challenge</span>
-            </div>
-          )}
         </div>
       </div>
 
@@ -244,8 +220,8 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
         ) : (
           <div className="divide-y divide-slate-100">
             {leaderboard.map((entry, i) => {
-              const name = entry.user?.name || entry.team?.name || "Unknown";
-              const pct = Math.min(100, Math.round((entry.progress / challenge.goalCount) * 100));
+              const name = entry.user?.name || "Unknown";
+              const pct = Math.min(100, Math.round((entry.progress / challenge.objectiveTarget) * 100));
               const rankIcon =
                 i === 0 ? (
                   <Crown size={16} className="text-yellow-500" />
@@ -272,7 +248,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                         />
                       </div>
                       <span className="text-[10px] text-slate-500 whitespace-nowrap">
-                        {entry.progress}/{challenge.goalCount}
+                        {entry.progress}/{challenge.objectiveTarget}
                       </span>
                     </div>
                   </div>

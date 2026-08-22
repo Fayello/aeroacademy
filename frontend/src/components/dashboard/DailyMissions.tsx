@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { fetchApi } from '@/lib/api';
 import { Target, Flame, Swords, Trophy, Loader2, CheckCircle2, Lock, ChevronRight } from 'lucide-react';
 
 interface Mission {
@@ -55,14 +56,10 @@ export default function DailyMissions() {
 
   async function fetchMissions() {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000'}/challenges/missions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
+      const data = await fetchApi<any[]>('/challenges/missions');
       setMissions(data);
     } catch (e: any) {
-      if (e.message?.includes('unlock')) {
+      if (e.message?.includes('unlock') || e.message?.includes('Level')) {
         setError(e.message);
       }
     } finally {
@@ -73,14 +70,7 @@ export default function DailyMissions() {
   async function claimReward(missionId: string) {
     setClaimingId(missionId);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000'}/challenges/missions/${missionId}/claim`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.message || 'Failed to claim');
-      }
+      await fetchApi(`/challenges/missions/${missionId}/claim`, { method: 'POST' });
       await fetchMissions();
     } catch (e) {
       console.error('Claim failed:', e);
