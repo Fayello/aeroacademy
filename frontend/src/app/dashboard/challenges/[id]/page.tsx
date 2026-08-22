@@ -128,14 +128,14 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
 
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-2.5 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="bg-white/20 p-2.5 rounded-lg shrink-0">
                 <ObjectiveIcon size={24} />
               </div>
-              <div>
-                <h1 className="text-xl font-bold">{challenge.title}</h1>
-                <div className="flex items-center gap-3 mt-1">
+              <div className="min-w-0">
+                <h1 className="text-xl font-bold truncate">{challenge.title}</h1>
+                <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
                   <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
                     {challenge.type === "TEAM" ? "Team" : "Individual"}
                   </span>
@@ -155,7 +155,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
               </div>
             </div>
             {challenge.xpReward > 0 && (
-              <div className="text-right">
+              <div className="text-right shrink-0">
                 <span className="text-2xl font-bold">+{challenge.xpReward}</span>
                 <p className="text-xs text-blue-200">XP Reward</p>
               </div>
@@ -184,7 +184,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="text-center p-3 bg-slate-50 rounded-lg">
               <Target size={18} className="text-blue-500 mx-auto mb-1" />
               <p className="text-lg font-bold text-slate-900">{challenge.objectiveTarget}</p>

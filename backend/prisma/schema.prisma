@@ -742,7 +742,7 @@ model LabSkill {
 
 model Challenge {
   id              String   @id @default(uuid())
-  type            String   // DAILY_WARMUP, DAILY_SKILL, DAILY_BOSS, WEEKLY, MONTHLY
+  type            String   // DAILY_WARMUP, DAILY_SKILL, DAILY_BOSS, WEEKLY, MONTHLY, TEAM_WEEKLY
   domainId        String?
   skillId         String?
   title           String

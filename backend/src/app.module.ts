@@ -31,6 +31,7 @@ import { VerifyModule } from './verify/verify.module';
 import { DiscussionsModule } from './discussions/discussions.module';
 import { TeamEnrollmentsModule } from './team-enrollments/team-enrollments.module';
 import { CourseAdminModule } from './course-admin/course-admin.module';
+import { CertificationsModule } from './certifications/certifications.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { CourseAdminModule } from './course-admin/course-admin.module';
     DiscussionsModule,
     TeamEnrollmentsModule,
     CourseAdminModule,
+    CertificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

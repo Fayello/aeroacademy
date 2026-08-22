@@ -26,7 +26,7 @@ export default function StatsGrid({ xp, rank, division, clearance, loading }: St
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map(({ key, label, icon: Icon, color }) => (
         <div key={key} className="card p-4">
           <div className="flex items-center justify-between mb-3">

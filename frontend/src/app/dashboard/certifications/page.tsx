@@ -1,11 +1,37 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Award, Download, Shield, CheckCircle, Lock, Trophy, Loader2, BookOpen, ExternalLink, Share2 } from "lucide-react";
+import {
+  Award,
+  Download,
+  Shield,
+  CheckCircle,
+  Lock,
+  Trophy,
+  Loader2,
+  BookOpen,
+  ExternalLink,
+  Share2,
+  Server,
+  Network,
+  Cloud,
+  Database,
+  ShieldCheck,
+  Bug,
+  Wrench,
+} from "lucide-react";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import PageHeader from "@/components/ui/PageHeader";
+
+interface DomainCertification {
+  domain: string;
+  domainDisplayName: string;
+  labCount: number;
+  totalLabs: number;
+  completedAt: string;
+}
 
 interface CourseCertificate {
   courseId: string;
@@ -29,21 +55,121 @@ const DIVISION_CERTS = [
   { id: "MASTER", title: "Master Cyber Operative", requirement: "5,000 XP", color: "text-amber-500 bg-amber-100", xp: 5000 },
 ];
 
+const domainIcons: Record<string, typeof Server> = {
+  SYSTEMS: Server,
+  NETWORKING: Network,
+  DEVOPS: Cloud,
+  DATABASES: Database,
+  SECURITY: ShieldCheck,
+  QA: Bug,
+};
+
+const domainColors: Record<string, string> = {
+  SYSTEMS: "from-blue-500 to-blue-600",
+  NETWORKING: "from-cyan-500 to-cyan-600",
+  DEVOPS: "from-orange-500 to-orange-600",
+  DATABASES: "from-purple-500 to-purple-600",
+  SECURITY: "from-[#229C62] to-[#1a7a4d]",
+  QA: "from-rose-500 to-rose-600",
+};
+
+function openPrintableCert(cert: DomainCertification, userName: string) {
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
+
+  const dateStr = new Date(cert.completedAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const certId = `XC-${cert.domain}-${Date.now().toString(36).toUpperCase()}`;
+
+  printWindow.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate - ${cert.domainDisplayName}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  .cert { width: 900px; height: 636px; background: white; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; overflow: hidden; }
+  .cert-border { position: absolute; inset: 8px; border: 2px solid #0F203A; border-radius: 8px; }
+  .cert-inner-border { position: absolute; inset: 14px; border: 1px solid #229C62; border-radius: 6px; }
+  .cert-header { text-align: center; padding-top: 60px; }
+  .cert-logo { font-size: 32px; font-weight: 700; color: #0F203A; letter-spacing: -0.5px; }
+  .cert-logo span { color: #229C62; }
+  .cert-subtitle { font-size: 11px; letter-spacing: 3px; color: #94a3b8; text-transform: uppercase; margin-top: 4px; }
+  .cert-title { font-size: 28px; font-weight: 700; color: #0F203A; margin-top: 36px; text-transform: uppercase; letter-spacing: 2px; }
+  .cert-divider { width: 200px; height: 2px; background: linear-gradient(90deg, transparent, #229C62, transparent); margin: 20px auto; }
+  .cert-body { text-align: center; padding: 0 80px; }
+  .cert-label { font-size: 13px; color: #94a3b8; margin-bottom: 8px; }
+  .cert-name { font-size: 26px; font-weight: 600; color: #0F203A; margin-bottom: 16px; }
+  .cert-domain { font-size: 20px; font-weight: 600; color: #229C62; }
+  .cert-meta { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+  .cert-footer { position: absolute; bottom: 40px; left: 0; right: 0; text-align: center; }
+  .cert-footer-line { width: 200px; height: 1px; background: linear-gradient(90deg, transparent, #e2e8f0, transparent); margin: 0 auto 12px; }
+  .cert-id { font-size: 10px; color: #cbd5e1; letter-spacing: 1px; }
+  .cert-brand { font-size: 10px; color: #cbd5e1; margin-top: 4px; }
+  .btn-print { position: fixed; bottom: 30px; right: 30px; background: #0F203A; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-print:hover { background: #1a3050; }
+  @media print { .btn-print { display: none; } body { background: white; } .cert { box-shadow: none; } }
+</style>
+</head>
+<body>
+  <div class="cert">
+    <div class="cert-border"></div>
+    <div class="cert-inner-border"></div>
+    <div class="cert-header">
+      <div class="cert-logo">Xpert<span>Class</span></div>
+      <div class="cert-subtitle">Academy</div>
+    </div>
+    <div class="cert-body">
+      <div class="cert-title">Certificate of Completion</div>
+      <div class="cert-divider"></div>
+      <div class="cert-label">This certifies that</div>
+      <div class="cert-name">${userName}</div>
+      <div class="cert-label">has successfully completed all labs in</div>
+      <div class="cert-domain">${cert.domainDisplayName}</div>
+      <div class="cert-meta">${cert.labCount} lab${cert.labCount !== 1 ? "s" : ""} completed &middot; ${dateStr}</div>
+    </div>
+    <div class="cert-footer">
+      <div class="cert-footer-line"></div>
+      <div class="cert-id">Credential ID: ${certId}</div>
+      <div class="cert-brand">XpertClass Academy &mdash; Cybersecurity Training Platform</div>
+    </div>
+  </div>
+  <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+</body>
+</html>`);
+  printWindow.document.close();
+}
+
 export default function CertificationsPage() {
+  const [domainCerts, setDomainCerts] = useState<DomainCertification[]>([]);
   const [courseCerts, setCourseCerts] = useState<CourseCertificate[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
   const [userXP, setUserXP] = useState(0);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         setUserXP(user.xp || 0);
+        setUserName(user.name || user.email || "Student");
 
-        const courses = await fetchApi<Array<{ id: string; title: string }>>("/courses");
+        const [domains, courses] = await Promise.all([
+          fetchApi<DomainCertification[]>("/certifications").catch(() => []),
+          fetchApi<Array<{ id: string; title: string }>>("/courses").catch(() => []),
+        ]);
+
+        setDomainCerts(domains);
+
         const certs: CourseCertificate[] = [];
-
         for (const course of courses.slice(0, 10)) {
           try {
             const cert = await fetchApi<CourseCertificate>("/courses/" + course.id + "/certificate");
@@ -52,7 +178,6 @@ export default function CertificationsPage() {
             certs.push({ courseId: course.id, courseName: course.title, eligible: false, completed: 0, total: 0 });
           }
         }
-
         setCourseCerts(certs);
       } catch {
         // silent
@@ -156,18 +281,78 @@ export default function CertificationsPage() {
     );
   }
 
-  const completedCerts = courseCerts.filter((c) => c.eligible);
+  const completedCourseCerts = courseCerts.filter((c) => c.eligible);
   const inProgressCourses = courseCerts.filter((c) => !c.eligible && c.total > 0 && c.completed > 0);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <PageHeader title="Certifications" description="Earn credentials as you complete training milestones." />
 
-      {completedCerts.length > 0 && (
+      {/* Domain Certifications */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Shield size={16} className="text-[#0F203A]" />
+          <h2 className="text-sm font-semibold text-slate-900">Domain Certifications</h2>
+        </div>
+        {domainCerts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {domainCerts.map((cert) => {
+              const Icon = domainIcons[cert.domain] || Award;
+              const gradient = domainColors[cert.domain] || "from-slate-500 to-slate-600";
+              const dateStr = new Date(cert.completedAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              });
+              return (
+                <div
+                  key={cert.domain}
+                  className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-all group"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+                      <Icon size={22} className="text-white" />
+                    </div>
+                    <CheckCircle size={18} className="text-[#229C62]" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-slate-900">{cert.domainDisplayName}</h3>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    {cert.labCount}/{cert.totalLabs} labs completed
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-1">Completed {dateStr}</p>
+                  <button
+                    onClick={() => openPrintableCert(cert, userName)}
+                    className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#0F203A] text-white text-xs font-medium hover:bg-[#1a3050] transition-colors"
+                  >
+                    <Download size={14} /> Download Certificate
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
+            <Award size={36} className="text-slate-300 mx-auto mb-3" />
+            <h3 className="text-sm font-semibold text-slate-900 mb-1">No Domain Certifications Yet</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Complete all labs in a domain to earn a certification.
+            </p>
+            <Link
+              href="/dashboard/labs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#229C62] text-white text-xs font-medium hover:bg-[#1a7a4d] transition-colors"
+            >
+              <BookOpen size={14} /> Browse Labs
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Course Certificates */}
+      {completedCourseCerts.length > 0 && (
         <div>
           <h2 className="text-sm font-semibold text-slate-900 mb-3">Course Certificates</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {completedCerts.map((cert) => (
+            {completedCourseCerts.map((cert) => (
               <div key={cert.courseId} className="bg-white rounded-xl border border-slate-200 p-5 flex items-start justify-between">
                 <div className="space-y-3">
                   <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
@@ -215,6 +400,7 @@ export default function CertificationsPage() {
         </div>
       )}
 
+      {/* In Progress Courses */}
       {inProgressCourses.length > 0 && (
         <div>
           <h2 className="text-sm font-semibold text-slate-900 mb-3">In Progress</h2>
@@ -249,6 +435,7 @@ export default function CertificationsPage() {
         </div>
       )}
 
+      {/* Rank Certifications */}
       <div>
         <h2 className="text-sm font-semibold text-slate-900 mb-3">Rank Certifications</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -283,20 +470,6 @@ export default function CertificationsPage() {
           })}
         </div>
       </div>
-
-      {completedCerts.length === 0 && inProgressCourses.length === 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <Award size={40} className="text-slate-300 mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-slate-900 mb-1">No Certificates Yet</h2>
-          <p className="text-sm text-slate-500 mb-4">Complete courses to earn certificates.</p>
-          <Link
-            href="/dashboard/courses"
-            className="btn-primary text-xs inline-flex items-center gap-1.5"
-          >
-            <BookOpen size={14} /> Browse Courses
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

@@ -23,19 +23,29 @@ export class MissionService implements OnModuleInit {
     await this.generateWeeklyMissions().catch((err) =>
       this.logger.error('Failed to generate weekly missions on startup', err),
     );
+    await this.generateTeamWeeklyMissions().catch((err) =>
+      this.logger.error('Failed to generate team weekly missions on startup', err),
+    );
     await this.generateMonthlyMissions().catch((err) =>
       this.logger.error('Failed to generate monthly missions on startup', err),
+    );
+    await this.generateSeasonalEvent().catch((err) =>
+      this.logger.error('Failed to generate seasonal event on startup', err),
     );
   }
 
   async getDailyMissions(userId: string) {
     const now = new Date();
 
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } });
+    const userLevel = Math.floor((user?.xp ?? 0) / 1000) + 1;
+
     const challenges = await this.prisma.challenge.findMany({
       where: {
         isActive: true,
         startAt: { lte: now },
         endAt: { gte: now },
+        ...(userLevel < 25 ? { type: { not: 'SEASONAL' } } : {}),
       },
     });
 
@@ -58,9 +68,11 @@ export class MissionService implements OnModuleInit {
         DAILY_BOSS: 'boss',
         WEEKLY: 'weekly',
         MONTHLY: 'monthly',
+        SEASONAL: 'seasonal',
+        TEAM_WEEKLY: 'team_weekly',
       };
 
-      missions.push({
+      const missionData: any = {
         id: challenge.id,
         type: tierMap[challenge.type] ?? challenge.type,
         title: challenge.title,
@@ -76,7 +88,51 @@ export class MissionService implements OnModuleInit {
         completed: userChallenge.completed,
         claimedAt: userChallenge.claimedAt,
         endAt: challenge.endAt,
-      });
+      };
+
+      if (challenge.type === 'TEAM_WEEKLY') {
+        const userWithTeam = await this.prisma.user.findUnique({
+          where: { id: userId },
+          select: { teamId: true },
+        });
+
+        if (userWithTeam?.teamId) {
+          const teamMemberIds = (
+            await this.prisma.user.findMany({
+              where: { teamId: userWithTeam.teamId },
+              select: { id: true },
+            })
+          ).map((u) => u.id);
+
+          const teamUserChallenges = await this.prisma.userChallenge.findMany({
+            where: {
+              challengeId: challenge.id,
+              userId: { in: teamMemberIds },
+            },
+            include: {
+              user: { select: { id: true, name: true, username: true, xp: true } },
+            },
+          });
+
+          const teamProgress = teamUserChallenges.reduce((sum, uc) => sum + uc.progress, 0);
+          const topContributors = teamUserChallenges
+            .sort((a, b) => b.progress - a.progress)
+            .slice(0, 3)
+            .map((uc) => ({
+              userId: uc.user.id,
+              name: uc.user.name ?? uc.user.username ?? 'Unknown',
+              progress: uc.progress,
+              xp: uc.user.xp,
+            }));
+
+          missionData.teamProgress = teamProgress;
+          missionData.teamTarget = challenge.objectiveTarget;
+          missionData.topContributors = topContributors;
+          missionData.progress = teamProgress;
+        }
+      }
+
+      missions.push(missionData);
     }
 
     return missions;
@@ -390,6 +446,59 @@ export class MissionService implements OnModuleInit {
     return created;
   }
 
+  @Cron('0 0 * * 1')
+  async generateTeamWeeklyMissions() {
+    this.logger.log('Running team weekly mission generation cron...');
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const existing = await this.prisma.challenge.findFirst({
+      where: { type: 'TEAM_WEEKLY', isActive: true, startAt: { lte: now }, endAt: { gte: now } },
+    });
+
+    if (existing) {
+      this.logger.log('Team weekly missions already exist, skipping');
+      return;
+    }
+
+    const teams = await this.prisma.team.findMany();
+    if (teams.length === 0) {
+      this.logger.log('No teams found, skipping team weekly mission generation');
+      return;
+    }
+
+    const allSkills = await this.prisma.skill.findMany({ include: { domain: true } });
+    const pick = <T>(arr: T[]): T | undefined =>
+      arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
+    const pickSkill = pick(allSkills);
+
+    const mission = await this.prisma.challenge.create({
+      data: {
+        type: 'TEAM_WEEKLY',
+        domainId: pickSkill?.domainId ?? null,
+        skillId: pickSkill?.id ?? null,
+        title: 'Team Weekly Challenge',
+        description: 'Capture 50 flags as a team this week!',
+        difficulty: 'MEDIUM',
+        objectiveType: 'FLAG_COMPLETIONS',
+        objectiveTarget: 50,
+        xpReward: 2000,
+        startAt: startOfWeek,
+        endAt: endOfWeek,
+        metadata: {},
+      },
+    });
+
+    this.logger.log(`Generated team weekly mission: ${mission.title}`);
+    return mission;
+  }
+
   @Cron('0 0 1 * *')
   async generateMonthlyMissions() {
     this.logger.log('Running monthly mission generation cron...');
@@ -443,5 +552,56 @@ export class MissionService implements OnModuleInit {
 
     this.logger.log(`Generated ${created.length} monthly missions`);
     return created;
+  }
+
+  @Cron('0 0 1 * *')
+  async generateSeasonalEvent() {
+    this.logger.log('Running seasonal event generation cron...');
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+
+    const existing = await this.prisma.challenge.findFirst({
+      where: { type: 'SEASONAL', isActive: true, startAt: { lte: now }, endAt: { gte: now } },
+    });
+
+    if (existing) {
+      this.logger.log('Seasonal event already active, skipping');
+      return;
+    }
+
+    const themes = [
+      { name: 'Security Sprint', domain: 'SECURITY', desc: 'Capture 20 flags across security labs.', obj: 'FLAG_COMPLETIONS', target: 20, xp: 3000, diff: 'HARD' },
+      { name: 'DevOps Marathon', domain: 'DEVOPS', desc: 'Complete 5 labs in the DevOps domain.', obj: 'LAB_COMPLETIONS', target: 5, xp: 3000, diff: 'MEDIUM' },
+      { name: 'Networking Gauntlet', domain: 'NETWORKING', desc: 'Solve 15 flags in networking labs.', obj: 'FLAG_COMPLETIONS', target: 15, xp: 3000, diff: 'HARD' },
+      { name: 'Database Deep Dive', domain: 'DATABASES', desc: 'Complete 4 database labs.', obj: 'LAB_COMPLETIONS', target: 4, xp: 3000, diff: 'MEDIUM' },
+      { name: 'Systems Challenge', domain: 'SYSTEMS', desc: 'Solve 15 flags across systems labs.', obj: 'FLAG_COMPLETIONS', target: 15, xp: 3000, diff: 'HARD' },
+      { name: 'QA Sprint', domain: 'QA', desc: 'Complete 3 QA labs.', obj: 'LAB_COMPLETIONS', target: 3, xp: 3000, diff: 'MEDIUM' },
+    ];
+
+    const theme = themes[month % themes.length];
+    const startOfMonth = new Date(year, month, 1);
+    const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
+
+    const domain = await this.prisma.skillDomain.findFirst({ where: { name: theme.domain } });
+
+    const seasonal = await this.prisma.challenge.create({
+      data: {
+        type: 'SEASONAL',
+        domainId: domain?.id ?? null,
+        title: `Seasonal: ${theme.name}`,
+        description: theme.desc,
+        difficulty: theme.diff,
+        objectiveType: theme.obj,
+        objectiveTarget: theme.target,
+        xpReward: theme.xp,
+        startAt: startOfMonth,
+        endAt: endOfMonth,
+        metadata: { theme: theme.name, season: `${year}-${String(month + 1).padStart(2, '0')}` },
+      },
+    });
+
+    this.logger.log(`Generated seasonal event: ${seasonal.title}`);
+    return seasonal;
   }
 }

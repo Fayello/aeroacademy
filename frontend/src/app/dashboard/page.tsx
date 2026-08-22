@@ -273,12 +273,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{greeting}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{greeting}</h1>
         </div>
         {user.currentStreak != null && user.currentStreak > 0 && (
-          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full px-4 py-2">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full px-4 py-2 self-start">
             <Flame size={18} className="text-orange-500" />
             <div className="text-right">
               <p className="text-sm font-bold text-amber-700">{user.currentStreak} day streak</p>

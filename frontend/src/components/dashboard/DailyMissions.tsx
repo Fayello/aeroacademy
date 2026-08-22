@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/api';
 import {
   Target, Flame, Swords, Trophy, Loader2, CheckCircle2,
-  Lock, ChevronRight, Calendar, Zap, Crown,
+  Lock, ChevronRight, Calendar, Zap, Crown, Users,
 } from 'lucide-react';
 
 interface Mission {
@@ -23,6 +23,9 @@ interface Mission {
   completed: boolean;
   claimedAt: string | null;
   endAt: string;
+  teamProgress?: number;
+  teamTarget?: number;
+  topContributors?: { userId: string; name: string; progress: number; xp: number }[];
 }
 
 function timeRemaining(endAt: string): string {
@@ -45,19 +48,24 @@ const tierConfig: Record<string, { icon: typeof Target; color: string; bgColor: 
   boss: { icon: Trophy, color: 'text-red-400', bgColor: 'bg-red-500/8', borderColor: 'border-red-500/20', label: 'Boss', accent: 'bg-red-500' },
   weekly: { icon: Calendar, color: 'text-purple-400', bgColor: 'bg-purple-500/8', borderColor: 'border-purple-500/20', label: 'Weekly', accent: 'bg-purple-500' },
   monthly: { icon: Crown, color: 'text-yellow-400', bgColor: 'bg-yellow-500/8', borderColor: 'border-yellow-500/20', label: 'Monthly', accent: 'bg-yellow-500' },
+  seasonal: { icon: Zap, color: 'text-cyan-400', bgColor: 'bg-cyan-500/8', borderColor: 'border-cyan-500/20', label: 'Seasonal', accent: 'bg-cyan-500' },
+  team_weekly: { icon: Users, color: 'text-emerald-400', bgColor: 'bg-emerald-500/8', borderColor: 'border-emerald-500/20', label: 'Team', accent: 'bg-emerald-500' },
 };
 
 const sections = [
   { key: 'daily', title: "Today's Missions", icon: Zap, types: ['warmup', 'skill', 'boss'], headerColor: 'text-white' },
   { key: 'weekly', title: 'Weekly Challenge', icon: Calendar, types: ['weekly'], headerColor: 'text-purple-400' },
+  { key: 'team', title: 'Team Challenge', icon: Users, types: ['team_weekly'], headerColor: 'text-emerald-400' },
   { key: 'monthly', title: 'Monthly Boss', icon: Crown, types: ['monthly'], headerColor: 'text-yellow-400' },
+  { key: 'seasonal', title: 'Seasonal Event', icon: Zap, types: ['seasonal'], headerColor: 'text-cyan-400' },
 ];
 
 function MissionCard({ mission, onClaim, claimingId }: { mission: Mission; onClaim: (id: string) => void; claimingId: string | null }) {
   const config = tierConfig[mission.type] || tierConfig.warmup;
   const Icon = config.icon;
   const pct = Math.min(100, Math.round((mission.progress / mission.objectiveTarget) * 100));
-  const isLongTerm = mission.type === 'weekly' || mission.type === 'monthly';
+  const isLongTerm = mission.type === 'weekly' || mission.type === 'monthly' || mission.type === 'seasonal' || mission.type === 'team_weekly';
+  const isTeamMission = mission.type === 'team_weekly';
 
   return (
     <div className={`border ${config.borderColor} rounded-lg p-3 sm:p-4 ${config.bgColor} transition-all hover:border-opacity-50`}>
@@ -112,18 +120,49 @@ function MissionCard({ mission, onClaim, claimingId }: { mission: Mission; onCla
 
       {!mission.claimedAt && (
         <div className="mt-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-white/35">
-              {mission.progress}/{mission.objectiveTarget} {mission.objectiveType === 'FLAG_COMPLETIONS' ? 'flags' : 'labs'}
-            </span>
-            <span className="text-[10px] text-white/35">{pct}%</span>
-          </div>
-          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${mission.completed ? 'bg-[#7AD62A]' : config.accent + '/60'}`}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
+          {isTeamMission && mission.teamProgress !== undefined ? (
+            <>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-white/35">
+                  Team Progress: {mission.teamProgress}/{mission.teamTarget ?? mission.objectiveTarget} flags
+                </span>
+                <span className="text-[10px] text-white/35">{pct}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-2">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${mission.completed ? 'bg-[#7AD62A]' : config.accent + '/60'}`}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              {mission.topContributors && mission.topContributors.length > 0 && (
+                <div className="space-y-1">
+                  {mission.topContributors.map((c, i) => (
+                    <div key={c.userId} className="flex items-center justify-between">
+                      <span className="text-[10px] text-white/40">
+                        {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} {c.name}
+                      </span>
+                      <span className="text-[10px] text-white/30">{c.progress} flags</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-white/35">
+                  {mission.progress}/{mission.objectiveTarget} {mission.objectiveType === 'FLAG_COMPLETIONS' ? 'flags' : 'labs'}
+                </span>
+                <span className="text-[10px] text-white/35">{pct}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${mission.completed ? 'bg-[#7AD62A]' : config.accent + '/60'}`}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
