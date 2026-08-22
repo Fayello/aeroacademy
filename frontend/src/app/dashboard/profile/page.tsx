@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
 import { fetchApi } from "@/lib/api";
+import toast from "@/lib/toast";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import type { User, Achievement } from "@/types/api";
 
