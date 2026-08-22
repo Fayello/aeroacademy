@@ -12,6 +12,8 @@ import { EventsService } from '../common/events.service';
 import { ActivityService } from '../common/activity.service';
 import { AchievementService } from '../dashboard/achievement.service';
 import { LeaguesService } from '../leagues/leagues.service';
+import { ProgressionService } from '../common/progression.service';
+import { MissionService } from '../challenges/mission.service';
 import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
 import { DockerManager } from './docker-manager.service';
@@ -53,6 +55,8 @@ export class LabsService implements OnModuleInit {
     private leaguesService: LeaguesService,
     private dockerManager: DockerManager,
     private emailService: EmailService,
+    private progressionService: ProgressionService,
+    private missionService: MissionService,
   ) {
     this.docker = dockerManager.getLocalDocker();
   }
@@ -613,19 +617,29 @@ export class LabsService implements OnModuleInit {
       await tx.labSubmission.create({
         data: { userId, flagId, answer: '[REDACTED]', isCorrect },
       });
-
-      if (isCorrect) {
-        await tx.user.update({
-          where: { id: userId },
-          data: { xp: { increment: flag.points } },
-        });
-      }
     });
 
     if (isCorrect) {
+      // Award XP through the progression engine
       const lab = await this.prisma.lab.findUnique({
         where: { id: flag.labId },
+        include: { labSkills: { include: { skill: { include: { domain: true } } } } },
       });
+
+      const primarySkill = lab?.labSkills?.[0]?.skill;
+      const domain = primarySkill?.domain?.name;
+      const skillName = primarySkill?.name;
+
+      await this.progressionService.awardXP(userId, {
+        amount: flag.points,
+        source: 'FLAG_SOLVED',
+        sourceId: flag.id,
+        domain,
+        skillName,
+      }).catch((err) => logger.error('ProgressionService.awardXP failed', err));
+
+      // Check mission progress
+      await this.missionService.checkProgress(userId, 'FLAG_COMPLETIONS', flag.id).catch((err) => logger.error('MissionService.checkProgress failed', err));
       if (lab)
         await this.leaguesService.calculateUserElo(
           userId,

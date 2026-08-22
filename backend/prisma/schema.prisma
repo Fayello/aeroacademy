@@ -53,8 +53,10 @@ model User {
   auditLogs                AuditLog[]
   notifications            Notification[]
   enrollments              CourseEnrollment[]
-  challengeParticipations ChallengeParticipant[]
   badges                   UserBadge[]
+  userSkills               UserSkill[]
+  userChallenges           UserChallenge[]
+  progressionEvents        ProgressionEvent[]
   assessmentResults        AssessmentResult[]
   reviews                  CourseReview[]
   learningPathEnrollments  LearningPathEnrollment[]
@@ -75,7 +77,6 @@ model Team {
   owner       User?    @relation("TeamOwner", fields: [ownerId], references: [id])
   members     User[]
   createdAt   DateTime @default(now())
-  challenges  TeamChallengeParticipant[]
   courseEnrollments TeamCourseEnrollment[]
 
   @@index([ownerId])
@@ -190,6 +191,7 @@ model Lab {
   instances        LabInstance[]
   lesson           Lesson?
   discussions     DiscussionPost[]
+  labSkills        LabSkill[]
 }
 
 model LabFlag {
@@ -539,50 +541,6 @@ model LearningPathEnrollment {
   @@index([learningPathId])
 }
 
-model Challenge {
-  id          String              @id @default(uuid())
-  title       String
-  description String
-  type        String              @default("INDIVIDUAL") // INDIVIDUAL, TEAM
-  goalType    String              // LESSONS_COMPLETED, FLAGS_CAPTURED, XP_EARNED, STREAK_DAYS
-  goalCount   Int
-  xpReward    Int                 @default(0)
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean             @default(true)
-  createdAt   DateTime            @default(now())
-  participants ChallengeParticipant[]
-  teamParticipants TeamChallengeParticipant[]
-}
-
-model ChallengeParticipant {
-  id          String    @id @default(uuid())
-  challengeId String
-  userId      String
-  progress    Int       @default(0)
-  completed   Boolean   @default(false)
-  joinedAt    DateTime  @default(now())
-  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([challengeId, userId])
-  @@index([userId])
-}
-
-model TeamChallengeParticipant {
-  id          String    @id @default(uuid())
-  challengeId String
-  teamId      String
-  progress    Int       @default(0)
-  completed   Boolean   @default(false)
-  joinedAt    DateTime  @default(now())
-  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  @@unique([challengeId, teamId])
-  @@index([teamId])
-}
-
 model Badge {
   id          String      @id @default(uuid())
   name        String      @unique
@@ -719,4 +677,139 @@ model TeamCourseEnrollment {
   @@unique([teamId, courseId])
   @@index([teamId])
   @@index([courseId])
+}
+
+// ─── V1: SKILL SYSTEM ───────────────────────────────────────────
+
+model SkillDomain {
+  id          String   @id @default(uuid())
+  name        String   @unique // SYSTEMS, NETWORKING, DEVOPS, DATABASES, SECURITY, QA
+  displayName String   // "Systems", "Networking", etc.
+  icon        String?  // lucide icon name
+  createdAt   DateTime @default(now())
+
+  skills     Skill[]
+  challenges Challenge[]
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  domainId    String
+  name        String   // "Linux", "Docker", "SQL", etc.
+  displayName String
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now())
+
+  domain      SkillDomain @relation(fields: [domainId], references: [id])
+  userSkills  UserSkill[]
+  labSkills   LabSkill[]
+  challenges  Challenge[]
+
+  @@unique([domainId, name])
+  @@index([domainId])
+}
+
+model UserSkill {
+  id     String @id @default(uuid())
+  userId String
+  skillId String
+  xp     Int    @default(0)
+  level  Int    @default(1)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@index([skillId])
+}
+
+model LabSkill {
+  id      String @id @default(uuid())
+  labId   String
+  skillId String
+
+  lab   Lab   @relation(fields: [labId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([labId, skillId])
+  @@index([labId])
+  @@index([skillId])
+}
+
+// ─── V1: MISSION ENGINE ─────────────────────────────────────────
+
+model Challenge {
+  id              String   @id @default(uuid())
+  type            String   // DAILY_WARMUP, DAILY_SKILL, DAILY_BOSS, WEEKLY, MONTHLY
+  domainId        String?
+  skillId         String?
+  title           String
+  description     String
+  difficulty      String   // EASY, MEDIUM, HARD, BOSS
+  objectiveType   String   // FLAG_COMPLETIONS, LAB_COMPLETIONS, LESSON_COMPLETIONS, QUIZ_COMPLETIONS, XP_EARNED, SKILL_XP_EARNED
+  objectiveTarget Int
+  xpReward        Int
+  badgeRewardId   String?
+  startAt         DateTime
+  endAt           DateTime
+  isActive        Boolean  @default(true)
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  domain      SkillDomain?  @relation(fields: [domainId], references: [id])
+  skill       Skill?         @relation(fields: [skillId], references: [id])
+  userChallenges UserChallenge[]
+
+  @@index([type, isActive])
+  @@index([startAt, endAt])
+  @@index([domainId])
+}
+
+model UserChallenge {
+  id          String    @id @default(uuid())
+  userId      String
+  challengeId String
+  progress    Int       @default(0)
+  target      Int
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([userId])
+  @@index([challengeId])
+  @@index([userId, completed])
+}
+
+// ─── V1: FEATURE UNLOCKING ──────────────────────────────────────
+
+model FeatureUnlock {
+  id            String @id @default(uuid())
+  feature       String @unique // DAILY_MISSIONS, SKILL_PROFILE, LEADERBOARD, etc.
+  requiredLevel Int
+  description   String?
+}
+
+// ─── V1: PROGRESSION EVENTS ─────────────────────────────────────
+
+model ProgressionEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // XP_AWARDED, SKILL_XP_AWARDED, LEVEL_UP, SKILL_LEVEL_UP, MISSION_COMPLETED
+  amount    Int?
+  source    String   // FLAG_SOLVED, LAB_COMPLETED, LESSON_COMPLETED, QUIZ_PASSED, MISSION_REWARD
+  sourceId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([type])
 }

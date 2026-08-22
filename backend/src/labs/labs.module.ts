@@ -7,7 +7,8 @@ import { DockerManager } from './docker-manager.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
-
+import { EventsModule } from '../common/events.module';
+import { ChallengesModule } from '../challenges/challenges.module';
 import { LeaguesModule } from '../leagues/leagues.module';
 
 @Module({
@@ -16,6 +17,8 @@ import { LeaguesModule } from '../leagues/leagues.module';
     AuthModule,
     forwardRef(() => DashboardModule),
     LeaguesModule,
+    EventsModule,
+    ChallengesModule,
   ],
   controllers: [LabsController],
   providers: [DockerManager, LabsService, LabsGateway, LabsCron],

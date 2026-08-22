@@ -1,6 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { EmailService } from '../email/email.service';
+import { MissionService } from './mission.service';
+import { FeatureUnlockService } from './feature-unlock.service';
+import { ProgressionService } from '../common/progression.service';
 
 @Injectable()
 export class ChallengesService {
@@ -8,14 +10,18 @@ export class ChallengesService {
 
   constructor(
     private prisma: PrismaService,
-    private emailService: EmailService,
+    private missionService: MissionService,
+    private featureUnlockService: FeatureUnlockService,
+    private progressionService: ProgressionService,
   ) {}
 
   async findAll() {
     return this.prisma.challenge.findMany({
       where: { isActive: true },
       include: {
-        _count: { select: { participants: true, teamParticipants: true } },
+        domain: { select: { name: true, displayName: true } },
+        skill: { select: { name: true, displayName: true } },
+        _count: { select: { userChallenges: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -25,12 +31,10 @@ export class ChallengesService {
     const challenge = await this.prisma.challenge.findUnique({
       where: { id },
       include: {
-        participants: {
-          include: { user: { select: { id: true, name: true, email: true, xp: true } } },
-          orderBy: { progress: 'desc' },
-        },
-        teamParticipants: {
-          include: { team: { select: { id: true, name: true } } },
+        domain: { select: { name: true, displayName: true } },
+        skill: { select: { name: true, displayName: true } },
+        userChallenges: {
+          include: { user: { select: { id: true, name: true, xp: true } } },
           orderBy: { progress: 'desc' },
         },
       },
@@ -39,146 +43,30 @@ export class ChallengesService {
     return challenge;
   }
 
-  async joinChallenge(userId: string, challengeId: string) {
-    const challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
-    if (!challenge) throw new NotFoundException('Challenge not found');
-    if (!challenge.isActive) throw new BadRequestException('Challenge is no longer active');
-    if (new Date(challenge.endDate) < new Date()) throw new BadRequestException('Challenge has ended');
-
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
-
-    if (challenge.type === 'TEAM') {
-      if (!user.teamId) throw new BadRequestException('You must be in a team to join team challenges');
-      return this.joinTeamChallenge(user.teamId, challengeId);
+  async getDailyMissions(userId: string) {
+    const unlocked = await this.featureUnlockService.isFeatureUnlocked(userId, 'DAILY_MISSIONS');
+    if (!unlocked) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } });
+      const level = Math.floor((user?.xp || 0) / 1000) + 1;
+      throw new BadRequestException(`Daily missions unlock at Level 2. You are Level ${level}.`);
     }
-
-    const existing = await this.prisma.challengeParticipant.findUnique({
-      where: { challengeId_userId: { challengeId, userId } },
-    });
-    if (existing) throw new BadRequestException('Already joined this challenge');
-
-    return this.prisma.challengeParticipant.create({
-      data: { challengeId, userId },
-    });
+    return this.missionService.getDailyMissions(userId);
   }
 
-  private async joinTeamChallenge(teamId: string, challengeId: string) {
-    const existing = await this.prisma.teamChallengeParticipant.findUnique({
-      where: { challengeId_teamId: { challengeId, teamId } },
-    });
-    if (existing) throw new BadRequestException('Team already joined this challenge');
-
-    return this.prisma.teamChallengeParticipant.create({
-      data: { challengeId, teamId },
-    });
+  async claimReward(userId: string, challengeId: string) {
+    return this.missionService.claimReward(userId, challengeId);
   }
 
-  async updateProgress(userId: string) {
-    const participations = await this.prisma.challengeParticipant.findMany({
-      where: { userId, completed: false },
-      include: { challenge: true },
-    });
-
-    for (const participation of participations) {
-      const challenge = participation.challenge;
-      if (new Date(challenge.endDate) < new Date()) continue;
-
-      let progress = 0;
-
-      switch (challenge.goalType) {
-        case 'LESSONS_COMPLETED':
-          progress = await this.prisma.progress.count({
-            where: { userId, completed: true },
-          });
-          break;
-        case 'FLAGS_CAPTURED':
-          progress = await this.prisma.labSubmission.count({
-            where: { userId, isCorrect: true },
-          });
-          break;
-        case 'XP_EARNED':
-          const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } });
-          progress = user?.xp || 0;
-          break;
-        case 'STREAK_DAYS':
-          const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { currentStreak: true } });
-          progress = u?.currentStreak || 0;
-          break;
-      }
-
-      const completed = progress >= challenge.goalCount;
-
-      if (progress !== participation.progress) {
-        await this.prisma.challengeParticipant.update({
-          where: { id: participation.id },
-          data: { progress, completed },
-        });
-
-        if (completed && !participation.completed) {
-          if (challenge.xpReward > 0) {
-            await this.prisma.user.update({
-              where: { id: userId },
-              data: { xp: { increment: challenge.xpReward } },
-            });
-          }
-
-          const user = await this.prisma.user.findUnique({ where: { id: userId } });
-          if (user?.email) {
-            this.emailService.send({
-              to: user.email,
-              from: 'labs',
-              subject: `Challenge complete: ${challenge.title}`,
-              html: `<p>Congratulations! You completed the challenge "${challenge.title}" and earned ${challenge.xpReward} XP.</p>`,
-            }).catch(() => {});
-          }
-
-          this.logger.log(`User ${userId} completed challenge "${challenge.title}"`);
-        }
-      }
-    }
-  }
-
-  async createChallenge(data: {
-    title: string;
-    description: string;
-    type?: string;
-    goalType: string;
-    goalCount: number;
-    xpReward?: number;
-    startDate: string;
-    endDate: string;
-  }) {
-    return this.prisma.challenge.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        type: data.type || 'INDIVIDUAL',
-        goalType: data.goalType,
-        goalCount: data.goalCount,
-        xpReward: data.xpReward || 0,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
-      },
-    });
+  async getSkillProfile(userId: string) {
+    const unlocked = await this.featureUnlockService.isFeatureUnlocked(userId, 'SKILL_PROFILE');
+    const skills = unlocked ? await this.progressionService.getSkillProfile(userId) : [];
+    return { unlocked, skills };
   }
 
   async getLeaderboard(challengeId: string) {
-    const challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
-    if (!challenge) throw new NotFoundException('Challenge not found');
-
-    if (challenge.type === 'TEAM') {
-      return this.prisma.teamChallengeParticipant.findMany({
-        where: { challengeId },
-        include: { team: { select: { id: true, name: true } } },
-        orderBy: { progress: 'desc' },
-        take: 20,
-      });
-    }
-
-    return this.prisma.challengeParticipant.findMany({
+    return this.prisma.userChallenge.findMany({
       where: { challengeId },
-      include: { user: { select: { id: true, name: true, email: true, xp: true } } },
+      include: { user: { select: { id: true, name: true, username: true, xp: true } } },
       orderBy: { progress: 'desc' },
       take: 20,
     });

@@ -9,8 +9,9 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AchievementService } from '../dashboard/achievement.service';
 import { EmailService } from '../email/email.service';
-import { ChallengesService } from '../challenges/challenges.service';
+import { MissionService } from '../challenges/mission.service';
 import { BadgesService } from '../badges/badges.service';
+import { ProgressionService } from '../common/progression.service';
 import { getLevel, getRequiredSectionLevel } from '../common/level.util';
 
 const MILESTONE_THRESHOLDS = [25, 50, 75, 100];
@@ -32,8 +33,9 @@ export class ProgressService {
     @Inject(forwardRef(() => AchievementService))
     private achievementService: AchievementService,
     private emailService: EmailService,
-    private challengesService: ChallengesService,
+    private missionService: MissionService,
     private badgesService: BadgesService,
+    private progressionService: ProgressionService,
   ) {}
 
   async startLesson(userId: string, lessonId: string) {
@@ -146,28 +148,27 @@ export class ProgressService {
         create: { userId, lessonId, completed: true },
       });
 
-      if (!alreadyCompleted) {
-        const xpToAward = this.calculateXpWithMultiplier(userId, BASE_LESSON_XP, { xp: user.xp, currentStreak: user.currentStreak || 0 });
-        await tx.user.update({
-          where: { id: userId },
-          data: { xp: { increment: xpToAward } },
-        });
-      }
-
       return { progress: p, wasNew: !alreadyCompleted };
     });
 
     if (progress.wasNew) {
-      await this.achievementService.checkAndUnlockAchievements(userId);
+      const xpToAward = this.calculateXpWithMultiplier(userId, BASE_LESSON_XP, { xp: user.xp, currentStreak: user.currentStreak || 0 });
+
+      // Award XP through the progression engine
+      await this.progressionService.awardXP(userId, {
+        amount: xpToAward,
+        source: 'LESSON_COMPLETED',
+        sourceId: lessonId,
+      }).catch((err) => this.logger.error('ProgressionService.awardXP failed', err));
+
+      // Check mission progress
+      await this.missionService.checkProgress(userId, 'LESSON_COMPLETIONS', lessonId).catch((err) => this.logger.error('MissionService.checkProgress failed', err));
 
       // Update streak
       await this.updateStreak(userId);
 
       // Check milestones
       await this.checkMilestones(userId, lesson.section.courseId);
-
-      // Update challenge progress
-      await this.challengesService.updateProgress(userId).catch(() => {});
 
       // Check and award badges
       await this.badgesService.checkAndAwardBadges(userId).catch(() => {});
