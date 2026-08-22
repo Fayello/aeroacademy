@@ -161,6 +161,7 @@ export interface LeaderboardEntry {
   position: number;
   id: string;
   name: string;
+  username?: string | null;
   email?: string | null;
   xp: number;
   rank: number;

@@ -8,6 +8,7 @@ interface LeaderboardPreviewProps {
   leaderboard: Array<{
     id: string;
     name: string;
+    username?: string | null;
     division: string;
     xp: number;
     rank: number;
@@ -32,10 +33,10 @@ export default function LeaderboardPreview({ leaderboard }: LeaderboardPreviewPr
           <div key={op.id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors">
             <span className="text-xs font-medium text-slate-400 w-5 text-center">{idx + 1}</span>
             <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600">
-              {op.name?.[0] || '?'}
+              {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-900 truncate">{op.name}</p>
+              <p className="text-sm font-medium text-slate-900 truncate">{op.username || op.name}</p>
               <p className={`text-xs font-medium ${DIVISION_TEXT_COLORS[op.division] || "text-slate-500"}`}>{op.division}</p>
             </div>
             <div className="text-right">

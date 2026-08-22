@@ -45,6 +45,17 @@ const EMAIL_PREFS = [
   { key: "weeklyDigest", label: "Weekly Digest", desc: "Weekly progress summary" },
 ];
 
+const AVATAR_GRADIENTS = [
+  { id: "green-lime", classes: "from-[#229C62] to-[#7AD62A]", label: "Green" },
+  { id: "navy-teal", classes: "from-[#0F203A] to-teal-600", label: "Navy" },
+  { id: "purple-pink", classes: "from-purple-500 to-pink-500", label: "Purple" },
+  { id: "orange-red", classes: "from-orange-400 to-red-500", label: "Orange" },
+  { id: "blue-cyan", classes: "from-blue-500 to-cyan-400", label: "Blue" },
+  { id: "indigo-purple", classes: "from-indigo-500 to-purple-500", label: "Indigo" },
+  { id: "emerald-teal", classes: "from-emerald-500 to-teal-400", label: "Emerald" },
+  { id: "amber-yellow", classes: "from-amber-500 to-yellow-400", label: "Amber" },
+];
+
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   username: z
@@ -69,6 +80,7 @@ export default function ProfileEditPage() {
   const [emailPrefs, setEmailPrefs] = useState<Record<string, boolean>>({});
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [showEmailPrefs, setShowEmailPrefs] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState("from-[#229C62] to-[#7AD62A]");
 
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting, isDirty } } =
     useForm<ProfileValues>({
@@ -88,6 +100,7 @@ export default function ProfileEditPage() {
 
       if (profile.status === "fulfilled") {
         const u = profile.value;
+        if (u.avatarUrl) setSelectedAvatar(u.avatarUrl);
         reset({
           name: u.name || "",
           username: u.username || "",
@@ -95,6 +108,7 @@ export default function ProfileEditPage() {
           city: u.city || "",
           timezone: u.timezone || "UTC",
           organizationId: u.organizationId || "",
+          avatarUrl: u.avatarUrl || "from-[#229C62] to-[#7AD62A]",
         });
         if (u.emailPreferences && typeof u.emailPreferences === "object") {
           setEmailPrefs(u.emailPreferences as Record<string, boolean>);
@@ -103,7 +117,8 @@ export default function ProfileEditPage() {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const u = JSON.parse(storedUser);
-          reset({ name: u.name || "", username: u.username || "", bio: u.bio || "", city: u.city || "", timezone: u.timezone || "UTC", organizationId: u.organizationId || "" });
+          if (u.avatarUrl) setSelectedAvatar(u.avatarUrl);
+          reset({ name: u.name || "", username: u.username || "", bio: u.bio || "", city: u.city || "", timezone: u.timezone || "UTC", organizationId: u.organizationId || "", avatarUrl: u.avatarUrl || "from-[#229C62] to-[#7AD62A]" });
         }
       }
     } catch {
@@ -127,6 +142,7 @@ export default function ProfileEditPage() {
       if (values.city !== undefined) payload.city = values.city;
       if (values.timezone !== undefined) payload.timezone = values.timezone;
       if (values.organizationId !== undefined) payload.organizationId = values.organizationId;
+      payload.avatarUrl = selectedAvatar;
 
       const updatedUser = await fetchApi("/auth/profile", { method: "PATCH", body: JSON.stringify(payload) });
       localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -187,16 +203,34 @@ export default function ProfileEditPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-          {/* Avatar Preview */}
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg">
-              <span className="text-xl font-bold text-white">
-                {(watch("name") || "U").charAt(0).toUpperCase()}
-              </span>
+          {/* Avatar */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Avatar</label>
+            <div className="flex items-center gap-4">
+              <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${selectedAvatar} flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg transition-all duration-200`}>
+                <span className="text-xl font-bold text-white">
+                  {(watch("name") || "U").charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-900">{watch("name") || "Your Name"}</p>
+                <p className="text-xs text-slate-500">{watchUsername ? `@${watchUsername}` : "No username set"}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-slate-900">{watch("name") || "Your Name"}</p>
-              <p className="text-xs text-slate-500">{watchUsername ? `@${watchUsername}` : "No username set"}</p>
+            <div className="flex gap-2 mt-3">
+              {AVATAR_GRADIENTS.map((gradient) => (
+                <button
+                  key={gradient.id}
+                  type="button"
+                  title={gradient.label}
+                  onClick={() => setSelectedAvatar(gradient.classes)}
+                  className={`w-9 h-9 rounded-full bg-gradient-to-br ${gradient.classes} ring-2 transition-all duration-150 shrink-0 ${
+                    selectedAvatar === gradient.classes
+                      ? "ring-slate-900 ring-offset-2 scale-110"
+                      : "ring-transparent hover:ring-slate-300 hover:ring-offset-1"
+                  }`}
+                />
+              ))}
             </div>
           </div>
 

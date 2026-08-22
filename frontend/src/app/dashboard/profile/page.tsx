@@ -6,7 +6,7 @@ import {
   Award, Flame, Zap, Flag, Target, Crosshair, Crown, Compass, Library,
   Footprints, GraduationCap, MapPin, Building2, Calendar, Users, Brain,
   Flame as FireIcon, Activity, ChevronRight, BarChart3, Medal, Ticket,
-  ExternalLink,
+  ExternalLink, CheckCircle, Pin,
 } from "lucide-react";
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -180,6 +180,9 @@ export default function ProfilePage() {
   const [analytics, setAnalytics] = useState<LearningAnalytics | null>(null);
   const [learningPaths, setLearningPaths] = useState<LearningPathEnrollment[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [yearlyActivity, setYearlyActivity] = useState<Record<string, number>>({});
+  const [pinnedBadgeIds, setPinnedBadgeIds] = useState<string[]>([]);
+  const [pinning, setPinning] = useState(false);
   const [loading, setLoading] = useState(true);
   const { userMetrics } = useDashboard();
 
@@ -226,7 +229,33 @@ export default function ProfilePage() {
 
     loadData();
     fetchApi<UserBadge[]>("/badges/my").then(setMyBadges).catch(() => {});
+    fetchApi<Record<string, number>>("/dashboard/activity/yearly").then(setYearlyActivity).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (user?.pinnedBadges) setPinnedBadgeIds(user.pinnedBadges);
+  }, [user?.pinnedBadges]);
+
+  const pinnedBadges = myBadges.filter((ub) => pinnedBadgeIds.includes(ub.badgeId));
+
+  const togglePin = async (badgeId: string) => {
+    if (pinning) return;
+    const isPinned = pinnedBadgeIds.includes(badgeId);
+    const newIds = isPinned
+      ? pinnedBadgeIds.filter((id) => id !== badgeId)
+      : pinnedBadgeIds.length < 5
+        ? [...pinnedBadgeIds, badgeId]
+        : pinnedBadgeIds;
+    setPinnedBadgeIds(newIds);
+    setPinning(true);
+    try {
+      await fetchApi("/auth/pinned-badges", { method: "PATCH", body: { badgeIds: newIds } });
+    } catch {
+      setPinnedBadgeIds(isPinned ? [...pinnedBadgeIds] : pinnedBadgeIds.filter((id) => id !== badgeId));
+    } finally {
+      setPinning(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -251,21 +280,62 @@ export default function ProfilePage() {
   const flagsSolved = userStats?.flagsSolved || user._count?.labSubmissions || 0;
   const coursesEnrolled = analytics?.stats?.totalCoursesEnrolled || 0;
   const lessonsCompleted = analytics?.stats?.totalLessonsCompleted || user._count?.progress || 0;
-  const weeklyActivity = analytics?.weeklyActivity || {};
-
-  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const today = new Date();
-  const weekDates: string[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    weekDates.push(d.toISOString().split("T")[0]);
-  }
-  const maxWeekly = Math.max(1, ...weekDates.map((d) => weeklyActivity[d] || 0));
 
   const enrolledCourses = (analytics?.courseProgress || []).filter((cp) => cp.total > 0);
   const completedPaths = learningPaths.filter((lp) => lp.completedAt);
   const activePaths = learningPaths.filter((lp) => !lp.completedAt);
+
+  const hasAvatar = pinnedBadgeIds.length > 0;
+  const completenessFields = [
+    { label: "Username", filled: !!user.username, weight: 20, link: "/dashboard/profile/edit" },
+    { label: "Bio", filled: !!user.bio, weight: 20, link: "/dashboard/profile/edit" },
+    { label: "City", filled: !!user.city, weight: 20, link: "/dashboard/profile/edit" },
+    { label: "Organization", filled: !!user.organization, weight: 20, link: "/dashboard/profile/edit" },
+    { label: "Pinned badge or avatar", filled: hasAvatar, weight: 20, link: "/dashboard/badges" },
+  ];
+  const completenessScore = completenessFields.reduce((acc, f) => acc + (f.filled ? f.weight : 0), 0);
+  const missingFields = completenessFields.filter((f) => !f.filled);
+
+  const totalYearlyEvents = Object.values(yearlyActivity).reduce((sum, c) => sum + c, 0);
+
+  const heatmapMonths = (() => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const result: { label: string; weekIndex: number }[] = [];
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - 364);
+    startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+    let lastMonth = -1;
+    for (let w = 0; w < 53; w++) {
+      const weekStart = new Date(startDate);
+      weekStart.setDate(weekStart.getDate() + w * 7);
+      const m = weekStart.getMonth();
+      if (m !== lastMonth) {
+        result.push({ label: months[m], weekIndex: w });
+        lastMonth = m;
+      }
+    }
+    return result;
+  })();
+
+  const heatmapGrid = (() => {
+    const grid: { date: string; count: number; col: number; row: number }[][] = [];
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - 364);
+    startDate.setDate(startDate.getDate() - startDate.getDay() + 1);
+    for (let w = 0; w < 53; w++) {
+      const week: { date: string; count: number; col: number; row: number }[] = [];
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + w * 7 + d);
+        const key = date.toISOString().split("T")[0];
+        week.push({ date: key, count: yearlyActivity[key] || 0, col: w, row: d });
+      }
+      grid.push(week);
+    }
+    return grid;
+  })();
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -362,6 +432,49 @@ export default function ProfilePage() {
         ))}
       </div>
 
+      {/* Profile Completeness */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
+            <Target size={18} className="text-[#229C62]" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Profile Completeness</h2>
+            <p className="text-xs text-slate-500">{completenessScore}% complete</p>
+          </div>
+          {completenessScore === 100 && (
+            <div className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E9F8EE] text-[#229C62] text-sm font-medium">
+              <CheckCircle size={14} />
+              Your profile is complete!
+            </div>
+          )}
+        </div>
+        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-4">
+          <div
+            className="h-full bg-gradient-to-r from-[#229C62] to-[#7AD62A] rounded-full transition-all duration-500"
+            style={{ width: `${completenessScore}%` }}
+          />
+        </div>
+        {missingFields.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs text-slate-500 font-medium">Add the following to complete your profile:</p>
+            <div className="flex flex-wrap gap-2">
+              {missingFields.map((f) => (
+                <Link
+                  key={f.label}
+                  href={f.link}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:border-[#229C62]/40 hover:text-[#229C62] transition-all"
+                >
+                  <Target size={12} className="text-slate-400" />
+                  {f.label}
+                  <ChevronRight size={12} />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Level & Division */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Level Progress */}
@@ -421,39 +534,66 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Weekly Activity */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      {/* Yearly Activity Heatmap */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6 overflow-x-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-              <BarChart3 size={18} className="text-blue-600" />
+            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+              <BarChart3 size={18} className="text-green-600" />
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">Weekly Activity</h2>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Yearly Activity</h2>
+              <p className="text-xs text-slate-500">{totalYearlyEvents} total events</p>
+            </div>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
             <Flame size={12} className="text-orange-500" />
             {streak > 0 ? `${streak} day streak` : "Start a streak today"}
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-2">
-          {weekDates.map((date, i) => {
-            const count = weeklyActivity[date] || 0;
-            const height = count > 0 ? Math.max(20, (count / maxWeekly) * 100) : 4;
-            return (
-              <div key={date} className="flex flex-col items-center gap-1">
-                <div className="w-full flex items-end justify-center" style={{ height: 80 }}>
-                  <div
-                    className={`w-full max-w-[32px] rounded-t-md transition-all duration-300 ${
-                      count > 0 ? "bg-gradient-to-t from-[#229C62] to-[#7AD62A]" : "bg-slate-100"
-                    }`}
-                    style={{ height: `${height}%` }}
-                    title={`${count} lesson${count !== 1 ? "s" : ""}`}
-                  />
+        <div className="min-w-[720px]">
+          <div className="flex mb-1 ml-8">
+            {heatmapMonths.map((m, i) => {
+              const nextWeek = i < heatmapMonths.length - 1 ? heatmapMonths[i + 1].weekIndex : 53;
+              const weeksCovered = nextWeek - m.weekIndex;
+              return (
+                <div
+                  key={`${m.label}-${i}`}
+                  className="text-[10px] text-slate-400 shrink-0"
+                  style={{ width: `${weeksCovered * 14}px` }}
+                >
+                  {m.label}
                 </div>
-                <span className="text-[10px] text-slate-400">{weekDays[i]}</span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <div className="flex gap-3">
+            <div className="flex flex-col gap-[3px] justify-around py-0">
+              {["Mon", "Wed", "Fri"].map((day) => (
+                <div key={day} className="text-[10px] text-slate-400 h-[11px] flex items-center">{day}</div>
+              ))}
+            </div>
+            <div className="flex gap-[3px]">
+              {heatmapGrid.map((week, wi) => (
+                <div key={wi} className="flex flex-col gap-[3px]">
+                  {week.map((cell) => {
+                    const color =
+                      cell.count === 0 ? "bg-slate-100" :
+                      cell.count <= 2 ? "bg-green-200" :
+                      cell.count <= 4 ? "bg-green-400" :
+                      "bg-green-600";
+                    return (
+                      <div
+                        key={cell.date}
+                        className={`w-[11px] h-[11px] rounded-sm ${color} transition-colors`}
+                        title={`${cell.date}: ${cell.count} event${cell.count !== 1 ? "s" : ""}`}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -626,25 +766,74 @@ export default function ProfilePage() {
               View All <ChevronRight size={14} />
             </Link>
           </div>
+          {pinnedBadges.length > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Pin size={14} className="text-[#229C62]" />
+                <span className="text-xs font-semibold text-slate-700">Pinned</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {pinnedBadges.map((ub) => {
+                  const BIcon = badgeIconMap[ub.badge.icon] || Award;
+                  const tierColor = badgeTierColors[ub.badge.tier] || badgeTierColors.BRONZE;
+                  const tierBg = badgeTierBg[ub.badge.tier] || badgeTierBg.BRONZE;
+                  return (
+                    <Link
+                      key={`pinned-${ub.badgeId}`}
+                      href={`/dashboard/badges/${ub.badgeId}`}
+                      className={`relative text-center p-3 rounded-xl ${tierBg} border border-[#229C62]/30 shadow-sm hover:shadow-md transition-all group`}
+                    >
+                      <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#229C62] flex items-center justify-center">
+                        <Pin size={10} className="text-white" />
+                      </div>
+                      <div
+                        className={`w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center bg-gradient-to-br ${tierColor} shadow-sm`}
+                      >
+                        <BIcon size={18} className="text-white" />
+                      </div>
+                      <p className="text-[11px] font-semibold text-slate-900 truncate">{ub.badge.name}</p>
+                      <p className="text-[9px] text-slate-400 mt-0.5">{new Date(ub.earnedAt).toLocaleDateString()}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {myBadges.slice(0, 10).map((ub) => {
               const BIcon = badgeIconMap[ub.badge.icon] || Award;
               const tierColor = badgeTierColors[ub.badge.tier] || badgeTierColors.BRONZE;
               const tierBg = badgeTierBg[ub.badge.tier] || badgeTierBg.BRONZE;
+              const isPinned = pinnedBadgeIds.includes(ub.badgeId);
               return (
-                <Link
-                  key={ub.badgeId}
-                  href={`/dashboard/badges/${ub.badgeId}`}
-                  className={`text-center p-3 rounded-xl ${tierBg} border hover:shadow-md transition-all group`}
-                >
-                  <div
-                    className={`w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center bg-gradient-to-br ${tierColor} shadow-sm`}
+                <div key={ub.badgeId} className="relative group">
+                  <Link
+                    href={`/dashboard/badges/${ub.badgeId}`}
+                    className={`text-center p-3 rounded-xl ${tierBg} border hover:shadow-md transition-all block`}
                   >
-                    <BIcon size={18} className="text-white" />
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-900 truncate">{ub.badge.name}</p>
-                  <p className="text-[9px] text-slate-400 mt-0.5">{new Date(ub.earnedAt).toLocaleDateString()}</p>
-                </Link>
+                    <div
+                      className={`w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center bg-gradient-to-br ${tierColor} shadow-sm`}
+                    >
+                      <BIcon size={18} className="text-white" />
+                    </div>
+                    <p className="text-[11px] font-semibold text-slate-900 truncate">{ub.badge.name}</p>
+                    <p className="text-[9px] text-slate-400 mt-0.5">{new Date(ub.earnedAt).toLocaleDateString()}</p>
+                  </Link>
+                  <button
+                    onClick={(e) => { e.preventDefault(); togglePin(ub.badgeId); }}
+                    disabled={isPinned || (!isPinned && pinnedBadgeIds.length >= 5)}
+                    className={`absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-white transition-all shadow-sm ${
+                      isPinned
+                        ? "bg-[#229C62]"
+                        : pinnedBadgeIds.length >= 5
+                          ? "bg-slate-300 cursor-not-allowed"
+                          : "bg-slate-400 hover:bg-[#229C62] opacity-0 group-hover:opacity-100"
+                    }`}
+                    title={isPinned ? "Unpin badge" : pinnedBadgeIds.length >= 5 ? "Max 5 pinned" : "Pin badge"}
+                  >
+                    <Pin size={10} />
+                  </button>
+                </div>
               );
             })}
           </div>

@@ -65,7 +65,7 @@ export default function LeaderboardPage() {
 
   const filteredOperators = useMemo(() => {
     return leaderboard
-      .filter((op) => (op.name || op.email || "").toLowerCase().includes(filter.toLowerCase()))
+      .filter((op) => (op.name || op.username || op.email || "").toLowerCase().includes(filter.toLowerCase()))
       .filter((op) => {
         if (activeLeague === "GLOBAL") return true;
         if (activeLeague === "REGIONAL") return op.city === selectedCity;
@@ -237,13 +237,13 @@ export default function LeaderboardPage() {
               idx === 2 ? "bg-slate-500 text-white" :
               "bg-slate-100 text-slate-600"
             }`}>
-              {op.name?.[0] || '?'}
+              {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
             </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-base font-semibold text-slate-900 truncate">{op.name}</p>
+                <p className="text-base font-semibold text-slate-900 truncate">{op.username || op.name}</p>
                 <Badge variant={(DIVISION_COLORS[op.division] as "emerald" | "blue" | "amber" | "red" | "slate") || "slate"}>
                   {op.division}
                 </Badge>
@@ -256,6 +256,9 @@ export default function LeaderboardPage() {
               <p className="text-sm text-slate-500 mt-0.5">
                 {op.organization?.name || "Independent"} • {op.city || "Unknown"}
               </p>
+              {op.username && (
+                <p className="text-xs text-slate-400 mt-0.5">@{op.username}</p>
+              )}
             </div>
 
             {/* Score */}
