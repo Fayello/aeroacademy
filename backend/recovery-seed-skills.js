@@ -135,15 +135,18 @@ async function main() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
 
+  const now2 = new Date();
+  const startOfDay = new Date(now2); startOfDay.setHours(0,0,0,0);
+  const endOfDay = new Date(now2); endOfDay.setHours(23,59,59,999);
   const missions = [
-    { title: 'Flag Catcher', description: 'Capture 3 flags across any labs', type: 'DAILY', xpReward: 150, target: 3, metadata: { trigger: 'FLAG_CAPTURES' }, expiresAt: tomorrow },
-    { title: 'Lab Explorer', description: 'Start a new lab session', type: 'DAILY', xpReward: 50, target: 1, metadata: { trigger: 'LAB_START' }, expiresAt: tomorrow },
-    { title: 'Code Warrior', description: 'Submit 5 answers in any lab', type: 'DAILY', xpReward: 100, target: 5, metadata: { trigger: 'FLAG_SUBMISSIONS' }, expiresAt: tomorrow },
+    { title: 'Flag Catcher', description: 'Capture 3 flags across any labs', type: 'DAILY_WARMUP', difficulty: 'EASY', objectiveType: 'FLAG_COMPLETIONS', objectiveTarget: 3, xpReward: 150, metadata: { trigger: 'FLAG_CAPTURES' }, startAt: startOfDay, endAt: endOfDay },
+    { title: 'Lab Explorer', description: 'Start a new lab session', type: 'DAILY_SKILL', difficulty: 'EASY', objectiveType: 'LAB_COMPLETIONS', objectiveTarget: 1, xpReward: 50, metadata: { trigger: 'LAB_START' }, startAt: startOfDay, endAt: endOfDay },
+    { title: 'Code Warrior', description: 'Submit 5 answers in any lab', type: 'DAILY_BOSS', difficulty: 'EASY', objectiveType: 'FLAG_COMPLETIONS', objectiveTarget: 5, xpReward: 100, metadata: { trigger: 'FLAG_SUBMISSIONS' }, startAt: startOfDay, endAt: endOfDay },
   ];
   for (const m of missions) {
-    const exists = await prisma.challenge.findFirst({ where: { title: m.title, type: 'DAILY' } });
+    const exists = await prisma.challenge.findFirst({ where: { title: m.title, type: m.type } });
     if (!exists) {
-      await prisma.challenge.create({ data: { ...m, difficulty: 'EASY' } });
+      await prisma.challenge.create({ data: m });
     }
   }
   console.log('Daily missions seeded.');
