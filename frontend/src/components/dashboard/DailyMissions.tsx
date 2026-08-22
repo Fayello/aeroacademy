@@ -19,6 +19,18 @@ interface Mission {
   progress: number;
   completed: boolean;
   claimedAt: string | null;
+  endAt: string;
+}
+
+function timeRemaining(endAt: string): string {
+  const now = new Date();
+  const end = new Date(endAt);
+  const diff = end.getTime() - now.getTime();
+  if (diff <= 0) return 'Expired';
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  if (days > 0) return `${days}d ${hours}h left`;
+  return `${hours}h left`;
 }
 
 const tierConfig: Record<string, { icon: typeof Target; color: string; bgColor: string; borderColor: string; label: string }> = {
@@ -42,6 +54,20 @@ const tierConfig: Record<string, { icon: typeof Target; color: string; bgColor: 
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/30',
     label: 'Boss',
+  },
+  weekly: {
+    icon: Target,
+    color: 'text-purple-400',
+    bgColor: 'bg-purple-500/10',
+    borderColor: 'border-purple-500/30',
+    label: 'Weekly',
+  },
+  monthly: {
+    icon: Trophy,
+    color: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/10',
+    borderColor: 'border-yellow-500/30',
+    label: 'Monthly',
   },
 };
 
@@ -144,6 +170,12 @@ export default function DailyMissions() {
                         </span>
                         <span className="text-[10px] text-white/30">•</span>
                         <span className="text-[10px] text-white/40">{mission.xpReward} XP</span>
+                        {(mission.type === 'weekly' || mission.type === 'monthly') && (
+                          <>
+                            <span className="text-[10px] text-white/30">•</span>
+                            <span className="text-[10px] text-purple-300/60">{timeRemaining(mission.endAt)}</span>
+                          </>
+                        )}
                       </div>
                       <h3 className="text-sm font-medium text-white mt-1 truncate">{mission.title}</h3>
                       <p className="text-xs text-white/50 mt-0.5">{mission.description}</p>
