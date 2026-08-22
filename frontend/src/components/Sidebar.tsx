@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route, Users, Medal, UserPlus } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route, Users, Medal, UserPlus, Snowflake, Compass } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -26,6 +26,9 @@ const links: NavLink[] = [
   { href: "/dashboard/leaderboard", tKey: "leaderboard", icon: Trophy },
   { href: "/dashboard/teams", tKey: "my-teams", icon: Users },
   { href: "/dashboard/challenges", tKey: "challenges", icon: Target },
+  { href: "/dashboard/achievements", tKey: "achievements", icon: Award },
+  { href: "/dashboard/streak", tKey: "streak", icon: Flame },
+  { href: "/dashboard/recommendations", tKey: "recommendations", icon: Compass },
   { href: "/dashboard/badges", tKey: "badges", icon: Award },
   { href: "/dashboard/assessments", tKey: "assessments", icon: ClipboardCheck },
   { href: "/dashboard/analytics", tKey: "my-analytics", icon: BarChart3 },

@@ -27,6 +27,30 @@ export class TeamEnrollmentsController {
     return this.teamEnrollmentsService.getCourseTeams(courseId);
   }
 
+  // V2: Self-service team creation
+  @Post('create')
+  createTeam(
+    @Req() req: any,
+    @Body() body: { name: string; description?: string },
+  ) {
+    return this.teamEnrollmentsService.createTeam(req.user.id, body.name, body.description);
+  }
+
+  // V2: Join team
+  @Post('join')
+  joinTeam(
+    @Req() req: any,
+    @Body() body: { teamName: string },
+  ) {
+    return this.teamEnrollmentsService.joinTeam(req.user.id, body.teamName);
+  }
+
+  // V2: Leave team
+  @Delete('leave')
+  leaveTeam(@Req() req: any) {
+    return this.teamEnrollmentsService.leaveTeam(req.user.id);
+  }
+
   @Post(':teamId/enroll/:courseId')
   enrollTeam(
     @Req() req: any,

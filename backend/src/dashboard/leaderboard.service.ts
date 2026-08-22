@@ -312,4 +312,96 @@ export class LeaderboardService {
       season: activeSeason,
     };
   }
+
+  // V2: Team leaderboard
+  async getTeamLeaderboard(limit = 50) {
+    const teams = await this.prisma.team.findMany({
+      include: {
+        members: {
+          select: { xp: true },
+        },
+      },
+    });
+
+    return teams
+      .map((team) => ({
+        id: team.id,
+        name: team.name,
+        description: team.description,
+        memberCount: team.members.length,
+        totalXp: team.members.reduce((sum, m) => sum + m.xp, 0),
+        avgXp: team.members.length > 0 ? Math.round(team.members.reduce((sum, m) => sum + m.xp, 0) / team.members.length) : 0,
+      }))
+      .sort((a, b) => b.totalXp - a.totalXp)
+      .slice(0, limit)
+      .map((team, index) => ({ ...team, position: index + 1 }));
+  }
+
+  // V2: Season snapshot
+  async createSnapshot(period: 'WEEKLY' | 'MONTHLY' | 'SEASONAL') {
+    const leaderboard = await this.getGlobalLeaderboard(100);
+    const snapshot = await this.prisma.leaderboardSnapshot.create({
+      data: {
+        period,
+        data: leaderboard as any,
+      },
+    });
+    return snapshot;
+  }
+
+  async getSnapshotHistory(period: string, limit = 10) {
+    return this.prisma.leaderboardSnapshot.findMany({
+      where: { period },
+      orderBy: { snapshotAt: 'desc' },
+      take: limit,
+    });
+  }
+
+  // V2: Head-to-head comparison
+  async getHeadToHead(userId1: string, userId2: string) {
+    const [user1, user2] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: userId1 },
+        select: {
+          id: true, name: true, username: true, xp: true, rank: true,
+          division: true, currentStreak: true, longestStreak: true,
+          achievements: { include: { achievement: true } },
+        },
+      }),
+      this.prisma.user.findUnique({
+        where: { id: userId2 },
+        select: {
+          id: true, name: true, username: true, xp: true, rank: true,
+          division: true, currentStreak: true, longestStreak: true,
+          achievements: { include: { achievement: true } },
+        },
+      }),
+    ]);
+
+    if (!user1 || !user2) return null;
+
+    const [flags1, flags2, labs1, labs2] = await Promise.all([
+      this.prisma.labSubmission.count({ where: { userId: userId1, isCorrect: true } }),
+      this.prisma.labSubmission.count({ where: { userId: userId2, isCorrect: true } }),
+      this.prisma.labSubmission.findMany({ where: { userId: userId1, isCorrect: true }, select: { flag: { select: { labId: true } } } }).then((s) => new Set(s.map((x) => x.flag.labId)).size),
+      this.prisma.labSubmission.findMany({ where: { userId: userId2, isCorrect: true }, select: { flag: { select: { labId: true } } } }).then((s) => new Set(s.map((x) => x.flag.labId)).size),
+    ]);
+
+    return {
+      user1: {
+        ...user1,
+        level: Math.floor(user1.xp / 1000) + 1,
+        flagsCaptured: flags1,
+        labsCompleted: labs1,
+        achievementsCount: user1.achievements.length,
+      },
+      user2: {
+        ...user2,
+        level: Math.floor(user2.xp / 1000) + 1,
+        flagsCaptured: flags2,
+        labsCompleted: labs2,
+        achievementsCount: user2.achievements.length,
+      },
+    };
+  }
 }

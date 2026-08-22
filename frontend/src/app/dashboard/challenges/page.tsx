@@ -14,6 +14,8 @@ import {
   Zap,
   Swords,
   Calendar,
+  Crown,
+  Users,
 } from "lucide-react";
 
 interface Challenge {
@@ -56,11 +58,29 @@ const typeConfig: Record<string, { label: string; icon: typeof Trophy; color: st
   DAILY_WARMUP: { label: "Warmup", icon: Flame, color: "text-orange-700", bg: "bg-orange-50", border: "border-orange-200" },
   DAILY_SKILL: { label: "Skill", icon: Target, color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200" },
   DAILY_BOSS: { label: "Boss", icon: Swords, color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-200" },
+  WEEKLY: { label: "Weekly", icon: Calendar, color: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-200" },
+  MONTHLY: { label: "Monthly", icon: Crown, color: "text-yellow-700", bg: "bg-yellow-50", border: "border-yellow-200" },
+  SEASONAL: { label: "Seasonal", icon: Zap, color: "text-cyan-700", bg: "bg-cyan-50", border: "border-cyan-200" },
+  TEAM_WEEKLY: { label: "Team", icon: Users, color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200" },
 };
+
+function timeRemaining(endAt: string): string {
+  const now = new Date();
+  const end = new Date(endAt);
+  const diff = end.getTime() - now.getTime();
+  if (diff <= 0) return "Expired";
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  if (days > 7) return `${days}d left`;
+  if (days > 0) return `${days}d ${hours}h left`;
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${minutes}m left`;
+}
 
 export default function ChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "daily" | "weekly" | "monthly" | "seasonal" | "team">("all");
 
   useEffect(() => {
     async function load() {
@@ -76,6 +96,16 @@ export default function ChallengesPage() {
     load();
   }, []);
 
+  const filteredChallenges = challenges.filter((c) => {
+    if (filter === "all") return true;
+    if (filter === "daily") return c.type.startsWith("DAILY_");
+    if (filter === "weekly") return c.type === "WEEKLY";
+    if (filter === "monthly") return c.type === "MONTHLY";
+    if (filter === "seasonal") return c.type === "SEASONAL";
+    if (filter === "team") return c.type === "TEAM_WEEKLY";
+    return true;
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -88,20 +118,37 @@ export default function ChallengesPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Daily Missions</h1>
-          <p className="text-sm text-slate-500 mt-1">Complete daily challenges to earn rewards</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Missions</h1>
+          <p className="text-sm text-slate-500 mt-1">Complete challenges to earn XP and level up</p>
         </div>
       </div>
 
-      {challenges.length === 0 ? (
+      {/* Filter tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {(["all", "daily", "weekly", "monthly", "seasonal", "team"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              filter === f
+                ? "bg-slate-800 text-white"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {filteredChallenges.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
           <Trophy size={32} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-sm text-slate-500">No active missions right now</p>
-          <p className="text-xs text-slate-400 mt-1">Check back later for new daily missions</p>
+          <p className="text-sm text-slate-500">No missions in this category</p>
+          <p className="text-xs text-slate-400 mt-1">Check back later for new challenges</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {challenges.map((challenge) => {
+          {filteredChallenges.map((challenge) => {
             const ObjIcon = objectiveIcons[challenge.objectiveType] || Target;
             const diff = difficultyConfig[challenge.difficulty] || difficultyConfig.MEDIUM;
             const type = typeConfig[challenge.type] || typeConfig.DAILY_SKILL;

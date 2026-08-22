@@ -175,7 +175,75 @@ export class MissionService implements OnModuleInit {
       },
     });
 
+    // V2: Daily combo — if all 3 dailies claimed today, award combo bonus
+    if (userChallenge.challenge.type.startsWith('DAILY_')) {
+      await this.checkDailyCombo(userId);
+    }
+
     return result;
+  }
+
+  private async checkDailyCombo(userId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todayDailies = await this.prisma.userChallenge.findMany({
+      where: {
+        userId,
+        claimedAt: { not: null },
+        challenge: {
+          type: { startsWith: 'DAILY_' },
+          startAt: { gte: today },
+          endAt: { lt: tomorrow },
+        },
+      },
+      include: { challenge: { select: { type: true } } },
+    });
+
+    const uniqueDailyTypes = new Set(todayDailies.map((uc) => uc.challenge.type));
+    const allThreeCompleted = uniqueDailyTypes.has('DAILY_WARMUP') &&
+      uniqueDailyTypes.has('DAILY_SKILL') &&
+      uniqueDailyTypes.has('DAILY_BOSS');
+
+    if (allThreeCompleted) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      if (!user) return;
+
+      const lastComboDate = user.lastDailyComboDate;
+      const lastDay = lastComboDate ? new Date(lastComboDate) : null;
+      lastDay?.setHours(0, 0, 0, 0);
+      const diffDays = lastDay ? Math.floor((today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+
+      // Increment combo streak if consecutive days, reset to 1 otherwise
+      const newCombo = diffDays === 1 ? user.dailyMissionCombo + 1 : 1;
+
+      // Combo XP: 100 base + 50 per consecutive day (max 500)
+      const comboBonus = Math.min(100 + (newCombo - 1) * 50, 500);
+
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          dailyMissionCombo: newCombo,
+          lastDailyComboDate: today,
+        },
+      });
+
+      await this.progressionService.awardXP(userId, {
+        amount: comboBonus,
+        source: 'DAILY_COMBO',
+      }).catch((err) => this.logger.error('ProgressionService.awardXP failed for combo bonus', err));
+
+      this.logger.log(`Daily combo ${newCombo}x for user ${userId}: +${comboBonus} XP`);
+
+      this.eventsService.emit('DAILY_COMBO', {
+        userId,
+        combo: newCombo,
+        bonusXp: comboBonus,
+        timestamp: new Date().toISOString(),
+      });
+    }
   }
 
   async checkProgress(userId: string, eventType: string, entityId?: string) {

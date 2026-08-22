@@ -31,6 +31,10 @@ model User {
   currentStreak            Int                       @default(0)
   longestStreak            Int                       @default(0)
   lastActivityDate         DateTime?
+  streakFreezes            Int                       @default(0)
+  lastStreakFreezeUsedAt   DateTime?
+  dailyMissionCombo        Int                       @default(0)
+  lastDailyComboDate       DateTime?
   welcomeDripSent          Json                      @default("[]")
   lastEmailSentAt          DateTime?
   emailPreferences         Json                      @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true,\"streaks\":true,\"labCompletions\":true}")
@@ -66,6 +70,7 @@ model User {
   discussionPosts          DiscussionPost[]
   discussionComments       DiscussionComment[]
   discussionVotes          DiscussionVote[]
+  preference               UserPreference?
 
   @@index([googleId])
   @@index([role])
@@ -252,19 +257,30 @@ model LabInstance {
 }
 
 model Achievement {
-  id          String            @id @default(uuid())
-  title       String            @unique
-  description String
-  icon        String
-  category    String
-  xpReward    Int               @default(0)
-  users       UserAchievement[]
+  id              String            @id @default(uuid())
+  title           String            @unique
+  description     String
+  icon            String
+  category        String            // MILESTONE, MASTERY, STREAK, SOCIAL, CHALLENGE
+  xpReward        Int               @default(0)
+  rarity          String            @default("COMMON") // COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
+  requirementType String            // FLAGS_CAPTURED, LABS_COMPLETED, STREAK_DAYS, LEVEL_REACHED, etc.
+  requirementTarget Int             @default(1)
+  chainParentId   String?
+  chainOrder      Int               @default(0)
+  isActive        Boolean           @default(true)
+  users           UserAchievement[]
+
+  chainParent Achievement? @relation("AchievementChain", fields: [chainParentId], references: [id])
+  chainChildren Achievement[] @relation("AchievementChain")
 }
 
 model UserAchievement {
   userId        String
   achievementId String
   unlockedAt    DateTime    @default(now())
+  progress      Int         @default(0)
+  target        Int         @default(1)
   achievement   Achievement @relation(fields: [achievementId], references: [id])
   user          User        @relation(fields: [userId], references: [id])
 
@@ -506,15 +522,22 @@ model CourseReview {
 }
 
 model LearningPath {
-  id          String              @id @default(uuid())
-  title       String
-  description String
-  imageUrl    String?
-  difficulty  String              @default("BEGINNER")
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  courses     LearningPathCourse[]
-  enrollments LearningPathEnrollment[]
+  id              String              @id @default(uuid())
+  title           String
+  description     String
+  imageUrl        String?
+  difficulty      String              @default("BEGINNER")
+  prerequisitePathId String?
+  careerRole      String?             // "SOC Analyst", "DevOps Engineer", etc.
+  certificationName String?
+  estimatedHours  Int?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  courses         LearningPathCourse[]
+  enrollments     LearningPathEnrollment[]
+
+  prerequisitePath LearningPath? @relation("PathPrerequisite", fields: [prerequisitePathId], references: [id])
+  prerequisiteFor  LearningPath[] @relation("PathPrerequisite")
 }
 
 model LearningPathCourse {
@@ -815,4 +838,32 @@ model ProgressionEvent {
 
   @@index([userId, createdAt])
   @@index([type])
+}
+
+// ─── V2: PERSONALIZATION ────────────────────────────────────────
+
+model UserPreference {
+  id       String @id @default(uuid())
+  userId   String @unique
+  interests String[] @default([]) // ["security", "devops", "networking"]
+  weakSkills String[] @default([]) // Skills the user struggles with
+  preferredDifficulty String @default("MEDIUM")
+  notificationsEnabled Boolean @default(true)
+  weeklyDigestEnabled  Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── V2: LEADERBOARD SNAPSHOTS ──────────────────────────────────
+
+model LeaderboardSnapshot {
+  id        String   @id @default(uuid())
+  seasonId  String?
+  period    String   // WEEKLY, MONTHLY, SEASONAL
+  snapshotAt DateTime @default(now())
+  data      Json     // Array of { userId, xp, rank, division, position }
+
+  @@index([period, snapshotAt])
 }

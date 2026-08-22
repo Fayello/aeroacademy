@@ -4,6 +4,7 @@ import { DashboardGateway } from './dashboard.gateway';
 import { DashboardController } from './dashboard.controller';
 import { LeaderboardService } from './leaderboard.service';
 import { AchievementService } from './achievement.service';
+import { PersonalizationService } from '../common/personalization.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { LabsModule } from '../labs/labs.module';
 import { AuthModule } from '../auth/auth.module';
@@ -17,7 +18,8 @@ import { EventsModule } from '../common/events.module';
     DashboardGateway,
     LeaderboardService,
     AchievementService,
+    PersonalizationService,
   ],
-  exports: [DashboardService, LeaderboardService, AchievementService],
+  exports: [DashboardService, LeaderboardService, AchievementService, PersonalizationService],
 })
 export class DashboardModule {}

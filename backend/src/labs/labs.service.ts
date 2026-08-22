@@ -700,6 +700,12 @@ export class LabsService implements OnModuleInit {
         points: flag.points,
         timestamp: new Date(),
       });
+    } else {
+      // V2: ELO adjustment for incorrect submissions
+      const lab = await this.prisma.lab.findUnique({ where: { id: flag.labId } });
+      if (lab) {
+        await this.leaguesService.calculateUserElo(userId, lab.difficulty, false).catch(() => {});
+      }
     }
 
     return {
