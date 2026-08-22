@@ -33,9 +33,7 @@ interface UserBadge {
 interface UserProfile extends User {
   currentStreak?: number;
   longestStreak?: number;
-  lastActivityDate?: string;
-  bio?: string;
-  city?: string;
+  lastActivityDate?: string | null;
   timezone?: string;
   organization?: { id: string; name: string; type: string } | null;
   level?: number;
