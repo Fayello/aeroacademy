@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { auth, API_URL } from "@/lib/api";
+import { auth, API_URL, API_VERSION } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
