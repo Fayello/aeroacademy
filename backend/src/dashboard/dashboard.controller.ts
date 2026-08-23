@@ -11,7 +11,7 @@ import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('dashboard')
-@Controller('dashboard')
+@Controller('v1/dashboard')
 export class DashboardController {
   constructor(
     private leaderboardService: LeaderboardService,

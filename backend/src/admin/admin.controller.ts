@@ -123,7 +123,7 @@ class UpdateChallengeDto {
 
 @ApiTags('admin')
 @ApiBearerAuth('JWT-auth')
-@Controller('admin')
+@Controller('v1/admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.ADMIN, Role.RECRUITER)
 export class AdminController {

@@ -8,7 +8,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('badges')
 @ApiBearerAuth('JWT-auth')
-@Controller('badges')
+@Controller('v1/badges')
 @UseGuards(AuthGuard('jwt'))
 export class BadgesController {
   constructor(private badgesService: BadgesService) {}

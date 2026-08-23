@@ -9,7 +9,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('challenges')
 @ApiBearerAuth('JWT-auth')
-@Controller('challenges')
+@Controller('v1/challenges')
 @UseGuards(AuthGuard('jwt'))
 export class ChallengesController {
   constructor(

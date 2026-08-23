@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { CoursesService } from '../courses/courses.service';
 
-@Controller('verify')
+@Controller('v1/verify')
 export class VerifyController {
   constructor(private coursesService: CoursesService) {}
 

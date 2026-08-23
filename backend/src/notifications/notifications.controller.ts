@@ -19,7 +19,7 @@ interface RequestWithUser extends ExpressRequest {
 
 @ApiTags('Notifications')
 @ApiBearerAuth('JWT-auth')
-@Controller('notifications')
+@Controller('v1/notifications')
 @UseGuards(AuthGuard('jwt'))
 export class NotificationsController {
   constructor(private notificationsService: NotificationsService) {}

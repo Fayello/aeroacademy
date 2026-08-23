@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { RankingService } from './ranking.service';
 
-@Controller('ranking')
+@Controller('v2/ranking')
 export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
 

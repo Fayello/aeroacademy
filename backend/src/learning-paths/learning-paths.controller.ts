@@ -18,7 +18,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('learning-paths')
 @ApiBearerAuth('JWT-auth')
-@Controller('learning-paths')
+@Controller('v1/learning-paths')
 @UseGuards(AuthGuard('jwt'))
 export class LearningPathsController {
   constructor(private learningPathsService: LearningPathsService) {}

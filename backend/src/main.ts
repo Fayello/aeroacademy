@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Request, Response, NextFunction } from 'express';
+import { API_PREFIX_V1 } from './common/api-version';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -76,7 +77,7 @@ async function bootstrap() {
       )
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api/1/docs', app, document, {
+    SwaggerModule.setup(`${API_PREFIX_V1}/docs`, app, document, {
       swaggerOptions: { persistAuthorization: true, docExpansion: 'none' },
     });
     logger.log('Swagger documentation available at /api/docs');

@@ -32,7 +32,7 @@ interface CreateMasterClassDto {
 }
 
 @ApiTags('master-classes')
-@Controller('master-classes')
+@Controller('v1/master-classes')
 export class MasterClassesController {
   constructor(private masterClassesService: MasterClassesService) {}
 

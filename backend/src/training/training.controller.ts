@@ -21,7 +21,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 import type { Prisma } from '@prisma/client';
 
 @ApiTags('training')
-@Controller('training')
+@Controller('v1/training')
 export class TrainingController {
   constructor(private trainingService: TrainingService) {}
 

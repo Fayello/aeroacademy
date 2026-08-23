@@ -20,7 +20,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('recruitment')
 @ApiBearerAuth('JWT-auth')
-@Controller('recruitment')
+@Controller('v1/recruitment')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles('ADMIN', 'RECRUITER')
 export class RecruitmentController {

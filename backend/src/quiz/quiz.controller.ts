@@ -18,7 +18,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('quiz')
 @ApiBearerAuth('JWT-auth')
-@Controller('quiz')
+@Controller('v1/quiz')
 @UseGuards(AuthGuard('jwt'))
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}

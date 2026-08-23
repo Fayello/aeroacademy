@@ -1,5 +1,5 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL !== undefined ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:4000';
-export const API_VERSION = '/api';
+export const API_VERSION = '/api/v1';
 
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;

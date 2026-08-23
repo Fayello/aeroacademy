@@ -6,7 +6,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('certifications')
 @ApiBearerAuth('JWT-auth')
-@Controller('certifications')
+@Controller('v1/certifications')
 @UseGuards(AuthGuard('jwt'))
 export class CertificationsController {
   constructor(private certificationsService: CertificationsService) {}

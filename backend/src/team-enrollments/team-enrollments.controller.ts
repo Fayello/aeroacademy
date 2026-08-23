@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Param, Body, Req, UseGuards } from '@nes
 import { AuthGuard } from '@nestjs/passport';
 import { TeamEnrollmentsService } from './team-enrollments.service';
 
-@Controller('team-enrollments')
+@Controller('v1/team-enrollments')
 @UseGuards(AuthGuard('jwt'))
 export class TeamEnrollmentsController {
   constructor(private teamEnrollmentsService: TeamEnrollmentsService) {}

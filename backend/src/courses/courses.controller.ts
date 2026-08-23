@@ -20,7 +20,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('courses')
 @ApiBearerAuth('JWT-auth')
-@Controller('courses')
+@Controller('v1/courses')
 @UseGuards(AuthGuard('jwt'))
 export class CoursesController {
   constructor(private coursesService: CoursesService) {}

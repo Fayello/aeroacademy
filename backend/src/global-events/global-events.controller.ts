@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { GlobalEventsService } from './global-events.service';
 
-@Controller('global-events')
+@Controller('v2/global-events')
 export class GlobalEventsController {
   constructor(private readonly globalEventsService: GlobalEventsService) {}
 

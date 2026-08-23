@@ -8,7 +8,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('analytics')
 @ApiBearerAuth('JWT-auth')
-@Controller('analytics')
+@Controller('v1/analytics')
 @UseGuards(AuthGuard('jwt'))
 export class AnalyticsController {
   constructor(private analyticsService: AnalyticsService) {}

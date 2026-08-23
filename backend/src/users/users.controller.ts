@@ -21,7 +21,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('admin-users')
 @ApiBearerAuth('JWT-auth')
-@Controller('admin/users')
+@Controller('v1/admin/users')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles('ADMIN')
 export class UsersController {

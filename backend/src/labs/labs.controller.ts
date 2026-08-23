@@ -23,7 +23,7 @@ import { BatchIdsDto, BatchLabStopDto } from '../common/batch.dto';
 import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('labs')
-@Controller('labs')
+@Controller('v1/labs')
 export class LabsController {
   constructor(private readonly labsService: LabsService) {}
 

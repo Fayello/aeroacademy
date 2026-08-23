@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Patch, Param, Body, Query, Req, UseGuard
 import { AuthGuard } from '@nestjs/passport';
 import { DiscussionsService } from './discussions.service';
 
-@Controller('discussions')
+@Controller('v1/discussions')
 @UseGuards(AuthGuard('jwt'))
 export class DiscussionsController {
   constructor(private discussionsService: DiscussionsService) {}

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { BattlePassService } from './battle-pass.service';
 
-@Controller('battle-pass')
+@Controller('v2/battle-pass')
 export class BattlePassController {
   constructor(private readonly battlePassService: BattlePassService) {}
 

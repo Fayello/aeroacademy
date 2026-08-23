@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { CourseAdminService } from './course-admin.service';
 
-@Controller('admin/courses')
+@Controller('v1/admin/courses')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CourseAdminController {
   constructor(private courseAdminService: CourseAdminService) {}

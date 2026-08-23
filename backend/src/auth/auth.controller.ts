@@ -50,7 +50,7 @@ interface GoogleUserProfile {
 }
 
 @ApiTags('auth')
-@Controller('auth')
+@Controller('v1/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,

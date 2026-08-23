@@ -17,7 +17,7 @@ import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('progress')
 @ApiBearerAuth('JWT-auth')
-@Controller('progress')
+@Controller('v1/progress')
 @UseGuards(AuthGuard('jwt'))
 export class ProgressController {
   constructor(private progressService: ProgressService) {}
