@@ -6,7 +6,7 @@ import {
   Award, Flame, Zap, Flag, Target, Crosshair, Crown, Compass, Library,
   Footprints, GraduationCap, MapPin, Building2, Calendar, Users, Brain,
   Flame as FireIcon, Activity, ChevronRight, BarChart3, Medal, Ticket,
-  ExternalLink, CheckCircle, Pin,
+  ExternalLink, CheckCircle, Pin, Settings, Bell, UserPlus, Route, Video, ClipboardCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -936,6 +936,33 @@ export default function ProfilePage() {
 
       {/* Skill Profile */}
       <SkillProfile />
+
+      {/* Quick Links */}
+      <div className="rounded-xl border border-slate-200 bg-white p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">More</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {[
+            { href: "/dashboard/profile/edit", label: "Settings", icon: Settings },
+            { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+            { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
+            { href: "/dashboard/certifications", label: "Certifications", icon: Medal },
+            { href: "/dashboard/referrals", label: "Referrals", icon: UserPlus },
+            { href: "/dashboard/learning-paths", label: "Learning Paths", icon: Route },
+            { href: "/dashboard/master-classes", label: "Master Classes", icon: Video },
+            { href: "/dashboard/assessments", label: "Assessments", icon: ClipboardCheck },
+            { href: "/dashboard/registry", label: "Registry", icon: Shield },
+          ].map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/50 transition-all"
+            >
+              <Icon size={16} className="text-slate-400" />
+              <span className="text-sm text-slate-700">{label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

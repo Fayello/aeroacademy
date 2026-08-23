@@ -18,16 +18,8 @@ const links = [
 
 const moreLinks = [
   { href: "/dashboard/labs", tKey: "labs" },
-  { href: "/dashboard/learning-paths", tKey: "learning-paths" },
-  { href: "/dashboard/master-classes", tKey: "master-classes" },
-  { href: "/dashboard/training", tKey: "training" },
   { href: "/dashboard/challenges", tKey: "challenges" },
-  { href: "/dashboard/achievements", tKey: "achievements" },
-  { href: "/dashboard/streak", tKey: "streak" },
-  { href: "/dashboard/recommendations", tKey: "recommendations" },
-  { href: "/dashboard/badges", tKey: "badges" },
   { href: "/dashboard/teams", tKey: "my-teams" },
-  { href: "/dashboard/registry", tKey: "registry" },
 ];
 
 export default function BottomNav() {

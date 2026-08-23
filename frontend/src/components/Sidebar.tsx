@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Video, Calendar, BarChart3, ScrollText, Bell, Settings, Flame, Target, ClipboardCheck, Route, Users, Medal, UserPlus, Snowflake, Compass } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Target, ClipboardCheck, Route, Users, BarChart3, ScrollText } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -19,23 +19,11 @@ interface NavLink {
 const links: NavLink[] = [
   { href: "/dashboard", tKey: "dashboard", icon: LayoutDashboard },
   { href: "/dashboard/courses", tKey: "courses", icon: GraduationCap },
-  { href: "/dashboard/learning-paths", tKey: "learning-paths", icon: Route },
   { href: "/dashboard/labs", tKey: "labs", icon: Microscope },
-  { href: "/dashboard/master-classes", tKey: "master-classes", icon: Video },
-  { href: "/dashboard/training", tKey: "training", icon: Calendar },
   { href: "/dashboard/leaderboard", tKey: "leaderboard", icon: Trophy },
   { href: "/dashboard/teams", tKey: "my-teams", icon: Users },
   { href: "/dashboard/challenges", tKey: "challenges", icon: Target },
-  { href: "/dashboard/achievements", tKey: "achievements", icon: Award },
-  { href: "/dashboard/streak", tKey: "streak", icon: Flame },
-  { href: "/dashboard/recommendations", tKey: "recommendations", icon: Compass },
-  { href: "/dashboard/badges", tKey: "badges", icon: Award },
-  { href: "/dashboard/assessments", tKey: "assessments", icon: ClipboardCheck },
-  { href: "/dashboard/analytics", tKey: "my-analytics", icon: BarChart3 },
-  { href: "/dashboard/notifications", tKey: "notifications", icon: Bell },
-  { href: "/dashboard/certifications", tKey: "certifications", icon: Medal },
-  { href: "/dashboard/referrals", tKey: "referrals", icon: UserPlus },
-  { href: "/dashboard/registry", tKey: "registry", icon: Shield },
+  { href: "/dashboard/profile", tKey: "profile", icon: User },
   { href: "/dashboard/enterprise", tKey: "enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
   { href: "/dashboard/admin", tKey: "admin", icon: Award, roles: ["ADMIN"] },
   { href: "/dashboard/admin/challenges", tKey: "admin-challenges", icon: Target, roles: ["ADMIN"] },
@@ -45,8 +33,6 @@ const links: NavLink[] = [
   { href: "/dashboard/admin/teams", tKey: "admin-teams", icon: Users, roles: ["ADMIN"] },
   { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3, roles: ["ADMIN"] },
   { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText, roles: ["ADMIN"] },
-  { href: "/dashboard/profile", tKey: "profile", icon: User },
-  { href: "/dashboard/profile/edit", tKey: "settings", icon: Settings },
 ];
 
 export default function Sidebar() {
