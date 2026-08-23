@@ -43,6 +43,9 @@ model User {
   referredBy               String?
   teamId                   String?
   team                     Team?                     @relation(fields: [teamId], references: [id])
+  bossAttempts             BossMissionAttempt[]
+  globalEventParticipation GlobalEventParticipant[]
+  crossDomainProgress      CrossDomainProgress[]
   ownedTeams               Team[]                    @relation("TeamOwner")
   labInstances             LabInstance[]
   labSubmissions           LabSubmission[]
@@ -91,12 +94,19 @@ model Team {
 }
 
 model Season {
-  id        String   @id @default(uuid())
-  name      String
-  startDate DateTime
-  endDate   DateTime
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  name          String
+  theme         String?
+  xpMultiplier  Float    @default(1.0)
+  startDate     DateTime
+  endDate       DateTime
+  isActive      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  battlePass    BattlePass?
+  bossMissions  BossMission[]
+  globalEvents  GlobalEvent[]
+  snapshots     LeaderboardSnapshot[]
 }
 
 model Organization {
@@ -865,5 +875,218 @@ model LeaderboardSnapshot {
   snapshotAt DateTime @default(now())
   data      Json     // Array of { userId, xp, rank, division, position }
 
+  season Season? @relation(fields: [seasonId], references: [id])
+
   @@index([period, snapshotAt])
+}
+
+// ─── V3: BATTLE PASS ──────────────────────────────────────────────
+
+model BattlePass {
+  id         String   @id @default(uuid())
+  seasonId   String   @unique
+  title      String
+  totalTiers Int      @default(50)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  season Season @relation(fields: [seasonId], references: [id])
+  tiers  BattlePassTier[]
+}
+
+model BattlePassTier {
+  id          String   @id @default(uuid())
+  battlePassId String
+  tierNumber  Int
+  title       String
+  description String?
+  xpRequired  Int
+  rewards     Json     // [{ type: 'BADGE', id, name }, { type: 'TITLE', title: 'X' }]
+  isPremium   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  battlePass BattlePass    @relation(fields: [battlePassId], references: [id])
+  progress   BattlePassProgress[]
+
+  @@unique([battlePassId, tierNumber])
+  @@index([battlePassId])
+}
+
+model BattlePassProgress {
+  id         String    @id @default(uuid())
+  userId     String
+  tierId     String
+  currentXp  Int       @default(0)
+  unlocked   Boolean   @default(false)
+  unlockedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  tier BattlePassTier   @relation(fields: [tierId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tierId])
+  @@index([userId])
+  @@index([tierId])
+}
+
+// ─── V3: BOSS MISSIONS ──────────────────────────────────────────
+
+model BossMission {
+  id              String   @id @default(uuid())
+  seasonId        String?
+  title           String
+  description     String
+  difficulty      String   // EASY, MEDIUM, HARD, BOSS
+  maxAttempts     Int      @default(3)
+  xpReward        Int
+  badgeRewardId   String?
+  prerequisiteLabIds Json  @default("[]") // lab IDs required before attempting
+  labId           String?  // The lab the boss mission runs against
+  isActive        Boolean  @default(true)
+  startsAt        DateTime
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+
+  season   Season?              @relation(fields: [seasonId], references: [id])
+  attempts BossMissionAttempt[]
+
+  @@index([seasonId, isActive])
+  @@index([startsAt, expiresAt])
+}
+
+model BossMissionAttempt {
+  id           String   @id @default(uuid())
+  userId       String
+  bossId       String
+  score        Int      @default(0)
+  maxScore     Int      @default(100)
+  isCompleted  Boolean  @default(false)
+  completedAt  DateTime?
+  feedback     Json?
+  createdAt    DateTime @default(now())
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  boss BossMission  @relation(fields: [bossId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bossId])
+  @@index([userId])
+  @@index([bossId])
+}
+
+// ─── V3: CROSS-DOMAIN MISSIONS ─────────────────────────────────
+
+model CrossDomainMission {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  requiredDomains Json     // [{ domainId: 'xxx', minSkillXp: 500 }, ...]
+  xpReward        Int
+  badgeRewardId   String?
+  isActive        Boolean  @default(true)
+  startsAt        DateTime
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+
+  userProgress CrossDomainProgress[]
+
+  @@index([isActive, startsAt, expiresAt])
+}
+
+model CrossDomainProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  missionId String
+  progress  Json     // { domainId: currentXp, ... }
+  completed Boolean  @default(false)
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission CrossDomainMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, missionId])
+  @@index([userId])
+}
+
+// ─── V3: GLOBAL EVENTS ─────────────────────────────────────────
+
+model GlobalEvent {
+  id          String   @id @default(uuid())
+  seasonId    String?
+  title       String
+  description String
+  type        String   // COMMUNITY_XP, TEAM_COMPETITION, SPEEDRUN, COLLABORATIVE
+  targetXp    Int?     // Target XP for community events
+  targetCount Int?     // Target count for collaborative events
+  xpReward    Int      @default(0)
+  metadata    Json?    // { labId, speedrunTargetMinutes, ... }
+  startsAt    DateTime
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  season       Season?                @relation(fields: [seasonId], references: [id])
+  participants GlobalEventParticipant[]
+
+  @@index([seasonId, isActive])
+  @@index([startsAt, expiresAt])
+}
+
+model GlobalEventParticipant {
+  id        String   @id @default(uuid())
+  userId    String
+  eventId   String
+  progress  Int      @default(0)
+  completed Boolean  @default(false)
+  completedAt DateTime?
+  rewardClaimed Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event GlobalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}
+
+// ─── V3: ADVANCED RANKING ───────────────────────────────────────
+
+model RankingTier {
+  id          String @id @default(uuid())
+  name        String @unique // BRONZE, SILVER, GOLD, PLATINUM, DIAMOND, MASTER, GRANDMASTER
+  displayName String
+  icon        String?
+  minXp       Int
+  maxXp       Int
+  kFactor     Float  @default(32.0)  // ELO sensitivity
+  decayRate   Float  @default(0.0)   // Daily XP decay percentage
+  order       Int    @default(0)
+  isActive    Boolean @default(true)
+
+  @@index([minXp, maxXp])
+  @@index([order])
+}
+
+model RankingHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  fromTier  String
+  toTier    String
+  reason    String   // XP_REACH, DECAY, SEASON_RESET
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model WinStreak {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastWinDate    DateTime?
+  streakMultiplier Float @default(1.0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
 }

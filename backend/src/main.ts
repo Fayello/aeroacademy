@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
+import { VersioningType } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -11,6 +12,12 @@ async function bootstrap() {
 
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.set('trust proxy', 1);
+
+  app.setGlobalPrefix('api');
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
 
   // Security headers
   app.use(
@@ -74,7 +81,7 @@ async function bootstrap() {
       )
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api/docs', app, document, {
+    SwaggerModule.setup('api/1/docs', app, document, {
       swaggerOptions: { persistAuthorization: true, docExpansion: 'none' },
     });
     logger.log('Swagger documentation available at /api/docs');

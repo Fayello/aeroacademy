@@ -1,4 +1,5 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL !== undefined ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:4000';
+export const API_VERSION = '/api/1';
 
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;
@@ -14,7 +15,7 @@ async function redirectToLogin() {
   document.cookie = 'token=; path=/; max-age=0';
   document.cookie = 'refresh_token=; path=/; max-age=0';
   try {
-    await fetch(`${API_URL}/auth/logout`, {
+    await fetch(`${API_URL}${API_VERSION}/auth/logout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -51,7 +52,7 @@ async function refreshAccessToken(): Promise<string> {
   const timeout = setTimeout(() => controller.abort(), 15000);
   let res;
   try {
-    res = await fetch(`${API_URL}/auth/refresh`, {
+    res = await fetch(`${API_URL}${API_VERSION}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -97,7 +98,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
 
   let response;
   try {
-    response = await fetch(`${API_URL}${endpoint}`, {
+    response = await fetch(`${API_URL}${API_VERSION}${endpoint}`, {
       ...options,
       headers,
       credentials: 'include',
@@ -134,7 +135,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
         const retryController = new AbortController();
         const retryTimeout = setTimeout(() => retryController.abort(), 15000);
         try {
-          response = await fetch(`${API_URL}${endpoint}`, {
+          response = await fetch(`${API_URL}${API_VERSION}${endpoint}`, {
             ...options,
             headers,
             credentials: 'include',

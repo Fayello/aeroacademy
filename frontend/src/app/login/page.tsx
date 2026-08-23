@@ -58,7 +58,7 @@ export default function LoginPage() {
   const handleGoogleLogin = () => {
     const state = crypto.randomUUID();
     sessionStorage.setItem("oauth_state", state);
-    window.location.href = `${API_URL}/auth/google?state=${state}`;
+    window.location.href = `${API_URL}/api/1/auth/google?state=${state}`;
   };
 
   return (

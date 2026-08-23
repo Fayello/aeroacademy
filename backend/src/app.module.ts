@@ -33,6 +33,12 @@ import { TeamEnrollmentsModule } from './team-enrollments/team-enrollments.modul
 import { CourseAdminModule } from './course-admin/course-admin.module';
 import { CertificationsModule } from './certifications/certifications.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
+import { SeasonsModule } from './seasons/seasons.module';
+import { BattlePassModule } from './battle-pass/battle-pass.module';
+import { BossMissionsModule } from './boss-missions/boss-missions.module';
+import { GlobalEventsModule } from './global-events/global-events.module';
+import { RankingModule } from './ranking/ranking.module';
+import { CrossDomainModule } from './cross-domain/cross-domain.module';
 
 @Module({
   imports: [
@@ -73,6 +79,12 @@ import { OnboardingModule } from './onboarding/onboarding.module';
     CourseAdminModule,
     CertificationsModule,
     OnboardingModule,
+    SeasonsModule,
+    BattlePassModule,
+    BossMissionsModule,
+    GlobalEventsModule,
+    RankingModule,
+    CrossDomainModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

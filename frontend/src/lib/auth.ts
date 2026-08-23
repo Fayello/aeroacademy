@@ -1,10 +1,10 @@
 import Cookies from "js-cookie";
-import { API_URL } from "./api";
+import { API_URL, API_VERSION } from "./api";
 
 export async function logout() {
   const refreshToken = localStorage.getItem("refresh_token");
   try {
-    await fetch(`${API_URL}/auth/logout`, {
+    await fetch(`${API_URL}${API_VERSION}/auth/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
