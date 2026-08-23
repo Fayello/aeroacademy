@@ -10,7 +10,7 @@ interface Recommendations {
   learningPaths: { id: string; title: string; description: string; imageUrl: string | null; careerRole: string | null }[];
   labs: { id: string; title: string; description: string; difficulty: number }[];
   similarUsers: { id: string; name: string | null; username: string | null; xp: number }[];
-  insights: {
+  insights?: {
     weakDomains: string[];
     level: number;
     streak: number;
@@ -58,7 +58,7 @@ export default function RecommendationsPage() {
       </div>
 
       {/* Insights */}
-      {data.insights.weakDomains.length > 0 && (
+      {data.insights && data.insights.weakDomains && data.insights.weakDomains.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles size={16} className="text-amber-600" />
