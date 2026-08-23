@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { RankingService } from './ranking.service';
 
-@Controller({ path: 'ranking', version: '1.2' })
+@Controller('ranking')
 export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
 

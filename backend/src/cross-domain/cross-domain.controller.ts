@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { CrossDomainService } from './cross-domain.service';
 
-@Controller({ path: 'cross-domain', version: '1.2' })
+@Controller('cross-domain')
 export class CrossDomainController {
   constructor(private readonly crossDomainService: CrossDomainService) {}
 

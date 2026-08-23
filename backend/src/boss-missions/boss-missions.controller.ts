@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { BossMissionsService } from './boss-missions.service';
 
-@Controller({ path: 'boss-missions', version: '1.2' })
+@Controller('boss-missions')
 export class BossMissionsController {
   constructor(private readonly bossMissionsService: BossMissionsService) {}
 

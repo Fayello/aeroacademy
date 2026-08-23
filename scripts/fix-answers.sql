@@ -1,11 +1,16 @@
--- Fix broken answers that depend on system state
--- These answers are wrong because ls /tmp/*.log returns ALL files in /tmp, not just created ones
-
--- Lab 1 fixes
-UPDATE "LabFlag" SET description = 'Run: seq 1 5 | while read i; do touch /home/student/file_$i.log; done && ls /home/student/*.log | wc -l. How many .log files exist in /home/student/?', "correctAnswer" = '$2b$10$placeholder' WHERE title = 'Glob Master' AND "labId" = (SELECT id FROM "Lab" WHERE title = 'Linux Fundamentals: Ubuntu CLI Mastery');
--- Need to rehash '5' since we're changing the answer
-UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcFL7p92MWGf2buAmAKUGdkLGjgnYpR5p2m' WHERE title = 'Glob Master' AND "labId" = (SELECT id FROM "Lab" WHERE title = 'Linux Fundamentals: Ubuntu CLI Mastery');
-
-UPDATE "LabFlag" SET description = 'Run: mkdir -p /home/student/txtfiles && touch /home/student/txtfiles/{a,b,c}.txt && ls /home/student/txtfiles/*.txt | wc -l. How many .txt files?', "correctAnswer" = '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcFL7p92MWGf2buAmAKUGdkLGjgnYpR5p2m' WHERE title = 'Chain Commander' AND "labId" = (SELECT id FROM "Lab" WHERE title = 'Linux Fundamentals: Ubuntu CLI Mastery');
--- Rehash '3'
-UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$7V2Yv8rZw.KG.EJ8TgVbUO1TXvQG6t5dF8fG3hZ5kL9mN1pQ2rS4tV6u' WHERE title = 'Chain Commander' AND "labId" = (SELECT id FROM "Lab" WHERE title = 'Linux Fundamentals: Ubuntu CLI Mastery');
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$51bNY2cvGZiHzR4txTkXa..V1/eTF.yp7OA14fn.9X4KFCpB0muj.' WHERE "labId" = '11dc0358-43a4-4f7c-b6eb-e12274be5ff9' AND title = 'Join Master';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$EvFm2JneUZTAvPjO.kRu.O0ofke5iUXUuJpLi5W/5lHQ8rpNoguai' WHERE "labId" = '19200b65-cad3-4667-9c99-67a384e89b73' AND title = 'API Endpoints';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$iS6VZ83sLa2bF7oquiGlvOXwM/w1rN/oDxTfkWhqzH49vLHfE1oWm' WHERE "labId" = '19200b65-cad3-4667-9c99-67a384e89b73' AND title = 'Data Exposure';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$NKwZJUlsVsFo34N2tse7WOK74Rs6WWsx249rWv41OcSQt6WOdJ9Uq' WHERE "labId" = '19200b65-cad3-4667-9c99-67a384e89b73' AND title = 'JWT Exploit';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$APM21v9fum6z9w5w/oIcQerLGSA/B3fiUT3FWDoKqq8p/US.bShpu' WHERE "labId" = '19200b65-cad3-4667-9c99-67a384e89b73' AND title = 'API Enumeration';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$YZlYbg51ruIlNSGe1VUYcu5ANYqMyBKWA5hDQkgsKbWTpvPIVhltu' WHERE "labId" = 'fe4537d4-26f0-490d-ab31-d0bf480438c0' AND title = 'Stored XSS';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$yvhQ3OILnKSKS34buVTasuYBHJrOvzTaOKhxNF4om1uXiwUTtYRNK' WHERE "labId" = 'fe4537d4-26f0-490d-ab31-d0bf480438c0' AND title = 'CSRF Vulnerability';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$iwnX1OQ9Tg1Kw8nhmYiiXOSU5XHSt9JDeeYe/POgCxv06mLaiv6aq' WHERE "labId" = 'ec751ad2-399b-4ec8-8556-ac12cb4d231a' AND title = 'Persisted XSS';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$xfv2Dn8B/jYVOooi.iUCIOMnQYK9THce5Zj63vjRKNb01DVJcZYf2' WHERE "labId" = 'f85ec687-5b86-40e2-a73b-5366652a4b10' AND title = 'Hidden Fields';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$xphN/12ml.YqiHiWBBW4ouKMIPrNNkL4tom1fSykMGStKCgQPQuxi' WHERE "labId" = 'f85ec687-5b86-40e2-a73b-5366652a4b10' AND title = 'JWT Weakness';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$OHDpRtOAp68oTDQVlBqq7OwXoZ564uhAX6pUpoSlI122r9NEK23K.' WHERE "labId" = 'f85ec687-5b86-40e2-a73b-5366652a4b10' AND title = 'Form Validation';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$jkbpW4YuEe6cP9o74P1ax.jzKqitJzXNDoRGs5qhxsv3Qlm/Tc6IS' WHERE "labId" = '9c861331-b3f2-4322-94d5-bc64f312f46e' AND title = 'XSS Profile';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$5eSzjstNsK4WJ5.C.WXqk.eWXbgQg.fBUiTdVWa0Oifq9dKVzIgCe' WHERE "labId" = '9c861331-b3f2-4322-94d5-bc64f312f46e' AND title = 'API Enumeration';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$EB7ANtrJM84ww.cvcxzf3Os/WidHrMsth7sj.ZyooYyqejStDcxVW' WHERE "labId" = '869c9fbc-601d-460d-8ef1-fcac9a62d08a' AND title = 'Port Scanner';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$EdzsqeUZ3LTeNwD48EgWfupBc2TMUyoNifuJ0N/TKkAnXdUsx4iW2' WHERE "labId" = '869c9fbc-601d-460d-8ef1-fcac9a62d08a' AND title = 'Web Scanner';
+UPDATE "LabFlag" SET "correctAnswer" = '$2b$10$.o2kiaw1/tc0UduToUKM.OBIOWCUhTZikBvwWkX6kgLH5h7ng00sC' WHERE "labId" = '869c9fbc-601d-460d-8ef1-fcac9a62d08a' AND title = 'MySQL Enum';
