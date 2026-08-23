@@ -173,7 +173,7 @@ export class AuthController {
   googleAuth(@Query('state') state: string, @Res() res: Response) {
     // Redirect to Google with state passed through
     const clientId = process.env.GOOGLE_CLIENT_ID;
-    const redirectUri = `${process.env.BACKEND_URL || 'http://localhost:4000'}/auth/google/callback`;
+    const redirectUri = `${process.env.BACKEND_URL || 'http://localhost:4000'}/api/v1/auth/google/callback`;
     const scope = 'openid email profile';
     const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${encodeURIComponent(state || '')}&access_type=offline`;
     res.redirect(url);
@@ -250,7 +250,7 @@ export class AuthController {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID || '',
         client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
-        redirect_uri: `${process.env.BACKEND_URL || 'http://localhost:4000'}/auth/google/callback`,
+        redirect_uri: `${process.env.BACKEND_URL || 'http://localhost:4000'}/api/v1/auth/google/callback`,
         grant_type: 'authorization_code',
       }).toString();
 
