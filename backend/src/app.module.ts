@@ -40,6 +40,7 @@ import { GlobalEventsModule } from './global-events/global-events.module';
 import { RankingModule } from './ranking/ranking.module';
 import { CrossDomainModule } from './cross-domain/cross-domain.module';
 import { DomainRankingModule } from './domain-ranking/domain-ranking.module';
+import { GenomeModule } from './genome/genome.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { DomainRankingModule } from './domain-ranking/domain-ranking.module';
     RankingModule,
     CrossDomainModule,
     DomainRankingModule,
+    GenomeModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

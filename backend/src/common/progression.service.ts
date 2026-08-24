@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsService } from './events.service';
+import { MasteryService } from './mastery.service';
 
 export interface AwardXPParams {
   amount: number;
@@ -17,6 +18,8 @@ export interface AwardXPResult {
   leveledUp: boolean;
   skillXp?: number;
   skillLevel?: number;
+  masteryBefore?: number;
+  masteryAfter?: number;
 }
 
 export interface SkillProfileDomain {
@@ -27,6 +30,9 @@ export interface SkillProfileDomain {
     displayName: string;
     xp: number;
     level: number;
+    mastery: number;
+    lastPracticedAt: Date | null;
+    isDecaying: boolean;
   }[];
 }
 
@@ -37,6 +43,7 @@ export class ProgressionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventsService: EventsService,
+    private readonly masteryService: MasteryService,
   ) {}
 
   async awardXP(userId: string, params: AwardXPParams): Promise<AwardXPResult> {
@@ -56,6 +63,8 @@ export class ProgressionService {
 
     let skillXp: number | undefined;
     let skillLevel: number | undefined;
+    let masteryBefore: number | undefined;
+    let masteryAfter: number | undefined;
 
     if (domain && skillName) {
       try {
@@ -84,6 +93,17 @@ export class ProgressionService {
             });
           }
 
+          // Compute mastery
+          const masteryResult = await this.masteryService.computeMasteryOnXpGain(
+            userId,
+            skill.id,
+            amount,
+            source,
+            sourceId,
+          );
+          masteryBefore = masteryResult.masteryBefore;
+          masteryAfter = masteryResult.masteryAfter;
+
           await this.prisma.progressionEvent.create({
             data: {
               userId,
@@ -91,7 +111,7 @@ export class ProgressionService {
               amount,
               source,
               sourceId: sourceId ?? null,
-              metadata: { domain, skillName, skillId: skill.id },
+              metadata: { domain, skillName, skillId: skill.id, masteryAfter },
             },
           });
         }
@@ -144,6 +164,8 @@ export class ProgressionService {
       leveledUp: newLevel > oldLevel,
       skillXp,
       skillLevel,
+      masteryBefore,
+      masteryAfter,
     };
   }
 
@@ -175,6 +197,9 @@ export class ProgressionService {
         displayName: us.skill.displayName,
         xp: us.xp,
         level: us.level,
+        mastery: us.mastery,
+        lastPracticedAt: us.lastPracticedAt,
+        isDecaying: us.isDecaying,
       });
     }
 

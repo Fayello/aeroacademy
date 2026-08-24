@@ -79,6 +79,8 @@ model User {
   globalRankSnapshots      GlobalRankSnapshot[]
   placementMatches         PlacementMatch[]
   ratingEvents             DomainRatingEvent[]
+  masteryEvents            SkillMasteryEvent[]
+  personalizedMissions     PersonalizedMission[]
 
   @@index([googleId])
   @@index([role])
@@ -737,9 +739,10 @@ model SkillDomain {
   icon        String?  // lucide icon name
   createdAt   DateTime @default(now())
 
-  skills      Skill[]
-  challenges  Challenge[]
-  domainRanks DomainRank[]
+  skills                Skill[]
+  challenges            Challenge[]
+  domainRanks           DomainRank[]
+  personalizedMissions  PersonalizedMission[]
 }
 
 model Skill {
@@ -751,21 +754,31 @@ model Skill {
   icon        String?
   createdAt   DateTime @default(now())
 
-  domain      SkillDomain @relation(fields: [domainId], references: [id])
-  userSkills  UserSkill[]
-  labSkills   LabSkill[]
-  challenges  Challenge[]
+  domain         SkillDomain           @relation(fields: [domainId], references: [id])
+  userSkills     UserSkill[]
+  labSkills      LabSkill[]
+  challenges     Challenge[]
+  masteryEvents  SkillMasteryEvent[]
+  prerequisites  SkillPrerequisite[]   @relation("SkillRequires")
+  requiredBy     SkillPrerequisite[]   @relation("SkillNeeded")
+  personalizedMissions PersonalizedMission[]
 
   @@unique([domainId, name])
   @@index([domainId])
 }
 
 model UserSkill {
-  id     String @id @default(uuid())
-  userId String
-  skillId String
-  xp     Int    @default(0)
-  level  Int    @default(1)
+  id              String    @id @default(uuid())
+  userId          String
+  skillId         String
+  xp              Int       @default(0)
+  level           Int       @default(1)
+  mastery         Float     @default(0)     // 0-100, demonstrated ability
+  lastPracticedAt DateTime?                 // last time skill was demonstrated
+  decayRate       Float     @default(0.5)   // % mastery lost per day of inactivity
+  isDecaying      Boolean   @default(false)  // whether decay is currently active
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
@@ -773,6 +786,7 @@ model UserSkill {
   @@unique([userId, skillId])
   @@index([userId])
   @@index([skillId])
+  @@index([lastPracticedAt])
 }
 
 model LabSkill {
@@ -786,6 +800,67 @@ model LabSkill {
   @@unique([labId, skillId])
   @@index([labId])
   @@index([skillId])
+}
+
+// ─── V4: TECHNOLOGY GENOME ──────────────────────────────────────
+
+model SkillMasteryEvent {
+  id            String   @id @default(uuid())
+  userId        String
+  skillId       String
+  eventType     String   // MASTERY_GAIN, MASTERY_DECAY, MASTERY_RECOVERY, MASTERY_SET
+  amount        Float    // change in mastery percentage
+  masteryBefore Float
+  masteryAfter  Float
+  source        String   // FLAG_SOLVED, LAB_COMPLETED, DECAY_CRON, RECOVERY_MISSION
+  sourceId      String?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@index([userId, skillId])
+  @@index([createdAt])
+  @@index([eventType])
+}
+
+model SkillPrerequisite {
+  id             String @id @default(uuid())
+  skillId        String
+  prerequisiteId String
+  minMastery     Float  @default(50) // required mastery of prerequisite
+
+  skill        Skill @relation("SkillRequires", fields: [skillId], references: [id])
+  prerequisite Skill @relation("SkillNeeded", fields: [prerequisiteId], references: [id])
+
+  @@unique([skillId, prerequisiteId])
+}
+
+model PersonalizedMission {
+  id               String   @id @default(uuid())
+  userId           String
+  title            String
+  description      String
+  difficulty       Int      // 1-10
+  estimatedMinutes Int
+  targetSkillId    String?
+  targetDomainId   String?
+  xpReward         Int
+  masteryReward    Float    // mastery boost on completion
+  missionType      String   // SKILL_MAINTENANCE, WEAKNESS_IMPROVEMENT, CROSS_DOMAIN, RANKED
+  status           String   @default("AVAILABLE") // AVAILABLE, ACTIVE, COMPLETED, EXPIRED
+  expiresAt        DateTime?
+  completedAt      DateTime?
+  metadata         Json?
+  createdAt        DateTime @default(now())
+
+  user   User          @relation(fields: [userId], references: [id])
+  skill  Skill?        @relation(fields: [targetSkillId], references: [id])
+  domain SkillDomain?  @relation(fields: [targetDomainId], references: [id])
+
+  @@index([userId, status])
+  @@index([userId, createdAt])
 }
 
 // ─── V1: MISSION ENGINE ─────────────────────────────────────────

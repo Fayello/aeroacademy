@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Target, ClipboardCheck, Route, Users, BarChart3, ScrollText, Crown, Swords, Calendar, Clock, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Target, ClipboardCheck, Route, Users, BarChart3, ScrollText, Crown, Swords, Calendar, Clock, ShieldCheck, Dna } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -28,6 +28,7 @@ const links: NavLink[] = [
   { href: "/dashboard/events", tKey: "events", icon: Calendar },
   { href: "/dashboard/seasons", tKey: "seasons", icon: Clock },
   { href: "/dashboard/ranking", tKey: "domain-ranking", icon: ShieldCheck },
+  { href: "/dashboard/genome", tKey: "genome", icon: Dna },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
   { href: "/dashboard/enterprise", tKey: "enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
   { href: "/dashboard/admin", tKey: "admin", icon: Award, roles: ["ADMIN"] },
