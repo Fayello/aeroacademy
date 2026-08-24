@@ -1,11 +1,9 @@
-import { Controller, Get, Post, Param, Body, Query, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
 import { DomainRankingService } from './domain-ranking.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('v2/domain-ranking')
 export class DomainRankingController {
-  private readonly logger = new Logger('DomainRankingController');
-
   constructor(
     private readonly domainRankingService: DomainRankingService,
     private readonly prisma: PrismaService,
@@ -125,14 +123,7 @@ export class DomainRankingController {
 
   @Get('profile/:userId')
   async getRankedProfile(@Param('userId') userId: string) {
-    this.logger.log(`getRankedProfile called for userId=${userId}`);
-    try {
-      const result = await this.domainRankingService.getRankedProfile(userId);
-      this.logger.log(`getRankedProfile result keys: ${result ? Object.keys(result).join(', ') : 'null/undefined'}`);
-      return result;
-    } catch (err) {
-      this.logger.error(`getRankedProfile error: ${err?.message}`, err?.stack);
-      return { error: err?.message };
-    }
+    return this.domainRankingService.getRankedProfile(userId);
+  }
   }
 }

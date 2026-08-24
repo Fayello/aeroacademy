@@ -363,7 +363,6 @@ export class DomainRankingService {
   }
 
   async getRankedProfile(userId: string) {
-    try {
     const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -451,9 +450,5 @@ export class DomainRankingService {
         labsCompleted,
       },
     };
-    } catch (err) {
-      this.logger.error('getRankedProfile failed', err?.stack || err);
-      throw err;
-    }
   }
 }
