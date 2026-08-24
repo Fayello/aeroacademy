@@ -85,6 +85,7 @@ model User {
   cohortMemberships        CohortMember[]
   studentAssessments       StudentAssessment[]
   certificationAwards      CertificationAward[]
+  professionalRecord       ProfessionalRecord?
 
   @@index([googleId])
   @@index([role])
@@ -1569,8 +1570,36 @@ model CertificationAward {
 
   user          User          @relation(fields: [userId], references: [id])
   certification Certification @relation(fields: [certificationId], references: [id])
+  renewals      CertificationRenewal[]
 
   @@unique([userId, certificationId])
   @@index([userId])
   @@index([credentialId])
+}
+
+model CertificationRenewal {
+  id              String   @id @default(uuid())
+  awardId         String
+  renewedAt       DateTime @default(now())
+  expiresAt       DateTime?
+  evidenceSummary Json     // snapshot at renewal time
+  method          String   // AUTO, MANUAL, ASSESSMENT
+
+  award CertificationAward @relation(fields: [awardId], references: [id], onDelete: Cascade)
+
+  @@index([awardId])
+}
+
+model ProfessionalRecord {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shareToken String? @unique // public shareable link token
+  data      Json     // full competency snapshot
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([shareToken])
 }

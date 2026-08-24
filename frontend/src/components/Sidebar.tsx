@@ -104,6 +104,7 @@ const BUCKETS: Bucket[] = [
       { href: "/dashboard/profile", tKey: "bucket.overview", icon: User },
       { href: "/dashboard/genome", tKey: "bucket.skills", icon: Target },
       { href: "/dashboard/competency", tKey: "bucket.competency", icon: BarChart3 },
+      { href: "/dashboard/certifications", tKey: "bucket.certifications", icon: Award },
       { href: "/dashboard/analytics", tKey: "bucket.achievements", icon: Award },
     ],
   },
