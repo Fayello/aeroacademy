@@ -48,6 +48,7 @@ import { CompetencyAnalyticsModule } from './common/competency-analytics.module'
 import { CurriculumModule } from './common/curriculum.module';
 import { CohortModule } from './common/cohort.module';
 import { ExamModule } from './common/exam.module';
+import { DisplayModeModule } from './common/display-mode.module';
 
 @Module({
   imports: [
@@ -103,6 +104,7 @@ import { ExamModule } from './common/exam.module';
     CurriculumModule,
     CohortModule,
     ExamModule,
+    DisplayModeModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

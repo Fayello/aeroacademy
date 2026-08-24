@@ -640,4 +640,157 @@ export class DomainRankingService {
       seasonNumber: e.season?.seasonNumber,
     }));
   }
+
+  // ─── PHASE 5: CAPABILITY-BASED RANKING ────────────────────────
+
+  async getCapabilityRanking(userId: string) {
+    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    if (!activeSeason) return null;
+
+    const domainRanks = await this.prisma.domainRank.findMany({
+      where: { userId, seasonId: activeSeason.id },
+    });
+
+    // 1. Technical Performance (40%): assessment scores + lab quality + flag efficiency
+    const assessments = await this.prisma.studentAssessment.findMany({
+      where: { userId, status: 'GRADED' },
+      select: { score: true, maxScore: true },
+    });
+
+    const labCompletions = await this.prisma.progress.findMany({
+      where: { userId, completed: true },
+    });
+
+    const flagSolves = await this.prisma.activityEvent.findMany({
+      where: { userId, type: 'FLAG_SOLVED' },
+      select: { metadata: true, createdAt: true },
+    });
+
+    const avgAssessmentScore = assessments.length > 0
+      ? assessments.reduce((sum, a) => sum + ((a.score || 0) / a.maxScore) * 100, 0) / assessments.length
+      : 50;
+
+    const labQuality = labCompletions.length > 0
+      ? Math.min(100, labCompletions.length * 5)
+      : 50;
+
+    const flagEfficiency = flagSolves.length > 0
+      ? Math.min(100, flagSolves.length * 5)
+      : 0;
+
+    const technicalPerformance = (avgAssessmentScore * 0.4 + labQuality * 0.4 + flagEfficiency * 0.2);
+
+    // 2. Difficulty (25%): level of challenges attempted
+    const difficultyMap: Record<string, number> = {
+      BEGINNER: 1, EASY: 1, MEDIUM: 2, HARD: 3, ADVANCED: 4, BOSS: 5, EXPERT: 6,
+    };
+
+    const maxDifficultyAttempted = domainRanks.reduce((max, r) => {
+      // Use gamesPlayed as a proxy for difficulty exposure
+      const diffScore = Math.min(100, r.gamesPlayed * 10);
+      return Math.max(max, diffScore);
+    }, 0);
+
+    const bossAttempts = await this.prisma.bossMissionAttempt.count({
+      where: { userId, isCompleted: true },
+    });
+
+    const difficultyScore = Math.min(100, maxDifficultyAttempted + bossAttempts * 5);
+
+    // 3. Consistency (20%): regular practice + sustained performance
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const activeDays = await this.prisma.$queryRaw<[{ count: bigint }]>`
+      SELECT COUNT(DISTINCT DATE("createdAt")) as count
+      FROM "ActivityEvent"
+      WHERE "userId" = ${userId} AND "createdAt" >= ${thirtyDaysAgo}
+    `;
+
+    const daysActive = Number(activeDays[0]?.count || 0);
+    const consistencyScore = Math.min(100, (daysActive / 30) * 100);
+
+    // 4. Problem Solving (15%): independent solutions + recovery + methodology
+    const independentFlags = flagSolves.filter((f) => {
+      const meta = f.metadata as Record<string, unknown> | null;
+      return !meta?.hintUsed;
+    }).length;
+
+    const independenceRate = flagSolves.length > 0
+      ? (independentFlags / flagSolves.length) * 100
+      : 50;
+
+    const problemSolvingScore = Math.min(100, independenceRate);
+
+    // Weighted total (0-100)
+    const capabilityScore = Math.round(
+      technicalPerformance * 0.40 +
+      difficultyScore * 0.25 +
+      consistencyScore * 0.20 +
+      problemSolvingScore * 0.15
+    );
+
+    // Map to tier
+    let tier = 'UNRANKED';
+    if (capabilityScore >= 90) tier = 'EXPERT';
+    else if (capabilityScore >= 75) tier = 'ADVANCED';
+    else if (capabilityScore >= 60) tier = 'INTERMEDIATE';
+    else if (capabilityScore >= 40) tier = 'DEVELOPING';
+    else if (capabilityScore > 0) tier = 'NOVICE';
+
+    return {
+      capabilityScore,
+      tier,
+      breakdown: {
+        technicalPerformance: Math.round(technicalPerformance),
+        difficulty: Math.round(difficultyScore),
+        consistency: Math.round(consistencyScore),
+        problemSolving: Math.round(problemSolvingScore),
+      },
+      details: {
+        assessmentsCompleted: assessments.length,
+        avgAssessmentScore: Math.round(avgAssessmentScore),
+        labsCompleted: labCompletions.length,
+        flagsSolved: flagSolves.length,
+        bossMissionsCompleted: bossAttempts,
+        activeDaysLast30: daysActive,
+        independenceRate: Math.round(independenceRate),
+      },
+    };
+  }
+
+  async getCapabilityLeaderboard(limit = 100) {
+    const users = await this.prisma.user.findMany({
+      where: { role: 'STUDENT' },
+      select: { id: true, name: true, avatarUrl: true, xp: true },
+      take: 200,
+    });
+
+    const results: {
+      userId: string;
+      user: { id: string; name: string | null; avatarUrl: string | null };
+      capabilityScore: number;
+      tier: string;
+      breakdown: { technicalPerformance: number; difficulty: number; consistency: number; problemSolving: number };
+      xp: number;
+    }[] = [];
+    for (const user of users) {
+      const cap = await this.getCapabilityRanking(user.id);
+      if (cap) {
+        results.push({
+          userId: user.id,
+          user: { id: user.id, name: user.name, avatarUrl: user.avatarUrl },
+          capabilityScore: cap.capabilityScore,
+          tier: cap.tier,
+          breakdown: cap.breakdown,
+          xp: user.xp,
+        });
+      }
+    }
+
+    return results
+      .sort((a, b) => b.capabilityScore - a.capabilityScore)
+      .slice(0, limit)
+      .map((r, i) => ({ position: i + 1, ...r }));
+  }
 }

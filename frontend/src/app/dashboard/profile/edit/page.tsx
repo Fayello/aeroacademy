@@ -11,10 +11,11 @@ import { CAMEROON_CITIES } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import {
   User, Save, ArrowLeft, Loader2, AtSign, MapPin, Building2,
-  Clock, Mail, Bell, Eye, EyeOff, Globe, Info,
+  Clock, Mail, Bell, Eye, EyeOff, Globe, Info, Monitor, Trophy, Briefcase,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "@/lib/toast";
+import { useDisplayMode, type DisplayMode } from "@/lib/displayMode";
 
 const TIMEZONES = [
   "UTC",
@@ -81,6 +82,7 @@ export default function ProfileEditPage() {
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [showEmailPrefs, setShowEmailPrefs] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState("from-[#229C62] to-[#7AD62A]");
+  const { mode, setMode } = useDisplayMode();
 
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting, isDirty } } =
     useForm<ProfileValues>({
@@ -416,6 +418,71 @@ export default function ProfileEditPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Display Mode */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
+              <Monitor size={18} className="text-violet-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Display Mode</h2>
+              <p className="text-sm text-slate-500">Choose how the platform appears to you</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              type="button"
+              onClick={() => setMode("PROFESSIONAL")}
+              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                mode === "PROFESSIONAL"
+                  ? "border-[#229C62] bg-[#E9F8EE]"
+                  : "border-slate-200 hover:border-slate-300 bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Briefcase size={16} className={mode === "PROFESSIONAL" ? "text-[#229C62]" : "text-slate-400"} />
+                <span className="text-sm font-semibold text-slate-900">Professional</span>
+              </div>
+              <p className="text-xs text-slate-500">Genome, mastery, missions, labs. No XP fire, no rank badges.</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMode("PROGRESSION")}
+              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                mode === "PROGRESSION"
+                  ? "border-[#229C62] bg-[#E9F8EE]"
+                  : "border-slate-200 hover:border-slate-300 bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Trophy size={16} className={mode === "PROGRESSION" ? "text-[#229C62]" : "text-slate-400"} />
+                <span className="text-sm font-semibold text-slate-900">Progression</span>
+              </div>
+              <p className="text-xs text-slate-500">XP, levels, missions, mastery, unlocks. Default experience.</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMode("COMPETITIVE")}
+              className={`p-4 rounded-xl border-2 text-left transition-all ${
+                mode === "COMPETITIVE"
+                  ? "border-[#229C62] bg-[#E9F8EE]"
+                  : "border-slate-200 hover:border-slate-300 bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Trophy size={16} className={mode === "COMPETITIVE" ? "text-[#229C62]" : "text-slate-400"} />
+                <span className="text-sm font-semibold text-slate-900">Competitive</span>
+              </div>
+              <p className="text-xs text-slate-500">Everything: ranks, leaderboards, boss missions, seasons.</p>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

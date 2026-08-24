@@ -86,6 +86,7 @@ model User {
   studentAssessments       StudentAssessment[]
   certificationAwards      CertificationAward[]
   professionalRecord       ProfessionalRecord?
+  metricEvents             MetricEvent[]
 
   @@index([googleId])
   @@index([role])
@@ -959,6 +960,7 @@ model UserPreference {
   preferredDifficulty String @default("MEDIUM")
   notificationsEnabled Boolean @default(true)
   weeklyDigestEnabled  Boolean @default(true)
+  displayMode  String @default("PROGRESSION") // PROFESSIONAL, PROGRESSION, COMPETITIVE
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1602,4 +1604,21 @@ model ProfessionalRecord {
 
   @@index([userId])
   @@index([shareToken])
+}
+
+// ─── PHASE 5: COMPETITION VALIDATION ────────────────────────────
+
+model MetricEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  displayMode String? // PROFESSIONAL, PROGRESSION, COMPETITIVE
+  type      String   // SESSION_START, LAB_COMPLETED, MISSION_COMPLETED, RETURN_VISIT, FEATURE_USED
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([displayMode, type])
+  @@index([createdAt])
+  @@index([userId])
 }

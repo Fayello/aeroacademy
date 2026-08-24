@@ -26,6 +26,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getLevel, getLevelProgress, getNextLabUnlock } from "@/lib/levelGating";
+import { useDisplayMode } from "@/lib/displayMode";
 import DailyMissions from "@/components/dashboard/DailyMissions";
 import NextSteps from "@/components/dashboard/NextSteps";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
@@ -88,6 +89,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { config } = useDisplayMode();
 
   useEffect(() => {
     let cancelled = false;
@@ -293,7 +295,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{greeting}</h1>
         </div>
-        {user.currentStreak != null && user.currentStreak > 0 && (
+        {config.showStreaks && user.currentStreak != null && user.currentStreak > 0 && (
           <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full px-4 py-2 self-start">
             <Flame size={18} className="text-orange-500" />
             <div className="text-right">
@@ -307,14 +309,14 @@ export default function DashboardPage() {
       </div>
 
       <StatsGrid
-        xp={userMetrics?.xp || 0}
-        rank={userMetrics?.rank || 1200}
-        division={userMetrics?.division || "BRONZE"}
+        xp={config.showXp ? (userMetrics?.xp || 0) : undefined}
+        rank={config.showRanks ? (userMetrics?.rank || 1200) : undefined}
+        division={config.showRanks ? (userMetrics?.division || "BRONZE") : undefined}
         clearance={userMetrics?.clearance || "STUDENT_L1"}
       />
 
       {/* XP Progress + Next Unlock */}
-      {(() => {
+      {config.showXp && config.showLevels && (() => {
         const xp = userMetrics?.xp || 0;
         const level = getLevel(xp);
         const progress = getLevelProgress(xp);
@@ -355,7 +357,7 @@ export default function DashboardPage() {
       })()}
 
       {/* Daily Missions */}
-      <DailyMissions />
+      {config.showMissions && <DailyMissions />}
 
       {/* What should I do right now? */}
       <NextSteps />

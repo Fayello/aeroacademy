@@ -135,4 +135,16 @@ export class DomainRankingController {
   async getAllRatingHistory(@Param('userId') userId: string) {
     return this.domainRankingService.getAllRatingHistory(userId);
   }
+
+  @Get('capability/:userId')
+  async getCapabilityRanking(@Param('userId') userId: string) {
+    return this.domainRankingService.getCapabilityRanking(userId);
+  }
+
+  @Get('capability-leaderboard')
+  async getCapabilityLeaderboard(@Query('limit') limit?: string) {
+    return this.domainRankingService.getCapabilityLeaderboard(
+      limit ? parseInt(limit) : 100,
+    );
+  }
 }

@@ -25,6 +25,7 @@ import { logout } from "@/lib/auth";
 import { useState, useEffect, useCallback } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
+import { useDisplayMode, type DisplayMode } from "@/lib/displayMode";
 import ThemeToggle from "@/components/ThemeToggle";
 
 interface BucketItem {
@@ -77,6 +78,7 @@ const BUCKETS: Bucket[] = [
     href: "/dashboard/leaderboard",
     items: [
       { href: "/dashboard/ranking", tKey: "bucket.ranked", icon: Shield },
+      { href: "/dashboard/capability-ranking", tKey: "bucket.capability", icon: Target },
       { href: "/dashboard/challenges", tKey: "bucket.challenges", icon: Target },
       { href: "/dashboard/seasons", tKey: "bucket.seasons", icon: ScrollText },
       { href: "/dashboard/leaderboard", tKey: "bucket.leaderboards", icon: Award },
@@ -128,6 +130,7 @@ export default function Sidebar() {
   const [level, setLevel] = useState(1);
   const [expandedBucket, setExpandedBucket] = useState<string | null>(null);
   const { t } = useI18n();
+  const { mode, config } = useDisplayMode();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -177,7 +180,21 @@ export default function Sidebar() {
     return pathname.startsWith(bucket.href + "/");
   };
 
-  const filteredBuckets = userRole === null ? [] : BUCKETS;
+  const filteredBuckets = userRole === null ? [] : BUCKETS.filter((bucket) => {
+    if (bucket.key === "compete") return config.showCompete;
+    if (bucket.key === "community") return true;
+    return true;
+  });
+
+  const filteredCompeteItems = BUCKETS.find(b => b.key === "compete")?.items?.filter(item => {
+    if (item.href === "/dashboard/ranking" || item.href === "/dashboard/leaderboard") return config.showRanks;
+    if (item.href === "/dashboard/battle-pass") return config.showBattlePass;
+    if (item.href === "/dashboard/boss-missions") return config.showBossMissions;
+    if (item.href === "/dashboard/seasons") return config.showSeasons;
+    if (item.href === "/dashboard/my-missions") return config.showMissions;
+    return true;
+  }) || [];
+
   const isAdmin = userRole === "ADMIN" || userRole === "RECRUITER";
 
   return (
@@ -276,7 +293,7 @@ export default function Sidebar() {
               {/* Sub-items */}
               {hasItems && isExpanded && !isLocked && (
                 <div className="ml-4 mt-1 space-y-0.5 border-l border-slate-100 pl-3">
-                  {bucket.items!.map((item) => {
+                  {(bucket.key === "compete" ? filteredCompeteItems : bucket.items!).map((item) => {
                     const ItemIcon = item.icon;
                     const isItemActive =
                       pathname === item.href ||

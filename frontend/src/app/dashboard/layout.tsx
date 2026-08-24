@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import NotificationBell from "@/components/NotificationBell";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 import { DashboardSocketProvider } from "@/hooks/DashboardSocketContext";
+import { DisplayModeProvider } from "@/lib/displayMode";
 import { initTokenRefresh } from "@/lib/api";
 
 function TokenHandler() {
@@ -34,20 +35,22 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardSocketProvider>
-      <div className="min-h-screen bg-slate-50">
-        <TokenHandler />
-        <Sidebar />
-        <NotificationBell />
-        <main className="pb-20 md:pb-0 md:pl-64 min-h-screen">
-          <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
-            <PageErrorBoundary>
-              {children}
-            </PageErrorBoundary>
-          </div>
-        </main>
-        <BottomNav />
-      </div>
-    </DashboardSocketProvider>
+    <DisplayModeProvider>
+      <DashboardSocketProvider>
+        <div className="min-h-screen bg-slate-50">
+          <TokenHandler />
+          <Sidebar />
+          <NotificationBell />
+          <main className="pb-20 md:pb-0 md:pl-64 min-h-screen">
+            <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
+              <PageErrorBoundary>
+                {children}
+              </PageErrorBoundary>
+            </div>
+          </main>
+          <BottomNav />
+        </div>
+      </DashboardSocketProvider>
+    </DisplayModeProvider>
   );
 }
