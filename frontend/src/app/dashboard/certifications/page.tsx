@@ -144,7 +144,7 @@ export default function CertificationsPage() {
                       <div className="font-mono text-[10px] mt-2">ID: {aw.credentialId}</div>
                     </div>
                     <Link
-                      href={`/verify/${aw.credentialId}`}
+                      href={`/credential/${aw.credentialId}`}
                       className="inline-flex items-center gap-1 mt-3 text-xs font-medium text-[#229C62] hover:underline"
                     >
                       <ExternalLink size={10} />
