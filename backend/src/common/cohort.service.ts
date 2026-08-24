@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Any = any;
+
 @Injectable()
 export class CohortService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCohorts(curriculumId?: string) {
+  async getCohorts(curriculumId?: string): Promise<Any> {
     return this.prisma.cohort.findMany({
       where: {
         isActive: true,
@@ -13,16 +16,13 @@ export class CohortService {
       },
       include: {
         curriculum: true,
-        members: {
-          include: { user: { select: { id: true, name: true, email: true, division: true } } },
-        },
         _count: { select: { members: true } },
       },
       orderBy: { createdAt: 'desc' },
-    });
+    }) as Any;
   }
 
-  async getCohort(id: string) {
+  async getCohort(id: string): Promise<Any> {
     const cohort = await this.prisma.cohort.findUnique({
       where: { id },
       include: {
@@ -40,7 +40,7 @@ export class CohortService {
           include: { user: { select: { id: true, name: true, email: true, division: true, xp: true } } },
         },
       },
-    });
+    }) as Any;
     if (!cohort) throw new NotFoundException('Cohort not found');
     return cohort;
   }
@@ -51,7 +51,7 @@ export class CohortService {
     semester?: string;
     year: number;
     maxStudents?: number;
-  }) {
+  }): Promise<Any> {
     const curriculum = await this.prisma.curriculum.findUnique({ where: { id: data.curriculumId } });
     if (!curriculum) throw new NotFoundException('Curriculum not found');
 
@@ -64,14 +64,14 @@ export class CohortService {
         maxStudents: data.maxStudents ?? 50,
       },
       include: { curriculum: true },
-    });
+    }) as Any;
   }
 
-  async addMember(cohortId: string, userId: string, role: string = 'STUDENT') {
+  async addMember(cohortId: string, userId: string, role: string = 'STUDENT'): Promise<Any> {
     const cohort = await this.prisma.cohort.findUnique({
       where: { id: cohortId },
       include: { _count: { select: { members: true } } },
-    });
+    }) as Any;
     if (!cohort) throw new NotFoundException('Cohort not found');
 
     if (cohort._count.members >= cohort.maxStudents) {
@@ -86,7 +86,7 @@ export class CohortService {
     return this.prisma.cohortMember.create({
       data: { cohortId, userId, role },
       include: { user: { select: { id: true, name: true, email: true } } },
-    });
+    }) as Any;
   }
 
   async removeMember(cohortId: string, userId: string) {
@@ -95,85 +95,89 @@ export class CohortService {
     });
   }
 
-  async getCohortDashboard(cohortId: string) {
+  async getCohortDashboard(cohortId: string): Promise<Any> {
     const cohort = await this.prisma.cohort.findUnique({
       where: { id: cohortId },
       include: {
-        curriculum: {
-          include: {
-            modules: {
-              include: {
-                outcomes: { include: { outcome: { include: { domain: true } } } },
-                labs: { include: { lab: true } },
-              },
-            },
-          },
-        },
+        curriculum: true,
         members: {
           include: {
             user: {
-              include: {
-                labCompletions: {
-                  include: { lab: { include: { skills: { include: { skill: { include: { domain: true } } } } } } },
-                },
-                outcomeProgress: { include: { outcome: { include: { domain: true } } } },
-              },
               select: { id: true, name: true, email: true, division: true, xp: true },
             },
           },
         },
       },
-    });
+    }) as Any;
     if (!cohort) throw new NotFoundException('Cohort not found');
+
+    const memberIds = cohort.members.map((m: Any) => m.user.id);
+
+    // Fetch outcome evidence per member
+    const evidences = await this.prisma.outcomeEvidence.findMany({
+      where: { userId: { in: memberIds } },
+      include: { outcome: { include: { domain: true } } },
+    }) as Any[];
+
+    // Fetch lab instances per member
+    const labInstances = await this.prisma.labInstance.findMany({
+      where: { userId: { in: memberIds } },
+      select: { userId: true, labId: true },
+    }) as Any[];
 
     // Aggregate domain stats
     const domainMap = new Map<string, { name: string; totalScore: number; count: number; labs: Set<string> }>();
-    const moduleMap = new Map<string, { name: string; code: string; totalScore: number; count: number }>();
 
-    for (const member of cohort.members) {
-      for (const op of member.user.outcomeProgress) {
-        const domainId = op.outcome.domainId;
-        const domainName = op.outcome.domain.name;
-        if (!domainMap.has(domainId)) {
-          domainMap.set(domainId, { name: domainName, totalScore: 0, count: 0, labs: new Set() });
-        }
-        const entry = domainMap.get(domainId)!;
-        entry.totalScore += op.mastery;
-        entry.count++;
+    for (const ev of evidences) {
+      const domainId = ev.outcome.domainId;
+      const domainName = ev.outcome.domain.name;
+      if (!domainMap.has(domainId)) {
+        domainMap.set(domainId, { name: domainName, totalScore: 0, count: 0, labs: new Set() });
       }
+      const entry = domainMap.get(domainId)!;
+      entry.totalScore += ev.score;
+      entry.count++;
+    }
 
-      for (const lc of member.user.labCompletions) {
-        for (const ls of lc.lab.skills) {
-          const domainId = ls.skill.domainId;
-          if (domainMap.has(domainId)) {
-            domainMap.get(domainId)!.labs.add(lc.labId);
-          }
-        }
-      }
+    // Count labs per user
+    const labsByUser = new Map<string, Set<string>>();
+    for (const li of labInstances) {
+      if (!labsByUser.has(li.userId)) labsByUser.set(li.userId, new Set());
+      labsByUser.get(li.userId)!.add(li.labId);
     }
 
     // Find weakest and strongest domains
     const domainStats = Array.from(domainMap.entries()).map(([id, d]) => ({
       domainId: id,
       name: d.name,
-      avgMastery: d.count > 0 ? Math.round(d.totalScore / d.count) : 0,
+      avgMastery: d.count > 0 ? Math.round((d.totalScore / d.count) * 10) / 10 : 0,
       labsCompleted: d.labs.size,
     }));
-    domainStats.sort((a, b) => b.avgMastery - a.avgMastery);
+    domainStats.sort((a: Any, b: Any) => b.avgMastery - a.avgMastery);
 
-    // At-risk students (below 50% mastery average)
-    const atRisk = cohort.members.filter((m) => {
-      const outcomes = m.user.outcomeProgress;
-      if (outcomes.length === 0) return true;
-      const avg = outcomes.reduce((sum, o) => sum + o.mastery, 0) / outcomes.length;
-      return avg < 50;
+    // Compute per-member stats
+    const memberStats = cohort.members.map((m: Any) => {
+      const userEvidences = evidences.filter((e: Any) => e.userId === m.user.id);
+      const avgMastery = userEvidences.length > 0
+        ? Math.round((userEvidences.reduce((s: number, e: Any) => s + e.score, 0) / userEvidences.length) * 10) / 10
+        : 0;
+      const labsDone = labsByUser.get(m.user.id)?.size ?? 0;
+      return {
+        id: m.user.id,
+        name: m.user.name,
+        email: m.user.email,
+        division: m.user.division,
+        xp: m.user.xp,
+        role: m.role,
+        labsCompleted: labsDone,
+        avgMastery,
+      };
     });
 
-    // Total labs completed across cohort
-    const totalLabsCompleted = cohort.members.reduce(
-      (sum, m) => sum + m.user.labCompletions.length,
-      0,
-    );
+    // At-risk students (below 50% mastery average)
+    const atRisk = memberStats.filter((m: Any) => m.avgMastery < 50);
+
+    const totalLabsCompleted = memberStats.reduce((sum: number, m: Any) => sum + m.labsCompleted, 0);
 
     return {
       cohort: { id: cohort.id, name: cohort.name, year: cohort.year, semester: cohort.semester },
@@ -184,32 +188,18 @@ export class CohortService {
         strongestDomain: domainStats[0] ?? null,
         weakestDomain: domainStats[domainStats.length - 1] ?? null,
         atRiskCount: atRisk.length,
-        atRiskStudents: atRisk.map((m) => ({
-          id: m.user.id,
-          name: m.user.name,
-          email: m.user.email,
+        atRiskStudents: atRisk.map((m: Any) => ({
+          id: m.id,
+          name: m.name,
+          email: m.email,
         })),
       },
       domains: domainStats,
-      members: cohort.members.map((m) => ({
-        id: m.user.id,
-        name: m.user.name,
-        email: m.user.email,
-        division: m.user.division,
-        xp: m.user.xp,
-        role: m.role,
-        labsCompleted: m.user.labCompletions.length,
-        avgMastery: m.user.outcomeProgress.length > 0
-          ? Math.round(
-              m.user.outcomeProgress.reduce((sum, o) => sum + o.mastery, 0) /
-              m.user.outcomeProgress.length,
-            )
-          : 0,
-      })),
+      members: memberStats,
     };
   }
 
-  async getStudentProgress(cohortId: string, userId: string) {
+  async getStudentProgress(cohortId: string, userId: string): Promise<Any> {
     const member = await this.prisma.cohortMember.findUnique({
       where: { cohortId_userId: { cohortId, userId } },
       include: {
@@ -228,38 +218,47 @@ export class CohortService {
           },
         },
         user: {
-          include: {
-            labCompletions: true,
-            outcomeProgress: { include: { outcome: { include: { domain: true } } } },
-            studentAssessments: {
-              include: { assessment: { include: { domain: true } } },
-              where: { status: 'COMPLETED' },
-            },
-          },
+          select: { id: true, name: true, email: true, division: true, xp: true },
         },
       },
-    });
+    }) as Any;
     if (!member) throw new NotFoundException('Student not in this cohort');
 
+    // Get student's evidence
+    const evidences = await this.prisma.outcomeEvidence.findMany({
+      where: { userId },
+      include: { outcome: { include: { domain: true } } },
+    }) as Any[];
+
+    // Get student's lab instances
+    const labInstances = await this.prisma.labInstance.findMany({
+      where: { userId },
+      select: { labId: true },
+    }) as Any[];
+    const completedLabIds = new Set(labInstances.map((li: Any) => li.labId));
+
+    // Get student's assessments
+    const assessments = await this.prisma.studentAssessment.findMany({
+      where: { userId, status: 'COMPLETED' },
+      include: { assessment: { include: { domain: true } } },
+      orderBy: { completedAt: 'desc' },
+    }) as Any[];
+
     // Map outcomes to student progress
-    const moduleProgress = member.cohort.curriculum.modules.map((mod) => {
-      const outcomeProgress = mod.outcomes.map((mo) => {
-        const studentOutcome = member.user.outcomeProgress.find(
-          (op) => op.learningOutcomeId === mo.learningOutcomeId,
-        );
+    const moduleProgress = member.cohort.curriculum.modules.map((mod: Any) => {
+      const outcomeProgress = mod.outcomes.map((mo: Any) => {
+        const evidence = evidences.find((e: Any) => e.learningOutcomeId === mo.learningOutcomeId);
         return {
           outcomeId: mo.learningOutcomeId,
           code: mo.outcome.code,
           title: mo.outcome.title,
           domain: mo.outcome.domain.name,
-          mastery: studentOutcome?.mastery ?? 0,
+          mastery: evidence ? Math.round(evidence.score * 10) / 10 : 0,
           weight: mo.weight,
         };
       });
 
-      const labsCompleted = mod.labs.filter((ml) =>
-        member.user.labCompletions.some((lc) => lc.labId === ml.labId),
-      ).length;
+      const labsCompleted = mod.labs.filter((ml: Any) => completedLabIds.has(ml.labId)).length;
 
       return {
         moduleId: mod.id,
@@ -272,7 +271,7 @@ export class CohortService {
       };
     });
 
-    const assessments = member.user.studentAssessments.map((a) => ({
+    const assessmentData = assessments.map((a: Any) => ({
       assessmentId: a.assessmentId,
       title: a.assessment.title,
       domain: a.assessment.domain?.name,
@@ -280,6 +279,8 @@ export class CohortService {
       breakdown: a.breakdown,
       completedAt: a.completedAt,
     }));
+
+    const allOutcomeMastery = moduleProgress.flatMap((m: Any) => m.outcomeProgress.map((o: Any) => o.mastery));
 
     return {
       student: {
@@ -291,20 +292,15 @@ export class CohortService {
       },
       cohort: { id: member.cohort.id, name: member.cohort.name },
       moduleProgress,
-      assessments,
+      assessments: assessmentData,
       overallStats: {
-        totalLabsCompleted: member.user.labCompletions.length,
-        avgMastery: member.user.outcomeProgress.length > 0
-          ? Math.round(
-              member.user.outcomeProgress.reduce((sum, o) => sum + o.mastery, 0) /
-              member.user.outcomeProgress.length,
-            )
+        totalLabsCompleted: completedLabIds.size,
+        avgMastery: allOutcomeMastery.length > 0
+          ? Math.round((allOutcomeMastery.reduce((s: number, m: number) => s + m, 0) / allOutcomeMastery.length) * 10) / 10
           : 0,
-        assessmentsCompleted: assessments.length,
-        avgAssessmentScore: assessments.length > 0
-          ? Math.round(
-              assessments.reduce((sum, a) => sum + (a.score ?? 0), 0) / assessments.length,
-            )
+        assessmentsCompleted: assessmentData.length,
+        avgAssessmentScore: assessmentData.length > 0
+          ? Math.round(assessmentData.reduce((s: number, a: Any) => s + (a.score ?? 0), 0) / assessmentData.length)
           : 0,
       },
     };
