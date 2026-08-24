@@ -136,6 +136,8 @@ export class ProgressionService {
       this.eventsService.emit('LEVEL_UP', { userId, newLevel });
     }
 
+    await this.awardPassXp(userId, amount, source);
+
     return {
       xp: newXp,
       level: newLevel,
@@ -182,5 +184,66 @@ export class ProgressionService {
   async getOverallLevel(userId: string): Promise<number> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     return Math.floor(user.xp / 1000) + 1;
+  }
+
+  async awardPassXp(userId: string, amount: number, source: string): Promise<void> {
+    try {
+      const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+      if (!activeSeason) return;
+
+      const battlePass = await this.prisma.battlePass.findFirst({
+        where: { seasonId: activeSeason.id, isActive: true },
+        include: { tiers: { orderBy: { tierNumber: 'asc' } } },
+      });
+      if (!battlePass) return;
+
+      let totalXpNeeded = 0;
+      let unlockedTierCount = 0;
+
+      for (const tier of battlePass.tiers) {
+        const existing = await this.prisma.battlePassProgress.findFirst({
+          where: { userId, tierId: tier.id },
+        });
+
+        if (existing?.unlocked) {
+          unlockedTierCount++;
+          continue;
+        }
+
+        const xpForThisTier = existing ? existing.currentXp : 0;
+        const remaining = tier.xpRequired - xpForThisTier;
+
+        if (amount <= 0) break;
+
+        if (amount >= remaining) {
+          if (existing) {
+            await this.prisma.battlePassProgress.update({
+              where: { id: existing.id },
+              data: { currentXp: tier.xpRequired, unlocked: true, unlockedAt: new Date() },
+            });
+          } else {
+            await this.prisma.battlePassProgress.create({
+              data: { userId, tierId: tier.id, currentXp: tier.xpRequired, unlocked: true, unlockedAt: new Date() },
+            });
+          }
+          unlockedTierCount++;
+          amount -= remaining;
+        } else {
+          if (existing) {
+            await this.prisma.battlePassProgress.update({
+              where: { id: existing.id },
+              data: { currentXp: existing.currentXp + amount },
+            });
+          } else {
+            await this.prisma.battlePassProgress.create({
+              data: { userId, tierId: tier.id, currentXp: amount },
+            });
+          }
+          amount = 0;
+        }
+      }
+    } catch (error) {
+      this.logger.warn(`Failed to award pass XP for user ${userId}: ${error}`);
+    }
   }
 }

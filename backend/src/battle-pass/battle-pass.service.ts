@@ -171,4 +171,17 @@ export class BattlePassService {
       tiersUnlocked: p._count.id,
     }));
   }
+
+  async resetSeasonProgress(seasonId: string) {
+    const battlePass = await this.prisma.battlePass.findFirst({
+      where: { seasonId },
+    });
+    if (!battlePass) return;
+
+    await this.prisma.battlePassProgress.deleteMany({
+      where: { tier: { battlePassId: battlePass.id } },
+    });
+
+    this.logger.log(`Battle pass progress reset for season ${seasonId}`);
+  }
 }

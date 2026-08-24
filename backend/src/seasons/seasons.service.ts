@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { PrismaService } from '../prisma/prisma.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
+import { BattlePassService } from '../battle-pass/battle-pass.service';
 
 const DOMAIN_THEME_MAP: Record<string, string[]> = {
   SECURITY: ['SECURITY', 'NETWORKING', 'SYSTEMS'],
@@ -19,6 +20,7 @@ export class SeasonsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly domainRankingService: DomainRankingService,
+    private readonly battlePassService: BattlePassService,
   ) {}
 
   async getActiveSeason() {
@@ -86,6 +88,7 @@ export class SeasonsService {
     const active = await this.prisma.season.findFirst({ where: { isActive: true } });
     if (active) {
       await this.domainRankingService.softResetSeason(active.id);
+      await this.battlePassService.resetSeasonProgress(active.id);
 
       await this.prisma.season.update({
         where: { id: active.id },
