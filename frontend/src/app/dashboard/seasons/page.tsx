@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchApiV2 } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { Loader2, Calendar, Zap, Trophy, Clock, Star, Crown } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
@@ -35,8 +36,8 @@ interface LeaderboardEntry {
   division: string;
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+function formatDate(dateStr: string, lang: string = "en") {
+  return new Date(dateStr).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -77,6 +78,7 @@ function positionBg(pos: number) {
 }
 
 export default function SeasonsPage() {
+  const { lang } = useI18n();
   const [activeSeason, setActiveSeason] = useState<Season | null>(null);
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -164,7 +166,7 @@ export default function SeasonsPage() {
                     </Badge>
                     <div className="flex items-center gap-1.5 text-sm text-slate-300">
                       <Calendar size={14} className="text-slate-400" />
-                      {formatDate(activeSeason.startDate)} — {formatDate(activeSeason.endDate)}
+                      {formatDate(activeSeason.startDate, lang)} — {formatDate(activeSeason.endDate, lang)}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-3">
@@ -222,7 +224,7 @@ export default function SeasonsPage() {
                       <td className="py-3 px-3 text-slate-600">
                         <div className="flex items-center gap-1.5">
                           <Calendar size={12} className="text-slate-400" />
-                          {formatDate(season.startDate)} — {formatDate(season.endDate)}
+                          {formatDate(season.startDate, lang)} — {formatDate(season.endDate, lang)}
                         </div>
                       </td>
                       <td className="py-3 px-3">

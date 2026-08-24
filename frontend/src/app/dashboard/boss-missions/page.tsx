@@ -160,7 +160,9 @@ export default function BossMissionsPage() {
     try {
       const lb = await fetchApiV2<LeaderboardEntry[]>(`/boss-missions/${bossId}/leaderboard`);
       setLeaderboard(lb);
-    } catch {} finally {
+    } catch {
+      toast.error("Failed to load leaderboard");
+    } finally {
       setLeaderboardLoading(false);
     }
   };
@@ -250,10 +252,10 @@ export default function BossMissionsPage() {
               {boss.requiredDomains.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {boss.requiredDomains.map((req) => {
-                    const DomainIcon = DOMAIN_ICONS[""] || Shield;
+                    const DomainIcon = DOMAIN_ICONS[req.domainId] || Target;
                     return (
                       <span key={req.domainId} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                        <Target size={10} />
+                        <DomainIcon size={10} />
                         Min {req.minRating} rating
                       </span>
                     );

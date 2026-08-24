@@ -321,6 +321,40 @@ export class DomainRankingService {
 
     await this.prisma.seasonRankSnapshot.createMany({ data: snapshots });
 
+    const userIds = [...new Set(allRanks.map((r) => r.userId))];
+    const globalSnapshots: { userId: string; seasonId: string; seasonNumber: number; globalRating: number; globalDivision: string; globalTier: number; domainCount: number; gamesPlayed: number; wins: number; losses: number; winRate: number }[] = [];
+
+    for (const uid of userIds) {
+      const userRanks = allRanks.filter((r) => r.userId === uid);
+      const globalRank = this.computeGlobalRank(
+        userRanks.map((r) => ({
+          rating: r.rating,
+          gamesPlayed: r.gamesPlayed,
+          wins: r.wins,
+          losses: r.losses,
+          division: r.division,
+          divisionTier: r.divisionTier,
+        })),
+      );
+      globalSnapshots.push({
+        userId: uid,
+        seasonId,
+        seasonNumber,
+        globalRating: globalRank.rating,
+        globalDivision: globalRank.division,
+        globalTier: globalRank.divisionTier,
+        domainCount: globalRank.domainCount,
+        gamesPlayed: globalRank.gamesPlayed,
+        wins: globalRank.totalWins,
+        losses: globalRank.totalLosses,
+        winRate: globalRank.winRate,
+      });
+    }
+
+    if (globalSnapshots.length > 0) {
+      await this.prisma.globalRankSnapshot.createMany({ data: globalSnapshots });
+    }
+
     const nextSeason = await this.prisma.season.findFirst({
       where: { seasonNumber: seasonNumber + 1 },
     });
@@ -356,10 +390,10 @@ export class DomainRankingService {
     });
 
     this.logger.log(
-      `Soft reset completed for season ${seasonId}: ${allRanks.length} domain ranks snapshotted and carried forward`,
+      `Soft reset completed for season ${seasonId}: ${allRanks.length} domain ranks snapshotted, ${globalSnapshots.length} global ranks snapshotted`,
     );
 
-    return { snapshotted: allRanks.length };
+    return { snapshotted: allRanks.length, globalSnapshots: globalSnapshots.length };
   }
 
   computeGlobalRank(domainRanks: { rating: number; gamesPlayed: number; wins: number; losses: number; division: string; divisionTier: number }[]) {
@@ -475,5 +509,107 @@ export class DomainRankingService {
         labsCompleted,
       },
     };
+  }
+
+  async getCareerHistory(userId: string) {
+    const globalSnapshots = await this.prisma.globalRankSnapshot.findMany({
+      where: { userId },
+      orderBy: { seasonNumber: 'desc' },
+      include: {
+        season: { select: { name: true, seasonNumber: true, theme: true } },
+      },
+    });
+
+    const domainSnapshots = await this.prisma.seasonRankSnapshot.findMany({
+      where: { userId },
+      orderBy: { seasonNumber: 'desc' },
+      include: {
+        season: { select: { name: true, seasonNumber: true } },
+        domain: { select: { name: true, displayName: true, icon: true } },
+      },
+    });
+
+    const seasons = new Map<number, {
+      seasonNumber: number;
+      seasonName: string;
+      theme: string | null;
+      global: { rating: number; division: string; tier: number; domainCount: number; gamesPlayed: number; wins: number; losses: number; winRate: number } | null;
+      domains: { domain: string; domainId: string; rating: number; division: string; tier: number; gamesPlayed: number; wins: number; losses: number }[];
+    }>();
+
+    for (const gs of globalSnapshots) {
+      const key = gs.seasonNumber;
+      if (!seasons.has(key)) {
+        seasons.set(key, {
+          seasonNumber: gs.seasonNumber,
+          seasonName: gs.season?.name || `Season ${gs.seasonNumber}`,
+          theme: gs.season?.theme || null,
+          global: {
+            rating: gs.globalRating,
+            division: gs.globalDivision,
+            tier: gs.globalTier,
+            domainCount: gs.domainCount,
+            gamesPlayed: gs.gamesPlayed,
+            wins: gs.wins,
+            losses: gs.losses,
+            winRate: gs.winRate,
+          },
+          domains: [],
+        });
+      }
+    }
+
+    for (const ds of domainSnapshots) {
+      const key = ds.seasonNumber;
+      if (!seasons.has(key)) {
+        seasons.set(key, {
+          seasonNumber: ds.seasonNumber,
+          seasonName: ds.season?.name || `Season ${ds.seasonNumber}`,
+          theme: null,
+          global: null,
+          domains: [],
+        });
+      }
+      const s = seasons.get(key)!;
+      s.domains.push({
+        domain: ds.domain?.displayName || ds.domainId,
+        domainId: ds.domainId,
+        rating: ds.finalRating,
+        division: ds.finalDivision,
+        tier: ds.finalTier,
+        gamesPlayed: ds.gamesPlayed,
+        wins: ds.wins,
+        losses: ds.losses,
+      });
+    }
+
+    return Array.from(seasons.values()).sort((a, b) => b.seasonNumber - a.seasonNumber);
+  }
+
+  async getAllRatingHistory(userId: string) {
+    const events = await this.prisma.domainRatingEvent.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        season: { select: { name: true, seasonNumber: true } },
+      },
+    });
+
+    const domains = await this.prisma.skillDomain.findMany({
+      select: { id: true, name: true, displayName: true },
+    });
+    const domainMap = new Map(domains.map((d) => [d.id, d.displayName || d.name]));
+
+    return events.map((e) => ({
+      date: e.createdAt,
+      domainId: e.domainId,
+      domain: domainMap.get(e.domainId) || e.domainId,
+      ratingBefore: e.ratingBefore,
+      ratingAfter: e.ratingAfter,
+      ratingDelta: e.ratingDelta,
+      activityType: e.activityType,
+      difficulty: e.difficulty,
+      seasonNumber: e.season?.seasonNumber,
+    }));
   }
 }

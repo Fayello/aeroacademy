@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import {
   Trophy, Loader2, Target, Crosshair, Shield, TrendingUp,
   Flame, Calendar, Users, MessageSquare, BookOpen, GraduationCap,
-  Zap, Crown, CheckCircle, Lock, ChevronRight,
+  Zap, Crown, CheckCircle, Lock, AlertCircle,
 } from "lucide-react";
 
 interface AchievementProgress {
@@ -49,8 +50,10 @@ const categoryIcons: Record<string, typeof Trophy> = {
 };
 
 export default function AchievementsPage() {
+  const { t } = useI18n();
   const [achievements, setAchievements] = useState<AchievementProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
@@ -60,7 +63,7 @@ export default function AchievementsPage() {
         const data = await fetchApi<AchievementProgress[]>("/dashboard/achievements");
         setAchievements(data);
       } catch {
-        // silent
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -88,40 +91,55 @@ export default function AchievementsPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+          <AlertCircle size={32} className="text-slate-300 mx-auto mb-3" />
+          <p className="text-sm text-slate-500 mb-2">{t("common.error")}</p>
+          <button
+            onClick={() => { setError(false); setLoading(true); window.location.reload(); }}
+            className="text-sm text-[#229C62] hover:underline font-medium"
+          >
+            {t("common.retry")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Stats header */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-[#E9F8EE] p-3 rounded-xl">
             <Trophy size={24} className="text-[#229C62]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Achievements</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{t("achievements.title")}</h1>
             <p className="text-sm text-slate-500">
-              {unlocked.length} of {achievements.length} unlocked
+              {t("achievements.progress").replace("{unlocked}", String(unlocked.length)).replace("{total}", String(achievements.length))}
             </p>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4 mt-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-slate-900">{unlocked.length}</p>
-            <p className="text-xs text-slate-500">Unlocked</p>
+            <p className="text-xs text-slate-500">{t("achievements.unlocked")}</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-amber-600">{totalXp.toLocaleString()}</p>
-            <p className="text-xs text-slate-500">XP Earned</p>
+            <p className="text-xs text-slate-500">{t("achievements.xpEarned")}</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-[#229C62]">
               {achievements.length > 0 ? Math.round((unlocked.length / achievements.length) * 100) : 0}%
             </p>
-            <p className="text-xs text-slate-500">Complete</p>
+            <p className="text-xs text-slate-500">{t("achievements.complete")}</p>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-2">
         {(["all", "unlocked", "locked"] as const).map((f) => (
           <button
@@ -145,7 +163,7 @@ export default function AchievementsPage() {
               : "bg-slate-100 text-slate-600 hover:bg-slate-200"
           }`}
         >
-          All Types
+          {t("achievements.allTypes")}
         </button>
         {categories.map((cat) => {
           const CatIcon = categoryIcons[cat] || Trophy;
@@ -166,7 +184,6 @@ export default function AchievementsPage() {
         })}
       </div>
 
-      {/* Achievement grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {filtered.map((ach) => {
           const Icon = iconMap[ach.icon] || Trophy;
@@ -206,7 +223,6 @@ export default function AchievementsPage() {
                 </div>
               </div>
 
-              {/* Progress bar */}
               {!ach.unlocked && (
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-1">
@@ -224,7 +240,6 @@ export default function AchievementsPage() {
                 </div>
               )}
 
-              {/* XP reward */}
               <div className="flex items-center justify-between mt-2">
                 {ach.xpReward > 0 && (
                   <span className="text-[10px] font-bold text-amber-600">+{ach.xpReward} XP</span>

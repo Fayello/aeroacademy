@@ -125,4 +125,14 @@ export class DomainRankingController {
   async getRankedProfile(@Param('userId') userId: string) {
     return this.domainRankingService.getRankedProfile(userId);
   }
+
+  @Get('career/:userId')
+  async getCareerHistory(@Param('userId') userId: string) {
+    return this.domainRankingService.getCareerHistory(userId);
+  }
+
+  @Get('history/:userId/all')
+  async getAllRatingHistory(@Param('userId') userId: string) {
+    return this.domainRankingService.getAllRatingHistory(userId);
+  }
 }

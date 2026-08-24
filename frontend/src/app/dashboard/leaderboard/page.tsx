@@ -1,17 +1,42 @@
 "use client";
 
 import { useDashboard } from "@/hooks/useDashboard";
-import { Trophy, Loader2, CheckCircle, TrendingUp, Lock } from "lucide-react";
+import { Trophy, Loader2, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import { fetchApi } from "@/lib/api";
+import { fetchApi, fetchApiV2 } from "@/lib/api";
 import toast from "@/lib/toast";
 import Badge from "@/components/ui/Badge";
 import { DIVISION_COLORS } from "@/lib/constants";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
+import { useI18n } from "@/lib/i18n";
 import type { LeaderboardEntry, LeagueStats } from "@/types/api";
 import PageHeader from "@/components/ui/PageHeader";
 
+interface GlobalRankProfile {
+  globalRank: {
+    rating: number;
+    division: string;
+    divisionTier: number;
+    gamesPlayed: number;
+    totalWins: number;
+    totalLosses: number;
+    winRate: number;
+    domainCount: number;
+  };
+  level: number;
+  domainRanks: { domain: string; domainId: string; rating: number; division: string; divisionTier: number }[];
+}
+
+const DOMAIN_ICONS: Record<string, typeof Shield> = {
+  SECURITY: Bug, NETWORKING: Network, SYSTEMS: Server, DATABASES: Database, DEVOPS: Code, QA: Target,
+};
+
+function romanTier(tier: number): string {
+  return ["IV", "III", "II", "I"][tier - 1] || "IV";
+}
+
 export default function LeaderboardPage() {
+  const { t } = useI18n();
   const { socket, leaderboard: contextLeaderboard, userMetrics, isConnected } = useDashboard();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +47,7 @@ export default function LeaderboardPage() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState<"all" | "month" | "week">("all");
   const [domainFilter, setDomainFilter] = useState<"all" | "SECURITY" | "NETWORKING" | "DEVOPS" | "DATABASES" | "SYSTEMS" | "QA">("all");
+  const [globalProfile, setGlobalProfile] = useState<GlobalRankProfile | null>(null);
 
   useEffect(() => {
     try {
@@ -31,6 +57,21 @@ export default function LeaderboardPage() {
       setCurrentUserId(null);
     }
   }, []);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    let cancelled = false;
+    async function load() {
+      try {
+        const data = await fetchApiV2<GlobalRankProfile>(`/domain-ranking/profile/${currentUserId}`);
+        if (!cancelled) setGlobalProfile(data);
+      } catch {
+        // silent - non-critical
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [currentUserId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,9 +173,52 @@ export default function LeaderboardPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
-        title="Leaderboard"
+        title={t("nav.leaderboard")}
         description="Global rankings and competition"
       />
+
+      {globalProfile?.globalRank && (
+        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] rounded-xl p-6 text-white">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
+              <Crown size={22} className="text-[#7AD62A]" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-300">Your Global Technology Rank</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold">{globalProfile.globalRank.rating.toLocaleString()}</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 border border-white/20">
+                  {globalProfile.globalRank.division} {romanTier(globalProfile.globalRank.divisionTier)}
+                </span>
+              </div>
+            </div>
+            <div className="ml-auto flex gap-4 text-sm">
+              <div className="text-center">
+                <p className="text-white font-semibold">{globalProfile.globalRank.domainCount}/6</p>
+                <p className="text-[10px] text-slate-400">Domains</p>
+              </div>
+              <div className="text-center">
+                <p className="text-white font-semibold">{globalProfile.globalRank.winRate}%</p>
+                <p className="text-[10px] text-slate-400">Win Rate</p>
+              </div>
+            </div>
+          </div>
+          {globalProfile.domainRanks.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {globalProfile.domainRanks.map((dr) => {
+                const DomainIcon = DOMAIN_ICONS[dr.domain] || Shield;
+                return (
+                  <div key={dr.domainId} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 border border-white/10 text-xs">
+                    <DomainIcon size={10} className="text-white/60" />
+                    <span className="text-white/80">{dr.domain}</span>
+                    <span className="text-white font-semibold">{dr.rating}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex gap-2">
         {(["GLOBAL", "REGIONAL", "UNIVERSITY"] as const).map((league) => (
@@ -150,9 +234,7 @@ export default function LeaderboardPage() {
         ))}
       </div>
 
-      {/* Time & Domain Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Segmented time filter */}
         <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
           {([
             { key: "all" as const, label: "All Time" },
@@ -173,7 +255,6 @@ export default function LeaderboardPage() {
           ))}
         </div>
 
-        {/* Domain dropdown */}
         <select
           value={domainFilter}
           onChange={(e) => setDomainFilter(e.target.value as typeof domainFilter)}
@@ -189,7 +270,6 @@ export default function LeaderboardPage() {
         </select>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <input
           type="text"
@@ -215,7 +295,6 @@ export default function LeaderboardPage() {
         )}
       </div>
 
-      {/* Season stats */}
       {leagueStats.season && (
         <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between">
           <div>
@@ -228,7 +307,6 @@ export default function LeaderboardPage() {
         </div>
       )}
 
-      {/* Progress to next tier */}
       {userMetrics && (() => {
         const currentLevel = getLevel(userMetrics.xp || 0);
         const progress = getLevelProgress(userMetrics.xp || 0);
@@ -254,7 +332,7 @@ export default function LeaderboardPage() {
                 <p className="text-sm text-slate-500">{xpNeeded} XP to Level {currentLevel + 1}</p>
               </div>
             </div>
-              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
               <div
                 className="h-full bg-slate-800 rounded-full transition-all duration-500"
                 style={{ width: `${Math.round(progress * 100)}%` }}
@@ -274,7 +352,6 @@ export default function LeaderboardPage() {
         );
       })()}
 
-      {/* Leaderboard list */}
       <div className="space-y-3">
         {filteredOperators.length > 0 ? filteredOperators.map((op, idx) => (
           <div
@@ -284,17 +361,15 @@ export default function LeaderboardPage() {
               idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
             }`}
           >
-            {/* Rank */}
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-              idx === 0 ? "bg-slate-100 text-slate-700" : 
-              idx === 1 ? "bg-slate-100 text-slate-500" : 
-              idx === 2 ? "bg-slate-100 text-slate-600" : 
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+              idx === 0 ? "bg-slate-100 text-slate-700" :
+              idx === 1 ? "bg-slate-100 text-slate-500" :
+              idx === 2 ? "bg-slate-100 text-slate-600" :
               "bg-slate-50 text-slate-400"
             }`}>
               {idx < 3 ? <Trophy size={18} /> : idx + 1}
             </div>
 
-            {/* Avatar */}
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
               idx === 0 ? "bg-slate-800 text-white" :
               idx === 1 ? "bg-slate-600 text-white" :
@@ -304,7 +379,6 @@ export default function LeaderboardPage() {
               {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
             </div>
 
-            {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-base font-semibold text-slate-900 truncate">{op.username || op.name}</p>
@@ -318,20 +392,19 @@ export default function LeaderboardPage() {
                 )}
               </div>
               <p className="text-sm text-slate-500 mt-0.5">
-                {op.organization?.name || "Independent"} • {op.city || "Unknown"}
+                {op.organization?.name || "Independent"} \u2022 {op.city || "Unknown"}
               </p>
               {op.username && (
                 <p className="text-xs text-slate-400 mt-0.5">@{op.username}</p>
               )}
             </div>
 
-            {/* Score */}
             <div className="text-right">
               <p className="text-2xl font-bold text-slate-900">{op.rank || 1200}</p>
               <p className="text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
-        )        ) : (
+        )) : (
           <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
             <Trophy size={40} className="mx-auto mb-3 text-slate-300" />
             <p className="text-sm font-medium text-slate-500">No results found.</p>

@@ -76,6 +76,7 @@ model User {
   preference               UserPreference?
   domainRanks              DomainRank[]
   rankSnapshots            SeasonRankSnapshot[]
+  globalRankSnapshots      GlobalRankSnapshot[]
   placementMatches         PlacementMatch[]
   ratingEvents             DomainRatingEvent[]
 
@@ -116,6 +117,7 @@ model Season {
   snapshots     LeaderboardSnapshot[]
   domainRanks   DomainRank[]
   rankSnapshots SeasonRankSnapshot[]
+  globalRankSnapshots GlobalRankSnapshot[]
   placementMatches PlacementMatch[]
   ratingEvents  DomainRatingEvent[]
 }
@@ -1158,6 +1160,28 @@ model SeasonRankSnapshot {
   @@unique([userId, domainId, seasonId])
   @@index([userId, seasonNumber])
   @@index([domainId, seasonId, finalRating(sort: Desc)])
+}
+
+model GlobalRankSnapshot {
+  id             String   @id @default(uuid())
+  userId         String
+  seasonId       String
+  seasonNumber   Int
+  globalRating   Int
+  globalDivision String
+  globalTier     Int
+  domainCount    Int
+  gamesPlayed    Int
+  wins           Int
+  losses         Int
+  winRate        Int
+  createdAt      DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  season Season @relation(fields: [seasonId], references: [id])
+
+  @@unique([userId, seasonId])
+  @@index([userId, seasonNumber])
 }
 
 model PlacementMatch {
