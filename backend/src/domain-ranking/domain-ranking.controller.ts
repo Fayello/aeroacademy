@@ -120,4 +120,9 @@ export class DomainRankingController {
     await this.domainRankingService.initializeDomainRanks(userId, sid);
     return { message: 'Domain ranks initialized' };
   }
+
+  @Get('profile/:userId')
+  async getRankedProfile(@Param('userId') userId: string) {
+    return this.domainRankingService.getRankedProfile(userId);
+  }
 }

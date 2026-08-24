@@ -361,4 +361,94 @@ export class DomainRankingService {
 
     return { snapshotted: allRanks.length };
   }
+
+  async getRankedProfile(userId: string) {
+    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, avatarUrl: true, xp: true },
+    });
+    if (!user) return null;
+
+    const level = Math.floor(user.xp / 1000) + 1;
+
+    const currentRanks = activeSeason
+      ? await this.prisma.domainRank.findMany({
+          where: { userId, seasonId: activeSeason.id },
+          include: { domain: { select: { name: true, displayName: true, icon: true } } },
+          orderBy: { rating: 'desc' },
+        })
+      : [];
+
+    const bestOverall = currentRanks.reduce(
+      (best, r) => (r.rating > best.rating ? r : best),
+      currentRanks[0],
+    );
+
+    const seasonHistory = await this.prisma.seasonRankSnapshot.findMany({
+      where: { userId },
+      orderBy: { seasonNumber: 'desc' },
+      take: 20,
+      include: {
+        season: { select: { name: true, seasonNumber: true } },
+      },
+    });
+
+    const bossAttempts = await this.prisma.bossMissionAttempt.count({
+      where: { userId, isCompleted: true },
+    });
+
+    const labsCompleted = await this.prisma.progress.count({
+      where: { userId, completed: true },
+    });
+
+    return {
+      user,
+      level,
+      activeSeason: activeSeason
+        ? { id: activeSeason.id, name: activeSeason.name, seasonNumber: activeSeason.seasonNumber }
+        : null,
+      overallRank: bestOverall
+        ? {
+            rating: bestOverall.rating,
+            division: bestOverall.division,
+            divisionTier: bestOverall.divisionTier,
+            domain: bestOverall.domain.displayName,
+            gamesPlayed: bestOverall.gamesPlayed,
+            winRate: bestOverall.gamesPlayed > 0
+              ? Math.round((bestOverall.wins / bestOverall.gamesPlayed) * 100)
+              : 0,
+            isProvisional: bestOverall.isProvisional,
+          }
+        : null,
+      domainRanks: currentRanks.map((r) => ({
+        domain: r.domain.displayName,
+        domainId: r.domainId,
+        rating: r.rating,
+        division: r.division,
+        divisionTier: r.divisionTier,
+        gamesPlayed: r.gamesPlayed,
+        wins: r.wins,
+        losses: r.losses,
+        isProvisional: r.isProvisional,
+        placementMatchesLeft: r.placementMatchesLeft,
+        careerHighRating: r.careerHighRating,
+        careerHighDivision: r.careerHighDivision,
+      })),
+      seasonHistory: seasonHistory.map((s) => ({
+        seasonNumber: s.seasonNumber,
+        seasonName: s.season?.name,
+        finalRating: s.finalRating,
+        finalDivision: s.finalDivision,
+        finalTier: s.finalTier,
+        gamesPlayed: s.gamesPlayed,
+        wins: s.wins,
+        losses: s.losses,
+      })),
+      stats: {
+        bossMissionsCompleted: bossAttempts,
+        labsCompleted,
+      },
+    };
+  }
 }
