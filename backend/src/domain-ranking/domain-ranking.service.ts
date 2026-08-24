@@ -525,9 +525,13 @@ export class DomainRankingService {
       orderBy: { seasonNumber: 'desc' },
       include: {
         season: { select: { name: true, seasonNumber: true } },
-        domain: { select: { name: true, displayName: true, icon: true } },
       },
     });
+
+    const domains = await this.prisma.skillDomain.findMany({
+      select: { id: true, name: true, displayName: true },
+    });
+    const domainMap = new Map(domains.map((d) => [d.id, d.displayName || d.name]));
 
     const seasons = new Map<number, {
       seasonNumber: number;
@@ -539,11 +543,12 @@ export class DomainRankingService {
 
     for (const gs of globalSnapshots) {
       const key = gs.seasonNumber;
+      const gsSeason = gs.season as { name: string; theme: string | null } | null;
       if (!seasons.has(key)) {
         seasons.set(key, {
           seasonNumber: gs.seasonNumber,
-          seasonName: gs.season?.name || `Season ${gs.seasonNumber}`,
-          theme: gs.season?.theme || null,
+          seasonName: gsSeason?.name || `Season ${gs.seasonNumber}`,
+          theme: gsSeason?.theme || null,
           global: {
             rating: gs.globalRating,
             division: gs.globalDivision,
@@ -561,10 +566,11 @@ export class DomainRankingService {
 
     for (const ds of domainSnapshots) {
       const key = ds.seasonNumber;
+      const seasonData = ds.season as { name: string; seasonNumber: number } | null;
       if (!seasons.has(key)) {
         seasons.set(key, {
           seasonNumber: ds.seasonNumber,
-          seasonName: ds.season?.name || `Season ${ds.seasonNumber}`,
+          seasonName: seasonData?.name || `Season ${ds.seasonNumber}`,
           theme: null,
           global: null,
           domains: [],
@@ -572,7 +578,7 @@ export class DomainRankingService {
       }
       const s = seasons.get(key)!;
       s.domains.push({
-        domain: ds.domain?.displayName || ds.domainId,
+        domain: domainMap.get(ds.domainId) || ds.domainId,
         domainId: ds.domainId,
         rating: ds.finalRating,
         division: ds.finalDivision,
