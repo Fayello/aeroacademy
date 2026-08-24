@@ -42,6 +42,7 @@ import { CrossDomainModule } from './cross-domain/cross-domain.module';
 import { DomainRankingModule } from './domain-ranking/domain-ranking.module';
 import { GenomeModule } from './genome/genome.module';
 import { MissionsModule } from './common/missions.module';
+import { LearningOutcomeModule } from './common/learning-outcome.module';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { MissionsModule } from './common/missions.module';
     DomainRankingModule,
     GenomeModule,
     MissionsModule,
+    LearningOutcomeModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

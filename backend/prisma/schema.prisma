@@ -81,6 +81,10 @@ model User {
   ratingEvents             DomainRatingEvent[]
   masteryEvents            SkillMasteryEvent[]
   personalizedMissions     PersonalizedMission[]
+  outcomeEvidence          OutcomeEvidence[]
+  cohortMemberships        CohortMember[]
+  studentAssessments       StudentAssessment[]
+  certificationAwards      CertificationAward[]
 
   @@index([googleId])
   @@index([role])
@@ -225,6 +229,8 @@ model Lab {
   lesson           Lesson?
   discussions     DiscussionPost[]
   labSkills        LabSkill[]
+  labOutcomes      LabOutcome[]
+  moduleLabs       ModuleLab[]
 }
 
 model LabFlag {
@@ -743,6 +749,8 @@ model SkillDomain {
   challenges            Challenge[]
   domainRanks           DomainRank[]
   personalizedMissions  PersonalizedMission[]
+  learningOutcomes      LearningOutcome[]
+  practicalAssessments  PracticalAssessment[]
 }
 
 model Skill {
@@ -762,6 +770,7 @@ model Skill {
   prerequisites  SkillPrerequisite[]   @relation("SkillRequires")
   requiredBy     SkillPrerequisite[]   @relation("SkillNeeded")
   personalizedMissions PersonalizedMission[]
+  skillOutcomes  SkillOutcome[]
 
   @@unique([domainId, name])
   @@index([domainId])
@@ -1305,4 +1314,260 @@ model DomainRatingEvent {
 
   @@index([userId, domainId, seasonId])
   @@index([seasonId, createdAt(sort: Desc)])
+}
+
+// ─── V5: LEARNING OUTCOMES & COMPETENCY ─────────────────────────
+
+model LearningOutcome {
+  id          String   @id @default(uuid())
+  code        String   // LO1, LO2, etc.
+  title       String
+  description String
+  domainId    String
+  weight      Float    @default(1.0) // importance weight for competency calc
+  createdAt   DateTime @default(now())
+
+  domain       SkillDomain          @relation(fields: [domainId], references: [id])
+  skillOutcomes SkillOutcome[]
+  labOutcomes  LabOutcome[]
+  assessments  AssessmentOutcome[]
+  evidence     OutcomeEvidence[]
+  moduleOutcomes ModuleOutcome[]
+
+  @@unique([domainId, code])
+  @@index([domainId])
+}
+
+model SkillOutcome {
+  id              String @id @default(uuid())
+  skillId         String
+  learningOutcomeId String
+  weight          Float  @default(1.0)
+
+  skill   Skill           @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  outcome LearningOutcome @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
+
+  @@unique([skillId, learningOutcomeId])
+  @@index([skillId])
+  @@index([learningOutcomeId])
+}
+
+model LabOutcome {
+  id              String @id @default(uuid())
+  labId           String
+  learningOutcomeId String
+  weight          Float  @default(1.0)
+
+  lab    Lab             @relation(fields: [labId], references: [id], onDelete: Cascade)
+  outcome LearningOutcome @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
+
+  @@unique([labId, learningOutcomeId])
+  @@index([labId])
+  @@index([learningOutcomeId])
+}
+
+model OutcomeEvidence {
+  id                String   @id @default(uuid())
+  userId            String
+  learningOutcomeId String
+  activityType      String   // LAB_COMPLETED, FLAG_SOLVED, ASSESSMENT_PASSED, BOSS_COMPLETED
+  activityId        String
+  score             Float    // 0-100, how well the outcome was demonstrated
+  metadata          Json?
+  demonstratedAt    DateTime @default(now())
+
+  user   User            @relation(fields: [userId], references: [id])
+  outcome LearningOutcome @relation(fields: [learningOutcomeId], references: [id])
+
+  @@index([userId, learningOutcomeId])
+  @@index([userId, activityType])
+  @@index([learningOutcomeId])
+  @@index([demonstratedAt])
+}
+
+// ─── V5: CURRICULUM & COHORTS ──────────────────────────────────
+
+model Curriculum {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  institution String
+  degree      String   // BSc, MSc, Diploma
+  year        Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  modules CurriculumModule[]
+  cohorts Cohort[]
+}
+
+model CurriculumModule {
+  id             String   @id @default(uuid())
+  curriculumId   String
+  name           String
+  code           String   // CS301, NET201
+  credits        Int
+  theoryHours    Int      @default(0)
+  practicalHours Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  curriculum Curriculum         @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+  outcomes   ModuleOutcome[]
+  labs       ModuleLab[]
+
+  @@index([curriculumId])
+}
+
+model ModuleOutcome {
+  id                 String @id @default(uuid())
+  moduleId           String
+  learningOutcomeId  String
+  weight             Float  @default(1.0)
+
+  module  CurriculumModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  outcome LearningOutcome  @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, learningOutcomeId])
+}
+
+model ModuleLab {
+  id       String @id @default(uuid())
+  moduleId String
+  labId    String
+
+  module CurriculumModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lab    Lab              @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, labId])
+}
+
+model Cohort {
+  id           String   @id @default(uuid())
+  curriculumId String
+  name         String
+  semester     String?
+  year         Int
+  maxStudents  Int      @default(50)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  curriculum Curriculum      @relation(fields: [curriculumId], references: [id])
+  members    CohortMember[]
+
+  @@index([curriculumId])
+}
+
+model CohortMember {
+  id       String @id @default(uuid())
+  cohortId String
+  userId   String
+  role     String @default("STUDENT") // STUDENT, TA, PROFESSOR
+  joinedAt DateTime @default(now())
+
+  cohort Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, userId])
+  @@index([cohortId])
+  @@index([userId])
+}
+
+// ─── V5: PRACTICAL ASSESSMENTS ─────────────────────────────────
+
+model PracticalAssessment {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  domainId    String?
+  timeLimit   Int      // minutes
+  maxScore    Int      @default(100)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  domain   SkillDomain?        @relation(fields: [domainId], references: [id])
+  outcomes AssessmentOutcome[]
+  attempts StudentAssessment[]
+  scenarios AssessmentScenario[]
+
+  @@index([domainId])
+}
+
+model AssessmentScenario {
+  id             String   @id @default(uuid())
+  assessmentId   String
+  title          String
+  description    String
+  order          Int      @default(0)
+  maxScore       Int      @default(100)
+  expectedSteps  Json?    // expected methodology
+  expectedState  Json?    // expected final state
+  hints          Json?
+
+  assessment PracticalAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+}
+
+model AssessmentOutcome {
+  id              String @id @default(uuid())
+  assessmentId    String
+  learningOutcomeId String
+  weight          Float  @default(1.0)
+
+  assessment PracticalAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  outcome    LearningOutcome     @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, learningOutcomeId])
+}
+
+model StudentAssessment {
+  id           String   @id @default(uuid())
+  userId       String
+  assessmentId String
+  startedAt    DateTime @default(now())
+  completedAt  DateTime?
+  score        Int?
+  maxScore     Int      @default(100)
+  breakdown    Json?    // { correctness, methodology, time, independence, finalState }
+  feedback     Json?
+  status       String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, EXPIRED
+
+  user       User                 @relation(fields: [userId], references: [id])
+  assessment PracticalAssessment  @relation(fields: [assessmentId], references: [id])
+
+  @@unique([userId, assessmentId])
+  @@index([userId])
+  @@index([assessmentId])
+}
+
+// ─── V5: CERTIFICATIONS ────────────────────────────────────────
+
+model Certification {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @unique // XCA, XCP, XCE
+  description String
+  requirements Json    // { domains: [{ domainId, minMastery, minLabs }], assessments: N, crossDomain: bool }
+  xpRequired  Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  awards CertificationAward[]
+}
+
+model CertificationAward {
+  id              String   @id @default(uuid())
+  userId          String
+  certificationId String
+  awardedAt       DateTime @default(now())
+  expiresAt       DateTime?
+  credentialId    String   @unique // public verification ID
+  evidenceSummary Json     // snapshot of competency at award time
+
+  user          User          @relation(fields: [userId], references: [id])
+  certification Certification @relation(fields: [certificationId], references: [id])
+
+  @@unique([userId, certificationId])
+  @@index([userId])
+  @@index([credentialId])
 }
