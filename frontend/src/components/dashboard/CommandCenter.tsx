@@ -23,6 +23,7 @@ import {
   ChevronRight,
   Zap,
   TrendingUp,
+  ClipboardCheck,
 } from "lucide-react";
 import { DomainBar, DomainMotif } from "@/components/ui/DomainVisual";
 
@@ -65,6 +66,21 @@ interface CompetencyData {
   }[];
 }
 
+interface CohortInfo {
+  cohortId: string;
+  cohortName: string;
+  curriculumName: string | null;
+  role: string;
+}
+
+interface ExamInfo {
+  assessmentId: string;
+  title: string;
+  status: string;
+  score: number | null;
+  maxScore: number;
+}
+
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return "Good morning";
@@ -85,6 +101,8 @@ export default function CommandCenter() {
   const [user, setUser] = useState<User | null>(null);
   const [activeLabs, setActiveLabs] = useState<ActiveLab[]>([]);
   const [competency, setCompetency] = useState<CompetencyData | null>(null);
+  const [cohorts, setCohorts] = useState<CohortInfo[]>([]);
+  const [exams, setExams] = useState<ExamInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const { config } = useDisplayMode();
   const { nav } = useNavigation();
@@ -105,14 +123,37 @@ export default function CommandCenter() {
         const userId = JSON.parse(storedUser || "{}").id;
         if (!userId) return;
 
-        const [labsData, compData] = await Promise.allSettled([
+        const [labsData, compData, cohortsData, examsData] = await Promise.allSettled([
           fetchApi<ActiveLab[]>("/dashboard/active-labs"),
           fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`),
+          fetchApi<CohortInfo[]>("/navigation/context").then(ctx => {
+            // Extract cohort info from navigation alerts
+            const cohortAlerts = (ctx as any).alerts?.filter((a: any) => a.type === "COHORT_ACTIVE") || [];
+            return cohortAlerts.map((a: any) => ({
+              cohortId: a.href?.split("/").pop() || "",
+              cohortName: a.title,
+              curriculumName: a.description?.replace("Curriculum: ", "") || null,
+              role: "STUDENT",
+            }));
+          }),
+          fetchApi<ExamInfo[]>("/navigation/context").then(ctx => {
+            // Extract exam info from navigation alerts
+            const examAlerts = (ctx as any).alerts?.filter((a: any) => a.type === "EXAM_AVAILABLE") || [];
+            return examAlerts.map((a: any) => ({
+              assessmentId: a.href?.split("/").pop() || "",
+              title: a.title,
+              status: "AVAILABLE",
+              score: null,
+              maxScore: 100,
+            }));
+          }),
         ]);
 
         if (!cancelled) {
           if (labsData.status === "fulfilled") setActiveLabs(labsData.value);
           if (compData.status === "fulfilled") setCompetency(compData.value);
+          if (cohortsData.status === "fulfilled") setCohorts(cohortsData.value);
+          if (examsData.status === "fulfilled") setExams(examsData.value);
         }
       } catch {
         // silent
@@ -225,6 +266,62 @@ export default function CommandCenter() {
                   <span className="text-sm font-medium group-hover:underline">Continue</span>
                   <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── COHORT (only if enrolled) ─── */}
+      {cohorts.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-slate-900">My Cohort</h2>
+            <Link href="/dashboard/cohorts" className="text-xs text-[#229C62] hover:underline font-medium">
+              View all
+            </Link>
+          </div>
+          {cohorts.map((c) => (
+            <Link
+              key={c.cohortId}
+              href={`/dashboard/cohorts/${c.cohortId}`}
+              className="block p-3 rounded-lg bg-slate-50 hover:bg-[#E9F8EE]/50 transition-colors"
+            >
+              <p className="text-sm font-medium text-slate-900">{c.cohortName}</p>
+              {c.curriculumName && (
+                <p className="text-xs text-slate-500 mt-0.5">{c.curriculumName}</p>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* ─── EXAMS (only if enrolled) ─── */}
+      {exams.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-slate-900">My Exams</h2>
+            <Link href="/dashboard/exams" className="text-xs text-[#229C62] hover:underline font-medium">
+              View all
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {exams.map((exam) => (
+              <Link
+                key={exam.assessmentId}
+                href={`/dashboard/exams/${exam.assessmentId}`}
+                className="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-[#E9F8EE]/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <ClipboardCheck size={14} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">{exam.title}</p>
+                    <p className="text-[11px] text-slate-500">{exam.status === "AVAILABLE" ? "Ready to start" : exam.status}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-slate-400" />
               </Link>
             ))}
           </div>
