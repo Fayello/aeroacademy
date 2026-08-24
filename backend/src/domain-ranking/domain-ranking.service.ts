@@ -473,6 +473,26 @@ export class DomainRankingService {
       })),
     );
 
+    // Fetch domain mastery averages
+    const userSkills = await this.prisma.userSkill.findMany({
+      where: { userId },
+      include: { skill: { select: { domainId: true } } },
+    });
+
+    const domainMasteryMap = new Map<string, { total: number; count: number }>();
+    for (const us of userSkills) {
+      const domainId = us.skill.domainId;
+      const existing = domainMasteryMap.get(domainId) || { total: 0, count: 0 };
+      existing.total += us.mastery;
+      existing.count += 1;
+      domainMasteryMap.set(domainId, existing);
+    }
+
+    const domainMastery: Record<string, number> = {};
+    for (const [domainId, { total, count }] of domainMasteryMap) {
+      domainMastery[domainId] = count > 0 ? Math.round(total / count) : 0;
+    }
+
     return {
       user,
       level,
@@ -480,6 +500,7 @@ export class DomainRankingService {
         ? { id: activeSeason.id, name: activeSeason.name, seasonNumber: activeSeason.seasonNumber }
         : null,
       globalRank,
+      domainMastery,
       domainRanks: currentRanks.map((r) => ({
         domain: r.domain.displayName,
         domainId: r.domainId,
@@ -493,6 +514,7 @@ export class DomainRankingService {
         placementMatchesLeft: r.placementMatchesLeft,
         careerHighRating: r.careerHighRating,
         careerHighDivision: r.careerHighDivision,
+        mastery: domainMastery[r.domainId] || 0,
       })),
       seasonHistory: seasonHistory.map((s) => ({
         seasonNumber: s.seasonNumber,
