@@ -13,6 +13,7 @@ model User {
   passwordHash             String?
   googleId                 String?                   @unique
   role                     Role                      @default(STUDENT)
+  userExperience           String                    @default("INDIVIDUAL") // INDIVIDUAL, UNIVERSITY, CORPORATE, INSTRUCTOR, ADMIN
   emailVerified            DateTime?
   verificationToken        String?                   @unique
   createdAt                DateTime                  @default(now())

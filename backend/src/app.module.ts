@@ -49,6 +49,7 @@ import { CurriculumModule } from './common/curriculum.module';
 import { CohortModule } from './common/cohort.module';
 import { ExamModule } from './common/exam.module';
 import { DisplayModeModule } from './common/display-mode.module';
+import { NavigationModule } from './common/navigation.module';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { DisplayModeModule } from './common/display-mode.module';
     CohortModule,
     ExamModule,
     DisplayModeModule,
+    NavigationModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

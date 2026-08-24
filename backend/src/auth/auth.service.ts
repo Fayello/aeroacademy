@@ -294,6 +294,7 @@ export class AuthService {
         bio: true,
         city: true,
         role: true,
+        userExperience: true,
         xp: true,
         rank: true,
         division: true,

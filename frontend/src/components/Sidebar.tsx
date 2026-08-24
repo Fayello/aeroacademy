@@ -20,117 +20,60 @@ import {
   BarChart3,
   ScrollText,
   Target,
+  Bell,
+  Info,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
-import { useState, useEffect, useCallback } from "react";
-import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
-import { useDisplayMode, type DisplayMode } from "@/lib/displayMode";
+import { useNavigation, type NavItem } from "@/lib/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 
-interface BucketItem {
-  href: string;
-  tKey: string;
-  icon: typeof Home;
-}
+const ICON_MAP: Record<string, typeof Home> = {
+  Home,
+  GraduationCap,
+  FlaskConical,
+  Swords,
+  Users,
+  User,
+  Shield,
+  Briefcase,
+  Award,
+  ClipboardCheck,
+  Route,
+  BarChart3,
+  ScrollText,
+  Target,
+  Bell,
+  Info,
+};
 
-interface Bucket {
+interface BucketDef {
   key: string;
   tKey: string;
   icon: typeof Home;
   href: string;
-  items?: BucketItem[];
-  roles?: string[];
+  items?: NavItem[];
 }
 
-const BUCKETS: Bucket[] = [
-  {
-    key: "home",
-    tKey: "bucket.home",
-    icon: Home,
-    href: "/dashboard",
-  },
-  {
-    key: "learn",
-    tKey: "bucket.learn",
-    icon: GraduationCap,
-    href: "/dashboard/courses",
-    items: [
-      { href: "/dashboard/courses", tKey: "bucket.courses", icon: GraduationCap },
-      { href: "/dashboard/learning-paths", tKey: "bucket.paths", icon: Route },
-      { href: "/dashboard/training", tKey: "bucket.masterclasses", icon: Award },
-      { href: "/dashboard/analytics/competency", tKey: "bucket.assessments", icon: ClipboardCheck },
-      { href: "/dashboard/curricula", tKey: "bucket.curricula", icon: ScrollText },
-      { href: "/dashboard/cohorts", tKey: "bucket.cohorts", icon: Users },
-      { href: "/dashboard/exams", tKey: "bucket.exams", icon: ClipboardCheck },
-    ],
-  },
-  {
-    key: "labs",
-    tKey: "bucket.labs",
-    icon: FlaskConical,
-    href: "/dashboard/labs",
-  },
-  {
-    key: "compete",
-    tKey: "bucket.compete",
-    icon: Swords,
-    href: "/dashboard/leaderboard",
-    items: [
-      { href: "/dashboard/ranking", tKey: "bucket.ranked", icon: Shield },
-      { href: "/dashboard/capability-ranking", tKey: "bucket.capability", icon: Target },
-      { href: "/dashboard/challenges", tKey: "bucket.challenges", icon: Target },
-      { href: "/dashboard/seasons", tKey: "bucket.seasons", icon: ScrollText },
-      { href: "/dashboard/leaderboard", tKey: "bucket.leaderboards", icon: Award },
-      { href: "/dashboard/battle-pass", tKey: "bucket.rewards", icon: Award },
-      { href: "/dashboard/boss-missions", tKey: "bucket.boss-missions", icon: Swords },
-      { href: "/dashboard/my-missions", tKey: "bucket.missions", icon: Target },
-    ],
-  },
-  {
-    key: "community",
-    tKey: "bucket.community",
-    icon: Users,
-    href: "/dashboard/teams",
-    items: [
-      { href: "/dashboard/teams", tKey: "bucket.teams", icon: Users },
-      { href: "/dashboard/events", tKey: "bucket.events", icon: ScrollText },
-    ],
-  },
-  {
-    key: "profile",
-    tKey: "bucket.profile",
-    icon: User,
-    href: "/dashboard/profile",
-    items: [
-      { href: "/dashboard/profile", tKey: "bucket.overview", icon: User },
-      { href: "/dashboard/genome", tKey: "bucket.skills", icon: Target },
-      { href: "/dashboard/competency", tKey: "bucket.competency", icon: BarChart3 },
-      { href: "/dashboard/certifications", tKey: "bucket.certifications", icon: Award },
-      { href: "/dashboard/analytics", tKey: "bucket.achievements", icon: Award },
-    ],
-  },
-];
-
-const ADMIN_ITEMS: BucketItem[] = [
-  { href: "/dashboard/admin", tKey: "nav.admin", icon: Shield },
-  { href: "/dashboard/admin/challenges", tKey: "nav.admin-challenges", icon: Target },
-  { href: "/dashboard/admin/badges", tKey: "nav.admin-badges", icon: Award },
-  { href: "/dashboard/admin/assessments", tKey: "nav.admin-assessments", icon: ClipboardCheck },
-  { href: "/dashboard/admin/learning-paths", tKey: "nav.admin-learning-paths", icon: Route },
-  { href: "/dashboard/admin/teams", tKey: "nav.admin-teams", icon: Users },
-  { href: "/dashboard/admin/analytics", tKey: "analytics", icon: BarChart3 },
-  { href: "/dashboard/admin/audit", tKey: "audit", icon: ScrollText },
-  { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: Briefcase },
+const ADMIN_ITEMS: NavItem[] = [
+  { href: "/dashboard/admin", tKey: "nav.admin", icon: "Shield", label: "Admin" },
+  { href: "/dashboard/admin/challenges", tKey: "nav.admin-challenges", icon: "Target", label: "Challenges" },
+  { href: "/dashboard/admin/badges", tKey: "nav.admin-badges", icon: "Award", label: "Badges" },
+  { href: "/dashboard/admin/assessments", tKey: "nav.admin-assessments", icon: "ClipboardCheck", label: "Assessments" },
+  { href: "/dashboard/admin/learning-paths", tKey: "nav.admin-learning-paths", icon: "Route", label: "Learning Paths" },
+  { href: "/dashboard/admin/teams", tKey: "nav.admin-teams", icon: "Users", label: "Teams" },
+  { href: "/dashboard/admin/analytics", tKey: "analytics", icon: "BarChart3", label: "Analytics" },
+  { href: "/dashboard/admin/audit", tKey: "audit", icon: "ScrollText", label: "Audit" },
+  { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Briefcase", label: "Enterprise" },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [level, setLevel] = useState(1);
   const [expandedBucket, setExpandedBucket] = useState<string | null>(null);
   const { t } = useI18n();
-  const { mode, config } = useDisplayMode();
+  const { nav, loading } = useNavigation();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -138,8 +81,6 @@ export default function Sidebar() {
         const stored = localStorage.getItem("user");
         if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
         else setUserRole("STUDENT");
-        const xp = parseInt(localStorage.getItem("xp") || "0", 10);
-        setLevel(getLevel(xp));
       } catch {
         setUserRole("STUDENT");
       }
@@ -147,9 +88,56 @@ export default function Sidebar() {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  // Auto-expand the active bucket
+  const buckets: BucketDef[] = useMemo(() => {
+    const b: BucketDef[] = [
+      { key: "home", tKey: "bucket.home", icon: Home, href: "/dashboard" },
+    ];
+
+    if (nav.learnItems.length > 0) {
+      b.push({
+        key: "learn",
+        tKey: "bucket.learn",
+        icon: GraduationCap,
+        href: "/dashboard/courses",
+        items: nav.learnItems,
+      });
+    }
+
+    b.push({ key: "labs", tKey: "bucket.labs", icon: FlaskConical, href: "/dashboard/labs" });
+
+    if (nav.showCompete && nav.competeItems.length > 0) {
+      b.push({
+        key: "compete",
+        tKey: "bucket.compete",
+        icon: Swords,
+        href: "/dashboard/leaderboard",
+        items: nav.competeItems,
+      });
+    }
+
+    if (nav.showCommunity && nav.communityItems.length > 0) {
+      b.push({
+        key: "community",
+        tKey: "bucket.community",
+        icon: Users,
+        href: "/dashboard/teams",
+        items: nav.communityItems,
+      });
+    }
+
+    b.push({
+      key: "profile",
+      tKey: "bucket.profile",
+      icon: User,
+      href: "/dashboard/profile",
+      items: nav.profileItems,
+    });
+
+    return b;
+  }, [nav]);
+
   useEffect(() => {
-    for (const bucket of BUCKETS) {
+    for (const bucket of buckets) {
       if (bucket.items) {
         const isActive = bucket.items.some(
           (item) => pathname === item.href || pathname.startsWith(item.href + "/")
@@ -160,17 +148,16 @@ export default function Sidebar() {
         }
       }
     }
-    // If on main dashboard, collapse all
     if (pathname === "/dashboard") {
       setExpandedBucket(null);
     }
-  }, [pathname]);
+  }, [pathname, buckets]);
 
   const toggleBucket = useCallback((key: string) => {
     setExpandedBucket((prev) => (prev === key ? null : key));
   }, []);
 
-  const isBucketActive = (bucket: Bucket): boolean => {
+  const isBucketActive = (bucket: BucketDef): boolean => {
     if (pathname === bucket.href) return true;
     if (bucket.items) {
       return bucket.items.some(
@@ -180,22 +167,27 @@ export default function Sidebar() {
     return pathname.startsWith(bucket.href + "/");
   };
 
-  const filteredBuckets = userRole === null ? [] : BUCKETS.filter((bucket) => {
-    if (bucket.key === "compete") return config.showCompete;
-    if (bucket.key === "community") return true;
-    return true;
-  });
-
-  const filteredCompeteItems = BUCKETS.find(b => b.key === "compete")?.items?.filter(item => {
-    if (item.href === "/dashboard/ranking" || item.href === "/dashboard/leaderboard") return config.showRanks;
-    if (item.href === "/dashboard/battle-pass") return config.showBattlePass;
-    if (item.href === "/dashboard/boss-missions") return config.showBossMissions;
-    if (item.href === "/dashboard/seasons") return config.showSeasons;
-    if (item.href === "/dashboard/my-missions") return config.showMissions;
-    return true;
-  }) || [];
-
   const isAdmin = userRole === "ADMIN" || userRole === "RECRUITER";
+
+  if (loading) {
+    return (
+      <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">
+        <div className="p-6 flex items-center gap-3">
+          <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
+          <div>
+            <h1 className="text-base font-semibold tracking-tight">
+              <span className="text-[#0F203A]">Xpert</span>
+              <span className="text-[#229C62]">Class</span>
+            </h1>
+            <p className="text-[11px] text-slate-400">{t("app.tagline")}</p>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-[#229C62] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">
@@ -211,94 +203,98 @@ export default function Sidebar() {
         </div>
       </div>
 
+      {/* Experience Badge */}
+      {nav.experience !== "INDIVIDUAL" && (
+        <div className="px-4 pb-2">
+          <span className="text-[10px] font-semibold text-[#229C62] bg-[#E9F8EE] px-2 py-0.5 rounded-full uppercase tracking-wider">
+            {nav.experience === "UNIVERSITY" ? "University" : nav.experience === "CORPORATE" ? "Enterprise" : nav.experience === "INSTRUCTOR" ? "Instructor" : nav.experience}
+          </span>
+        </div>
+      )}
+
       <div className="px-3">
         <div className="h-px bg-slate-100" />
       </div>
 
-      {/* Main Navigation — 6 Buckets */}
+      {/* Alerts */}
+      {nav.alerts.length > 0 && (
+        <div className="px-3 pt-3 space-y-1.5">
+          {nav.alerts.slice(0, 2).map((alert, i) => {
+            const AlertIcon = alert.type === "EXAM_AVAILABLE" ? ClipboardCheck : Users;
+            return (
+              <Link
+                key={i}
+                href={alert.href || "#"}
+                className="flex items-start gap-2 p-2 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+              >
+                <AlertIcon size={14} className="text-amber-600 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold text-amber-800 truncate">{alert.title}</p>
+                  <p className="text-[10px] text-amber-600 truncate">{alert.description}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Main Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto min-h-0" role="navigation" aria-label={t("nav.main")}>
-        {filteredBuckets.map((bucket) => {
+        {buckets.map((bucket) => {
           const Icon = bucket.icon;
           const isActive = isBucketActive(bucket);
           const isExpanded = expandedBucket === bucket.key;
           const hasItems = bucket.items && bucket.items.length > 0;
-          const gate = getSidebarItemLock(bucket.href, level);
-          const isLocked = gate.locked;
           const label = t(bucket.tKey);
 
           return (
             <div key={bucket.key}>
-              {/* Bucket Header */}
               {hasItems ? (
                 <button
-                  onClick={() => !isLocked && toggleBucket(bucket.key)}
-                  disabled={isLocked}
+                  onClick={() => toggleBucket(bucket.key)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
-                    isLocked
-                      ? "text-slate-400 cursor-not-allowed opacity-60"
-                      : isActive
+                    isActive
                       ? "bg-[#E9F8EE] text-[#0F203A]"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
                   <Icon
                     size={18}
-                    className={isActive && !isLocked ? "text-[#229C62]" : "text-slate-400"}
+                    className={isActive ? "text-[#229C62]" : "text-slate-400"}
                   />
                   <span className="flex-1 text-left">{label}</span>
-                  {isLocked ? (
-                    <span className="flex items-center gap-1 text-[10px] text-slate-400">
-                      <Lock size={10} />
-                      Lv.{gate.requiredLevel}
-                    </span>
-                  ) : (
-                    <ChevronDown
-                      size={14}
-                      className={`text-slate-400 transition-transform duration-200 ${
-                        isExpanded ? "rotate-180" : ""
-                      }`}
-                    />
-                  )}
+                  <ChevronDown
+                    size={14}
+                    className={`text-slate-400 transition-transform duration-200 ${
+                      isExpanded ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
               ) : (
                 <Link
-                  href={isLocked ? "#" : bucket.href}
+                  href={bucket.href}
                   aria-current={isActive ? "page" : undefined}
-                  title={isLocked ? gate.reason : undefined}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
-                    isLocked
-                      ? "text-slate-400 cursor-not-allowed opacity-60"
-                      : isActive
+                    isActive
                       ? "bg-[#E9F8EE] text-[#0F203A]"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
-                  onClick={(e) => {
-                    if (isLocked) e.preventDefault();
-                  }}
                 >
                   <Icon
                     size={18}
-                    className={isActive && !isLocked ? "text-[#229C62]" : "text-slate-400"}
+                    className={isActive ? "text-[#229C62]" : "text-slate-400"}
                   />
                   <span className="flex-1">{label}</span>
-                  {isLocked && (
-                    <span className="flex items-center gap-1 text-[10px] text-slate-400">
-                      <Lock size={10} />
-                      Lv.{gate.requiredLevel}
-                    </span>
-                  )}
                 </Link>
               )}
 
-              {/* Sub-items */}
-              {hasItems && isExpanded && !isLocked && (
+              {hasItems && isExpanded && (
                 <div className="ml-4 mt-1 space-y-0.5 border-l border-slate-100 pl-3">
-                  {(bucket.key === "compete" ? filteredCompeteItems : bucket.items!).map((item) => {
-                    const ItemIcon = item.icon;
+                  {bucket.items!.map((item) => {
+                    const ItemIcon = ICON_MAP[item.icon] || Target;
                     const isItemActive =
                       pathname === item.href ||
                       (item.href !== "/dashboard" && pathname.startsWith(item.href));
-                    const itemLabel = t(item.tKey);
 
                     return (
                       <Link
@@ -315,7 +311,12 @@ export default function Sidebar() {
                           size={14}
                           className={isItemActive ? "text-[#229C62]" : "text-slate-400"}
                         />
-                        {itemLabel}
+                        {item.label}
+                        {item.badge && (
+                          <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded ml-auto">
+                            {item.badge}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}
@@ -334,7 +335,7 @@ export default function Sidebar() {
               </p>
             </div>
             {ADMIN_ITEMS.map((item) => {
-              const Icon = item.icon;
+              const Icon = ICON_MAP[item.icon] || Shield;
               const isActive =
                 pathname === item.href ||
                 (item.href !== "/dashboard" && pathname.startsWith(item.href));
