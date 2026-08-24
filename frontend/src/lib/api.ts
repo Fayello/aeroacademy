@@ -1,5 +1,6 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL !== undefined ? process.env.NEXT_PUBLIC_API_URL : 'http://127.0.0.1:4000';
 export const API_VERSION = '/api/v1';
+export const API_VERSION_V2 = '/api/v2';
 
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;
@@ -81,7 +82,8 @@ async function refreshAccessToken(): Promise<string> {
   return data.access_token || '';
 }
 
-export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
+export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}, apiVersion?: string): Promise<T> {
+  const version = apiVersion || API_VERSION;
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   const isFormData = typeof window !== 'undefined' && options.body instanceof FormData;
@@ -98,7 +100,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
 
   let response;
   try {
-    response = await fetch(`${API_URL}${API_VERSION}${endpoint}`, {
+    response = await fetch(`${API_URL}${version}${endpoint}`, {
       ...options,
       headers,
       credentials: 'include',
@@ -135,7 +137,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
         const retryController = new AbortController();
         const retryTimeout = setTimeout(() => retryController.abort(), 15000);
         try {
-          response = await fetch(`${API_URL}${API_VERSION}${endpoint}`, {
+          response = await fetch(`${API_URL}${version}${endpoint}`, {
             ...options,
             headers,
             credentials: 'include',
@@ -179,6 +181,10 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   } catch {
     return text as unknown as T;
   }
+}
+
+export function fetchApiV2<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  return fetchApi<T>(endpoint, options, API_VERSION_V2);
 }
 
 export function initTokenRefresh() {

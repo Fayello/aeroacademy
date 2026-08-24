@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Target, ClipboardCheck, Route, Users, BarChart3, ScrollText } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Microscope, LogOut, Shield, User, Trophy, Award, Briefcase, Lock, Target, ClipboardCheck, Route, Users, BarChart3, ScrollText, Crown, Swords, Calendar, Clock } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import { getLevel, getSidebarItemLock } from "@/lib/levelGating";
@@ -23,6 +23,10 @@ const links: NavLink[] = [
   { href: "/dashboard/leaderboard", tKey: "leaderboard", icon: Trophy },
   { href: "/dashboard/teams", tKey: "my-teams", icon: Users },
   { href: "/dashboard/challenges", tKey: "challenges", icon: Target },
+  { href: "/dashboard/battle-pass", tKey: "battle-pass", icon: Crown },
+  { href: "/dashboard/boss-missions", tKey: "boss-missions", icon: Swords },
+  { href: "/dashboard/events", tKey: "events", icon: Calendar },
+  { href: "/dashboard/seasons", tKey: "seasons", icon: Clock },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
   { href: "/dashboard/enterprise", tKey: "enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },
   { href: "/dashboard/admin", tKey: "admin", icon: Award, roles: ["ADMIN"] },
