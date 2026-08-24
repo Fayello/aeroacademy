@@ -17,6 +17,7 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  BarChart3,
 } from "lucide-react";
 
 interface OutcomeSummary {
@@ -156,13 +157,22 @@ export default function CompetencyPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-          Competency Profile
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Your learning outcomes, assessment scores, and recommendations
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Competency Profile
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Your learning outcomes, assessment scores, and recommendations
+          </p>
+        </div>
+        <Link
+          href="/dashboard/analytics/competency"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-700 transition-colors self-start"
+        >
+          <BarChart3 size={14} />
+          Analytics
+        </Link>
       </div>
 
       {/* Summary Cards */}

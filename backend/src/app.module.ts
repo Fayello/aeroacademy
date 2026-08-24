@@ -44,6 +44,7 @@ import { GenomeModule } from './genome/genome.module';
 import { MissionsModule } from './common/missions.module';
 import { LearningOutcomeModule } from './common/learning-outcome.module';
 import { PracticalAssessmentModule } from './common/practical-assessment.module';
+import { CompetencyAnalyticsModule } from './common/competency-analytics.module';
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { PracticalAssessmentModule } from './common/practical-assessment.module'
     MissionsModule,
     LearningOutcomeModule,
     PracticalAssessmentModule,
+    CompetencyAnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
