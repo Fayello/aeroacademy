@@ -15,6 +15,11 @@ export class BossMissionsController {
     return this.bossMissionsService.getAllBossMissions();
   }
 
+  @Get(':bossId/requirements/:userId')
+  checkRequirements(@Param('userId') userId: string, @Param('bossId') bossId: string) {
+    return this.bossMissionsService.checkDomainRequirements(userId, bossId);
+  }
+
   @Get(':bossId/attempts/:userId')
   getUserAttempts(@Param('userId') userId: string, @Param('bossId') bossId: string) {
     return this.bossMissionsService.getUserAttempts(userId, bossId);
@@ -26,7 +31,22 @@ export class BossMissionsController {
   }
 
   @Post()
-  createBossMission(@Body() body: { seasonId?: string; title: string; description: string; difficulty?: string; maxAttempts?: number; xpReward: number; prerequisiteLabIds?: string[]; labId?: string; startsAt: string; expiresAt: string }) {
+  createBossMission(@Body() body: {
+    seasonId?: string;
+    title: string;
+    description: string;
+    difficulty?: string;
+    maxAttempts?: number;
+    xpReward: number;
+    ratingReward?: number;
+    prerequisiteLabIds?: string[];
+    requiredDomains?: any[];
+    domainId?: string;
+    theme?: string;
+    labId?: string;
+    startsAt: string;
+    expiresAt: string;
+  }) {
     return this.bossMissionsService.createBossMission(body);
   }
 

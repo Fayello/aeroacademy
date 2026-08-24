@@ -950,8 +950,12 @@ model BossMission {
   difficulty      String   // EASY, MEDIUM, HARD, BOSS
   maxAttempts     Int      @default(3)
   xpReward        Int
+  ratingReward    Int      @default(200) // domain rating awarded on completion
   badgeRewardId   String?
   prerequisiteLabIds Json  @default("[]") // lab IDs required before attempting
+  requiredDomains Json     @default("[]") // [{ domainId, minRating }], cross-domain requirements
+  domainId        String?  // Primary domain for this boss
+  theme           String?  // Seasonal theme tag (e.g. "zero-day", "ransomware")
   labId           String?  // The lab the boss mission runs against
   isActive        Boolean  @default(true)
   startsAt        DateTime
