@@ -37,15 +37,16 @@ interface RankedProfile {
   user: { id: string; name: string; avatarUrl: string | null; xp: number };
   level: number;
   activeSeason: { id: string; name: string; seasonNumber: number } | null;
-  overallRank: {
+  globalRank: {
     rating: number;
     division: string;
     divisionTier: number;
-    domain: string;
     gamesPlayed: number;
+    totalWins: number;
+    totalLosses: number;
     winRate: number;
-    isProvisional: boolean;
-  } | null;
+    domainCount: number;
+  };
   domainRanks: DomainRank[];
   seasonHistory: SeasonHistoryEntry[];
   stats: { bossMissionsCompleted: number; labsCompleted: number };
@@ -200,7 +201,7 @@ export default function RankingPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader title="Domain Ranking" description="Your competitive ranking across skill domains" />
 
-      {profile.overallRank ? (
+      {profile.globalRank ? (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="relative bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] p-6 sm:p-8">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvc3ZnPg==')] opacity-40" />
@@ -211,30 +212,29 @@ export default function RankingPage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-xl font-bold text-white mb-1">{profile.user.name}</h2>
+                  <p className="text-xs text-slate-300 mb-2">Global Technology Rank</p>
                   <div className="flex flex-wrap items-center gap-3 mb-3">
-                    <DivisionBadge division={profile.overallRank.division} tier={profile.overallRank.divisionTier} size="lg" />
-                    {profile.overallRank.isProvisional && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
-                        <Clock size={10} /> Provisional
-                      </span>
-                    )}
+                    <DivisionBadge division={profile.globalRank.division} tier={profile.globalRank.divisionTier} size="lg" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20">
+                      Technology Level {profile.level}
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <p className="text-slate-400 text-xs">Rating</p>
-                      <p className="text-white font-semibold text-lg">{profile.overallRank.rating.toLocaleString()}</p>
+                      <p className="text-slate-400 text-xs">Global Rating</p>
+                      <p className="text-white font-semibold text-lg">{profile.globalRank.rating.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-slate-400 text-xs">Best Domain</p>
-                      <p className="text-white font-semibold">{profile.overallRank.domain}</p>
+                      <p className="text-slate-400 text-xs">Domains Ranked</p>
+                      <p className="text-white font-semibold">{profile.globalRank.domainCount}/6</p>
                     </div>
                     <div>
-                      <p className="text-slate-400 text-xs">Games</p>
-                      <p className="text-white font-semibold">{profile.overallRank.gamesPlayed}</p>
+                      <p className="text-slate-400 text-xs">Total Games</p>
+                      <p className="text-white font-semibold">{profile.globalRank.gamesPlayed}</p>
                     </div>
                     <div>
                       <p className="text-slate-400 text-xs">Win Rate</p>
-                      <p className="text-white font-semibold">{profile.overallRank.winRate}%</p>
+                      <p className="text-white font-semibold">{profile.globalRank.winRate}%</p>
                     </div>
                   </div>
                 </div>
@@ -247,6 +247,26 @@ export default function RankingPage() {
           <Shield size={28} className="text-slate-300 mx-auto mb-2" />
           <p className="text-sm text-slate-500 mb-1">No overall rank yet</p>
           <p className="text-xs text-slate-400">Complete ranked activities to establish your rating</p>
+        </div>
+      )}
+
+      {profile.domainRanks.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="p-4">
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Domain Divisions</h3>
+            <div className="flex flex-wrap gap-2">
+              {profile.domainRanks.map((rank) => {
+                const DomainIcon = DOMAIN_ICONS[rank.domain] || Shield;
+                return (
+                  <div key={rank.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <DomainIcon size={12} className="text-slate-400" />
+                    <span className="text-xs font-medium text-slate-700">{rank.domain}</span>
+                    <DivisionBadge division={rank.division} tier={rank.divisionTier} size="sm" />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
 
@@ -397,8 +417,22 @@ export default function RankingPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="text-center p-3 bg-slate-50 rounded-lg">
             <p className="text-2xl font-bold text-slate-900">{profile.level}</p>
-            <p className="text-xs text-slate-500">Level</p>
+            <p className="text-xs text-slate-500">Technology Level</p>
           </div>
+          <div className="text-center p-3 bg-slate-50 rounded-lg">
+            <p className="text-2xl font-bold text-slate-900">{profile.globalRank.rating.toLocaleString()}</p>
+            <p className="text-xs text-slate-500">Global Rating</p>
+          </div>
+          <div className="text-center p-3 bg-emerald-50 rounded-lg">
+            <p className="text-2xl font-bold text-emerald-700">{profile.globalRank.totalWins}</p>
+            <p className="text-xs text-slate-500">Total Wins</p>
+          </div>
+          <div className="text-center p-3 bg-red-50 rounded-lg">
+            <p className="text-2xl font-bold text-red-600">{profile.globalRank.totalLosses}</p>
+            <p className="text-xs text-slate-500">Total Losses</p>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="text-center p-3 bg-slate-50 rounded-lg">
             <p className="text-2xl font-bold text-slate-900">{profile.stats.labsCompleted}</p>
             <p className="text-xs text-slate-500">Labs Completed</p>
@@ -408,7 +442,7 @@ export default function RankingPage() {
             <p className="text-xs text-slate-500">Boss Missions</p>
           </div>
           <div className="text-center p-3 bg-slate-50 rounded-lg">
-            <p className="text-2xl font-bold text-slate-900">{profile.domainRanks.length}</p>
+            <p className="text-2xl font-bold text-slate-900">{profile.globalRank.domainCount}</p>
             <p className="text-xs text-slate-500">Active Domains</p>
           </div>
         </div>

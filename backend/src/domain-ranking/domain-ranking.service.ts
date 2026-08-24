@@ -362,6 +362,37 @@ export class DomainRankingService {
     return { snapshotted: allRanks.length };
   }
 
+  computeGlobalRank(domainRanks: { rating: number; gamesPlayed: number; wins: number; losses: number; division: string; divisionTier: number }[]) {
+    if (domainRanks.length === 0) {
+      return { rating: 1000, division: 'BRONZE', divisionTier: 1, gamesPlayed: 0, totalWins: 0, totalLosses: 0, winRate: 0, domainCount: 0 };
+    }
+
+    const totalGames = domainRanks.reduce((sum, r) => sum + r.gamesPlayed, 0);
+
+    let weightedRating: number;
+    if (totalGames > 0) {
+      weightedRating = domainRanks.reduce((sum, r) => sum + r.rating * r.gamesPlayed, 0) / totalGames;
+    } else {
+      weightedRating = domainRanks.reduce((sum, r) => sum + r.rating, 0) / domainRanks.length;
+    }
+
+    const globalRating = Math.round(weightedRating);
+    const { name: division, tier: divisionTier } = this.getDivisionFromRating(globalRating);
+    const totalWins = domainRanks.reduce((sum, r) => sum + r.wins, 0);
+    const totalLosses = domainRanks.reduce((sum, r) => sum + r.losses, 0);
+
+    return {
+      rating: globalRating,
+      division,
+      divisionTier,
+      gamesPlayed: totalGames,
+      totalWins,
+      totalLosses,
+      winRate: totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0,
+      domainCount: domainRanks.length,
+    };
+  }
+
   async getRankedProfile(userId: string) {
     const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
     const user = await this.prisma.user.findUnique({
@@ -380,11 +411,6 @@ export class DomainRankingService {
         })
       : [];
 
-    const bestOverall = currentRanks.reduce(
-      (best, r) => (r.rating > best.rating ? r : best),
-      currentRanks[0],
-    );
-
     const seasonHistory = await this.prisma.seasonRankSnapshot.findMany({
       where: { userId },
       orderBy: { seasonNumber: 'desc' },
@@ -402,25 +428,24 @@ export class DomainRankingService {
       where: { userId, completed: true },
     });
 
+    const globalRank = this.computeGlobalRank(
+      currentRanks.map((r) => ({
+        rating: r.rating,
+        gamesPlayed: r.gamesPlayed,
+        wins: r.wins,
+        losses: r.losses,
+        division: r.division,
+        divisionTier: r.divisionTier,
+      })),
+    );
+
     return {
       user,
       level,
       activeSeason: activeSeason
         ? { id: activeSeason.id, name: activeSeason.name, seasonNumber: activeSeason.seasonNumber }
         : null,
-      overallRank: bestOverall
-        ? {
-            rating: bestOverall.rating,
-            division: bestOverall.division,
-            divisionTier: bestOverall.divisionTier,
-            domain: bestOverall.domain.displayName,
-            gamesPlayed: bestOverall.gamesPlayed,
-            winRate: bestOverall.gamesPlayed > 0
-              ? Math.round((bestOverall.wins / bestOverall.gamesPlayed) * 100)
-              : 0,
-            isProvisional: bestOverall.isProvisional,
-          }
-        : null,
+      globalRank,
       domainRanks: currentRanks.map((r) => ({
         domain: r.domain.displayName,
         domainId: r.domainId,
