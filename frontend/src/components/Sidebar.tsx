@@ -59,6 +59,9 @@ const BUCKETS: Bucket[] = [
       { href: "/dashboard/learning-paths", tKey: "bucket.paths", icon: Route },
       { href: "/dashboard/training", tKey: "bucket.masterclasses", icon: Award },
       { href: "/dashboard/analytics/competency", tKey: "bucket.assessments", icon: ClipboardCheck },
+      { href: "/dashboard/curricula", tKey: "bucket.curricula", icon: ScrollText },
+      { href: "/dashboard/cohorts", tKey: "bucket.cohorts", icon: Users },
+      { href: "/dashboard/exams", tKey: "bucket.exams", icon: ClipboardCheck },
     ],
   },
   {

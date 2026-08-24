@@ -45,6 +45,9 @@ import { MissionsModule } from './common/missions.module';
 import { LearningOutcomeModule } from './common/learning-outcome.module';
 import { PracticalAssessmentModule } from './common/practical-assessment.module';
 import { CompetencyAnalyticsModule } from './common/competency-analytics.module';
+import { CurriculumModule } from './common/curriculum.module';
+import { CohortModule } from './common/cohort.module';
+import { ExamModule } from './common/exam.module';
 
 @Module({
   imports: [
@@ -97,6 +100,9 @@ import { CompetencyAnalyticsModule } from './common/competency-analytics.module'
     LearningOutcomeModule,
     PracticalAssessmentModule,
     CompetencyAnalyticsModule,
+    CurriculumModule,
+    CohortModule,
+    ExamModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
