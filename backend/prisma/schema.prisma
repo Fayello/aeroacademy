@@ -74,6 +74,10 @@ model User {
   discussionComments       DiscussionComment[]
   discussionVotes          DiscussionVote[]
   preference               UserPreference?
+  domainRanks              DomainRank[]
+  rankSnapshots            SeasonRankSnapshot[]
+  placementMatches         PlacementMatch[]
+  ratingEvents             DomainRatingEvent[]
 
   @@index([googleId])
   @@index([role])
@@ -94,19 +98,26 @@ model Team {
 }
 
 model Season {
-  id            String   @id @default(uuid())
-  name          String
-  theme         String?
-  xpMultiplier  Float    @default(1.0)
-  startDate     DateTime
-  endDate       DateTime
-  isActive      Boolean  @default(false)
-  createdAt     DateTime @default(now())
+  id                   String   @id @default(uuid())
+  name                 String
+  theme                String?
+  domainTheme          String?
+  seasonNumber         Int      @default(1)
+  xpMultiplier         Float    @default(1.0)
+  startDate            DateTime
+  endDate              DateTime
+  isActive             Boolean  @default(false)
+  softResetCompleted   Boolean  @default(false)
+  createdAt            DateTime @default(now())
 
   battlePass    BattlePass?
   bossMissions  BossMission[]
   globalEvents  GlobalEvent[]
   snapshots     LeaderboardSnapshot[]
+  domainRanks   DomainRank[]
+  rankSnapshots SeasonRankSnapshot[]
+  placementMatches PlacementMatch[]
+  ratingEvents  DomainRatingEvent[]
 }
 
 model Organization {
@@ -724,8 +735,9 @@ model SkillDomain {
   icon        String?  // lucide icon name
   createdAt   DateTime @default(now())
 
-  skills     Skill[]
-  challenges Challenge[]
+  skills      Skill[]
+  challenges  Challenge[]
+  domainRanks DomainRank[]
 }
 
 model Skill {
@@ -1089,4 +1101,105 @@ model WinStreak {
   updatedAt      DateTime @updatedAt
 
   @@index([userId])
+}
+
+model DomainRank {
+  id                  String   @id @default(uuid())
+  userId              String
+  domainId            String
+  seasonId            String
+  rating              Int      @default(1000)
+  division            String   @default("BRONZE")
+  divisionTier        Int      @default(1)
+  gamesPlayed         Int      @default(0)
+  wins                Int      @default(0)
+  losses              Int      @default(0)
+  draws               Int      @default(0)
+  isProvisional       Boolean  @default(true)
+  placementMatchesLeft Int     @default(5)
+  careerHighRating    Int      @default(1000)
+  careerHighDivision  String   @default("BRONZE")
+  careerHighTier      Int      @default(1)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id])
+  domain   SkillDomain @relation(fields: [domainId], references: [id])
+  season   Season      @relation(fields: [seasonId], references: [id])
+
+  @@unique([userId, domainId, seasonId])
+  @@index([domainId, seasonId, rating(sort: Desc)])
+  @@index([userId, seasonId])
+  @@index([rating(sort: Desc)])
+}
+
+model SeasonRankSnapshot {
+  id              String   @id @default(uuid())
+  userId          String
+  domainId        String
+  seasonId        String
+  seasonNumber    Int
+  finalRating     Int
+  finalDivision   String
+  finalTier       Int
+  gamesPlayed     Int
+  wins            Int
+  losses          Int
+  placementRating Int?
+  createdAt       DateTime @default(now())
+
+  user   User        @relation(fields: [userId], references: [id])
+  season Season      @relation(fields: [seasonId], references: [id])
+
+  @@unique([userId, domainId, seasonId])
+  @@index([userId, seasonNumber])
+  @@index([domainId, seasonId, finalRating(sort: Desc)])
+}
+
+model PlacementMatch {
+  id             String   @id @default(uuid())
+  userId         String
+  domainId       String
+  seasonId       String
+  activityType   String
+  activityId     String?
+  difficulty     String
+  performance    Float
+  quality        Float
+  timeEfficiency Float
+  independence   Float
+  ratingDelta    Int
+  ratingBefore   Int
+  ratingAfter    Int
+  createdAt      DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  season Season @relation(fields: [seasonId], references: [id])
+
+  @@index([userId, domainId, seasonId])
+  @@index([seasonId, domainId])
+}
+
+model DomainRatingEvent {
+  id             String   @id @default(uuid())
+  userId         String
+  domainId       String
+  seasonId       String
+  activityType   String
+  activityId     String?
+  difficulty     String
+  performance    Float
+  quality        Float
+  timeEfficiency Float
+  independence   Float
+  ratingDelta    Int
+  ratingBefore   Int
+  ratingAfter    Int
+  createdAt      DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  season Season @relation(fields: [seasonId], references: [id])
+
+  @@index([userId, domainId, seasonId])
+  @@index([seasonId, createdAt(sort: Desc)])
 }

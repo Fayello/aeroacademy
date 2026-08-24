@@ -39,6 +39,7 @@ import { BossMissionsModule } from './boss-missions/boss-missions.module';
 import { GlobalEventsModule } from './global-events/global-events.module';
 import { RankingModule } from './ranking/ranking.module';
 import { CrossDomainModule } from './cross-domain/cross-domain.module';
+import { DomainRankingModule } from './domain-ranking/domain-ranking.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { CrossDomainModule } from './cross-domain/cross-domain.module';
     GlobalEventsModule,
     RankingModule,
     CrossDomainModule,
+    DomainRankingModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
