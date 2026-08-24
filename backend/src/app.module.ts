@@ -43,6 +43,7 @@ import { DomainRankingModule } from './domain-ranking/domain-ranking.module';
 import { GenomeModule } from './genome/genome.module';
 import { MissionsModule } from './common/missions.module';
 import { LearningOutcomeModule } from './common/learning-outcome.module';
+import { PracticalAssessmentModule } from './common/practical-assessment.module';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import { LearningOutcomeModule } from './common/learning-outcome.module';
     GenomeModule,
     MissionsModule,
     LearningOutcomeModule,
+    PracticalAssessmentModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
