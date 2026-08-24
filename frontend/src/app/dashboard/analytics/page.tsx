@@ -248,9 +248,11 @@ export default function StudentAnalyticsPage() {
 
       {data.courseProgress.length === 0 && (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <BookOpen size={40} className="text-slate-300 mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-slate-900 mb-1">No courses yet</h2>
-          <p className="text-sm text-slate-500 mb-4">Enroll in a course to start tracking your progress.</p>
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
+            <BookOpen size={28} className="text-blue-600" />
+          </div>
+          <h2 className="text-sm font-semibold text-slate-900 mb-1">Your journey starts here</h2>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">Enroll in a course to start tracking your progress across domains.</p>
           <Link href="/dashboard/courses" className="btn-primary text-xs inline-flex items-center gap-1.5">
             <BookOpen size={14} /> Browse Courses
           </Link>

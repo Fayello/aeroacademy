@@ -187,7 +187,15 @@ export default function BossMissionsPage() {
     return (
       <div className="space-y-6">
         <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
-        <EmptyState icon={Swords} title="No active boss missions" description="Check back later for new boss challenges" />
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+            <Swords size={28} className="text-red-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No boss missions active</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Boss challenges are being designed. These are high-difficulty labs that test your full skill set — stay ready.
+          </p>
+        </div>
       </div>
     );
   }

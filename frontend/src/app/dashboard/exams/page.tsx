@@ -107,9 +107,14 @@ export default function ExamsPage() {
 
       {/* Assessment Cards */}
       {assessments.length === 0 ? (
-        <div className="text-center py-20 text-slate-400">
-          <FileText size={48} className="mx-auto mb-4 opacity-50" />
-          <p className="text-sm">No assessments found</p>
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+            <FileText size={28} className="text-amber-600" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No exams assigned</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Practical exams will appear here once your instructor assigns them. Keep completing labs to be ready.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

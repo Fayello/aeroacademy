@@ -70,8 +70,13 @@ export default function AssessmentsPage() {
 
       {assessments.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-          <ClipboardCheck size={32} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-sm text-slate-500">No assessments available yet</p>
+          <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
+            <ClipboardCheck size={28} className="text-purple-600" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No assessments available</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Skill assessments are being prepared. Complete some labs first to unlock personalized evaluations.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

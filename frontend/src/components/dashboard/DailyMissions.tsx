@@ -245,7 +245,13 @@ export default function DailyMissions() {
       </div>
 
       {missions.length === 0 ? (
-        <p className="text-sm text-white/40 text-center py-4">No missions available</p>
+        <div className="text-center py-6">
+          <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mx-auto mb-3">
+            <Target size={20} className="text-white/40" />
+          </div>
+          <p className="text-sm text-white/60 font-medium">No missions available</p>
+          <p className="text-xs text-white/40 mt-1">Complete more labs to unlock daily challenges</p>
+        </div>
       ) : (
         <div className="space-y-5">
           {sections.map((section) => {

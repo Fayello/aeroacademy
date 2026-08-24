@@ -219,10 +219,14 @@ export default function TeamsPage() {
       </div>
 
       {teams.length === 0 ? (
-        <div className="text-center py-16">
-          <Users size={40} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-sm text-slate-500">No teams yet.</p>
-          <p className="text-xs text-slate-400 mt-1">Contact your administrator to get started.</p>
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+            <Users size={28} className="text-[#229C62]" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No teams yet</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Teams let you collaborate with other engineers. Ask your administrator to create or assign you to a team.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

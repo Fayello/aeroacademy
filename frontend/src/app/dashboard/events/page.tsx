@@ -311,19 +311,19 @@ export default function EventsPage() {
       </div>
 
       {displayEvents.length === 0 ? (
-        <EmptyState
-          icon={Calendar}
-          title={
-            activeTab === "my"
-              ? "No events joined"
-              : "No active events"
-          }
-          description={
-            activeTab === "my"
-              ? "Join an event to see it here"
-              : "Check back later for new community events"
-          }
-        />
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center mx-auto mb-4">
+            <Calendar size={28} className="text-teal-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+            {activeTab === "my" ? "No events joined yet" : "No active events"}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            {activeTab === "my"
+              ? "Join an event to compete, collaborate, and earn rewards with other engineers."
+              : "Community events bring themed challenges and competitions. New ones are added regularly."}
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {displayEvents.map((event) => {

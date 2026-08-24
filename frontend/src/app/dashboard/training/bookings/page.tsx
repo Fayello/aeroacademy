@@ -53,10 +53,17 @@ export default function MyBookingsPage() {
           <Loader2 className="animate-spin text-[#229C62]" size={24} />
         </div>
       ) : bookings.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
-          <Calendar size={40} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 mb-3">No bookings yet.</p>
-          <Link href="/dashboard/training" className="btn-primary text-sm">Browse Trainers</Link>
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+            <Calendar size={28} className="text-amber-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No bookings yet</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+            Book a 1-on-1 session with a trainer to get personalized coaching on your weak areas.
+          </p>
+          <Link href="/dashboard/training" className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all">
+            Browse Trainers
+          </Link>
         </div>
       ) : (
         <div className="space-y-8">

@@ -225,11 +225,11 @@ export default function ReferralsPage() {
           </div>
         ) : (
           <div className="text-center py-8">
-            <Users size={32} className="text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-500">No referrals yet</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Share your code to start earning XP
-            </p>
+            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-3">
+              <Users size={20} className="text-[#229C62]" />
+            </div>
+            <p className="text-sm font-medium text-slate-900">No referrals yet</p>
+            <p className="text-xs text-slate-500 mt-1">Share your code to start earning XP for each invite</p>
           </div>
         )}
       </div>

@@ -180,19 +180,21 @@ export default function LabsCatalog() {
       {/* Labs Grid */}
       {filteredLabs.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <Microscope size={40} className="mx-auto mb-3 text-slate-300" />
-          <h3 className="text-sm font-medium text-slate-500 mb-1">
-            {labs.length === 0 ? "No labs available" : "No labs match your filters"}
+          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+            <Microscope size={28} className="text-[#229C62]" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+            {labs.length === 0 ? "The lab is quiet" : "No labs match your filters"}
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
             {labs.length === 0
-              ? "Lab environments will appear here once configured."
+              ? "Lab environments are being prepared. Check back soon — hands-on workstations are coming."
               : "Try adjusting your search or filter criteria."}
           </p>
           {labs.length > 0 && hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-4 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all"
+              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all"
             >
               Clear all filters
             </button>

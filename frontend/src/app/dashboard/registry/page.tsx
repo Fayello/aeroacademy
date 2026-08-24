@@ -129,7 +129,13 @@ export default function RegistryPage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-slate-500 text-center py-8">No achievements yet. Complete courses and labs to earn them.</p>
+          <div className="text-center py-8">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-3">
+              <Award size={20} className="text-slate-400" />
+            </div>
+            <p className="text-sm font-medium text-slate-900">No achievements yet</p>
+            <p className="text-xs text-slate-500 mt-1">Complete courses and labs to earn your first achievements</p>
+          </div>
         )}
       </div>
     </div>

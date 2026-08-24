@@ -877,9 +877,11 @@ export default function ProfilePage() {
               ))
             ) : (
               <div className="text-center py-8">
-                <Star size={32} className="mx-auto text-slate-200 mb-2" />
-                <p className="text-sm text-slate-500">No achievements yet</p>
-                <p className="text-xs text-slate-400 mt-1">Complete labs and courses to earn achievements</p>
+                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center mx-auto mb-3">
+                  <Star size={20} className="text-amber-500" />
+                </div>
+                <p className="text-sm font-medium text-slate-900">No achievements yet</p>
+                <p className="text-xs text-slate-500 mt-1">Complete labs and courses to earn your first badges</p>
               </div>
             )}
           </div>
@@ -925,9 +927,11 @@ export default function ProfilePage() {
               })
             ) : (
               <div className="text-center py-8">
-                <Activity size={32} className="mx-auto text-slate-200 mb-2" />
-                <p className="text-sm text-slate-500">No activity yet</p>
-                <p className="text-xs text-slate-400 mt-1">Start a lab or course to see your activity here</p>
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
+                  <Activity size={20} className="text-blue-500" />
+                </div>
+                <p className="text-sm font-medium text-slate-900">No activity yet</p>
+                <p className="text-xs text-slate-500 mt-1">Start a lab or course to see your activity feed here</p>
               </div>
             )}
           </div>

@@ -141,10 +141,14 @@ export default function ChallengesPage() {
       </div>
 
       {filteredChallenges.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-          <Trophy size={32} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-sm text-slate-500">No missions in this category</p>
-          <p className="text-xs text-slate-400 mt-1">Check back later for new challenges</p>
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+            <Trophy size={28} className="text-amber-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No missions in this category</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            New challenges are added regularly. Try a different category or check back later.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

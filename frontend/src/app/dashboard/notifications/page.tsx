@@ -121,12 +121,16 @@ export default function NotificationsPage() {
         </div>
       ) : visible.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <Bell size={40} className="mx-auto mb-3 text-slate-300" />
-          <p className="text-sm font-medium text-slate-500">
-            {filter === "unread" ? "No unread notifications" : "No notifications yet"}
-          </p>
-          <p className="text-xs text-slate-400 mt-1">
-            Achievements, flag captures, bookings and more will show up here.
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+            <Bell size={28} className="text-slate-400" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+            {filter === "unread" ? "All caught up" : "No notifications yet"}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            {filter === "unread"
+              ? "You've read all your notifications. New activity will appear here."
+              : "Achievements, flag captures, bookings and more will show up here as you progress."}
           </p>
         </div>
       ) : (

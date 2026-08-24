@@ -159,11 +159,15 @@ export default function BattlePassPage() {
     return (
       <div className="space-y-6">
         <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
-        <EmptyState
-          icon={Crown}
-          title="No Battle Pass Available"
-          description="There is no active battle pass season right now. Check back later!"
-        />
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
+            <Crown size={28} className="text-purple-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No battle pass active</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Battle passes bring tiered rewards and exclusive content. The next one is being prepared — check back soon.
+          </p>
+        </div>
       </div>
     );
   }

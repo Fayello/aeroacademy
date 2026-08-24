@@ -88,19 +88,21 @@ export default function MasterClassesPage() {
         </div>
       ) : filteredClasses.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <Video size={40} className="mx-auto mb-3 text-slate-300" />
-          <h3 className="text-sm font-medium text-slate-500 mb-1">
-            {searchQuery.trim() ? "No matching master classes" : "No master classes found"}
+          <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center mx-auto mb-4">
+            <Video size={28} className="text-orange-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+            {searchQuery.trim() ? "No matching master classes" : "No master classes scheduled"}
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
             {searchQuery.trim()
               ? "Try a different search term or category."
-              : "Check back later for upcoming sessions."}
+              : "Expert-led sessions are being planned. They'll appear here once scheduled."}
           </p>
           {searchQuery.trim() && (
             <button
               onClick={() => setSearchQuery("")}
-              className="mt-4 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-all"
+              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-all"
             >
               Clear search
             </button>

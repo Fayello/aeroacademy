@@ -191,11 +191,15 @@ export default function SeasonsPage() {
           </div>
         </div>
       ) : (
-        <EmptyState
-          icon={Calendar}
-          title="No Active Season"
-          description="There is no season currently running. Check back soon for the next season."
-        />
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
+            <Calendar size={28} className="text-indigo-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No active season</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Seasons bring themed challenges and exclusive rewards. The next one is being prepared — check back soon.
+          </p>
+        </div>
       )}
 
       {seasons.length > 0 && (

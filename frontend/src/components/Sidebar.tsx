@@ -80,7 +80,7 @@ export default function Sidebar() {
   // Build simplified 5-bucket nav
   const buckets = useMemo(() => {
     const b: { key: string; label: string; icon: typeof Home; href: string; items?: NavItem[] }[] = [
-      { key: "home", label: "Command Center", icon: Home, href: "/dashboard" },
+      { key: "home", label: "Dashboard", icon: Home, href: "/dashboard" },
     ];
 
     if (nav.learnItems.length > 0) {

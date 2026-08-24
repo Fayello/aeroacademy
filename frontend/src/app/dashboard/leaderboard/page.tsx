@@ -404,10 +404,15 @@ export default function LeaderboardPage() {
               <p className="text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
-        )) : (
+        )        ) : (
           <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-            <Trophy size={40} className="mx-auto mb-3 text-slate-300" />
-            <p className="text-sm font-medium text-slate-500">No results found.</p>
+            <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+              <Trophy size={28} className="text-amber-500" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-1">No rankings yet</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Complete ranked activities to appear on the leaderboard. Your first attempts will establish your position.
+            </p>
           </div>
         )}
       </div>

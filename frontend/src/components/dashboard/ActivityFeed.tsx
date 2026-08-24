@@ -44,10 +44,13 @@ export default function ActivityFeed({ feed }: ActivityFeedProps) {
               </div>
             </div>
           </div>
-        )) : (
+        )        ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <Activity size={24} className="text-slate-300 mb-2" />
-            <p className="text-sm text-slate-500">No activity yet</p>
+            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+              <Activity size={20} className="text-slate-400" />
+            </div>
+            <p className="text-sm font-medium text-slate-900">No activity yet</p>
+            <p className="text-xs text-slate-500 mt-1">Start a lab or course to see your activity here</p>
           </div>
         )}
       </div>

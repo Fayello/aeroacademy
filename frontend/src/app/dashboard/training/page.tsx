@@ -53,9 +53,13 @@ export default function TrainingPage() {
         </div>
       ) : trainers.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <Calendar size={40} className="mx-auto mb-3 text-slate-300" />
-          <h3 className="text-sm font-medium text-slate-500 mb-1">No trainers available</h3>
-          <p className="text-xs text-slate-400">Check back later for trainer availability.</p>
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+            <Calendar size={28} className="text-amber-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No trainers available</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            1-on-1 training sessions are being set up. Check back soon for expert-led coaching.
+          </p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

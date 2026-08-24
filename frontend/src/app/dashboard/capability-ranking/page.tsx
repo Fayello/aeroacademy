@@ -182,8 +182,13 @@ export default function CapabilityRankingPage() {
 
         {leaderboard.length === 0 ? (
           <div className="p-10 text-center">
-            <BarChart3 size={32} className="text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-500">No capability data yet</p>
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-3">
+              <BarChart3 size={24} className="text-slate-400" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-1">No capability data yet</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Complete labs across multiple domains to build your capability profile and appear on the leaderboard.
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">

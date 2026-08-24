@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { fetchApiV2 } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -258,7 +259,18 @@ export default function RankingPage() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         <PageHeader title={t("nav.domain-ranking")} description="Your competitive ranking across skill domains" />
-        <EmptyState icon={Shield} title="No ranking data" description="Complete ranked activities to establish your rating" />
+        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+            <Shield size={28} className="text-[#229C62]" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">No ranking data yet</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Complete ranked labs to establish your technology rating. Your first few attempts will calibrate your skill level.
+          </p>
+          <Link href="/dashboard/labs" className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all">
+            Start a Lab
+          </Link>
+        </div>
       </div>
     );
   }
