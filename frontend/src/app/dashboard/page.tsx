@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { getLevel, getLevelProgress, getNextLabUnlock } from "@/lib/levelGating";
 import DailyMissions from "@/components/dashboard/DailyMissions";
+import NextSteps from "@/components/dashboard/NextSteps";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 interface User {
@@ -355,6 +356,9 @@ export default function DashboardPage() {
 
       {/* Daily Missions */}
       <DailyMissions />
+
+      {/* What should I do right now? */}
+      <NextSteps />
 
       {/* Start Here — Beginner Labs */}
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">

@@ -29,6 +29,7 @@ const links: NavLink[] = [
   { href: "/dashboard/seasons", tKey: "seasons", icon: Clock },
   { href: "/dashboard/ranking", tKey: "domain-ranking", icon: ShieldCheck },
   { href: "/dashboard/genome", tKey: "genome", icon: Dna },
+  { href: "/dashboard/competency", tKey: "competency", icon: Target },
   { href: "/dashboard/my-missions", tKey: "my-missions", icon: Swords },
   { href: "/dashboard/profile", tKey: "profile", icon: User },
   { href: "/dashboard/enterprise", tKey: "enterprise", icon: Briefcase, roles: ["ADMIN", "RECRUITER"] },

@@ -76,6 +76,11 @@ export class LearningOutcomeController {
     return this.service.getCompetencyProfile(userId);
   }
 
+  @Get('competency-profile/:userId/enhanced')
+  async getEnhancedCompetencyProfile(@Param('userId') userId: string) {
+    return this.service.getEnhancedCompetencyProfile(userId);
+  }
+
   // ─── EVIDENCE ─────────────────────────────────────────────────
 
   @Get('evidence/:userId')
