@@ -125,5 +125,4 @@ export class DomainRankingController {
   async getRankedProfile(@Param('userId') userId: string) {
     return this.domainRankingService.getRankedProfile(userId);
   }
-  }
 }
