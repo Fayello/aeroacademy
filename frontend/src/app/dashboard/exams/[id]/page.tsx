@@ -15,6 +15,7 @@ import {
   BarChart3,
   Play,
   History,
+  Shield,
 } from "lucide-react";
 
 interface Assessment {
@@ -23,6 +24,9 @@ interface Assessment {
   description: string;
   timeLimit: number;
   maxScore: number;
+  passingScore: number;
+  maxAttempts: number;
+  isProctored: boolean;
   domain: { name: string } | null;
   scenarios: { id: string; title: string; description: string; maxScore: number }[];
   outcomes: { outcome: { code: string; title: string }; weight: number }[];
@@ -157,7 +161,7 @@ export default function ExamDetailPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
           <Clock size={18} className="mx-auto mb-1 text-[#229C62]" />
           <div className="text-xl font-bold text-slate-900">{assessment.timeLimit}m</div>
@@ -167,6 +171,11 @@ export default function ExamDetailPage() {
           <Target size={18} className="mx-auto mb-1 text-[#229C62]" />
           <div className="text-xl font-bold text-slate-900">{assessment.scenarios.length}</div>
           <div className="text-xs text-slate-500">Scenarios</div>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
+          <Award size={18} className="mx-auto mb-1 text-[#229C62]" />
+          <div className="text-xl font-bold text-slate-900">{assessment.passingScore}%</div>
+          <div className="text-xs text-slate-500">Passing Score</div>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
           <Users size={18} className="mx-auto mb-1 text-[#229C62]" />
@@ -179,6 +188,20 @@ export default function ExamDetailPage() {
           <div className="text-xs text-slate-500">Avg Score</div>
         </div>
       </div>
+
+      {/* Proctoring Banner */}
+      {assessment.isProctored && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+          <Shield size={20} className="text-amber-600 shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-amber-800">Proctored Exam</p>
+            <p className="text-xs text-amber-600">
+              This exam is monitored. Max {assessment.maxAttempts} attempt{assessment.maxAttempts !== 1 ? "s" : ""} allowed.
+              Time limit: {assessment.timeLimit} minutes. Passing score: {assessment.passingScore}%.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">

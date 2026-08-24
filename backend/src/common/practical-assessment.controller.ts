@@ -24,6 +24,9 @@ export class PracticalAssessmentController {
     domainId?: string;
     timeLimit: number;
     maxScore?: number;
+    passingScore?: number;
+    maxAttempts?: number;
+    isProctored?: boolean;
     scenarios: Array<{
       title: string;
       description: string;

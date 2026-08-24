@@ -51,6 +51,9 @@ export class PracticalAssessmentService {
     domainId?: string;
     timeLimit: number;
     maxScore?: number;
+    passingScore?: number;
+    maxAttempts?: number;
+    isProctored?: boolean;
     scenarios: Array<{
       title: string;
       description: string;
@@ -70,6 +73,9 @@ export class PracticalAssessmentService {
           domainId: data.domainId,
           timeLimit: data.timeLimit,
           maxScore: data.maxScore ?? 100,
+          passingScore: data.passingScore ?? 70,
+          maxAttempts: data.maxAttempts ?? 3,
+          isProctored: data.isProctored ?? false,
         },
       });
 
@@ -121,8 +127,14 @@ export class PracticalAssessmentService {
       return existing;
     }
 
-    if (existing && existing.status === 'COMPLETED') {
-      throw new BadRequestException('Assessment already completed');
+    // Check max attempts
+    if (assessment.maxAttempts > 0) {
+      const completedCount = await this.prisma.studentAssessment.count({
+        where: { userId, assessmentId, status: 'COMPLETED' },
+      });
+      if (completedCount >= assessment.maxAttempts) {
+        throw new BadRequestException(`Maximum attempts (${assessment.maxAttempts}) reached`);
+      }
     }
 
     return this.prisma.studentAssessment.create({

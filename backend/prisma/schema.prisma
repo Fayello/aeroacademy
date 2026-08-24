@@ -1475,14 +1475,17 @@ model CohortMember {
 // ─── V5: PRACTICAL ASSESSMENTS ─────────────────────────────────
 
 model PracticalAssessment {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  domainId    String?
-  timeLimit   Int      // minutes
-  maxScore    Int      @default(100)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  domainId      String?
+  timeLimit     Int      // minutes
+  maxScore      Int      @default(100)
+  passingScore  Int      @default(70) // minimum % to pass
+  maxAttempts   Int      @default(3) // max attempts per student (0 = unlimited)
+  isProctored   Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
 
   domain   SkillDomain?        @relation(fields: [domainId], references: [id])
   outcomes AssessmentOutcome[]

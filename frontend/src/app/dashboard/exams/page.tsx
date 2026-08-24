@@ -11,6 +11,7 @@ import {
   Users,
   Target,
   Play,
+  Shield,
 } from "lucide-react";
 
 interface Assessment {
@@ -19,6 +20,9 @@ interface Assessment {
   description: string;
   timeLimit: number;
   maxScore: number;
+  passingScore: number;
+  maxAttempts: number;
+  isProctored: boolean;
   isActive: boolean;
   createdAt: string;
   domain: { name: string } | null;
@@ -132,6 +136,12 @@ export default function ExamsPage() {
                 {a.domain && (
                   <span className="px-2 py-0.5 bg-[#E9F8EE] text-[#0F203A] rounded-full">
                     {a.domain.name}
+                  </span>
+                )}
+                {a.isProctored && (
+                  <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full flex items-center gap-1">
+                    <Shield size={10} />
+                    Proctored
                   </span>
                 )}
                 <span className="flex items-center gap-1">
