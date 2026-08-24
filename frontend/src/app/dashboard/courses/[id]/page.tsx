@@ -82,6 +82,7 @@ export default function CourseBriefingPage() {
   const [myComment, setMyComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hoverRating, setHoverRating] = useState(0);
+  const [activeTab, setActiveTab] = useState<"overview" | "lessons" | "labs" | "progress">("overview");
 
   useEffect(() => {
     try {
@@ -226,24 +227,48 @@ export default function CourseBriefingPage() {
         </div>
       </div>
 
-      {/* What You'll Learn */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-          <Target size={18} className="text-[#229C62]" />
-          What you&apos;ll learn
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {course.sections?.map((section: Section) => (
-            <div key={section.id} className="flex items-start gap-2">
-              <CheckCircle2 size={16} className="text-[#229C62] mt-0.5 shrink-0" />
-              <span className="text-sm text-slate-700">{section.title}</span>
-            </div>
-          ))}
-        </div>
+      {/* Contextual Tabs */}
+      <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+        {[
+          { key: "overview" as const, label: "Overview" },
+          { key: "lessons" as const, label: "Lessons" },
+          { key: "progress" as const, label: "Progress" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              activeTab === tab.key
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Reviews Section */}
-      {reviewsData && reviewsData.stats.total > 0 && (
+      {/* Overview Tab */}
+      {activeTab === "overview" && (
+        <>
+          {/* What You'll Learn */}
+          <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <Target size={18} className="text-[#229C62]" />
+              What you&apos;ll learn
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {course.sections?.map((section: Section) => (
+                <div key={section.id} className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-[#229C62] mt-0.5 shrink-0" />
+                  <span className="text-sm text-slate-700">{section.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Reviews Section */}
+          {reviewsData && reviewsData.stats.total > 0 && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <Star size={18} className="text-amber-500" />
@@ -368,10 +393,12 @@ export default function CourseBriefingPage() {
           <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
         </Link>
       )}
+        </>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Modules */}
-        <div className="lg:col-span-2 space-y-4">
+      {/* Lessons Tab */}
+      {activeTab === "lessons" && (
+        <div className="space-y-4">
           <h2 className="text-lg font-semibold text-slate-900">Course Modules</h2>
           {course.sections.map((section: Section) => {
             const gate = getCourseLock(section.title, level);
@@ -434,10 +461,12 @@ export default function CourseBriefingPage() {
             );
           })}
         </div>
+      )}
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl border border-slate-200 p-6 sticky top-24">
+      {/* Progress Tab */}
+      {activeTab === "progress" && (
+        <div className="max-w-md">
+          <div className="bg-white rounded-xl border border-slate-200 p-6">
             {isEnrolled ? (
               <>
                 <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mb-4">
@@ -530,7 +559,7 @@ export default function CourseBriefingPage() {
             )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
