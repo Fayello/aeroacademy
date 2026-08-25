@@ -33,6 +33,7 @@ services:
       REMOTE_DOCKER_HOST: 5.189.182.196
       REMOTE_DOCKER_USER: fayell
       REMOTE_DOCKER_KEY: /app/.ssh_key
+      OLLAMA_HOST: http://5.189.182.196:11434
     ports:
       - "4000:4000"
     depends_on:

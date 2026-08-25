@@ -81,6 +81,7 @@ export default function CommandCenter() {
   const [competency, setCompetency] = useState<CompetencyData | null>(null);
   const [academic, setAcademic] = useState<AcademicData | null>(null);
   const [weeklyItems, setWeeklyItems] = useState<{ title: string; done: boolean }[]>([]);
+  const [aiRecommendations, setAiRecommendations] = useState<{ title: string; description: string; priority: string; type: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const { config } = useDisplayMode();
   const { userMetrics } = useDashboard();
@@ -102,7 +103,7 @@ export default function CommandCenter() {
         const userId = JSON.parse(storedUser || "{}").id;
         if (!userId) return;
 
-        const [labsData, compData, acadData] = await Promise.allSettled([
+        const [labsData, compData, acadData, aiRecs] = await Promise.allSettled([
           fetchApi<ActiveLab[]>("/dashboard/active-labs"),
           fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`),
           fetchApi<any>("/academic/my-courses").then((courses) => {
@@ -113,12 +114,16 @@ export default function CommandCenter() {
               courses: courses.map((c: any) => ({ id: c.id, title: c.title, weight: c.weight })),
             };
           }),
+          fetchApi<any>("/ai/recommendations"),
         ]);
 
         if (!cancelled) {
           if (labsData.status === "fulfilled") setActiveLabs(labsData.value);
           if (compData.status === "fulfilled") setCompetency(compData.value);
           if (acadData.status === "fulfilled" && acadData.value) setAcademic(acadData.value);
+          if (aiRecs.status === "fulfilled" && aiRecs.value?.recommendations) {
+            setAiRecommendations(aiRecs.value.recommendations);
+          }
 
           // Build weekly items from labs + recommendations
           const recs = compData.status === "fulfilled" ? compData.value?.recommendations || [] : [];
@@ -159,7 +164,10 @@ export default function CommandCenter() {
   const userName = user?.name || user?.email?.split("@")[0] || "Engineer";
   const firstName = userName.split(" ")[0];
   const domains = competency?.domains || [];
-  const topRecs = competency?.recommendations?.slice(0, 3) || [];
+  // Prefer AI recommendations over competency-based ones
+  const topRecs = aiRecommendations.length > 0
+    ? aiRecommendations.map(r => ({ ...r, link: r.type === 'lab' ? '/dashboard/labs' : r.type === 'course' ? '/dashboard/courses' : '/dashboard/assessments' }))
+    : competency?.recommendations?.slice(0, 3) || [];
   const nextObjective = activeLabs[0] || topRecs[0] || null;
 
   return (

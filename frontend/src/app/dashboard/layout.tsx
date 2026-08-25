@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import NotificationBell from "@/components/NotificationBell";
+import LearningCoach from "@/components/ai/LearningCoach";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 import { DashboardSocketProvider } from "@/hooks/DashboardSocketContext";
 import { DisplayModeProvider } from "@/lib/displayMode";
@@ -51,6 +52,7 @@ export default function DashboardLayout({
               </div>
             </main>
             <BottomNav />
+            <LearningCoach />
           </div>
         </DashboardSocketProvider>
       </NavigationProvider>

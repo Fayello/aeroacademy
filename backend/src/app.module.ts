@@ -52,6 +52,7 @@ import { DisplayModeModule } from './common/display-mode.module';
 import { NavigationModule } from './common/navigation.module';
 import { AcademicModule } from './common/academic.module';
 import { GradeBookModule } from './common/grade-book.module';
+import { AiModule } from './common/ai.module';
 
 @Module({
   imports: [
@@ -111,6 +112,7 @@ import { GradeBookModule } from './common/grade-book.module';
     NavigationModule,
     AcademicModule,
     GradeBookModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
