@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Request, Response, NextFunction } from 'express';
 import { API_PREFIX_V1 } from './common/api-version';
+import { GlobalExceptionFilter } from './common/global-exception.filter';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
@@ -69,6 +70,9 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  // Global Exception Filter — consistent error responses
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Swagger API documentation (dev only, gated by ENABLE_SWAGGER env)
   if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_SWAGGER !== 'false') {

@@ -29,17 +29,19 @@ export class CoursesService {
       orderBy: { createdAt: 'desc' },
     });
 
-    const coursesWithRatings = await Promise.all(
-      courses.map(async (c) => {
-        const agg = await this.prisma.courseReview.aggregate({
-          where: { courseId: c.id },
-          _avg: { rating: true },
-        });
-        return { ...c, averageRating: agg._avg.rating || 0 };
-      }),
-    );
+    // Batch-fetch all average ratings in a single query instead of N+1
+    const ratings = await this.prisma.$queryRawUnsafe(
+      `SELECT "courseId", AVG("rating")::float as "avgRating"
+       FROM "CourseReview"
+       GROUP BY "courseId"`
+    ) as Array<{ courseId: string; avgRating: number }>;
 
-    return coursesWithRatings;
+    const ratingMap = new Map(ratings.map((r) => [r.courseId, r.avgRating || 0]));
+
+    return courses.map((c) => ({
+      ...c,
+      averageRating: ratingMap.get(c.id) || 0,
+    }));
   }
 
   async findOne(id: string) {
@@ -559,13 +561,27 @@ export class CoursesService {
       orderBy: { createdAt: 'desc' },
     });
 
+    // Batch completion check — single query instead of N+1 loop
     const completedCourses: string[] = [];
-    for (const courseId of enrolledIds) {
-      const total = await this.prisma.lesson.count({ where: { section: { courseId } } });
-      const completed = await this.prisma.progress.count({
-        where: { userId, completed: true, lesson: { section: { courseId } } },
-      });
-      if (total > 0 && completed === total) completedCourses.push(courseId);
+    if (enrolledIds.length > 0) {
+      const completionData = await this.prisma.$queryRawUnsafe(
+        `SELECT s."courseId",
+                COUNT(DISTINCT l.id) as "totalLessons",
+                COUNT(DISTINCT CASE WHEN p.completed = true THEN p."lessonId" END) as "completedLessons"
+         FROM "CourseEnrollment" ce
+         JOIN "Section" s ON s."courseId" = ce."courseId"
+         JOIN "Lesson" l ON l."sectionId" = s.id
+         LEFT JOIN "Progress" p ON p."lessonId" = l.id AND p."userId" = ce."userId"
+         WHERE ce."userId" = $1
+         GROUP BY s."courseId"`,
+        userId,
+      ) as Array<{ courseId: string; totalLessons: bigint; completedLessons: bigint }>;
+
+      for (const row of completionData) {
+        if (Number(row.totalLessons) > 0 && Number(row.completedLessons) === Number(row.totalLessons)) {
+          completedCourses.push(row.courseId);
+        }
+      }
     }
 
     const notEnrolled = allCourses.filter((c) => !enrolledIds.includes(c.id));
