@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Req, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { AiService } from './ai.service';
+import { AiGatewayFactory } from './ai.gateway';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -8,7 +9,10 @@ import { Roles } from '../auth/roles.decorator';
 @Controller('v1/ai')
 @UseGuards(AuthGuard('jwt'))
 export class AiController {
-  constructor(private readonly service: AiService) {}
+  constructor(
+    private readonly service: AiService,
+    private readonly gatewayFactory: AiGatewayFactory,
+  ) {}
 
   @Post('coach')
   async learningCoach(
@@ -54,5 +58,22 @@ export class AiController {
   @Roles('ADMIN', 'PROFESSOR', 'TA')
   async getAtRiskStudents(@Param('cohortId') cohortId: string) {
     return this.service.getAtRiskStudents(cohortId);
+  }
+
+  @Get('lab-analytics')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
+  async getLabAnalytics() {
+    return this.service.getLabAnalytics();
+  }
+
+  @Get('gateway-status')
+  async getGatewayStatus() {
+    const gateways = this.gatewayFactory.listGateways();
+    const available = await this.gatewayFactory.getAvailableGateway();
+    return {
+      active: available?.name || null,
+      gateways,
+    };
   }
 }

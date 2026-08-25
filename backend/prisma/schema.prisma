@@ -252,6 +252,7 @@ model Lab {
   labSkills        LabSkill[]
   labOutcomes      LabOutcome[]
   moduleLabs       ModuleLab[]
+  analytics        LabAnalytics?
 }
 
 model LabFlag {
@@ -1733,4 +1734,45 @@ model MetricEvent {
   @@index([displayMode, type])
   @@index([createdAt])
   @@index([userId])
+}
+
+// ─── AI CONTENT ENGINE: LAB ANALYTICS ─────────────────────────────
+
+model LabAnalytics {
+  id              String   @id @default(uuid())
+  labId           String
+  domainName      String?
+
+  // Aggregate metrics (nightly batch)
+  totalAttempts   Int      @default(0)
+  completions     Int      @default(0)
+  completionRate  Float    @default(0)
+  avgTimeMinutes  Float    @default(0)
+  medianTimeMinutes Float?
+  totalSubmissions Int     @default(0)
+  correctSubmissions Int  @default(0)
+  failureRate     Float    @default(0)
+  hintUsageRate   Float    @default(0)
+
+  // Difficulty calibration
+  difficultyELO   Float?   // computed difficulty based on actual performance
+  tooEasy         Boolean  @default(false)  // completionRate > 85%
+  tooHard         Boolean  @default(false)  // completionRate < 15%
+
+  // Step-level analytics (JSON)
+  stepAnalytics   Json?    // [{step, attempts, completions, avgTime, failureRate}]
+
+  // Trend data
+  weeklyCompletions Json?  // [{week, count}]
+  weeklyAttempts    Json?  // [{week, count}]
+
+  lastUpdated     DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  lab   Lab  @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@unique([labId])
+  @@index([labId])
+  @@index([completionRate])
+  @@index([failureRate])
 }
