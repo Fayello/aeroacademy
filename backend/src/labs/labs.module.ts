@@ -10,6 +10,7 @@ import { DashboardModule } from '../dashboard/dashboard.module';
 import { EventsModule } from '../common/events.module';
 import { ChallengesModule } from '../challenges/challenges.module';
 import { LeaguesModule } from '../leagues/leagues.module';
+import { DomainRankingModule } from '../domain-ranking/domain-ranking.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { LeaguesModule } from '../leagues/leagues.module';
     LeaguesModule,
     EventsModule,
     ChallengesModule,
+    DomainRankingModule,
   ],
   controllers: [LabsController],
   providers: [DockerManager, LabsService, LabsGateway, LabsCron],

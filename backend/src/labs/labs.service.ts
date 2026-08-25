@@ -14,6 +14,7 @@ import { AchievementService } from '../dashboard/achievement.service';
 import { LeaguesService } from '../leagues/leagues.service';
 import { ProgressionService } from '../common/progression.service';
 import { MissionService } from '../challenges/mission.service';
+import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
 import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
 import { DockerManager } from './docker-manager.service';
@@ -57,6 +58,7 @@ export class LabsService implements OnModuleInit {
     private emailService: EmailService,
     private progressionService: ProgressionService,
     private missionService: MissionService,
+    private domainRankingService: DomainRankingService,
   ) {
     this.docker = dockerManager.getLocalDocker();
   }
@@ -638,6 +640,30 @@ export class LabsService implements OnModuleInit {
         skillName,
       }).catch((err) => logger.error('ProgressionService.awardXP failed', err));
 
+      // Award domain rating for flag solve
+      if (primarySkill?.domain?.id) {
+        try {
+          const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+          if (activeSeason) {
+            const difficultyMap: Record<number, string> = { 800: 'EASY', 900: 'EASY', 1000: 'MEDIUM', 1100: 'MEDIUM', 1200: 'HARD', 1300: 'HARD', 1400: 'HARD', 1500: 'EXPERT', 1600: 'EXPERT', 1700: 'EXPERT' };
+            await this.domainRankingService.awardDomainRating({
+              userId,
+              domainId: primarySkill.domain.id,
+              seasonId: activeSeason.id,
+              activityType: 'FLAG_SOLVED',
+              activityId: flag.id,
+              difficulty: difficultyMap[lab?.difficulty || 1000] || 'MEDIUM',
+              performance: Math.min(1.0, flag.points / 100),
+              quality: 0.8,
+              timeEfficiency: 0.7,
+              independence: 1.0,
+            });
+          }
+        } catch (err) {
+          logger.error(`Domain rating award failed for flag: ${(err as Error)?.message}`);
+        }
+      }
+
       // Check mission progress
       await this.missionService.checkProgress(userId, 'FLAG_COMPLETIONS', flag.id).catch((err) => logger.error('MissionService.checkProgress failed', err));
       if (lab)
@@ -678,6 +704,30 @@ export class LabsService implements OnModuleInit {
           this.emailService.sendLabCompleted(user.email, user.name, lab?.title || 'Unknown Lab', totalXp, totalFlagsInLab).catch(() => {});
         }
         this.eventsService.emit('LAB_COMPLETED', { userId, labId: flag.labId, labTitle: lab?.title, timestamp: new Date() });
+
+        // Award bonus domain rating for lab completion
+        if (primarySkill?.domain?.id) {
+          try {
+            const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+            if (activeSeason) {
+              const difficultyMap: Record<number, string> = { 800: 'EASY', 900: 'EASY', 1000: 'MEDIUM', 1100: 'MEDIUM', 1200: 'HARD', 1300: 'HARD', 1400: 'HARD', 1500: 'EXPERT', 1600: 'EXPERT', 1700: 'EXPERT' };
+              await this.domainRankingService.awardDomainRating({
+                userId,
+                domainId: primarySkill.domain.id,
+                seasonId: activeSeason.id,
+                activityType: 'LAB_COMPLETED',
+                activityId: flag.labId,
+                difficulty: difficultyMap[lab?.difficulty || 1000] || 'MEDIUM',
+                performance: 1.0,
+                quality: 1.0,
+                timeEfficiency: 0.9,
+                independence: 1.0,
+              });
+            }
+          } catch (err) {
+            logger.error(`Domain rating award failed for lab completion: ${(err as Error)?.message}`);
+          }
+        }
 
         await this.missionService.checkProgress(userId, 'LAB_COMPLETIONS', flag.labId).catch((err) => logger.error('MissionService.checkProgress LAB_COMPLETIONS failed', err));
       }
