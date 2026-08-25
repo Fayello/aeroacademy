@@ -175,6 +175,12 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#229C62] focus:text-white focus:rounded-xl focus:text-sm focus:font-medium"
+      >
+        Skip to main content
+      </a>
       {/* ═══════════ NAVIGATION ═══════════ */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm" : "bg-white border-b border-slate-100"}`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -203,7 +209,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+      <section id="main-content" className="pt-32 pb-20 px-6 relative overflow-hidden">
         <HeroParticles />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">

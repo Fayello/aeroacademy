@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
@@ -35,6 +35,18 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("account");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  // Close modal on Escape
+  useEffect(() => {
+    if (!showDeleteConfirm) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowDeleteConfirm(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    cancelRef.current?.focus();
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [showDeleteConfirm]);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -195,14 +207,14 @@ export default function SettingsPage() {
       <BottomNav />
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
           <div className="bg-white rounded-2xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
                 <AlertTriangle size={20} className="text-red-500" />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-900">Delete account</h3>
+                <h3 id="delete-modal-title" className="font-semibold text-slate-900">Delete account</h3>
                 <p className="text-sm text-slate-500">This action cannot be undone</p>
               </div>
             </div>
@@ -211,6 +223,7 @@ export default function SettingsPage() {
             </p>
             <div className="flex gap-3 justify-end">
               <button
+                ref={cancelRef}
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
               >

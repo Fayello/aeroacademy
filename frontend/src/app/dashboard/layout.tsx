@@ -43,9 +43,15 @@ export default function DashboardLayout({
         <DashboardSocketProvider>
           <div className="min-h-screen bg-slate-50">
             <TokenHandler />
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#229C62] focus:text-white focus:rounded-xl focus:text-sm focus:font-medium"
+            >
+              Skip to main content
+            </a>
             <Sidebar />
             <NotificationBell />
-            <main className="pb-20 md:pb-0 md:pl-64 min-h-screen">
+            <main id="main-content" className="pb-20 md:pb-0 md:pl-64 min-h-screen" role="main">
               <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
                 <Breadcrumbs />
                 <PageErrorBoundary>

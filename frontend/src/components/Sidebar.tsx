@@ -105,7 +105,7 @@ export default function Sidebar() {
 
   if (loading) {
     return (
-      <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">
+      <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 hidden md:flex flex-col z-50" aria-label="Main navigation">
         <div className="p-5 flex items-center gap-3">
           <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
           <div>
@@ -123,7 +123,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 hidden md:flex flex-col z-50">
+    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 hidden md:flex flex-col z-50" aria-label="Main navigation">
       {/* Logo */}
       <div className="p-5 flex items-center gap-3">
         <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
