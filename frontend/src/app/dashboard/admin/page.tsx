@@ -82,6 +82,7 @@ export default function AdminDashboardPage() {
     { label: "Manage Trainers", href: "/dashboard/admin/trainers", icon: Calendar, description: "Add trainers & availability" },
     { label: "Manage Users", href: "/dashboard/admin/users", icon: Users, description: "User accounts & role management" },
     { label: "AI Content Engine", href: "/dashboard/admin/ai-generator", icon: Sparkles, description: "Generate briefings, questions, outlines & calibrate" },
+    { label: "Cohort Intelligence", href: "/dashboard/admin/cohort-intelligence", icon: Users, description: "Assessment analytics per cohort" },
   ];
 
   return (

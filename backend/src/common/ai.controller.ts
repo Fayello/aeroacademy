@@ -3,9 +3,12 @@ import type { Response } from 'express';
 import { AiService } from './ai.service';
 import { AiGatewayFactory } from './ai.gateway';
 import { LabAnalyticsService } from './lab-analytics.service';
+import { AssessmentIntelligenceService } from './assessment-intelligence.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+
+type Any = any;
 
 @Controller('v1/ai')
 @UseGuards(AuthGuard('jwt'))
@@ -14,6 +17,7 @@ export class AiController {
     private readonly service: AiService,
     private readonly gatewayFactory: AiGatewayFactory,
     private readonly analyticsService: LabAnalyticsService,
+    private readonly intelligenceService: AssessmentIntelligenceService,
   ) {}
 
   @Post('coach')
@@ -121,5 +125,37 @@ export class AiController {
   @Roles('ADMIN')
   async calibrateAllLabs() {
     return this.service.calibrateAllLabs();
+  }
+
+  // ─── ASSESSMENT INTELLIGENCE ──────────────────
+
+  @Post('adaptive/start')
+  async startAdaptiveAssessment(@Req() req: any, @Body() body: { assessmentId: string }) {
+    return this.intelligenceService.createAdaptiveSession(req.user.id, body.assessmentId);
+  }
+
+  @Post('adaptive/answer')
+  async submitAdaptiveAnswer(
+    @Req() req: any,
+    @Body() body: { sessionId: string; questionIndex: number; answer: string; session: Any },
+  ) {
+    return this.intelligenceService.processAdaptiveAnswer(body.session, body.questionIndex, body.answer);
+  }
+
+  @Get('skill-gaps')
+  async getSkillGapReport(@Req() req: any) {
+    return this.intelligenceService.getSkillGapReport(req.user.id);
+  }
+
+  @Get('personalized-path')
+  async getPersonalizedPath(@Req() req: any) {
+    return this.intelligenceService.generatePersonalizedPath(req.user.id);
+  }
+
+  @Get('cohort-intelligence/:cohortId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getCohortIntelligence(@Param('cohortId') cohortId: string) {
+    return this.intelligenceService.getCohortIntelligence(cohortId);
   }
 }
