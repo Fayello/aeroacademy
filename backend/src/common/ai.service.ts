@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 type Any = any;
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://5.189.182.196:11434';
-const MODEL = 'llama3.2';
+const MODEL = 'xpertcoach';
 
 @Injectable()
 export class AiService {
@@ -24,7 +24,7 @@ export class AiService {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(90000),
+      signal: AbortSignal.timeout(60000),
     });
 
     if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
@@ -41,7 +41,7 @@ export class AiService {
         messages,
         stream: false,
       }),
-      signal: AbortSignal.timeout(90000),
+      signal: AbortSignal.timeout(60000),
     });
 
     if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
