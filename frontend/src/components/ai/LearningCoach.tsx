@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { fetchApi } from "@/lib/api";
+import { API_URL, API_VERSION } from "@/lib/api";
 import {
   MessageCircle,
   Send,
@@ -58,12 +58,24 @@ export default function LearningCoach() {
         content: m.content,
       }));
 
-      const res = await fetchApi<{ response: string }>("/ai/coach", {
-        method: "POST",
-        body: JSON.stringify({ message: userMessage, history }),
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
 
-      setMessages((prev) => [...prev, { role: "assistant", content: res.response }]);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const res = await fetch(`${API_URL}${API_VERSION}/ai/coach`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ message: userMessage, history }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (!res.ok) throw new Error(`AI error: ${res.status}`);
+      const data = await res.json();
+      setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
     } catch (err: any) {
       const msg = err?.name === "AbortError" || err?.message?.includes("timeout")
         ? "Response is taking longer than expected. The AI model is running on CPU — please try a shorter question."
