@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { DomainRankingService } from './domain-ranking.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('v2/domain-ranking')
+@UseGuards(AuthGuard('jwt'))
 export class DomainRankingController {
   constructor(
     private readonly domainRankingService: DomainRankingService,

@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { GlobalEventsService } from './global-events.service';
 
 @Controller('v2/global-events')
+@UseGuards(AuthGuard('jwt'))
 export class GlobalEventsController {
   constructor(private readonly globalEventsService: GlobalEventsService) {}
 

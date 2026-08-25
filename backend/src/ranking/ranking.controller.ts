@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { RankingService } from './ranking.service';
 
 @Controller('v2/ranking')
+@UseGuards(AuthGuard('jwt'))
 export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
 

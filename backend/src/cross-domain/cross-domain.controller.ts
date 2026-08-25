@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CrossDomainService } from './cross-domain.service';
 
 @Controller('v2/cross-domain')
+@UseGuards(AuthGuard('jwt'))
 export class CrossDomainController {
   constructor(private readonly crossDomainService: CrossDomainService) {}
 
