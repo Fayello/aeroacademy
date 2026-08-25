@@ -160,37 +160,13 @@ export class NavigationService {
       ],
     });
 
-    // Compete (level-gated)
-    const competeItems: NavItem[] = [];
-    if (level >= 3) {
-      competeItems.push({ href: '/dashboard/challenges', tKey: 'nav.challenges', icon: 'Target', label: 'Challenges' });
-    }
-    if (level >= 5) {
-      competeItems.push(
-        { href: '/dashboard/ranking', tKey: 'nav.ranked', icon: 'Shield', label: 'Ranked' },
-        { href: '/dashboard/capability-ranking', tKey: 'nav.capability', icon: 'BarChart3', label: 'Capability' },
-      );
-    }
-    if (level >= 7) {
-      competeItems.push(
-        { href: '/dashboard/seasons', tKey: 'nav.seasons', icon: 'ScrollText', label: 'Seasons' },
-      );
-    }
-    if (level >= 10) {
-      competeItems.push(
-        { href: '/dashboard/boss-missions', tKey: 'nav.bosses', icon: 'Swords', label: 'Boss Missions' },
-        { href: '/dashboard/battle-pass', tKey: 'nav.battlepass', icon: 'Award', label: 'Battle Pass' },
-      );
-    }
-    competeItems.push(
-      { href: '/dashboard/my-missions', tKey: 'nav.missions', icon: 'Target', label: 'My Missions' },
-      { href: '/dashboard/leaderboard', tKey: 'nav.leaderboards', icon: 'Award', label: 'Leaderboards' },
-    );
-
+    // Compete (single hub entry)
     sections.push({
       id: 'compete',
       label: 'Compete',
-      items: competeItems,
+      items: [
+        { href: '/dashboard/compete', tKey: 'nav.compete', icon: 'Swords', label: 'Compete' },
+      ],
     });
 
     // Community
@@ -286,6 +262,13 @@ export class NavigationService {
             { href: '/dashboard/labs', tKey: 'nav.labs', icon: 'FlaskConical', label: 'Labs' },
             { href: '/dashboard/exams', tKey: 'nav.exams', icon: 'ClipboardCheck', label: 'Practical Exams' },
             { href: '/dashboard/assessments', tKey: 'nav.assessments', icon: 'Target', label: 'Skill Assessments' },
+          ],
+        },
+        {
+          id: 'compete',
+          label: 'Compete',
+          items: [
+            { href: '/dashboard/compete', tKey: 'nav.compete', icon: 'Swords', label: 'Compete' },
           ],
         },
       ],
