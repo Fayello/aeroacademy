@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
 import {
@@ -9,6 +9,7 @@ import {
   Loader2,
   GraduationCap,
   Calendar,
+  AlertTriangle,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 
@@ -26,22 +27,26 @@ export default function CohortsPage() {
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const cancelledRef = useRef(false);
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await fetchApi("/cohorts");
+      if (!cancelledRef.current) setCohorts(data);
+    } catch (err) {
+      if (!cancelledRef.current) setError(err instanceof Error ? err.message : "Failed to load cohorts");
+    } finally {
+      if (!cancelledRef.current) setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const data = await fetchApi("/cohorts");
-        if (!cancelled) setCohorts(data);
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
+    cancelledRef.current = false;
     load();
-    return () => { cancelled = true; };
-  }, []);
+    return () => { cancelledRef.current = true; };
+  }, [load]);
 
   if (loading) {
     return (
@@ -52,7 +57,15 @@ export default function CohortsPage() {
   }
 
   if (error) {
-    return <div className="text-center py-20 text-red-500 text-sm">{error}</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <AlertTriangle size={32} className="text-red-400 mb-3" />
+        <p className="text-sm text-slate-600 mb-3">{error}</p>
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+          Try again
+        </button>
+      </div>
+    );
   }
 
   return (

@@ -20,6 +20,7 @@ import {
   GraduationCap,
   Crosshair,
   ChevronRight,
+  AlertTriangle,
 } from "lucide-react";
 
 interface Badge {
@@ -65,25 +66,29 @@ export default function BadgesPage() {
   const [allBadges, setAllBadges] = useState<Badge[]>([]);
   const [myBadges, setMyBadges] = useState<UserBadge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "earned" | "locked">("all");
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [badges, earned] = await Promise.all([
-          fetchApi<Badge[]>("/badges"),
-          fetchApi<UserBadge[]>("/badges/my"),
-        ]);
-        setAllBadges(badges);
-        setMyBadges(earned);
-      } catch {
-        // silent
-      } finally {
-        setLoading(false);
-      }
-    }
     load();
   }, []);
+
+  async function load() {
+    try {
+      setLoading(true);
+      setError("");
+      const [badges, earned] = await Promise.all([
+        fetchApi<Badge[]>("/badges"),
+        fetchApi<UserBadge[]>("/badges/my"),
+      ]);
+      setAllBadges(badges);
+      setMyBadges(earned);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load badges");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const earnedIds = new Set(myBadges.map((b) => b.badgeId));
 
@@ -98,6 +103,18 @@ export default function BadgesPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 size={20} className="text-blue-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <AlertTriangle size={32} className="text-red-400 mb-3" />
+        <p className="text-sm text-slate-600 mb-3">{error}</p>
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+          Try again
+        </button>
       </div>
     );
   }

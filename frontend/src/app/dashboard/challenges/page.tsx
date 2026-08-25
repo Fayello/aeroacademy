@@ -17,6 +17,7 @@ import {
   Calendar,
   Crown,
   Users,
+  AlertTriangle,
 } from "lucide-react";
 
 interface Challenge {
@@ -81,21 +82,25 @@ function timeRemaining(endAt: string): string {
 export default function ChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "daily" | "weekly" | "monthly" | "seasonal" | "team">("all");
 
   useEffect(() => {
-    async function load() {
-      try {
-        const data = await fetchApi<Challenge[]>("/challenges");
-        setChallenges(data);
-      } catch {
-        // silent
-      } finally {
-        setLoading(false);
-      }
-    }
     load();
   }, []);
+
+  async function load() {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await fetchApi<Challenge[]>("/challenges");
+      setChallenges(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load challenges");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const filteredChallenges = challenges.filter((c) => {
     if (filter === "all") return true;
@@ -111,6 +116,18 @@ export default function ChallengesPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 size={20} className="text-blue-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <AlertTriangle size={32} className="text-red-400 mb-3" />
+        <p className="text-sm text-slate-600 mb-3">{error}</p>
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+          Try again
+        </button>
       </div>
     );
   }

@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Search,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 
@@ -56,19 +57,42 @@ const difficultyColors: Record<string, string> = {
 export default function LearningPathsPage() {
   const [paths, setPaths] = useState<LearningPath[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    fetchApi("/learning-paths")
-      .then((data) => setPaths(Array.isArray(data) ? data : []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    load();
   }, []);
+
+  async function load() {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await fetchApi("/learning-paths");
+      setPaths(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load learning paths");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="animate-spin text-[#229C62]" size={32} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <AlertTriangle size={32} className="text-red-400 mb-3" />
+        <p className="text-sm text-slate-600 mb-3">{error}</p>
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+          Try again
+        </button>
       </div>
     );
   }
