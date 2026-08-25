@@ -5,6 +5,7 @@ import { AiGatewayFactory } from './ai.gateway';
 import { LabAnalyticsService } from './lab-analytics.service';
 import { AssessmentIntelligenceService } from './assessment-intelligence.service';
 import { PredictiveAnalyticsService } from './predictive-analytics.service';
+import { TutoringService } from './tutoring.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -20,6 +21,7 @@ export class AiController {
     private readonly analyticsService: LabAnalyticsService,
     private readonly intelligenceService: AssessmentIntelligenceService,
     private readonly predictiveService: PredictiveAnalyticsService,
+    private readonly tutoringService: TutoringService,
   ) {}
 
   @Post('coach')
@@ -189,5 +191,46 @@ export class AiController {
   @Roles('ADMIN', 'PROFESSOR', 'TA')
   async getInterventions(@Param('cohortId') cohortId: string) {
     return this.predictiveService.generateInterventions(cohortId);
+  }
+
+  // ─── AUTONOMOUS TUTORING ─────────────────────────────
+
+  @Post('tutor/chat')
+  async tutorChat(
+    @Req() req: any,
+    @Body() body: { message: string; history?: Array<{ role: string; content: string }>; context?: { labId?: string; currentStep?: string; skillDomain?: string } },
+  ) {
+    return this.tutoringService.socraticTutor(req.user.id, body.message, body.history, body.context);
+  }
+
+  @Post('tutor/lab-assist')
+  async labAssist(
+    @Req() req: any,
+    @Body() body: { labId: string; currentStep?: string; errorOutput?: string; flagTitle?: string; hintLevel: number },
+  ) {
+    return this.tutoringService.labAssist(req.user.id, body);
+  }
+
+  @Post('tutor/hint')
+  async getHint(
+    @Req() req: any,
+    @Body() body: { labId: string; context: string },
+  ) {
+    return this.tutoringService.getAdaptiveHint(req.user.id, body.labId, body.context);
+  }
+
+  @Post('tutor/explain')
+  async explainConcept(
+    @Req() req: any,
+    @Body() body: { concept: string; relatedLab?: string },
+  ) {
+    return this.tutoringService.explainConcept(req.user.id, body.concept, body.relatedLab);
+  }
+
+  @Get('tutor/analytics')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getTutoringAnalytics(@Param('cohortId') cohortId?: string) {
+    return this.tutoringService.getTutoringAnalytics(cohortId);
   }
 }

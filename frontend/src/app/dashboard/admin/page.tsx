@@ -84,6 +84,7 @@ export default function AdminDashboardPage() {
     { label: "AI Content Engine", href: "/dashboard/admin/ai-generator", icon: Sparkles, description: "Generate briefings, questions, outlines & calibrate" },
     { label: "Cohort Intelligence", href: "/dashboard/admin/cohort-intelligence", icon: Users, description: "Assessment analytics per cohort" },
     { label: "Predictive Analytics", href: "/dashboard/admin/predictive-analytics", icon: ShieldAlert, description: "At-risk predictions & intervention recommendations" },
+    { label: "Tutoring Analytics", href: "/dashboard/admin/tutoring-analytics", icon: GraduationCap, description: "AI tutoring interaction insights" },
   ];
 
   return (

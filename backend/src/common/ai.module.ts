@@ -4,13 +4,14 @@ import { AiController } from './ai.controller';
 import { LabAnalyticsService } from './lab-analytics.service';
 import { AssessmentIntelligenceService } from './assessment-intelligence.service';
 import { PredictiveAnalyticsService } from './predictive-analytics.service';
+import { TutoringService } from './tutoring.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AiGatewayFactory } from './ai.gateway';
 
 @Module({
   imports: [PrismaModule],
   controllers: [AiController],
-  providers: [AiService, AiGatewayFactory, LabAnalyticsService, AssessmentIntelligenceService, PredictiveAnalyticsService],
-  exports: [AiService, AiGatewayFactory, LabAnalyticsService, AssessmentIntelligenceService, PredictiveAnalyticsService],
+  providers: [AiService, AiGatewayFactory, LabAnalyticsService, AssessmentIntelligenceService, PredictiveAnalyticsService, TutoringService],
+  exports: [AiService, AiGatewayFactory, LabAnalyticsService, AssessmentIntelligenceService, PredictiveAnalyticsService, TutoringService],
 })
 export class AiModule {}

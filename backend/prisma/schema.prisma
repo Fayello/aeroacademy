@@ -91,6 +91,7 @@ model User {
   teamMembers              TeamMember[]
   gradeEntries             GradeEntry[]
   studentGPA               StudentGPA?
+  tutoringInteractions     TutoringInteraction[]
 
   @@index([googleId])
   @@index([role])
@@ -1775,4 +1776,23 @@ model LabAnalytics {
   @@index([labId])
   @@index([completionRate])
   @@index([failureRate])
+}
+
+model TutoringInteraction {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // chat, lab_assist, hint, socratic
+  message     String
+  response    String
+  method      String   // socratic, direct, hint, encouragement
+  labId       String?
+  conceptTags String[] @default([])
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([labId])
+  @@index([createdAt])
 }
