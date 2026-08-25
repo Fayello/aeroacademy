@@ -5,7 +5,6 @@ import { fetchApi } from "@/lib/api";
 import {
   MessageCircle,
   Send,
-  Loader2,
   X,
   Bot,
   User,
@@ -16,6 +15,13 @@ interface Message {
   role: "user" | "assistant";
   content: string;
 }
+
+const SUGGESTIONS = [
+  "What should I study next?",
+  "Explain a concept",
+  "Help me with a lab",
+  "How do I level up?",
+];
 
 export default function LearningCoach() {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,13 +64,13 @@ export default function LearningCoach() {
       });
 
       setMessages((prev) => [...prev, { role: "assistant", content: res.response }]);
-    } catch {
+    } catch (err: any) {
+      const msg = err?.name === "AbortError" || err?.message?.includes("timeout")
+        ? "Response is taking longer than expected. The AI model is running on CPU — please try a shorter question."
+        : "Sorry, I couldn't process that right now. Please try again.";
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I couldn't process that right now. Please try again.",
-        },
+        { role: "assistant", content: msg },
       ]);
     } finally {
       setLoading(false);
@@ -152,8 +158,25 @@ export default function LearningCoach() {
                   <Bot size={12} className="text-[#229C62]" />
                 </div>
                 <div className="bg-slate-100 px-3 py-2 rounded-xl rounded-bl-sm">
-                  <Loader2 size={14} className="text-slate-400 animate-spin" />
+                  <div className="flex gap-1">
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                  </div>
                 </div>
+              </div>
+            )}
+            {messages.length <= 1 && !loading && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { setInput(s); inputRef.current?.focus(); }}
+                    className="px-2.5 py-1 text-xs rounded-full bg-[#E9F8EE] text-[#229C62] hover:bg-[#229C62] hover:text-white transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
               </div>
             )}
             <div ref={messagesEndRef} />

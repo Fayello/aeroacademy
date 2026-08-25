@@ -24,7 +24,7 @@ export class AiService {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(30000),
+      signal: AbortSignal.timeout(90000),
     });
 
     if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
@@ -41,7 +41,7 @@ export class AiService {
         messages,
         stream: false,
       }),
-      signal: AbortSignal.timeout(30000),
+      signal: AbortSignal.timeout(90000),
     });
 
     if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
@@ -62,7 +62,7 @@ export class AiService {
     const systemPrompt = `You are a helpful learning coach for XpertClass, a technology competency platform.
 The student is level ${level} with ${(user?.xp || 0).toLocaleString()} XP.
 You help with: understanding concepts, recommending next steps, explaining errors, and study tips.
-Be concise, encouraging, and practical. No markdown formatting. Max 3 sentences.`;
+Be concise, encouraging, and practical. Max 2 sentences.`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
@@ -88,7 +88,13 @@ Be concise, encouraging, and practical. No markdown formatting. Max 3 sentences.
     // Gather context: competency, labs, recent activity
     const [competency, labs, enrollments, badges] = await Promise.all([
       this.prisma.$queryRawUnsafe(
-        'SELECT de."domainName", de.score FROM "DomainEvidence" de WHERE de."userId" = $1 ORDER BY de.score DESC',
+        `SELECT sd."displayName" as "domainName", AVG(us.mastery) as score
+         FROM "UserSkill" us
+         JOIN "Skill" s ON s.id = us."skillId"
+         JOIN "SkillDomain" sd ON sd.id = s."domainId"
+         WHERE us."userId" = $1
+         GROUP BY sd."displayName"
+         ORDER BY score DESC`,
         userId,
       ) as Promise<Any[]>,
       this.prisma.$queryRawUnsafe(
