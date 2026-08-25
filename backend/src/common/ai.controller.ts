@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Req, Res, UseGuards } from '@nestjs
 import type { Response } from 'express';
 import { AiService } from './ai.service';
 import { AiGatewayFactory } from './ai.gateway';
+import { LabAnalyticsService } from './lab-analytics.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -12,6 +13,7 @@ export class AiController {
   constructor(
     private readonly service: AiService,
     private readonly gatewayFactory: AiGatewayFactory,
+    private readonly analyticsService: LabAnalyticsService,
   ) {}
 
   @Post('coach')
@@ -75,5 +77,12 @@ export class AiController {
       active: available?.name || null,
       gateways,
     };
+  }
+
+  @Get('lab-analytics/:labId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
+  async getLabInsights(@Param('labId') labId: string) {
+    return this.analyticsService.getLabInsights(labId);
   }
 }

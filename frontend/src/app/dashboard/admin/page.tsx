@@ -76,6 +76,7 @@ export default function AdminDashboardPage() {
     { label: "Manage Assessments", href: "/dashboard/admin/assessments", icon: ClipboardCheck, description: "Create skill assessments & quizzes" },
     { label: "Lab Monitoring", href: "/dashboard/admin/monitoring", icon: Activity, description: "Monitor active users & force-stop labs" },
     { label: "Analytics", href: "/dashboard/admin/analytics", icon: TrendingUp, description: "User growth, engagement & completion metrics" },
+    { label: "Lab Analytics", href: "/dashboard/admin/analytics/labs", icon: Microscope, description: "Step-level insights, difficulty calibration & trends" },
     { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ScrollText, description: "Security and administrative action trail" },
     { label: "Manage Master Classes", href: "/dashboard/admin/master-classes", icon: Video, description: "Schedule live sessions" },
     { label: "Manage Trainers", href: "/dashboard/admin/trainers", icon: Calendar, description: "Add trainers & availability" },
