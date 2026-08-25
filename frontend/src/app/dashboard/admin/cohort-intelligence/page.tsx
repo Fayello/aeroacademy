@@ -6,6 +6,7 @@ import {
   CheckCircle, Search, ChevronDown, ChevronUp, Target,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
+import EmptyState from "@/components/ui/EmptyState";
 
 type Any = any;
 
@@ -239,7 +240,7 @@ export default function CohortIntelligencePage() {
                     </tr>
                   ))}
                   {sortedStudents.length === 0 && (
-                    <tr><td colSpan={4} className="px-6 py-12 text-center text-sm text-slate-500">No assessment data yet</td></tr>
+                    <tr><td colSpan={4} className="px-6 py-12 text-center"><EmptyState icon={Users} title="No assessment data yet" description="" /></td></tr>
                   )}
                 </tbody>
               </table>

@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface CourseProgress {
   courseId: string;
@@ -91,10 +92,7 @@ export default function StudentAnalyticsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Learning Analytics</h1>
-        <p className="text-sm text-slate-500 mt-1">Your progress and activity overview</p>
-      </div>
+      <PageHeader title="Learning Analytics" description="Your progress and activity overview" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 p-5">

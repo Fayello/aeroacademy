@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   ClipboardCheck,
   Loader2,
@@ -63,10 +64,7 @@ export default function AssessmentsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Assessments</h1>
-        <p className="text-sm text-slate-500 mt-1">Evaluate your skills and get personalized recommendations</p>
-      </div>
+      <PageHeader title="Skill Assessments" description="Evaluate your skills and get personalized recommendations" />
 
       {assessments.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">

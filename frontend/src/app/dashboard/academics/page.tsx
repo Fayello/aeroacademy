@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   BookOpen,
   ChevronRight,
@@ -118,15 +119,7 @@ export default function AcademicsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <BookOpen size={28} className="text-[#229C62]" />
-          My Academics
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Your enrolled courses, grades, and academic progress
-        </p>
-      </div>
+      <PageHeader title="My Academics" description="Your enrolled courses, grades, and academic progress" />
 
       {/* GPA Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

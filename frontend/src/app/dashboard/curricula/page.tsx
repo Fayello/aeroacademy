@@ -14,6 +14,7 @@ import {
   Clock,
   Layers,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface CurriculumModule {
   id: string;
@@ -89,10 +90,11 @@ export default function CurriculaPage() {
 
       {/* Curriculum Cards */}
       {curricula.length === 0 ? (
-        <div className="text-center py-20 text-slate-400">
-          <GraduationCap size={48} className="mx-auto mb-4 opacity-50" />
-          <p className="text-sm">No curricula found</p>
-        </div>
+        <EmptyState
+          icon={GraduationCap}
+          title="No curricula found"
+          description="Curricula will appear here once an admin creates them."
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {curricula.map((curr) => {

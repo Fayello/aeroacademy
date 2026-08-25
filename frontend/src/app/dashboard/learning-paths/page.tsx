@@ -16,6 +16,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface Course {
   id: string;
@@ -90,11 +91,11 @@ export default function LearningPathsPage() {
       </div>
 
       {paths.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <Route size={48} className="mx-auto mb-4 text-slate-300" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">No learning paths yet</h3>
-          <p className="text-sm text-slate-500">Learning paths will appear here once an admin creates them.</p>
-        </div>
+        <EmptyState
+          icon={Route}
+          title="No learning paths yet"
+          description="Learning paths will appear here once an admin creates them."
+        />
       ) : (
         <>
           <div className="relative">

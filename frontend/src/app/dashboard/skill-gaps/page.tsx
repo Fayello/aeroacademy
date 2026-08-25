@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 
 type Any = any;
 
@@ -169,10 +170,7 @@ export default function SkillGapPage() {
             <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
               <Target size={24} className="text-[#229C62]" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Skill Gap Analysis</h1>
-              <p className="text-sm text-slate-500">Your competency profile across all domains</p>
-            </div>
+            <PageHeader title="Skill Gap Analysis" description="Your competency profile across all domains" />
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
             <div className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">

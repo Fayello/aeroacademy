@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { Award, Plus, Pencil, Trash2, Loader2, ArrowLeft } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface BadgeItem {
   id: string;
@@ -141,18 +143,14 @@ export default function AdminBadgesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
-            <ArrowLeft size={14} /> Admin
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Badges</h1>
-          <p className="text-sm text-slate-500 mt-1">{badges.length} badges defined</p>
-        </div>
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={14} /> Admin
+      </Link>
+      <PageHeader title="Badges" description={`${badges.length} badges defined`} action={
         <button onClick={openCreate} className="btn-primary text-xs flex items-center gap-1.5">
           <Plus size={14} /> Create Badge
         </button>
-      </div>
+      } />
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
@@ -204,10 +202,11 @@ export default function AdminBadgesPage() {
           </table>
         </div>
         {badges.length === 0 && (
-          <div className="py-12 text-center">
-            <Award size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No badges yet</p>
-          </div>
+          <EmptyState
+            icon={Award}
+            title="No badges yet"
+            description="Create a badge to get started."
+          />
         )}
       </div>
 

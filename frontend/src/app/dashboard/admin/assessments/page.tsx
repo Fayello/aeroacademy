@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { ClipboardCheck, Plus, Pencil, Trash2, Loader2, ArrowLeft, ChevronDown, ChevronUp, X } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface AssessmentQuestion {
   text: string;
@@ -158,18 +160,14 @@ export default function AdminAssessmentsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
-            <ArrowLeft size={14} /> Admin
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Assessments</h1>
-          <p className="text-sm text-slate-500 mt-1">{assessments.length} assessments</p>
-        </div>
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={14} /> Admin
+      </Link>
+      <PageHeader title="Assessments" description={`${assessments.length} assessments`} action={
         <button onClick={openCreate} className="btn-primary text-xs flex items-center gap-1.5">
           <Plus size={14} /> Create Assessment
         </button>
-      </div>
+      } />
 
       <div className="space-y-3">
         {assessments.map((a) => (
@@ -216,10 +214,11 @@ export default function AdminAssessmentsPage() {
           </div>
         ))}
         {assessments.length === 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 py-12 text-center">
-            <ClipboardCheck size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No assessments yet</p>
-          </div>
+          <EmptyState
+            icon={ClipboardCheck}
+            title="No assessments yet"
+            description="Create an assessment to get started."
+          />
         )}
       </div>
 

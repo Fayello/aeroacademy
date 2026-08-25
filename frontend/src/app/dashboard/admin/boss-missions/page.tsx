@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApiV2 } from "@/lib/api";
-import { Swords, Plus, Pencil, Trash2, ArrowLeft, Loader2, Search } from "lucide-react";
+import { Swords, Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, Skull } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminNumber, AdminSelect, AdminDatePicker } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface BossMission {
   id: string;
@@ -174,18 +176,14 @@ export default function AdminBossMissionsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
-            <ArrowLeft size={14} /> Admin
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Boss Missions</h1>
-          <p className="text-sm text-slate-500 mt-1">{missions.length} missions</p>
-        </div>
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={14} /> Admin
+      </Link>
+      <PageHeader title="Boss Missions" description={`${missions.length} missions`} action={
         <button onClick={openCreate} className="btn-primary text-xs flex items-center gap-1.5">
           <Plus size={14} /> Create Boss Mission
         </button>
-      </div>
+      } />
 
       <div className="flex items-center gap-3">
         <select
@@ -270,10 +268,11 @@ export default function AdminBossMissionsPage() {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="py-12 text-center">
-            <Swords size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No boss missions found</p>
-          </div>
+          <EmptyState
+            icon={Skull}
+            title="No boss missions found"
+            description="Create a boss mission to get started."
+          />
         )}
       </div>
 

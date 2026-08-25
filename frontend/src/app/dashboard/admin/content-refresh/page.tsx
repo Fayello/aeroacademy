@@ -16,6 +16,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface ContentRelevanceScore {
   id: string;
@@ -143,9 +144,7 @@ export default function ContentRefreshDashboard() {
 
   if (!report) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-slate-500">
-        No content data available
-      </div>
+      <EmptyState icon={RefreshCw} title="No content data available" description="" />
     );
   }
 

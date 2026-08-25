@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   ArrowLeft,
   BookOpen,
@@ -113,10 +114,7 @@ export default function CohortDetailPage() {
               <GraduationCap size={28} className="text-[#229C62]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">My Grades</h1>
-              <p className="text-sm text-slate-500">
-                {grades?.categories.length ?? 0} grade categories
-              </p>
+              <PageHeader title="My Grades" description={`${grades?.categories.length ?? 0} grade categories`} />
             </div>
           </div>
           <div className="text-right">

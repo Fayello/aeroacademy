@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApiV2 } from "@/lib/api";
-import { Layers, Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { Layers, Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, ChevronDown, ChevronUp, Swords } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminNumber } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface BattlePassTier {
   tierNumber: number;
@@ -166,18 +168,14 @@ export default function AdminBattlePassPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
-            <ArrowLeft size={14} /> Admin
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Battle Pass</h1>
-          <p className="text-sm text-slate-500 mt-1">{battlePasses.length} battle passes</p>
-        </div>
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={14} /> Admin
+      </Link>
+      <PageHeader title="Battle Pass" description={`${battlePasses.length} battle passes`} action={
         <button onClick={openCreate} className="btn-primary text-xs flex items-center gap-1.5">
           <Plus size={14} /> Create Battle Pass
         </button>
-      </div>
+      } />
 
       <div className="relative max-w-xs">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -237,10 +235,11 @@ export default function AdminBattlePassPage() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 py-12 text-center">
-            <Layers size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No battle passes found</p>
-          </div>
+          <EmptyState
+            icon={Swords}
+            title="No battle passes found"
+            description="Create a battle pass to get started."
+          />
         )}
       </div>
 

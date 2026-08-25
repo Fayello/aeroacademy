@@ -7,6 +7,8 @@ import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal from "@/components/admin/AdminModal";
 import { AdminInput, AdminNumber, AdminDatePicker } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface Season {
   id: string;
@@ -136,14 +138,10 @@ export default function AdminSeasonsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
-            <ArrowLeft size={14} /> Admin
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Seasons</h1>
-          <p className="text-sm text-slate-500 mt-1">{seasons.length} seasons</p>
-        </div>
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={14} /> Admin
+      </Link>
+      <PageHeader title="Seasons" description={`${seasons.length} seasons`} action={
         <div className="flex gap-2">
           <button onClick={handleRotate} className="px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
             <RotateCcw size={14} /> Rotate
@@ -152,7 +150,7 @@ export default function AdminSeasonsPage() {
             <Plus size={14} /> Create Season
           </button>
         </div>
-      </div>
+      } />
 
       <div className="relative max-w-xs">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -221,10 +219,11 @@ export default function AdminSeasonsPage() {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="py-12 text-center">
-            <Calendar size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No seasons found</p>
-          </div>
+          <EmptyState
+            icon={Calendar}
+            title="No seasons found"
+            description="Create a season to get started."
+          />
         )}
       </div>
 

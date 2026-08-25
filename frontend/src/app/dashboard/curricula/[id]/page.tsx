@@ -17,6 +17,7 @@ import {
   Target,
   Beaker,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface Outcome {
   id: string;
@@ -287,7 +288,7 @@ export default function CurriculumDetailPage() {
                     <h4 className="text-xs font-medium text-slate-500 uppercase mb-2">Labs</h4>
                     <div className="space-y-1.5">
                       {mod.labs.length === 0 ? (
-                        <p className="text-xs text-slate-400">No labs mapped yet</p>
+                        <EmptyState icon={Beaker} title="No labs mapped yet" description="" />
                       ) : (
                         mod.labs.map((l) => (
                           <div key={l.lab.id} className="flex items-center gap-2 text-sm">
@@ -309,10 +310,7 @@ export default function CurriculumDetailPage() {
       {activeTab === "cohorts" && (
         <div className="space-y-4">
           {curriculum.cohorts.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
-              <Users size={32} className="mx-auto mb-3 opacity-50" />
-              <p className="text-sm">No cohorts yet</p>
-            </div>
+            <EmptyState icon={Users} title="No cohorts yet" description="" />
           ) : (
             curriculum.cohorts.map((cohort) => (
               <Link

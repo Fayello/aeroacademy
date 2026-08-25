@@ -17,6 +17,7 @@ import {
   History,
   Shield,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface Assessment {
   id: string;
@@ -264,10 +265,7 @@ export default function ExamDetailPage() {
       {activeTab === "attempts" && (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           {attempts.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
-              <History size={32} className="mx-auto mb-3 opacity-50" />
-              <p className="text-sm">No attempts yet</p>
-            </div>
+            <EmptyState icon={FileText} title="No attempts yet" description="" />
           ) : (
             <table className="w-full">
               <thead>

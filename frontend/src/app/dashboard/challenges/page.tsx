@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   Trophy,
   Target,
@@ -117,10 +118,7 @@ export default function ChallengesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Missions</h1>
-          <p className="text-sm text-slate-500 mt-1">Complete challenges to earn XP and level up</p>
-        </div>
+        <PageHeader title="Missions" description="Complete challenges to earn XP and level up" />
       </div>
 
       {/* Filter tabs */}

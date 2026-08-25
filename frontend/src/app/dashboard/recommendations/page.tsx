@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { Loader2, Compass, BookOpen, Target, Users, Sparkles } from "lucide-react";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface Recommendations {
   courses: { id: string; title: string; description: string; imageUrl: string | null }[];
@@ -51,10 +52,7 @@ export default function RecommendationsPage() {
         <div className="bg-[#E9F8EE] p-3 rounded-xl">
           <Compass size={24} className="text-[#229C62]" />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">For You</h1>
-          <p className="text-sm text-slate-500">Personalized recommendations based on your profile</p>
-        </div>
+        <PageHeader title="For You" description="Personalized recommendations based on your profile" />
       </div>
 
       {/* Insights */}

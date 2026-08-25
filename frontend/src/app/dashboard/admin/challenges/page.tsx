@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { Target, Plus, Pencil, Trash2, Loader2, ArrowLeft, Search } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber, AdminDatePicker } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface Challenge {
   id: string;
@@ -196,18 +198,14 @@ export default function AdminChallengesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-2">
-            <ArrowLeft size={14} /> Admin
-          </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Mission Manager</h1>
-          <p className="text-sm text-slate-500 mt-1">{challenges.length} missions</p>
-        </div>
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+        <ArrowLeft size={14} /> Admin
+      </Link>
+      <PageHeader title="Mission Manager" description={`${challenges.length} missions`} action={
         <button onClick={openCreate} className="btn-primary text-xs flex items-center gap-1.5">
           <Plus size={14} /> Create Mission
         </button>
-      </div>
+      } />
 
       <div className="flex items-center gap-3">
         <select
@@ -302,10 +300,11 @@ export default function AdminChallengesPage() {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="py-12 text-center">
-            <Target size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No missions found</p>
-          </div>
+          <EmptyState
+            icon={Target}
+            title="No missions found"
+            description="Create a mission to get started."
+          />
         )}
       </div>
 

@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Clock,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface TutoringAnalytics {
   totalInteractions: number;
@@ -72,9 +73,7 @@ export default function TutoringDashboard() {
 
   if (!analytics) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-slate-500">
-        No tutoring data yet
-      </div>
+      <EmptyState icon={GraduationCap} title="No tutoring data yet" description="" />
     );
   }
 

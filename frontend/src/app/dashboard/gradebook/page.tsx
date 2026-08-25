@@ -10,6 +10,7 @@ import {
   Users,
   GraduationCap,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface TeachingCohort {
   id: string;
@@ -61,15 +62,11 @@ export default function GradebookIndexPage() {
       </div>
 
       {cohorts.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-            <ClipboardCheck size={28} className="text-[#229C62]" />
-          </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No cohorts to grade</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            You don&apos;t have any teaching assignments yet. Create a cohort in the Curriculum section to get started.
-          </p>
-        </div>
+        <EmptyState
+          icon={ClipboardCheck}
+          title="No cohorts to grade"
+          description="You don't have any teaching assignments yet. Create a cohort in the Curriculum section to get started."
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {cohorts.map((cohort) => (

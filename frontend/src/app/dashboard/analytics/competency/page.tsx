@@ -31,6 +31,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface RadarPoint {
   domain: string;
@@ -172,14 +173,7 @@ export default function CompetencyAnalyticsPage() {
         >
           <ArrowLeft size={18} className="text-slate-600" />
         </Link>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Competency Analytics
-          </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Deep insights into your competency patterns
-          </p>
-        </div>
+        <PageHeader title="Competency Analytics" description="Deep insights into your competency patterns" />
       </div>
 
       {/* Tabs */}

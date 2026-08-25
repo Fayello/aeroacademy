@@ -6,6 +6,7 @@ import { Shield, Award, CheckCircle, Target, Trophy, Loader2, MapPin, Graduation
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import Link from "next/link";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface CandidateProfile {
   id: string;
@@ -132,10 +133,7 @@ export default function CandidateRegistry() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10 text-sm text-slate-500">
-              <Target size={24} className="mx-auto mb-2 text-slate-300" />
-              No achievements yet
-            </div>
+            <EmptyState icon={Award} title="No achievements yet" description="" />
           )}
         </div>
       </div>

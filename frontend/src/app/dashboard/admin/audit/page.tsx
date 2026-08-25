@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { ScrollText, Users, ShieldCheck, AlertTriangle, Loader2, ChevronLeft, ChevronRight, Eye, X, RefreshCw, Activity } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import type { AuditLog, AuditLogResponse } from "@/types/api";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface Summary {
   byAction: { action: string; count: number }[];
@@ -191,12 +192,7 @@ export default function AdminAuditPage() {
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-16 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
-                        <ScrollText size={20} className="text-slate-400" />
-                      </div>
-                      <p className="text-sm text-slate-500">No audit events found.</p>
-                    </div>
+                    <EmptyState icon={ScrollText} title="No audit events found" description="" />
                   </td>
                 </tr>
               ) : (

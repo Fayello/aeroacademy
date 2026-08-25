@@ -19,6 +19,7 @@ import {
   Award,
   CheckCircle2,
 } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 interface ChallengeDetail {
   id: string;
@@ -213,10 +214,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
           </h2>
         </div>
         {leaderboard.length === 0 ? (
-          <div className="p-8 text-center">
-            <Users size={24} className="text-slate-300 mx-auto mb-2" />
-            <p className="text-xs text-slate-500">No participants yet</p>
-          </div>
+          <EmptyState icon={Users} title="No participants yet" description="" />
         ) : (
           <div className="divide-y divide-slate-100">
             {leaderboard.map((entry, i) => {
