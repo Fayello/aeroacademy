@@ -49,7 +49,7 @@ export default function LearningCoach() {
     if (!input.trim() || loading) return;
     const userMessage = input.trim();
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }, { role: "assistant", content: "" }]);
     setLoading(true);
 
     try {
@@ -58,32 +58,69 @@ export default function LearningCoach() {
         content: m.content,
       }));
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
-
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const res = await fetch(`${API_URL}${API_VERSION}/ai/coach`, {
+      const res = await fetch(`${API_URL}${API_VERSION}/ai/coach/stream`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ message: userMessage, history }),
-        signal: controller.signal,
       });
-      clearTimeout(timeout);
 
       if (!res.ok) throw new Error(`AI error: ${res.status}`);
-      const data = await res.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+      if (!res.body) throw new Error("No response body");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.token) {
+              setMessages((prev) => {
+                const updated = [...prev];
+                const last = updated[updated.length - 1];
+                if (last.role === "assistant") {
+                  updated[updated.length - 1] = { ...last, content: last.content + data.token };
+                }
+                return updated;
+              });
+            }
+            if (data.error) {
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: "assistant", content: data.error };
+                return updated;
+              });
+            }
+          } catch {}
+        }
+      }
     } catch (err: any) {
-      const msg = err?.name === "AbortError" || err?.message?.includes("timeout")
-        ? "Response is taking longer than expected. The AI model is running on CPU — please try a shorter question."
-        : "Sorry, I couldn't process that right now. Please try again.";
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: msg },
-      ]);
+      setMessages((prev) => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (last.role === "assistant" && last.content === "") {
+          updated[updated.length - 1] = {
+            role: "assistant",
+            content: err?.name === "AbortError" || err?.message?.includes("timeout")
+              ? "Response is taking longer than expected. The AI model is running on CPU."
+              : "Sorry, I couldn't process that right now. Please try again.",
+          };
+        }
+        return updated;
+      });
     } finally {
       setLoading(false);
     }

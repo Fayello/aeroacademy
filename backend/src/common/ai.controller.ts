@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Req, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { AiService } from './ai.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -15,6 +16,32 @@ export class AiController {
     @Body() body: { message: string; history?: Array<{ role: string; content: string }> },
   ) {
     return this.service.learningCoach(req.user.id, body.message, body.history);
+  }
+
+  @Post('coach/stream')
+  async learningCoachStream(
+    @Req() req: any,
+    @Body() body: { message: string; history?: Array<{ role: string; content: string }> },
+    @Res() res: Response,
+  ) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    const stream = await this.service.learningCoachStream(req.user.id, body.message, body.history);
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(decoder.decode(value, { stream: true }));
+      }
+    } catch {}
+    res.end();
   }
 
   @Get('recommendations')

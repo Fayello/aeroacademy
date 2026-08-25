@@ -167,6 +167,190 @@ ${studentContext}`;
     return { response };
   }
 
+  async learningCoachStream(userId: string, message: string, history: Array<{ role: string; content: string }> = []): Promise<ReadableStream<Uint8Array>> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, xp: true },
+    });
+
+    const level = Math.floor((user?.xp || 0) / 1000) + 1;
+
+    const [completedLabs, skillData, enrollments] = await Promise.all([
+      this.prisma.$queryRawUnsafe(
+        'SELECT l.title, l.difficulty, li.status FROM "LabInstance" li JOIN "Lab" l ON l.id = li."labId" WHERE li."userId" = $1 ORDER BY li."createdAt" DESC LIMIT 10',
+        userId,
+      ) as Promise<Any[]>,
+      this.prisma.$queryRawUnsafe(
+        `SELECT sd."displayName" as "domainName", AVG(us.mastery) as score
+         FROM "UserSkill" us
+         JOIN "Skill" s ON s.id = us."skillId"
+         JOIN "SkillDomain" sd ON sd.id = s."domainId"
+         WHERE us."userId" = $1
+         GROUP BY sd."displayName"
+         ORDER BY score DESC`,
+        userId,
+      ) as Promise<Any[]>,
+      this.prisma.cohortMember.findMany({
+        where: { userId },
+        include: { cohort: { select: { name: true } } },
+      }) as Promise<Any[]>,
+    ]);
+
+    const studentContext = `STUDENT PROFILE:
+Name: ${user?.name || 'Student'}
+Level: ${level} | XP: ${(user?.xp || 0).toLocaleString()}
+Domains: ${skillData.map((d: Any) => `${d.domainName} ${Math.round(d.score)}%`).join(', ') || 'No skill data yet'}
+Recent labs: ${completedLabs.map((l: Any) => `${l.title} (${l.status})`).join(', ') || 'None started'}
+Enrolled cohorts: ${enrollments.map((e: Any) => e.cohort.name).join(', ') || 'None'}`;
+
+    const systemPrompt = `You are the XpertClass Learning Coach. You know the platform inside and out.
+
+PLATFORM:
+XpertClass is a hands-on technology competency platform. Students learn by doing real labs on real systems.
+
+AVAILABLE LABS (all run in Docker containers on the platform):
+
+CYBERSECURITY / HACKING LABS:
+- "Advanced Web Exploitation Sandbox" — OWASP Top 10, SQL injection, XSS, CSRF (difficulty 1200)
+- "Broken Authentication Sandbox" — session hijacking, brute force, auth bypass (difficulty 1200)
+- "Enterprise Java Security: WebGoat" — Java web app vulnerabilities (difficulty 1200)
+- "Node.js Security Matrix: NodeGoat" — Node.js vulnerabilities (difficulty 1200)
+- "API Security Sandbox: vAPI" — API hacking and testing (difficulty 1200)
+- "Kali Linux: Reconnaissance & OSINT" — footprinting, information gathering (difficulty 1500)
+- "Kali Linux: Vulnerability Scanning & Exploitation" — Nessus, Metasploit (difficulty 1600)
+- "Parrot Security OS: Privacy & Forensics" — digital forensics (difficulty 1550)
+- "Penetration Testing: Metasploitable Practice" — full pentest methodology (difficulty 1700)
+- "Network Security: Firewalls, VPNs & IDS/IPS" — defensive security (difficulty 1600)
+- "Linux Security Auditing with OpenSCAP" — compliance scanning (difficulty 1500)
+- "System Hardening: CIS Benchmarks" — secure configuration (difficulty 1650)
+- "Web Application Firewall: ModSecurity" — WAF setup and rules (difficulty 1500)
+
+LINUX LABS:
+- "Linux Fundamentals: Ubuntu CLI Mastery" (difficulty 800)
+- "Linux Fundamentals: File Permissions & Users" (difficulty 900)
+- "Linux Fundamentals: Text Processing & Shell Scripting" (difficulty 1000)
+- "Linux Fundamentals: Process & Service Management" (difficulty 1100)
+- "Linux Kernel & System Internals" (difficulty 1500)
+- "Linux Kernel Debugging & Tracing" (difficulty 1650)
+- "Linux Automation: Ansible & Bash Scripting" (difficulty 1450)
+
+DEVOPS / INFRASTRUCTURE:
+- "Docker & Container Fundamentals" (difficulty 1400)
+- "Kubernetes Cluster Setup" (difficulty 1600)
+- "Git & Gitea: Self-Hosted Version Control" (difficulty 1450)
+- "Monitoring Stack: Prometheus & Grafana" (difficulty 1450)
+- "High Availability with Keepalived & HAProxy" (difficulty 1550)
+
+SERVER ADMIN:
+- "Server Administration: Debian Server Hardening" (difficulty 1200)
+- "Server Administration: CentOS/RHEL Management" (difficulty 1250)
+- "Server Administration: Web Servers & Nginx Mastery" (difficulty 1300)
+- "Server Administration: Storage & Filesystems" (difficulty 1350)
+- "DNS Server Administration with BIND9" (difficulty 1350)
+- "Mail Server with Postfix & Dovecot" (difficulty 1400)
+- "Centralized Logging: rsyslog & Log Rotation" (difficulty 1200)
+- "Backup & Disaster Recovery" (difficulty 1300)
+
+DATABASES:
+- "Database Administration: PostgreSQL" (difficulty 1350)
+- "Database Administration: MySQL/MariaDB" (difficulty 1300)
+
+PLATFORM FEATURES:
+- Skill Assessments: quick tests to measure competency in specific areas
+- Practical Exams: timed, proctored lab exams
+- Compete Hub: Challenges, Ranked matches, Seasons, Boss Missions, Battle Pass, Leaderboards
+- Teams: create or join teams with invite codes, compete together
+- Courses: structured learning paths with modules
+
+IMPORTANT RULES:
+- XpertClass DOES have hacking/cybersecurity labs. Always mention specific lab names when students ask.
+- When asked about hacking, penetration testing, or cybersecurity, list the specific labs above.
+- Never say "we don't have that" or "XpertClass doesn't offer that."
+- Be specific: name actual labs, give difficulty levels, suggest where to start.
+- Be concise (2-3 sentences max), encouraging, and practical.
+- No markdown formatting in your responses.
+- If a student is new, suggest starting with "Linux Fundamentals: Ubuntu CLI Mastery" (difficulty 800).
+
+${studentContext}`;
+
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...history.slice(-6),
+      { role: 'user', content: message },
+    ];
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const res = await fetch(`${OLLAMA_HOST}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: MODEL, messages, stream: true }),
+            signal: AbortSignal.timeout(120000),
+          });
+
+          if (!res.ok) {
+            const errText = await res.text();
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: `Ollama error: ${res.status} ${errText}` })}\n\n`));
+            controller.close();
+            return;
+          }
+
+          const reader = res.body?.getReader();
+          if (!reader) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'No response body' })}\n\n`));
+            controller.close();
+            return;
+          }
+
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              try {
+                const chunk = JSON.parse(line);
+                if (chunk.message?.content) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: chunk.message.content })}\n\n`));
+                }
+                if (chunk.done) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+                }
+              } catch {}
+            }
+          }
+
+          if (buffer.trim()) {
+            try {
+              const chunk = JSON.parse(buffer);
+              if (chunk.message?.content) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: chunk.message.content })}\n\n`));
+              }
+              if (chunk.done) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+              }
+            } catch {}
+          }
+
+          controller.close();
+        } catch (err: Any) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: err.message || 'Stream failed' })}\n\n`));
+          controller.close();
+        }
+      },
+    });
+
+    return stream;
+  }
+
   // ─── SMART RECOMMENDATIONS ─────────────────────────────
 
   async getSmartRecommendations(userId: string): Promise<Any> {
