@@ -4,6 +4,7 @@ import { AiService } from './ai.service';
 import { AiGatewayFactory } from './ai.gateway';
 import { LabAnalyticsService } from './lab-analytics.service';
 import { AssessmentIntelligenceService } from './assessment-intelligence.service';
+import { PredictiveAnalyticsService } from './predictive-analytics.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -18,6 +19,7 @@ export class AiController {
     private readonly gatewayFactory: AiGatewayFactory,
     private readonly analyticsService: LabAnalyticsService,
     private readonly intelligenceService: AssessmentIntelligenceService,
+    private readonly predictiveService: PredictiveAnalyticsService,
   ) {}
 
   @Post('coach')
@@ -157,5 +159,35 @@ export class AiController {
   @Roles('ADMIN', 'PROFESSOR', 'TA')
   async getCohortIntelligence(@Param('cohortId') cohortId: string) {
     return this.intelligenceService.getCohortIntelligence(cohortId);
+  }
+
+  // ─── PREDICTIVE ANALYTICS ─────────────────────
+
+  @Get('predictive/dashboard')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getPredictiveDashboard(@Req() req: any, @Param('cohortId') cohortId?: string) {
+    return this.predictiveService.getPredictiveDashboard(cohortId);
+  }
+
+  @Get('predictive/at-risk')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getAtRiskPredictions(@Param('cohortId') cohortId?: string) {
+    return this.predictiveService.predictAtRiskStudents(cohortId);
+  }
+
+  @Get('predictive/forecast/:userId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getPerformanceForecast(@Param('userId') userId: string) {
+    return this.predictiveService.forecastPerformance(userId);
+  }
+
+  @Get('predictive/interventions/:cohortId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getInterventions(@Param('cohortId') cohortId: string) {
+    return this.predictiveService.generateInterventions(cohortId);
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords, Sparkles } from "lucide-react";
+import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords, Sparkles, ShieldAlert } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -83,6 +83,7 @@ export default function AdminDashboardPage() {
     { label: "Manage Users", href: "/dashboard/admin/users", icon: Users, description: "User accounts & role management" },
     { label: "AI Content Engine", href: "/dashboard/admin/ai-generator", icon: Sparkles, description: "Generate briefings, questions, outlines & calibrate" },
     { label: "Cohort Intelligence", href: "/dashboard/admin/cohort-intelligence", icon: Users, description: "Assessment analytics per cohort" },
+    { label: "Predictive Analytics", href: "/dashboard/admin/predictive-analytics", icon: ShieldAlert, description: "At-risk predictions & intervention recommendations" },
   ];
 
   return (
