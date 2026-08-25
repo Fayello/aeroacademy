@@ -291,21 +291,22 @@ export default function LandingPage() {
             {AUDIENCES.map((audience) => {
               const colors = COLOR_MAP[audience.color];
               return (
-                <div key={audience.tag} className="card p-8 hover:shadow-lg transition-all duration-300 group">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${colors.bg} ${colors.border} ${colors.text} text-xs font-semibold mb-6`}>
+                <div key={audience.tag} className="relative bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 border border-slate-200 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#229C62]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+                  <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${colors.bg} ${colors.border} ${colors.text} text-xs font-semibold mb-6 relative z-10`}>
                     <audience.icon size={14} />
                     {audience.tag}
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3">{audience.title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed mb-6">{audience.description}</p>
-                  <ul className="space-y-2.5 mb-8">
+                  <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10">{audience.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mb-6 relative z-10">{audience.description}</p>
+                  <ul className="space-y-2.5 mb-8 relative z-10">
                     {audience.features.map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
                         <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {f}
                       </li>
                     ))}
                   </ul>
-                  <Link href={audience.href} className="btn-primary text-sm w-full justify-center">
+                  <Link href={audience.href} className="relative z-10 btn-primary text-sm w-full justify-center">
                     {audience.cta} <ArrowRight size={14} />
                   </Link>
                 </div>
@@ -316,7 +317,7 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ LEARNING PATHS (TABBED) ═══════════ */}
-      <section id="courses" className="py-24 px-6 bg-slate-50">
+      <section id="courses" className="py-24 px-6 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What you will learn</h2>
@@ -327,13 +328,13 @@ export default function LandingPage() {
               <button
                 key={path.tab}
                 onClick={() => setActiveTab(i)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === i ? "bg-[#229C62] text-white shadow-md" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"}`}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === i ? "bg-[#229C62] text-white shadow-lg shadow-[#229C62]/25" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 hover:border-slate-300"}`}
               >
                 <path.icon size={16} /> {path.tab}
               </button>
             ))}
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 md:p-10">
+          <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8 md:p-10">
             <div className="grid lg:grid-cols-2 gap-10">
               <div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-3">{LEARNING_PATHS[activeTab].title}</h3>
@@ -347,7 +348,7 @@ export default function LandingPage() {
               </div>
               <div className="space-y-3">
                 {LEARNING_PATHS[activeTab].courses.map((course) => (
-                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/50 transition-all">
+                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/50 hover:shadow-md transition-all duration-200">
                     <div>
                       <div className="font-medium text-slate-900 text-sm">{course.name}</div>
                       <div className="text-xs text-slate-500 mt-0.5">{course.lessons} lessons</div>
@@ -371,10 +372,10 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map((step, i) => (
               <div key={step.number} className="relative">
-                {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-slate-200" />}
-                <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] border border-[#229C62]/20 flex items-center justify-center mb-6">
-                    <step.icon size={28} className="text-[#229C62]" />
+                {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-[#229C62]/30" />}
+                <div className="relative bg-gradient-to-br from-white to-[#E9F8EE]/30 rounded-2xl p-8 border border-slate-200 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
+                    <step.icon size={28} className="text-white" />
                   </div>
                   <span className="text-xs font-bold text-[#229C62] uppercase tracking-wider">Step {step.number}</span>
                   <h3 className="text-xl font-bold text-slate-900 mt-2 mb-3">{step.title}</h3>
@@ -387,7 +388,7 @@ export default function LandingPage() {
       </section>
 
       {/* PLATFORM FEATURES */}
-      <section id="platform" className="py-24 px-6 bg-slate-50">
+      <section id="platform" className="py-24 px-6 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">The platform built for real skills</h2>
@@ -395,9 +396,9 @@ export default function LandingPage() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature) => (
-              <div key={feature.title} className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md hover:border-[#229C62]/30 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] border border-[#229C62]/20 flex items-center justify-center mb-4 group-hover:bg-[#E9F8EE] transition-colors">
-                  <feature.icon size={22} className="text-[#229C62]" />
+              <div key={feature.title} className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 border border-slate-200 hover:shadow-xl hover:shadow-[#229C62]/5 hover:border-[#229C62]/30 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-4 shadow-md shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
+                  <feature.icon size={22} className="text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
@@ -567,7 +568,7 @@ export default function LandingPage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-24 px-6 bg-slate-50">
+      <section className="py-24 px-6 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
@@ -575,14 +576,15 @@ export default function LandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="bg-white rounded-xl p-8 border border-slate-200 hover:shadow-md transition-shadow">
+              <div key={t.name} className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 border border-slate-200 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-400/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="flex gap-1 mb-4">
                   {[1, 2, 3, 4, 5].map((s) => (
                     <svg key={s} className="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                   ))}
                 </div>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">&quot;{t.quote}&quot;</p>
-                <div>
+                <p className="text-slate-600 text-sm leading-relaxed mb-6 italic relative z-10">&quot;{t.quote}&quot;</p>
+                <div className="relative z-10">
                   <div className="font-semibold text-slate-900 text-sm">{t.name}</div>
                   <div className="text-xs text-slate-500">{t.role}</div>
                 </div>
@@ -593,16 +595,18 @@ export default function LandingPage() {
       </section>
 
       {/* BIG STATS */}
-      <section className="py-20 px-6 bg-gradient-to-r from-[#0F203A] to-[#0F203A]/90">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-20 px-6 bg-gradient-to-r from-[#0F203A] via-[#1a2d47] to-[#0F203A] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-5" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: stats.totalCourses || "—", label: "Courses" },
-              { value: stats.totalLabs ? `${stats.totalLabs}+` : "—", label: "Labs" },
-              { value: "50+", label: "Lessons" },
-              { value: stats.totalStudents ? `${stats.totalStudents}+` : "—", label: "Engineers" },
+              { value: stats.totalCourses || "7", label: "Courses", icon: BookOpen },
+              { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Labs", icon: Microscope },
+              { value: "55+", label: "Lessons", icon: Code },
+              { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers", icon: Users },
             ].map((s) => (
-              <div key={s.label}>
+              <div key={s.label} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/15 transition-all duration-300 group">
+                <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover:scale-110 transition-transform" />
                 <div className="text-4xl md:text-5xl font-bold text-white">{s.value}</div>
                 <div className="text-white/80 text-sm mt-2">{s.label}</div>
               </div>
@@ -614,19 +618,21 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Ready to master the tech stack?</h2>
-          <p className="text-lg text-slate-500 mt-4 leading-relaxed">
-            Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
-            <Link href="/get-started" className="btn-primary text-sm px-8 py-3">
-              Start Free Today <ArrowRight size={16} />
-            </Link>
-            <a href="#courses" className="btn-secondary text-sm px-8 py-3">
-              Browse Courses
-            </a>
+          <div className="bg-gradient-to-br from-[#E9F8EE] to-white rounded-3xl p-12 border border-[#229C62]/20 shadow-xl shadow-[#229C62]/5">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Ready to master the tech stack?</h2>
+            <p className="text-lg text-slate-500 mt-4 leading-relaxed">
+              Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+              <Link href="/get-started" className="btn-primary text-sm px-8 py-3">
+                Start Free Today <ArrowRight size={16} />
+              </Link>
+              <a href="#courses" className="btn-secondary text-sm px-8 py-3">
+                Browse Courses
+              </a>
+            </div>
+            <p className="text-sm text-slate-400 mt-4">No credit card required. Free tier available.</p>
           </div>
-          <p className="text-sm text-slate-400 mt-4">No credit card required. Free tier available.</p>
         </div>
       </section>
 
