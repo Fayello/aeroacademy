@@ -1,25 +1,25 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LabsService } from '../labs/labs.service';
+import { TeamEnrollmentsService } from '../team-enrollments/team-enrollments.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private prisma: PrismaService,
     private labsService: LabsService,
+    private teamEnrollmentsService: TeamEnrollmentsService,
   ) {}
 
   async createTeam(ownerId: string, name: string, description?: string) {
-    return this.prisma.team.create({
-      data: { name, description, ownerId },
-    });
+    return this.teamEnrollmentsService.createTeam(ownerId, name, description, 'PUBLIC');
   }
 
   async getMyTeams(ownerId: string) {
     return this.prisma.team.findMany({
       where: { ownerId },
       include: {
-        _count: { select: { members: true } },
+        _count: { select: { teamMembers: true } },
       },
     });
   }
@@ -28,10 +28,20 @@ export class AdminService {
     const team = await this.prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
     if (!team) throw new NotFoundException('Team not found');
     if (team.ownerId !== requesterId) throw new ForbiddenException('You do not own this team');
-    return this.prisma.team.update({
-      where: { id: teamId },
-      data: { members: { connect: { id: userId } } },
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.teamId) throw new ForbiddenException('User is already in a team');
+
+    await this.prisma.teamMember.create({
+      data: { teamId, userId, role: 'MEMBER' },
     });
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { teamId },
+    });
+
+    return this.prisma.team.findUnique({ where: { id: teamId }, include: { teamMembers: true } });
   }
 
   async getTeamProgress(teamId: string, requesterId: string) {

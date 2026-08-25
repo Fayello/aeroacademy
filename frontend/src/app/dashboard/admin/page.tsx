@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck } from "lucide-react";
+import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -69,6 +69,9 @@ export default function AdminDashboardPage() {
     { label: "Manage Courses", href: "/dashboard/admin/courses", icon: GraduationCap, description: "Create, edit sections, lessons & quizzes" },
     { label: "Manage Labs", href: "/dashboard/admin/labs", icon: Microscope, description: "Lab environments & CTF flags" },
     { label: "Manage Challenges", href: "/dashboard/admin/challenges", icon: Target, description: "Create & manage competitive challenges" },
+    { label: "Manage Seasons", href: "/dashboard/admin/seasons", icon: Calendar, description: "Season lifecycle, XP multipliers, rotation" },
+    { label: "Manage Battle Pass", href: "/dashboard/admin/battle-pass", icon: Layers, description: "Tier-based progression rewards" },
+    { label: "Manage Boss Missions", href: "/dashboard/admin/boss-missions", icon: Swords, description: "Boss fights with XP & rating rewards" },
     { label: "Manage Badges", href: "/dashboard/admin/badges", icon: Award, description: "Define achievement badges & rewards" },
     { label: "Manage Assessments", href: "/dashboard/admin/assessments", icon: ClipboardCheck, description: "Create skill assessments & quizzes" },
     { label: "Lab Monitoring", href: "/dashboard/admin/monitoring", icon: Activity, description: "Monitor active users & force-stop labs" },
