@@ -433,6 +433,227 @@ Provide 2-3 brief, actionable intervention suggestions for the professor.`;
     };
   }
 
+  // ─── AI CONTENT GENERATORS ───────────────────────────────
+
+  async generateLabBriefing(labId: string): Promise<{ briefing: string; objectives: string[]; prerequisites: string[] }> {
+    if (!this.gateway) throw new Error('AI service unavailable');
+
+    const lab = await this.prisma.lab.findUnique({
+      where: { id: labId },
+      select: {
+        title: true, description: true, dockerImage: true, difficulty: true,
+        labSkills: { select: { skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
+      },
+    });
+    if (!lab) throw new Error('Lab not found');
+
+    const domains = [...new Set(lab.labSkills.map((ls) => ls.skill.domain?.displayName).filter(Boolean))];
+    const skills = lab.labSkills.map((ls) => ls.skill.displayName);
+    const diffLabel = lab.difficulty < 1000 ? 'beginner' : lab.difficulty < 1300 ? 'intermediate' : lab.difficulty < 1600 ? 'advanced' : 'expert';
+
+    const prompt = `Generate a professional lab briefing for this hands-on lab:
+
+Title: ${lab.title}
+Description: ${lab.description}
+Docker Image: ${lab.dockerImage}
+Difficulty: ${diffLabel} (ELO ${lab.difficulty})
+Domain: ${domains.join(', ') || 'General'}
+Skills: ${skills.join(', ') || 'N/A'}
+
+Create a briefing with:
+1. A compelling scenario paragraph (3-5 sentences) setting up the real-world context
+2. Exactly 3-5 learning objectives (what the student will master)
+3. 2-3 prerequisites (what they should know before starting)
+
+Respond in JSON format only:
+{"briefing":"...","objectives":["..."],"prerequisites":["..."]}`;
+
+    const response = await this.gateway.generate({
+      prompt,
+      system: 'You are a cybersecurity/technology education content writer. Create professional, concise lab briefings. Respond only in valid JSON.',
+      format: 'json',
+      temperature: 0.7,
+    });
+
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return {
+          briefing: parsed.briefing || lab.description,
+          objectives: Array.isArray(parsed.objectives) ? parsed.objectives : [],
+          prerequisites: Array.isArray(parsed.prerequisites) ? parsed.prerequisites : [],
+        };
+      } catch {}
+    }
+
+    return { briefing: lab.description, objectives: [], prerequisites: [] };
+  }
+
+  async generateAssessmentQuestions(assessmentId: string, count: number = 5): Promise<{ questions: Array<{ text: string; options: Array<{ key: string; text: string }>; correctAnswer: string; category: string }> }> {
+    if (!this.gateway) throw new Error('AI service unavailable');
+
+    const assessment = await this.prisma.skillAssessment.findUnique({
+      where: { id: assessmentId },
+      select: { title: true, description: true, category: true, questions: true },
+    });
+    if (!assessment) throw new Error('Assessment not found');
+
+    const existingQuestions = (assessment.questions as Any[] || []).map((q) => q.text).slice(0, 5);
+
+    const prompt = `Generate ${count} multiple-choice questions for this assessment:
+
+Title: ${assessment.title}
+Description: ${assessment.description}
+Category: ${assessment.category}
+${existingQuestions.length > 0 ? `\nExisting questions (avoid duplicates):\n${existingQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}` : ''}
+
+Requirements:
+- Each question has exactly 4 options (A, B, C, D)
+- Only ONE correct answer per question
+- Questions should test understanding, not just recall
+- Mix difficulty: some easy, some hard
+- Category should be specific (e.g., "SQL Injection", "Buffer Overflow", not just "${assessment.category}")
+
+Respond in JSON format only:
+{"questions":[{"text":"...","options":[{"key":"A","text":"..."},{"key":"B","text":"..."},{"key":"C","text":"..."},{"key":"D","text":"..."}],"correctAnswer":"A","category":"..."}]}`;
+
+    const response = await this.gateway.generate({
+      prompt,
+      system: 'You are a technology education assessment expert. Create accurate, well-crafted MCQ questions. Respond only in valid JSON.',
+      format: 'json',
+      temperature: 0.8,
+    });
+
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(parsed.questions)) {
+          return { questions: parsed.questions.slice(0, count) };
+        }
+      } catch {}
+    }
+
+    return { questions: [] };
+  }
+
+  async generateCourseOutline(courseId: string): Promise<{ modules: Array<{ title: string; description: string; lessons: Array<{ title: string; type: string }> }> }> {
+    if (!this.gateway) throw new Error('AI service unavailable');
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      select: {
+        title: true, description: true,
+        sections: { select: { title: true, lessons: { select: { title: true } } } },
+      },
+    });
+    if (!course) throw new Error('Course not found');
+
+    const existingModules = (course as Any).sections.map((s: Any) => ({
+      title: s.title,
+      lessonCount: s.lessons.length,
+    }));
+
+    const prompt = `Generate a structured course outline for this course:
+
+Title: ${course.title}
+Description: ${course.description}
+${existingModules.length > 0 ? `\nExisting modules:\n${existingModules.map((m) => `- ${m.title} (${m.lessonCount} lessons)`).join('\n')}` : '\nThis is a new course — create the full outline from scratch.'}
+
+Create a course outline with 4-6 modules. Each module has 3-5 lessons.
+Lessons can be of types: video, reading, lab, quiz, practice.
+
+Requirements:
+- Progress from fundamentals to advanced topics
+- Include hands-on labs for practical skills
+- Each module should build on the previous one
+- Module titles should be clear and descriptive
+
+Respond in JSON format only:
+{"modules":[{"title":"...","description":"...","lessons":[{"title":"...","type":"lab|video|reading|quiz|practice"}]}]}`;
+
+    const response = await this.gateway.generate({
+      prompt,
+      system: 'You are a curriculum design expert for technology education. Create well-structured course outlines. Respond only in valid JSON.',
+      format: 'json',
+      temperature: 0.7,
+    });
+
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(parsed.modules)) {
+          return { modules: parsed.modules };
+        }
+      } catch {}
+    }
+
+    return { modules: [] };
+  }
+
+  async calibrateLabDifficulty(labId: string): Promise<Any> {
+    const analytics = await this.prisma.labAnalytics.findUnique({ where: { labId } });
+    const lab = await this.prisma.lab.findUnique({ where: { id: labId }, select: { difficulty: true, title: true } });
+    if (!lab) throw new Error('Lab not found');
+
+    if (!analytics || analytics.totalAttempts < 5) {
+      return {
+        labId, title: lab.title, currentDifficulty: lab.difficulty,
+        suggestion: 'insufficient_data', message: 'Need at least 5 attempts to calibrate difficulty.',
+        newDifficulty: lab.difficulty,
+      };
+    }
+
+    const completionRate = analytics.completionRate;
+    const failureRate = analytics.failureRate;
+    const avgTime = analytics.avgTimeMinutes;
+    const estimatedMinutes = 60;
+
+    let adjustment = 0;
+    const reasons: string[] = [];
+
+    if (completionRate > 85) { adjustment -= 50; reasons.push(`Very high completion rate (${completionRate}%) — lab is too easy`); }
+    else if (completionRate > 70) { adjustment -= 20; reasons.push(`High completion rate (${completionRate}%) — slightly too easy`); }
+    else if (completionRate < 15) { adjustment += 80; reasons.push(`Very low completion rate (${completionRate}%) — lab is too hard`); }
+    else if (completionRate < 30) { adjustment += 40; reasons.push(`Low completion rate (${completionRate}%) — slightly too hard`); }
+
+    if (failureRate > 80) { adjustment += 30; reasons.push(`Very high failure rate (${failureRate}%) — questions may be unclear`); }
+    if (avgTime > estimatedMinutes * 1.5) { adjustment += 20; reasons.push(`Avg time (${avgTime.toFixed(0)}m) exceeds estimate (${estimatedMinutes}m)`); }
+    else if (avgTime < estimatedMinutes * 0.4) { adjustment -= 20; reasons.push(`Avg time (${avgTime.toFixed(0)}m) much faster than estimate (${estimatedMinutes}m)`); }
+
+    const newDifficulty = Math.max(800, Math.min(2000, lab.difficulty + adjustment));
+
+    if (newDifficulty !== lab.difficulty) {
+      await this.prisma.lab.update({ where: { id: labId }, data: { difficulty: newDifficulty } });
+    }
+
+    return {
+      labId, title: lab.title,
+      currentDifficulty: lab.difficulty,
+      newDifficulty,
+      adjustment,
+      reasons,
+      metrics: { completionRate, failureRate, avgTimeMinutes: avgTime, totalAttempts: analytics.totalAttempts },
+      changed: newDifficulty !== lab.difficulty,
+    };
+  }
+
+  async calibrateAllLabs(): Promise<Any[]> {
+    const labs = await this.prisma.lab.findMany({ select: { id: true } });
+    const results: Any[] = [];
+    for (const lab of labs) {
+      try {
+        const result = await this.calibrateLabDifficulty(lab.id);
+        results.push(result);
+      } catch (err) {
+        results.push({ labId: lab.id, error: String(err) });
+      }
+    }
+    return results;
+  }
+
   // ─── LAB ANALYTICS ─────────────────────────────────────
 
   async getLabAnalytics(): Promise<Any[]> {
@@ -443,8 +664,8 @@ Provide 2-3 brief, actionable intervention suggestions for the professor.`;
         l.difficulty,
         sd."displayName" as "domain",
         COUNT(DISTINCT li.id) as "totalAttempts",
-        COUNT(DISTINCT CASE WHEN li.status = 'COMPLETED' THEN li.id END) as "completions",
-        ROUND(COUNT(DISTINCT CASE WHEN li.status = 'COMPLETED' THEN li.id END)::numeric / NULLIF(COUNT(DISTINCT li.id), 0) * 100, 1) as "completionRate",
+        COUNT(DISTINCT CASE WHEN (li.status::text) = 'COMPLETED' THEN li.id END) as "completions",
+        ROUND(COUNT(DISTINCT CASE WHEN (li.status::text) = 'COMPLETED' THEN li.id END)::numeric / NULLIF(COUNT(DISTINCT li.id), 0) * 100, 1) as "completionRate",
         COUNT(DISTINCT ls.id) as "totalSubmissions",
         COUNT(DISTINCT CASE WHEN ls."isCorrect" = true THEN ls.id END) as "correctSubmissions",
         ROUND(COUNT(DISTINCT CASE WHEN ls."isCorrect" = false THEN ls.id END)::numeric / NULLIF(COUNT(DISTINCT ls.id), 0) * 100, 1) as "failureRate"

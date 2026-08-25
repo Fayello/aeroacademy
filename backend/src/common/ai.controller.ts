@@ -85,4 +85,41 @@ export class AiController {
   async getLabInsights(@Param('labId') labId: string) {
     return this.analyticsService.getLabInsights(labId);
   }
+
+  // ─── AI CONTENT GENERATORS ─────────────────────
+
+  @Post('generate/briefing')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async generateLabBriefing(@Body() body: { labId: string }) {
+    return this.service.generateLabBriefing(body.labId);
+  }
+
+  @Post('generate/questions')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async generateAssessmentQuestions(@Body() body: { assessmentId: string; count?: number }) {
+    return this.service.generateAssessmentQuestions(body.assessmentId, body.count || 5);
+  }
+
+  @Post('generate/outline')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async generateCourseOutline(@Body() body: { courseId: string }) {
+    return this.service.generateCourseOutline(body.courseId);
+  }
+
+  @Post('calibrate/:labId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  async calibrateLabDifficulty(@Param('labId') labId: string) {
+    return this.service.calibrateLabDifficulty(labId);
+  }
+
+  @Post('calibrate-all')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  async calibrateAllLabs() {
+    return this.service.calibrateAllLabs();
+  }
 }
