@@ -197,6 +197,26 @@ export default function Sidebar() {
           );
           const isExpanded = expandedSection === section.id;
 
+          // Single-item sections render as direct links
+          if (section.items.length === 1) {
+            const item = section.items[0];
+            const ItemIcon = ICON_MAP[item.icon] || Target;
+            return (
+              <Link
+                key={section.id}
+                href={item.href}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#E9F8EE] text-[#0F203A]"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <ItemIcon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          }
+
           return (
             <div key={section.id}>
               <button
