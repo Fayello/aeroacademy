@@ -184,7 +184,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                <span>{section.label}</span>
+                <span className="truncate">{section.label}</span>
               </Link>
             );
           }
@@ -212,7 +212,7 @@ export default function Sidebar() {
                 }`}
               >
                 <ItemIcon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           }
@@ -228,7 +228,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="flex-1 text-left">{section.label}</span>
+                <span className="flex-1 text-left truncate">{section.label}</span>
                 {section.items.length > 1 && (
                   <ChevronDown
                     size={12}
@@ -256,7 +256,7 @@ export default function Sidebar() {
                         }`}
                       >
                         <ItemIcon size={12} className={isItemActive ? "text-[#229C62]" : "text-slate-400"} />
-                        {item.label}
+                        <span className="truncate">{item.label}</span>
                       </Link>
                     );
                   })}
