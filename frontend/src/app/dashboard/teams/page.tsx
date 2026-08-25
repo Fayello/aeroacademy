@@ -178,15 +178,15 @@ export default function TeamsPage() {
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="bg-[#E9F8EE] p-3 rounded-xl">
+          <div className="bg-[#E9F8EE] p-3 rounded-xl shrink-0">
             <Users size={24} className="text-[#229C62]" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight truncate">
               {selectedTeam.name}
             </h1>
             {selectedTeam.description && (
-              <p className="text-sm text-slate-500 mt-0.5">{selectedTeam.description}</p>
+              <p className="text-sm text-slate-500 mt-0.5 truncate">{selectedTeam.description}</p>
             )}
           </div>
         </div>

@@ -159,7 +159,7 @@ export default function LearningCoach() {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-40 md:bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-40 md:bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#0F203A] to-[#229C62] p-4 text-white">
             <div className="flex items-center gap-2">

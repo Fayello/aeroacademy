@@ -209,7 +209,7 @@ export default function CompeteHub() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-8 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-4 sm:p-8 text-white">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#7AD62A] blur-3xl" />

@@ -198,21 +198,23 @@ export default function LeaderboardPage() {
       />
 
       {globalProfile?.globalRank && (
-        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] rounded-xl p-6 text-white">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
-              <Crown size={22} className="text-[#7AD62A]" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-300">Your Global Technology Rank</p>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold">{globalProfile.globalRank.rating.toLocaleString()}</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 border border-white/20">
-                  {globalProfile.globalRank.division} {romanTier(globalProfile.globalRank.divisionTier)}
-                </span>
+        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] rounded-xl p-4 sm:p-6 text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 shrink-0">
+                <Crown size={22} className="text-[#7AD62A]" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-slate-300">Your Global Technology Rank</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold">{globalProfile.globalRank.rating.toLocaleString()}</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 border border-white/20">
+                    {globalProfile.globalRank.division} {romanTier(globalProfile.globalRank.divisionTier)}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="ml-auto flex gap-4 text-sm">
+            <div className="sm:ml-auto flex gap-4 text-sm">
               <div className="text-center">
                 <p className="text-white font-semibold">{globalProfile.globalRank.domainCount}/6</p>
                 <p className="text-[10px] text-slate-400">Domains</p>
@@ -240,12 +242,12 @@ export default function LeaderboardPage() {
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-1 -mb-1">
         {(["GLOBAL", "REGIONAL", "UNIVERSITY", "TEAMS"] as const).map((league) => (
           <button
             key={league}
             onClick={() => setActiveLeague(league)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeLeague === league ? "bg-slate-800 text-white border border-slate-800" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
             }`}
           >
@@ -317,12 +319,12 @@ export default function LeaderboardPage() {
       </div>
 
       {leagueStats.season && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between">
-          <div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="min-w-0">
             <p className="text-xs text-slate-500">Current Season</p>
-            <p className="text-sm font-semibold text-slate-900">{leagueStats.season.name}</p>
+            <p className="text-sm font-semibold text-slate-900 truncate">{leagueStats.season.name}</p>
           </div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 shrink-0">
             Ends {new Date(leagueStats.season.endDate).toLocaleDateString()}
           </p>
         </div>
@@ -391,11 +393,11 @@ export default function LeaderboardPage() {
           ) : teamLeaderboard.length > 0 ? teamLeaderboard.map((team, idx) => (
             <div
               key={team.id}
-              className={`bg-white rounded-xl border p-5 flex items-center gap-4 transition-all hover:shadow-md ${
+              className={`bg-white rounded-xl border p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md ${
                 idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
               }`}
             >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
                 idx === 0 ? "bg-slate-100 text-slate-700" :
                 idx === 1 ? "bg-slate-100 text-slate-500" :
                 idx === 2 ? "bg-slate-100 text-slate-600" :
@@ -404,18 +406,18 @@ export default function LeaderboardPage() {
                 {idx < 3 ? <Trophy size={18} /> : idx + 1}
               </div>
 
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${
                 idx === 0 ? "bg-[#229C62] text-white" :
                 idx === 1 ? "bg-[#229C62]/80 text-white" :
                 idx === 2 ? "bg-[#229C62]/60 text-white" :
                 "bg-[#E9F8EE] text-[#229C62]"
               }`}>
-                <Users size={20} />
+                <Users size={18} />
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-base font-semibold text-slate-900 truncate">{team.name}</p>
+                  <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{team.name}</p>
                   {team.visibility === "PRIVATE" && (
                     <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">Private</span>
                   )}
@@ -450,21 +452,21 @@ export default function LeaderboardPage() {
         {filteredOperators.length > 0 ? filteredOperators.map((op, idx) => (
           <div
             key={op.id}
-            className={`bg-white rounded-xl border p-5 flex items-center gap-4 transition-all hover:shadow-md ${
+            className={`bg-white rounded-xl border p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md ${
               op.id === currentUserId ? "border-slate-400 bg-slate-50 shadow-md" :
               idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
             }`}
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
               idx === 0 ? "bg-slate-100 text-slate-700" :
               idx === 1 ? "bg-slate-100 text-slate-500" :
               idx === 2 ? "bg-slate-100 text-slate-600" :
               "bg-slate-50 text-slate-400"
             }`}>
-              {idx < 3 ? <Trophy size={18} /> : idx + 1}
+              {idx < 3 ? <Trophy size={16} /> : idx + 1}
             </div>
 
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${
               idx === 0 ? "bg-slate-800 text-white" :
               idx === 1 ? "bg-slate-600 text-white" :
               idx === 2 ? "bg-slate-500 text-white" :
@@ -474,28 +476,25 @@ export default function LeaderboardPage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-base font-semibold text-slate-900 truncate">{op.username || op.name}</p>
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{op.username || op.name}</p>
                 <Badge variant={(DIVISION_COLORS[op.division] as "emerald" | "blue" | "amber" | "red" | "slate") || "slate"}>
                   {op.division}
                 </Badge>
                 {op.xp > 2500 && (
-                  <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 flex items-center gap-0.5">
+                  <span className="hidden sm:inline-flex text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 items-center gap-0.5">
                     <CheckCircle size={10} /> Top talent
                   </span>
                 )}
               </div>
-              <p className="text-sm text-slate-500 mt-0.5">
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 truncate">
                 {op.organization?.name || "Independent"} \u2022 {op.city || "Unknown"}
               </p>
-              {op.username && (
-                <p className="text-xs text-slate-400 mt-0.5">@{op.username}</p>
-              )}
             </div>
 
-            <div className="text-right">
-              <p className="text-2xl font-bold text-slate-900">{op.rank || 1200}</p>
-              <p className="text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
+            <div className="text-right shrink-0">
+              <p className="text-lg sm:text-2xl font-bold text-slate-900">{op.rank || 1200}</p>
+              <p className="text-[10px] sm:text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
         )        ) : (
