@@ -89,6 +89,8 @@ model User {
   professionalRecord       ProfessionalRecord?
   metricEvents             MetricEvent[]
   teamMembers              TeamMember[]
+  gradeEntries             GradeEntry[]
+  studentGPA               StudentGPA?
 
   @@index([googleId])
   @@index([role])
@@ -159,6 +161,8 @@ model Course {
   learningPaths  LearningPathCourse[]
   discussions    DiscussionPost[]
   teamEnrollments TeamCourseEnrollment[]
+  moduleCourses  ModuleCourse[]
+  cohortAssignments CohortCourseAssignment[]
 }
 
 model Section {
@@ -1440,6 +1444,7 @@ model CurriculumModule {
   curriculum Curriculum         @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   outcomes   ModuleOutcome[]
   labs       ModuleLab[]
+  courses    ModuleCourse[]
 
   @@index([curriculumId])
 }
@@ -1467,6 +1472,19 @@ model ModuleLab {
   @@unique([moduleId, labId])
 }
 
+model ModuleCourse {
+  id       String @id @default(uuid())
+  moduleId String
+  courseId String
+
+  module CurriculumModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  course Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, courseId])
+  @@index([moduleId])
+  @@index([courseId])
+}
+
 model Cohort {
   id           String   @id @default(uuid())
   curriculumId String
@@ -1477,8 +1495,10 @@ model Cohort {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  curriculum Curriculum      @relation(fields: [curriculumId], references: [id])
+  curriculum Curriculum              @relation(fields: [curriculumId], references: [id])
   members    CohortMember[]
+  courseAssignments CohortCourseAssignment[]
+  gradeCategories  GradeCategory[]
 
   @@index([curriculumId])
 }
@@ -1496,6 +1516,67 @@ model CohortMember {
   @@unique([cohortId, userId])
   @@index([cohortId])
   @@index([userId])
+}
+
+model CohortCourseAssignment {
+  id           String   @id @default(uuid())
+  cohortId     String
+  courseId      String
+  weight       Float    @default(1.0)
+  isRequired   Boolean  @default(true)
+  assignedAt   DateTime @default(now())
+
+  cohort Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, courseId])
+  @@index([cohortId])
+  @@index([courseId])
+}
+
+model GradeCategory {
+  id          String   @id @default(uuid())
+  cohortId    String
+  name        String
+  weight      Float
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  cohort  Cohort      @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  entries GradeEntry[]
+
+  @@index([cohortId])
+}
+
+model GradeEntry {
+  id           String   @id @default(uuid())
+  categoryId   String
+  userId       String
+  title        String
+  score        Float
+  maxScore     Float    @default(100)
+  weight       Float    @default(1.0)
+  comment      String?
+  gradedById   String?
+  gradedAt     DateTime?
+  createdAt    DateTime @default(now())
+
+  category GradeCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, userId, title])
+  @@index([categoryId])
+  @@index([userId])
+}
+
+model StudentGPA {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  cumulativeGPA   Float    @default(0)
+  totalCredits    Int      @default(0)
+  lastCalculatedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ─── V5: PRACTICAL ASSESSMENTS ─────────────────────────────────

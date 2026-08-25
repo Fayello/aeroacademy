@@ -50,6 +50,8 @@ import { CohortModule } from './common/cohort.module';
 import { ExamModule } from './common/exam.module';
 import { DisplayModeModule } from './common/display-mode.module';
 import { NavigationModule } from './common/navigation.module';
+import { AcademicModule } from './common/academic.module';
+import { GradeBookModule } from './common/grade-book.module';
 
 @Module({
   imports: [
@@ -107,6 +109,8 @@ import { NavigationModule } from './common/navigation.module';
     ExamModule,
     DisplayModeModule,
     NavigationModule,
+    AcademicModule,
+    GradeBookModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

@@ -206,19 +206,9 @@ export class NavigationService {
 
     // ─── ACADEMIC SECTION (for enrolled students) ───
     if (isEnrolledInCohort) {
-      const academicItems: NavItem[] = [];
-      for (const cm of cohortMemberships) {
-        academicItems.push({
-          href: `/dashboard/cohorts/${cm.cohort.id}`,
-          tKey: `nav.cohort.${cm.cohort.id}`,
-          icon: 'Users',
-          label: cm.cohort.name,
-        });
-      }
-      academicItems.push(
-        { href: '/dashboard/exams', tKey: 'nav.academic.exams', icon: 'ClipboardCheck', label: 'My Exams' },
-        { href: '/dashboard/assessments', tKey: 'nav.academic.assessments', icon: 'Target', label: 'My Assessments' },
-      );
+      const academicItems: NavItem[] = [
+        { href: '/dashboard/academics', tKey: 'nav.academic.overview', icon: 'BookOpen', label: 'My Academics' },
+      ];
 
       sections.push({
         id: 'academic',
@@ -233,6 +223,7 @@ export class NavigationService {
         { href: '/dashboard/curricula', tKey: 'nav.teach.curricula', icon: 'ScrollText', label: 'Curriculum' },
         { href: '/dashboard/cohorts', tKey: 'nav.teach.cohorts', icon: 'Users', label: 'Classes' },
         { href: '/dashboard/exams', tKey: 'nav.teach.exams', icon: 'ClipboardCheck', label: 'Assessments' },
+        { href: '/dashboard/gradebook', tKey: 'nav.teach.gradebook', icon: 'ClipboardCheck', label: 'Gradebook' },
       ];
 
       sections.push({
