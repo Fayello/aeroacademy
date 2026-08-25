@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Shield,
   Award,
+  Settings,
   ClipboardCheck,
   Route,
   BarChart3,
@@ -314,6 +315,17 @@ export default function Sidebar() {
         >
           <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#229C62]" : "text-slate-400"} />
           Profile
+        </Link>
+        <Link
+          href="/dashboard/settings"
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            pathname === "/dashboard/settings"
+              ? "bg-[#E9F8EE] text-[#0F203A]"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          }`}
+        >
+          <Settings size={16} className={pathname === "/dashboard/settings" ? "text-[#229C62]" : "text-slate-400"} />
+          Settings
         </Link>
         <div className="flex items-center px-1">
           <LanguageSwitcher />
