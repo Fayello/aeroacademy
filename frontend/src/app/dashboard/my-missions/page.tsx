@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { fetchApiV2 } from "@/lib/api";
+import toast from "@/lib/toast";
 import {
   Swords,
   Clock,
@@ -69,7 +70,7 @@ export default function MyMissionsPage() {
       setMissions(available);
       setHistory(historyData);
     } catch (err: any) {
-      setError(err.message || t("common.error"));
+      setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);
     }
@@ -84,7 +85,7 @@ export default function MyMissionsPage() {
       await fetchApiV2(`/missions/${missionId}/accept`, { method: "POST" });
       fetchData();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err instanceof Error ? err.message : "Failed to accept mission");
     }
   };
 
@@ -93,7 +94,7 @@ export default function MyMissionsPage() {
       await fetchApiV2(`/missions/${missionId}/complete`, { method: "POST" });
       fetchData();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err instanceof Error ? err.message : "Failed to complete mission");
     }
   };
 

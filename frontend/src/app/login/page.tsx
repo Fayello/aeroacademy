@@ -46,7 +46,12 @@ export default function LoginPage() {
       toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Invalid credentials";
+      const raw = err instanceof Error ? err.message : "Invalid credentials";
+      const msg = raw.toLowerCase().includes("user not found") || raw.toLowerCase().includes("wrong password")
+        ? "Invalid email or password"
+        : raw.toLowerCase().includes("verify your email")
+          ? raw
+          : "Login failed. Please try again.";
       if (msg.toLowerCase().includes("verify your email")) {
         setNeedsVerification(values.email);
       } else {

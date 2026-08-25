@@ -2,6 +2,16 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL !== undefined ? process.e
 export const API_VERSION = '/api/v1';
 export const API_VERSION_V2 = '/api/v2';
 
+function sanitizeErrorMessage(raw: string): string {
+  if (!raw) return 'Something went wrong. Please try again.';
+  if (raw.includes('Cannot ') && (raw.includes(' /api/') || raw.includes(' /v1/') || raw.includes(' /v2/'))) {
+    return 'This action is not available right now. Please try again later.';
+  }
+  if (/^[A-Z]+ \//.test(raw) || raw.startsWith('http')) return 'Something went wrong. Please try again.';
+  if (raw.length > 200) return 'Something went wrong. Please try again.';
+  return raw;
+}
+
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;
 let refreshRetries = 0;
@@ -164,12 +174,27 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
 
   if (!response.ok) {
     const errorText = await response.text();
-    let errorMessage = 'API request failed';
+    let errorMessage = 'Something went wrong. Please try again.';
     try {
       const errorData = JSON.parse(errorText);
-      errorMessage = errorData.message || errorMessage;
+      const raw = Array.isArray(errorData.message) ? (errorData.message[0] || '') : (errorData.message || '');
+      errorMessage = sanitizeErrorMessage(raw) || errorMessage;
     } catch {
-      errorMessage = errorText || errorMessage;
+      if (errorText.includes('Cannot')) {
+        errorMessage = 'This action is not available right now. Please try again later.';
+      } else if (response.status === 404) {
+        errorMessage = 'The resource you\'re looking for doesn\'t exist.';
+      } else if (response.status === 403) {
+        errorMessage = 'You don\'t have permission to do this.';
+      } else if (response.status === 409) {
+        errorMessage = 'This conflicts with existing data. Please check and try again.';
+      } else if (response.status === 400) {
+        errorMessage = 'Please check your input and try again.';
+      } else if (response.status >= 500) {
+        errorMessage = 'Something went wrong on our end. Please try again later.';
+      } else {
+        errorMessage = 'Something went wrong. Please try again.';
+      }
     }
     throw new Error(errorMessage);
   }

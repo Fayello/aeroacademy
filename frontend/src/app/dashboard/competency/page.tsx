@@ -125,7 +125,7 @@ export default function CompetencyPage() {
         );
         if (!cancelled) setProfile(data);
       } catch (err: any) {
-        if (!cancelled) setError(err.message || "Failed to load competency profile");
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load competency profile");
       } finally {
         if (!cancelled) setLoading(false);
       }

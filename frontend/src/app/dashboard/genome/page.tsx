@@ -126,7 +126,7 @@ export default function GenomePage() {
       const data = await fetchApiV2<TechnologyGenome>("/genome/profile");
       setGenome(data);
     } catch (err: any) {
-      setError(err.message || t("common.error"));
+      setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);
     }

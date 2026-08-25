@@ -58,7 +58,7 @@ export default function LessonPage() {
           }).catch(() => {});
         }
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load lesson");
       } finally {
         if (!cancelled) setLoading(false);
       }

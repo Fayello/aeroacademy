@@ -118,7 +118,7 @@ export default function CourseBriefingPage() {
           }
         }
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load course");
       } finally {
         if (!cancelled) setLoading(false);
       }
