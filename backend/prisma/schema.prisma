@@ -88,6 +88,7 @@ model User {
   certificationAwards      CertificationAward[]
   professionalRecord       ProfessionalRecord?
   metricEvents             MetricEvent[]
+  teamMembers              TeamMember[]
 
   @@index([googleId])
   @@index([role])
@@ -98,13 +99,18 @@ model Team {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
+  inviteCode  String?  @unique
+  visibility  String   @default("PUBLIC") // PUBLIC, PRIVATE
+  maxMembers  Int      @default(20)
   ownerId     String
   owner       User?    @relation("TeamOwner", fields: [ownerId], references: [id])
   members     User[]
   createdAt   DateTime @default(now())
   courseEnrollments TeamCourseEnrollment[]
+  teamMembers TeamMember[]
 
   @@index([ownerId])
+  @@index([inviteCode])
 }
 
 model Season {
@@ -465,6 +471,8 @@ enum BookingStatus {
 
 enum Role {
   STUDENT
+  PROFESSOR
+  TA
   ADMIN
   RECRUITER
 }
@@ -737,6 +745,20 @@ model TeamCourseEnrollment {
   @@unique([teamId, courseId])
   @@index([teamId])
   @@index([courseId])
+}
+
+model TeamMember {
+  id       String   @id @default(uuid())
+  teamId   String
+  userId   String
+  role     String   @default("MEMBER") // LEADER, MEMBER
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
 }
 
 // ─── V1: SKILL SYSTEM ───────────────────────────────────────────

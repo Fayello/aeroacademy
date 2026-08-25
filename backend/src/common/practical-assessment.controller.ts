@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { PracticalAssessmentService } from './practical-assessment.service';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
-@Controller('v1/assessments')
+@Controller('v1/practical-assessments')
 @UseGuards(AuthGuard('jwt'))
 export class PracticalAssessmentController {
   constructor(private readonly service: PracticalAssessmentService) {}
@@ -12,12 +14,24 @@ export class PracticalAssessmentController {
     return this.service.getAssessments(domainId);
   }
 
+  @Get('user/history')
+  async getUserAttempts(@Req() req: any) {
+    return this.service.getUserAttempts(req.user.id);
+  }
+
   @Get(':id')
   async getAssessment(@Param('id') id: string) {
     return this.service.getAssessment(id);
   }
 
+  @Get(':id/stats')
+  async getAssessmentStats(@Param('id') assessmentId: string) {
+    return this.service.getAssessmentStats(assessmentId);
+  }
+
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
   async createAssessment(@Body() body: {
     title: string;
     description: string;
@@ -62,15 +76,5 @@ export class PracticalAssessmentController {
     },
   ) {
     return this.service.submitAttempt(req.user.id, assessmentId, body);
-  }
-
-  @Get('user/history')
-  async getUserAttempts(@Req() req: any) {
-    return this.service.getUserAttempts(req.user.id);
-  }
-
-  @Get(':id/stats')
-  async getAssessmentStats(@Param('id') assessmentId: string) {
-    return this.service.getAssessmentStats(assessmentId);
   }
 }

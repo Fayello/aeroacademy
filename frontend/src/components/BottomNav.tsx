@@ -11,11 +11,13 @@ export default function BottomNav() {
   const { t } = useI18n();
   const { nav } = useNavigation();
 
+  const hasCompete = nav.sections.some(s => s.id === "compete");
+
   const links = [
     { href: "/dashboard", tKey: "mobile.home", icon: Home, show: true },
     { href: "/dashboard/courses", tKey: "mobile.learn", icon: GraduationCap, show: true },
     { href: "/dashboard/labs", tKey: "mobile.labs", icon: FlaskConical, show: true },
-    { href: "/dashboard/leaderboard", tKey: "mobile.compete", icon: Swords, show: nav.showCompete },
+    { href: "/dashboard/leaderboard", tKey: "mobile.compete", icon: Swords, show: hasCompete },
     { href: "/dashboard/profile", tKey: "mobile.me", icon: User, show: true },
   ].filter(l => l.show);
 

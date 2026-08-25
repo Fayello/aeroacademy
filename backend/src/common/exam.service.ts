@@ -111,11 +111,11 @@ export class ExamService {
       letterGrade: this.getLetterGrade(attempt.score ?? 0),
       outcomeBreakdown,
       evidence: {
-        stepsTaken: 0,
-        commandsExecuted: 0,
-        avgTimePerStep: 0,
-        hintsUsed: 0,
-        errorsRecovered: 0,
+        stepsTaken: (breakdown as any)?.stepsTaken ?? 0,
+        commandsExecuted: (breakdown as any)?.commandsExecuted ?? 0,
+        avgTimePerStep: (breakdown as any)?.avgTimePerStep ?? 0,
+        hintsUsed: (breakdown as any)?.hintsUsed ?? 0,
+        errorsRecovered: (breakdown as any)?.errorsRecovered ?? 0,
       },
     };
   }

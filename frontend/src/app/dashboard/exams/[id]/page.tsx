@@ -77,7 +77,7 @@ export default function ExamDetailPage() {
     async function load() {
       try {
         const [a, at, st] = await Promise.all([
-          fetchApi(`/assessments/${id}`),
+          fetchApi(`/practical-assessments/${id}`),
           fetchApi(`/exams/${id}/attempts`).catch(() => []),
           fetchApi(`/exams/${id}/stats`).catch(() => null),
         ]);
@@ -99,7 +99,7 @@ export default function ExamDetailPage() {
   const handleStart = async () => {
     setStarting(true);
     try {
-      await fetchApi(`/assessments/${id}/start`, { method: "POST" });
+      await fetchApi(`/practical-assessments/${id}/start`, { method: "POST" });
       window.location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start");

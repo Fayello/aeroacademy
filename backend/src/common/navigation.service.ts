@@ -12,6 +12,12 @@ export interface NavItem {
   disabled?: boolean;
 }
 
+export interface NavSection {
+  id: string;
+  label: string;
+  items: NavItem[];
+}
+
 export interface NavAlert {
   type: 'EXAM_AVAILABLE' | 'COHORT_ACTIVE' | 'CURRICULUM_ASSIGNED' | 'LEVEL_UP';
   title: string;
@@ -22,13 +28,12 @@ export interface NavAlert {
 export interface NavigationContext {
   experience: UserExperience;
   level: number;
-  learnItems: NavItem[];
-  competeItems: NavItem[];
-  communityItems: NavItem[];
-  profileItems: NavItem[];
+  role: string;
+  sections: NavSection[];
   alerts: NavAlert[];
-  showCompete: boolean;
-  showCommunity: boolean;
+  showTeach: boolean;
+  showAcademic: boolean;
+  showAdmin: boolean;
 }
 
 @Injectable()
@@ -49,22 +54,14 @@ export class NavigationService {
 
     if (!user) return 'INDIVIDUAL';
 
-    // Admin/Recruiter → ADMIN experience
     if (user.role === 'ADMIN' || user.role === 'RECRUITER') return 'ADMIN';
+    if (user.role === 'PROFESSOR' || user.role === 'TA') return 'INSTRUCTOR';
 
-    // Check if user is an instructor/professor in any cohort
-    const instructorCohort = await this.prisma.cohortMember.findFirst({
-      where: { userId, role: { in: ['PROFESSOR', 'TA'] } },
-    });
-    if (instructorCohort) return 'INSTRUCTOR';
-
-    // Check organization type
     if (user.organization) {
       if (user.organization.type === 'UNIVERSITY') return 'UNIVERSITY';
       if (user.organization.type === 'ENTERPRISE' || user.organization.type === 'GOVERNMENT') return 'CORPORATE';
     }
 
-    // Check if enrolled in any cohort (even as student)
     const cohortMembership = await this.prisma.cohortMember.findFirst({
       where: { userId },
     });
@@ -89,21 +86,21 @@ export class NavigationService {
         id: true,
         role: true,
         xp: true,
+        teamId: true,
         userExperience: true,
-        organizationId: true,
-        organization: { select: { type: true, name: true } },
       },
     });
 
     if (!user) {
-      return this.getDefaultContext('INDIVIDUAL', 1);
+      return this.getDefaultContext('INDIVIDUAL', 1, 'STUDENT');
     }
 
     const level = Math.floor(user.xp / 1000) + 1;
     const experience = user.userExperience as UserExperience;
+    const role = user.role;
 
-    // Get user's enrollments
-    const [cohortMemberships, examEnrollments, activeExams] = await Promise.all([
+    // Check context
+    const [cohortMemberships, teachingCohorts] = await Promise.all([
       this.prisma.cohortMember.findMany({
         where: { userId },
         include: {
@@ -116,182 +113,195 @@ export class NavigationService {
           },
         },
       }),
-      this.prisma.studentAssessment.findMany({
-        where: { userId },
-        include: {
-          assessment: {
-            select: { id: true, title: true, domainId: true, isProctored: true },
-          },
-        },
-      }),
-      this.prisma.practicalAssessment.findMany({
-        select: { id: true, title: true, domainId: true, isProctored: true },
-        take: 3,
-      }),
+      // Check if user teaches any cohorts (PROFESSOR/TA)
+      (role === 'PROFESSOR' || role === 'TA')
+        ? this.prisma.cohortMember.findMany({
+            where: { userId, role: { in: ['PROFESSOR', 'TA'] } },
+            include: {
+              cohort: { select: { id: true, name: true } },
+            },
+          })
+        : Promise.resolve([]),
     ]);
 
-    // Build navigation based on experience
-    const ctx = this.getDefaultContext(experience, level);
+    const isEnrolledInCohort = cohortMemberships.length > 0;
+    const isTeaching = teachingCohorts.length > 0;
+    const isAdmin = role === 'ADMIN';
 
-    // ─── LEARN items ───
-    // Always show courses, learning paths, assessments
-    ctx.learnItems = [
-      { href: '/dashboard/courses', tKey: 'bucket.courses', icon: 'GraduationCap', label: 'Courses' },
-      { href: '/dashboard/learning-paths', tKey: 'bucket.paths', icon: 'Route', label: 'Learning Paths' },
-      { href: '/dashboard/training', tKey: 'bucket.masterclasses', icon: 'Award', label: 'Masterclasses' },
-      { href: '/dashboard/analytics/competency', tKey: 'bucket.assessments', icon: 'ClipboardCheck', label: 'Assessments' },
-    ];
+    // ─── BUILD CORE SECTIONS ───
+    const sections: NavSection[] = [];
 
-    // UNIVERSITY: show curriculum, cohort, exams
-    if (experience === 'UNIVERSITY' || experience === 'INSTRUCTOR') {
-      const hasCurriculum = cohortMemberships.some(cm => cm.cohort.curriculum);
-      if (hasCurriculum) {
-        ctx.learnItems.splice(0, 0, {
-          href: '/dashboard/curricula',
-          tKey: 'bucket.myCurriculum',
-          icon: 'ScrollText',
-          label: 'My Curriculum',
-        });
-      }
+    // Dashboard (always first)
+    sections.push({
+      id: 'dashboard',
+      label: 'Command Center',
+      items: [{ href: '/dashboard', tKey: 'nav.dashboard', icon: 'Home', label: 'Dashboard' }],
+    });
 
-      if (cohortMemberships.length > 0) {
-        ctx.learnItems.push({
-          href: '/dashboard/cohorts',
-          tKey: 'bucket.myCohort',
-          icon: 'Users',
-          label: 'My Cohort',
-        });
-      }
+    // Learn
+    sections.push({
+      id: 'learn',
+      label: 'Learn',
+      items: [
+        { href: '/dashboard/courses', tKey: 'nav.courses', icon: 'GraduationCap', label: 'Courses' },
+        { href: '/dashboard/learning-paths', tKey: 'nav.paths', icon: 'Route', label: 'Learning Paths' },
+        { href: '/dashboard/training', tKey: 'nav.masterclasses', icon: 'Award', label: 'Master Classes' },
+      ],
+    });
 
-      if (activeExams.length > 0 || examEnrollments.length > 0) {
-        ctx.learnItems.push({
-          href: '/dashboard/exams',
-          tKey: 'bucket.exams',
-          icon: 'ClipboardCheck',
-          label: 'Exams',
-        });
-      }
-    }
+    // Labs
+    sections.push({
+      id: 'labs',
+      label: 'Practice',
+      items: [
+        { href: '/dashboard/labs', tKey: 'nav.labs', icon: 'FlaskConical', label: 'Labs' },
+        { href: '/dashboard/exams', tKey: 'nav.exams', icon: 'ClipboardCheck', label: 'Practical Exams' },
+        { href: '/dashboard/assessments', tKey: 'nav.assessments', icon: 'Target', label: 'Skill Assessments' },
+      ],
+    });
 
-    // CORPORATE: show assigned training
-    if (experience === 'CORPORATE') {
-      ctx.learnItems = [
-        { href: '/dashboard/courses', tKey: 'bucket.courses', icon: 'GraduationCap', label: 'Assigned Training' },
-        { href: '/dashboard/learning-paths', tKey: 'bucket.paths', icon: 'Route', label: 'Learning Paths' },
-        { href: '/dashboard/analytics/competency', tKey: 'bucket.assessments', icon: 'ClipboardCheck', label: 'Assessments' },
-      ];
-
-      if (cohortMemberships.length > 0) {
-        ctx.learnItems.push({
-          href: '/dashboard/cohorts',
-          tKey: 'bucket.myCohort',
-          icon: 'Users',
-          label: 'My Cohort',
-        });
-      }
-    }
-
-    // INSTRUCTOR: add management items
-    if (experience === 'INSTRUCTOR') {
-      ctx.learnItems.push(
-        { href: '/dashboard/curricula', tKey: 'bucket.curricula', icon: 'ScrollText', label: 'Curriculum Management' },
-        { href: '/dashboard/cohorts', tKey: 'bucket.cohorts', icon: 'Users', label: 'Cohort Management' },
-        { href: '/dashboard/exams', tKey: 'bucket.exams', icon: 'ClipboardCheck', label: 'Exam Management' },
-      );
-    }
-
-    // ─── COMPETE items ───
-    // Level-gated progression
-    ctx.competeItems = [];
-
+    // Compete (level-gated)
+    const competeItems: NavItem[] = [];
     if (level >= 3) {
-      ctx.competeItems.push({
-        href: '/dashboard/challenges',
-        tKey: 'bucket.challenges',
-        icon: 'Target',
-        label: 'Challenges',
-      });
+      competeItems.push({ href: '/dashboard/challenges', tKey: 'nav.challenges', icon: 'Target', label: 'Challenges' });
     }
-
     if (level >= 5) {
-      ctx.competeItems.push(
-        { href: '/dashboard/ranking', tKey: 'bucket.ranked', icon: 'Shield', label: 'Ranked' },
-        { href: '/dashboard/capability-ranking', tKey: 'bucket.capability', icon: 'Target', label: 'Capability' },
+      competeItems.push(
+        { href: '/dashboard/ranking', tKey: 'nav.ranked', icon: 'Shield', label: 'Ranked' },
+        { href: '/dashboard/capability-ranking', tKey: 'nav.capability', icon: 'BarChart3', label: 'Capability' },
       );
     }
-
     if (level >= 7) {
-      ctx.competeItems.push(
-        { href: '/dashboard/teams', tKey: 'bucket.teams', icon: 'Users', label: 'Teams' },
-        { href: '/dashboard/seasons', tKey: 'bucket.seasons', icon: 'ScrollText', label: 'Seasons' },
+      competeItems.push(
+        { href: '/dashboard/seasons', tKey: 'nav.seasons', icon: 'ScrollText', label: 'Seasons' },
       );
     }
-
     if (level >= 10) {
-      ctx.competeItems.push(
-        { href: '/dashboard/boss-missions', tKey: 'bucket.boss-missions', icon: 'Swords', label: 'Boss Missions' },
-        { href: '/dashboard/battle-pass', tKey: 'bucket.rewards', icon: 'Award', label: 'Battle Pass' },
+      competeItems.push(
+        { href: '/dashboard/boss-missions', tKey: 'nav.bosses', icon: 'Swords', label: 'Boss Missions' },
+        { href: '/dashboard/battle-pass', tKey: 'nav.battlepass', icon: 'Award', label: 'Battle Pass' },
       );
     }
-
-    // Always show missions and leaderboards for competitive
-    ctx.competeItems.push(
-      { href: '/dashboard/my-missions', tKey: 'bucket.missions', icon: 'Target', label: 'My Missions' },
-      { href: '/dashboard/leaderboard', tKey: 'bucket.leaderboards', icon: 'Award', label: 'Leaderboards' },
+    competeItems.push(
+      { href: '/dashboard/my-missions', tKey: 'nav.missions', icon: 'Target', label: 'My Missions' },
+      { href: '/dashboard/leaderboard', tKey: 'nav.leaderboards', icon: 'Award', label: 'Leaderboards' },
     );
 
-    // ─── COMMUNITY items ───
-    ctx.communityItems = [
-      { href: '/dashboard/teams', tKey: 'bucket.teams', icon: 'Users', label: 'Teams' },
-      { href: '/dashboard/events', tKey: 'bucket.events', icon: 'ScrollText', label: 'Events' },
-    ];
+    sections.push({
+      id: 'compete',
+      label: 'Compete',
+      items: competeItems,
+    });
 
-    // ─── ALERTS ───
-    // Exam alerts
-    for (const exam of activeExams) {
-      ctx.alerts.push({
-        type: 'EXAM_AVAILABLE',
-        title: `${exam.title} is available`,
-        description: exam.isProctored ? 'Proctored exam — timed environment' : 'Self-paced assessment',
-        href: `/dashboard/exams/${exam.id}`,
+    // Community
+    const communityItems: NavItem[] = [
+      { href: '/dashboard/teams', tKey: 'nav.teams', icon: 'Users', label: 'Teams' },
+      { href: '/dashboard/events', tKey: 'nav.events', icon: 'ScrollText', label: 'Events' },
+    ];
+    sections.push({
+      id: 'community',
+      label: 'Community',
+      items: communityItems,
+    });
+
+    // ─── ACADEMIC SECTION (for enrolled students) ───
+    if (isEnrolledInCohort) {
+      const academicItems: NavItem[] = [];
+      for (const cm of cohortMemberships) {
+        academicItems.push({
+          href: `/dashboard/cohorts/${cm.cohort.id}`,
+          tKey: `nav.cohort.${cm.cohort.id}`,
+          icon: 'Users',
+          label: cm.cohort.name,
+        });
+      }
+      academicItems.push(
+        { href: '/dashboard/exams', tKey: 'nav.academic.exams', icon: 'ClipboardCheck', label: 'My Exams' },
+        { href: '/dashboard/assessments', tKey: 'nav.academic.assessments', icon: 'Target', label: 'My Assessments' },
+      );
+
+      sections.push({
+        id: 'academic',
+        label: 'My Academics',
+        items: academicItems,
       });
     }
 
-    // Cohort alerts
+    // ─── TEACH SECTION (for professors/TAs) ───
+    if (isTeaching) {
+      const teachItems: NavItem[] = [
+        { href: '/dashboard/curricula', tKey: 'nav.teach.curricula', icon: 'ScrollText', label: 'Curriculum' },
+        { href: '/dashboard/cohorts', tKey: 'nav.teach.cohorts', icon: 'Users', label: 'Classes' },
+        { href: '/dashboard/exams', tKey: 'nav.teach.exams', icon: 'ClipboardCheck', label: 'Assessments' },
+      ];
+
+      sections.push({
+        id: 'teach',
+        label: 'Teaching',
+        items: teachItems,
+      });
+    }
+
+    // ─── ALERTS ───
+    const alerts: NavAlert[] = [];
+
     for (const cm of cohortMemberships) {
       if (cm.cohort.curriculum) {
-        ctx.alerts.push({
+        alerts.push({
           type: 'COHORT_ACTIVE',
-          title: `${cm.cohort.name}`,
+          title: cm.cohort.name,
           description: `Curriculum: ${cm.cohort.curriculum.degree} ${cm.cohort.curriculum.name}`,
           href: `/dashboard/cohorts/${cm.cohort.id}`,
         });
       }
     }
 
-    ctx.showCompete = ctx.competeItems.length > 0;
-    ctx.showCommunity = true;
-
-    return ctx;
-  }
-
-  private getDefaultContext(experience: UserExperience, level: number): NavigationContext {
     return {
       experience,
       level,
-      learnItems: [],
-      competeItems: [],
-      communityItems: [],
-      profileItems: [
-        { href: '/dashboard/profile', tKey: 'bucket.overview', icon: 'User', label: 'Overview' },
-        { href: '/dashboard/genome', tKey: 'bucket.skills', icon: 'Target', label: 'Skills' },
-        { href: '/dashboard/competency', tKey: 'bucket.competency', icon: 'BarChart3', label: 'Competency' },
-        { href: '/dashboard/certifications', tKey: 'bucket.certifications', icon: 'Award', label: 'Certifications' },
-        { href: '/dashboard/analytics', tKey: 'bucket.achievements', icon: 'Award', label: 'Achievements' },
+      role,
+      sections,
+      alerts,
+      showTeach: isTeaching,
+      showAcademic: isEnrolledInCohort,
+      showAdmin: isAdmin,
+    };
+  }
+
+  private getDefaultContext(experience: UserExperience, level: number, role: string): NavigationContext {
+    return {
+      experience,
+      level,
+      role,
+      sections: [
+        {
+          id: 'dashboard',
+          label: 'Command Center',
+          items: [{ href: '/dashboard', tKey: 'nav.dashboard', icon: 'Home', label: 'Dashboard' }],
+        },
+        {
+          id: 'learn',
+          label: 'Learn',
+          items: [
+            { href: '/dashboard/courses', tKey: 'nav.courses', icon: 'GraduationCap', label: 'Courses' },
+            { href: '/dashboard/learning-paths', tKey: 'nav.paths', icon: 'Route', label: 'Learning Paths' },
+            { href: '/dashboard/training', tKey: 'nav.masterclasses', icon: 'Award', label: 'Master Classes' },
+          ],
+        },
+        {
+          id: 'labs',
+          label: 'Practice',
+          items: [
+            { href: '/dashboard/labs', tKey: 'nav.labs', icon: 'FlaskConical', label: 'Labs' },
+            { href: '/dashboard/exams', tKey: 'nav.exams', icon: 'ClipboardCheck', label: 'Practical Exams' },
+            { href: '/dashboard/assessments', tKey: 'nav.assessments', icon: 'Target', label: 'Skill Assessments' },
+          ],
+        },
       ],
       alerts: [],
-      showCompete: true,
-      showCommunity: true,
+      showTeach: false,
+      showAcademic: false,
+      showAdmin: false,
     };
   }
 }

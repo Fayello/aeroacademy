@@ -41,7 +41,7 @@ export default function ExamsPage() {
     let cancelled = false;
     async function load() {
       try {
-        const url = domainFilter ? `/assessments?domainId=${domainFilter}` : "/assessments";
+        const url = domainFilter ? `/practical-assessments?domainId=${domainFilter}` : "/practical-assessments";
         const data = await fetchApi(url);
         if (!cancelled) setAssessments(data);
       } catch (err) {

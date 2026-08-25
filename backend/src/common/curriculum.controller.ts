@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('v1/curricula')
 @UseGuards(AuthGuard('jwt'))
@@ -23,6 +25,8 @@ export class CurriculumController {
   }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async createCurriculum(@Body() body: {
     name: string;
     description: string;
@@ -43,6 +47,8 @@ export class CurriculumController {
   }
 
   @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async updateCurriculum(@Param('id') id: string, @Body() body: {
     name?: string;
     description?: string;
@@ -55,6 +61,8 @@ export class CurriculumController {
   }
 
   @Post(':curriculumId/modules')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async addModule(@Param('curriculumId') curriculumId: string, @Body() body: {
     name: string;
     code: string;
@@ -66,6 +74,8 @@ export class CurriculumController {
   }
 
   @Put('modules/:moduleId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async updateModule(@Param('moduleId') moduleId: string, @Body() body: {
     name?: string;
     code?: string;
@@ -77,11 +87,15 @@ export class CurriculumController {
   }
 
   @Delete('modules/:moduleId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async deleteModule(@Param('moduleId') moduleId: string) {
     return this.service.deleteModule(moduleId);
   }
 
   @Post('modules/:moduleId/outcomes')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async mapOutcome(@Param('moduleId') moduleId: string, @Body() body: {
     learningOutcomeId: string;
     weight?: number;
@@ -90,6 +104,8 @@ export class CurriculumController {
   }
 
   @Delete('modules/:moduleId/outcomes/:outcomeId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async removeOutcomeMapping(
     @Param('moduleId') moduleId: string,
     @Param('outcomeId') outcomeId: string,
@@ -98,6 +114,8 @@ export class CurriculumController {
   }
 
   @Post('modules/:moduleId/labs')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async mapLab(@Param('moduleId') moduleId: string, @Body() body: {
     labId: string;
   }) {
@@ -105,6 +123,8 @@ export class CurriculumController {
   }
 
   @Delete('modules/:moduleId/labs/:labId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR')
   async removeLabMapping(
     @Param('moduleId') moduleId: string,
     @Param('labId') labId: string,

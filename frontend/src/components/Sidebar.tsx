@@ -12,20 +12,19 @@ import {
   LogOut,
   ChevronDown,
   Shield,
-  Briefcase,
   Award,
   ClipboardCheck,
   Route,
   BarChart3,
   ScrollText,
   Target,
-  Info,
+  BookOpen,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
-import { useNavigation, type NavItem } from "@/lib/navigation";
+import { useNavigation, type NavItem, type NavSection } from "@/lib/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const ICON_MAP: Record<string, typeof Home> = {
@@ -36,20 +35,19 @@ const ICON_MAP: Record<string, typeof Home> = {
   Users,
   User,
   Shield,
-  Briefcase,
   Award,
   ClipboardCheck,
   Route,
   BarChart3,
   ScrollText,
   Target,
-  Info,
+  BookOpen,
 };
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [expandedBucket, setExpandedBucket] = useState<string | null>(null);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [xp, setXp] = useState(0);
   const { t } = useI18n();
   const { nav, loading } = useNavigation();
@@ -77,66 +75,30 @@ export default function Sidebar() {
     } catch {}
   }, [pathname]);
 
-  // Build simplified 5-bucket nav
-  const buckets = useMemo(() => {
-    const b: { key: string; label: string; icon: typeof Home; href: string; items?: NavItem[] }[] = [
-      { key: "home", label: "Dashboard", icon: Home, href: "/dashboard" },
-    ];
-
-    if (nav.learnItems.length > 0) {
-      b.push({
-        key: "learn",
-        label: "Learn",
-        icon: GraduationCap,
-        href: "/dashboard/courses",
-        items: nav.learnItems,
-      });
-    }
-
-    b.push({ key: "labs", label: "Labs", icon: FlaskConical, href: "/dashboard/labs" });
-
-    if (nav.showCompete && nav.competeItems.length > 0) {
-      b.push({
-        key: "compete",
-        label: "Compete",
-        icon: Swords,
-        href: "/dashboard/leaderboard",
-        items: nav.competeItems,
-      });
-    }
-
-    if (nav.showCommunity && nav.communityItems.length > 0) {
-      b.push({
-        key: "community",
-        label: "Community",
-        icon: Users,
-        href: "/dashboard/teams",
-        items: nav.communityItems,
-      });
-    }
-
-    return b;
+  // Build sections from navigation context
+  const sections = useMemo(() => {
+    return nav.sections;
   }, [nav]);
 
   useEffect(() => {
-    for (const bucket of buckets) {
-      if (bucket.items) {
-        const isActive = bucket.items.some(
+    for (const section of sections) {
+      if (section.items) {
+        const isActive = section.items.some(
           (item) => pathname === item.href || pathname.startsWith(item.href + "/")
         );
         if (isActive) {
-          setExpandedBucket(bucket.key);
+          setExpandedSection(section.id);
           return;
         }
       }
     }
     if (pathname === "/dashboard") {
-      setExpandedBucket(null);
+      setExpandedSection(null);
     }
-  }, [pathname, buckets]);
+  }, [pathname, sections]);
 
-  const toggleBucket = useCallback((key: string) => {
-    setExpandedBucket((prev) => (prev === key ? null : key));
+  const toggleSection = useCallback((id: string) => {
+    setExpandedSection((prev) => (prev === id ? null : id));
   }, []);
 
   const isAdmin = userRole === "ADMIN" || userRole === "RECRUITER";
@@ -204,49 +166,60 @@ export default function Sidebar() {
 
       {/* Main Nav */}
       <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto min-h-0">
-        {buckets.map((bucket) => {
-          const Icon = bucket.icon;
-          const isActive = pathname === bucket.href || (bucket.items?.some(
+        {sections.map((section) => {
+          // Dashboard is a single link, not expandable
+          if (section.id === "dashboard") {
+            const item = section.items[0];
+            const Icon = ICON_MAP[item.icon] || Home;
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={section.id}
+                href={item.href}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#E9F8EE] text-[#0F203A]"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
+                <span>{section.label}</span>
+              </Link>
+            );
+          }
+
+          // Section with items
+          const firstItem = section.items[0];
+          const Icon = ICON_MAP[firstItem?.icon] || Target;
+          const isActive = section.items.some(
             (item) => pathname === item.href || pathname.startsWith(item.href + "/")
-          ) ?? false);
-          const isExpanded = expandedBucket === bucket.key;
-          const hasItems = bucket.items && bucket.items.length > 0;
+          );
+          const isExpanded = expandedSection === section.id;
 
           return (
-            <div key={bucket.key}>
-              {hasItems ? (
-                <button
-                  onClick={() => toggleBucket(bucket.key)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[#E9F8EE] text-[#0F203A]"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
-                >
-                  <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                  <span className="flex-1 text-left">{bucket.label}</span>
+            <div key={section.id}>
+              <button
+                onClick={() => toggleSection(section.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#E9F8EE] text-[#0F203A]"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
+                <span className="flex-1 text-left">{section.label}</span>
+                {section.items.length > 1 && (
                   <ChevronDown
                     size={12}
                     className={`text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
                   />
-                </button>
-              ) : (
-                <Link
-                  href={bucket.href}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[#E9F8EE] text-[#0F203A]"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
-                >
-                  <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                  <span className="flex-1">{bucket.label}</span>
-                </Link>
-              )}
+                )}
+              </button>
 
-              {hasItems && isExpanded && (
+              {section.items.length > 1 && isExpanded && (
                 <div className="ml-4 mt-0.5 mb-1 space-y-0.5 border-l border-slate-100 pl-3">
-                  {bucket.items!.map((item) => {
+                  {section.items.map((item) => {
                     const ItemIcon = ICON_MAP[item.icon] || Target;
                     const isItemActive =
                       pathname === item.href ||

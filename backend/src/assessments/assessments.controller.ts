@@ -41,7 +41,7 @@ export class AssessmentsController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
   @Audit('ASSESSMENT_CREATED')
   async createAssessment(
     @Body() body: {

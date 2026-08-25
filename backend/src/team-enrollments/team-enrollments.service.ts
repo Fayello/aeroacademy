@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException, ForbiddenException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class TeamEnrollmentsService {
   constructor(private prisma: PrismaService) {}
 
-  // V2: Self-service team creation
-  async createTeam(ownerId: string, name: string, description?: string) {
+  private generateInviteCode(): string {
+    return crypto.randomBytes(4).toString('hex').toUpperCase();
+  }
+
+  async createTeam(ownerId: string, name: string, description?: string, visibility: string = 'PUBLIC') {
     const existingUser = await this.prisma.user.findUnique({ where: { id: ownerId } });
     if (!existingUser) throw new NotFoundException('User not found');
     if (existingUser.teamId) throw new BadRequestException('You are already in a team. Leave your current team first.');
@@ -14,15 +18,28 @@ export class TeamEnrollmentsService {
     const existingTeam = await this.prisma.team.findUnique({ where: { name } });
     if (existingTeam) throw new ConflictException('Team name already taken');
 
+    const inviteCode = this.generateInviteCode();
+
     const team = await this.prisma.team.create({
       data: {
         name,
         description: description || null,
+        inviteCode,
+        visibility,
         ownerId,
       },
     });
 
-    // Auto-assign owner to team
+    // Create TeamMember entry for owner
+    await this.prisma.teamMember.create({
+      data: {
+        teamId: team.id,
+        userId: ownerId,
+        role: 'LEADER',
+      },
+    });
+
+    // Also set teamId on User for backward compatibility
     await this.prisma.user.update({
       where: { id: ownerId },
       data: { teamId: team.id },
@@ -31,8 +48,41 @@ export class TeamEnrollmentsService {
     return team;
   }
 
-  // V2: Join team via invite code (team name as code)
-  async joinTeam(userId: string, teamName: string) {
+  async joinTeam(userId: string, inviteCode: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.teamId) throw new BadRequestException('You are already in a team. Leave your current team first.');
+
+    const team = await this.prisma.team.findFirst({
+      where: { inviteCode },
+    });
+    if (!team) throw new NotFoundException('Invalid invite code');
+
+    const memberCount = await this.prisma.teamMember.count({ where: { teamId: team.id } });
+    if (memberCount >= team.maxMembers) throw new BadRequestException(`Team is full (max ${team.maxMembers} members)`);
+
+    const existingMember = await this.prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId: team.id, userId } },
+    });
+    if (existingMember) throw new ConflictException('Already a member of this team');
+
+    await this.prisma.teamMember.create({
+      data: {
+        teamId: team.id,
+        userId,
+        role: 'MEMBER',
+      },
+    });
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { teamId: team.id },
+    });
+
+    return { message: `Joined team "${team.name}"`, teamId: team.id, teamName: team.name };
+  }
+
+  async joinTeamByName(userId: string, teamName: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
     if (user.teamId) throw new BadRequestException('You are already in a team. Leave your current team first.');
@@ -42,8 +92,20 @@ export class TeamEnrollmentsService {
     });
     if (!team) throw new NotFoundException('Team not found. Check the team name.');
 
-    const memberCount = await this.prisma.user.count({ where: { teamId: team.id } });
-    if (memberCount >= 20) throw new BadRequestException('Team is full (max 20 members)');
+    if (team.visibility === 'PRIVATE') {
+      throw new ForbiddenException('This team is private. Use an invite code to join.');
+    }
+
+    const memberCount = await this.prisma.teamMember.count({ where: { teamId: team.id } });
+    if (memberCount >= team.maxMembers) throw new BadRequestException(`Team is full (max ${team.maxMembers} members)`);
+
+    await this.prisma.teamMember.create({
+      data: {
+        teamId: team.id,
+        userId,
+        role: 'MEMBER',
+      },
+    });
 
     await this.prisma.user.update({
       where: { id: userId },
@@ -53,15 +115,17 @@ export class TeamEnrollmentsService {
     return { message: `Joined team "${team.name}"`, teamId: team.id };
   }
 
-  // V2: Leave team
   async leaveTeam(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
     if (!user.teamId) throw new BadRequestException('You are not in a team');
-    if (user.teamId) {
-      const team = await this.prisma.team.findUnique({ where: { id: user.teamId } });
-      if (team?.ownerId === userId) throw new BadRequestException('Team owner cannot leave. Transfer ownership or delete the team.');
-    }
+
+    const team = await this.prisma.team.findUnique({ where: { id: user.teamId } });
+    if (team?.ownerId === userId) throw new BadRequestException('Team owner cannot leave. Transfer ownership or disband the team.');
+
+    await this.prisma.teamMember.deleteMany({
+      where: { teamId: user.teamId, userId },
+    });
 
     await this.prisma.user.update({
       where: { id: userId },
@@ -71,17 +135,112 @@ export class TeamEnrollmentsService {
     return { message: 'Left team' };
   }
 
+  async removeMember(teamId: string, userId: string, requesterId: string) {
+    const requesterMember = await this.prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId, userId: requesterId } },
+    });
+    if (!requesterMember || requesterMember.role !== 'LEADER') {
+      throw new ForbiddenException('Only team leader can remove members');
+    }
+
+    if (userId === requesterId) {
+      throw new BadRequestException('Leader cannot remove themselves. Use leave or disband.');
+    }
+
+    const member = await this.prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId, userId } },
+    });
+    if (!member) throw new NotFoundException('Member not found in this team');
+
+    await this.prisma.teamMember.delete({
+      where: { teamId_userId: { teamId, userId } },
+    });
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { teamId: null },
+    });
+
+    return { message: 'Member removed' };
+  }
+
+  async disbandTeam(teamId: string, requesterId: string) {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (!team) throw new NotFoundException('Team not found');
+    if (team.ownerId !== requesterId) throw new ForbiddenException('Only team owner can disband');
+
+    // Remove all members
+    await this.prisma.teamMember.deleteMany({ where: { teamId } });
+    await this.prisma.user.updateMany({
+      where: { teamId },
+      data: { teamId: null },
+    });
+
+    // Remove team
+    await this.prisma.team.delete({ where: { id: teamId } });
+
+    return { message: 'Team disbanded' };
+  }
+
+  async getInviteCode(teamId: string, requesterId: string) {
+    const member = await this.prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId, userId: requesterId } },
+    });
+    if (!member) throw new ForbiddenException('You are not a member of this team');
+
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (!team) throw new NotFoundException('Team not found');
+
+    return { inviteCode: team.inviteCode, teamName: team.name };
+  }
+
+  async refreshInviteCode(teamId: string, requesterId: string) {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (!team) throw new NotFoundException('Team not found');
+    if (team.ownerId !== requesterId) throw new ForbiddenException('Only team owner can refresh invite code');
+
+    const newCode = this.generateInviteCode();
+    await this.prisma.team.update({
+      where: { id: teamId },
+      data: { inviteCode: newCode },
+    });
+
+    return { inviteCode: newCode };
+  }
+
   async getTeams() {
     return this.prisma.team.findMany({
+      where: { visibility: 'PUBLIC' },
       include: {
-        owner: { select: { id: true, name: true, email: true } },
-        members: { select: { id: true, name: true, email: true } },
+        owner: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        teamMembers: {
+          include: { user: { select: { id: true, name: true, email: true, avatarUrl: true } } },
+        },
         courseEnrollments: {
           include: { course: { select: { id: true, title: true } } },
         },
-        _count: { select: { members: true } },
+        _count: { select: { teamMembers: true } },
       },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getMyTeam(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.teamId) return null;
+
+    return this.prisma.team.findUnique({
+      where: { id: user.teamId },
+      include: {
+        owner: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        teamMembers: {
+          include: { user: { select: { id: true, name: true, email: true, avatarUrl: true, xp: true, division: true } } },
+          orderBy: { role: 'asc' },
+        },
+        courseEnrollments: {
+          include: { course: { select: { id: true, title: true, imageUrl: true } } },
+        },
+      },
     });
   }
 
@@ -89,8 +248,11 @@ export class TeamEnrollmentsService {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
-        owner: { select: { id: true, name: true, email: true, xp: true } },
-        members: { select: { id: true, name: true, email: true, xp: true, division: true } },
+        owner: { select: { id: true, name: true, email: true, avatarUrl: true, xp: true } },
+        teamMembers: {
+          include: { user: { select: { id: true, name: true, email: true, avatarUrl: true, xp: true, division: true } } },
+          orderBy: { role: 'asc' },
+        },
         courseEnrollments: {
           include: { course: { select: { id: true, title: true, imageUrl: true } } },
         },
@@ -100,13 +262,13 @@ export class TeamEnrollmentsService {
     return team;
   }
 
-  async enrollTeamInCourse(teamId: string, courseId: string, adminId: string) {
+  async enrollTeamInCourse(teamId: string, courseId: string, requesterId: string) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
-      include: { members: { select: { id: true } } },
+      include: { teamMembers: { include: { user: { select: { id: true } } } } },
     });
     if (!team) throw new NotFoundException('Team not found');
-    if (team.ownerId !== adminId) throw new ForbiddenException('Only team owner can enroll');
+    if (team.ownerId !== requesterId) throw new ForbiddenException('Only team owner can enroll');
 
     const course = await this.prisma.course.findUnique({ where: { id: courseId } });
     if (!course) throw new NotFoundException('Course not found');
@@ -122,10 +284,10 @@ export class TeamEnrollmentsService {
     });
 
     // Auto-enroll all team members
-    for (const member of team.members) {
+    for (const member of team.teamMembers) {
       await this.prisma.courseEnrollment.upsert({
-        where: { userId_courseId: { userId: member.id, courseId } },
-        create: { userId: member.id, courseId },
+        where: { userId_courseId: { userId: member.user.id, courseId } },
+        create: { userId: member.user.id, courseId },
         update: { lastActivityAt: new Date() },
       });
     }
@@ -144,18 +306,22 @@ export class TeamEnrollmentsService {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
-        members: {
-          select: { id: true, name: true, xp: true, division: true, currentStreak: true },
-          orderBy: { xp: 'desc' },
+        teamMembers: {
+          include: {
+            user: { select: { id: true, name: true, xp: true, division: true, currentStreak: true } },
+          },
+          orderBy: { user: { xp: 'desc' } },
         },
       },
     });
     if (!team) throw new NotFoundException('Team not found');
 
-    const totalXP = team.members.reduce((sum, m) => sum + m.xp, 0);
+    const members = team.teamMembers.map(tm => tm.user);
+    const totalXP = members.reduce((sum, m) => sum + m.xp, 0);
+
     return {
-      team: { id: team.id, name: team.name, totalXP, memberCount: team.members.length },
-      members: team.members,
+      team: { id: team.id, name: team.name, totalXP, memberCount: members.length },
+      members,
     };
   }
 
@@ -165,8 +331,10 @@ export class TeamEnrollmentsService {
       include: {
         team: {
           include: {
-            members: { select: { id: true, name: true, xp: true } },
-            _count: { select: { members: true } },
+            teamMembers: {
+              include: { user: { select: { id: true, name: true, xp: true } } },
+            },
+            _count: { select: { teamMembers: true } },
           },
         },
       },
@@ -175,7 +343,7 @@ export class TeamEnrollmentsService {
     return enrollments.map(e => ({
       ...e.team,
       enrolledAt: e.enrolledAt,
-      totalXP: e.team.members.reduce((sum, m) => sum + m.xp, 0),
+      totalXP: e.team.teamMembers.reduce((sum, tm) => sum + tm.user.xp, 0),
     }));
   }
 
