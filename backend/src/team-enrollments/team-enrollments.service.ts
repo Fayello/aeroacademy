@@ -10,7 +10,20 @@ export class TeamEnrollmentsService {
     return crypto.randomBytes(4).toString('hex').toUpperCase();
   }
 
-  async createTeam(ownerId: string, name: string, description?: string, visibility: string = 'PUBLIC') {
+  async createTeam(
+    ownerId: string,
+    name: string,
+    description?: string,
+    visibility: string = 'PUBLIC',
+    customization?: {
+      avatarUrl?: string;
+      bannerUrl?: string;
+      primaryColor?: string;
+      accentColor?: string;
+      motto?: string;
+      tagline?: string;
+    },
+  ) {
     const existingUser = await this.prisma.user.findUnique({ where: { id: ownerId } });
     if (!existingUser) throw new NotFoundException('User not found');
     if (existingUser.teamId) throw new BadRequestException('You are already in a team. Leave your current team first.');
@@ -27,6 +40,12 @@ export class TeamEnrollmentsService {
         inviteCode,
         visibility,
         ownerId,
+        avatarUrl: customization?.avatarUrl || null,
+        bannerUrl: customization?.bannerUrl || null,
+        primaryColor: customization?.primaryColor || '#229C62',
+        accentColor: customization?.accentColor || '#7AD62A',
+        motto: customization?.motto || null,
+        tagline: customization?.tagline || null,
       },
     });
 
@@ -46,6 +65,44 @@ export class TeamEnrollmentsService {
     });
 
     return team;
+  }
+
+  async updateTeam(
+    teamId: string,
+    userId: string,
+    data: {
+      name?: string;
+      description?: string;
+      avatarUrl?: string;
+      bannerUrl?: string;
+      primaryColor?: string;
+      accentColor?: string;
+      motto?: string;
+      tagline?: string;
+    },
+  ) {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (!team) throw new NotFoundException('Team not found');
+    if (team.ownerId !== userId) throw new ForbiddenException('Only the team leader can update the team');
+
+    if (data.name && data.name !== team.name) {
+      const existing = await this.prisma.team.findUnique({ where: { name: data.name } });
+      if (existing) throw new ConflictException('Team name already taken');
+    }
+
+    return this.prisma.team.update({
+      where: { id: teamId },
+      data: {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.avatarUrl !== undefined && { avatarUrl: data.avatarUrl }),
+        ...(data.bannerUrl !== undefined && { bannerUrl: data.bannerUrl }),
+        ...(data.primaryColor !== undefined && { primaryColor: data.primaryColor }),
+        ...(data.accentColor !== undefined && { accentColor: data.accentColor }),
+        ...(data.motto !== undefined && { motto: data.motto }),
+        ...(data.tagline !== undefined && { tagline: data.tagline }),
+      },
+    });
   }
 
   async joinTeam(userId: string, inviteCode: string) {

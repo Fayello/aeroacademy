@@ -111,6 +111,14 @@ model Team {
   courseEnrollments TeamCourseEnrollment[]
   teamMembers TeamMember[]
 
+  // Team customization
+  avatarUrl      String?
+  bannerUrl      String?
+  primaryColor   String?  @default("#229C62")
+  accentColor    String?  @default("#7AD62A")
+  motto          String?
+  tagline        String?
+
   @@index([ownerId])
   @@index([inviteCode])
 }

@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Request, Response, NextFunction } from 'express';
 import { API_PREFIX_V1 } from './common/api-version';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +40,18 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     maxAge: 86400,
+  });
+
+  // Static file serving for uploads
+  const uploadsDir = join(process.cwd(), 'uploads');
+  if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
+  expressApp.use('/api/v1/upload/files', (req: Request, res: Response, next: NextFunction) => {
+    const filePath = join(uploadsDir, req.url);
+    if (existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      next();
+    }
   });
 
   // Request logging

@@ -53,6 +53,7 @@ import { NavigationModule } from './common/navigation.module';
 import { AcademicModule } from './common/academic.module';
 import { GradeBookModule } from './common/grade-book.module';
 import { AiModule } from './common/ai.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -113,6 +114,7 @@ import { AiModule } from './common/ai.module';
     AcademicModule,
     GradeBookModule,
     AiModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

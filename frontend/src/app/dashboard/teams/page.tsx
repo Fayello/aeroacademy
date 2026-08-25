@@ -1,23 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 import {
-  Users,
-  Trophy,
-  BookOpen,
-  Star,
-  ChevronRight,
-  Loader2,
-  Crown,
-  Plus,
-  LogIn,
-  X,
-  Copy,
-  Check,
-  Shield,
+  Users, Trophy, BookOpen, Star, ChevronRight, Loader2, Crown,
+  Plus, LogIn, X, Copy, Check, Shield, Palette, Camera, Pencil, Image as ImageIcon,
 } from "lucide-react";
+import toast from "@/lib/toast";
+
+const PRESET_COLORS = [
+  { primary: "#229C62", accent: "#7AD62A", label: "Green" },
+  { primary: "#3B82F6", accent: "#60A5FA", label: "Blue" },
+  { primary: "#8B5CF6", accent: "#A78BFA", label: "Purple" },
+  { primary: "#F59E0B", accent: "#FCD34D", label: "Amber" },
+  { primary: "#EF4444", accent: "#F87171", label: "Red" },
+  { primary: "#EC4899", accent: "#F472B6", label: "Pink" },
+  { primary: "#06B6D4", accent: "#22D3EE", label: "Cyan" },
+  { primary: "#F97316", accent: "#FB923C", label: "Orange" },
+];
 
 interface TeamMember {
   id: string;
@@ -47,6 +48,12 @@ interface Team {
   maxMembers?: number;
   members?: TeamMember[];
   courses?: TeamCourse[];
+  avatarUrl?: string;
+  bannerUrl?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  motto?: string;
+  tagline?: string;
 }
 
 export default function TeamsPage() {
@@ -57,23 +64,33 @@ export default function TeamsPage() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [createName, setCreateName] = useState("");
   const [createDesc, setCreateDesc] = useState("");
   const [createVisibility, setCreateVisibility] = useState<"PUBLIC" | "PRIVATE">("PUBLIC");
+  const [createMotto, setCreateMotto] = useState("");
+  const [createTagline, setCreateTagline] = useState("");
+  const [createPrimary, setCreatePrimary] = useState("#229C62");
+  const [createAccent, setCreateAccent] = useState("#7AD62A");
+  const [createAvatar, setCreateAvatar] = useState("");
+  const [createBanner, setCreateBanner] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState<string | null>(null);
+  const avatarRef = useRef<HTMLInputElement>(null);
+  const bannerRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const mine = await fetchApi<Team>("/team-enrollments/mine").catch(() => null);
+        const mine = await fetchApi<Team>("/teams/mine").catch(() => null);
         if (mine) {
           setMyTeam(mine);
         } else {
-          const data = await fetchApi<Team[]>("/team-enrollments");
+          const data = await fetchApi<Team[]>("/teams");
           setTeams(data);
         }
       } catch {
@@ -85,19 +102,82 @@ export default function TeamsPage() {
     load();
   }, []);
 
+  async function uploadImage(file: File, type: "avatar" | "banner"): Promise<string | null> {
+    const formData = new FormData();
+    formData.append("file", file);
+    setUploading(type);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/v1/upload/team`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return data.url;
+    } catch {
+      toast.error(`Failed to upload ${type}`);
+      return null;
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>, mode: "create" | "edit") {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const url = await uploadImage(file, "avatar");
+      if (url) {
+        if (mode === "create") setCreateAvatar(url);
+        else handleEditField("avatarUrl", url);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>, mode: "create" | "edit") {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const url = await uploadImage(file, "banner");
+      if (url) {
+        if (mode === "create") setCreateBanner(url);
+        else handleEditField("bannerUrl", url);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
   async function handleCreate() {
     if (!createName.trim()) return;
     setCreating(true);
     setError("");
     try {
-      const team = await fetchApi<Team>("/team-enrollments/create", {
+      const team = await fetchApi<Team>("/teams/create", {
         method: "POST",
-        body: JSON.stringify({ name: createName.trim(), description: createDesc.trim() || undefined, visibility: createVisibility }),
+        body: JSON.stringify({
+          name: createName.trim(),
+          description: createDesc.trim() || undefined,
+          visibility: createVisibility,
+          avatarUrl: createAvatar || undefined,
+          bannerUrl: createBanner || undefined,
+          primaryColor: createPrimary,
+          accentColor: createAccent,
+          motto: createMotto.trim() || undefined,
+          tagline: createTagline.trim() || undefined,
+        }),
       });
       setMyTeam(team);
       setShowCreate(false);
       setCreateName("");
       setCreateDesc("");
+      setCreateMotto("");
+      setCreateTagline("");
+      setCreateAvatar("");
+      setCreateBanner("");
     } catch (err: any) {
       setError(err?.message || "Failed to create team");
     } finally {
@@ -110,7 +190,7 @@ export default function TeamsPage() {
     setJoining(true);
     setError("");
     try {
-      const team = await fetchApi<Team>("/team-enrollments/join", {
+      const team = await fetchApi<Team>("/teams/join", {
         method: "POST",
         body: JSON.stringify({ inviteCode: joinCode.trim().toUpperCase() }),
       });
@@ -127,9 +207,9 @@ export default function TeamsPage() {
   async function handleLeave() {
     if (!confirm("Are you sure you want to leave this team?")) return;
     try {
-      await fetchApi("/team-enrollments/leave", { method: "DELETE" });
+      await fetchApi("/teams/leave", { method: "DELETE" });
       setMyTeam(null);
-      const data = await fetchApi<Team[]>("/team-enrollments");
+      const data = await fetchApi<Team[]>("/teams");
       setTeams(data);
     } catch (err: any) {
       setError(err?.message || "Failed to leave team");
@@ -145,7 +225,7 @@ export default function TeamsPage() {
   async function openTeam(team: Team) {
     setDetailLoading(true);
     try {
-      const detail = await fetchApi<Team>(`/team-enrollments/${team.id}`);
+      const detail = await fetchApi<Team>(`/teams/${team.id}`);
       setSelectedTeam(detail);
     } catch {
       setSelectedTeam(team);
@@ -154,10 +234,69 @@ export default function TeamsPage() {
     }
   }
 
+  const [editFields, setEditFields] = useState<Partial<Team>>({});
+
+  function handleEditField(field: string, value: string) {
+    setEditFields((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSaveEdit() {
+    if (!myTeam) return;
+    try {
+      const updated = await fetchApi<Team>(`/teams/${myTeam.id}/update`, {
+        method: "POST",
+        body: JSON.stringify(editFields),
+      });
+      setMyTeam({ ...myTeam, ...updated });
+      setShowEdit(false);
+      setEditFields({});
+      toast.success("Team updated");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update team");
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 size={20} className="text-[#229C62] animate-spin" />
+      </div>
+    );
+  }
+
+  // ─── HELPER: Team Banner + Avatar ────────────────────────
+  function TeamHeader({ team, size = "lg" }: { team: Team; size?: "sm" | "lg" }) {
+    const primary = team.primaryColor || "#229C62";
+    const accent = team.accentColor || "#7AD62A";
+    const isLg = size === "lg";
+
+    return (
+      <div className="relative overflow-hidden rounded-xl" style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}>
+        {team.bannerUrl && (
+          <img src={team.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+        )}
+        <div className={`relative z-10 flex items-center gap-3 ${isLg ? "p-5" : "p-3"}`}>
+          {team.avatarUrl ? (
+            <img
+              src={team.avatarUrl}
+              alt={team.name}
+              className={`${isLg ? "w-14 h-14" : "w-10 h-10"} rounded-xl object-cover border-2 border-white/30 shrink-0`}
+            />
+          ) : (
+            <div className={`${isLg ? "w-14 h-14" : "w-10 h-10"} rounded-xl bg-white/20 flex items-center justify-center border-2 border-white/30 shrink-0`}>
+              <Users size={isLg ? 24 : 18} className="text-white" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className={`font-bold text-white truncate ${isLg ? "text-lg" : "text-sm"}`}>{team.name}</h3>
+            {team.motto && (
+              <p className="text-white/80 text-xs truncate italic">&ldquo;{team.motto}&rdquo;</p>
+            )}
+            {team.tagline && isLg && (
+              <p className="text-white/60 text-xs truncate mt-0.5">{team.tagline}</p>
+            )}
+          </div>
+        </div>
       </div>
     );
   }
@@ -177,19 +316,11 @@ export default function TeamsPage() {
           &larr; Back to Teams
         </button>
 
-        <div className="flex items-center gap-3">
-          <div className="bg-[#E9F8EE] p-3 rounded-xl shrink-0">
-            <Users size={24} className="text-[#229C62]" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight truncate">
-              {selectedTeam.name}
-            </h1>
-            {selectedTeam.description && (
-              <p className="text-sm text-slate-500 mt-0.5 truncate">{selectedTeam.description}</p>
-            )}
-          </div>
-        </div>
+        <TeamHeader team={selectedTeam} />
+
+        {selectedTeam.description && (
+          <p className="text-sm text-slate-600">{selectedTeam.description}</p>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-4">
@@ -242,9 +373,7 @@ export default function TeamsPage() {
                   key={member.id}
                   className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0"
                 >
-                  <span className="text-sm font-bold text-slate-400 w-6 text-center">
-                    {idx + 1}
-                  </span>
+                  <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
                   <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
                     <span className="text-xs font-bold text-[#0F203A]">
                       {member.name?.charAt(0)?.toUpperCase() || "?"}
@@ -256,9 +385,7 @@ export default function TeamsPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Star size={12} className="text-amber-400" />
-                    <span className="text-sm font-semibold text-slate-700">
-                      {member.xp?.toLocaleString() || 0}
-                    </span>
+                    <span className="text-sm font-semibold text-slate-700">{member.xp?.toLocaleString() || 0}</span>
                   </div>
                 </div>
               ))}
@@ -271,10 +398,7 @@ export default function TeamsPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-3">Enrolled Courses</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {selectedTeam.courses.map((course) => (
-                <div
-                  key={course.id}
-                  className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3"
-                >
+                <div key={course.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3">
                   <div className="bg-blue-100 p-2 rounded-lg">
                     <BookOpen size={16} className="text-blue-600" />
                   </div>
@@ -282,10 +406,7 @@ export default function TeamsPage() {
                     <p className="text-sm font-medium text-slate-900 truncate">{course.title}</p>
                     {course.progress !== undefined && (
                       <div className="mt-1.5 w-full bg-slate-100 rounded-full h-1.5">
-                        <div
-                          className="bg-[#229C62] h-1.5 rounded-full transition-all"
-                          style={{ width: `${Math.min(course.progress, 100)}%` }}
-                        />
+                        <div className="bg-[#229C62] h-1.5 rounded-full transition-all" style={{ width: `${Math.min(course.progress, 100)}%` }} />
                       </div>
                     )}
                   </div>
@@ -303,19 +424,39 @@ export default function TeamsPage() {
     const sortedMembers = myTeam.members
       ? [...myTeam.members].sort((a, b) => b.xp - a.xp)
       : [];
+    const isOwner = myTeam.ownerId === (typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}").id : "");
 
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         <PageHeader title="My Team" description={myTeam.name} />
 
+        <TeamHeader team={myTeam} />
+
+        {myTeam.motto && !showEdit && (
+          <p className="text-sm text-slate-500 italic">&ldquo;{myTeam.motto}&rdquo;</p>
+        )}
+
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="bg-[#E9F8EE] p-3 rounded-xl">
-            <Users size={24} className="text-[#229C62]" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{myTeam.name}</h1>
-            {myTeam.description && <p className="text-sm text-slate-500">{myTeam.description}</p>}
-          </div>
+          {isOwner && (
+            <button
+              onClick={() => {
+                setEditFields({
+                  name: myTeam.name,
+                  description: myTeam.description || "",
+                  motto: myTeam.motto || "",
+                  tagline: myTeam.tagline || "",
+                  avatarUrl: myTeam.avatarUrl || "",
+                  bannerUrl: myTeam.bannerUrl || "",
+                  primaryColor: myTeam.primaryColor || "#229C62",
+                  accentColor: myTeam.accentColor || "#7AD62A",
+                });
+                setShowEdit(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#229C62] bg-[#E9F8EE] rounded-lg hover:bg-[#229C62]/20 transition-colors"
+            >
+              <Pencil size={12} /> Customize
+            </button>
+          )}
           <button
             onClick={handleLeave}
             className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
@@ -323,6 +464,121 @@ export default function TeamsPage() {
             Leave Team
           </button>
         </div>
+
+        {showEdit && (
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <Palette size={14} /> Customize Team
+              </h3>
+              <button onClick={() => setShowEdit(false)} className="text-slate-400 hover:text-slate-600">
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Avatar */}
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                {(editFields.avatarUrl || myTeam.avatarUrl) ? (
+                  <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-slate-200" />
+                ) : (
+                  <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200">
+                    <Camera size={20} className="text-slate-400" />
+                  </div>
+                )}
+                <button
+                  onClick={() => avatarRef.current?.click()}
+                  className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                >
+                  <Camera size={16} className="text-white" />
+                </button>
+                <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleAvatarUpload(e, "edit")} />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-700">Team Avatar</p>
+                <p className="text-xs text-slate-400">Square image, recommended 128x128</p>
+              </div>
+            </div>
+
+            {/* Banner */}
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1.5 block">Banner Image</label>
+              <div className="relative group rounded-xl overflow-hidden border border-slate-200">
+                {(editFields.bannerUrl || myTeam.bannerUrl) ? (
+                  <img src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" className="w-full h-24 object-cover" />
+                ) : (
+                  <div className="w-full h-24 bg-gradient-to-r from-[#0F203A] to-[#229C62] flex items-center justify-center">
+                    <ImageIcon size={20} className="text-white/40" />
+                  </div>
+                )}
+                <button
+                  onClick={() => bannerRef.current?.click()}
+                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                >
+                  <Camera size={16} className="text-white" />
+                </button>
+                <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleBannerUpload(e, "edit")} />
+              </div>
+            </div>
+
+            {/* Colors */}
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Team Colors</label>
+              <div className="flex flex-wrap gap-2">
+                {PRESET_COLORS.map((preset) => (
+                  <button
+                    key={preset.label}
+                    onClick={() => { handleEditField("primaryColor", preset.primary); handleEditField("accentColor", preset.accent); }}
+                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                      editFields.primaryColor === preset.primary ? "border-slate-900 scale-110" : "border-transparent"
+                    }`}
+                    style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.accent})` }}
+                    title={preset.label}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Fields */}
+            <input
+              type="text"
+              value={(editFields.name as string) || ""}
+              onChange={(e) => handleEditField("name", e.target.value)}
+              placeholder="Team name"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            />
+            <input
+              type="text"
+              value={(editFields.description as string) || ""}
+              onChange={(e) => handleEditField("description", e.target.value)}
+              placeholder="Description"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            />
+            <input
+              type="text"
+              value={(editFields.motto as string) || ""}
+              onChange={(e) => handleEditField("motto", e.target.value)}
+              placeholder="Team motto (shown on banner)"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            />
+            <input
+              type="text"
+              value={(editFields.tagline as string) || ""}
+              onChange={(e) => handleEditField("tagline", e.target.value)}
+              placeholder="Short tagline"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                Cancel
+              </button>
+              <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] transition-colors">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        )}
 
         {myTeam.inviteCode && (
           <div className="bg-[#E9F8EE] border border-[#229C62]/20 rounded-xl p-4 flex items-center justify-between">
@@ -342,21 +598,15 @@ export default function TeamsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
-              <Crown size={14} /> Owner
-            </div>
+            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Crown size={14} /> Owner</div>
             <p className="text-sm font-semibold text-slate-900">{myTeam.ownerName}</p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
-              <Users size={14} /> Members
-            </div>
+            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Users size={14} /> Members</div>
             <p className="text-sm font-semibold text-slate-900">{myTeam.memberCount}</p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
-              <Trophy size={14} /> Total XP
-            </div>
+            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Trophy size={14} /> Total XP</div>
             <p className="text-sm font-semibold text-slate-900">{myTeam.totalXp.toLocaleString()}</p>
           </div>
         </div>
@@ -366,15 +616,10 @@ export default function TeamsPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-3">Team Members</h2>
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
               {sortedMembers.map((member, idx) => (
-                <div
-                  key={member.id}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0"
-                >
+                <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0">
                   <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
                   <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
-                    <span className="text-xs font-bold text-[#0F203A]">
-                      {member.name?.charAt(0)?.toUpperCase() || "?"}
-                    </span>
+                    <span className="text-xs font-bold text-[#0F203A]">{member.name?.charAt(0)?.toUpperCase() || "?"}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
@@ -396,10 +641,7 @@ export default function TeamsPage() {
   // ─── NO TEAM — BROWSE / CREATE / JOIN ─────────────────
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <PageHeader
-        title="Teams"
-        description="Create or join a team to collaborate with other engineers"
-      />
+      <PageHeader title="Teams" description="Create or join a team to collaborate with other engineers" />
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">{error}</div>
@@ -428,6 +670,59 @@ export default function TeamsPage() {
               <X size={16} />
             </button>
           </div>
+
+          {/* Avatar + Banner Preview */}
+          <div className="relative rounded-xl overflow-hidden" style={{ background: `linear-gradient(135deg, ${createPrimary}, ${createAccent})` }}>
+            {createBanner ? (
+              <img src={createBanner} alt="" className="w-full h-24 object-cover opacity-60" />
+            ) : (
+              <div className="w-full h-24" />
+            )}
+            <div className="absolute bottom-3 left-3">
+              <div className="relative group">
+                {createAvatar ? (
+                  <img src={createAvatar} alt="" className="w-12 h-12 rounded-xl object-cover border-2 border-white/30" />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center border-2 border-white/30">
+                    <Camera size={16} className="text-white/60" />
+                  </div>
+                )}
+                <button
+                  onClick={() => avatarRef.current?.click()}
+                  className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                >
+                  <Camera size={12} className="text-white" />
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => bannerRef.current?.click()}
+              className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-black/40 text-white text-[10px] opacity-0 group-hover:opacity-100 hover:bg-black/60 transition-all flex items-center gap-1"
+            >
+              <Camera size={10} /> Banner
+            </button>
+            <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleAvatarUpload(e, "create")} />
+            <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleBannerUpload(e, "create")} />
+          </div>
+
+          {/* Color Presets */}
+          <div>
+            <label className="text-xs font-medium text-slate-500 mb-1.5 block flex items-center gap-1"><Palette size={12} /> Team Colors</label>
+            <div className="flex flex-wrap gap-2">
+              {PRESET_COLORS.map((preset) => (
+                <button
+                  key={preset.label}
+                  onClick={() => { setCreatePrimary(preset.primary); setCreateAccent(preset.accent); }}
+                  className={`w-7 h-7 rounded-lg border-2 transition-all ${
+                    createPrimary === preset.primary ? "border-slate-900 scale-110" : "border-transparent"
+                  }`}
+                  style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.accent})` }}
+                  title={preset.label}
+                />
+              ))}
+            </div>
+          </div>
+
           <input
             type="text"
             value={createName}
@@ -442,13 +737,25 @@ export default function TeamsPage() {
             placeholder="Description (optional)"
             className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
           />
+          <input
+            type="text"
+            value={createMotto}
+            onChange={(e) => setCreateMotto(e.target.value)}
+            placeholder="Team motto (optional, shown on banner)"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+          />
+          <input
+            type="text"
+            value={createTagline}
+            onChange={(e) => setCreateTagline(e.target.value)}
+            placeholder="Short tagline (optional)"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+          />
           <div className="flex gap-2">
             <button
               onClick={() => setCreateVisibility("PUBLIC")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PUBLIC"
-                  ? "bg-[#229C62] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                createVisibility === "PUBLIC" ? "bg-[#229C62] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               <Users size={12} /> Public
@@ -456,9 +763,7 @@ export default function TeamsPage() {
             <button
               onClick={() => setCreateVisibility("PRIVATE")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PRIVATE"
-                  ? "bg-[#229C62] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                createVisibility === "PRIVATE" ? "bg-[#229C62] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               <Shield size={12} /> Private
@@ -516,33 +821,47 @@ export default function TeamsPage() {
             <button
               key={team.id}
               onClick={() => openTeam(team)}
-              className="bg-white border border-slate-200 rounded-xl p-5 text-left hover:shadow-md hover:border-[#229C62]/20 transition-all group"
+              className="bg-white border border-slate-200 rounded-xl overflow-hidden text-left hover:shadow-md hover:border-[#229C62]/20 transition-all group"
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="bg-[#E9F8EE] p-2 rounded-lg group-hover:bg-[#229C62]/30 transition-colors">
-                  <Users size={18} className="text-[#229C62]" />
-                </div>
-                <ChevronRight
-                  size={16}
-                  className="text-slate-300 group-hover:text-[#229C62] transition-colors mt-1"
-                />
+              {/* Team Banner */}
+              <div
+                className="relative h-16"
+                style={{ background: `linear-gradient(135deg, ${team.primaryColor || "#229C62"}, ${team.accentColor || "#7AD62A"})` }}
+              >
+                {team.bannerUrl && (
+                  <img src={team.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+                )}
+                {team.avatarUrl ? (
+                  <img src={team.avatarUrl} alt="" className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm" />
+                ) : (
+                  <div className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl bg-white flex items-center justify-center border-2 border-white shadow-sm">
+                    <Users size={16} className="text-[#229C62]" />
+                  </div>
+                )}
+                <ChevronRight size={16} className="absolute top-3 right-3 text-white/40 group-hover:text-white/80 transition-colors" />
               </div>
-              <h3 className="text-base font-semibold text-slate-900 mb-1">{team.name}</h3>
-              {team.description && (
-                <p className="text-xs text-slate-500 line-clamp-2 mb-3">{team.description}</p>
-              )}
-              <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-                <Crown size={12} className="text-amber-400" />
-                <span>{team.ownerName}</span>
-              </div>
-              <div className="flex items-center gap-4 text-xs text-slate-500">
-                <div className="flex items-center gap-1">
-                  <Users size={12} />
-                  <span>{team.memberCount} member{team.memberCount !== 1 ? "s" : ""}</span>
+
+              <div className="p-4 pt-6">
+                <h3 className="text-sm font-semibold text-slate-900 mb-0.5">{team.name}</h3>
+                {team.motto && (
+                  <p className="text-[10px] text-slate-400 italic mb-1">&ldquo;{team.motto}&rdquo;</p>
+                )}
+                {team.description && (
+                  <p className="text-xs text-slate-500 line-clamp-2 mb-2">{team.description}</p>
+                )}
+                <div className="flex items-center gap-2 text-[10px] text-slate-400 mb-2">
+                  <Crown size={10} className="text-amber-400" />
+                  <span>{team.ownerName}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Trophy size={12} className="text-amber-500" />
-                  <span>{team.totalXp.toLocaleString()} XP</span>
+                <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                  <div className="flex items-center gap-1">
+                    <Users size={10} />
+                    <span>{team.memberCount} member{team.memberCount !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Trophy size={10} className="text-amber-500" />
+                    <span>{team.totalXp.toLocaleString()} XP</span>
+                  </div>
                 </div>
               </div>
             </button>

@@ -35,9 +35,19 @@ export class TeamEnrollmentsController {
   @Post('create')
   createTeam(
     @Req() req: any,
-    @Body() body: { name: string; description?: string; visibility?: string },
+    @Body() body: {
+      name: string;
+      description?: string;
+      visibility?: string;
+      avatarUrl?: string;
+      bannerUrl?: string;
+      primaryColor?: string;
+      accentColor?: string;
+      motto?: string;
+      tagline?: string;
+    },
   ) {
-    return this.teamEnrollmentsService.createTeam(req.user.id, body.name, body.description, body.visibility);
+    return this.teamEnrollmentsService.createTeam(req.user.id, body.name, body.description, body.visibility, body);
   }
 
   @Post('join')
@@ -78,6 +88,24 @@ export class TeamEnrollmentsController {
   @Post(':teamId/refresh-invite')
   refreshInviteCode(@Param('teamId') teamId: string, @Req() req: any) {
     return this.teamEnrollmentsService.refreshInviteCode(teamId, req.user.id);
+  }
+
+  @Post(':teamId/update')
+  updateTeam(
+    @Param('teamId') teamId: string,
+    @Req() req: any,
+    @Body() body: {
+      name?: string;
+      description?: string;
+      avatarUrl?: string;
+      bannerUrl?: string;
+      primaryColor?: string;
+      accentColor?: string;
+      motto?: string;
+      tagline?: string;
+    },
+  ) {
+    return this.teamEnrollmentsService.updateTeam(teamId, req.user.id, body);
   }
 
   @Post(':teamId/enroll/:courseId')
