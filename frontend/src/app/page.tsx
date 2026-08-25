@@ -252,7 +252,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mt-4 bg-white rounded-xl p-4 border border-slate-200 flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {["bg-[#E9F8EE]0", "bg-blue-500", "bg-violet-500", "bg-amber-500"].map((color, i) => (
+                    {["bg-[#229C62]", "bg-blue-500", "bg-violet-500", "bg-amber-500"].map((color, i) => (
                       <div key={i} className={`w-8 h-8 rounded-full ${color} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}>
                         {String.fromCharCode(65 + i)}
                       </div>
@@ -657,10 +657,10 @@ export default function LandingPage() {
                 { label: "Documentation", href: "#" },
               ],
               Company: [
-                { label: "About Us", href: "#" },
+                { label: "About Us", href: "/about" },
                 { label: "Contact", href: "mailto:contact@xpertclass.academy" },
-                { label: "Privacy Policy", href: "#" },
-                { label: "Terms of Service", href: "#" },
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Terms of Service", href: "/terms" },
               ],
             }).map(([category, links]) => (
               <div key={category}>

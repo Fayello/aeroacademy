@@ -123,8 +123,8 @@ function VerifyEmailForm() {
             <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
           </div>
 
-          <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-5">
-            <Mail className="text-indigo-600" size={24} />
+          <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-5">
+            <Mail className="text-emerald-600" size={24} />
           </div>
 
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Verify your email</h1>
@@ -146,7 +146,7 @@ function VerifyEmailForm() {
                   onChange={(e) => handleChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
                   onPaste={handlePaste}
-                  className="w-12 h-14 text-center text-xl font-bold text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 bg-white"
+                  className="w-12 h-14 text-center text-xl font-bold text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 bg-white"
                 />
               ))}
             </div>
@@ -154,7 +154,7 @@ function VerifyEmailForm() {
             <button
               type="submit"
               disabled={loading || code.join("").length !== 6}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -173,7 +173,7 @@ function VerifyEmailForm() {
               <button
                 onClick={handleResend}
                 disabled={resending}
-                className="text-indigo-600 hover:text-indigo-700 font-medium disabled:text-slate-400"
+                className="text-emerald-600 hover:text-emerald-700 font-medium disabled:text-slate-400"
               >
                 {resending ? "Sending..." : "Resend code"}
               </button>

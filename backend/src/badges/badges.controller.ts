@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { BadgesService } from './badges.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -48,5 +48,12 @@ export class BadgesController {
     },
   ) {
     return this.badgesService.createBadge(body);
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  async deleteBadge(@Param('id') id: string) {
+    return this.badgesService.deleteBadge(id);
   }
 }

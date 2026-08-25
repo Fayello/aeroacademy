@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
@@ -628,14 +629,14 @@ export class CoursesService {
 
   async createReview(userId: string, courseId: string, rating: number, comment?: string) {
     if (rating < 1 || rating > 5) {
-      throw new Error('Rating must be between 1 and 5');
+      throw new BadRequestException('Rating must be between 1 and 5');
     }
 
     const enrollment = await this.prisma.courseEnrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
     if (!enrollment) {
-      throw new Error('You must be enrolled to review this course');
+      throw new ForbiddenException('You must be enrolled to review this course');
     }
 
     return this.prisma.courseReview.upsert({

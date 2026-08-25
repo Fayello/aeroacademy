@@ -25,7 +25,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
 import { useNavigation, type NavItem, type NavSection } from "@/lib/navigation";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const ICON_MAP: Record<string, typeof Home> = {
   Home,
@@ -316,9 +315,8 @@ export default function Sidebar() {
           <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#229C62]" : "text-slate-400"} />
           Profile
         </Link>
-        <div className="flex items-center justify-between px-1">
+        <div className="flex items-center px-1">
           <LanguageSwitcher />
-          <ThemeToggle />
         </div>
         <button
           onClick={logout}

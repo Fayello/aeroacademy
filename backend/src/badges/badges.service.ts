@@ -135,4 +135,10 @@ export class BadgesService {
       },
     });
   }
+
+  async deleteBadge(id: string) {
+    const badge = await this.prisma.badge.findUnique({ where: { id } });
+    if (!badge) throw new Error('Badge not found');
+    return this.prisma.badge.delete({ where: { id } });
+  }
 }
