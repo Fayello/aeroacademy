@@ -6,6 +6,7 @@ import { LabAnalyticsService } from './lab-analytics.service';
 import { AssessmentIntelligenceService } from './assessment-intelligence.service';
 import { PredictiveAnalyticsService } from './predictive-analytics.service';
 import { TutoringService } from './tutoring.service';
+import { ContentRefreshService } from './content-refresh.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -22,6 +23,7 @@ export class AiController {
     private readonly intelligenceService: AssessmentIntelligenceService,
     private readonly predictiveService: PredictiveAnalyticsService,
     private readonly tutoringService: TutoringService,
+    private readonly contentRefreshService: ContentRefreshService,
   ) {}
 
   @Post('coach')
@@ -232,5 +234,49 @@ export class AiController {
   @Roles('ADMIN', 'PROFESSOR', 'TA')
   async getTutoringAnalytics(@Param('cohortId') cohortId?: string) {
     return this.tutoringService.getTutoringAnalytics(cohortId);
+  }
+
+  // ─── CONTENT REFRESH ───────────────────────────────────
+
+  @Get('content-refresh/report')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getFreshnessReport() {
+    return this.contentRefreshService.getFreshnessReport();
+  }
+
+  @Get('content-refresh/score-all')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async scoreAllContent() {
+    return this.contentRefreshService.scoreAllContent();
+  }
+
+  @Get('content-refresh/score/lab/:labId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async scoreLab(@Param('labId') labId: string) {
+    return this.contentRefreshService.scoreLabRelevance(labId);
+  }
+
+  @Get('content-refresh/score/course/:courseId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async scoreCourse(@Param('courseId') courseId: string) {
+    return this.contentRefreshService.scoreCourseRelevance(courseId);
+  }
+
+  @Get('content-refresh/suggestions/:labId')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getLabSuggestions(@Param('labId') labId: string) {
+    return this.contentRefreshService.suggestLabUpdates(labId);
+  }
+
+  @Get('content-refresh/history')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'PROFESSOR', 'TA')
+  async getRefreshHistory() {
+    return this.contentRefreshService.getRefreshHistory();
   }
 }
