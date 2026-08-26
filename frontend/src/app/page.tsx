@@ -10,6 +10,8 @@ import {
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";
 import HeroParticles from "@/components/HeroParticles";
+import AngularDivider from "@/components/ui/AngularDivider";
+import SectionLabel from "@/components/ui/SectionLabel";
 import type { MasterClass, Trainer } from "@/types/api";
 
 const AUDIENCES = [
@@ -269,8 +271,12 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* ═══════════ SKILL FUSION LAB ═══════════ */}
       <SkillFusionLab />
+
+      <AngularDivider />
 
       {/* ═══════════ AUDIENCE SEGMENTATION ═══════════ */}
       <section id="enterprise" className="py-28 px-6 relative overflow-hidden">
@@ -308,6 +314,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <AngularDivider />
 
       {/* ═══════════ LEARNING PATHS (TABBED) ═══════════ */}
       <section id="courses" className="py-28 px-6 relative overflow-hidden">
@@ -358,6 +366,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* ═══════════ HOW IT WORKS ═══════════ */}
       <section className="py-28 px-6 relative overflow-hidden scanline-overlay">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0F203A]" />
@@ -385,6 +395,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* PLATFORM FEATURES */}
       <section id="platform" className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -406,6 +418,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <AngularDivider />
 
       {/* LAB SHOWCASE */}
       <section id="labs" className="py-28 px-6 relative overflow-hidden">
@@ -466,6 +480,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* ═══════════ MASTER CLASSES ═══════════ */}
       <section id="master-classes" className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -519,6 +535,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* ═══════════ 1-ON-1 TRAINING ═══════════ */}
       <section id="training" className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -556,6 +574,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* TESTIMONIALS */}
       <section className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -579,6 +599,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <AngularDivider />
+
       {/* BIG STATS */}
       <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden scanline-overlay">
         <div className="absolute inset-0 angular-grid-bg" />
@@ -599,6 +621,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <AngularDivider color="#7AD62A" />
 
       {/* CTA */}
       <section className="py-28 px-6 relative overflow-hidden">

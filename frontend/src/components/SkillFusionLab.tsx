@@ -1015,7 +1015,7 @@ export default function SkillFusionLab() {
   }, [spawnParticles, spawnExplosion]);
 
   return (
-    <section className="py-16 px-4 sm:px-6 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
+    <section className="py-16 px-4 sm:px-6 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden scanline-overlay">
       <style dangerouslySetInnerHTML={{ __html: FUSION_KEYFRAMES }} />
       {screenFlash && (
         <div className="fixed inset-0 z-50 pointer-events-none"
@@ -1026,10 +1026,7 @@ export default function SkillFusionLab() {
           }}
         />
       )}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: "linear-gradient(rgba(16,185,129,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.3) 1px, transparent 1px)",
-        backgroundSize: "60px 60px"
-      }} />
+      <div className="absolute inset-0 angular-grid-bg opacity-50" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-8">
@@ -1142,7 +1139,7 @@ export default function SkillFusionLab() {
 
         {/* Discovery Journal */}
         {showJournal && (
-          <div className="mb-4 p-4 sm:p-5 rounded-2xl bg-slate-800/90 border border-slate-700/50 backdrop-blur-sm max-h-96 overflow-y-auto">
+          <div className="mb-4 p-4 sm:p-5 angular-card bg-slate-800/90 border border-slate-700/50 backdrop-blur-sm max-h-96 overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Discovery Journal</h3>
@@ -1155,7 +1152,7 @@ export default function SkillFusionLab() {
                 <p className="text-slate-500 text-xs text-center py-6">No discoveries yet. Click skills from the palette, then drag them together!</p>
               )}
               {[...discovered].reverse().map((d) => (
-                <div key={d.id} className="p-3 rounded-xl bg-slate-900/60 border border-slate-700/30 transition-all hover:border-slate-600/50">
+                <div key={d.id} className="p-3 angular-card bg-slate-900/60 border border-slate-700/30 transition-all hover:border-slate-600/50">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
@@ -1191,7 +1188,7 @@ export default function SkillFusionLab() {
 
         {/* Custom Creator */}
         {showCreator && (
-          <div className="mb-4 p-4 rounded-2xl bg-slate-800/90 border border-amber-500/20 backdrop-blur-sm">
+          <div className="mb-4 p-4 angular-card bg-slate-800/90 border border-amber-500/20 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider">Create a Custom Skill</h3>
               <button onClick={() => setShowCreator(false)} className="text-slate-500 hover:text-white cursor-pointer" aria-label="Close custom skill creator"><X size={14} /></button>
@@ -1212,7 +1209,7 @@ export default function SkillFusionLab() {
 
         {/* Admin Panel */}
         {showAdmin && (
-          <div className="mb-4 p-4 sm:p-5 rounded-2xl bg-slate-800/90 border border-violet-500/20 backdrop-blur-sm max-h-96 overflow-y-auto">
+          <div className="mb-4 p-4 sm:p-5 angular-card bg-slate-800/90 border border-violet-500/20 backdrop-blur-sm max-h-96 overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Fusion Admin Panel</h3>
@@ -1231,7 +1228,7 @@ export default function SkillFusionLab() {
                 const isEditing = editingFusion === key;
                 const isCustom = !!fusionEdits[key];
                 return (
-                  <div key={key} className={`p-3 rounded-xl border transition-all ${isCustom ? "bg-violet-900/10 border-violet-500/20" : "bg-slate-900/60 border-slate-700/30"}`}>
+                  <div key={key} className={`p-3 angular-card border transition-all ${isCustom ? "bg-violet-900/10 border-violet-500/20" : "bg-slate-900/60 border-slate-700/30"}`}>
                     {isEditing ? (
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
@@ -1343,7 +1340,7 @@ export default function SkillFusionLab() {
         </div>
 
         {/* Canvas */}
-        <div ref={containerRef} className="relative w-full h-[450px] sm:h-[500px] rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+        <div ref={containerRef} className="relative w-full h-[450px] sm:h-[500px] angular-card border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
           <canvas ref={canvasRef} className="absolute inset-0 cursor-grab active:cursor-grabbing" />
           {arenaEmpty && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
