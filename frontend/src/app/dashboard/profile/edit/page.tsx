@@ -181,7 +181,8 @@ export default function ProfileEditPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#229C62] to-[#7AD62A] p-8 text-white">
+      <div className="angular-card relative overflow-hidden bg-gradient-to-br from-[#0F203A] via-[#229C62] to-[#7AD62A] p-8 text-white">
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.06] pointer-events-none" />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-4 right-4 w-32 h-32 rounded-full bg-white/20 blur-2xl" />
           <div className="absolute bottom-4 left-4 w-24 h-24 rounded-full bg-white/10 blur-xl" />
@@ -197,7 +198,7 @@ export default function ProfileEditPage() {
       </div>
 
       {/* Profile Form */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="angular-card bg-white overflow-hidden">
         <div className="p-6 border-b border-slate-100">
           <h2 className="text-lg font-semibold text-slate-900">Personal Information</h2>
           <p className="text-sm text-slate-500 mt-0.5">Your public profile details</p>

@@ -178,9 +178,11 @@ export default function CommandCenter() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link
           href="/dashboard/courses"
-          className="angular-card p-6 group hover:border-[#229C62]/40 transition-all"
+          className="angular-card p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-1"
         >
-          <BookOpen size={28} className="text-blue-500 mb-3" />
+          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+            <BookOpen size={22} className="text-blue-500" />
+          </div>
           <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Academy</h3>
           <p className="text-sm text-slate-500 mb-4">Structured courses from fundamentals to advanced</p>
           <span className="inline-flex items-center gap-1 text-sm font-medium text-[#229C62]">
@@ -190,9 +192,11 @@ export default function CommandCenter() {
 
         <Link
           href="/dashboard/labs"
-          className="angular-card p-6 group hover:border-[#229C62]/40 transition-all"
+          className="angular-card p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-2"
         >
-          <Terminal size={28} className="text-emerald-500 mb-3" />
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+            <Terminal size={22} className="text-emerald-500" />
+          </div>
           <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Labs</h3>
           <p className="text-sm text-slate-500 mb-4">Hands-on labs with real Docker environments</p>
           <span className="inline-flex items-center gap-1 text-sm font-medium text-[#229C62]">
@@ -202,9 +206,11 @@ export default function CommandCenter() {
 
         <Link
           href="/dashboard/leaderboard"
-          className="angular-card p-6 group hover:border-[#229C62]/40 transition-all"
+          className="angular-card p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-3"
         >
-          <Trophy size={28} className="text-amber-500 mb-3" />
+          <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+            <Trophy size={22} className="text-amber-500" />
+          </div>
           <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Compete</h3>
           <p className="text-sm text-slate-500 mb-4">Leaderboard, challenges, and team competitions</p>
           <span className="inline-flex items-center gap-1 text-sm font-medium text-[#229C62]">
@@ -214,7 +220,9 @@ export default function CommandCenter() {
       </div>
 
       {/* ─── GREETING + NEXT OBJECTIVE ─── */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-4 sm:p-8 text-white">
+      <div className="angular-card relative overflow-hidden bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-4 sm:p-8 text-white animate-fade-in-up animate-delay-2">
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.06] pointer-events-none" />
+        <div className="absolute inset-0 scanline-overlay pointer-events-none opacity-50" />
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#7AD62A] blur-3xl" />
@@ -284,7 +292,7 @@ export default function CommandCenter() {
       {/* ─── PROGRESS SUMMARY ─── */}
       {config.showXp && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
                 <TrendingUp size={14} className="text-[#229C62]" />
@@ -301,7 +309,7 @@ export default function CommandCenter() {
             <p className="text-[10px] text-slate-400 mt-1">{xp.toLocaleString()} XP</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-2">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
                 <Award size={14} className="text-amber-600" />
@@ -312,7 +320,7 @@ export default function CommandCenter() {
             <p className="text-[10px] text-slate-400 mt-1">{clearance}</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-3">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
                 <Flame size={14} className="text-orange-500" />
@@ -323,7 +331,7 @@ export default function CommandCenter() {
             <p className="text-[10px] text-slate-400 mt-1">day{streak !== 1 ? "s" : ""}</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-4">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
                 <FlaskConical size={14} className="text-blue-600" />
@@ -342,14 +350,14 @@ export default function CommandCenter() {
 
       {/* ─── THIS WEEK ─── */}
       {weeklyItems.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-3">
           <div className="flex items-center gap-2 mb-4">
             <Calendar size={16} className="text-[#229C62]" />
             <h2 className="text-sm font-semibold text-slate-900">This Week</h2>
           </div>
           <div className="space-y-2">
             {weeklyItems.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50">
+              <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50 hover:bg-[#E9F8EE]/50 transition-colors">
                 {item.done ? (
                   <div className="w-5 h-5 rounded-full bg-[#229C62] flex items-center justify-center">
                     <Check size={12} className="text-white" />
@@ -368,7 +376,7 @@ export default function CommandCenter() {
 
       {/* ─── ENGINEERING PROFILE ─── */}
       {domains.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-slate-900">Engineering Profile</h2>
             <Link
@@ -388,7 +396,7 @@ export default function CommandCenter() {
 
       {/* ─── ACADEMIC (if enrolled) ─── */}
       {academic && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-slate-900">Academic</h2>
             <Link href="/dashboard/academics" className="text-xs text-[#229C62] hover:underline font-medium">
@@ -409,7 +417,7 @@ export default function CommandCenter() {
 
       {/* ─── NEXT STEPS ─── */}
       {topRecs.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-5">
           <div className="flex items-center gap-2 mb-4">
             <Target size={16} className="text-[#229C62]" />
             <h2 className="text-sm font-semibold text-slate-900">Recommended</h2>
@@ -421,7 +429,7 @@ export default function CommandCenter() {
                 href={rec.link || "/dashboard/labs"}
                 className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 hover:bg-[#E9F8EE]/50 transition-colors group"
               >
-                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                   {rec.type === "LAB" && <FlaskConical size={14} className="text-[#229C62]" />}
                   {rec.type === "OUTCOME" && <BookOpen size={14} className="text-violet-500" />}
                   {rec.type === "ASSESSMENT" && <Target size={14} className="text-blue-500" />}
@@ -433,7 +441,7 @@ export default function CommandCenter() {
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">{rec.description}</p>
                 </div>
-                <ArrowRight size={14} className="text-slate-300 group-hover:text-[#229C62] shrink-0 mt-1" />
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-[#229C62] shrink-0 mt-1 group-hover:translate-x-0.5 transition-all" />
               </Link>
             ))}
           </div>
@@ -444,33 +452,33 @@ export default function CommandCenter() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Link
           href="/dashboard/labs"
-          className="group p-4 rounded-xl bg-white border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/30 transition-all"
+          className="angular-card group p-4 hover-lift hover-glow transition-all duration-300"
         >
-          <FlaskConical size={20} className="text-[#229C62] mb-2" />
+          <FlaskConical size={20} className="text-[#229C62] mb-2 group-hover:scale-110 group-hover:rotate-3 transition-transform" />
           <p className="text-sm font-semibold text-slate-900">Labs</p>
           <p className="text-xs text-slate-500">Hands-on practice</p>
         </Link>
         <Link
           href="/dashboard/courses"
-          className="group p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 transition-all"
+          className="angular-card group p-4 hover-lift hover-glow transition-all duration-300"
         >
-          <BookOpen size={20} className="text-blue-500 mb-2" />
+          <BookOpen size={20} className="text-blue-500 mb-2 group-hover:scale-110 group-hover:rotate-3 transition-transform" />
           <p className="text-sm font-semibold text-slate-900">Courses</p>
           <p className="text-xs text-slate-500">Structured learning</p>
         </Link>
         <Link
           href="/dashboard/compete"
-          className="group p-4 rounded-xl bg-white border border-slate-200 hover:border-amber-300 hover:bg-amber-50/30 transition-all"
+          className="angular-card group p-4 hover-lift hover-glow transition-all duration-300"
         >
-          <Target size={20} className="text-amber-500 mb-2" />
+          <Target size={20} className="text-amber-500 mb-2 group-hover:scale-110 group-hover:rotate-3 transition-transform" />
           <p className="text-sm font-semibold text-slate-900">Compete</p>
           <p className="text-xs text-slate-500">Challenge yourself</p>
         </Link>
         <Link
           href="/dashboard/analytics/competency"
-          className="group p-4 rounded-xl bg-white border border-slate-200 hover:border-purple-300 hover:bg-purple-50/30 transition-all"
+          className="angular-card group p-4 hover-lift hover-glow transition-all duration-300"
         >
-          <TrendingUp size={20} className="text-purple-500 mb-2" />
+          <TrendingUp size={20} className="text-purple-500 mb-2 group-hover:scale-110 group-hover:rotate-3 transition-transform" />
           <p className="text-sm font-semibold text-slate-900">Skills</p>
           <p className="text-xs text-slate-500">Your profile</p>
         </Link>

@@ -73,7 +73,7 @@ export default function SettingsPage() {
 
             <div className="flex flex-col sm:flex-row gap-6">
               <nav className="sm:w-56 flex-shrink-0">
-                <div className="bg-white rounded-2xl border border-slate-200 p-2">
+                <div className="angular-card bg-white p-2">
                   {sections.map((section) => {
                     const Icon = section.icon;
                     return (
@@ -97,7 +97,7 @@ export default function SettingsPage() {
               <div className="flex-1 min-w-0">
                 {activeSection === "account" && (
                   <div className="space-y-6">
-                    <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                    <div className="angular-card bg-white p-6">
                       <h2 className="text-lg font-semibold text-slate-900 mb-4">Profile</h2>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between py-3 border-b border-slate-100">
@@ -125,7 +125,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                    <div className="angular-card bg-white p-6">
                       <h2 className="text-lg font-semibold text-slate-900 mb-4">Danger Zone</h2>
                       <div className="flex items-center justify-between">
                         <div>
@@ -144,7 +144,7 @@ export default function SettingsPage() {
                 )}
 
                 {activeSection === "notifications" && (
-                  <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <div className="angular-card bg-white p-6">
                     <h2 className="text-lg font-semibold text-slate-900 mb-4">Email Notifications</h2>
                     <div className="space-y-4">
                       {[
@@ -170,18 +170,18 @@ export default function SettingsPage() {
 
                 {activeSection === "security" && (
                   <div className="space-y-6">
-                    <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                    <div className="angular-card bg-white p-6">
                       <h2 className="text-lg font-semibold text-slate-900 mb-4">Password</h2>
                       <Link
                         href="/dashboard/profile/change-password"
-                        className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#229C62] border border-[#229C62] rounded-xl hover:bg-[#E9F8EE] transition-colors"
+                        className="angular-btn inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#229C62] border border-[#229C62] hover:bg-[#E9F8EE] transition-colors"
                       >
                         <Key size={16} />
                         Change password
                       </Link>
                     </div>
 
-                    <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                    <div className="angular-card bg-white p-6">
                       <h2 className="text-lg font-semibold text-slate-900 mb-4">Sessions</h2>
                       <p className="text-sm text-slate-500 mb-4">You are currently signed in on this device.</p>
                       <button
@@ -195,7 +195,7 @@ export default function SettingsPage() {
                 )}
 
                 {activeSection === "appearance" && (
-                  <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <div className="angular-card bg-white p-6">
                     <h2 className="text-lg font-semibold text-slate-900 mb-4">Theme</h2>
                     <div className="flex items-center justify-between py-3 border-b border-slate-100">
                       <div>

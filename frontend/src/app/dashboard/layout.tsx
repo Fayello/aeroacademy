@@ -76,7 +76,8 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     : "?";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center gap-3 px-4 md:pl-64">
+    <header className="fixed top-0 left-0 right-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center gap-3 px-4 md:pl-64 relative overflow-hidden">
+      <div className="absolute inset-0 angular-grid-bg opacity-[0.02] pointer-events-none" />
       <button
         onClick={onToggleSidebar}
         className="hidden lg:flex p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
@@ -261,7 +262,8 @@ export default function DashboardLayout({
     <DisplayModeProvider>
       <NavigationProvider>
         <DashboardSocketProvider>
-          <div className="min-h-screen bg-slate-50">
+          <div className="min-h-screen bg-slate-50 relative">
+            <div className="absolute inset-0 dot-grid-bg opacity-[0.015] pointer-events-none" />
             <TokenHandler />
             <a
               href="#main-content"

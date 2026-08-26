@@ -130,7 +130,9 @@ export default function Sidebar() {
 
   if (loading) {
     return (
-      <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+    <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+      <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
+      <div className="absolute inset-0 scanline-overlay pointer-events-none" />
         <div className="p-5 flex items-center gap-3">
           <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8 shrink-0" />
           {!collapsed && (
@@ -150,7 +152,8 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+      <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
       {/* Logo */}
       <div className={`flex items-center gap-3 ${collapsed ? "p-3 justify-center" : "p-5"}`}>
         <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8 shrink-0" />

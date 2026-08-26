@@ -109,7 +109,7 @@ export default function NotificationsPage() {
       {loading ? (
         <div className="space-y-2">
           {[1, 2, 3].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4">
+            <div key={id} className="angular-card bg-white p-4 flex items-start gap-4">
               <div className="w-9 h-9 rounded-lg bg-slate-200 animate-pulse" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
@@ -120,7 +120,7 @@ export default function NotificationsPage() {
           ))}
         </div>
       ) : visible.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card bg-white py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
             <Bell size={28} className="text-slate-400" />
           </div>
@@ -138,8 +138,8 @@ export default function NotificationsPage() {
           {visible.map((n) => (
             <div
               key={n.id}
-              className={`group bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4 transition-colors ${
-                !n.read ? "border-l-2 border-l-slate-800 bg-slate-50/50" : ""
+              className={`group angular-card bg-white p-4 flex items-start gap-4 transition-colors ${
+                !n.read ? "border-l-2 border-l-[#229C62] bg-[#E9F8EE]/30" : ""
               }`}
             >
               <div className="mt-0.5 shrink-0 w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center">
