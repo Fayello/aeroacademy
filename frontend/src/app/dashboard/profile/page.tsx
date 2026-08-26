@@ -343,7 +343,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Profile Header */}
-      <div className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-6">
+      <div className="relative overflow-hidden angular-card border-slate-200 p-6">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#E9F8EE] to-transparent rounded-bl-full opacity-60" />
         <div className="flex flex-col sm:flex-row items-start gap-5 relative">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg">
@@ -420,7 +420,7 @@ export default function ProfilePage() {
           { label: "Flags Solved", value: String(flagsSolved), icon: Flag, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Days Active", value: String(daysActive), icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all duration-300">
+          <div key={stat.label} className="angular-card border-slate-200 p-4 hover-lift transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
                 <stat.icon size={18} className={stat.color} />
@@ -436,7 +436,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Profile Completeness */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="angular-card border-slate-200 p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
             <Target size={18} className="text-[#229C62]" />
@@ -481,7 +481,7 @@ export default function ProfilePage() {
       {/* Level & Division */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Level Progress */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
+        <div className="angular-card border-slate-200 p-6 hover-lift transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
               <TrendingUp size={22} className="text-[#229C62]" />
@@ -507,7 +507,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Division */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
+        <div className="angular-card border-slate-200 p-6 hover-lift transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${divInfo.bg}`}>
               <Shield size={22} className={divInfo.color} />
@@ -538,7 +538,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Yearly Activity Heatmap */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 overflow-x-auto">
+      <div className="angular-card border-slate-200 p-6 overflow-x-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
@@ -602,7 +602,7 @@ export default function ProfilePage() {
 
       {/* Learning Progress */}
       {enrolledCourses.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -638,7 +638,7 @@ export default function ProfilePage() {
 
       {/* Learning Paths */}
       {(activePaths.length > 0 || completedPaths.length > 0) && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
@@ -655,7 +655,7 @@ export default function ProfilePage() {
               <Link
                 key={lp.learningPathId}
                 href={`/dashboard/learning-paths/${lp.learningPathId}`}
-                className="p-4 rounded-xl border border-slate-200 hover:border-[#229C62]/30 hover:shadow-md transition-all group"
+                className="p-4 rounded-xl border border-slate-200 hover:border-[#229C62]/30 hover-lift transition-all group"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -670,7 +670,7 @@ export default function ProfilePage() {
               <Link
                 key={lp.learningPathId}
                 href={`/dashboard/learning-paths/${lp.learningPathId}`}
-                className="p-4 rounded-xl border border-[#229C62]/20 bg-[#E9F8EE]/30 hover:shadow-md transition-all group"
+                className="p-4 rounded-xl border border-[#229C62]/20 bg-[#E9F8EE]/30 hover-lift transition-all group"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -686,7 +686,7 @@ export default function ProfilePage() {
       )}
 
       {/* Level Unlocks */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="angular-card border-slate-200 p-6">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Content Unlocks</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {LEVEL_UNLOCKS.map(({ level: reqLevel, label, icon: Icon }) => {
@@ -696,7 +696,7 @@ export default function ProfilePage() {
                 key={reqLevel}
                 className={`p-4 rounded-xl border text-center transition-all ${
                   unlocked
-                    ? "bg-[#E9F8EE] border-[#229C62]/20 hover:shadow-md"
+                    ? "bg-[#E9F8EE] border-[#229C62]/20 hover-lift"
                     : "bg-slate-50 border-slate-200 opacity-60"
                 }`}
               >
@@ -721,7 +721,7 @@ export default function ProfilePage() {
 
       {/* Certifications */}
       {certificates.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
@@ -754,7 +754,7 @@ export default function ProfilePage() {
 
       {/* Badges Earned */}
       {myBadges.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
@@ -784,7 +784,7 @@ export default function ProfilePage() {
                     <Link
                       key={`pinned-${ub.badgeId}`}
                       href={`/dashboard/badges/${ub.badgeId}`}
-                      className={`relative text-center p-3 rounded-xl ${tierBg} border border-[#229C62]/30 shadow-sm hover:shadow-md transition-all group`}
+                      className={`relative text-center p-3 rounded-xl ${tierBg} border border-[#229C62]/30 shadow-sm hover-lift transition-all group`}
                     >
                       <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#229C62] flex items-center justify-center">
                         <Pin size={10} className="text-white" />
@@ -812,7 +812,7 @@ export default function ProfilePage() {
                 <div key={ub.badgeId} className="relative group">
                   <Link
                     href={`/dashboard/badges/${ub.badgeId}`}
-                    className={`text-center p-3 rounded-xl ${tierBg} border hover:shadow-md transition-all block`}
+                    className={`text-center p-3 rounded-xl ${tierBg} border hover-lift transition-all block`}
                   >
                     <div
                       className={`w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center bg-gradient-to-br ${tierColor} shadow-sm`}
@@ -846,7 +846,7 @@ export default function ProfilePage() {
       {/* Achievements & Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Achievements */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
@@ -888,7 +888,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -942,7 +942,7 @@ export default function ProfilePage() {
       <SkillProfile />
 
       {/* Quick Links */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="angular-card border-slate-200 p-6">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">More</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {[

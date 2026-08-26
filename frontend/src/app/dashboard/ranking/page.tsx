@@ -259,8 +259,8 @@ export default function RankingPage() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         <PageHeader title={t("nav.domain-ranking")} description="Your competitive ranking across skill domains" />
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+        <div className="angular-card border border-slate-200 py-16 text-center">
+          <div className="w-16 h-16 angular-card bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
             <Shield size={28} className="text-[#229C62]" />
           </div>
           <h3 className="text-sm font-semibold text-slate-900 mb-1">No ranking data yet</h3>
@@ -282,7 +282,7 @@ export default function RankingPage() {
       <PageHeader title={t("nav.domain-ranking")} description="Your competitive ranking across skill domains" />
 
       {profile.globalRank ? (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="angular-card border border-slate-200 overflow-hidden">
           <div className="relative bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] p-6 sm:p-8">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvc3ZnPg==')] opacity-40" />
             <div className="relative z-10">
@@ -323,7 +323,7 @@ export default function RankingPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
+        <div className="angular-card border border-slate-200 p-6 text-center">
           <Shield size={28} className="text-slate-300 mx-auto mb-2" />
           <p className="text-sm text-slate-500 mb-1">No overall rank yet</p>
           <p className="text-xs text-slate-400">Complete ranked activities to establish your rating</p>
@@ -352,7 +352,7 @@ export default function RankingPage() {
       {activeTab === "overview" && (
         <>
           {profile.domainRanks.length > 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="angular-card border border-slate-200 overflow-hidden">
               <div className="p-4">
                 <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Domain Divisions</h3>
                 <div className="flex flex-wrap gap-2">
@@ -372,7 +372,7 @@ export default function RankingPage() {
           )}
 
           {profile.domainRanks.length > 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="angular-card border border-slate-200 overflow-hidden">
               <div className="p-6">
                 <h3 className="text-sm font-semibold text-slate-900 mb-4">Domain Ratings</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -382,7 +382,7 @@ export default function RankingPage() {
                     return (
                       <div
                         key={rank.domainId}
-                        className={`p-4 rounded-xl border transition-all cursor-pointer hover:shadow-md ${
+                        className={`p-4 rounded-xl border transition-all cursor-pointer hover:shadow-md hover-lift ${
                           selectedDomain === rank.domainId
                             ? "border-[#229C62] ring-1 ring-[#229C62]/30 bg-[#E9F8EE]/30"
                             : "border-slate-200 hover:border-slate-300"
@@ -424,7 +424,7 @@ export default function RankingPage() {
           )}
 
           {selectedDomain && (
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="angular-card border border-slate-200 overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-slate-900">
@@ -481,7 +481,7 @@ export default function RankingPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card border border-slate-200 p-6">
             <h3 className="text-sm font-semibold text-slate-900 mb-4">Quick Stats</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="text-center p-3 bg-slate-50 rounded-lg">
@@ -520,7 +520,7 @@ export default function RankingPage() {
       )}
 
       {activeTab === "chart" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border border-slate-200 p-6">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">Rating Progression</h3>
           {historyLoading ? (
             <div className="flex items-center justify-center py-20">
@@ -567,7 +567,7 @@ export default function RankingPage() {
             <EmptyState icon={History} title="No career history" description="Complete seasons to build your career history" />
           ) : (
             careerHistory.map((season) => (
-              <div key={season.seasonNumber} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <div key={season.seasonNumber} className="angular-card border border-slate-200 overflow-hidden">
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <div>

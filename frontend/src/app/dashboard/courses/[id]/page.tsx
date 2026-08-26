@@ -196,7 +196,7 @@ export default function CourseBriefingPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
           <Link
@@ -252,7 +252,7 @@ export default function CourseBriefingPage() {
       {activeTab === "overview" && (
         <>
           {/* What You'll Learn */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card border-slate-200 p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <Target size={18} className="text-[#229C62]" />
               What you&apos;ll learn
@@ -269,7 +269,7 @@ export default function CourseBriefingPage() {
 
           {/* Reviews Section */}
           {reviewsData && reviewsData.stats.total > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <Star size={18} className="text-amber-500" />
             Student Reviews
@@ -379,7 +379,7 @@ export default function CourseBriefingPage() {
       {isEnrolled && (
         <Link
           href={`/dashboard/courses/${course.id}/discussions`}
-          className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between hover:shadow-md transition-all group"
+          className="angular-card border-slate-200 p-4 flex items-center justify-between hover-lift transition-all group"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
@@ -406,7 +406,7 @@ export default function CourseBriefingPage() {
             const isExpanded = expandedSections.has(section.id) || isEnrolled;
 
             return (
-              <div key={section.id} className={`bg-white rounded-xl border border-slate-200 overflow-hidden ${isLocked ? "opacity-60" : "hover:shadow-md"} transition-all duration-300`}>
+              <div key={section.id} className={`angular-card border-slate-200 overflow-hidden ${isLocked ? "opacity-60" : "hover-lift"} transition-all duration-300`}>
                 <button
                   onClick={() => toggleSection(section.id)}
                   className="w-full px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-left"
@@ -466,7 +466,7 @@ export default function CourseBriefingPage() {
       {/* Progress Tab */}
       {activeTab === "progress" && (
         <div className="max-w-md">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card border-slate-200 p-6">
             {isEnrolled ? (
               <>
                 <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mb-4">

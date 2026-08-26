@@ -201,7 +201,7 @@ export default function AdminTeamsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -236,7 +236,7 @@ export default function AdminTeamsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
               <Users size={18} className="text-indigo-600" />
@@ -249,7 +249,7 @@ export default function AdminTeamsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
               <Users size={18} className="text-[#229C62]" />
@@ -262,7 +262,7 @@ export default function AdminTeamsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
               <Trophy size={18} className="text-amber-600" />
@@ -275,7 +275,7 @@ export default function AdminTeamsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card border-slate-200 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
               <BookOpen size={18} className="text-blue-600" />
@@ -316,7 +316,7 @@ export default function AdminTeamsPage() {
 
       {/* Leaderboard View */}
       {showLeaderboard && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <Trophy size={20} className="text-amber-500" /> Team
@@ -426,7 +426,7 @@ export default function AdminTeamsPage() {
         {filtered.map((team) => (
           <div
             key={team.id}
-            className={`bg-white rounded-xl border border-slate-200 transition-all ${
+            className={`angular-card border-slate-200 transition-all ${
               selectedTeams.has(team.id)
                 ? "border-indigo-400 ring-1 ring-indigo-400/40"
                 : ""
@@ -609,7 +609,7 @@ export default function AdminTeamsPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setEnrollModal({ open: false, teamIds: [] })}
           />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative angular-card border-slate-200 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900">
                 Enroll Team{enrollModal.teamIds.length !== 1 ? "s" : ""} in

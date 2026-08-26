@@ -323,13 +323,13 @@ export default function TeamsPage() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
               <Crown size={14} /> Owner
             </div>
             <p className="text-sm font-semibold text-slate-900">{selectedTeam.ownerName}</p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
               <Users size={14} /> Members
             </div>
@@ -338,7 +338,7 @@ export default function TeamsPage() {
               {selectedTeam.maxMembers ? ` / ${selectedTeam.maxMembers}` : ""}
             </p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
               <Trophy size={14} /> Total XP
             </div>
@@ -367,7 +367,7 @@ export default function TeamsPage() {
         {sortedMembers.length > 0 && (
           <div>
             <h2 className="text-lg font-semibold text-slate-900 mb-3">Leaderboard</h2>
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="angular-card overflow-hidden">
               {sortedMembers.map((member, idx) => (
                 <div
                   key={member.id}
@@ -398,7 +398,7 @@ export default function TeamsPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-3">Enrolled Courses</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {selectedTeam.courses.map((course) => (
-                <div key={course.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3">
+                <div key={course.id} className="angular-card p-4 flex items-center gap-3">
                   <div className="bg-blue-100 p-2 rounded-lg">
                     <BookOpen size={16} className="text-blue-600" />
                   </div>
@@ -466,7 +466,7 @@ export default function TeamsPage() {
         </div>
 
         {showEdit && (
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+          <div className="angular-card p-5 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                 <Palette size={14} /> Customize Team
@@ -597,15 +597,15 @@ export default function TeamsPage() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Crown size={14} /> Owner</div>
             <p className="text-sm font-semibold text-slate-900">{myTeam.ownerName}</p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Users size={14} /> Members</div>
             <p className="text-sm font-semibold text-slate-900">{myTeam.memberCount}</p>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Trophy size={14} /> Total XP</div>
             <p className="text-sm font-semibold text-slate-900">{myTeam.totalXp.toLocaleString()}</p>
           </div>
@@ -614,7 +614,7 @@ export default function TeamsPage() {
         {sortedMembers.length > 0 && (
           <div>
             <h2 className="text-lg font-semibold text-slate-900 mb-3">Team Members</h2>
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="angular-card overflow-hidden">
               {sortedMembers.map((member, idx) => (
                 <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0">
                   <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
@@ -663,7 +663,7 @@ export default function TeamsPage() {
       </div>
 
       {showCreate && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="angular-card p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">Create a Team</h3>
             <button onClick={() => setShowCreate(false)} className="text-slate-400 hover:text-slate-600">
@@ -780,7 +780,7 @@ export default function TeamsPage() {
       )}
 
       {showJoin && (
-        <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="angular-card p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">Join with Invite Code</h3>
             <button onClick={() => setShowJoin(false)} className="text-slate-400 hover:text-slate-600">
@@ -806,7 +806,7 @@ export default function TeamsPage() {
       )}
 
       {teams.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
             <Users size={28} className="text-[#229C62]" />
           </div>
@@ -821,7 +821,7 @@ export default function TeamsPage() {
             <button
               key={team.id}
               onClick={() => openTeam(team)}
-              className="bg-white border border-slate-200 rounded-xl overflow-hidden text-left hover:shadow-md hover:border-[#229C62]/20 transition-all group"
+              className="angular-card overflow-hidden text-left hover-lift hover:border-[#229C62]/20 transition-all group"
             >
               {/* Team Banner */}
               <div

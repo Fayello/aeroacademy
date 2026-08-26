@@ -153,6 +153,68 @@ body {
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
 }
 
+/* ===== DARK MODE ANGULAR SYSTEM ===== */
+
+.dark .angular-card,
+:where(.dark, .dark *) .angular-card {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .angular-card:hover,
+:where(.dark, .dark *) .angular-card:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(34, 156, 98, 0.2);
+}
+
+.dark .btn-primary,
+:where(.dark, .dark *) .btn-primary {
+  background-color: #229C62;
+}
+.dark .btn-primary:hover,
+:where(.dark, .dark *) .btn-primary:hover {
+  background-color: #1a8a55;
+}
+
+.dark .btn-secondary,
+:where(.dark, .dark *) .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+.dark .btn-secondary:hover,
+:where(.dark, .dark *) .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .btn-ghost,
+:where(.dark, .dark *) .btn-ghost {
+  color: #94a3b8;
+}
+.dark .btn-ghost:hover,
+:where(.dark, .dark *) .btn-ghost:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.dark .input-field,
+:where(.dark, .dark *) .input-field {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.dark .hover-lift:hover,
+:where(.dark, .dark *) .hover-lift:hover {
+  box-shadow: 0 12px 40px rgba(34, 156, 98, 0.2);
+}
+
+.dark .hover-glow:hover,
+:where(.dark, .dark *) .hover-glow:hover {
+  box-shadow: 0 0 30px rgba(34, 156, 98, 0.25);
+  border-color: rgba(34, 156, 98, 0.4);
+}
+
 /* Angular section divider — diagonal slash */
 .angular-divider {
   position: relative;

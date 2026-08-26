@@ -239,7 +239,7 @@ export default function PredictiveAnalyticsPage() {
   return (
     <div className="space-y-8 p-6">
       {/* Hero Header */}
-      <div className="rounded-2xl bg-[#0F203A] p-8 text-white">
+      <div className="angular-card bg-[#0F203A] p-8 text-white">
         <div className="flex items-center gap-3">
           <ShieldAlert className="h-8 w-8 text-[#7AD62A]" />
           <div>
@@ -275,7 +275,7 @@ export default function PredictiveAnalyticsPage() {
         <div className="space-y-8">
           {/* Stat Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-slate-200 bg-white p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-[#E9F8EE] p-2.5">
                   <Users className="h-5 w-5 text-[#229C62]" />
@@ -288,7 +288,7 @@ export default function PredictiveAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-slate-200 bg-white p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-red-50 p-2.5">
                   <AlertTriangle className="h-5 w-5 text-red-500" />
@@ -301,7 +301,7 @@ export default function PredictiveAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-slate-200 bg-white p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-[#E9F8EE] p-2.5">
                   <BarChart3 className="h-5 w-5 text-[#229C62]" />
@@ -314,7 +314,7 @@ export default function PredictiveAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-slate-200 bg-white p-6">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-[#E9F8EE] p-2.5">
                   <CheckCircle className="h-5 w-5 text-[#229C62]" />
@@ -330,7 +330,7 @@ export default function PredictiveAnalyticsPage() {
           </div>
 
           {/* Risk Distribution */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6">
+          <div className="angular-card border border-slate-200 bg-white p-6">
             <h3 className="mb-4 text-lg font-semibold text-[#0F203A]">
               Risk Distribution
             </h3>
@@ -349,7 +349,7 @@ export default function PredictiveAnalyticsPage() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Student Trends */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-slate-200 bg-white p-6">
               <h3 className="mb-4 text-lg font-semibold text-[#0F203A]">
                 Student Trends
               </h3>
@@ -393,7 +393,7 @@ export default function PredictiveAnalyticsPage() {
             </div>
 
             {/* Most Common Risk Factors */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-slate-200 bg-white p-6">
               <h3 className="mb-4 text-lg font-semibold text-[#0F203A]">
                 Most Common Risk Factors
               </h3>
@@ -429,7 +429,7 @@ export default function PredictiveAnalyticsPage() {
       {activeTab === "at-risk" && (
         <div className="space-y-4">
           {atRiskStudents.length === 0 && (
-            <div className="rounded-xl border border-slate-200 bg-white py-12 text-center">
+            <div className="angular-card border border-slate-200 bg-white py-12 text-center">
               <CheckCircle className="mx-auto h-12 w-12 text-[#229C62]" />
               <p className="mt-4 text-lg font-medium text-slate-700">
                 No at-risk students identified
@@ -444,7 +444,7 @@ export default function PredictiveAnalyticsPage() {
             return (
               <div
                 key={student.userId}
-                className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+                className="overflow-hidden angular-card border border-slate-200 bg-white"
               >
                 <button
                   onClick={() =>
@@ -608,7 +608,7 @@ export default function PredictiveAnalyticsPage() {
           </div>
 
           {interventions.length === 0 && (
-            <div className="rounded-xl border border-slate-200 bg-white py-12 text-center">
+            <div className="angular-card border border-slate-200 bg-white py-12 text-center">
               <Target className="mx-auto h-12 w-12 text-slate-300" />
               <p className="mt-4 text-lg font-medium text-slate-700">
                 No interventions for this cohort
@@ -621,7 +621,7 @@ export default function PredictiveAnalyticsPage() {
             return (
               <div
                 key={intervention.userId}
-                className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+                className="overflow-hidden angular-card border border-slate-200 bg-white"
               >
                 <button
                   onClick={() =>

@@ -172,7 +172,7 @@ export default function LeaderboardPage() {
         <div className="h-10 w-full max-w-xs bg-slate-200 rounded-lg animate-pulse" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
+                <div key={id} className="angular-card border-slate-200 p-5 flex items-center gap-4">
               <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
               <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
               <div className="flex-1 space-y-2">
@@ -319,7 +319,7 @@ export default function LeaderboardPage() {
       </div>
 
       {leagueStats.season && (
-        <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="angular-card border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs text-slate-500">Current Season</p>
             <p className="text-sm font-semibold text-slate-900 truncate">{leagueStats.season.name}</p>
@@ -345,7 +345,7 @@ export default function LeaderboardPage() {
         ].find((u) => u.level > currentLevel);
 
         return (
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card border-slate-200 p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
                 <TrendingUp size={22} className="text-slate-600" />
@@ -380,7 +380,7 @@ export default function LeaderboardPage() {
           {teamsLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((id) => (
-                <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
+            <div key={id} className="angular-card border-slate-200 p-5 flex items-center gap-4">
                   <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
                   <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
                   <div className="flex-1 space-y-2">
@@ -393,7 +393,7 @@ export default function LeaderboardPage() {
           ) : teamLeaderboard.length > 0 ? teamLeaderboard.map((team, idx) => (
             <div
               key={team.id}
-              className={`bg-white rounded-xl border p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md ${
+              className={`angular-card p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md hover-lift ${
                 idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
               }`}
             >
@@ -436,7 +436,7 @@ export default function LeaderboardPage() {
               </div>
             </div>
           )) : (
-            <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+            <div className="angular-card border-slate-200 py-16 text-center">
               <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
                 <Users size={28} className="text-[#229C62]" />
               </div>
@@ -452,7 +452,7 @@ export default function LeaderboardPage() {
         {filteredOperators.length > 0 ? filteredOperators.map((op, idx) => (
           <div
             key={op.id}
-            className={`bg-white rounded-xl border p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md ${
+            className={`angular-card p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md hover-lift ${
               op.id === currentUserId ? "border-slate-400 bg-slate-50 shadow-md" :
               idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
             }`}
@@ -498,7 +498,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
         )        ) : (
-          <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+          <div className="angular-card border-slate-200 py-16 text-center">
             <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
               <Trophy size={28} className="text-amber-500" />
             </div>

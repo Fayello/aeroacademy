@@ -187,7 +187,7 @@ export default function LandingPage() {
       </a>
 
       {/* ═══════════ NAVIGATION ═══════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm" : "bg-white border-b border-slate-100"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b-2 border-[#229C62]/30 shadow-sm" : "bg-white border-b border-slate-100"}`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5">
@@ -198,7 +198,7 @@ export default function LandingPage() {
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-all">
+                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className="px-3 py-2 text-sm font-medium text-slate-500 hover:text-[#229C62] hover:bg-[#E9F8EE]/50 transition-all">
                   {item}
                 </a>
               ))}
@@ -206,8 +206,8 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login" className="hidden sm:inline-flex btn-ghost text-sm">Sign in</Link>
-            <Link href="/get-started" className="btn-primary text-sm px-5 py-2">
-              Get Started <ArrowRight size={14} />
+            <Link href="/get-started" className="angular-btn btn-primary text-sm px-5 py-2">
+              <span>Get Started</span> <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -388,7 +388,7 @@ export default function LandingPage() {
               <div key={step.number} className="relative">
                 <div className="angular-card relative bg-white/[0.04] backdrop-blur-sm p-8 border border-white/[0.06] hover:border-[#229C62]/20 hover:bg-white/[0.06] transition-all duration-300 group">
                   <div className="text-6xl font-extrabold text-[#229C62]/10 absolute top-4 right-6 group-hover:text-[#229C62]/20 transition-colors">{step.number}</div>
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover-rotate relative z-10">
+                  <div className="w-16 h-16 angular-card bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover-rotate relative z-10">
                     <step.icon size={28} className="text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mt-2 mb-3 relative z-10">{step.title}</h3>
@@ -413,7 +413,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature, i) => (
               <div key={feature.title} className={`angular-card bg-white p-8 border border-slate-200/80 hover-glow transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover-rotate">
+                <div className="w-12 h-12 angular-card bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover-rotate">
                   <feature.icon size={22} className="text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">{feature.title}</h3>

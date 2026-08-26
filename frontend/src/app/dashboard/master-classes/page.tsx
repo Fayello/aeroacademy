@@ -76,7 +76,7 @@ export default function MasterClassesPage() {
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div key={id} className="angular-card border border-slate-200 overflow-hidden">
               <div className="h-40 bg-slate-200 animate-pulse" />
               <div className="p-5 space-y-3">
                 <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
@@ -87,7 +87,7 @@ export default function MasterClassesPage() {
           ))}
         </div>
       ) : filteredClasses.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card border border-slate-200 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center mx-auto mb-4">
             <Video size={28} className="text-orange-500" />
           </div>
@@ -114,7 +114,7 @@ export default function MasterClassesPage() {
             <Link
               key={mc.id}
               href={`/dashboard/master-classes/${mc.id}`}
-              className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300"
+              className="group relative overflow-hidden angular-card border border-slate-200 hover:border-slate-300 hover-lift transition-all duration-300"
             >
               {/* Gradient Header */}
               <div className="h-40 bg-gradient-to-br from-violet-500 via-purple-500 to-[#229C62] flex items-center justify-center relative">

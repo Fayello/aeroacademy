@@ -97,7 +97,7 @@ export default function LabsCatalog() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+            <div key={id} className="angular-card border border-slate-200 p-5 space-y-3">
               <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
               <div className="h-5 w-3/4 bg-slate-200 rounded animate-pulse" />
               <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
@@ -179,7 +179,7 @@ export default function LabsCatalog() {
 
       {/* Labs Grid */}
       {filteredLabs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card border border-slate-200 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
             <Microscope size={28} className="text-[#229C62]" />
           </div>
@@ -215,7 +215,7 @@ export default function LabsCatalog() {
               return (
                 <div
                   key={lab.id}
-                  className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden"
+                  className="group relative angular-card border border-slate-200 overflow-hidden"
                   aria-label={`${lab.title} — locked, requires level ${requiredLevel}`}
                 >
                   <div className="absolute inset-0 z-20 backdrop-blur-md bg-white/80 flex flex-col items-center justify-center gap-3">
@@ -262,7 +262,7 @@ export default function LabsCatalog() {
               <Link
                 key={lab.id}
                 href={`/dashboard/labs/${lab.id}`}
-                className="group relative bg-white rounded-xl border border-slate-200 hover:border-slate-300 overflow-hidden transition-all duration-300 hover:shadow-md"
+                className="group relative angular-card border border-slate-200 hover:border-slate-300 overflow-hidden transition-all duration-300 hover-lift"
               >
                 <div className={`h-0.5 w-full ${diff.bar} opacity-60`} />
                 <div className="p-5 space-y-3">

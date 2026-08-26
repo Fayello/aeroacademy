@@ -296,7 +296,7 @@ export default function AdminCoursesPage() {
   if (!selectedCourse) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 text-white">
+        <div className="relative overflow-hidden angular-card bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 text-white">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -353,7 +353,7 @@ export default function AdminCoursesPage() {
               return c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
             })
             .map((course) => (
-            <div key={course.id} onClick={() => loadCourseDetail(course.id)} className={`bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group ${selectedCourses.has(course.id) ? "border-[#229C62]/60 ring-1 ring-[#229C62]/40" : ""}`}>
+            <div key={course.id} onClick={() => loadCourseDetail(course.id)} className={`angular-card border border-slate-200 p-5 hover-lift hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group ${selectedCourses.has(course.id) ? "border-[#229C62]/60 ring-1 ring-[#229C62]/40" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <button onClick={(e) => { e.stopPropagation(); toggleCourseSelection(course.id); }} className="text-slate-300 hover:text-[#229C62] transition-colors shrink-0" title={selectedCourses.has(course.id) ? "Deselect" : "Select"}>
@@ -405,7 +405,7 @@ export default function AdminCoursesPage() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         {renderBreadcrumb()}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
+        <div className="relative overflow-hidden angular-card bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -423,7 +423,7 @@ export default function AdminCoursesPage() {
 
         <div className="grid gap-4">
           {selectedCourse?.sections?.map((section) => (
-            <div key={section.id} onClick={() => setSelectedSection(section)} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-violet-300 cursor-pointer transition-all group">
+            <div key={section.id} onClick={() => setSelectedSection(section)} className="angular-card border border-slate-200 p-5 hover-lift hover:shadow-lg hover:border-violet-300 cursor-pointer transition-all group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center group-hover:bg-violet-600 transition-colors">
@@ -461,7 +461,7 @@ export default function AdminCoursesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {renderBreadcrumb()}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -479,7 +479,7 @@ export default function AdminCoursesPage() {
 
       <div className="grid gap-4">
         {selectedSection?.lessons?.map((lesson) => (
-          <div key={lesson.id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all group">
+          <div key={lesson.id} className="angular-card border border-slate-200 p-5 hover-lift hover:shadow-lg transition-all group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
