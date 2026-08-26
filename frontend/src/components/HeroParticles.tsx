@@ -25,6 +25,7 @@ export default function HeroParticles() {
     let particles: Particle[] = [];
     const mouse = { x: -1000, y: -1000 };
     let frame: number;
+    let time = 0;
 
     const resize = () => {
       const parent = canvas.parentElement;
@@ -40,35 +41,92 @@ export default function HeroParticles() {
 
     const init = () => {
       particles = [];
-      const count = Math.min(Math.floor((w * h) / 12000), 80);
+      const count = Math.min(Math.floor((w * h) / 15000), 60);
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
           size: Math.random() * 2 + 0.8,
-          opacity: Math.random() * 0.5 + 0.1,
-          color: ["#10b981", "#3b82f6", "#8b5cf6", "#06b6d4"][Math.floor(Math.random() * 4)],
+          opacity: Math.random() * 0.4 + 0.1,
+          color: ["#229C62", "#7AD62A", "#3b82f6"][Math.floor(Math.random() * 3)],
         });
+      }
+    };
+
+    const drawGrid = () => {
+      const gridSize = 60;
+      const offsetX = (time * 0.2) % gridSize;
+      const offsetY = (time * 0.2) % gridSize;
+
+      ctx.strokeStyle = "rgba(34, 156, 98, 0.04)";
+      ctx.lineWidth = 0.5;
+
+      // Diagonal lines at 45 degrees
+      for (let x = -gridSize + offsetX; x < w + gridSize; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + h, h);
+        ctx.stroke();
+      }
+      for (let x = -gridSize + offsetX; x < w + gridSize; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x + h, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+
+      // Pulsing glow at center
+      const pulseAlpha = 0.03 + Math.sin(time * 0.02) * 0.015;
+      const gradient = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.4);
+      gradient.addColorStop(0, `rgba(34, 156, 98, ${pulseAlpha})`);
+      gradient.addColorStop(1, "rgba(34, 156, 98, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, w, h);
+    };
+
+    const drawScanlines = () => {
+      const scanlineY = (time * 1.5) % h;
+      const scanlineHeight = 80;
+
+      const gradient = ctx.createLinearGradient(0, scanlineY - scanlineHeight / 2, 0, scanlineY + scanlineHeight / 2);
+      gradient.addColorStop(0, "rgba(34, 156, 98, 0)");
+      gradient.addColorStop(0.5, "rgba(34, 156, 98, 0.02)");
+      gradient.addColorStop(1, "rgba(34, 156, 98, 0)");
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, scanlineY - scanlineHeight / 2, w, scanlineHeight);
+
+      // Static scanlines
+      ctx.fillStyle = "rgba(255, 255, 255, 0.008)";
+      for (let y = 0; y < h; y += 4) {
+        ctx.fillRect(0, y, w, 1);
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
+      time++;
 
-      // Draw connections
+      // Layer 1: Angular grid
+      drawGrid();
+
+      // Layer 2: Scanlines
+      drawScanlines();
+
+      // Layer 3: Particle connections
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            const alpha = (1 - dist / 120) * 0.08;
+          if (dist < 140) {
+            const alpha = (1 - dist / 140) * 0.1;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(16,185,129,${alpha})`;
+            ctx.strokeStyle = `rgba(34,156,98,${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -87,7 +145,7 @@ export default function HeroParticles() {
         }
       }
 
-      // Draw and move particles
+      // Layer 4: Particles
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;

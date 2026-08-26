@@ -10,6 +10,8 @@ import {
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";
 import HeroParticles from "@/components/HeroParticles";
+import FloatingShapes from "@/components/FloatingShapes";
+import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import AngularDivider from "@/components/ui/AngularDivider";
 import SectionLabel from "@/components/ui/SectionLabel";
 import type { MasterClass, Trainer } from "@/types/api";
@@ -214,10 +216,11 @@ export default function LandingPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section id="main-content" className="pt-32 pb-24 px-6 relative overflow-hidden">
         <HeroParticles />
+        <FloatingShapes />
         <div className="absolute inset-0 dot-grid-bg" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-16 items-center">
-            <div>
+          <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
+            <div className="lg:pr-8">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6 label-tracking">
                 <CheckCircle2 size={14} />
                 Built for hands-on learners
@@ -244,9 +247,9 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            <div className="relative hidden lg:block">
-              <div className="absolute -inset-4 bg-gradient-to-r from-[#229C62]/15 to-[#7AD62A]/15 rounded-3xl blur-2xl" />
-              <div className="bg-[#0d1117] angular-card p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10 w-[420px]">
+            <div className="relative hidden lg:block lg:-ml-12">
+              <div className="absolute -inset-6 bg-gradient-to-br from-[#229C62]/20 via-[#7AD62A]/10 to-transparent clip-path-trapezoid blur-xl" />
+              <div className="bg-[#0d1117] angular-card p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10 w-[440px]">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
                   <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
@@ -372,6 +375,8 @@ export default function LandingPage() {
       <section className="py-28 px-6 relative overflow-hidden scanline-overlay">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0F203A]" />
         <div className="absolute inset-0 angular-grid-bg" />
+        <NoiseOverlay opacity={0.025} />
+        <FloatingShapes className="opacity-40" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="label-tracking text-[#7AD62A] mb-4 block">Process</span>
@@ -454,8 +459,8 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-[#229C62]/15 to-[#7AD62A]/15 rounded-3xl blur-2xl" />
-              <div className="bg-[#0d1117] rounded-2xl p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10">
+              <div className="absolute -inset-6 bg-gradient-to-br from-[#229C62]/20 via-[#7AD62A]/10 to-transparent clip-path-trapezoid blur-xl" />
+              <div className="bg-[#0d1117] angular-card p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
                   <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
@@ -604,6 +609,7 @@ export default function LandingPage() {
       {/* BIG STATS */}
       <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden scanline-overlay">
         <div className="absolute inset-0 angular-grid-bg" />
+        <NoiseOverlay opacity={0.025} />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -628,7 +634,8 @@ export default function LandingPage() {
       <section className="py-28 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[#0F203A]" />
         <div className="absolute inset-0 angular-grid-bg" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.12] rounded-full blur-3xl" />
+        <NoiseOverlay opacity={0.02} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.12] clip-path-trapezoid blur-3xl" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Ready to master the tech stack?</h2>
           <p className="text-lg text-white/60 mt-5 leading-relaxed max-w-xl mx-auto">
