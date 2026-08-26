@@ -95,7 +95,7 @@ export default function StudentAnalyticsPage() {
       <PageHeader title="Learning Analytics" description="Your progress and activity overview" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
               <BookOpen size={18} className="text-blue-600" />
@@ -106,7 +106,7 @@ export default function StudentAnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
               <Flag size={18} className="text-emerald-600" />
@@ -117,7 +117,7 @@ export default function StudentAnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
               <Flame size={18} className="text-amber-600" />
@@ -128,7 +128,7 @@ export default function StudentAnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="angular-card bg-white p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
               <Award size={18} className="text-purple-600" />
@@ -142,7 +142,7 @@ export default function StudentAnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h2 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <Calendar size={16} className="text-blue-500" /> Weekly Activity
           </h2>
@@ -162,7 +162,7 @@ export default function StudentAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h2 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <TrendingUp size={16} className="text-emerald-500" /> Streak History
           </h2>
@@ -194,7 +194,7 @@ export default function StudentAnalyticsPage() {
       </div>
 
       {completedCourses.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h2 className="text-sm font-semibold text-slate-900 mb-4">Completed Courses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {completedCourses.map((c) => (
@@ -218,7 +218,7 @@ export default function StudentAnalyticsPage() {
       )}
 
       {inProgressCourses.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h2 className="text-sm font-semibold text-slate-900 mb-4">In Progress</h2>
           <div className="space-y-3">
             {inProgressCourses.map((c) => (
@@ -245,7 +245,7 @@ export default function StudentAnalyticsPage() {
       )}
 
       {data.courseProgress.length === 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div className="angular-card bg-white p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
             <BookOpen size={28} className="text-blue-600" />
           </div>

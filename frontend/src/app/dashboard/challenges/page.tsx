@@ -156,7 +156,7 @@ export default function ChallengesPage() {
       </div>
 
       {filteredChallenges.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card bg-white py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
             <Trophy size={28} className="text-amber-500" />
           </div>
@@ -180,7 +180,7 @@ export default function ChallengesPage() {
               <Link
                 key={challenge.id}
                 href={`/dashboard/challenges/${challenge.id}`}
-                className="rounded-xl border border-slate-200 bg-white overflow-hidden hover:border-blue-300 hover:shadow-md transition-all block"
+                className="angular-card border border-slate-200 bg-white overflow-hidden hover:border-blue-300 hover:shadow-md transition-all block"
               >
                 <div className="p-5">
                   <div className="flex items-start justify-between mb-3">

@@ -50,7 +50,7 @@ function getDifficulty(level: number) {
 
 function ShimmerSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-white border border-slate-200">
+    <div className="relative overflow-hidden angular-card bg-white">
       <div className="h-40 bg-slate-200">
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
       </div>
@@ -237,7 +237,7 @@ export default function CoursesPage() {
 
       {/* Courses Grid */}
       {filteredCourses.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card bg-white py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
             <BookOpen size={28} className="text-blue-600" />
           </div>
@@ -417,7 +417,7 @@ export default function CoursesPage() {
             );
 
             const baseClasses =
-              "group relative overflow-hidden rounded-xl bg-white border border-slate-200 transition-all duration-300";
+              "group relative overflow-hidden angular-card bg-white transition-all duration-300";
 
             if (isLocked) {
               return (

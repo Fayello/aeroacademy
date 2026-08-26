@@ -94,7 +94,7 @@ export default function AchievementsPage() {
   if (error) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div className="angular-card bg-white p-12 text-center">
           <AlertCircle size={32} className="text-slate-300 mx-auto mb-3" />
           <p className="text-sm text-slate-500 mb-2">{t("common.error")}</p>
           <button
@@ -110,7 +110,7 @@ export default function AchievementsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="angular-card bg-white p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-[#E9F8EE] p-3 rounded-xl">
             <Trophy size={24} className="text-[#229C62]" />
@@ -192,7 +192,7 @@ export default function AchievementsPage() {
           return (
             <div
               key={ach.id}
-              className={`rounded-xl border p-4 transition-all ${
+              className={`angular-card border p-4 transition-all ${
                 ach.unlocked
                   ? `${rarity.bg} ${rarity.border} border ${rarity.glow}`
                   : "bg-slate-50 border-slate-200 opacity-60"

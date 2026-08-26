@@ -120,7 +120,7 @@ export default function ExamsPage() {
 
       {/* Assessment Cards */}
       {assessments.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="angular-card bg-white py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
             <FileText size={28} className="text-amber-600" />
           </div>
@@ -135,7 +135,7 @@ export default function ExamsPage() {
             <Link
               key={a.id}
               href={`/dashboard/exams/${a.id}`}
-              className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all group"
+              className="angular-card bg-white p-6 hover:shadow-md transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">

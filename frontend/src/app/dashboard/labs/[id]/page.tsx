@@ -628,7 +628,7 @@ export default function LabWorkspace() {
       <main className="flex-1 flex min-h-0 p-4 gap-4">
         {/* Briefing panel */}
         {!isFullscreen && (
-        <div className="w-80 shrink-0 bg-white rounded-xl border border-slate-200 shadow-sm overflow-y-auto hidden lg:block">
+        <div className="w-80 shrink-0 angular-card bg-white shadow-sm overflow-y-auto hidden lg:block">
           <div className="p-5 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-900">Briefing</h2>
           </div>
@@ -757,7 +757,7 @@ export default function LabWorkspace() {
         )}
 
         {/* Terminal */}
-        <div className="flex-1 flex flex-col min-w-0 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 angular-card bg-white shadow-sm overflow-hidden">
           <div className="h-10 border-b border-slate-200 px-4 flex items-center gap-2 shrink-0">
             <TerminalIcon size={14} className="text-slate-400" />
             <span className="text-xs font-medium text-slate-500">Terminal</span>

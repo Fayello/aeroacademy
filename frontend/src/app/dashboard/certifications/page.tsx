@@ -124,7 +124,7 @@ export default function CertificationsPage() {
               return (
                 <div
                   key={aw.id}
-                  className={`${colors.bg} rounded-xl border ${colors.border} p-6 relative overflow-hidden`}
+                  className={`${colors.bg} angular-card border ${colors.border} p-6 relative overflow-hidden`}
                 >
                   <div className="absolute top-4 right-4">
                     <Shield size={40} className={`${colors.icon} opacity-20`} />
@@ -169,7 +169,7 @@ export default function CertificationsPage() {
             return (
               <div
                 key={ev.certificationId}
-                className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+                className="angular-card bg-white overflow-hidden"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">

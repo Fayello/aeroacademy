@@ -67,7 +67,7 @@ export default function AssessmentsPage() {
       <PageHeader title="Skill Assessments" description="Evaluate your skills and get personalized recommendations" />
 
       {assessments.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+        <div className="angular-card border border-slate-200 bg-white p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
             <ClipboardCheck size={28} className="text-purple-600" />
           </div>
@@ -82,7 +82,7 @@ export default function AssessmentsPage() {
             <Link
               key={a.id}
               href={`/dashboard/assessments/${a.id}`}
-              className="rounded-xl border border-slate-200 bg-white p-5 hover:border-blue-300 transition-all group"
+              className="angular-card border border-slate-200 bg-white p-5 hover:border-blue-300 transition-all group"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ export default function AssessmentsPage() {
       {results.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Past Results</h2>
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="angular-card border border-slate-200 bg-white overflow-hidden">
             <div className="divide-y divide-slate-100">
               {results.map((r) => {
                 const pct = Math.round((r.score / r.maxScore) * 100);

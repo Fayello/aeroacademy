@@ -44,7 +44,7 @@ export default function StreakPage() {
   if (error || !streak) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div className="angular-card bg-white p-12 text-center">
           <AlertCircle size={32} className="text-slate-300 mx-auto mb-3" />
           <p className="text-sm text-slate-500 mb-2">{t("common.error")}</p>
           <button
@@ -64,7 +64,7 @@ export default function StreakPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] rounded-xl p-8 text-white">
+      <div className="angular-card bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] p-8 text-white">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-white/10 p-3 rounded-xl">
             <Flame size={28} className="text-orange-400" />
@@ -91,7 +91,7 @@ export default function StreakPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="angular-card bg-white p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-cyan-50 p-2 rounded-lg">
             <Snowflake size={20} className="text-cyan-600" />
@@ -134,7 +134,7 @@ export default function StreakPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="angular-card bg-white p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-amber-50 p-2 rounded-lg">
             <TrendingUp size={20} className="text-amber-600" />

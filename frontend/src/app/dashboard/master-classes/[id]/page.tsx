@@ -117,14 +117,14 @@ export default function MasterClassDetailPage() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
           {mc.instructorBio && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="angular-card bg-white p-6">
               <h3 className="font-bold text-slate-900 mb-2">About the Instructor</h3>
               <p className="text-sm text-slate-500">{mc.instructorBio}</p>
             </div>
           )}
 
           {mc.recordingUrl && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="angular-card bg-white p-6">
               <h3 className="font-bold text-slate-900 mb-3">Recording</h3>
               <a href={mc.recordingUrl} target="_blank" rel="noopener noreferrer" className="btn-primary text-sm">
                 <Video size={16} /> Watch Recording
@@ -133,7 +133,7 @@ export default function MasterClassDetailPage() {
           )}
 
           {mc.registrations && mc.registrations.length > 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="angular-card bg-white p-6">
               <h3 className="font-bold text-slate-900 mb-3">Registered ({mc.registrations.length})</h3>
               <div className="space-y-2">
                 {mc.registrations.map((r) => (
@@ -150,7 +150,7 @@ export default function MasterClassDetailPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card bg-white p-6">
             {mc.status === "UPCOMING" ? (
               isRegistered ? (
                 <div className="space-y-3">

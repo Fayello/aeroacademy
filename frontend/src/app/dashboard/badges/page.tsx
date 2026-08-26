@@ -152,7 +152,7 @@ export default function BadgesPage() {
           return (
             <div
               key={badge.id}
-              className={`rounded-xl border p-4 text-center transition-all ${
+              className={`angular-card border p-4 text-center transition-all ${
                 earned
                   ? tierColors[badge.tier] || tierColors.BRONZE
                   : "bg-slate-50 border-slate-200 opacity-50"
