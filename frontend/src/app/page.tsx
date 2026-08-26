@@ -190,18 +190,18 @@ export default function LandingPage() {
       </a>
 
       {/* ═══════════ NAVIGATION ═══════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b-2 border-[#229C62]/30 shadow-sm" : "bg-white border-b border-slate-100"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b-2 border-[#229C62]/30 shadow-sm" : "bg-transparent border-b border-white/10"}`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
               <span className="text-lg font-bold tracking-tight">
-                <span className="text-[#0F203A]">Xpert</span><span className="text-[#229C62]">Class</span>
+                <span className={scrolled ? "text-[#0F203A]" : "text-white"}>Xpert</span><span className="text-[#229C62]">Class</span>
               </span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className="px-3 py-2 text-sm font-medium text-slate-500 hover:text-[#229C62] hover:bg-[#E9F8EE]/50 transition-all">
+                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-500 hover:text-[#229C62] hover:bg-[#E9F8EE]/50" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
                   {item}
                 </a>
               ))}
@@ -209,7 +209,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <CurrencySwitcher />
-            <Link href="/login" className="hidden sm:inline-flex btn-ghost text-sm">Sign in</Link>
+            <Link href="/login" className={`hidden sm:inline-flex btn-ghost text-sm ${scrolled ? "" : "text-white/80 hover:text-white"}`}>Sign in</Link>
             <Link href="/get-started" className="angular-btn btn-primary text-sm px-5 py-2">
               <span>Get Started</span> <ArrowRight size={14} />
             </Link>
@@ -218,35 +218,36 @@ export default function LandingPage() {
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
-      <section id="main-content" className="pt-32 pb-24 px-6 relative overflow-hidden">
+      <section id="main-content" className="pt-32 pb-24 px-6 relative overflow-hidden bg-[#0F203A]">
         <HeroParticles />
         <FloatingShapes />
-        <div className="absolute inset-0 dot-grid-bg" />
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.04]" />
+        <div className="absolute inset-0 scanline-overlay opacity-30" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
             <div className="lg:pr-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6 label-tracking">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-[#7AD62A] text-xs font-semibold mb-6 label-tracking">
                 <CheckCircle2 size={14} />
                 Built for hands-on learners
               </div>
-              <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-slate-900 tracking-tight leading-[1.02] glitch-hover">
+              <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-white tracking-tight leading-[1.02] glitch-hover">
                 Master the <span className="text-gradient-brand">technologies</span> that power modern software
               </h1>
-              <p className="text-lg text-slate-500 mt-6 leading-relaxed max-w-xl">
+              <p className="text-lg text-white/60 mt-6 leading-relaxed max-w-xl">
                 Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
                 <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40 magnetic-btn">
                   <span>Start Learning Free</span> <ArrowRight size={18} />
                 </Link>
-                <a href="#labs" className="btn-ghost text-sm px-6 py-3.5 text-slate-600 hover:text-[#229C62]">
+                <a href="#labs" className="btn-ghost text-sm px-6 py-3.5 text-white/60 hover:text-white">
                   <Play size={14} /> Explore Labs
                 </a>
               </div>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-slate-500">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-white/40">
                 {["No credit card required", `${stats.totalLabs || 37}+ hands-on labs`, "Free tier available"].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
-                    <CheckCircle2 size={14} className="text-[#229C62]" /> {item}
+                    <CheckCircle2 size={14} className="text-[#7AD62A]" /> {item}
                   </div>
                 ))}
               </div>
@@ -279,21 +280,20 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className="py-8 px-6 border-y border-slate-200/60 bg-[#E9F8EE]/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <section className="py-10 px-6 bg-[#0a1628] border-y border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.03]" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers Training", icon: Users },
               { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Hands-on Labs", icon: Terminal },
               { value: stats.totalCourses || "7", label: "Expert Courses", icon: BookOpen },
               { value: "95%", label: "Completion Rate", icon: Award },
-            ].map((s) => (
-              <div key={s.label} className="flex items-center justify-center gap-3">
-                <s.icon size={20} className="text-[#229C62]" />
-                <div className="text-left">
-                  <div className="text-xl font-extrabold text-slate-900">{s.value}</div>
-                  <div className="text-xs text-slate-500 label-tracking">{s.label}</div>
-                </div>
+            ].map((s, i) => (
+              <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
+                <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />
+                <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">{s.value}</div>
+                <div className="text-xs text-white/40 mt-2 label-tracking">{s.label}</div>
               </div>
             ))}
           </div>
@@ -301,19 +301,19 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ TRUSTED BY ═══════════ */}
-      <section className="py-6 px-6 border-b border-slate-200/60 bg-white">
+      <section className="py-8 px-6 bg-[#0a1628] border-b border-white/5 relative">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-xs text-slate-400 font-medium tracking-wide uppercase mb-4">Trusted by engineers at</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-medium text-slate-400">
-            <span>University of Yaoundé</span>
-            <span className="text-slate-200">·</span>
-            <span>ENS Yaoundé</span>
-            <span className="text-slate-200">·</span>
-            <span>Digital Cameroon</span>
-            <span className="text-slate-200">·</span>
-            <span>Cameroon Tech Hub</span>
-            <span className="text-slate-200">·</span>
-            <span>Garoua Innovation Hub</span>
+          <p className="text-[10px] text-white/30 font-semibold tracking-[0.25em] uppercase mb-5">Trusted by engineers at</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-white/40">
+            <span className="hover:text-white/70 transition-colors">University of Yaoundé</span>
+            <span className="text-white/10">|</span>
+            <span className="hover:text-white/70 transition-colors">ENS Yaoundé</span>
+            <span className="text-white/10">|</span>
+            <span className="hover:text-white/70 transition-colors">Digital Cameroon</span>
+            <span className="text-white/10">|</span>
+            <span className="hover:text-white/70 transition-colors">Cameroon Tech Hub</span>
+            <span className="text-white/10">|</span>
+            <span className="hover:text-white/70 transition-colors">Garoua Innovation Hub</span>
           </div>
         </div>
       </section>
