@@ -230,6 +230,11 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+/* Text stroke — white variant for dark backgrounds */
+.text-stroke-white {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+}
+
 /* Extreme letter spacing for labels */
 .label-tracking {
   letter-spacing: 0.2em;
@@ -264,6 +269,43 @@ body {
 }
 .hover-scale:hover {
   transform: scale(1.03);
+}
+
+/* Magnetic button — shifts on hover */
+.magnetic-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.magnetic-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 rgba(34, 156, 98, 0.3);
+}
+.magnetic-btn:active {
+  transform: translate(0, 0);
+  box-shadow: 0 0 0 rgba(34, 156, 98, 0.3);
+}
+
+/* Glitch text effect */
+.glitch-hover {
+  position: relative;
+}
+.glitch-hover:hover {
+  animation: glitch 0.3s ease forwards;
+}
+@keyframes glitch {
+  0% { text-shadow: none; }
+  20% { text-shadow: -2px 0 #7AD62A, 2px 0 #229C62; }
+  40% { text-shadow: 2px 0 #7AD62A, -2px 0 #229C62; }
+  60% { text-shadow: -1px 0 #7AD62A, 1px 0 #229C62; }
+  80% { text-shadow: 1px 0 #7AD62A, -1px 0 #229C62; }
+  100% { text-shadow: none; }
+}
+
+/* Icon rotate on group hover */
+.group-hover-rotate {
+  transition: transform 0.3s ease;
+}
+.group:hover .group-hover-rotate {
+  transform: scale(1.1) rotate(3deg);
 }
 
 /* Staggered fade-in animation */

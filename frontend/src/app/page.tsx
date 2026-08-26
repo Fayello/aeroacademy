@@ -225,14 +225,14 @@ export default function LandingPage() {
                 <CheckCircle2 size={14} />
                 Built for hands-on learners
               </div>
-              <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-slate-900 tracking-tight leading-[1.02]">
+              <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-slate-900 tracking-tight leading-[1.02] glitch-hover">
                 Master the <span className="text-gradient-brand">technologies</span> that power modern software
               </h1>
               <p className="text-lg text-slate-500 mt-6 leading-relaxed max-w-xl">
                 Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
-                <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40 hover:translate-y-[-2px]">
+                <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40 magnetic-btn">
                   <span>Start Learning Free</span> <ArrowRight size={18} />
                 </Link>
                 <a href="#labs" className="btn-ghost text-sm px-6 py-3.5 text-slate-600 hover:text-[#229C62]">
@@ -339,7 +339,7 @@ export default function LandingPage() {
               </button>
             ))}
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 hover-lift">
+          <div className="bg-white angular-card border border-slate-200/80 p-8 md:p-10 hover-lift">
             <div className="grid lg:grid-cols-2 gap-10">
               <div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-3">{LEARNING_PATHS[activeTab].title}</h3>
@@ -355,12 +355,12 @@ export default function LandingPage() {
               </div>
               <div className="space-y-3">
                 {LEARNING_PATHS[activeTab].courses.map((course) => (
-                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200/80 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/30 hover:shadow-sm transition-all duration-200">
+                  <div key={course.name} className="flex items-center justify-between p-4 angular-card border border-slate-200/80 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/30 hover:shadow-sm transition-all duration-200">
                     <div>
                       <div className="font-medium text-slate-900 text-sm">{course.name}</div>
                       <div className="text-xs text-slate-400 mt-0.5">{course.lessons} lessons</div>
                     </div>
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${LEVEL_COLORS[course.level] || ""}`}>{course.level}</span>
+                    <span className={`text-xs font-medium px-2.5 py-1 hex-badge border ${LEVEL_COLORS[course.level] || ""}`}>{course.level}</span>
                   </div>
                 ))}
               </div>
@@ -380,7 +380,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="label-tracking text-[#7AD62A] mb-4 block">Process</span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">How it works</h2>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight text-stroke-white">How it works</h2>
             <p className="text-lg text-white/60 mt-4">From sign-up to skill mastery in three simple steps.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -388,7 +388,7 @@ export default function LandingPage() {
               <div key={step.number} className="relative">
                 <div className="angular-card relative bg-white/[0.04] backdrop-blur-sm p-8 border border-white/[0.06] hover:border-[#229C62]/20 hover:bg-white/[0.06] transition-all duration-300 group">
                   <div className="text-6xl font-extrabold text-[#229C62]/10 absolute top-4 right-6 group-hover:text-[#229C62]/20 transition-colors">{step.number}</div>
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover-rotate relative z-10">
                     <step.icon size={28} className="text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mt-2 mb-3 relative z-10">{step.title}</h3>
@@ -413,7 +413,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature, i) => (
               <div key={feature.title} className={`angular-card bg-white p-8 border border-slate-200/80 hover-glow transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover-rotate">
                   <feature.icon size={22} className="text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">{feature.title}</h3>
@@ -432,7 +432,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-6">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 hex-badge bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-6">
                 <Terminal size={14} /> Hands-on Labs
               </span>
               <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
@@ -507,12 +507,12 @@ export default function LandingPage() {
                   <div className="h-44 bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center relative">
                     <Video size={40} className="text-white/70" />
                     {mc.status === "LIVE" && (
-                      <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse-glow">
+                      <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold hex-badge animate-pulse-glow">
                         <span className="w-2 h-2 bg-white rounded-full" /> LIVE
                       </span>
                     )}
                     {mc.recordingUrl && (
-                      <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 text-white text-xs font-medium rounded-full backdrop-blur-sm">
+                      <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 text-white text-xs font-medium hex-badge backdrop-blur-sm">
                         <Play size={12} /> Recorded
                       </span>
                     )}
@@ -619,7 +619,7 @@ export default function LandingPage() {
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers", icon: Users },
             ].map((s, i) => (
               <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
-                <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover-rotate" />
                 <div className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">{s.value}</div>
                 <div className="text-white/60 text-sm mt-2 label-tracking">{s.label}</div>
               </div>
@@ -637,12 +637,12 @@ export default function LandingPage() {
         <NoiseOverlay opacity={0.02} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.12] clip-path-trapezoid blur-3xl" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Ready to master the tech stack?</h2>
+          <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight text-stroke-white">Ready to master the tech stack?</h2>
           <p className="text-lg text-white/60 mt-5 leading-relaxed max-w-xl mx-auto">
             Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-            <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/25 hover:shadow-[#229C62]/40 hover:translate-y-[-2px]">
+            <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/25 hover:shadow-[#229C62]/40 magnetic-btn">
               <span>Start Free Today</span> <ArrowRight size={18} />
             </Link>
             <a href="#courses" className="text-white/60 hover:text-white text-sm font-medium px-6 py-4 transition-colors">
