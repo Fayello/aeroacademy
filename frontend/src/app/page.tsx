@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import {
   Shield, Target, Microscope, ArrowRight, CheckCircle2, Play,
   Terminal, Users, BookOpen, Award, Server, Code, Network, Layers, BarChart3,
@@ -13,6 +14,7 @@ import HeroParticles from "@/components/HeroParticles";
 import FloatingShapes from "@/components/FloatingShapes";
 import NoiseOverlay from "@/components/ui/NoiseOverlay";
 import AngularDivider from "@/components/ui/AngularDivider";
+import CurrencySwitcher from "@/components/ui/CurrencySwitcher";
 import SectionLabel from "@/components/ui/SectionLabel";
 import type { MasterClass, Trainer } from "@/types/api";
 
@@ -156,6 +158,7 @@ export default function LandingPage() {
   const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalLabs: 0 });
   const [masterClasses, setMasterClasses] = useState<MasterClass[]>([]);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const { convert, config: currencyConfig } = useCurrency();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -205,6 +208,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <CurrencySwitcher />
             <Link href="/login" className="hidden sm:inline-flex btn-ghost text-sm">Sign in</Link>
             <Link href="/get-started" className="angular-btn btn-primary text-sm px-5 py-2">
               <span>Get Started</span> <ArrowRight size={14} />
@@ -663,7 +667,7 @@ export default function LandingPage() {
               <div className="mb-6">
                 <span className="label-tracking text-slate-400 mb-2 block">Free</span>
                 <div className="flex items-end gap-1">
-                  <span className="text-5xl font-extrabold text-slate-900">$0</span>
+                  <span className="text-5xl font-extrabold text-slate-900">{convert(0)}</span>
                   <span className="text-slate-500 mb-2">/mo</span>
                 </div>
                 <p className="text-slate-500 text-sm mt-3">Everything you need to get started</p>
@@ -690,7 +694,7 @@ export default function LandingPage() {
               <div className="mb-6">
                 <span className="label-tracking text-[#229C62] mb-2 block">Pro</span>
                 <div className="flex items-end gap-1">
-                  <span className="text-5xl font-extrabold text-slate-900">$29</span>
+                  <span className="text-5xl font-extrabold text-slate-900">{convert(29)}</span>
                   <span className="text-slate-500 mb-2">/mo</span>
                 </div>
                 <p className="text-slate-500 text-sm mt-3">For serious practitioners</p>

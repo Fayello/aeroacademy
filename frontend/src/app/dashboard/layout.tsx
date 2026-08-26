@@ -12,6 +12,7 @@ import { DashboardSocketProvider } from "@/hooks/DashboardSocketContext";
 import { DisplayModeProvider } from "@/lib/displayMode";
 import { NavigationProvider } from "@/lib/navigation";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import CurrencySwitcher from "@/components/ui/CurrencySwitcher";
 import { initTokenRefresh } from "@/lib/api";
 import { logout } from "@/lib/auth";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -96,6 +97,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
       </div>
 
       <div className="flex items-center gap-2">
+        <CurrencySwitcher />
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setNotifOpen((o) => !o)}
