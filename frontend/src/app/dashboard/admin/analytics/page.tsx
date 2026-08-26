@@ -61,7 +61,7 @@ function HBar({ label, value, max, color = "emerald" }: { label: string; value: 
 
 function StatCard({ label, value, icon: Icon, color }: { label: string; value: number | string; icon: typeof Users; color: string }) {
   return (
-    <div className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all duration-300">
+    <div className="relative overflow-hidden angular-card bg-white p-5 hover:shadow-lg transition-all duration-300">
       <div className={`absolute top-0 right-0 w-20 h-20 ${color} opacity-10 rounded-bl-full`}></div>
       <Icon size={20} className="text-slate-500 mb-3" />
       <div className="text-2xl font-bold text-slate-900">{value}</div>
@@ -109,7 +109,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-slate-900 border border-slate-200">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-slate-900 border border-slate-200">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
@@ -171,7 +171,7 @@ export default function AdminAnalyticsPage() {
 
       {/* User growth + Quiz/Flag stats */}
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
+        <div className="lg:col-span-2 angular-card bg-white p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold text-slate-900 flex items-center gap-2"><TrendingUp size={16} className="text-[#229C62]" /> User Growth</h3>
@@ -183,7 +183,7 @@ export default function AdminAnalyticsPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card bg-white p-6">
             <h3 className="font-semibold text-slate-900 mb-4">Quiz Performance</h3>
             <div className="space-y-3">
               <HBar label="Passed" value={data.quizStats.passed} max={data.quizStats.submissions} color="emerald" />
@@ -194,7 +194,7 @@ export default function AdminAnalyticsPage() {
               <span className="text-lg font-bold text-[#229C62]">{data.quizStats.passRate}%</span>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="angular-card bg-white p-6">
             <h3 className="font-semibold text-slate-900 mb-4">Flag Submissions</h3>
             <div className="space-y-3">
               <HBar label="Correct" value={data.flagStats.correct} max={data.flagStats.correct + data.flagStats.incorrect} color="emerald" />
@@ -213,7 +213,7 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Activity (14 days) */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="angular-card bg-white p-6">
         <h3 className="font-semibold text-slate-900 mb-1">Learning Activity</h3>
         <p className="text-xs text-slate-500 mb-4">Daily engagement — last 14 days</p>
         <div className="flex gap-1 items-end" style={{ height: 160 }}>
@@ -248,7 +248,7 @@ export default function AdminAnalyticsPage() {
 
       {/* Distribution + Levels */}
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h3 className="font-semibold text-slate-900 mb-4">Role Distribution</h3>
           <div className="space-y-3">
             {data.roleDistribution.map((r) => (
@@ -256,7 +256,7 @@ export default function AdminAnalyticsPage() {
             ))}
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h3 className="font-semibold text-slate-900 mb-4">Division Distribution</h3>
           <div className="space-y-3">
             {data.divisionDistribution.map((d) => (
@@ -264,7 +264,7 @@ export default function AdminAnalyticsPage() {
             ))}
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h3 className="font-semibold text-slate-900 mb-4">Users by Level</h3>
           <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
             {data.levelDistribution.length === 0 && <p className="text-sm text-slate-500">No level data yet.</p>}
@@ -277,7 +277,7 @@ export default function AdminAnalyticsPage() {
 
       {/* Course completion + Lab usage */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h3 className="font-semibold text-slate-900 mb-4">Course Completion</h3>
           <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
             {data.courseStats.length === 0 && <p className="text-sm text-slate-500">No course activity yet.</p>}
@@ -295,7 +295,7 @@ export default function AdminAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="angular-card bg-white p-6">
           <h3 className="font-semibold text-slate-900 mb-4">Lab Usage</h3>
           <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
             {data.labStats.length === 0 && <p className="text-sm text-slate-500">No lab activity yet.</p>}
@@ -318,7 +318,7 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Top performers */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="angular-card bg-white overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">Top Performers</h3>
           <span className="text-xs text-slate-500">By XP</span>

@@ -165,7 +165,7 @@ export default function AdminLearningPathsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -182,7 +182,7 @@ export default function AdminLearningPathsPage() {
       </div>
 
       {paths.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div className="angular-card bg-white p-12 text-center">
           <Route size={48} className="mx-auto mb-4 text-slate-300" />
           <h3 className="text-lg font-semibold text-slate-900 mb-2">No learning paths yet</h3>
           <p className="text-sm text-slate-500 mb-4">Create your first learning path to guide students through a structured curriculum.</p>
@@ -193,7 +193,7 @@ export default function AdminLearningPathsPage() {
       ) : (
         <div className="grid gap-4">
           {paths.map((path) => (
-            <div key={path.id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-all">
+            <div key={path.id} className="angular-card bg-white p-5 hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">

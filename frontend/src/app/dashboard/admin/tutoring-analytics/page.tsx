@@ -142,7 +142,7 @@ export default function TutoringDashboard() {
           ].map((stat, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl p-4 border border-slate-100"
+              className="angular-card bg-white p-4"
             >
               <div className="flex items-center gap-2 mb-2">
                 <stat.icon size={16} style={{ color: stat.color }} />
@@ -157,7 +157,7 @@ export default function TutoringDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Interaction Types */}
-          <div className="bg-white rounded-xl p-6 border border-slate-100">
+          <div className="angular-card bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
               <BarChart3 size={16} className="text-[#229C62]" />
               Interaction Types
@@ -195,7 +195,7 @@ export default function TutoringDashboard() {
           </div>
 
           {/* Teaching Methods */}
-          <div className="bg-white rounded-xl p-6 border border-slate-100">
+          <div className="angular-card bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
               <Brain size={16} className="text-purple-500" />
               Teaching Methods
@@ -235,7 +235,7 @@ export default function TutoringDashboard() {
           </div>
 
           {/* Top Concepts */}
-          <div className="bg-white rounded-xl p-6 border border-slate-100">
+          <div className="angular-card bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
               <Lightbulb size={16} className="text-amber-500" />
               Top Concepts Discussed
@@ -260,7 +260,7 @@ export default function TutoringDashboard() {
           </div>
 
           {/* Activity by Hour */}
-          <div className="bg-white rounded-xl p-6 border border-slate-100">
+          <div className="angular-card bg-white p-6">
             <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
               <Clock size={16} className="text-blue-500" />
               Activity by Hour (UTC)

@@ -198,7 +198,7 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center"><Users size={28} /></div>
@@ -211,25 +211,25 @@ export default function AdminUsersPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card bg-white p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center"><Users size={18} className="text-[#229C62]" /></div>
             <div><p className="text-lg font-bold text-slate-900">{stats?.total || 0}</p><p className="text-xs text-slate-500">Total</p></div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card bg-white p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"><GraduationCap size={18} className="text-blue-600" /></div>
             <div><p className="text-lg font-bold text-slate-900">{getRoleStats("STUDENT")}</p><p className="text-xs text-slate-500">Students</p></div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card bg-white p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center"><Shield size={18} className="text-purple-600" /></div>
             <div><p className="text-lg font-bold text-slate-900">{getRoleStats("ADMIN")}</p><p className="text-xs text-slate-500">Admins</p></div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="angular-card bg-white p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center"><UserCheck size={18} className="text-orange-600" /></div>
             <div><p className="text-lg font-bold text-slate-900">{getRoleStats("RECRUITER")}</p><p className="text-xs text-slate-500">Recruiters</p></div>

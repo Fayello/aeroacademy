@@ -190,7 +190,7 @@ export default function AdminBattlePassPage() {
 
       <div className="space-y-3">
         {filtered.map((bp) => (
-          <div key={bp.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div key={bp.id} className="angular-card bg-white overflow-hidden">
             <div className="flex items-center justify-between p-5">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">

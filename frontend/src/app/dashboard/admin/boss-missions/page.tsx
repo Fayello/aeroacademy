@@ -208,7 +208,7 @@ export default function AdminBossMissionsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="angular-card bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

@@ -94,7 +94,7 @@ export default function AdminAuditPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-slate-900 border border-slate-200">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-slate-900 border border-slate-200">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
@@ -124,7 +124,7 @@ export default function AdminAuditPage() {
       </div>
 
       {/* Top actions */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="angular-card bg-white p-6">
         <h3 className="font-semibold text-slate-900 mb-4">Most Frequent Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {topActions.map((a) => (
@@ -141,7 +141,7 @@ export default function AdminAuditPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-end gap-3">
+      <div className="angular-card bg-white p-4 flex flex-wrap items-end gap-3">
         <div className="flex-1 min-w-[180px]">
           <label className="block text-xs font-medium text-slate-500 mb-1">Action</label>
           <select value={action} onChange={(e) => handleFilterChange(e.target.value, status)} className="input-field">
@@ -168,7 +168,7 @@ export default function AdminAuditPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="angular-card bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -270,7 +270,7 @@ export default function AdminAuditPage() {
       {selected && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setSelected(null)} aria-hidden="true" />
-          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+          <div className="relative angular-card bg-white shadow-xl w-full max-w-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ActionBadge action={selected.action} />

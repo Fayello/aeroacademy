@@ -261,7 +261,7 @@ export default function ContentRefreshDashboard() {
               ].map((stat, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-xl p-4 border border-slate-100"
+                  className="angular-card bg-white p-4"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <stat.icon size={16} style={{ color: stat.color }} />
@@ -282,7 +282,7 @@ export default function ContentRefreshDashboard() {
 
             {/* Freshness gauges */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl p-6 border border-slate-100">
+              <div className="angular-card bg-white p-6">
                 <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                   <Clock size={16} className="text-blue-500" />
                   Lab Freshness
@@ -328,7 +328,7 @@ export default function ContentRefreshDashboard() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl p-6 border border-slate-100">
+              <div className="angular-card bg-white p-6">
                 <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                   <Clock size={16} className="text-blue-500" />
                   Course Freshness
@@ -379,7 +379,7 @@ export default function ContentRefreshDashboard() {
             {/* Needs refresh */}
             {(report.labsNeedingRefresh.length > 0 ||
               report.coursesNeedingRefresh.length > 0) && (
-              <div className="bg-white rounded-xl p-6 border border-slate-100">
+              <div className="angular-card bg-white p-6">
                 <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                   <AlertTriangle size={16} className="text-amber-500" />
                   Content Needing Refresh
@@ -470,7 +470,7 @@ export default function ContentRefreshDashboard() {
                 {report.domainBreakdown.map((d) => (
                   <div
                     key={d.domain}
-                    className="bg-white rounded-xl p-4 border border-slate-100"
+                    className="angular-card bg-white p-4"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-sm">{d.domain}</span>
@@ -512,7 +512,7 @@ function LabScoreCard({ score }: { score: ContentRelevanceScore }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+    <div className="angular-card bg-white overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
@@ -596,7 +596,7 @@ function CourseScoreCard({ score }: { score: ContentRelevanceScore }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+    <div className="angular-card bg-white overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"

@@ -145,7 +145,7 @@ export default function AdminLabsPage() {
   if (!selectedLab) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
+        <div className="relative overflow-hidden angular-card bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -217,7 +217,7 @@ export default function AdminLabsPage() {
         <span className="text-slate-900 font-medium">{selectedLab?.title}</span>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -235,7 +235,7 @@ export default function AdminLabsPage() {
 
       <div className="grid gap-4">
         {selectedLab!.flags?.map((flag) => (
-          <div key={flag.id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all">
+          <div key={flag.id} className="angular-card bg-white p-5 hover:shadow-lg transition-all">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><Shield size={18} className="text-amber-600" /></div>
@@ -253,7 +253,7 @@ export default function AdminLabsPage() {
           </div>
         ))}
         {(!selectedLab!.flags || selectedLab!.flags.length === 0) && (
-          <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
+          <div className="text-center py-12 angular-card bg-white">
             <Shield size={40} className="mx-auto text-slate-300 mb-3" />
             <p className="text-slate-500">No flags yet. Add CTF flags for this lab.</p>
           </div>

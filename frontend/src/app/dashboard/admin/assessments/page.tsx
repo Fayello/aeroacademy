@@ -171,7 +171,7 @@ export default function AdminAssessmentsPage() {
 
       <div className="space-y-3">
         {assessments.map((a) => (
-          <div key={a.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div key={a.id} className="angular-card bg-white overflow-hidden">
             <div className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
               <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => toggleExpand(a.id)}>
                 <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">

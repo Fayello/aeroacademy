@@ -140,7 +140,7 @@ export default function AdminMonitoringPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
@@ -172,7 +172,7 @@ export default function AdminMonitoringPage() {
           { label: "Capacity Used", value: `${capacityPercent}%`, icon: Gauge, bg: "bg-amber-500", color: "text-amber-600" },
           { label: "Max Capacity", value: stats?.maxCapacity || 0, icon: Activity, bg: "bg-violet-500", color: "text-violet-600" },
         ].map((card) => (
-          <div key={card.label} className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all duration-300">
+          <div key={card.label} className="relative overflow-hidden angular-card bg-white p-5 hover:shadow-lg transition-all duration-300">
             <div className={`absolute top-0 right-0 w-20 h-20 ${card.bg} opacity-10 rounded-bl-full`}></div>
             <card.icon size={20} className={`${card.color} mb-3`} />
             <div className="text-2xl font-bold text-slate-900">{card.value}</div>
@@ -247,7 +247,7 @@ export default function AdminMonitoringPage() {
       </div>
 
       {instances.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="angular-card bg-white overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
             <h4 className="text-sm font-semibold text-slate-700">Quick Actions</h4>
           </div>
