@@ -22,9 +22,11 @@ import {
   ScrollText,
   Target,
   BookOpen,
+  Bell,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import NotificationBadge from "@/components/ui/NotificationBadge";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
@@ -360,6 +362,24 @@ export default function Sidebar() {
 
       {/* Bottom */}
       <div className={`px-3 pb-3 shrink-0 space-y-1.5 ${collapsed ? "px-2" : ""}`}>
+        <Link
+          href="/dashboard/notifications"
+          title={collapsed ? "Notifications" : undefined}
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            pathname === "/dashboard/notifications"
+              ? "bg-[#E9F8EE] text-[#0F203A]"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          } ${collapsed ? "justify-center px-2" : ""}`}
+        >
+          <Bell size={16} className={pathname === "/dashboard/notifications" ? "text-[#229C62]" : "text-slate-400"} />
+          {!collapsed && (
+            <>
+              <span className="flex-1">Notifications</span>
+              <NotificationBadge />
+            </>
+          )}
+          {collapsed && <NotificationBadge className="absolute -top-1 -right-1" />}
+        </Link>
         <Link
           href="/dashboard/profile"
           title={collapsed ? "Profile" : undefined}

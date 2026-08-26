@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, GraduationCap, FlaskConical, Swords, User } from "lucide-react";
+import { Home, GraduationCap, FlaskConical, Swords, User, Bell } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useNavigation } from "@/lib/navigation";
+import NotificationBadge from "@/components/ui/NotificationBadge";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -18,13 +19,14 @@ export default function BottomNav() {
     { href: "/dashboard/courses", tKey: "mobile.learn", icon: GraduationCap, show: true },
     { href: "/dashboard/labs", tKey: "mobile.labs", icon: FlaskConical, show: true },
     { href: "/dashboard/leaderboard", tKey: "mobile.compete", icon: Swords, show: hasCompete },
+    { href: "/dashboard/notifications", tKey: "mobile.notifications", icon: Bell, show: true, isNotifications: true },
     { href: "/dashboard/profile", tKey: "mobile.me", icon: User, show: true },
   ].filter(l => l.show);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 md:hidden z-50" aria-label={t("nav.mobile")}>
       <div className="flex justify-around items-center h-16 px-2 safe-area-pb">
-        {links.map(({ href, tKey, icon: Icon }) => {
+        {links.map(({ href, tKey, icon: Icon, isNotifications }) => {
           const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
           const label = t(tKey);
           return (
@@ -36,7 +38,10 @@ export default function BottomNav() {
                 isActive ? "text-[#229C62]" : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <div className="relative">
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                {isNotifications && <NotificationBadge className="absolute -top-2 -right-3" />}
+              </div>
               <span className="text-[10px] mt-1 font-medium">{label}</span>
               {isActive && <span className="w-1 h-1 rounded-full bg-[#229C62] mt-1" />}
             </Link>

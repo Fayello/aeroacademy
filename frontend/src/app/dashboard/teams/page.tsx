@@ -65,6 +65,7 @@ export default function TeamsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [teamTab, setTeamTab] = useState<"my-team" | "browse">("browse");
   const [createName, setCreateName] = useState("");
   const [createDesc, setCreateDesc] = useState("");
   const [createVisibility, setCreateVisibility] = useState<"PUBLIC" | "PRIVATE">("PUBLIC");
@@ -89,9 +90,11 @@ export default function TeamsPage() {
         const mine = await fetchApi<Team>("/teams/mine").catch(() => null);
         if (mine) {
           setMyTeam(mine);
+          setTeamTab("my-team");
         } else {
           const data = await fetchApi<Team[]>("/teams");
           setTeams(data);
+          setTeamTab("browse");
         }
       } catch {
         // silent
@@ -419,251 +422,302 @@ export default function TeamsPage() {
     );
   }
 
-  // ─── MY TEAM VIEW ─────────────────────────────────────
-  if (myTeam) {
-    const sortedMembers = myTeam.members
-      ? [...myTeam.members].sort((a, b) => b.xp - a.xp)
-      : [];
-    const isOwner = myTeam.ownerId === (typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}").id : "");
+  // ─── TABS — MY TEAM / BROWSE ─────────────────────────
+  const sortedMembers = myTeam?.members
+    ? [...myTeam.members].sort((a, b) => b.xp - a.xp)
+    : [];
+  const isOwner = myTeam?.ownerId === (typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}").id : "");
 
-    return (
-      <div className="space-y-6 animate-in fade-in duration-500">
-        <PageHeader title="My Team" description={myTeam.name} />
-
-        <TeamHeader team={myTeam} />
-
-        {myTeam.motto && !showEdit && (
-          <p className="text-sm text-slate-500 italic">&ldquo;{myTeam.motto}&rdquo;</p>
-        )}
-
-        <div className="flex items-center gap-3 flex-wrap">
-          {isOwner && (
-            <button
-              onClick={() => {
-                setEditFields({
-                  name: myTeam.name,
-                  description: myTeam.description || "",
-                  motto: myTeam.motto || "",
-                  tagline: myTeam.tagline || "",
-                  avatarUrl: myTeam.avatarUrl || "",
-                  bannerUrl: myTeam.bannerUrl || "",
-                  primaryColor: myTeam.primaryColor || "#229C62",
-                  accentColor: myTeam.accentColor || "#7AD62A",
-                });
-                setShowEdit(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#229C62] bg-[#E9F8EE] rounded-lg hover:bg-[#229C62]/20 transition-colors"
-            >
-              <Pencil size={12} /> Customize
-            </button>
-          )}
-          <button
-            onClick={handleLeave}
-            className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-          >
-            Leave Team
-          </button>
-        </div>
-
-        {showEdit && (
-          <div className="angular-card p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                <Palette size={14} /> Customize Team
-              </h3>
-              <button onClick={() => setShowEdit(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* Avatar */}
-            <div className="flex items-center gap-4">
-              <div className="relative group">
-                {(editFields.avatarUrl || myTeam.avatarUrl) ? (
-                  <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-slate-200" />
-                ) : (
-                  <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200">
-                    <Camera size={20} className="text-slate-400" />
-                  </div>
-                )}
-                <button
-                  onClick={() => avatarRef.current?.click()}
-                  className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                >
-                  <Camera size={16} className="text-white" />
-                </button>
-                <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleAvatarUpload(e, "edit")} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-700">Team Avatar</p>
-                <p className="text-xs text-slate-400">Square image, recommended 128x128</p>
-              </div>
-            </div>
-
-            {/* Banner */}
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-1.5 block">Banner Image</label>
-              <div className="relative group rounded-xl overflow-hidden border border-slate-200">
-                {(editFields.bannerUrl || myTeam.bannerUrl) ? (
-                  <img src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" className="w-full h-24 object-cover" />
-                ) : (
-                  <div className="w-full h-24 bg-gradient-to-r from-[#0F203A] to-[#229C62] flex items-center justify-center">
-                    <ImageIcon size={20} className="text-white/40" />
-                  </div>
-                )}
-                <button
-                  onClick={() => bannerRef.current?.click()}
-                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                >
-                  <Camera size={16} className="text-white" />
-                </button>
-                <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleBannerUpload(e, "edit")} />
-              </div>
-            </div>
-
-            {/* Colors */}
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-2 block">Team Colors</label>
-              <div className="flex flex-wrap gap-2">
-                {PRESET_COLORS.map((preset) => (
-                  <button
-                    key={preset.label}
-                    onClick={() => { handleEditField("primaryColor", preset.primary); handleEditField("accentColor", preset.accent); }}
-                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
-                      editFields.primaryColor === preset.primary ? "border-slate-900 scale-110" : "border-transparent"
-                    }`}
-                    style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.accent})` }}
-                    title={preset.label}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Fields */}
-            <input
-              type="text"
-              value={(editFields.name as string) || ""}
-              onChange={(e) => handleEditField("name", e.target.value)}
-              placeholder="Team name"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
-            />
-            <input
-              type="text"
-              value={(editFields.description as string) || ""}
-              onChange={(e) => handleEditField("description", e.target.value)}
-              placeholder="Description"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
-            />
-            <input
-              type="text"
-              value={(editFields.motto as string) || ""}
-              onChange={(e) => handleEditField("motto", e.target.value)}
-              placeholder="Team motto (shown on banner)"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
-            />
-            <input
-              type="text"
-              value={(editFields.tagline as string) || ""}
-              onChange={(e) => handleEditField("tagline", e.target.value)}
-              placeholder="Short tagline"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
-            />
-
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-                Cancel
-              </button>
-              <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] transition-colors">
-                Save Changes
-              </button>
-            </div>
-          </div>
-        )}
-
-        {myTeam.inviteCode && (
-          <div className="bg-[#E9F8EE] border border-[#229C62]/20 rounded-xl p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-[#229C62] mb-0.5">Share this invite code with teammates</p>
-              <p className="text-lg font-mono font-bold text-[#0F203A] tracking-wider">{myTeam.inviteCode}</p>
-            </div>
-            <button
-              onClick={() => copyCode(myTeam.inviteCode!)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229C62] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
-            >
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? "Copied!" : "Copy"}
-            </button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="angular-card p-4">
-            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Crown size={14} /> Owner</div>
-            <p className="text-sm font-semibold text-slate-900">{myTeam.ownerName}</p>
-          </div>
-          <div className="angular-card p-4">
-            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Users size={14} /> Members</div>
-            <p className="text-sm font-semibold text-slate-900">{myTeam.memberCount}</p>
-          </div>
-          <div className="angular-card p-4">
-            <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Trophy size={14} /> Total XP</div>
-            <p className="text-sm font-semibold text-slate-900">{myTeam.totalXp.toLocaleString()}</p>
-          </div>
-        </div>
-
-        {sortedMembers.length > 0 && (
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-3">Team Members</h2>
-            <div className="angular-card overflow-hidden">
-              {sortedMembers.map((member, idx) => (
-                <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0">
-                  <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
-                  <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
-                    <span className="text-xs font-bold text-[#0F203A]">{member.name?.charAt(0)?.toUpperCase() || "?"}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
-                    <p className="text-[10px] text-slate-400 capitalize">{member.role?.toLowerCase()}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star size={12} className="text-amber-400" />
-                    <span className="text-sm font-semibold text-slate-700">{member.xp?.toLocaleString() || 0}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // ─── NO TEAM — BROWSE / CREATE / JOIN ─────────────────
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader title="Teams" description="Create or join a team to collaborate with other engineers" />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">{error}</div>
-      )}
-
-      <div className="flex gap-3 flex-wrap">
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 border-b border-slate-200">
         <button
-          onClick={() => { setShowCreate(true); setShowJoin(false); setError(""); }}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+          onClick={() => setTeamTab("my-team")}
+          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+            teamTab === "my-team"
+              ? "border-[#229C62] text-[#229C62]"
+              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+          }`}
         >
-          <Plus size={16} /> Create Team
+          My Team
+          {myTeam && <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-[#E9F8EE] text-[#229C62]">1</span>}
         </button>
         <button
-          onClick={() => { setShowJoin(true); setShowCreate(false); setError(""); }}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:border-[#229C62] transition-colors"
+          onClick={() => setTeamTab("browse")}
+          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+            teamTab === "browse"
+              ? "border-[#229C62] text-[#229C62]"
+              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+          }`}
         >
-          <LogIn size={16} /> Join with Code
+          Browse Teams
+          <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">{teams.length}</span>
         </button>
       </div>
 
-      {showCreate && (
-        <div className="angular-card p-5 space-y-4">
+      {/* My Team tab */}
+      {teamTab === "my-team" && myTeam && (
+        <div className="space-y-6">
+          <TeamHeader team={myTeam} />
+          {myTeam.motto && !showEdit && (
+            <p className="text-sm text-slate-500 italic">&ldquo;{myTeam.motto}&rdquo;</p>
+          )}
+
+          <div className="flex items-center gap-3 flex-wrap">
+            {isOwner && (
+              <button
+                onClick={() => {
+                  setEditFields({
+                    name: myTeam.name,
+                    description: myTeam.description || "",
+                    motto: myTeam.motto || "",
+                    tagline: myTeam.tagline || "",
+                    avatarUrl: myTeam.avatarUrl || "",
+                    bannerUrl: myTeam.bannerUrl || "",
+                    primaryColor: myTeam.primaryColor || "#229C62",
+                    accentColor: myTeam.accentColor || "#7AD62A",
+                  });
+                  setShowEdit(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#229C62] bg-[#E9F8EE] rounded-lg hover:bg-[#229C62]/20 transition-colors"
+              >
+                <Pencil size={12} /> Customize
+              </button>
+            )}
+            <button
+              onClick={handleLeave}
+              className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              Leave Team
+            </button>
+          </div>
+
+          {showEdit && (
+            <div className="angular-card p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <Palette size={14} /> Customize Team
+                </h3>
+                <button onClick={() => setShowEdit(false)} className="text-slate-400 hover:text-slate-600">
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Avatar */}
+              <div className="flex items-center gap-4">
+                <div className="relative group">
+                  {(editFields.avatarUrl || myTeam.avatarUrl) ? (
+                    <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-slate-200" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200">
+                      <Camera size={20} className="text-slate-400" />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => avatarRef.current?.click()}
+                    className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  >
+                    <Camera size={16} className="text-white" />
+                  </button>
+                  <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleAvatarUpload(e, "edit")} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Team Avatar</p>
+                  <p className="text-xs text-slate-400">Square image, recommended 128x128</p>
+                </div>
+              </div>
+
+              {/* Banner */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1.5 block">Banner Image</label>
+                <div className="relative group rounded-xl overflow-hidden border border-slate-200">
+                  {(editFields.bannerUrl || myTeam.bannerUrl) ? (
+                    <img src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" className="w-full h-24 object-cover" />
+                  ) : (
+                    <div className="w-full h-24 bg-gradient-to-r from-[#0F203A] to-[#229C62] flex items-center justify-center">
+                      <ImageIcon size={20} className="text-white/40" />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => bannerRef.current?.click()}
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  >
+                    <Camera size={16} className="text-white" />
+                  </button>
+                  <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleBannerUpload(e, "edit")} />
+                </div>
+              </div>
+
+              {/* Colors */}
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Team Colors</label>
+                <div className="flex flex-wrap gap-2">
+                  {PRESET_COLORS.map((preset) => (
+                    <button
+                      key={preset.label}
+                      onClick={() => { handleEditField("primaryColor", preset.primary); handleEditField("accentColor", preset.accent); }}
+                      className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                        editFields.primaryColor === preset.primary ? "border-slate-900 scale-110" : "border-transparent"
+                      }`}
+                      style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.accent})` }}
+                      title={preset.label}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Fields */}
+              <input
+                type="text"
+                value={(editFields.name as string) || ""}
+                onChange={(e) => handleEditField("name", e.target.value)}
+                placeholder="Team name"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+              />
+              <input
+                type="text"
+                value={(editFields.description as string) || ""}
+                onChange={(e) => handleEditField("description", e.target.value)}
+                placeholder="Description"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+              />
+              <input
+                type="text"
+                value={(editFields.motto as string) || ""}
+                onChange={(e) => handleEditField("motto", e.target.value)}
+                placeholder="Team motto (shown on banner)"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+              />
+              <input
+                type="text"
+                value={(editFields.tagline as string) || ""}
+                onChange={(e) => handleEditField("tagline", e.target.value)}
+                placeholder="Short tagline"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+              />
+
+              <div className="flex justify-end gap-2">
+                <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                  Cancel
+                </button>
+                <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] transition-colors">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          )}
+
+          {myTeam.inviteCode && (
+            <div className="bg-[#E9F8EE] border border-[#229C62]/20 rounded-xl p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-[#229C62] mb-0.5">Share this invite code with teammates</p>
+                <p className="text-lg font-mono font-bold text-[#0F203A] tracking-wider">{myTeam.inviteCode}</p>
+              </div>
+              <button
+                onClick={() => copyCode(myTeam.inviteCode!)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229C62] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="angular-card p-4">
+              <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Crown size={14} /> Owner</div>
+              <p className="text-sm font-semibold text-slate-900">{myTeam.ownerName}</p>
+            </div>
+            <div className="angular-card p-4">
+              <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Users size={14} /> Members</div>
+              <p className="text-sm font-semibold text-slate-900">{myTeam.memberCount}</p>
+            </div>
+            <div className="angular-card p-4">
+              <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Trophy size={14} /> Total XP</div>
+              <p className="text-sm font-semibold text-slate-900">{myTeam.totalXp.toLocaleString()}</p>
+            </div>
+          </div>
+
+          {sortedMembers.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-3">Team Members</h2>
+              <div className="angular-card overflow-hidden">
+                {sortedMembers.map((member, idx) => (
+                  <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0">
+                    <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
+                      <span className="text-xs font-bold text-[#0F203A]">{member.name?.charAt(0)?.toUpperCase() || "?"}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
+                      <p className="text-[10px] text-slate-400 capitalize">{member.role?.toLowerCase()}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star size={12} className="text-amber-400" />
+                      <span className="text-sm font-semibold text-slate-700">{member.xp?.toLocaleString() || 0}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* My Team tab - no team */}
+      {teamTab === "my-team" && !myTeam && (
+        <div className="angular-card py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+            <Users size={28} className="text-[#229C62]" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 mb-1">You haven&apos;t joined a team yet</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+            Create a new team or join an existing one with an invite code.
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={() => { setShowCreate(true); setTeamTab("browse"); }}
+              className="flex items-center gap-2 px-4 py-2 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+            >
+              <Plus size={16} /> Create Team
+            </button>
+            <button
+              onClick={() => { setShowJoin(true); setTeamTab("browse"); }}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:border-[#229C62] transition-colors"
+            >
+              <LogIn size={16} /> Join with Code
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Browse tab */}
+      {teamTab === "browse" && (
+        <>
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">{error}</div>
+          )}
+
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={() => { setShowCreate(true); setShowJoin(false); setError(""); }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+            >
+              <Plus size={16} /> Create Team
+            </button>
+            <button
+              onClick={() => { setShowJoin(true); setShowCreate(false); setError(""); }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:border-[#229C62] transition-colors"
+            >
+              <LogIn size={16} /> Join with Code
+            </button>
+          </div>
+
+          {showCreate && (
+            <div className="angular-card p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">Create a Team</h3>
             <button onClick={() => setShowCreate(false)} className="text-slate-400 hover:text-slate-600">
@@ -779,8 +833,8 @@ export default function TeamsPage() {
         </div>
       )}
 
-      {showJoin && (
-        <div className="angular-card p-5 space-y-4">
+          {showJoin && (
+            <div className="angular-card p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">Join with Invite Code</h3>
             <button onClick={() => setShowJoin(false)} className="text-slate-400 hover:text-slate-600">
@@ -805,7 +859,7 @@ export default function TeamsPage() {
         </div>
       )}
 
-      {teams.length === 0 ? (
+          {teams.length === 0 ? (
         <div className="angular-card py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
             <Users size={28} className="text-[#229C62]" />
@@ -815,8 +869,8 @@ export default function TeamsPage() {
             Be the first to create a team or ask a teammate for an invite code.
           </p>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {teams.map((team) => (
             <button
               key={team.id}
@@ -866,7 +920,9 @@ export default function TeamsPage() {
               </div>
             </button>
           ))}
-        </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
