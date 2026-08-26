@@ -212,24 +212,25 @@ export default function LandingPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section id="main-content" className="pt-32 pb-24 px-6 relative overflow-hidden">
         <HeroParticles />
+        <div className="absolute inset-0 dot-grid-bg" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-[1fr_auto] gap-16 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6 label-tracking">
                 <CheckCircle2 size={14} />
-                Trusted by engineers across Cameroon
+                Built for hands-on learners
               </div>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-[1.05]">
-                Master the <span className="text-[#229C62]">technologies</span> that power modern software
+              <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-slate-900 tracking-tight leading-[1.02]">
+                Master the <span className="text-gradient-brand">technologies</span> that power modern software
               </h1>
               <p className="text-lg text-slate-500 mt-6 leading-relaxed max-w-xl">
                 Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
-                <Link href="/get-started" className="btn-primary text-sm px-8 py-3.5">
-                  Start Learning Free <ArrowRight size={16} />
+                <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40 hover:translate-y-[-2px]">
+                  <span>Start Learning Free</span> <ArrowRight size={18} />
                 </Link>
-                <a href="#labs" className="btn-secondary text-sm px-8 py-3.5">
+                <a href="#labs" className="btn-ghost text-sm px-6 py-3.5 text-slate-600 hover:text-[#229C62]">
                   <Play size={14} /> Explore Labs
                 </a>
               </div>
@@ -241,38 +242,28 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            <div className="relative">
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 border border-slate-200/80">
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { value: stats.totalCourses || "—", label: "Structured Courses", icon: BookOpen },
-                    { value: stats.totalLabs || "—", label: "Hands-on Labs", icon: Microscope },
-                    { value: "50+", label: "Technical Lessons", icon: Code },
-                    { value: stats.totalStudents || "—", label: "Students Training", icon: Users },
-                  ].map((stat) => (
-                    <div key={stat.label} className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-                      <stat.icon size={20} className="text-[#229C62] mb-3" />
-                      <div className="text-3xl font-bold text-slate-900 tracking-tight">{stat.value}{typeof stat.value === 'number' ? '+' : ''}</div>
-                      <div className="text-sm text-slate-500 mt-1">{stat.label}</div>
-                    </div>
-                  ))}
+            <div className="relative hidden lg:block">
+              <div className="absolute -inset-4 bg-gradient-to-r from-[#229C62]/15 to-[#7AD62A]/15 rounded-3xl blur-2xl" />
+              <div className="bg-[#0d1117] angular-card p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10 w-[420px]">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+                  <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
                 </div>
-                <div className="mt-4 bg-white rounded-2xl p-4 border border-slate-200/80 flex items-center gap-3">
-                  <div className="flex -space-x-2">
-                    {["bg-[#229C62]", "bg-blue-500", "bg-violet-500", "bg-amber-500"].map((color, i) => (
-                      <div key={i} className={`w-8 h-8 rounded-full ${color} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}>
-                        {String.fromCharCode(65 + i)}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold text-slate-900">{stats.totalStudents || "500+"}</span>
-                    <span className="text-slate-500 ml-1">engineers learning right now</span>
-                  </div>
+                <div className="space-y-2 text-emerald-400/70">
+                  <div><span className="text-slate-500">$</span> docker ps</div>
+                  <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
+                  <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
+                  <div className="mt-3"><span className="text-slate-500">$</span> sqlmap -u &quot;http://localhost:8080/?id=1&quot; --dbs</div>
+                  <div className="text-amber-400/80">[*] testing connection to target URL</div>
+                  <div className="text-amber-400/80">[+] available databases [3]:</div>
+                  <div className="text-white/90 ml-4">dvwa</div>
+                  <div className="text-white/90 ml-4">information_schema</div>
+                  <div className="text-white/90 ml-4">mysql</div>
+                  <div className="mt-3"><span className="text-slate-500">$</span> <span className="animate-pulse">_</span></div>
                 </div>
               </div>
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#E9F8EE] rounded-full opacity-60 blur-2xl" />
-              <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-blue-100 rounded-full opacity-40 blur-2xl" />
             </div>
           </div>
         </div>
@@ -283,11 +274,10 @@ export default function LandingPage() {
 
       {/* ═══════════ AUDIENCE SEGMENTATION ═══════════ */}
       <section id="enterprise" className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/40 via-white to-blue-50/30" />
-        <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#229C62]/[0.03] rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-100/40 rounded-full blur-3xl" />
+        <div className="absolute inset-0 angular-grid-bg" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="label-tracking text-[#229C62] mb-4 block">Who it&apos;s for</span>
             <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Built for every learner</h2>
             <p className="text-lg text-slate-500 mt-4 max-w-2xl mx-auto">Whether you are a student, a team lead, or an educator, there is a path designed for you.</p>
           </div>
@@ -295,13 +285,12 @@ export default function LandingPage() {
             {AUDIENCES.map((audience) => {
               const colors = COLOR_MAP[audience.color];
               return (
-                <div key={audience.tag} className="relative bg-white rounded-2xl p-8 border border-slate-200/80 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group overflow-hidden">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#229C62]/[0.03] to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+                <div key={audience.tag} className="angular-card relative bg-white p-8 border border-slate-200/80 hover-glow transition-all duration-300 group overflow-hidden hover-lift">
                   <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${colors.bg} ${colors.border} ${colors.text} text-xs font-semibold mb-6 relative z-10`}>
                     <audience.icon size={14} />
                     {audience.tag}
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10 leading-tight">{audience.title}</h3>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10 leading-tight group-hover:text-[#229C62] transition-colors">{audience.title}</h3>
                   <p className="text-slate-500 text-sm leading-relaxed mb-6 relative z-10">{audience.description}</p>
                   <ul className="space-y-3 mb-8 relative z-10">
                     {audience.features.map((f) => (
@@ -310,8 +299,8 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link href={audience.href} className="relative z-10 btn-primary text-sm w-full justify-center">
-                    {audience.cta} <ArrowRight size={14} />
+                  <Link href={audience.href} className="relative z-10 angular-btn btn-primary text-sm w-full justify-center">
+                    <span>{audience.cta}</span> <ArrowRight size={14} />
                   </Link>
                 </div>
               );
@@ -322,25 +311,24 @@ export default function LandingPage() {
 
       {/* ═══════════ LEARNING PATHS (TABBED) ═══════════ */}
       <section id="courses" className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white to-slate-50/80" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#229C62]/[0.02] rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="label-tracking text-[#229C62] mb-4 block">Curriculum</span>
             <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">What you will learn</h2>
             <p className="text-lg text-slate-500 mt-4">Structured learning paths from fundamentals to advanced topics.</p>
           </div>
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
+          <div className="flex justify-center border-b border-slate-200 mb-10">
             {LEARNING_PATHS.map((path, i) => (
               <button
                 key={path.tab}
                 onClick={() => setActiveTab(i)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === i ? "bg-[#229C62] text-white shadow-lg shadow-[#229C62]/25" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300"}`}
+                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-all ${activeTab === i ? "border-[#229C62] text-[#229C62]" : "border-transparent text-slate-400 hover:text-slate-600"}`}
               >
                 <path.icon size={16} /> {path.tab}
               </button>
             ))}
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/40 p-8 md:p-10">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-8 md:p-10 hover-lift">
             <div className="grid lg:grid-cols-2 gap-10">
               <div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-3">{LEARNING_PATHS[activeTab].title}</h3>
@@ -348,9 +336,11 @@ export default function LandingPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-8">
                   <Microscope size={14} /> {LEARNING_PATHS[activeTab].labHighlight}
                 </div>
-                <Link href="/register" className="btn-primary text-sm">
-                  Explore This Path <ArrowRight size={14} />
-                </Link>
+                <div>
+                  <Link href="/register" className="angular-btn btn-primary text-sm">
+                    <span>Explore This Path</span> <ArrowRight size={14} />
+                  </Link>
+                </div>
               </div>
               <div className="space-y-3">
                 {LEARNING_PATHS[activeTab].courses.map((course) => (
@@ -369,27 +359,25 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ HOW IT WORKS ═══════════ */}
-      <section className="py-28 px-6 relative overflow-hidden">
+      <section className="py-28 px-6 relative overflow-hidden scanline-overlay">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0F203A]" />
-        <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-[0.03]" />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#229C62]/[0.07] rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#7AD62A]/[0.05] rounded-full blur-3xl" />
+        <div className="absolute inset-0 angular-grid-bg" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="label-tracking text-[#7AD62A] mb-4 block">Process</span>
             <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">How it works</h2>
             <p className="text-lg text-white/60 mt-4">From sign-up to skill mastery in three simple steps.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map((step, i) => (
               <div key={step.number} className="relative">
-                {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-[#229C62]/20" />}
-                <div className="relative bg-white/[0.04] backdrop-blur-sm rounded-2xl p-8 border border-white/[0.06] hover:border-[#229C62]/20 hover:bg-white/[0.06] transition-all duration-300 group">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
+                <div className="angular-card relative bg-white/[0.04] backdrop-blur-sm p-8 border border-white/[0.06] hover:border-[#229C62]/20 hover:bg-white/[0.06] transition-all duration-300 group">
+                  <div className="text-6xl font-extrabold text-[#229C62]/10 absolute top-4 right-6 group-hover:text-[#229C62]/20 transition-colors">{step.number}</div>
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300 relative z-10">
                     <step.icon size={28} className="text-white" />
                   </div>
-                  <span className="text-xs font-bold text-[#7AD62A] uppercase tracking-wider">Step {step.number}</span>
-                  <h3 className="text-xl font-bold text-white mt-2 mb-3">{step.title}</h3>
-                  <p className="text-white/50 text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="text-xl font-bold text-white mt-2 mb-3 relative z-10">{step.title}</h3>
+                  <p className="text-white/50 text-sm leading-relaxed relative z-10">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -399,20 +387,19 @@ export default function LandingPage() {
 
       {/* PLATFORM FEATURES */}
       <section id="platform" className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white to-slate-50/80" />
-        <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-[#229C62]/[0.02] rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="label-tracking text-[#229C62] mb-4 block">Capabilities</span>
             <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">The platform built for real skills</h2>
             <p className="text-lg text-slate-500 mt-4">Everything you need to learn, practice, and prove your expertise.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature, i) => (
-              <div key={feature.title} className="bg-white rounded-2xl p-8 border border-slate-200/80 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group">
+              <div key={feature.title} className={`angular-card bg-white p-8 border border-slate-200/80 hover-glow transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon size={22} className="text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">{feature.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
               </div>
             ))}
@@ -481,30 +468,26 @@ export default function LandingPage() {
 
       {/* ═══════════ MASTER CLASSES ═══════════ */}
       <section id="master-classes" className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-50/40 via-white to-slate-50" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-100/20 rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-semibold mb-4">
-                <Video size={14} /> Live + Recorded
-              </span>
+              <span className="label-tracking text-violet-600 mb-4 block">Live + Recorded</span>
               <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Master Classes</h2>
               <p className="text-lg text-slate-500 mt-3">Learn from expert instructors in live sessions. Can&apos;t make it? Watch the recording.</p>
             </div>
-            <Link href="/dashboard/master-classes" className="btn-secondary text-sm mt-4 md:mt-0">
+            <Link href="/dashboard/master-classes" className="btn-ghost text-sm mt-4 md:mt-0 text-[#229C62] hover:text-[#1a8a55]">
               View All <ChevronRight size={14} />
             </Link>
           </div>
-          {masterClasses.length > 0 ? (
+          {masterClasses.length > 0 && (
             <div className="grid md:grid-cols-3 gap-6">
-              {masterClasses.map((mc: MasterClass) => (
-                <div key={mc.id} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+              {masterClasses.map((mc: MasterClass, i) => (
+                <div key={mc.id} className={`angular-card bg-white border border-slate-200/80 overflow-hidden hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
                   <div className="h-44 bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center relative">
                     <Video size={40} className="text-white/70" />
                     {mc.status === "LIVE" && (
-                      <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                        <span className="w-2 h-2 bg-white rounded-full animate-pulse" /> LIVE
+                      <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse-glow">
+                        <span className="w-2 h-2 bg-white rounded-full" /> LIVE
                       </span>
                     )}
                     {mc.recordingUrl && (
@@ -532,36 +515,27 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/80">
-              <Video size={40} className="text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500 text-sm">Master classes coming soon. Stay tuned.</p>
-            </div>
           )}
         </div>
       </section>
 
       {/* ═══════════ 1-ON-1 TRAINING ═══════════ */}
       <section id="training" className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-amber-100/20 rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold mb-4">
-                <Calendar size={14} /> 1-on-1 Sessions
-              </span>
+              <span className="label-tracking text-amber-600 mb-4 block">1-on-1 Sessions</span>
               <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Personal Training</h2>
               <p className="text-lg text-slate-500 mt-3">Book private sessions with expert trainers. Tailored to your goals and schedule.</p>
             </div>
-            <Link href="/dashboard/training" className="btn-secondary text-sm mt-4 md:mt-0">
+            <Link href="/dashboard/training" className="btn-ghost text-sm mt-4 md:mt-0 text-[#229C62] hover:text-[#1a8a55]">
               Browse Trainers <ChevronRight size={14} />
             </Link>
           </div>
-          {trainers.length > 0 ? (
+          {trainers.length > 0 && (
             <div className="grid md:grid-cols-3 gap-6">
-              {trainers.map((trainer: Trainer) => (
-                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className="bg-white rounded-2xl border border-slate-200/80 p-6 hover:shadow-lg hover:border-[#229C62]/30 transition-all duration-300 group">
+              {trainers.map((trainer: Trainer, i) => (
+                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className={`angular-card bg-white p-6 border border-slate-200/80 hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-lg">
                       {(trainer.user?.name || "T").charAt(0)}
@@ -578,33 +552,24 @@ export default function LandingPage() {
                 </Link>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/80">
-              <Calendar size={40} className="text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500 text-sm">Trainer profiles coming soon.</p>
-            </div>
           )}
         </div>
       </section>
 
       {/* TESTIMONIALS */}
       <section className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white to-slate-50/80" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="label-tracking text-[#229C62] mb-4 block">Testimonials</span>
             <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
             <p className="text-lg text-slate-500 mt-4">Real feedback from engineers building their skills on XpertClass.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="bg-white rounded-2xl p-8 border border-slate-200/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-                <div className="flex gap-1 mb-4">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <svg key={s} className="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                  ))}
-                </div>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">&quot;{t.quote}&quot;</p>
-                <div>
+            {TESTIMONIALS.map((t, i) => (
+              <div key={t.name} className={`angular-card bg-white p-8 border border-slate-200/80 hover-lift transition-all duration-300 relative overflow-hidden animate-fade-in-up animate-delay-${i + 1}`}>
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#229C62] to-[#7AD62A]" />
+                <p className="text-slate-600 text-sm leading-relaxed mb-6 pl-4">&quot;{t.quote}&quot;</p>
+                <div className="pl-4">
                   <div className="font-semibold text-slate-900 text-sm">{t.name}</div>
                   <div className="text-xs text-slate-400">{t.role}</div>
                 </div>
@@ -615,9 +580,8 @@ export default function LandingPage() {
       </section>
 
       {/* BIG STATS */}
-      <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-[0.03]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.08] rounded-full blur-3xl" />
+      <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden scanline-overlay">
+        <div className="absolute inset-0 angular-grid-bg" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -625,11 +589,11 @@ export default function LandingPage() {
               { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Labs", icon: Microscope },
               { value: "55+", label: "Lessons", icon: Code },
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers", icon: Users },
-            ].map((s) => (
-              <div key={s.label} className="bg-white/[0.04] backdrop-blur-sm rounded-2xl p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group">
+            ].map((s, i) => (
+              <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-4xl md:text-5xl font-bold text-white tracking-tight">{s.value}</div>
-                <div className="text-white/60 text-sm mt-2">{s.label}</div>
+                <div className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">{s.value}</div>
+                <div className="text-white/60 text-sm mt-2 label-tracking">{s.label}</div>
               </div>
             ))}
           </div>
@@ -638,23 +602,23 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="py-28 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/50 via-white to-[#229C62]/[0.03]" />
+        <div className="absolute inset-0 bg-[#0F203A]" />
+        <div className="absolute inset-0 angular-grid-bg" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.12] rounded-full blur-3xl" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <div className="bg-gradient-to-br from-[#E9F8EE] to-white rounded-3xl p-14 border border-[#229C62]/20 shadow-xl shadow-[#229C62]/5">
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Ready to master the tech stack?</h2>
-            <p className="text-lg text-slate-500 mt-5 leading-relaxed max-w-xl mx-auto">
-              Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-              <Link href="/get-started" className="btn-primary text-sm px-8 py-3.5">
-                Start Free Today <ArrowRight size={16} />
-              </Link>
-              <a href="#courses" className="btn-secondary text-sm px-8 py-3.5">
-                Browse Courses
-              </a>
-            </div>
-            <p className="text-sm text-slate-400 mt-5">No credit card required. Free tier available.</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Ready to master the tech stack?</h2>
+          <p className="text-lg text-white/60 mt-5 leading-relaxed max-w-xl mx-auto">
+            Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+            <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/25 hover:shadow-[#229C62]/40 hover:translate-y-[-2px]">
+              <span>Start Free Today</span> <ArrowRight size={18} />
+            </Link>
+            <a href="#courses" className="text-white/60 hover:text-white text-sm font-medium px-6 py-4 transition-colors">
+              Browse Courses
+            </a>
           </div>
+          <p className="text-sm text-white/40 mt-5">No credit card required. Free tier available.</p>
         </div>
       </section>
 

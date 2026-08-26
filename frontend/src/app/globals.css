@@ -111,7 +111,183 @@ body {
   }
 }
 
-/* Scrollbar */
+/* ===== ANGULAR GEOMETRIC SYSTEM ===== */
+
+/* Angular card — notched bottom-right corner */
+.angular-card {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+  transition: clip-path 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.angular-card:hover {
+  clip-path: polygon(0 0, 100% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Angular card — angled top-right */
+.angular-card-tr {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+  transition: clip-path 0.3s ease;
+}
+.angular-card-tr:hover {
+  clip-path: polygon(0 0, 100% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Parallelogram button */
+.angular-btn {
+  transform: skewX(-6deg);
+}
+.angular-btn > * {
+  transform: skewX(6deg);
+}
+
+/* Hexagonal badge */
+.hex-badge {
+  clip-path: polygon(8% 0, 92% 0, 100% 50%, 92% 100%, 8% 100%, 0% 50%);
+}
+
+/* Angular section divider — diagonal slash */
+.angular-divider {
+  position: relative;
+}
+.angular-divider::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--brand-green), transparent);
+  transform: skewY(-1deg);
+}
+
+/* ===== DYNAMIC BACKGROUNDS ===== */
+
+/* Scanline overlay */
+.scanline-overlay {
+  position: relative;
+}
+.scanline-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Angular grid pattern */
+.angular-grid-bg {
+  background-image:
+    linear-gradient(45deg, rgba(34, 156, 98, 0.03) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(34, 156, 98, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(34, 156, 98, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(34, 156, 98, 0.03) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+}
+
+/* Dotted grid pattern */
+.dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(34, 156, 98, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ===== TYPOGRAPHY ===== */
+
+/* Gradient text */
+.text-gradient-brand {
+  background: linear-gradient(135deg, #229C62, #7AD62A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient text — white to muted */
+.text-gradient-white {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Text stroke */
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(34, 156, 98, 0.25);
+  -webkit-text-fill-color: transparent;
+}
+
+/* Extreme letter spacing for labels */
+.label-tracking {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ===== MICRO-INTERACTIONS ===== */
+
+/* Card hover lift */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(34, 156, 98, 0.12);
+}
+
+/* Glow on hover */
+.hover-glow {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 30px rgba(34, 156, 98, 0.15);
+  border-color: rgba(34, 156, 98, 0.3);
+}
+
+/* Scale on hover */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* Staggered fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+.animate-delay-5 { animation-delay: 0.5s; }
+
+/* Pulse glow for LIVE badges */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 2s infinite;
+}
+
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
