@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Video, Calendar, Loader2, Users, Search, X } from "lucide-react";
+import { Video, Calendar, Loader2, Users, Search, X, Clock, CalendarPlus } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 import type { MasterClass } from "@/types/api";
@@ -126,8 +126,8 @@ export default function MasterClassesPage() {
               <div className="h-40 bg-gradient-to-br from-violet-500 via-purple-500 to-[#229C62] flex items-center justify-center relative">
                 <Video size={36} className="text-white/80" />
                 {mc.status === "LIVE" && (
-                  <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                    <span className="w-2 h-2 bg-white rounded-full animate-pulse" /> LIVE
+                  <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30 animate-pulse">
+                    <span className="w-2 h-2 bg-white rounded-full" /> LIVE
                   </span>
                 )}
                 {mc.status === "COMPLETED" && mc.recordingUrl && (
@@ -166,13 +166,35 @@ export default function MasterClassesPage() {
                     const hours = Math.floor((diff % 86400000) / 3600000);
                     const minutes = Math.floor((diff % 3600000) / 60000);
                     return (
-                      <span className="text-[#229C62] font-medium">Starts in {days}d {hours}h {minutes}m</span>
+                      <span className="flex items-center gap-1 text-[#229C62] font-medium"><Clock size={12} /> {days}d {hours}h {minutes}m</span>
                     );
                   })()}
                   {mc._count && (
                     <span className="flex items-center gap-1"><Users size={12} /> {mc._count.registrations}</span>
                   )}
                 </div>
+
+                {/* Add to Calendar for upcoming */}
+                {mc.status === "UPCOMING" && mc.scheduledAt && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const start = new Date(mc.scheduledAt!);
+                      const end = new Date(start.getTime() + (mc.duration || 60) * 60000);
+                      const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+                      const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${fmt(start)}\nDTEND:${fmt(end)}\nSUMMARY:${mc.title}\nDESCRIPTION:${mc.description || ""}\nEND:VEVENT\nEND:VCALENDAR`;
+                      const blob = new Blob([ics], { type: "text/calendar" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url; a.download = `${mc.title.replace(/\s+/g, "_")}.ics`; a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#229C62] bg-[#E9F8EE] rounded-lg hover:bg-[#229C62]/20 transition-colors"
+                  >
+                    <CalendarPlus size={12} /> Add to Calendar
+                  </button>
+                )}
               </div>
             </Link>
           ))}

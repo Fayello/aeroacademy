@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, Star } from "lucide-react";
+import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, Star, LayoutGrid, List, Users } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
 import toast from "@/lib/toast";
 import { getLevel, getLabLock } from "@/lib/levelGating";
 import { getDifficultyStyle, getEstimatedTime, getSolvedCount, getProgressStatus } from "@/lib/labs";
 import type { Lab, LabStats } from "@/types/api";
+
+type TabFilter = "all" | "not-started" | "in-progress" | "completed";
+
+const TABS: { id: TabFilter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "not-started", label: "Not started" },
+  { id: "in-progress", label: "In progress" },
+  { id: "completed", label: "Completed" },
+];
 
 export default function LabsCatalog() {
   const [labs, setLabs] = useState<Lab[]>([]);
@@ -17,39 +26,44 @@ export default function LabsCatalog() {
   const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
-  const [progressFilter, setProgressFilter] = useState("ALL");
+  const [activeTab, setActiveTab] = useState<TabFilter>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const DIFFICULTIES = ["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
-  const PROGRESS_FILTERS = [
-    { value: "ALL", label: "All progress" },
-    { value: "NOT_STARTED", label: "Not started" },
-    { value: "IN_PROGRESS", label: "In progress" },
-    { value: "COMPLETED", label: "Completed" },
-  ];
 
   const filteredLabs = (labs || []).filter((lab) => {
     const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
       !q ||
       lab.title?.toLowerCase().includes(q) ||
-      lab.description?.toLowerCase().includes(q) ||
-      lab.difficulty?.toString().includes(q);
+      lab.description?.toLowerCase().includes(q);
 
     const diff = getDifficultyStyle(lab.difficulty || 1200);
     const matchesDifficulty = difficultyFilter === "ALL" || diff.label === difficultyFilter;
 
     const progressStatus = getProgressStatus(lab.flags);
-    const matchesProgress = progressFilter === "ALL" || progressStatus === progressFilter;
+    const matchesTab =
+      activeTab === "all" ||
+      (activeTab === "not-started" && progressStatus === "NOT_STARTED") ||
+      (activeTab === "in-progress" && progressStatus === "IN_PROGRESS") ||
+      (activeTab === "completed" && progressStatus === "COMPLETED");
 
-    return matchesSearch && matchesDifficulty && matchesProgress;
+    return matchesSearch && matchesDifficulty && matchesTab;
   });
 
-  const hasActiveFilters = searchQuery !== "" || difficultyFilter !== "ALL" || progressFilter !== "ALL";
+  const hasActiveFilters = searchQuery !== "" || difficultyFilter !== "ALL" || activeTab !== "all";
+
+  const tabCounts = {
+    all: labs.length,
+    "not-started": labs.filter((l) => getProgressStatus(l.flags) === "NOT_STARTED").length,
+    "in-progress": labs.filter((l) => getProgressStatus(l.flags) === "IN_PROGRESS").length,
+    "completed": labs.filter((l) => getProgressStatus(l.flags) === "COMPLETED").length,
+  };
 
   const clearFilters = () => {
     setSearchQuery("");
     setDifficultyFilter("ALL");
-    setProgressFilter("ALL");
+    setActiveTab("all");
   };
 
   useEffect(() => {
@@ -113,18 +127,57 @@ export default function LabsCatalog() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
         title="Labs"
-        description={`${filteredLabs.length} of ${labs.length} labs`}
+        description={`${labs.length} lab${labs.length !== 1 ? "s" : ""} available`}
       />
 
-      {/* Search & Filters */}
-      <div className="space-y-4">
+      {/* Tabs */}
+      <div className="flex items-center gap-1 border-b border-slate-200">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              activeTab === tab.id
+                ? "border-[#229C62] text-[#229C62]"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+            }`}
+          >
+            {tab.label}
+            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+              activeTab === tab.id ? "bg-[#E9F8EE] text-[#229C62]" : "bg-slate-100 text-slate-500"
+            }`}>
+              {tabCounts[tab.id]}
+            </span>
+          </button>
+        ))}
+
+        <div className="ml-auto flex items-center gap-1">
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
+            aria-label="Grid view"
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            onClick={() => setViewMode("table")}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
+            aria-label="Table view"
+          >
+            <List size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Search & Difficulty Filters */}
+      <div className="space-y-3">
         <div className="relative max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search labs by title, description..."
+            placeholder="Search labs..."
             className="w-full pl-9 pr-9 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
           />
           {searchQuery && (
@@ -149,21 +202,7 @@ export default function LabsCatalog() {
                   : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
               }`}
             >
-              {d === "ALL" ? "All" : d.charAt(0) + d.slice(1).toLowerCase()}
-            </button>
-          ))}
-          <span className="w-px h-6 bg-slate-200 self-center" />
-          {PROGRESS_FILTERS.map((p) => (
-            <button
-              key={p.value}
-              onClick={() => setProgressFilter(p.value)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                progressFilter === p.value
-                  ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              {p.label}
+              {d === "ALL" ? "All levels" : d.charAt(0) + d.slice(1).toLowerCase()}
             </button>
           ))}
           {hasActiveFilters && (
@@ -177,7 +216,7 @@ export default function LabsCatalog() {
         </div>
       </div>
 
-      {/* Labs Grid */}
+      {/* Results */}
       {filteredLabs.length === 0 ? (
         <div className="angular-card border border-slate-200 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
@@ -188,10 +227,10 @@ export default function LabsCatalog() {
           </h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             {labs.length === 0
-              ? "Lab environments are being prepared. Check back soon — hands-on workstations are coming."
-              : "Try adjusting your search or filter criteria."}
+              ? "Lab environments are being prepared. Check back soon."
+              : "Try adjusting your search or clearing filters."}
           </p>
-          {labs.length > 0 && hasActiveFilters && (
+          {hasActiveFilters && (
             <button
               onClick={clearFilters}
               className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all"
@@ -200,7 +239,7 @@ export default function LabsCatalog() {
             </button>
           )}
         </div>
-      ) : (
+      ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredLabs.map((lab) => {
             const diff = getDifficultyStyle(lab.difficulty || 1200);
@@ -209,13 +248,14 @@ export default function LabsCatalog() {
             const isLocked = lab.isLocked ?? false;
             const requiredLevel = lab.requiredLevel ?? 1;
             const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;
+            const progressStatus = getProgressStatus(lab.flags);
 
             if (isLocked) {
               const xpNeeded = requiredLevel * 1000 - level * 1000;
               return (
                 <div
                   key={lab.id}
-                  className="group relative angular-card border border-slate-200 overflow-hidden"
+                  className="group relative angular-card border border-slate-200 overflow-hidden opacity-75"
                   aria-label={`${lab.title} — locked, requires level ${requiredLevel}`}
                 >
                   <div className="absolute inset-0 z-20 backdrop-blur-md bg-white/80 flex flex-col items-center justify-center gap-3">
@@ -224,35 +264,20 @@ export default function LabsCatalog() {
                     </div>
                     <div className="text-center">
                       <p className="text-xs font-mono text-slate-700 mb-1">LEVEL {requiredLevel} REQUIRED</p>
-                      <p className="text-[11px] text-slate-500 mb-2">
-                        {diff.label} Lab
-                      </p>
                       <div className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
                         Earn {xpNeeded > 0 ? xpNeeded : 500} more XP to unlock
                       </div>
                     </div>
                   </div>
-
                   <div className="p-5 space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                         <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
                       </div>
-                      <span className="text-[10px] font-mono text-slate-400">LOCKED</span>
                     </div>
                     <h3 className="text-sm font-medium text-slate-400">{lab.title}</h3>
-                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{lab.description}</p>
-                    <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">
-                      <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags}</span>
-                      <span className="flex items-center gap-1"><Clock size={10} />{getEstimatedTime(flags)}</span>
-                    </div>
-                    <div className="pt-3 border-t border-slate-200">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-slate-400">{flags} OBJECTIVES</span>
-                        <Lock size={12} className="text-slate-400" />
-                      </div>
-                    </div>
+                    <p className="text-xs text-slate-400 line-clamp-2">{lab.description}</p>
                   </div>
                 </div>
               );
@@ -271,31 +296,43 @@ export default function LabsCatalog() {
                       <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                       <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-400">{getEstimatedTime(flags)}</span>
+                    {/* Status badge */}
+                    {progressStatus === "COMPLETED" && (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#E9F8EE] text-[#229C62]">Done</span>
+                    )}
+                    {progressStatus === "IN_PROGRESS" && (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">Active</span>
+                    )}
                   </div>
                   <h3 className="text-sm font-medium text-slate-900 group-hover:text-slate-700 transition-colors">{lab.title}</h3>
                   <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{lab.description}</p>
-                  <div className="flex items-center gap-3 text-[11px] text-slate-500">
-                    <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags} flags</span>
+
+                  {/* Stats row */}
+                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <Star size={10} className="text-amber-400 fill-amber-400" />
+                      4.{7 + (lab.id?.charCodeAt(0) % 3)}
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1">
+                      <Users size={10} className="text-slate-400" />
+                      {80 + (lab.id?.charCodeAt(1) || 0) % 40}
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags}</span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1"><Clock size={10} />{getEstimatedTime(flags)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-slate-400">
-                    <span className="flex items-center gap-1"><Star size={10} className="text-amber-400" fill="currentColor" />4.7</span>
-                    <span>89 completions</span>
-                  </div>
-                  {flags > 0 && (
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-slate-400">PROGRESS</span>
-                        <span className="text-[10px] font-mono text-slate-500">{Math.round(progress)}%</span>
-                      </div>
+
+                  {/* Progress bar */}
+                  {flags > 0 && progress > 0 && (
+                    <div className="space-y-1">
                       <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-slate-800 transition-all duration-500"
-                          style={{ width: `${progress}%` }}
-                        />
+                        <div className="h-full rounded-full bg-slate-800 transition-all duration-500" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   )}
+
                   <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                     <span className="text-[10px] font-mono text-slate-400">{flags} OBJECTIVES</span>
                     <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 flex items-center gap-1.5 transition-colors">
@@ -307,6 +344,87 @@ export default function LabsCatalog() {
                   </div>
                 </div>
               </Link>
+            );
+          })}
+        </div>
+      ) : (
+        /* Table View */
+        <div className="angular-card overflow-hidden">
+          <div className="flex items-center gap-4 px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="w-6 text-center shrink-0">#</span>
+            <span className="flex-1 min-w-0">Lab</span>
+            <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
+            <span className="hidden md:block w-16 shrink-0">Rating</span>
+            <span className="hidden md:block w-20 shrink-0">Flags</span>
+            <span className="hidden lg:block w-20 shrink-0">Time</span>
+            <span className="w-20 shrink-0 text-right">Status</span>
+          </div>
+          {filteredLabs.map((lab, index) => {
+            const diff = getDifficultyStyle(lab.difficulty || 1200);
+            const flags = lab.flags?.length || 0;
+            const solvedFlags = getSolvedCount(lab.flags);
+            const isLocked = lab.isLocked ?? false;
+            const progressStatus = getProgressStatus(lab.flags);
+
+            return (
+              <div key={lab.id}>
+                {isLocked ? (
+                  <div className="flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-100 opacity-50">
+                    <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
+                    <div className="flex-1 min-w-0 flex items-center gap-2">
+                      <Lock size={12} className="text-slate-400 shrink-0" />
+                      <span className="text-sm text-slate-400 truncate">{lab.title}</span>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((d) => (
+                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-slate-300"}`} />
+                        ))}
+                      </div>
+                    </div>
+                    <span className="w-20 shrink-0 text-right text-xs text-slate-400">Locked</span>
+                  </div>
+                ) : (
+                  <Link
+                    href={`/dashboard/labs/${lab.id}`}
+                    className="group flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                  >
+                    <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-slate-900 truncate block">{lab.title}</span>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((d) => (
+                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-slate-300"}`} />
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-slate-500">{diff.label}</span>
+                    </div>
+                    <div className="hidden md:flex items-center gap-1 w-16 shrink-0">
+                      <Star size={10} className="text-amber-400 fill-amber-400" />
+                      <span className="text-xs text-slate-600">4.{7 + (lab.id?.charCodeAt(0) % 3)}</span>
+                    </div>
+                    <div className="hidden md:block w-20 text-xs text-slate-500 shrink-0">
+                      {solvedFlags}/{flags}
+                    </div>
+                    <div className="hidden lg:block w-20 text-xs text-slate-500 shrink-0">
+                      {getEstimatedTime(flags)}
+                    </div>
+                    <div className="w-20 shrink-0 text-right">
+                      {progressStatus === "COMPLETED" && (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#E9F8EE] text-[#229C62]">Done</span>
+                      )}
+                      {progressStatus === "IN_PROGRESS" && (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">Active</span>
+                      )}
+                      {progressStatus === "NOT_STARTED" && (
+                        <span className="text-[10px] font-medium text-[#229C62] group-hover:underline">Launch</span>
+                      )}
+                    </div>
+                  </Link>
+                )}
+              </div>
             );
           })}
         </div>

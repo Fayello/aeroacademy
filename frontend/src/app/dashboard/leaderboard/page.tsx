@@ -406,14 +406,14 @@ export default function LeaderboardPage() {
                 idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
               }`}
             >
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
-                idx === 0 ? "bg-slate-100 text-slate-700" :
-                idx === 1 ? "bg-slate-100 text-slate-500" :
-                idx === 2 ? "bg-slate-100 text-slate-600" :
-                "bg-slate-50 text-slate-400"
-              }`}>
-                {idx < 3 ? <Trophy size={18} /> : idx + 1}
-              </div>
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
+              idx === 0 ? "bg-amber-100 text-amber-700" :
+              idx === 1 ? "bg-slate-100 text-slate-500" :
+              idx === 2 ? "bg-orange-100 text-orange-700" :
+              "bg-slate-50 text-slate-400"
+            }`}>
+              {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
+            </div>
 
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${
                 idx === 0 ? "bg-[#229C62] text-white" :
@@ -487,12 +487,12 @@ export default function LeaderboardPage() {
             }`}
           >
             <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
-              idx === 0 ? "bg-slate-100 text-slate-700" :
+              idx === 0 ? "bg-amber-100 text-amber-700" :
               idx === 1 ? "bg-slate-100 text-slate-500" :
-              idx === 2 ? "bg-slate-100 text-slate-600" :
+              idx === 2 ? "bg-orange-100 text-orange-700" :
               "bg-slate-50 text-slate-400"
             }`}>
-              {idx < 3 ? <Trophy size={16} /> : idx + 1}
+              {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
             </div>
 
             <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${

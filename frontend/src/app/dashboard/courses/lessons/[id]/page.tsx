@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, CheckCircle, Loader2, Microscope } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 type ReactPlayerComponent = React.ComponentType<{
@@ -23,6 +23,19 @@ import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
 import type { Lesson, QuizQuestion, QuizAnswer, QuizSubmissionResult } from "@/types/api";
 
+interface SectionWithLessons {
+  id: string;
+  title: string;
+  order: number;
+  lessons: { id: string; title: string; order: number }[];
+}
+
+interface CourseProgress {
+  total: number;
+  completed: number;
+  percentage: number;
+}
+
 export default function LessonPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -36,6 +49,8 @@ export default function LessonPage() {
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizCorrect, setQuizCorrect] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<QuizSubmissionResult | null>(null);
+  const [sections, setSections] = useState<SectionWithLessons[]>([]);
+  const [courseProgress, setCourseProgress] = useState<CourseProgress | null>(null);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     title: string;
@@ -56,6 +71,19 @@ export default function LessonPage() {
             method: "POST",
             body: JSON.stringify({ lessonId: id }),
           }).catch(() => {});
+
+          // Load course sections and progress
+          const courseId = (data as any)?.section?.courseId;
+          if (courseId) {
+            const [sectionsData, progressData] = await Promise.allSettled([
+              fetchApi<SectionWithLessons[]>(`/courses/${courseId}/sections`),
+              fetchApi<CourseProgress>(`/progress/course/${courseId}`).catch(() => null),
+            ]);
+            if (!cancelled) {
+              if (sectionsData.status === "fulfilled") setSections(sectionsData.value);
+              if (progressData.status === "fulfilled" && progressData.value) setCourseProgress(progressData.value);
+            }
+          }
         }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load lesson");
@@ -82,7 +110,8 @@ export default function LessonPage() {
             body: JSON.stringify({ lessonId: id }),
           });
           setCompleted(true);
-          toast.success("Lesson completed!");
+          setCourseProgress((prev) => prev ? { ...prev, completed: prev.completed + 1, percentage: Math.min(100, ((prev.completed + 1) / prev.total) * 100) } : prev);
+          toast.success("Lesson completed! +10 XP earned");
         } catch (err) {
           toast.error(err instanceof Error ? err.message : "Failed to record progress.");
         } finally {
@@ -96,6 +125,38 @@ export default function LessonPage() {
     if (!completed) handleMarkComplete();
   };
 
+  // Find current lesson position and prev/next
+  const findLessonNav = () => {
+    if (!lesson || !sections.length) return { prev: null, next: null, sectionIndex: 0, lessonIndex: 0, totalSections: 0 };
+    let sectionIdx = 0;
+    let lessonIdx = 0;
+    let flatIdx = 0;
+    let currentFlatIdx = 0;
+    const allLessons: { id: string; title: string; sectionTitle: string }[] = [];
+
+    for (const section of sections) {
+      for (const l of section.lessons) {
+        allLessons.push({ id: l.id, title: l.title, sectionTitle: section.title });
+        if (l.id === id) {
+          currentFlatIdx = flatIdx;
+          sectionIdx = sections.indexOf(section);
+          lessonIdx = section.lessons.indexOf(l);
+        }
+        flatIdx++;
+      }
+    }
+
+    return {
+      prev: currentFlatIdx > 0 ? allLessons[currentFlatIdx - 1] : null,
+      next: currentFlatIdx < allLessons.length - 1 ? allLessons[currentFlatIdx + 1] : null,
+      sectionIndex: sectionIdx,
+      lessonIndex: lessonIdx,
+      totalSections: sections.length,
+      totalLessons: allLessons.length,
+      currentLessonNumber: currentFlatIdx + 1,
+    };
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -106,38 +167,69 @@ export default function LessonPage() {
   if (error) return <div role="alert" className="text-red-600 p-4">{error}</div>;
   if (!lesson) return null;
 
+  const nav = findLessonNav();
+  const currentSection = sections[nav.sectionIndex];
+
   return (
     <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white mb-6">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-6 sm:p-8 text-white mb-6">
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.04] pointer-events-none" />
         <div className="relative z-10">
           <Link
             href={`/dashboard/courses/${lesson.section?.courseId || ""}`}
-            className="inline-flex items-center gap-1 text-sm text-white/80 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-1 text-sm text-white/60 hover:text-white transition-colors mb-4"
           >
             <ChevronLeft size={16} />
             Back to course
           </Link>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full">{lesson.section?.title}</span>
-                <span className="text-xs text-white/80">~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read</span>
+
+          {/* Section counter + Progress bar */}
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-xs font-medium px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full">
+              Section {nav.sectionIndex + 1} / {nav.totalSections || "?"}
+            </span>
+            <span className="text-xs text-white/50">
+              Lesson {nav.currentLessonNumber} of {nav.totalLessons || "?"}
+            </span>
+            {courseProgress && (
+              <div className="flex items-center gap-2 ml-auto">
+                <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#7AD62A] rounded-full transition-all duration-500"
+                    style={{ width: `${courseProgress.percentage || 0}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-white/50">{courseProgress.percentage || 0}%</span>
               </div>
-              <h1 className="text-2xl font-bold tracking-tight">{lesson.title}</h1>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-medium px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full">{lesson.section?.title}</span>
+                <span className="text-xs text-white/60">~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read</span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{lesson.title}</h1>
             </div>
             <button
               onClick={handleMarkComplete}
               disabled={saving || completed}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all shrink-0 ${
                 completed
-                  ? "bg-white text-[#229C62]"
+                  ? "bg-[#7AD62A] text-[#0F203A]"
                   : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
               } disabled:opacity-50`}
             >
               <CheckCircle size={16} />
-              {completed ? "Completed" : "Mark as complete"}
+              {completed ? "Completed" : "Mark complete"}
+              {!completed && (
+                <span className="flex items-center gap-1 text-[#7AD62A] font-bold text-xs">
+                  <Award size={12} />
+                  +10 XP
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -146,18 +238,20 @@ export default function LessonPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           {/* Video Player */}
-          <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden relative shadow-lg">
-            <ReactPlayer
-              url={lesson.videoUrl || undefined}
-              width="100%"
-              height="100%"
-              playing={playing}
-              controls
-              onEnded={handleVideoEnded}
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
-            />
-          </div>
+          {lesson.videoUrl && (
+            <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden relative shadow-lg">
+              <ReactPlayer
+                url={lesson.videoUrl}
+                width="100%"
+                height="100%"
+                playing={playing}
+                controls
+                onEnded={handleVideoEnded}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+              />
+            </div>
+          )}
 
           {/* Lesson Content */}
           <div className="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
@@ -293,12 +387,52 @@ export default function LessonPage() {
               </div>
             )}
           </div>
+
+          {/* Prev / Next Navigation */}
+          <div className="flex items-center justify-between gap-4">
+            {nav.prev ? (
+              <Link
+                href={`/dashboard/courses/lessons/${nav.prev.id}`}
+                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#229C62] hover:bg-[#E9F8EE]/30 transition-all group flex-1 min-w-0"
+              >
+                <ArrowLeft size={16} className="text-slate-400 group-hover:text-[#229C62] shrink-0 transition-colors" />
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Previous</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">{nav.prev.title}</p>
+                </div>
+              </Link>
+            ) : <div className="flex-1" />}
+
+            {nav.next ? (
+              <Link
+                href={`/dashboard/courses/lessons/${nav.next.id}`}
+                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#229C62] hover:bg-[#E9F8EE]/30 transition-all group flex-1 min-w-0 text-right justify-end"
+              >
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Next</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">{nav.next.title}</p>
+                </div>
+                <ArrowRight size={16} className="text-slate-400 group-hover:text-[#229C62] shrink-0 transition-colors" />
+              </Link>
+            ) : (
+              <Link
+                href={`/dashboard/courses/${lesson.section?.courseId || ""}`}
+                className="flex items-center gap-3 p-4 rounded-xl border border-[#229C62]/30 bg-[#E9F8EE] hover:bg-[#229C62] hover:text-white transition-all group flex-1 min-w-0 text-right justify-end"
+              >
+                <div className="min-w-0">
+                  <p className="text-[10px] text-[#229C62]/70 uppercase tracking-wide group-hover:text-white/70">Done!</p>
+                  <p className="text-sm font-medium text-[#0F203A] group-hover:text-white">Back to course</p>
+                </div>
+                <ChevronRight size={16} className="text-[#229C62] group-hover:text-white shrink-0 transition-colors" />
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           {lesson.labId && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6 border-blue-200 bg-blue-50/50">
+            <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
               <div className="flex items-center gap-2 text-blue-700 mb-3">
                 <Microscope size={18} />
                 <h3 className="text-sm font-semibold">Practice Lab</h3>
@@ -315,7 +449,32 @@ export default function LessonPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          {/* Section lessons list */}
+          {currentSection && (
+            <div className="bg-white rounded-xl border border-slate-200 p-5">
+              <h3 className="text-sm font-semibold text-slate-900 mb-3">{currentSection.title}</h3>
+              <div className="space-y-1">
+                {currentSection.lessons.map((l, i) => (
+                  <Link
+                    key={l.id}
+                    href={`/dashboard/courses/lessons/${l.id}`}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      l.id === id
+                        ? "bg-[#E9F8EE] text-[#0F203A] font-medium"
+                        : "text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 bg-slate-100 text-slate-500">
+                      {l.id === id ? <CheckCircle size={12} className="text-[#229C62]" /> : i + 1}
+                    </span>
+                    <span className="truncate">{l.title}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">Lesson Info</h3>
             <div className="space-y-2 text-sm text-slate-600">
               <div className="flex justify-between">
@@ -327,6 +486,10 @@ export default function LessonPage() {
                 <span className={`font-medium ${completed ? "text-[#229C62]" : "text-slate-500"}`}>
                   {completed ? "Completed" : "In progress"}
                 </span>
+              </div>
+              <div className="flex justify-between">
+                <span>XP Reward</span>
+                <span className="font-medium text-[#229C62]">+10 XP</span>
               </div>
             </div>
           </div>
