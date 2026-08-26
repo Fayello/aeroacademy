@@ -466,7 +466,6 @@ export class AuthService {
       timezone?: string;
       organizationId?: string;
       avatarUrl?: string;
-      interests?: string[];
       userExperience?: string;
     },
   ) {
@@ -496,7 +495,6 @@ export class AuthService {
     if (data.city !== undefined) updateData.city = data.city;
     if (data.timezone !== undefined) updateData.timezone = data.timezone;
     if (data.avatarUrl !== undefined) updateData.avatarUrl = data.avatarUrl;
-    if (data.interests !== undefined) updateData.interests = data.interests;
     if (data.userExperience !== undefined) updateData.userExperience = data.userExperience;
 
     if (data.organizationId) {

@@ -123,7 +123,6 @@ export default function OnboardingPage() {
         method: "PATCH",
         body: JSON.stringify({
           userExperience,
-          interests: [...selections.field, ...selections.skills],
         }),
       });
 
