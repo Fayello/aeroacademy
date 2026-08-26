@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   Shield, Target, Microscope, ArrowRight, CheckCircle2, Play,
   Terminal, Users, BookOpen, Award, Server, Code, Network, Layers, BarChart3,
-  Calendar, Clock, Video, UserCheck, ChevronRight
+  Calendar, Clock, Video, UserCheck, ChevronRight, Zap, Lock
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";
@@ -181,10 +181,11 @@ export default function LandingPage() {
       >
         Skip to main content
       </a>
+
       {/* ═══════════ NAVIGATION ═══════════ */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm" : "bg-white border-b border-slate-100"}`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
               <span className="text-lg font-bold tracking-tight">
@@ -193,7 +194,7 @@ export default function LandingPage() {
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-all">
+                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-all">
                   {item}
                 </a>
               ))}
@@ -209,26 +210,26 @@ export default function LandingPage() {
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
-      <section id="main-content" className="pt-32 pb-20 px-6 relative overflow-hidden">
+      <section id="main-content" className="pt-32 pb-24 px-6 relative overflow-hidden">
         <HeroParticles />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-6">
                 <CheckCircle2 size={14} />
                 Trusted by engineers across Cameroon
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.1]">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-[1.05]">
                 Master the <span className="text-[#229C62]">technologies</span> that power modern software
               </h1>
               <p className="text-lg text-slate-500 mt-6 leading-relaxed max-w-xl">
                 Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
               </p>
-              <div className="flex flex-col sm:flex-row items-start gap-3 mt-8">
-                <Link href="/get-started" className="btn-primary text-sm px-7 py-3">
+              <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
+                <Link href="/get-started" className="btn-primary text-sm px-8 py-3.5">
                   Start Learning Free <ArrowRight size={16} />
                 </Link>
-                <a href="#labs" className="btn-secondary text-sm px-7 py-3">
+                <a href="#labs" className="btn-secondary text-sm px-8 py-3.5">
                   <Play size={14} /> Explore Labs
                 </a>
               </div>
@@ -241,7 +242,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-8 border border-slate-200">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 border border-slate-200/80">
                 <div className="grid grid-cols-2 gap-4">
                   {[
                     { value: stats.totalCourses || "—", label: "Structured Courses", icon: BookOpen },
@@ -249,14 +250,14 @@ export default function LandingPage() {
                     { value: "50+", label: "Technical Lessons", icon: Code },
                     { value: stats.totalStudents || "—", label: "Students Training", icon: Users },
                   ].map((stat) => (
-                    <div key={stat.label} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={stat.label} className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
                       <stat.icon size={20} className="text-[#229C62] mb-3" />
-                      <div className="text-3xl font-bold text-slate-900">{stat.value}{typeof stat.value === 'number' ? '+' : ''}</div>
+                      <div className="text-3xl font-bold text-slate-900 tracking-tight">{stat.value}{typeof stat.value === 'number' ? '+' : ''}</div>
                       <div className="text-sm text-slate-500 mt-1">{stat.label}</div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 bg-white rounded-xl p-4 border border-slate-200 flex items-center gap-3">
+                <div className="mt-4 bg-white rounded-2xl p-4 border border-slate-200/80 flex items-center gap-3">
                   <div className="flex -space-x-2">
                     {["bg-[#229C62]", "bg-blue-500", "bg-violet-500", "bg-amber-500"].map((color, i) => (
                       <div key={i} className={`w-8 h-8 rounded-full ${color} border-2 border-white flex items-center justify-center text-white text-xs font-bold`}>
@@ -270,8 +271,8 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#E9F8EE] rounded-full opacity-50 blur-xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-100 rounded-full opacity-50 blur-xl" />
+              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#E9F8EE] rounded-full opacity-60 blur-2xl" />
+              <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-blue-100 rounded-full opacity-40 blur-2xl" />
             </div>
           </div>
         </div>
@@ -281,33 +282,30 @@ export default function LandingPage() {
       <SkillFusionLab />
 
       {/* ═══════════ AUDIENCE SEGMENTATION ═══════════ */}
-      <section id="enterprise" className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/30 via-white to-blue-50/30" />
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#229C62]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl" />
+      <section id="enterprise" className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/40 via-white to-blue-50/30" />
+        <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#229C62]/[0.03] rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-100/40 rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-4">
-              <Users size={14} /> Built for Everyone
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Built for every learner</h2>
-            <p className="text-lg text-slate-500 mt-4">Whether you are a student, a team lead, or an educator, there is a path designed for you.</p>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Built for every learner</h2>
+            <p className="text-lg text-slate-500 mt-4 max-w-2xl mx-auto">Whether you are a student, a team lead, or an educator, there is a path designed for you.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {AUDIENCES.map((audience) => {
               const colors = COLOR_MAP[audience.color];
               return (
-                <div key={audience.tag} className="relative bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 border border-slate-200 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#229C62]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+                <div key={audience.tag} className="relative bg-white rounded-2xl p-8 border border-slate-200/80 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#229C62]/[0.03] to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
                   <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${colors.bg} ${colors.border} ${colors.text} text-xs font-semibold mb-6 relative z-10`}>
                     <audience.icon size={14} />
                     {audience.tag}
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10">{audience.title}</h3>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10 leading-tight">{audience.title}</h3>
                   <p className="text-slate-500 text-sm leading-relaxed mb-6 relative z-10">{audience.description}</p>
-                  <ul className="space-y-2.5 mb-8 relative z-10">
+                  <ul className="space-y-3 mb-8 relative z-10">
                     {audience.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
+                      <li key={f} className="flex items-center gap-2.5 text-sm text-slate-600">
                         <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {f}
                       </li>
                     ))}
@@ -323,15 +321,12 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ LEARNING PATHS (TABBED) ═══════════ */}
-      <section id="courses" className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#229C62]/3 rounded-full blur-3xl" />
+      <section id="courses" className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white to-slate-50/80" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#229C62]/[0.02] rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-4">
-              <BookOpen size={14} /> Learning Paths
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What you will learn</h2>
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">What you will learn</h2>
             <p className="text-lg text-slate-500 mt-4">Structured learning paths from fundamentals to advanced topics.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2 mb-10">
@@ -339,13 +334,13 @@ export default function LandingPage() {
               <button
                 key={path.tab}
                 onClick={() => setActiveTab(i)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === i ? "bg-[#229C62] text-white shadow-lg shadow-[#229C62]/25" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 hover:border-slate-300"}`}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === i ? "bg-[#229C62] text-white shadow-lg shadow-[#229C62]/25" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300"}`}
               >
                 <path.icon size={16} /> {path.tab}
               </button>
             ))}
           </div>
-          <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8 md:p-10">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/40 p-8 md:p-10">
             <div className="grid lg:grid-cols-2 gap-10">
               <div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-3">{LEARNING_PATHS[activeTab].title}</h3>
@@ -359,10 +354,10 @@ export default function LandingPage() {
               </div>
               <div className="space-y-3">
                 {LEARNING_PATHS[activeTab].courses.map((course) => (
-                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/50 hover:shadow-md transition-all duration-200">
+                  <div key={course.name} className="flex items-center justify-between p-4 rounded-xl border border-slate-200/80 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/30 hover:shadow-sm transition-all duration-200">
                     <div>
                       <div className="font-medium text-slate-900 text-sm">{course.name}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">{course.lessons} lessons</div>
+                      <div className="text-xs text-slate-400 mt-0.5">{course.lessons} lessons</div>
                     </div>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${LEVEL_COLORS[course.level] || ""}`}>{course.level}</span>
                   </div>
@@ -374,30 +369,27 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ HOW IT WORKS ═══════════ */}
-      <section className="py-24 px-6 relative overflow-hidden">
+      <section className="py-28 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0F203A]" />
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('/logo-icon.svg')] bg-repeat opacity-5" />
-        <div className="absolute top-10 right-20 w-64 h-64 bg-[#229C62]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-20 w-64 h-64 bg-[#7AD62A]/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-[0.03]" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#229C62]/[0.07] rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#7AD62A]/[0.05] rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold mb-4">
-              <Target size={14} /> Simple Process
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">How it works</h2>
-            <p className="text-lg text-white/70 mt-4">From sign-up to skill mastery in three simple steps.</p>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">How it works</h2>
+            <p className="text-lg text-white/60 mt-4">From sign-up to skill mastery in three simple steps.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map((step, i) => (
               <div key={step.number} className="relative">
-                {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-[#229C62]/30" />}
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-[#229C62]/30 hover:bg-white/10 transition-all duration-300 group">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
+                {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-[#229C62]/20" />}
+                <div className="relative bg-white/[0.04] backdrop-blur-sm rounded-2xl p-8 border border-white/[0.06] hover:border-[#229C62]/20 hover:bg-white/[0.06] transition-all duration-300 group">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
                     <step.icon size={28} className="text-white" />
                   </div>
                   <span className="text-xs font-bold text-[#7AD62A] uppercase tracking-wider">Step {step.number}</span>
                   <h3 className="text-xl font-bold text-white mt-2 mb-3">{step.title}</h3>
-                  <p className="text-white/60 text-sm leading-relaxed">{step.description}</p>
+                  <p className="text-white/50 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -406,63 +398,41 @@ export default function LandingPage() {
       </section>
 
       {/* PLATFORM FEATURES */}
-      <section id="platform" className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" />
-        <div className="absolute top-20 left-10 w-96 h-96 bg-[#229C62]/3 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl" />
+      <section id="platform" className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white to-slate-50/80" />
+        <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-[#229C62]/[0.02] rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-4">
-              <Layers size={14} /> Platform Features
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">The platform built for real skills</h2>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">The platform built for real skills</h2>
             <p className="text-lg text-slate-500 mt-4">Everything you need to learn, practice, and prove your expertise.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((feature, i) => {
-              const gradients = [
-                "from-[#229C62]/5 to-[#7AD62A]/5",
-                "from-blue-50/50 to-violet-50/50",
-                "from-amber-50/50 to-orange-50/50",
-                "from-violet-50/50 to-fuchsia-50/50",
-                "from-cyan-50/50 to-blue-50/50",
-                "from-emerald-50/50 to-teal-50/50",
-              ];
-              const borderColors = [
-                "hover:border-[#229C62]/30",
-                "hover:border-blue-300",
-                "hover:border-amber-300",
-                "hover:border-violet-300",
-                "hover:border-cyan-300",
-                "hover:border-emerald-300",
-              ];
-              return (
-                <div key={feature.title} className={`bg-gradient-to-br ${gradients[i]} backdrop-blur-sm rounded-2xl p-6 border border-slate-200 ${borderColors[i]} hover:shadow-xl transition-all duration-300 group`}>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-4 shadow-md shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon size={22} className="text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
+            {FEATURES.map((feature, i) => (
+              <div key={feature.title} className="bg-white rounded-2xl p-8 border border-slate-200/80 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover:scale-110 transition-transform duration-300">
+                  <feature.icon size={22} className="text-white" />
                 </div>
-              );
-            })}
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* LAB SHOWCASE */}
-      <section id="labs" className="py-24 px-6 relative overflow-hidden">
+      <section id="labs" className="py-28 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/20 via-white to-blue-50/20" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-6">
                 <Terminal size={14} /> Hands-on Labs
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
                 Deploy your first lab in <span className="text-[#229C62]">30 seconds</span>
               </h2>
-              <p className="text-lg text-slate-500 mt-4 leading-relaxed">
+              <p className="text-lg text-slate-500 mt-5 leading-relaxed">
                 Each lab spins up an isolated Docker container with a real terminal. No virtual machines, no complicated setup.
               </p>
               <div className="mt-8 space-y-3">
@@ -478,29 +448,29 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/register" className="btn-primary text-sm mt-8 px-7 py-3">
+              <Link href="/register" className="btn-primary text-sm mt-10 px-8 py-3.5">
                 Try a Lab Now <ArrowRight size={14} />
               </Link>
             </div>
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-[#229C62]/20 to-[#7AD62A]/20 rounded-3xl blur-xl" />
-              <div className="bg-slate-900 rounded-2xl p-6 font-mono text-sm overflow-hidden border border-slate-700 shadow-2xl relative z-10">
+              <div className="absolute -inset-4 bg-gradient-to-r from-[#229C62]/15 to-[#7AD62A]/15 rounded-3xl blur-2xl" />
+              <div className="bg-[#0d1117] rounded-2xl p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28c840]" />
                   <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
                 </div>
-                <div className="space-y-2 text-[#229C62]/60">
+                <div className="space-y-2 text-emerald-400/70">
                   <div><span className="text-slate-500">$</span> docker ps</div>
                   <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
                   <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
                   <div className="mt-3"><span className="text-slate-500">$</span> sqlmap -u &quot;http://localhost:8080/?id=1&quot; --dbs</div>
-                  <div className="text-amber-400">[*] testing connection to target URL</div>
-                  <div className="text-amber-400">[+] available databases [3]:</div>
-                  <div className="text-white ml-4">dvwa</div>
-                  <div className="text-white ml-4">information_schema</div>
-                  <div className="text-white ml-4">mysql</div>
+                  <div className="text-amber-400/80">[*] testing connection to target URL</div>
+                  <div className="text-amber-400/80">[+] available databases [3]:</div>
+                  <div className="text-white/90 ml-4">dvwa</div>
+                  <div className="text-white/90 ml-4">information_schema</div>
+                  <div className="text-white/90 ml-4">mysql</div>
                   <div className="mt-3"><span className="text-slate-500">$</span> <span className="animate-pulse">_</span></div>
                 </div>
               </div>
@@ -510,17 +480,17 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ MASTER CLASSES ═══════════ */}
-      <section id="master-classes" className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-50/50 via-white to-slate-50" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-violet-100/30 rounded-full blur-3xl" />
+      <section id="master-classes" className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-50/40 via-white to-slate-50" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-100/20 rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-semibold mb-4">
                 <Video size={14} /> Live + Recorded
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Master Classes</h2>
-              <p className="text-lg text-slate-500 mt-2">Learn from expert instructors in live sessions. Can&apos;t make it? Watch the recording.</p>
+              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Master Classes</h2>
+              <p className="text-lg text-slate-500 mt-3">Learn from expert instructors in live sessions. Can&apos;t make it? Watch the recording.</p>
             </div>
             <Link href="/dashboard/master-classes" className="btn-secondary text-sm mt-4 md:mt-0">
               View All <ChevronRight size={14} />
@@ -529,24 +499,24 @@ export default function LandingPage() {
           {masterClasses.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {masterClasses.map((mc: MasterClass) => (
-                <div key={mc.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow group">
-                  <div className="h-40 bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center relative">
-                    <Video size={40} className="text-white/80" />
+                <div key={mc.id} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+                  <div className="h-44 bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center relative">
+                    <Video size={40} className="text-white/70" />
                     {mc.status === "LIVE" && (
                       <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
                         <span className="w-2 h-2 bg-white rounded-full animate-pulse" /> LIVE
                       </span>
                     )}
                     {mc.recordingUrl && (
-                      <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 text-white text-xs font-medium rounded-full">
+                      <span className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 text-white text-xs font-medium rounded-full backdrop-blur-sm">
                         <Play size={12} /> Recorded
                       </span>
                     )}
                   </div>
-                  <div className="p-5">
+                  <div className="p-6">
                     <div className="text-xs text-violet-600 font-semibold mb-2">{mc.category || "Security"}</div>
-                    <h3 className="font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">{mc.title}</h3>
-                    <p className="text-sm text-slate-500 line-clamp-2 mb-3">{mc.description}</p>
+                    <h3 className="font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors leading-tight">{mc.title}</h3>
+                    <p className="text-sm text-slate-500 line-clamp-2 mb-4">{mc.description}</p>
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       {mc.instructorName && (
                         <span className="flex items-center gap-1"><UserCheck size={12} /> {mc.instructorName}</span>
@@ -563,7 +533,7 @@ export default function LandingPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
+            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/80">
               <Video size={40} className="text-slate-300 mx-auto mb-3" />
               <p className="text-slate-500 text-sm">Master classes coming soon. Stay tuned.</p>
             </div>
@@ -572,17 +542,17 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ 1-ON-1 TRAINING ═══════════ */}
-      <section id="training" className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/30" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl" />
+      <section id="training" className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/20" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-amber-100/20 rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold mb-4">
                 <Calendar size={14} /> 1-on-1 Sessions
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Personal Training</h2>
-              <p className="text-lg text-slate-500 mt-2">Book private sessions with expert trainers. Tailored to your goals and schedule.</p>
+              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Personal Training</h2>
+              <p className="text-lg text-slate-500 mt-3">Book private sessions with expert trainers. Tailored to your goals and schedule.</p>
             </div>
             <Link href="/dashboard/training" className="btn-secondary text-sm mt-4 md:mt-0">
               Browse Trainers <ChevronRight size={14} />
@@ -591,14 +561,14 @@ export default function LandingPage() {
           {trainers.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {trainers.map((trainer: Trainer) => (
-                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-[#229C62]/30 transition-all group">
+                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className="bg-white rounded-2xl border border-slate-200/80 p-6 hover:shadow-lg hover:border-[#229C62]/30 transition-all duration-300 group">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-lg">
                       {(trainer.user?.name || "T").charAt(0)}
                     </div>
                     <div>
                       <div className="font-bold text-slate-900 group-hover:text-[#229C62] transition-colors">{trainer.user?.name}</div>
-                      <div className="text-xs text-slate-500">{trainer.specialties?.join(", ") || "Security, Linux"}</div>
+                      <div className="text-xs text-slate-400">{trainer.specialties?.join(", ") || "Security, Linux"}</div>
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 line-clamp-2 mb-4">{trainer.bio || "Expert trainer with years of hands-on experience."}</p>
@@ -609,7 +579,7 @@ export default function LandingPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
+            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/80">
               <Calendar size={40} className="text-slate-300 mx-auto mb-3" />
               <p className="text-slate-500 text-sm">Trainer profiles coming soon.</p>
             </div>
@@ -618,31 +588,25 @@ export default function LandingPage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" />
-        <div className="absolute top-1/2 left-0 w-96 h-96 bg-[#229C62]/3 rounded-full blur-3xl -translate-y-1/2" />
+      <section className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 via-white to-slate-50/80" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold mb-4">
-              <svg className="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              Testimonials
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
             <p className="text-lg text-slate-500 mt-4">Real feedback from engineers building their skills on XpertClass.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-8 border border-slate-200 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-400/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div key={t.name} className="bg-white rounded-2xl p-8 border border-slate-200/80 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
                 <div className="flex gap-1 mb-4">
                   {[1, 2, 3, 4, 5].map((s) => (
                     <svg key={s} className="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                   ))}
                 </div>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6 italic relative z-10">&quot;{t.quote}&quot;</p>
-                <div className="relative z-10">
+                <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">&quot;{t.quote}&quot;</p>
+                <div>
                   <div className="font-semibold text-slate-900 text-sm">{t.name}</div>
-                  <div className="text-xs text-slate-500">{t.role}</div>
+                  <div className="text-xs text-slate-400">{t.role}</div>
                 </div>
               </div>
             ))}
@@ -651,9 +615,9 @@ export default function LandingPage() {
       </section>
 
       {/* BIG STATS */}
-      <section className="py-20 px-6 bg-gradient-to-r from-[#0F203A] via-[#1a2d47] to-[#0F203A] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#229C62]/10 rounded-full blur-3xl" />
+      <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-[0.03]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.08] rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -662,10 +626,10 @@ export default function LandingPage() {
               { value: "55+", label: "Lessons", icon: Code },
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers", icon: Users },
             ].map((s) => (
-              <div key={s.label} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/15 transition-all duration-300 group">
+              <div key={s.label} className="bg-white/[0.04] backdrop-blur-sm rounded-2xl p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group">
                 <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-4xl md:text-5xl font-bold text-white">{s.value}</div>
-                <div className="text-white/80 text-sm mt-2">{s.label}</div>
+                <div className="text-4xl md:text-5xl font-bold text-white tracking-tight">{s.value}</div>
+                <div className="text-white/60 text-sm mt-2">{s.label}</div>
               </div>
             ))}
           </div>
@@ -673,30 +637,29 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/50 via-white to-[#229C62]/5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#229C62]/5 rounded-full blur-3xl" />
+      <section className="py-28 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/50 via-white to-[#229C62]/[0.03]" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <div className="bg-gradient-to-br from-[#E9F8EE] to-white rounded-3xl p-12 border border-[#229C62]/20 shadow-xl shadow-[#229C62]/5">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Ready to master the tech stack?</h2>
-            <p className="text-lg text-slate-500 mt-4 leading-relaxed">
+          <div className="bg-gradient-to-br from-[#E9F8EE] to-white rounded-3xl p-14 border border-[#229C62]/20 shadow-xl shadow-[#229C62]/5">
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Ready to master the tech stack?</h2>
+            <p className="text-lg text-slate-500 mt-5 leading-relaxed max-w-xl mx-auto">
               Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
-              <Link href="/get-started" className="btn-primary text-sm px-8 py-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+              <Link href="/get-started" className="btn-primary text-sm px-8 py-3.5">
                 Start Free Today <ArrowRight size={16} />
               </Link>
-              <a href="#courses" className="btn-secondary text-sm px-8 py-3">
+              <a href="#courses" className="btn-secondary text-sm px-8 py-3.5">
                 Browse Courses
               </a>
             </div>
-            <p className="text-sm text-slate-400 mt-4">No credit card required. Free tier available.</p>
+            <p className="text-sm text-slate-400 mt-5">No credit card required. Free tier available.</p>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-200 bg-slate-50">
+      <footer className="border-t border-slate-200/80 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
@@ -710,7 +673,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3 mt-4">
                 <span className="text-xs text-slate-400">Built with</span>
                 {["NestJS", "PostgreSQL", "Docker", "Next.js"].map((tech) => (
-                  <span key={tech} className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded">{tech}</span>
+                  <span key={tech} className="text-xs bg-slate-200/80 text-slate-600 px-2 py-0.5 rounded">{tech}</span>
                 ))}
               </div>
             </div>
@@ -755,7 +718,7 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-        <div className="border-t border-slate-200 py-6 px-6">
+        <div className="border-t border-slate-200/80 py-6 px-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
             <p>&copy; 2026 XpertClass. All rights reserved.</p>
             <div className="flex gap-6">
