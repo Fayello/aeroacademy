@@ -40,6 +40,23 @@ function TokenHandler() {
   return null;
 }
 
+function OnboardingGuard({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    const onboardingDone = localStorage.getItem("onboardingComplete");
+    if (!onboardingDone) {
+      router.replace("/onboarding");
+      return;
+    }
+    setChecked(true);
+  }, [router]);
+
+  if (!checked) return null;
+  return <>{children}</>;
+}
+
 function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const router = useRouter();
   const [user, setUser] = useState<{ name?: string; avatarUrl?: string } | null>(null);
@@ -277,7 +294,7 @@ export default function DashboardLayout({
               <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
                 <Breadcrumbs />
                 <PageErrorBoundary>
-                  {children}
+                  <OnboardingGuard>{children}</OnboardingGuard>
                 </PageErrorBoundary>
               </div>
             </main>

@@ -5,7 +5,6 @@ import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import CommandCenter from "@/components/dashboard/CommandCenter";
-import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 interface User {
   id: string;
@@ -16,7 +15,6 @@ interface User {
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const { userMetrics } = useDashboard();
 
   useEffect(() => {
@@ -49,18 +47,6 @@ export default function DashboardPage() {
     }
   }, [userMetrics?.xp]);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      const alreadyOnboarded = localStorage.getItem("onboardingComplete");
-      if (!alreadyOnboarded && (userMetrics?.xp ?? 0) === 0) {
-        setShowOnboarding(true);
-      }
-    } catch {
-      // localStorage unavailable
-    }
-  }, [hydrated, userMetrics?.xp]);
-
   if (!hydrated) {
     return <DashboardSkeleton />;
   }
@@ -72,7 +58,6 @@ export default function DashboardPage() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      {showOnboarding && <OnboardingOverlay onComplete={() => setShowOnboarding(false)} />}
       <CommandCenter />
     </div>
   );

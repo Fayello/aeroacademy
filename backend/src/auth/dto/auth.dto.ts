@@ -4,6 +4,7 @@ import {
   MinLength,
   IsOptional,
   IsString,
+  IsArray,
   Matches,
   MaxLength,
 } from 'class-validator';
@@ -80,6 +81,14 @@ export class UpdateProfileDto {
   @IsString()
   @IsOptional()
   organizationId?: string;
+
+  @IsArray()
+  @IsOptional()
+  interests?: string[];
+
+  @IsString()
+  @IsOptional()
+  userExperience?: string;
 }
 
 export class ChangePasswordDto {
