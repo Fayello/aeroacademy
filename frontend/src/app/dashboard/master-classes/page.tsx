@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Video, Calendar, UserCheck, Loader2, Users, Search, X } from "lucide-react";
+import { Video, Calendar, Loader2, Users, Search, X } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 import type { MasterClass } from "@/types/api";
@@ -14,6 +14,12 @@ export default function MasterClassesPage() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredClasses = classes.filter((mc) => {
     const q = searchQuery.trim().toLowerCase();
@@ -143,11 +149,26 @@ export default function MasterClassesPage() {
                 <p className="text-sm text-slate-500 line-clamp-2 mb-4">{mc.description}</p>
                 <div className="flex items-center gap-4 text-xs text-slate-400">
                   {mc.instructorName && (
-                    <span className="flex items-center gap-1"><UserCheck size={12} /> {mc.instructorName}</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-xs">
+                        {(mc.instructorName || "I").charAt(0)}
+                      </span>
+                      {mc.instructorName}
+                    </span>
                   )}
                   {mc.scheduledAt && (
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(mc.scheduledAt).toLocaleDateString()}</span>
                   )}
+                  {mc.scheduledAt && mc.status === "UPCOMING" && (() => {
+                    const diff = new Date(mc.scheduledAt).getTime() - now.getTime();
+                    if (diff <= 0) return null;
+                    const days = Math.floor(diff / 86400000);
+                    const hours = Math.floor((diff % 86400000) / 3600000);
+                    const minutes = Math.floor((diff % 3600000) / 60000);
+                    return (
+                      <span className="text-[#229C62] font-medium">Starts in {days}d {hours}h {minutes}m</span>
+                    );
+                  })()}
                   {mc._count && (
                     <span className="flex items-center gap-1"><Users size={12} /> {mc._count.registrations}</span>
                   )}

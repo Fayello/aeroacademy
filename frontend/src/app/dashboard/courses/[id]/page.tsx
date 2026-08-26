@@ -223,6 +223,10 @@ export default function CourseBriefingPage() {
               <BookOpen size={14} />
               {totalLessons} lessons
             </span>
+            <span className="flex items-center gap-1.5 bg-[#7AD62A] text-[#0F203A] rounded-lg px-3 py-1.5 text-sm font-bold">
+              <Award size={14} />
+              +{totalLessons * 25} XP
+            </span>
           </div>
         </div>
       </div>

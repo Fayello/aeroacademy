@@ -41,6 +41,7 @@ export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ name?: string; username?: string; points?: number } | null>(null);
   const [activeLeague, setActiveLeague] = useState<"GLOBAL" | "REGIONAL" | "UNIVERSITY" | "TEAMS">("GLOBAL");
   const [filter, setFilter] = useState("");
   const [leagueStats, setLeagueStats] = useState<LeagueStats>({ regional: [], university: [], season: null });
@@ -54,9 +55,17 @@ export default function LeaderboardPage() {
   useEffect(() => {
     try {
       const user = localStorage.getItem("user");
-      setCurrentUserId(user ? JSON.parse(user).id ?? null : null);
+      if (user) {
+        const parsed = JSON.parse(user);
+        setCurrentUserId(parsed.id ?? null);
+        setCurrentUser({ name: parsed.name, username: parsed.username, points: parsed.points });
+      } else {
+        setCurrentUserId(null);
+        setCurrentUser(null);
+      }
     } catch {
       setCurrentUserId(null);
+      setCurrentUser(null);
     }
   }, []);
 
@@ -449,6 +458,26 @@ export default function LeaderboardPage() {
         </div>
       ) : (
       <div className="space-y-3">
+        {currentUserId && currentUser && (() => {
+          const userEntry = filteredOperators.find((op) => op.id === currentUserId);
+          if (!userEntry) return null;
+          const userRank = filteredOperators.indexOf(userEntry) + 1;
+          return (
+            <div className="angular-card border-l-4 border-l-[#229C62] bg-[#E9F8EE]/50 p-4 sm:p-5 flex items-center gap-2 sm:gap-4">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold bg-[#229C62] text-white shrink-0">
+                {userRank}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-[#229C62] font-medium mb-0.5">Your Rank</p>
+                <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{userEntry.username || currentUser.username || currentUser.name || "You"}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-lg sm:text-2xl font-bold text-slate-900">{userEntry.rank || 1200}</p>
+                <p className="text-[10px] sm:text-xs text-slate-400">{userEntry.xp.toLocaleString()} XP</p>
+              </div>
+            </div>
+          );
+        })()}
         {filteredOperators.length > 0 ? filteredOperators.map((op, idx) => (
           <div
             key={op.id}

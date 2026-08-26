@@ -13,6 +13,8 @@ import {
   Play,
   Clock,
   ChevronRight,
+  Terminal,
+  Trophy,
   Flame,
   TrendingUp,
   Target,
@@ -172,6 +174,45 @@ export default function CommandCenter() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      {/* ─── PRODUCT CARDS ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link
+          href="/dashboard/courses"
+          className="angular-card p-6 group hover:border-[#229C62]/40 transition-all"
+        >
+          <BookOpen size={28} className="text-blue-500 mb-3" />
+          <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Academy</h3>
+          <p className="text-sm text-slate-500 mb-4">Structured courses from fundamentals to advanced</p>
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-[#229C62]">
+            Explore <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </Link>
+
+        <Link
+          href="/dashboard/labs"
+          className="angular-card p-6 group hover:border-[#229C62]/40 transition-all"
+        >
+          <Terminal size={28} className="text-emerald-500 mb-3" />
+          <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Labs</h3>
+          <p className="text-sm text-slate-500 mb-4">Hands-on labs with real Docker environments</p>
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-[#229C62]">
+            Start <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </Link>
+
+        <Link
+          href="/dashboard/leaderboard"
+          className="angular-card p-6 group hover:border-[#229C62]/40 transition-all"
+        >
+          <Trophy size={28} className="text-amber-500 mb-3" />
+          <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Compete</h3>
+          <p className="text-sm text-slate-500 mb-4">Leaderboard, challenges, and team competitions</p>
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-[#229C62]">
+            Join <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </Link>
+      </div>
+
       {/* ─── GREETING + NEXT OBJECTIVE ─── */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-4 sm:p-8 text-white">
         <div className="absolute inset-0 opacity-5">

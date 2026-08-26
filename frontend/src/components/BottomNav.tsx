@@ -38,6 +38,7 @@ export default function BottomNav() {
             >
               <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               <span className="text-[10px] mt-1 font-medium">{label}</span>
+              {isActive && <span className="w-1 h-1 rounded-full bg-[#229C62] mt-1" />}
             </Link>
           );
         })}

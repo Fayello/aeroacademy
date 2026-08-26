@@ -34,6 +34,7 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
   const [needsVerification, setNeedsVerification] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const onSubmit = async (values: LoginValues) => {
     try {
@@ -147,12 +148,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <label htmlFor="password" className="text-sm font-medium text-slate-700">Password</label>
-                <Link href="/forgot-password" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
-                  Forgot password?
-                </Link>
-              </div>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
@@ -164,6 +160,21 @@ export default function LoginPage() {
                 />
               </div>
               {errors.password && <p className="text-xs text-red-600 mt-1.5">{errors.password.message}</p>}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 accent-[#229C62]"
+                />
+                <span className="text-sm text-slate-600">Remember me</span>
+              </label>
+              <Link href="/forgot-password" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                Forgot password?
+              </Link>
             </div>
 
             <button
@@ -186,38 +197,38 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Marketing */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0d1a2e] angular-grid-bg">
+        <div className="absolute inset-0 opacity-10"></div>
         <div className="relative z-10 flex flex-col justify-center px-12 py-12">
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-white mb-4">
               Start your journey in security, Linux & DevOps
             </h2>
-            <p className="text-emerald-100 text-lg mb-10">
+            <p className="text-slate-300 text-lg mb-10">
               Join thousands of engineers across Cameroon building real skills through hands-on labs and structured courses.
             </p>
 
             <div className="grid grid-cols-2 gap-4">
               {FEATURES.map((feature) => (
                 <div key={feature.title} className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <feature.icon size={20} className="text-emerald-200 mb-2" />
+                  <feature.icon size={20} className="text-[#7AD62A] mb-2" />
                   <h3 className="text-sm font-semibold text-white mb-1">{feature.title}</h3>
-                  <p className="text-xs text-emerald-200">{feature.description}</p>
+                  <p className="text-xs text-slate-400">{feature.description}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-10 flex items-center gap-6 text-sm text-emerald-200">
+            <div className="mt-10 flex items-center gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
                 <span>Free to start</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
                 <span>No credit card required</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
                 <span>Cancel anytime</span>
               </div>
             </div>

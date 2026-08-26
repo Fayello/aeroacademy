@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import BottomNav from "@/components/BottomNav";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 interface SettingsSection {
   id: string;
@@ -196,7 +197,13 @@ export default function SettingsPage() {
                 {activeSection === "appearance" && (
                   <div className="bg-white rounded-2xl border border-slate-200 p-6">
                     <h2 className="text-lg font-semibold text-slate-900 mb-4">Theme</h2>
-                    <p className="text-sm text-slate-500">The platform uses a light theme. Dark mode is not currently supported.</p>
+                    <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">Dark mode</p>
+                        <p className="text-sm text-slate-500">Toggle between light and dark themes</p>
+                      </div>
+                      <ThemeToggle />
+                    </div>
                   </div>
                 )}
               </div>

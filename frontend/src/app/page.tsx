@@ -274,6 +274,46 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ═══════════ STATS BAR ═══════════ */}
+      <section className="py-8 px-6 border-y border-slate-200/60 bg-[#E9F8EE]/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {[
+              { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers Training", icon: Users },
+              { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Hands-on Labs", icon: Terminal },
+              { value: stats.totalCourses || "7", label: "Expert Courses", icon: BookOpen },
+              { value: "95%", label: "Completion Rate", icon: Award },
+            ].map((s) => (
+              <div key={s.label} className="flex items-center justify-center gap-3">
+                <s.icon size={20} className="text-[#229C62]" />
+                <div className="text-left">
+                  <div className="text-xl font-extrabold text-slate-900">{s.value}</div>
+                  <div className="text-xs text-slate-500 label-tracking">{s.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ TRUSTED BY ═══════════ */}
+      <section className="py-6 px-6 border-b border-slate-200/60 bg-white">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-xs text-slate-400 font-medium tracking-wide uppercase mb-4">Trusted by engineers at</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-medium text-slate-400">
+            <span>University of Yaoundé</span>
+            <span className="text-slate-200">·</span>
+            <span>ENS Yaoundé</span>
+            <span className="text-slate-200">·</span>
+            <span>Digital Cameroon</span>
+            <span className="text-slate-200">·</span>
+            <span>Cameroon Tech Hub</span>
+            <span className="text-slate-200">·</span>
+            <span>Garoua Innovation Hub</span>
+          </div>
+        </div>
+      </section>
+
       <AngularDivider />
 
       {/* ═══════════ SKILL FUSION LAB ═══════════ */}
@@ -523,7 +563,10 @@ export default function LandingPage() {
                     <p className="text-sm text-slate-500 line-clamp-2 mb-4">{mc.description}</p>
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       {mc.instructorName && (
-                        <span className="flex items-center gap-1"><UserCheck size={12} /> {mc.instructorName}</span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-5 h-5 rounded-full bg-[#E9F8EE] text-[#0F203A] text-[10px] font-bold flex items-center justify-center">{mc.instructorName.charAt(0)}</span>
+                          {mc.instructorName}
+                        </span>
                       )}
                       {mc.scheduledAt && (
                         <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(mc.scheduledAt).toLocaleDateString()}</span>
@@ -600,6 +643,69 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <AngularDivider />
+
+      {/* ═══════════ PRICING ═══════════ */}
+      <section id="pricing" className="py-28 px-6 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <SectionLabel>Simple Pricing</SectionLabel>
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Choose your plan</h2>
+            <p className="text-lg text-slate-500 mt-4">Start free, upgrade when you are ready. No hidden fees.</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Tier */}
+            <div className="angular-card bg-white p-8 border border-slate-200/80 hover-lift transition-all duration-300">
+              <div className="mb-6">
+                <span className="label-tracking text-slate-400 mb-2 block">Free</span>
+                <div className="flex items-end gap-1">
+                  <span className="text-5xl font-extrabold text-slate-900">$0</span>
+                  <span className="text-slate-500 mb-2">/mo</span>
+                </div>
+                <p className="text-slate-500 text-sm mt-3">Everything you need to get started</p>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {["All courses", "Hands-on labs", "Community access", "Basic certifications"].map((feature) => (
+                  <li key={feature} className="flex items-center gap-2.5 text-sm text-slate-600">
+                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/get-started" className="angular-btn btn-ghost text-sm w-full justify-center border border-slate-200 hover:border-[#229C62] hover:text-[#229C62]">
+                <span>Get Started Free</span>
+              </Link>
+            </div>
+
+            {/* Pro Tier */}
+            <div className="angular-card bg-white p-8 border-2 border-[#229C62] hover-lift transition-all duration-300 relative">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                <span className="bg-[#229C62] text-white text-xs font-bold px-4 py-1.5 hex-badge shadow-lg shadow-[#229C62]/25">
+                  Most Popular
+                </span>
+              </div>
+              <div className="mb-6">
+                <span className="label-tracking text-[#229C62] mb-2 block">Pro</span>
+                <div className="flex items-end gap-1">
+                  <span className="text-5xl font-extrabold text-slate-900">$29</span>
+                  <span className="text-slate-500 mb-2">/mo</span>
+                </div>
+                <p className="text-slate-500 text-sm mt-3">For serious practitioners</p>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {["Everything in Free", "Priority lab access", "1-on-1 training sessions", "Advanced certifications", "Team analytics"].map((feature) => (
+                  <li key={feature} className="flex items-center gap-2.5 text-sm text-slate-600">
+                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/get-started" className="angular-btn btn-primary text-sm w-full justify-center shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40">
+                <span>Start Pro Trial</span> <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

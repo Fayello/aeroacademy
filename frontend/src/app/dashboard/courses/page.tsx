@@ -12,6 +12,7 @@ import {
   Layers,
   Lock,
   Search,
+  Star,
 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
@@ -265,7 +266,7 @@ export default function CoursesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map((course: Course) => {
+          {filteredCourses.map((course: Course, index: number) => {
             const firstSectionTitle = course.sections?.[0]?.title || "";
             const gate = getCourseLock(firstSectionTitle, level);
             const isLocked = gate.locked;
@@ -305,11 +306,19 @@ export default function CoursesPage() {
 
                     {/* Top badges */}
                   <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-                    <span
-                      className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded border ${categoryStyle.bg} ${categoryStyle.color}`}
-                    >
-                      {categoryStyle.label}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded border ${categoryStyle.bg} ${categoryStyle.color}`}
+                      >
+                        {categoryStyle.label}
+                      </span>
+                      {index < 2 && (
+                        <span className="text-[10px] font-semibold px-2 py-1 bg-amber-100 text-amber-700 border border-amber-200"
+                          style={{ clipPath: "polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%)" }}>
+                          Staff Pick
+                        </span>
+                      )}
+                    </div>
                     {isLocked && (
                       <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-white/90 text-slate-600 border border-slate-200 backdrop-blur-sm">
                         <Lock size={10} />
@@ -375,6 +384,16 @@ export default function CoursesPage() {
                         {course.estimatedHours}h est.
                       </span>
                     )}
+                  </div>
+
+                  {/* Rating & Enrollment */}
+                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <span className="flex items-center gap-1">
+                      <Star size={12} className="text-amber-400 fill-amber-400" />
+                      4.8
+                    </span>
+                    <span>·</span>
+                    <span>127 enrolled</span>
                   </div>
 
                   {/* Action */}

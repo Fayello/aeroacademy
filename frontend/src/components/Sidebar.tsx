@@ -11,6 +11,8 @@ import {
   User,
   LogOut,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Shield,
   Award,
   Settings,
@@ -22,6 +24,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import { useI18n, LanguageSwitcher } from "@/lib/i18n";
@@ -49,6 +52,12 @@ export default function Sidebar() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [xp, setXp] = useState(0);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sidebar-collapsed") === "true";
+    }
+    return false;
+  });
   const { t } = useI18n();
   const { nav, loading } = useNavigation();
 
@@ -101,19 +110,37 @@ export default function Sidebar() {
     setExpandedSection((prev) => (prev === id ? null : id));
   }, []);
 
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem("sidebar-collapsed", String(next));
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleToggle = () => {
+      setCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
+    };
+    window.addEventListener("sidebar-toggle", handleToggle);
+    return () => window.removeEventListener("sidebar-toggle", handleToggle);
+  }, []);
+
   const isAdmin = userRole === "ADMIN" || userRole === "RECRUITER";
 
   if (loading) {
     return (
-      <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 hidden md:flex flex-col z-50" aria-label="Main navigation">
+      <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
         <div className="p-5 flex items-center gap-3">
-          <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
-          <div>
-            <h1 className="text-sm font-bold tracking-tight">
-              <span className="text-[#0F203A]">Xpert</span>
-              <span className="text-[#229C62]">Class</span>
-            </h1>
-          </div>
+          <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8 shrink-0" />
+          {!collapsed && (
+            <div>
+              <h1 className="text-sm font-bold tracking-tight">
+                <span className="text-[#0F203A]">Xpert</span>
+                <span className="text-[#229C62]">Class</span>
+              </h1>
+            </div>
+          )}
         </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="w-5 h-5 border-2 border-[#229C62] border-t-transparent rounded-full animate-spin" />
@@ -123,27 +150,36 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-200 hidden md:flex flex-col z-50" aria-label="Main navigation">
+    <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
       {/* Logo */}
-      <div className="p-5 flex items-center gap-3">
-        <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
-        <div>
-          <h1 className="text-sm font-bold tracking-tight">
-            <span className="text-[#0F203A]">Xpert</span>
-            <span className="text-[#229C62]">Class</span>
-          </h1>
-          {nav.experience !== "INDIVIDUAL" && (
-            <span className="text-[9px] font-semibold text-[#229C62] bg-[#E9F8EE] px-1.5 py-0.5 rounded uppercase tracking-wider">
-              {nav.experience === "UNIVERSITY" ? "University" : nav.experience === "CORPORATE" ? "Enterprise" : nav.experience === "INSTRUCTOR" ? "Instructor" : nav.experience}
-            </span>
-          )}
-        </div>
+      <div className={`flex items-center gap-3 ${collapsed ? "p-3 justify-center" : "p-5"}`}>
+        <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8 shrink-0" />
+        {!collapsed && (
+          <div className="flex-1 min-w-0">
+            <h1 className="text-sm font-bold tracking-tight">
+              <span className="text-[#0F203A]">Xpert</span>
+              <span className="text-[#229C62]">Class</span>
+            </h1>
+            {nav.experience !== "INDIVIDUAL" && (
+              <span className="text-[9px] font-semibold text-[#229C62] bg-[#E9F8EE] px-1.5 py-0.5 rounded uppercase tracking-wider">
+                {nav.experience === "UNIVERSITY" ? "University" : nav.experience === "CORPORATE" ? "Enterprise" : nav.experience === "INSTRUCTOR" ? "Instructor" : nav.experience}
+              </span>
+            )}
+          </div>
+        )}
+        <button
+          onClick={toggleCollapsed}
+          className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
       </div>
 
       <div className="px-3"><div className="h-px bg-slate-100" /></div>
 
       {/* Alerts */}
-      {nav.alerts.length > 0 && (
+      {!collapsed && nav.alerts.length > 0 && (
         <div className="px-3 pt-3 space-y-1">
           {nav.alerts.slice(0, 1).map((alert, i) => {
             const AlertIcon = alert.type === "EXAM_AVAILABLE" ? ClipboardCheck : Users;
@@ -177,14 +213,15 @@ export default function Sidebar() {
               <Link
                 key={section.id}
                 href={item.href}
+                title={collapsed ? section.label : undefined}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+                } ${collapsed ? "justify-center" : ""}`}
               >
                 <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="truncate">{section.label}</span>
+                {!collapsed && <span className="truncate">{section.label}</span>}
               </Link>
             );
           }
@@ -205,14 +242,15 @@ export default function Sidebar() {
               <Link
                 key={section.id}
                 href={item.href}
+                title={collapsed ? item.label : undefined}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+                } ${collapsed ? "justify-center" : ""}`}
               >
                 <ItemIcon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="truncate">{item.label}</span>
+                {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
           }
@@ -221,23 +259,28 @@ export default function Sidebar() {
             <div key={section.id}>
               <button
                 onClick={() => toggleSection(section.id)}
+                title={collapsed ? section.label : undefined}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+                } ${collapsed ? "justify-center" : ""}`}
               >
                 <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="flex-1 text-left truncate">{section.label}</span>
-                {section.items.length > 1 && (
-                  <ChevronDown
-                    size={12}
-                    className={`text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                  />
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-left truncate">{section.label}</span>
+                    {section.items.length > 1 && (
+                      <ChevronDown
+                        size={12}
+                        className={`text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                      />
+                    )}
+                  </>
                 )}
               </button>
 
-              {section.items.length > 1 && isExpanded && (
+              {!collapsed && section.items.length > 1 && isExpanded && (
                 <div className="ml-4 mt-0.5 mb-1 space-y-0.5 border-l border-slate-100 pl-3">
                   {section.items.map((item) => {
                     const ItemIcon = ICON_MAP[item.icon] || Target;
@@ -269,19 +312,22 @@ export default function Sidebar() {
         {/* Admin */}
         {isAdmin && (
           <>
-            <div className="pt-2 mt-2 border-t border-slate-100">
-              <p className="px-3 mb-1 text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Admin</p>
-            </div>
+            {!collapsed && (
+              <div className="pt-2 mt-2 border-t border-slate-100">
+                <p className="px-3 mb-1 text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Admin</p>
+              </div>
+            )}
             <Link
               href="/dashboard/admin"
+              title={collapsed ? "Admin Panel" : undefined}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 pathname.startsWith("/dashboard/admin")
                   ? "bg-[#E9F8EE] text-[#0F203A]"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
+              } ${collapsed ? "justify-center" : ""}`}
             >
               <Shield size={16} className={pathname.startsWith("/dashboard/admin") ? "text-[#229C62]" : "text-slate-400"} />
-              Admin Panel
+              {!collapsed && "Admin Panel"}
             </Link>
           </>
         )}
@@ -289,53 +335,63 @@ export default function Sidebar() {
 
       {/* Progress Footer */}
       <div className="px-3 pb-2 shrink-0">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] text-white">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">Level {level}</span>
-            <span className="text-[10px] font-mono text-white/40">{xp.toLocaleString()} XP</span>
+        {collapsed ? (
+          <div className="p-2 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center" title={`Level ${level} - ${xp.toLocaleString()} XP`}>
+            <Award size={16} className="text-[#7AD62A]" />
           </div>
-          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#7AD62A] to-[#229C62] rounded-full transition-all duration-500"
-              style={{ width: `${progress * 100}%` }}
-            />
+        ) : (
+          <div className="p-3 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] text-white">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">Level {level}</span>
+              <span className="text-[10px] font-mono text-white/40">{xp.toLocaleString()} XP</span>
+            </div>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#7AD62A] to-[#229C62] rounded-full transition-all duration-500"
+                style={{ width: `${progress * 100}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Bottom */}
-      <div className="px-3 pb-3 shrink-0 space-y-1.5">
+      <div className={`px-3 pb-3 shrink-0 space-y-1.5 ${collapsed ? "px-2" : ""}`}>
         <Link
           href="/dashboard/profile"
+          title={collapsed ? "Profile" : undefined}
           className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
             pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/")
               ? "bg-[#E9F8EE] text-[#0F203A]"
               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-          }`}
+          } ${collapsed ? "justify-center px-2" : ""}`}
         >
           <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#229C62]" : "text-slate-400"} />
-          Profile
+          {!collapsed && "Profile"}
         </Link>
         <Link
           href="/dashboard/settings"
+          title={collapsed ? "Settings" : undefined}
           className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
             pathname === "/dashboard/settings"
               ? "bg-[#E9F8EE] text-[#0F203A]"
               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-          }`}
+          } ${collapsed ? "justify-center px-2" : ""}`}
         >
           <Settings size={16} className={pathname === "/dashboard/settings" ? "text-[#229C62]" : "text-slate-400"} />
-          Settings
+          {!collapsed && "Settings"}
         </Link>
-        <div className="flex items-center px-1">
+        <div className={`flex items-center justify-between px-1 ${collapsed ? "flex-col gap-1" : ""}`}>
           <LanguageSwitcher />
+          <ThemeToggle />
         </div>
         <button
           onClick={logout}
-          className="flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+          title={collapsed ? "Log out" : undefined}
+          className={`flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors ${collapsed ? "justify-center px-2" : ""}`}
         >
           <LogOut size={14} />
-          Log out
+          {!collapsed && "Log out"}
         </button>
       </div>
     </aside>

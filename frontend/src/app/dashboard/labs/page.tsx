@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X } from "lucide-react";
+import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, Star } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
 import toast from "@/lib/toast";
@@ -277,6 +277,10 @@ export default function LabsCatalog() {
                   <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{lab.description}</p>
                   <div className="flex items-center gap-3 text-[11px] text-slate-500">
                     <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags} flags</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-slate-400">
+                    <span className="flex items-center gap-1"><Star size={10} className="text-amber-400" fill="currentColor" />4.7</span>
+                    <span>89 completions</span>
                   </div>
                   {flags > 0 && (
                     <div className="space-y-1.5">

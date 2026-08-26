@@ -77,33 +77,32 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Marketing */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0d1a2e] angular-grid-bg">
         <div className="relative z-10 flex flex-col justify-center px-12 py-12">
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-white mb-4">
               Start your journey in security, Linux & DevOps
             </h2>
-            <p className="text-emerald-100 text-lg mb-10">
+            <p className="text-slate-300 text-lg mb-10">
               Join thousands of engineers across Cameroon building real skills through hands-on labs and structured courses.
             </p>
 
             <div className="space-y-4">
               {BENEFITS.map((benefit) => (
                 <div key={benefit} className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <CheckCircle2 size={20} className="text-emerald-300 shrink-0" />
+                  <CheckCircle2 size={20} className="text-[#7AD62A] shrink-0" />
                   <span className="text-white font-medium">{benefit}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-10 flex items-center gap-6 text-sm text-emerald-200">
+            <div className="mt-10 flex items-center gap-6 text-sm text-slate-300">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
                 <span>Free to start</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
                 <span>No credit card required</span>
               </div>
             </div>
