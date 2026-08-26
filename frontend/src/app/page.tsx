@@ -281,9 +281,15 @@ export default function LandingPage() {
       <SkillFusionLab />
 
       {/* ═══════════ AUDIENCE SEGMENTATION ═══════════ */}
-      <section id="enterprise" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section id="enterprise" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/30 via-white to-blue-50/30" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#229C62]/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-4">
+              <Users size={14} /> Built for Everyone
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Built for every learner</h2>
             <p className="text-lg text-slate-500 mt-4">Whether you are a student, a team lead, or an educator, there is a path designed for you.</p>
           </div>
@@ -317,9 +323,14 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ LEARNING PATHS (TABBED) ═══════════ */}
-      <section id="courses" className="py-24 px-6 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto">
+      <section id="courses" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#229C62]/3 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-4">
+              <BookOpen size={14} /> Learning Paths
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What you will learn</h2>
             <p className="text-lg text-slate-500 mt-4">Structured learning paths from fundamentals to advanced topics.</p>
           </div>
@@ -363,23 +374,30 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ HOW IT WORKS ═══════════ */}
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0F203A]" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('/logo-icon.svg')] bg-repeat opacity-5" />
+        <div className="absolute top-10 right-20 w-64 h-64 bg-[#229C62]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-20 w-64 h-64 bg-[#7AD62A]/10 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">How it works</h2>
-            <p className="text-lg text-slate-500 mt-4">From sign-up to skill mastery in three simple steps.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold mb-4">
+              <Target size={14} /> Simple Process
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">How it works</h2>
+            <p className="text-lg text-white/70 mt-4">From sign-up to skill mastery in three simple steps.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map((step, i) => (
               <div key={step.number} className="relative">
                 {i < STEPS.length - 1 && <div className="hidden md:block absolute top-10 left-[60%] w-[80%] border-t-2 border-dashed border-[#229C62]/30" />}
-                <div className="relative bg-gradient-to-br from-white to-[#E9F8EE]/30 rounded-2xl p-8 border border-slate-200 hover:border-[#229C62]/30 hover:shadow-xl hover:shadow-[#229C62]/5 transition-all duration-300 group">
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-[#229C62]/30 hover:bg-white/10 transition-all duration-300 group">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
                     <step.icon size={28} className="text-white" />
                   </div>
-                  <span className="text-xs font-bold text-[#229C62] uppercase tracking-wider">Step {step.number}</span>
-                  <h3 className="text-xl font-bold text-slate-900 mt-2 mb-3">{step.title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
+                  <span className="text-xs font-bold text-[#7AD62A] uppercase tracking-wider">Step {step.number}</span>
+                  <h3 className="text-xl font-bold text-white mt-2 mb-3">{step.title}</h3>
+                  <p className="text-white/60 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -388,29 +406,54 @@ export default function LandingPage() {
       </section>
 
       {/* PLATFORM FEATURES */}
-      <section id="platform" className="py-24 px-6 bg-gradient-to-b from-white to-slate-50">
-        <div className="max-w-7xl mx-auto">
+      <section id="platform" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" />
+        <div className="absolute top-20 left-10 w-96 h-96 bg-[#229C62]/3 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-4">
+              <Layers size={14} /> Platform Features
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">The platform built for real skills</h2>
             <p className="text-lg text-slate-500 mt-4">Everything you need to learn, practice, and prove your expertise.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((feature) => (
-              <div key={feature.title} className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 border border-slate-200 hover:shadow-xl hover:shadow-[#229C62]/5 hover:border-[#229C62]/30 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-4 shadow-md shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon size={22} className="text-white" />
+            {FEATURES.map((feature, i) => {
+              const gradients = [
+                "from-[#229C62]/5 to-[#7AD62A]/5",
+                "from-blue-50/50 to-violet-50/50",
+                "from-amber-50/50 to-orange-50/50",
+                "from-violet-50/50 to-fuchsia-50/50",
+                "from-cyan-50/50 to-blue-50/50",
+                "from-emerald-50/50 to-teal-50/50",
+              ];
+              const borderColors = [
+                "hover:border-[#229C62]/30",
+                "hover:border-blue-300",
+                "hover:border-amber-300",
+                "hover:border-violet-300",
+                "hover:border-cyan-300",
+                "hover:border-emerald-300",
+              ];
+              return (
+                <div key={feature.title} className={`bg-gradient-to-br ${gradients[i]} backdrop-blur-sm rounded-2xl p-6 border border-slate-200 ${borderColors[i]} hover:shadow-xl transition-all duration-300 group`}>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#1e8a56] flex items-center justify-center mb-4 shadow-md shadow-[#229C62]/20 group-hover:scale-110 transition-transform duration-300">
+                    <feature.icon size={22} className="text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* LAB SHOWCASE */}
-      <section id="labs" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section id="labs" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/20 via-white to-blue-50/20" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-6">
@@ -439,24 +482,27 @@ export default function LandingPage() {
                 Try a Lab Now <ArrowRight size={14} />
               </Link>
             </div>
-            <div className="bg-slate-900 rounded-2xl p-6 font-mono text-sm overflow-hidden border border-slate-700 shadow-2xl">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
-              </div>
-              <div className="space-y-2 text-[#229C62]/60">
-                <div><span className="text-slate-500">$</span> docker ps</div>
-                <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
-                <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
-                <div className="mt-3"><span className="text-slate-500">$</span> sqlmap -u &quot;http://localhost:8080/?id=1&quot; --dbs</div>
-                <div className="text-amber-400">[*] testing connection to target URL</div>
-                <div className="text-amber-400">[+] available databases [3]:</div>
-                <div className="text-white ml-4">dvwa</div>
-                <div className="text-white ml-4">information_schema</div>
-                <div className="text-white ml-4">mysql</div>
-                <div className="mt-3"><span className="text-slate-500">$</span> <span className="animate-pulse">_</span></div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-[#229C62]/20 to-[#7AD62A]/20 rounded-3xl blur-xl" />
+              <div className="bg-slate-900 rounded-2xl p-6 font-mono text-sm overflow-hidden border border-slate-700 shadow-2xl relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
+                </div>
+                <div className="space-y-2 text-[#229C62]/60">
+                  <div><span className="text-slate-500">$</span> docker ps</div>
+                  <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
+                  <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
+                  <div className="mt-3"><span className="text-slate-500">$</span> sqlmap -u &quot;http://localhost:8080/?id=1&quot; --dbs</div>
+                  <div className="text-amber-400">[*] testing connection to target URL</div>
+                  <div className="text-amber-400">[+] available databases [3]:</div>
+                  <div className="text-white ml-4">dvwa</div>
+                  <div className="text-white ml-4">information_schema</div>
+                  <div className="text-white ml-4">mysql</div>
+                  <div className="mt-3"><span className="text-slate-500">$</span> <span className="animate-pulse">_</span></div>
+                </div>
               </div>
             </div>
           </div>
@@ -464,8 +510,10 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ MASTER CLASSES ═══════════ */}
-      <section id="master-classes" className="py-24 px-6 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
+      <section id="master-classes" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-50/50 via-white to-slate-50" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-violet-100/30 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-semibold mb-4">
@@ -524,8 +572,10 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ 1-ON-1 TRAINING ═══════════ */}
-      <section id="training" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section id="training" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 via-white to-orange-50/30" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold mb-4">
@@ -568,9 +618,15 @@ export default function LandingPage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-24 px-6 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50" />
+        <div className="absolute top-1/2 left-0 w-96 h-96 bg-[#229C62]/3 rounded-full blur-3xl -translate-y-1/2" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold mb-4">
+              <svg className="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              Testimonials
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
             <p className="text-lg text-slate-500 mt-4">Real feedback from engineers building their skills on XpertClass.</p>
           </div>
@@ -597,6 +653,7 @@ export default function LandingPage() {
       {/* BIG STATS */}
       <section className="py-20 px-6 bg-gradient-to-r from-[#0F203A] via-[#1a2d47] to-[#0F203A] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/logo-icon.svg')] bg-repeat opacity-5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#229C62]/10 rounded-full blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -616,8 +673,10 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E9F8EE]/50 via-white to-[#229C62]/5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#229C62]/5 rounded-full blur-3xl" />
+        <div className="max-w-3xl mx-auto text-center relative z-10">
           <div className="bg-gradient-to-br from-[#E9F8EE] to-white rounded-3xl p-12 border border-[#229C62]/20 shadow-xl shadow-[#229C62]/5">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Ready to master the tech stack?</h2>
             <p className="text-lg text-slate-500 mt-4 leading-relaxed">
