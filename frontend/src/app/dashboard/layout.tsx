@@ -52,7 +52,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     try {
       const stored = localStorage.getItem("user");
       if (stored) setUser(JSON.parse(stored));
-    } {}
+    } catch {}
   }, []);
 
   useEffect(() => {
