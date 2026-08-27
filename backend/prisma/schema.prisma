@@ -70,6 +70,7 @@ model User {
   progressionEvents        ProgressionEvent[]
   assessmentResults        AssessmentResult[]
   reviews                  CourseReview[]
+  labReviews               LabReview[]
   learningPathEnrollments  LearningPathEnrollment[]
   discussionPosts          DiscussionPost[]
   discussionComments       DiscussionComment[]
@@ -254,6 +255,7 @@ model Lab {
   labOutcomes      LabOutcome[]
   moduleLabs       ModuleLab[]
   analytics        LabAnalytics?
+  reviews          LabReview[]
 }
 
 model LabFlag {
@@ -574,6 +576,22 @@ model CourseReview {
 
   @@unique([userId, courseId])
   @@index([courseId])
+  @@index([rating])
+}
+
+model LabReview {
+  id        String   @id @default(uuid())
+  userId    String
+  labId     String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lab       Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, labId])
+  @@index([labId])
   @@index([rating])
 }
 

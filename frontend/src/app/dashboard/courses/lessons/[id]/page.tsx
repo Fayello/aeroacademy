@@ -113,6 +113,7 @@ export default function LessonPage() {
           // Load course sections and progress
           const courseId = (data as any)?.section?.courseId;
           if (courseId) {
+            localStorage.setItem(`lastViewedLesson:${courseId}`, id as string);
             const [sectionsData, progressData] = await Promise.allSettled([
               fetchApi<SectionWithLessons[]>(`/courses/${courseId}/sections`),
               fetchApi<CourseProgress>(`/progress/course/${courseId}`).catch(() => null),

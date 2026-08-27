@@ -1016,4 +1016,53 @@ export class LabsService implements OnModuleInit {
     if (!flag) throw new NotFoundException('Flag not found');
     return this.prisma.labFlag.delete({ where: { id: flagId } });
   }
+
+  // === REVIEWS ===
+
+  async getLabReviews(labId: string) {
+    const reviews = await this.prisma.labReview.findMany({
+      where: { labId },
+      include: { user: { select: { id: true, name: true, email: true, division: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const stats = await this.prisma.labReview.aggregate({
+      where: { labId },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    const distribution = await this.prisma.labReview.groupBy({
+      by: ['rating'],
+      where: { labId },
+      _count: { rating: true },
+    });
+
+    return {
+      reviews,
+      stats: {
+        average: stats._avg.rating || 0,
+        total: stats._count.rating,
+        distribution: distribution.reduce((acc, d) => {
+          acc[d.rating] = d._count.rating;
+          return acc;
+        }, {} as Record<number, number>),
+      },
+    };
+  }
+
+  async createLabReview(userId: string, labId: string, rating: number, comment?: string) {
+    if (rating < 1 || rating > 5) {
+      throw new BadRequestException('Rating must be between 1 and 5');
+    }
+
+    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
+    if (!lab) throw new NotFoundException('Lab not found');
+
+    return this.prisma.labReview.upsert({
+      where: { userId_labId: { userId, labId } },
+      update: { rating, comment },
+      create: { userId, labId, rating, comment },
+    });
+  }
 }

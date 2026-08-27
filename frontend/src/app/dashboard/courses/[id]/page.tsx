@@ -175,6 +175,11 @@ export default function CourseBriefingPage() {
 
   const handleResumeCourse = useCallback(() => {
     if (course?.sections) {
+      const lastId = localStorage.getItem(`lastViewedLesson:${id}`);
+      if (lastId) {
+        router.push(`/dashboard/courses/lessons/${lastId}`);
+        return;
+      }
       for (const section of course.sections) {
         for (const lesson of section.lessons) {
           router.push(`/dashboard/courses/lessons/${lesson.id}`);
@@ -182,7 +187,7 @@ export default function CourseBriefingPage() {
         }
       }
     }
-  }, [course, router]);
+  }, [course, id, router]);
 
   const handleSubmitReview = useCallback(async () => {
     if (myRating < 1) return;
@@ -401,15 +406,31 @@ export default function CourseBriefingPage() {
                     {isExpanded && (
                       <div className="divide-y divide-slate-100">
                         {section.lessons.map((lesson: Lesson) => (
-                          <div key={lesson.id} className="flex items-center justify-between px-6 py-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                                {isLocked ? <Lock size={12} className="text-slate-400" /> : <Play size={12} className="text-slate-400" fill="currentColor" />}
+                          isLocked ? (
+                            <div key={lesson.id} className="flex items-center justify-between px-6 py-3 opacity-60">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                                  <Lock size={12} className="text-slate-400" />
+                                </div>
+                                <span className="text-sm text-slate-400">{lesson.title}</span>
                               </div>
-                              <span className={`text-sm ${isLocked ? "text-slate-400" : "text-slate-700"}`}>{lesson.title}</span>
+                              <span className="text-xs text-slate-400">~12 min</span>
                             </div>
-                            <span className="text-xs text-slate-400">~12 min</span>
-                          </div>
+                          ) : (
+                            <Link
+                              key={lesson.id}
+                              href={`/dashboard/courses/lessons/${lesson.id}`}
+                              className="flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
+                                  <Play size={12} className="text-[#229C62]" fill="currentColor" />
+                                </div>
+                                <span className="text-sm text-slate-700">{lesson.title}</span>
+                              </div>
+                              <span className="text-xs text-slate-400">~12 min</span>
+                            </Link>
+                          )
                         ))}
                       </div>
                     )}

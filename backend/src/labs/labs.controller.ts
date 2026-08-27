@@ -222,4 +222,23 @@ export class LabsController {
   async removeFlag(@Param('flagId', ParseUUIDPipe) flagId: string) {
     return this.labsService.removeFlag(flagId);
   }
+
+  // === REVIEWS ===
+
+  @Get(':labId/reviews')
+  async getLabReviews(@Param('labId') labId: string) {
+    return this.labsService.getLabReviews(labId);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post(':labId/reviews')
+  @UseGuards(AuthGuard('jwt'))
+  @Audit('LAB_REVIEW_CREATED')
+  async createLabReview(
+    @Request() req: RequestWithUser,
+    @Param('labId') labId: string,
+    @Body() body: { rating: number; comment?: string },
+  ) {
+    return this.labsService.createLabReview(req.user.id, labId, body.rating, body.comment);
+  }
 }

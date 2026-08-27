@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
@@ -301,11 +302,12 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
 }
 
 export default function CoursesPage() {
+  const searchParams = useSearchParams();
   const [courses, setCourses] = useState<(Course & { averageRating?: number; _count?: any })[]>([]);
   const [enrollments, setEnrollments] = useState<Record<string, { enrolledAt: string; lastActivityAt: string }>>({});
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
@@ -318,6 +320,11 @@ export default function CoursesPage() {
       setLevel(1);
     }
   }, []);
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
 
   useEffect(() => {
     let cancelled = false;

@@ -305,15 +305,12 @@ export default function ProfileEditPage() {
               <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1.5">
                 <MapPin size={13} className="inline mr-1" />City
               </label>
-              <select
+              <input
                 {...register("city")}
+                type="text"
+                placeholder="e.g. Yaoundé, Douala, Lagos..."
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
-              >
-                <option value="">Select city</option>
-                {CAMEROON_CITIES.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>

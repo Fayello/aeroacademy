@@ -154,7 +154,7 @@ export default function OnboardingPage() {
     } catch {
       localStorage.setItem(ONBOARDING_KEY, "true");
       localStorage.setItem("onboardingSelections", JSON.stringify(selections));
-      toast.success("Welcome to XpertClass!");
+      toast.error("Failed to save preferences. You can update them later in Settings.");
       router.push("/dashboard");
     } finally {
       setLoading(false);

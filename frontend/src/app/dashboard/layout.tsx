@@ -75,6 +75,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [searchValue, setSearchValue] = useState("");
   const { notifications, unread, loading, markRead, markAllRead } = useNotifications();
 
   useEffect(() => {
@@ -137,6 +138,15 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             ref={searchRef}
             type="text"
             placeholder="Search courses, labs..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchValue.trim()) {
+                router.push(`/dashboard/courses?q=${encodeURIComponent(searchValue.trim())}`);
+                setSearchValue("");
+                searchRef.current?.blur();
+              }
+            }}
             className="w-full h-8 pl-8 pr-14 rounded-lg bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-[#229C62] focus:bg-white dark:focus:bg-slate-700 focus:outline-none text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
