@@ -595,11 +595,6 @@ export default function LabWorkspace() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <div className="flex items-center gap-1.5 justify-end mb-1">
-                    <Star size={14} className="text-amber-400 fill-amber-400" />
-                    <span className="text-sm font-bold text-slate-900">4.{7 + (lab.id?.charCodeAt(0) % 3)}</span>
-                    <span className="text-xs text-slate-400">(128)</span>
-                  </div>
                   <div className="flex items-center gap-1.5 justify-end">
                     <Users size={12} className="text-slate-400" />
                     <span className="text-xs text-slate-500">{solvedFlags}/{flags} solved</span>
@@ -743,10 +738,10 @@ export default function LabWorkspace() {
                       <p className="text-xs text-slate-400">Official XpertClass walkthrough</p>
                     </div>
                   </div>
-                  <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-400 text-sm font-medium cursor-not-allowed">
                     <Download size={14} />
-                    Download
-                  </button>
+                    Coming Soon
+                  </span>
                 </div>
               ) : (
                 <p className="text-sm text-slate-500">No official writeup available yet for this lab.</p>
@@ -790,22 +785,8 @@ export default function LabWorkspace() {
               </div>
               <div className="space-y-4">
                 <p className="text-sm text-slate-500">Share your approach to solving this lab. Help others learn from your perspective.</p>
-                <div className="flex gap-3">
-                  <input
-                    type="url"
-                    placeholder="Paste a link to your walkthrough (blog, video, GitHub...)"
-                    className="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
-                  />
-                  <button
-                    onClick={() => toast.success("Walkthrough submitted for review!")}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#0F203A] hover:bg-[#1a3a5c] text-white text-sm font-medium transition-colors shrink-0"
-                  >
-                    <ExternalLink size={14} />
-                    Submit
-                  </button>
-                </div>
-                <div className="border-t border-slate-100 pt-4">
-                  <p className="text-xs text-slate-400 text-center">No community walkthroughs submitted yet. Be the first!</p>
+                <div className="p-4 rounded-lg bg-slate-50 border border-dashed border-slate-300 text-center">
+                  <p className="text-sm text-slate-400">Community walkthroughs coming soon. Check back later!</p>
                 </div>
               </div>
             </div>
@@ -818,28 +799,16 @@ export default function LabWorkspace() {
             <div className="angular-card bg-white p-6">
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-slate-900">4.{7 + (lab?.id?.charCodeAt(0) % 3)}</p>
+                  <p className="text-4xl font-bold text-slate-900">—</p>
                   <div className="flex items-center gap-0.5 my-1">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={14} className={`${s <= 4 ? "text-amber-400 fill-amber-400" : "text-slate-200"}`} />
+                      <Star key={s} size={14} className="text-slate-200" />
                     ))}
                   </div>
-                  <p className="text-xs text-slate-400">128 ratings</p>
+                  <p className="text-xs text-slate-400">No ratings yet</p>
                 </div>
                 <div className="flex-1 space-y-1.5">
-                  {[5, 4, 3, 2, 1].map((stars) => {
-                    const pct = stars === 5 ? 62 : stars === 4 ? 28 : stars === 3 ? 7 : stars === 2 ? 2 : 1;
-                    return (
-                      <div key={stars} className="flex items-center gap-2 text-xs">
-                        <span className="w-3 text-slate-400">{stars}</span>
-                        <Star size={10} className="text-amber-400 fill-amber-400 shrink-0" />
-                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-amber-400 rounded-full" style={{ width: `${pct}%` }} />
-                        </div>
-                        <span className="w-8 text-right text-slate-400">{pct}%</span>
-                      </div>
-                    );
-                  })}
+                  <p className="text-sm text-slate-400 text-center py-4">Reviews coming soon. Be the first to rate this lab!</p>
                 </div>
               </div>
             </div>
@@ -847,24 +816,9 @@ export default function LabWorkspace() {
             {/* Write a review */}
             <div className="angular-card bg-white p-6">
               <h3 className="text-sm font-semibold text-slate-900 mb-3">Write a Review</h3>
-              <div className="flex items-center gap-1 mb-3">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <button key={s} className="text-slate-200 hover:text-amber-400 transition-colors">
-                    <Star size={20} />
-                  </button>
-                ))}
+              <div className="p-4 rounded-lg bg-slate-50 border border-dashed border-slate-300 text-center">
+                <p className="text-sm text-slate-400">Review submission coming soon. Check back later!</p>
               </div>
-              <textarea
-                placeholder="Share your experience with this lab..."
-                rows={3}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] resize-none"
-              />
-              <button
-                onClick={() => toast.success("Review submitted!")}
-                className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors"
-              >
-                Submit Review
-              </button>
             </div>
 
             {/* Reviews list */}

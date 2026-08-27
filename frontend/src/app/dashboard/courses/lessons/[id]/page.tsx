@@ -311,7 +311,7 @@ export default function LessonPage() {
 
           {/* Lesson Content */}
           <div className="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
-            <h1 className="text-2xl font-bold text-slate-900 mb-6">{lesson.title}</h1>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">{lesson.title}</h2>
 
             <div className="prose prose-slate max-w-none">
               <ReactMarkdown

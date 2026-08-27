@@ -168,7 +168,7 @@ export default function Sidebar() {
   const seasonWeek = 14;
 
   return (
-      <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+      <aside className={`fixed left-0 top-12 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
         <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
       {/* Logo */}
       <div className={`flex items-center gap-3 ${collapsed ? "p-3 justify-center" : "p-5"}`}>
@@ -396,7 +396,7 @@ export default function Sidebar() {
         <Link
           href="/dashboard/notifications"
           title={collapsed ? "Notifications" : undefined}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
             pathname === "/dashboard/notifications"
               ? "bg-[#E9F8EE] text-[#0F203A]"
               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"

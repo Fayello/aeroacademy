@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, Star, LayoutGrid, List, Users } from "lucide-react";
+import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, LayoutGrid, List } from "lucide-react";
 import LabAvatar from "@/components/ui/LabAvatar";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
@@ -329,16 +329,6 @@ export default function LabsCatalog() {
 
                   {/* Stats row */}
                   <div className="flex items-center gap-3 text-xs text-slate-500">
-                    <span className="flex items-center gap-1">
-                      <Star size={10} className="text-amber-400 fill-amber-400" />
-                      4.{7 + (lab.id?.charCodeAt(0) % 3)}
-                    </span>
-                    <span>·</span>
-                    <span className="flex items-center gap-1">
-                      <Users size={10} className="text-slate-400" />
-                      {80 + (lab.id?.charCodeAt(1) || 0) % 40}
-                    </span>
-                    <span>·</span>
                     <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags}</span>
                     <span>·</span>
                     <span className="flex items-center gap-1"><Clock size={10} />{getEstimatedTime(flags)}</span>
@@ -420,10 +410,6 @@ export default function LabsCatalog() {
                         ))}
                       </div>
                       <span className="text-[10px] text-slate-500">{diff.label}</span>
-                    </div>
-                    <div className="hidden md:flex items-center gap-1 w-16 shrink-0">
-                      <Star size={10} className="text-amber-400 fill-amber-400" />
-                      <span className="text-xs text-slate-600">4.{7 + (lab.id?.charCodeAt(0) % 3)}</span>
                     </div>
                     <div className="hidden md:block w-20 text-xs text-slate-500 shrink-0">
                       {solvedFlags}/{flags}
