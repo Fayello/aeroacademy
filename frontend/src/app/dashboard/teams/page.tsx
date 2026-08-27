@@ -359,15 +359,16 @@ export default function TeamsPage() {
             </div>
             <button
               onClick={() => copyCode(selectedTeam.inviteCode!)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] text-white text-xs font-medium hover:bg-[#6bc422] transition-colors"
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
               {copied ? "Copied!" : "Copy"}
             </button>
           </div>
-        )}
+        </div>
+      )}
 
-        {sortedMembers.length > 0 && (
+      {sortedMembers.length > 0 && (
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Leaderboard</h2>
             <div className="angular-card overflow-hidden">
@@ -603,7 +604,7 @@ export default function TeamsPage() {
                 <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-slate-600 hover:bg-white/5 rounded-lg transition-colors">
                   Cancel
                 </button>
-                <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#0F203A] transition-colors">
+                <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#6bc422] transition-colors">
                   Save Changes
                 </button>
               </div>
@@ -618,7 +619,7 @@ export default function TeamsPage() {
               </div>
               <button
                 onClick={() => copyCode(myTeam.inviteCode!)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] text-white text-xs font-medium hover:bg-[#6bc422] transition-colors"
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 {copied ? "Copied!" : "Copy"}
@@ -680,7 +681,7 @@ export default function TeamsPage() {
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => { setShowCreate(true); setTeamTab("browse"); }}
-              className="flex items-center gap-2 px-4 py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#6bc422] transition-colors"
             >
               <Plus size={16} /> Create Team
             </button>
@@ -704,7 +705,7 @@ export default function TeamsPage() {
           <div className="flex gap-3 flex-wrap">
             <button
               onClick={() => { setShowCreate(true); setShowJoin(false); setError(""); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#6bc422] transition-colors"
             >
               <Plus size={16} /> Create Team
             </button>
@@ -826,7 +827,7 @@ export default function TeamsPage() {
           <button
             onClick={handleCreate}
             disabled={creating || !createName.trim()}
-            className="w-full py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors disabled:opacity-50"
+            className="w-full py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#6bc422] transition-colors disabled:opacity-50"
           >
             {creating ? "Creating..." : "Create Team"}
           </button>
@@ -852,7 +853,7 @@ export default function TeamsPage() {
           <button
             onClick={handleJoin}
             disabled={joining || joinCode.trim().length < 4}
-            className="w-full py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors disabled:opacity-50"
+            className="w-full py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#6bc422] transition-colors disabled:opacity-50"
           >
             {joining ? "Joining..." : "Join Team"}
           </button>

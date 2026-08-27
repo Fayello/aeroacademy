@@ -130,7 +130,7 @@ export default function Modal({
             </button>
           </div>
         </div>
-        <div className="px-6 py-4 bg-white/5 border-t border-white/6 flex justify-end gap-3">
+        <div className="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-end gap-3">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"

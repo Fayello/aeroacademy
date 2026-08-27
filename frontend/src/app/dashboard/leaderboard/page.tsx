@@ -506,9 +506,9 @@ export default function LeaderboardPage() {
               }`}
             >
             <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
-              idx === 0 ? "bg-amber-100 text-amber-700" :
-              idx === 1 ? "bg-slate-100 text-slate-500" :
-              idx === 2 ? "bg-orange-100 text-orange-700" :
+              idx === 0 ? "bg-amber-500/10 text-amber-400" :
+              idx === 1 ? "bg-white/10 text-slate-300" :
+              idx === 2 ? "bg-orange-500/10 text-orange-400" :
               "bg-white/5 text-slate-400"
             }`}>
               {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
@@ -601,9 +601,9 @@ export default function LeaderboardPage() {
           >
             {/* Rank */}
             <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 text-sm ${
-              idx === 0 ? "bg-amber-100 text-amber-700" :
-              idx === 1 ? "bg-slate-100 text-slate-500" :
-              idx === 2 ? "bg-orange-100 text-orange-700" :
+              idx === 0 ? "bg-amber-500/10 text-amber-400" :
+              idx === 1 ? "bg-white/10 text-slate-300" :
+              idx === 2 ? "bg-orange-500/10 text-orange-400" :
               "bg-white/5 text-slate-400"
             }`}>
               {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}

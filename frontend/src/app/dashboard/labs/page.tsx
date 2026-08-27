@@ -252,7 +252,7 @@ export default function LabsCatalog() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#7AD62A] rounded-lg hover:bg-[#1a8050] transition-all"
+              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#7AD62A] rounded-lg hover:bg-[#6bc422] transition-all"
             >
               Clear all filters
             </button>

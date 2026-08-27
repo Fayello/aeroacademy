@@ -711,7 +711,7 @@ export default function LabWorkspace() {
 
         {/* Tab content */}
         {activeLabTab === "play" && (
-          <div className="angular-card bg-[#0f172a] p-8 text-center">
+          <div className="angular-card bg-[#0f172a] p-8 text-center hover-lift">
             <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
               <TerminalIcon size={28} className="text-[#7AD62A]" />
             </div>

@@ -103,7 +103,7 @@ export default function CertificationsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-6xl mx-auto space-y-6 animate-fade-in-up pb-20">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">

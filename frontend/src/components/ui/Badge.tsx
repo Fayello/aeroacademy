@@ -9,7 +9,7 @@ const variants = {
   blue: "bg-blue-500/10 text-blue-700 border-blue-200",
   amber: "bg-amber-500/10 text-amber-700 border-amber-200",
   red: "bg-red-500/10 text-red-700 border-red-200",
-  slate: "bg-slate-100 text-slate-600 border-white/10",
+  slate: "bg-white/5 text-slate-400 border-white/10",
 };
 
 export default function Badge({ children, variant = "slate", className = "" }: BadgeProps) {
