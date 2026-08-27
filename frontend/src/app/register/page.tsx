@@ -79,7 +79,8 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Marketing */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-gradient-to-br from-[#0F203A] via-[#162a45] to-[#0d1a2e] angular-grid-bg">
+      <div className="hidden lg:flex flex-1 relative overflow-hidden bg-[#0F203A]">
+        <div className="absolute inset-0 angular-grid-bg opacity-10"></div>
         <div className="relative z-10 flex flex-col justify-center px-12 py-12">
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-white mb-4">
