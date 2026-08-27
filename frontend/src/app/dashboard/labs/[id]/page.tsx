@@ -8,7 +8,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft } from "lucide-react";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -68,6 +68,21 @@ const MAX_RECONNECT_ATTEMPTS = 4;
 const MIN_FONT_SIZE = 10;
 const MAX_FONT_SIZE = 24;
 
+function getDifficultyInfo(difficulty: number) {
+  if (difficulty < 400) return { label: "VERY EASY", color: "text-emerald-600", bar: "bg-emerald-500", dot: "bg-emerald-500" };
+  if (difficulty < 800) return { label: "EASY", color: "text-green-600", bar: "bg-green-500", dot: "bg-green-500" };
+  if (difficulty < 1200) return { label: "MEDIUM", color: "text-amber-600", bar: "bg-amber-500", dot: "bg-amber-500" };
+  if (difficulty < 1600) return { label: "HARD", color: "text-orange-600", bar: "bg-orange-500", dot: "bg-orange-500" };
+  return { label: "INSANE", color: "text-red-600", bar: "bg-red-500", dot: "bg-red-500" };
+}
+
+function getEstimatedTime(flags: number) {
+  if (flags <= 2) return "30-60m";
+  if (flags <= 4) return "1-2h";
+  if (flags <= 6) return "2-4h";
+  return "4h+";
+}
+
 export default function LabWorkspace() {
   const { id } = useParams();
   const { labTelemetry } = useDashboard();
@@ -102,6 +117,8 @@ export default function LabWorkspace() {
   const hasConnectedRef = useRef(false);
   const sessionEndedRef = useRef(false);
   const [hasConnected, setHasConnected] = useState(false);
+  const [viewMode, setViewMode] = useState<"info" | "workspace">("info");
+  const [activeLabTab, setActiveLabTab] = useState<"play" | "info" | "walkthroughs" | "reviews" | "activity">("play");
 
   const clearReconnectTimer = useCallback(() => {
     if (reconnectTimerRef.current) {
@@ -140,6 +157,11 @@ export default function LabWorkspace() {
     reconnectAttemptsRef.current = 0;
     setAutoReconnecting(false);
     handleReconnect();
+  };
+
+  const handleLaunchAndView = async () => {
+    setViewMode("workspace");
+    await handleLaunch();
   };
 
   const updateFontSize = (next: number) => {
@@ -528,14 +550,201 @@ export default function LabWorkspace() {
     }
   }
 
+  const diff = lab ? getDifficultyInfo(lab.difficulty || 1200) : null;
+  const flags = lab?.flags?.length || 0;
+  const solvedFlags = lab?.flags?.filter((f: LabFlag) => f.submissions && f.submissions.length > 0).length || 0;
+  const isLocked = lab ? (lab as any).isLocked ?? false : false;
+
+  if (viewMode === "info" && lab && !isRunning) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-500">
+        {/* Back button */}
+        <Link href="/dashboard/labs" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#229C62] transition-colors">
+          <ChevronLeft size={16} />
+          Back to Labs
+        </Link>
+
+        {/* Hero section */}
+        <div className="angular-card bg-white overflow-hidden">
+          <div className={`h-1.5 w-full ${diff?.bar || "bg-slate-300"}`} />
+          <div className="p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  {diff && (
+                    <span className={`text-[11px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
+                  )}
+                  <span className="text-xs text-slate-400">·</span>
+                  <span className="text-xs text-slate-500">{flags} objectives</span>
+                  <span className="text-xs text-slate-400">·</span>
+                  <span className="text-xs text-slate-500">{getEstimatedTime(flags)}</span>
+                </div>
+                <h1 className="text-2xl font-bold text-slate-900 mb-2">{lab.title}</h1>
+                <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">{lab.description}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="flex items-center gap-1.5 justify-end mb-1">
+                    <Star size={14} className="text-amber-400 fill-amber-400" />
+                    <span className="text-sm font-bold text-slate-900">4.{7 + (lab.id?.charCodeAt(0) % 3)}</span>
+                    <span className="text-xs text-slate-400">(128)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 justify-end">
+                    <Users size={12} className="text-slate-400" />
+                    <span className="text-xs text-slate-500">{solvedFlags}/{flags} solved</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLaunchAndView}
+                  disabled={provisioning || isLocked}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                >
+                  {provisioning ? <Loader2 className="animate-spin" size={16} /> : <Play size={16} />}
+                  Start Lab
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex items-center gap-1 border-b border-slate-200">
+          {[
+            { key: "play" as const, label: "Play Lab" },
+            { key: "info" as const, label: "Lab Info" },
+            { key: "walkthroughs" as const, label: "Walkthroughs" },
+            { key: "reviews" as const, label: "Reviews" },
+            { key: "activity" as const, label: "Activity" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveLabTab(tab.key)}
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+                activeLabTab === tab.key
+                  ? "border-[#229C62] text-[#229C62]"
+                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab content */}
+        {activeLabTab === "play" && (
+          <div className="angular-card bg-white p-8 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+              <TerminalIcon size={28} className="text-[#229C62]" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Ready to start?</h3>
+            <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
+              Launch this lab to get a live interactive terminal environment. You&apos;ll have access to all tools and can work through the objectives at your own pace.
+            </p>
+            <button
+              onClick={handleLaunchAndView}
+              disabled={provisioning || isLocked}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors disabled:opacity-50"
+            >
+              {provisioning ? <Loader2 className="animate-spin" size={16} /> : <Play size={16} />}
+              Start Machine
+            </button>
+          </div>
+        )}
+
+        {activeLabTab === "info" && (
+          <div className="angular-card bg-white p-6 space-y-6">
+            {lab.briefing && (
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-3">Scenario</h3>
+                <div className="text-sm text-slate-600 leading-relaxed prose prose-sm max-w-none">
+                  <ReactMarkdown>{lab.briefing}</ReactMarkdown>
+                </div>
+              </div>
+            )}
+            {lab.tasks && lab.tasks.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-3">Objectives</h3>
+                <div className="space-y-2">
+                  {lab.tasks.map((task: string, i: number) => (
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                      <span className="w-6 h-6 rounded-full bg-[#229C62]/10 flex items-center justify-center text-xs font-bold text-[#229C62] shrink-0">{i + 1}</span>
+                      <p className="text-sm text-slate-700">{task}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {lab.flags && lab.flags.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-3">Flags</h3>
+                <div className="space-y-3">
+                  {lab.flags.map((flag: LabFlag) => (
+                    <div key={flag.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-slate-900">{flag.title}</span>
+                        <span className="text-sm font-bold text-[#229C62]">+{flag.points} pts</span>
+                      </div>
+                      <p className="text-xs text-slate-500">{flag.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {lab.credentials && lab.credentials.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-3">Credentials</h3>
+                <div className="grid gap-2">
+                  {lab.credentials.map((cred: LabCredential, i: number) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                      <span className="font-medium text-slate-700">{cred.service}</span>
+                      <span className="text-slate-400">·</span>
+                      <span className="font-mono text-[#229C62]">{cred.username}</span>
+                      {cred.password && (
+                        <>
+                          <span className="text-slate-400">·</span>
+                          <span className="font-mono text-[#229C62]">{cred.password}</span>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeLabTab === "walkthroughs" && (
+          <div className="angular-card bg-white p-8 text-center">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">Walkthroughs</h3>
+            <p className="text-xs text-slate-500">Official walkthroughs and community solutions will appear here once available.</p>
+          </div>
+        )}
+
+        {activeLabTab === "reviews" && (
+          <div className="angular-card bg-white p-8 text-center">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">Reviews</h3>
+            <p className="text-xs text-slate-500">Complete this lab to leave a review.</p>
+          </div>
+        )}
+
+        {activeLabTab === "activity" && (
+          <div className="angular-card bg-white p-8 text-center">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">Activity</h3>
+            <p className="text-xs text-slate-500">Your activity timeline for this lab will appear here.</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`${isFullscreen ? "fixed inset-0 z-50 bg-white" : "h-[calc(100vh-4rem)] -m-4 md:-m-8"} flex flex-col animate-in fade-in duration-500`}>
       {/* Header */}
       <header className="h-14 border-b border-slate-200 bg-white px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/labs" className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={() => setViewMode("info")} className="text-slate-400 hover:text-slate-600 transition-colors">
             <ChevronLeft size={20} />
-          </Link>
+          </button>
           <div>
             <h1 className="text-sm font-semibold text-slate-900">{lab?.title || "Lab"}</h1>
             <p className="text-xs text-slate-500">Interactive Environment</p>
