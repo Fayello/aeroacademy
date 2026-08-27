@@ -49,13 +49,13 @@ const tierConfig: Record<string, { icon: typeof Target; color: string; bgColor: 
   weekly: { icon: Calendar, color: 'text-purple-400', bgColor: 'bg-purple-500/8', borderColor: 'border-purple-500/20', label: 'Weekly', accent: 'bg-purple-500' },
   monthly: { icon: Crown, color: 'text-yellow-400', bgColor: 'bg-yellow-500/8', borderColor: 'border-yellow-500/20', label: 'Monthly', accent: 'bg-yellow-500' },
   seasonal: { icon: Zap, color: 'text-cyan-400', bgColor: 'bg-cyan-500/8', borderColor: 'border-cyan-500/20', label: 'Seasonal', accent: 'bg-cyan-500' },
-  team_weekly: { icon: Users, color: 'text-emerald-400', bgColor: 'bg-emerald-500/8', borderColor: 'border-emerald-500/20', label: 'Team', accent: 'bg-emerald-500' },
+  team_weekly: { icon: Users, color: 'text-[#7AD62A]', bgColor: 'bg-[#7AD62A]/8', borderColor: 'border-[#7AD62A]/20', label: 'Team', accent: 'bg-[#7AD62A]' },
 };
 
 const sections = [
   { key: 'daily', title: "Today's Missions", icon: Zap, types: ['warmup', 'skill', 'boss'], headerColor: 'text-white' },
   { key: 'weekly', title: 'Weekly Challenge', icon: Calendar, types: ['weekly'], headerColor: 'text-purple-400' },
-  { key: 'team', title: 'Team Challenge', icon: Users, types: ['team_weekly'], headerColor: 'text-emerald-400' },
+  { key: 'team', title: 'Team Challenge', icon: Users, types: ['team_weekly'], headerColor: 'text-[#7AD62A]' },
   { key: 'monthly', title: 'Monthly Boss', icon: Crown, types: ['monthly'], headerColor: 'text-yellow-400' },
   { key: 'seasonal', title: 'Seasonal Event', icon: Zap, types: ['seasonal'], headerColor: 'text-cyan-400' },
 ];

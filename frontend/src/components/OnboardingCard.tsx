@@ -108,7 +108,7 @@ export default function OnboardingCard() {
             onClick={() => setStep(i)}
             aria-label={`Go to step ${i + 1}`}
             className={`h-1 rounded-full transition-all duration-300 ${
-              i === step ? "w-6 bg-[#7AD62A]" : "w-2 bg-slate-200"
+              i === step ? "w-6 bg-[#7AD62A]" : "w-2 bg-white/10"
             }`}
           />
         ))}

@@ -39,14 +39,14 @@ interface StudentGrades {
 }
 
 function getGradeColor(grade: number): string {
-  if (grade >= 90) return "text-emerald-600 bg-emerald-50";
+  if (grade >= 90) return "text-[#7AD62A] bg-emerald-50";
   if (grade >= 80) return "text-blue-600 bg-blue-500/10";
   if (grade >= 70) return "text-amber-600 bg-amber-500/10";
   return "text-red-600 bg-red-500/10";
 }
 
 function getGradeBarColor(grade: number): string {
-  if (grade >= 90) return "bg-emerald-500";
+  if (grade >= 90) return "bg-[#7AD62A]";
   if (grade >= 80) return "bg-blue-500";
   if (grade >= 70) return "bg-amber-500";
   return "bg-red-500";
@@ -78,7 +78,7 @@ export default function CohortDetailPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-8 w-48 bg-white/10 rounded-lg animate-pulse" />
         <div className="h-24 bg-[#0f172a] rounded-xl border border-white/10 animate-pulse" />
         <div className="h-64 bg-[#0f172a] rounded-xl border border-white/10 animate-pulse" />
       </div>

@@ -66,7 +66,7 @@ export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
     displayName: "Databases",
     icon: Database,
     motif: "▤",
-    color: "text-emerald-600",
+    color: "text-[#7AD62A]",
     bgColor: "bg-emerald-50",
     borderColor: "border-emerald-200",
     gradient: "from-emerald-500 to-green-600",

@@ -32,7 +32,7 @@ const CATEGORIES: Record<string, { label: string; color: string; bg: string }> =
   avionics: { label: "Avionics", color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10 border-[#7AD62A]/20" },
   controls: { label: "Controls", color: "text-violet-600", bg: "bg-violet-50 border-violet-200" },
   composites: { label: "Composites", color: "text-cyan-600", bg: "bg-cyan-50 border-cyan-200" },
-  cybersecurity: { label: "Cybersecurity", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+  cybersecurity: { label: "Cybersecurity", color: "text-[#7AD62A]", bg: "bg-emerald-50 border-emerald-200" },
   cloud: { label: "Cloud", color: "text-blue-600", bg: "bg-blue-500/10 border-blue-200" },
   devops: { label: "DevOps", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
   networking: { label: "Networking", color: "text-indigo-600", bg: "bg-indigo-50 border-indigo-200" },
@@ -42,7 +42,7 @@ const CATEGORIES: Record<string, { label: string; color: string; bg: string }> =
 };
 
 const DIFFICULTY_MAP: Record<number, { label: string; dots: number; color: string }> = {
-  1: { label: "Fundamentals", dots: 1, color: "text-emerald-600" },
+  1: { label: "Fundamentals", dots: 1, color: "text-[#7AD62A]" },
   2: { label: "Beginner", dots: 2, color: "text-blue-600" },
   3: { label: "Intermediate", dots: 3, color: "text-amber-600" },
   4: { label: "Advanced", dots: 4, color: "text-orange-600" },
@@ -81,21 +81,21 @@ function StarRating({ rating }: { rating: number }) {
 function ShimmerSkeleton() {
   return (
     <div className="relative overflow-hidden angular-card bg-[#0f172a]">
-      <div className="h-40 bg-slate-200">
+      <div className="h-40 bg-white/10">
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
       </div>
       <div className="p-5 space-y-3">
         <div className="flex gap-2">
-          <div className="h-5 w-16 rounded-full bg-slate-200" />
-          <div className="h-5 w-20 rounded-full bg-slate-200" />
+          <div className="h-5 w-16 rounded-full bg-white/10" />
+          <div className="h-5 w-20 rounded-full bg-white/10" />
         </div>
-        <div className="h-5 w-3/4 bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
-        <div className="h-3 w-1/2 bg-slate-200 rounded" />
+        <div className="h-5 w-3/4 bg-white/10 rounded" />
+        <div className="h-3 w-full bg-white/10 rounded" />
+        <div className="h-3 w-1/2 bg-white/10 rounded" />
         <div className="flex gap-3 pt-1">
-          <div className="h-3 w-16 bg-slate-200 rounded" />
-          <div className="h-3 w-14 bg-slate-200 rounded" />
-          <div className="h-3 w-12 bg-slate-200 rounded" />
+          <div className="h-3 w-16 bg-white/10 rounded" />
+          <div className="h-3 w-14 bg-white/10 rounded" />
+          <div className="h-3 w-12 bg-white/10 rounded" />
         </div>
       </div>
     </div>
@@ -427,12 +427,12 @@ export default function CoursesPage() {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
-          <div className="h-8 w-40 bg-slate-200 rounded animate-pulse" />
-          <div className="h-4 w-60 bg-slate-200 rounded animate-pulse" />
+          <div className="h-8 w-40 bg-white/10 rounded animate-pulse" />
+          <div className="h-4 w-60 bg-white/10 rounded animate-pulse" />
         </div>
-        <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-10 w-full max-w-md bg-white/10 rounded-lg animate-pulse" />
         <div className="flex gap-2">
-          {[1, 2, 3].map((i) => <div key={i} className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-7 w-20 bg-white/10 rounded-full animate-pulse" />)}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((id) => <ShimmerSkeleton key={id} />)}
@@ -472,14 +472,14 @@ export default function CoursesPage() {
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Grid view"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Table view"
           >
             <List size={16} />

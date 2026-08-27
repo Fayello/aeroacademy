@@ -101,22 +101,22 @@ export default function LabsCatalog() {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
-          <div className="h-8 w-24 bg-slate-200 rounded animate-pulse" />
-          <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
+          <div className="h-8 w-24 bg-white/10 rounded animate-pulse" />
+          <div className="h-4 w-48 bg-white/10 rounded animate-pulse" />
         </div>
-        <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-10 w-full max-w-md bg-white/10 rounded-lg animate-pulse" />
         <div className="flex gap-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-7 w-20 bg-slate-200 rounded-full animate-pulse" />
+            <div key={i} className="h-7 w-20 bg-white/10 rounded-full animate-pulse" />
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((id) => (
             <div key={id} className="angular-card border border-white/10 p-5 space-y-3">
-              <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
-              <div className="h-5 w-3/4 bg-slate-200 rounded animate-pulse" />
-              <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
-              <div className="h-1 w-full bg-slate-200 rounded-full animate-pulse" />
+              <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
+              <div className="h-5 w-3/4 bg-white/10 rounded animate-pulse" />
+              <div className="h-3 w-full bg-white/10 rounded animate-pulse" />
+              <div className="h-1 w-full bg-white/10 rounded-full animate-pulse" />
             </div>
           ))}
         </div>
@@ -173,14 +173,14 @@ export default function LabsCatalog() {
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Grid view"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Table view"
           >
             <List size={16} />
@@ -338,7 +338,7 @@ export default function LabsCatalog() {
                   {/* Progress bar */}
                   {flags > 0 && progress > 0 && (
                     <div className="space-y-1">
-                      <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                         <div className="h-full rounded-full bg-slate-800 transition-all duration-500" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
@@ -348,7 +348,7 @@ export default function LabsCatalog() {
                     <span className="text-[10px] font-mono text-slate-400">{flags} OBJECTIVES</span>
                     <span className="text-xs font-medium text-slate-600 group-hover:text-white flex items-center gap-1.5 transition-colors">
                       LAUNCH
-                      <span className="w-5 h-5 rounded-md bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center transition-all">
+                      <span className="w-5 h-5 rounded-md bg-slate-100 group-hover:bg-white/10 flex items-center justify-center transition-all">
                         <Play size={10} fill="currentColor" />
                       </span>
                     </span>

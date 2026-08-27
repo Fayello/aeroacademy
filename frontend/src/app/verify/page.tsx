@@ -48,7 +48,7 @@ function VerifyTokenForm() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white/5">
         <div className="text-center">
-          <Loader2 className="animate-spin text-emerald-600 mx-auto mb-4" size={32} />
+          <Loader2 className="animate-spin text-[#7AD62A] mx-auto mb-4" size={32} />
           <p className="text-slate-500">Verifying your email...</p>
         </div>
       </div>
@@ -59,8 +59,8 @@ function VerifyTokenForm() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white/5 px-6">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="text-emerald-600" size={32} />
+          <div className="w-16 h-16 bg-[#7AD62A]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="text-[#7AD62A]" size={32} />
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Email Verified!</h1>
           <p className="text-slate-500">Redirecting you to your dashboard...</p>
@@ -82,7 +82,7 @@ function VerifyTokenForm() {
 
         <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8 text-center">
           <div className="flex items-center gap-2.5 mb-6 justify-center">
-            <div className="bg-emerald-600 p-2 rounded-xl">
+            <div className="bg-[#7AD62A] p-2 rounded-xl">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
@@ -98,13 +98,13 @@ function VerifyTokenForm() {
           <div className="space-y-3">
             <Link
               href="/login"
-              className="block w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all duration-200 text-center"
+              className="block w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#6bc422] text-white font-medium rounded-xl transition-all duration-200 text-center"
             >
               Go to Login
             </Link>
             <Link
               href="/register"
-              className="block w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-all duration-200 text-center"
+              className="block w-full py-3 px-4 bg-slate-100 hover:bg-white/10 text-slate-700 font-medium rounded-xl transition-all duration-200 text-center"
             >
               Create New Account
             </Link>

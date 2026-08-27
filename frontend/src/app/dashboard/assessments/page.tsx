@@ -122,7 +122,7 @@ export default function AssessmentsPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
                             pct >= 80 ? "bg-[#7AD62A]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"

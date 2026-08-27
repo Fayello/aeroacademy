@@ -70,7 +70,7 @@ const badgeTierBg: Record<string, string> = {
 
 const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; nextAt: number }> = {
   BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", next: "SILVER", nextAt: 800 },
-  SILVER:   { color: "text-slate-500", bg: "bg-slate-200", next: "GOLD", nextAt: 1200 },
+  SILVER:   { color: "text-slate-500", bg: "bg-white/10", next: "GOLD", nextAt: 1200 },
   GOLD:     { color: "text-amber-600", bg: "bg-amber-100", next: "PLATINUM", nextAt: 1600 },
   PLATINUM: { color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", next: "DIAMOND", nextAt: 2000 },
   DIAMOND:  { color: "text-blue-600", bg: "bg-blue-100", next: "TITAN", nextAt: 2400 },

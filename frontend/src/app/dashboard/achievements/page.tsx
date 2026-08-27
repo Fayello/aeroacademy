@@ -35,7 +35,7 @@ const iconMap: Record<string, typeof Trophy> = {
 
 const rarityColors: Record<string, { bg: string; border: string; text: string; glow: string }> = {
   COMMON: { bg: "bg-white/5", border: "border-white/10", text: "text-slate-600", glow: "" },
-  UNCOMMON: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-600", glow: "shadow-emerald-100" },
+  UNCOMMON: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-[#7AD62A]", glow: "shadow-emerald-100" },
   RARE: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-600", glow: "shadow-blue-100" },
   EPIC: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-600", glow: "shadow-purple-100" },
   LEGENDARY: { bg: "bg-amber-500/10", border: "border-amber-300", text: "text-amber-600", glow: "shadow-amber-200" },
@@ -148,19 +148,19 @@ export default function AchievementsPage() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filter === f
                 ? "bg-slate-800 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-slate-100 text-slate-600 hover:bg-white/10"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
-        <div className="w-px bg-slate-200 mx-1" />
+        <div className="w-px bg-white/10 mx-1" />
         <button
           onClick={() => setCategoryFilter("all")}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             categoryFilter === "all"
               ? "bg-[#7AD62A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-600 hover:bg-white/10"
           }`}
         >
           {t("achievements.allTypes")}
@@ -174,7 +174,7 @@ export default function AchievementsPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 categoryFilter === cat
                   ? "bg-[#7AD62A] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  : "bg-slate-100 text-slate-600 hover:bg-white/10"
               }`}
             >
               <CatIcon size={12} />
@@ -203,7 +203,7 @@ export default function AchievementsPage() {
                   className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                     ach.unlocked
                       ? "bg-gradient-to-br from-[#7AD62A] to-[#7AD62A]"
-                      : "bg-slate-200"
+                      : "bg-white/10"
                   }`}
                 >
                   {ach.unlocked ? (
@@ -231,7 +231,7 @@ export default function AchievementsPage() {
                     </span>
                     <span className="text-[10px] text-slate-400">{ach.percentage}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-[#7AD62A] rounded-full transition-all duration-500"
                       style={{ width: `${ach.percentage}%` }}

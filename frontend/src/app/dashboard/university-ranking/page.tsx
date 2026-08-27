@@ -158,7 +158,7 @@ export default function UniversityRankingPage() {
                     : "border-white/10 bg-[#0f172a]"
                 }`}
               >
-                <div className={`h-0.5 w-full ${isFirst ? "bg-[#7AD62A]" : isTop3 ? "bg-[#7AD62A]" : "bg-slate-200"} opacity-40`} />
+                <div className={`h-0.5 w-full ${isFirst ? "bg-[#7AD62A]" : isTop3 ? "bg-[#7AD62A]" : "bg-white/10"} opacity-40`} />
                 <div className="p-4 flex items-center gap-4">
                   {/* Rank */}
                   <div

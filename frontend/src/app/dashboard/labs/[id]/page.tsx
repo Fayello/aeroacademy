@@ -604,7 +604,7 @@ export default function LabWorkspace() {
                 <span className="text-slate-600">Required</span>
                 <span className="font-semibold text-[#7AD62A]">Level {gate.requiredLevel}</span>
               </div>
-              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all"
                   style={{ width: `${Math.min(((level - 1) / (gate.requiredLevel - 1)) * 100, 100)}%` }}
@@ -1152,7 +1152,7 @@ export default function LabWorkspace() {
                     {cmd}
                   </button>
                 ))}
-                <div className="w-px h-4 bg-slate-200 mx-1" />
+                <div className="w-px h-4 bg-white/10 mx-1" />
                 <button
                   onClick={handleCopy}
                   disabled={!selection}

@@ -98,7 +98,7 @@ export default function ExamsPage() {
           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             domainFilter === ""
               ? "bg-[#7AD62A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-600 hover:bg-white/10"
           }`}
         >
           All
@@ -110,7 +110,7 @@ export default function ExamsPage() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               domainFilter === d
                 ? "bg-[#7AD62A] text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-slate-100 text-slate-600 hover:bg-white/10"
             }`}
           >
             {d}

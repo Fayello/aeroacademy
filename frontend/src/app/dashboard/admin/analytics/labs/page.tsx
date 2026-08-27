@@ -187,7 +187,7 @@ export default function LabAnalyticsPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <Link href="/dashboard/admin/analytics" className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
+            <Link href="/dashboard/admin/analytics" className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-white/10 transition-colors">
               <ArrowLeft size={18} className="text-slate-600" />
             </Link>
             <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
@@ -205,7 +205,7 @@ export default function LabAnalyticsPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <StatCard label="Total Labs" value={totals.totalLabs} icon={Microscope} color="bg-[#7AD62A]" />
         <StatCard label="Total Attempts" value={totals.totalAttempts.toLocaleString()} icon={Target} color="bg-blue-500" />
-        <StatCard label="Avg Completion" value={`${totals.avgCompletion.toFixed(1)}%`} icon={TrendingUp} color="bg-emerald-500" />
+        <StatCard label="Avg Completion" value={`${totals.avgCompletion.toFixed(1)}%`} icon={TrendingUp} color="bg-[#7AD62A]" />
         <StatCard label="Avg Failure Rate" value={`${totals.avgFailure.toFixed(1)}%`} icon={TrendingDown} color="bg-amber-500" />
         <StatCard label="Too Easy" value={totals.tooEasy} icon={CheckCircle} color="bg-green-500" sub="Completion > 85%" />
         <StatCard label="Too Hard" value={totals.tooHard} icon={AlertTriangle} color="bg-red-500" sub="Completion < 15%" />

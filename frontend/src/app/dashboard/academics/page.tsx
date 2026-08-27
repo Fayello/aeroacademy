@@ -63,7 +63,7 @@ function getLetterGrade(gpa: number): string {
 }
 
 function getGradeColor(grade: number): string {
-  if (grade >= 90) return "text-emerald-600 bg-emerald-50";
+  if (grade >= 90) return "text-[#7AD62A] bg-emerald-50";
   if (grade >= 80) return "text-blue-600 bg-blue-500/10";
   if (grade >= 70) return "text-amber-600 bg-amber-500/10";
   return "text-red-600 bg-red-500/10";
@@ -99,7 +99,7 @@ export default function AcademicsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-8 w-48 bg-white/10 rounded-lg animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-32 bg-[#0f172a] rounded-xl border border-white/10 animate-pulse" />

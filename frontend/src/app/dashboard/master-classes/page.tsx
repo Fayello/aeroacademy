@@ -83,11 +83,11 @@ export default function MasterClassesPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((id) => (
             <div key={id} className="angular-card border border-white/10 overflow-hidden">
-              <div className="h-40 bg-slate-200 animate-pulse" />
+              <div className="h-40 bg-white/10 animate-pulse" />
               <div className="p-5 space-y-3">
-                <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
-                <div className="h-5 w-3/4 bg-slate-200 rounded animate-pulse" />
-                <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
+                <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
+                <div className="h-5 w-3/4 bg-white/10 rounded animate-pulse" />
+                <div className="h-3 w-full bg-white/10 rounded animate-pulse" />
               </div>
             </div>
           ))}

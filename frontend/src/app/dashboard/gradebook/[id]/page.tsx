@@ -54,7 +54,7 @@ interface GradeBookData {
 }
 
 function getGradeColor(grade: number): string {
-  if (grade >= 90) return "text-emerald-600";
+  if (grade >= 90) return "text-[#7AD62A]";
   if (grade >= 80) return "text-blue-600";
   if (grade >= 70) return "text-amber-600";
   return "text-red-600";
@@ -174,7 +174,7 @@ export default function GradebookPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-8 w-48 bg-white/10 rounded-lg animate-pulse" />
         <div className="h-48 bg-[#0f172a] rounded-xl border border-white/10 animate-pulse" />
         <div className="h-64 bg-[#0f172a] rounded-xl border border-white/10 animate-pulse" />
       </div>

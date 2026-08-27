@@ -84,7 +84,7 @@ const TABS: { key: TabKey; label: string; icon: any }[] = [
 ];
 
 const DIFFICULTY_MAP: Record<number, { label: string; color: string; bg: string }> = {
-  1: { label: "Fundamentals", color: "text-emerald-300", bg: "bg-emerald-500/20" },
+  1: { label: "Fundamentals", color: "text-emerald-300", bg: "bg-[#7AD62A]/20" },
   2: { label: "Beginner", color: "text-blue-300", bg: "bg-blue-500/20" },
   3: { label: "Intermediate", color: "text-amber-300", bg: "bg-amber-500/20" },
   4: { label: "Advanced", color: "text-orange-300", bg: "bg-orange-500/20" },

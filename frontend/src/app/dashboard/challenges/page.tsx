@@ -50,7 +50,7 @@ const objectiveLabels: Record<string, string> = {
 };
 
 const difficultyConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  EASY: { label: "Easy", color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200" },
+  EASY: { label: "Easy", color: "text-[#6bc422]", bg: "bg-emerald-50", border: "border-emerald-200" },
   MEDIUM: { label: "Medium", color: "text-amber-700", bg: "bg-amber-500/10", border: "border-amber-200" },
   HARD: { label: "Hard", color: "text-red-700", bg: "bg-red-500/10", border: "border-red-200" },
   BOSS: { label: "Boss", color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-200" },
@@ -63,7 +63,7 @@ const typeConfig: Record<string, { label: string; icon: typeof Trophy; color: st
   WEEKLY: { label: "Weekly", icon: Calendar, color: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-200" },
   MONTHLY: { label: "Monthly", icon: Crown, color: "text-yellow-700", bg: "bg-yellow-50", border: "border-yellow-200" },
   SEASONAL: { label: "Seasonal", icon: Zap, color: "text-cyan-700", bg: "bg-cyan-50", border: "border-cyan-200" },
-  TEAM_WEEKLY: { label: "Team", icon: Users, color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200" },
+  TEAM_WEEKLY: { label: "Team", icon: Users, color: "text-[#6bc422]", bg: "bg-emerald-50", border: "border-emerald-200" },
 };
 
 function timeRemaining(endAt: string): string {
@@ -147,7 +147,7 @@ export default function ChallengesPage() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filter === f
                 ? "bg-slate-800 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-slate-100 text-slate-600 hover:bg-white/10"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}

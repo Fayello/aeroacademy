@@ -160,7 +160,7 @@ export default function CompeteHub() {
       title: "Seasons",
       description: "Compete in seasonal competitions for exclusive rewards",
       icon: ScrollText,
-      color: "text-emerald-600",
+      color: "text-[#7AD62A]",
       bgColor: "bg-emerald-50",
       href: "/dashboard/seasons",
       requiredLevel: 7,
@@ -267,11 +267,11 @@ export default function CompeteHub() {
             {activeSeason && (
               <Link
                 href="/dashboard/seasons"
-                className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 hover:bg-[#7AD62A]/10 transition-colors group"
               >
-                <ScrollText size={20} className="text-emerald-600" />
+                <ScrollText size={20} className="text-[#7AD62A]" />
                 <div>
-                  <p className="text-sm font-medium text-white group-hover:text-emerald-700">{activeSeason.name}</p>
+                  <p className="text-sm font-medium text-white group-hover:text-[#6bc422]">{activeSeason.name}</p>
                   <p className="text-xs text-slate-500">Season active</p>
                 </div>
               </Link>

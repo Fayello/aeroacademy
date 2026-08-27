@@ -237,7 +237,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{name}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             entry.completed ? "bg-[#7AD62A]" : "bg-blue-500"

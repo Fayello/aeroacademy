@@ -809,7 +809,7 @@ export default function TeamsPage() {
             <button
               onClick={() => setCreateVisibility("PUBLIC")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PUBLIC" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                createVisibility === "PUBLIC" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-white/10"
               }`}
             >
               <Users size={12} /> Public
@@ -817,7 +817,7 @@ export default function TeamsPage() {
             <button
               onClick={() => setCreateVisibility("PRIVATE")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PRIVATE" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                createVisibility === "PRIVATE" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-white/10"
               }`}
             >
               <Shield size={12} /> Private

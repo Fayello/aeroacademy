@@ -120,7 +120,7 @@ export default function AdminBadgesPage() {
 
   const tierColors: Record<string, string> = {
     BRONZE: "bg-amber-100 text-amber-700",
-    SILVER: "bg-slate-200 text-slate-700",
+    SILVER: "bg-white/10 text-slate-700",
     GOLD: "bg-yellow-100 text-yellow-700",
     PLATINUM: "bg-purple-100 text-purple-700",
   };

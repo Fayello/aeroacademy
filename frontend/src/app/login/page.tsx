@@ -90,7 +90,7 @@ export default function LoginPage() {
             <button
               onClick={handleGoogleLogin}
               type="button"
-              className="flex items-center justify-center gap-2 px-4 py-3 border border-white/10 rounded-xl bg-[#0f172a] text-slate-700 text-sm font-medium hover:bg-white/5 hover:border-slate-400 transition-all duration-200"
+              className="flex items-center justify-center gap-2 px-4 py-3 border border-white/10 rounded-xl bg-[#0f172a] text-slate-300 text-sm font-medium hover:bg-white/5 hover:border-slate-400 transition-all duration-200"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -113,18 +113,18 @@ export default function LoginPage() {
 
           {/* Form */}
           {needsVerification && (
-            <div className="mb-5 p-4 rounded-xl bg-amber-500/10 border border-amber-200">
+            <div className="mb-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
               <div className="flex items-start gap-3">
-                <AlertCircle className="text-amber-600 mt-0.5 shrink-0" size={18} />
+                <AlertCircle className="text-amber-400 mt-0.5 shrink-0" size={18} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-amber-800 font-medium">Email not verified</p>
-                  <p className="text-xs text-amber-600 mt-1">Please verify <span className="font-medium">{needsVerification}</span> before signing in.</p>
+                  <p className="text-sm text-amber-200 font-medium">Email not verified</p>
+                  <p className="text-xs text-amber-400 mt-1">Please verify <span className="font-medium">{needsVerification}</span> before signing in.</p>
                   <div className="flex gap-2 mt-2">
-                    <Link href={`/verify-email?email=${encodeURIComponent(needsVerification)}`} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
+                    <Link href={`/verify-email?email=${encodeURIComponent(needsVerification)}`} className="text-xs font-medium text-amber-300 hover:text-amber-200 underline">
                       Check email
                     </Link>
                     <span className="text-amber-300">|</span>
-                    <button type="button" onClick={async () => { await auth.resendVerification(needsVerification); toast.success("Verification link resent!"); }} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
+                    <button type="button" onClick={async () => { await auth.resendVerification(needsVerification); toast.success("Verification link resent!"); }} className="text-xs font-medium text-amber-300 hover:text-amber-200 underline">
                       Resend link
                     </button>
                   </div>
@@ -135,14 +135,14 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">Email</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                   id="email"
                   {...register("email")}
                   type="email"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.email ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.email ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all duration-200`}
                   placeholder="you@example.com"
                 />
               </div>
@@ -150,14 +150,14 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                   id="password"
                   {...register("password")}
                   type="password"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.password ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.password ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all duration-200`}
                   placeholder="Enter your password"
                 />
               </div>
@@ -172,9 +172,9 @@ export default function LoginPage() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4 rounded border-white/10 accent-[#7AD62A]"
                 />
-                <span className="text-sm text-slate-600">Remember me</span>
+                <span className="text-sm text-slate-400">Remember me</span>
               </label>
-              <Link href="/forgot-password" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+              <Link href="/forgot-password" className="text-sm text-[#7AD62A] hover:text-[#6bc422] font-medium">
                 Forgot password?
               </Link>
             </div>
@@ -182,7 +182,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <LogIn size={18} />}
               {isSubmitting ? "Signing in..." : "Sign in"}
@@ -191,7 +191,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-emerald-600 hover:text-emerald-700 font-semibold">
+            <Link href="/register" className="text-[#7AD62A] hover:text-[#6bc422] font-semibold">
               Create account
             </Link>
           </p>

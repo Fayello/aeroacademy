@@ -115,10 +115,10 @@ export default function MyMissionsPage() {
     return (
       <div className="p-6 max-w-6xl mx-auto">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-slate-200 rounded w-64" />
+          <div className="h-8 bg-white/10 rounded w-64" />
           <div className="grid grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-40 bg-slate-200 rounded-xl" />
+              <div key={i} className="h-40 bg-white/10 rounded-xl" />
             ))}
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function MyMissionsPage() {
             {tab.count > 0 && (
               <span
                 className={`px-1.5 py-0.5 rounded-full text-xs ${
-                  activeTab === tab.key ? "bg-white/20" : "bg-slate-200"
+                  activeTab === tab.key ? "bg-white/20" : "bg-white/10"
                 }`}
               >
                 {tab.count}

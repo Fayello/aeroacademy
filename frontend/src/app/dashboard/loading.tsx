@@ -8,7 +8,7 @@ export default function DashboardLoading() {
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
         {/* Page header shimmer */}
         <div className="space-y-3">
-          <div className="h-8 w-48 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+          <div className="h-8 w-48 bg-white/10 dark:bg-slate-700 rounded-lg" />
           <div className="h-4 w-72 bg-slate-100 dark:bg-slate-800 rounded-lg" />
         </div>
 
@@ -17,9 +17,9 @@ export default function DashboardLoading() {
           {[1, 2, 3].map((i) => (
             <div key={i} className="rounded-xl border border-white/10 dark:border-slate-700 p-5 space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl" />
+                <div className="w-10 h-10 bg-white/10 dark:bg-slate-700 rounded-xl" />
                 <div className="space-y-2 flex-1">
-                  <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded" />
+                  <div className="h-4 w-24 bg-white/10 dark:bg-slate-700 rounded" />
                   <div className="h-3 w-16 bg-slate-100 dark:bg-slate-800 rounded" />
                 </div>
               </div>
@@ -34,7 +34,7 @@ export default function DashboardLoading() {
           <div className="h-10 bg-white/5 dark:bg-slate-800/50 border-b border-white/10 dark:border-slate-700" />
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-14 border-b border-slate-100 dark:border-slate-800 last:border-0 flex items-center px-4 gap-4">
-              <div className="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+              <div className="w-8 h-8 bg-white/10 dark:bg-slate-700 rounded-lg" />
               <div className="h-4 flex-1 bg-slate-100 dark:bg-slate-800 rounded" />
               <div className="h-4 w-20 bg-slate-100 dark:bg-slate-800 rounded" />
             </div>

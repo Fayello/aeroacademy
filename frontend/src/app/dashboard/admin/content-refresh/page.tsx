@@ -64,7 +64,7 @@ interface ContentFreshnessReport {
 function ScoreBadge({ score }: { score: number }) {
   if (score >= 80)
     return (
-      <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+      <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-[#6bc422] border border-emerald-200">
         {score} Good
       </span>
     );
@@ -577,7 +577,7 @@ function LabScoreCard({ score }: { score: ContentRelevanceScore }) {
                 {score.suggestions.map((s, i) => (
                   <li
                     key={i}
-                    className="text-xs text-emerald-600 flex items-start gap-1"
+                    className="text-xs text-[#7AD62A] flex items-start gap-1"
                   >
                     <CheckCircle size={10} className="mt-0.5 flex-shrink-0" />
                     {s}
@@ -661,7 +661,7 @@ function CourseScoreCard({ score }: { score: ContentRelevanceScore }) {
                 {score.suggestions.map((s, i) => (
                   <li
                     key={i}
-                    className="text-xs text-emerald-600 flex items-start gap-1"
+                    className="text-xs text-[#7AD62A] flex items-start gap-1"
                   >
                     <CheckCircle size={10} className="mt-0.5 flex-shrink-0" />
                     {s}

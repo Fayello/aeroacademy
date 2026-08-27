@@ -164,7 +164,7 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
           </p>
           {data?.completed !== undefined && data?.total !== undefined && data.total > 0 && (
             <div className="mt-4 max-w-xs mx-auto">
-              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 rounded-full"
                   style={{ width: Math.round((data.completed / data.total) * 100) + "%" }}

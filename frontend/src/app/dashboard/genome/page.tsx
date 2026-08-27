@@ -68,7 +68,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 const MASTERY_COLORS: Record<number, string> = {
-  0: "bg-slate-200",
+  0: "bg-white/10",
   1: "bg-red-400",
   2: "bg-orange-400",
   3: "bg-yellow-400",
@@ -140,13 +140,13 @@ export default function GenomePage() {
     return (
       <div className="p-6 max-w-6xl mx-auto">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-slate-200 rounded w-64" />
+          <div className="h-8 bg-white/10 rounded w-64" />
           <div className="grid grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 bg-slate-200 rounded-xl" />
+              <div key={i} className="h-32 bg-white/10 rounded-xl" />
             ))}
           </div>
-          <div className="h-64 bg-slate-200 rounded-xl" />
+          <div className="h-64 bg-white/10 rounded-xl" />
         </div>
       </div>
     );
@@ -266,7 +266,7 @@ export default function GenomePage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
             !selectedDomain
               ? "bg-[#0F203A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-600 hover:bg-white/10"
           }`}
         >
           All Domains
@@ -280,7 +280,7 @@ export default function GenomePage() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedDomain === domain.domain
                   ? "bg-[#0F203A] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  : "bg-slate-100 text-slate-600 hover:bg-white/10"
               }`}
             >
               <Icon className="w-4 h-4" />

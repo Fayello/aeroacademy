@@ -148,7 +148,7 @@ export default function CapabilityRankingPage() {
                 <p className="text-[10px] text-slate-500">Consistency</p>
               </div>
               <div className="text-center p-3 bg-emerald-50 rounded-lg">
-                <p className="text-lg font-bold text-emerald-600">{myCap.breakdown.problemSolving}</p>
+                <p className="text-lg font-bold text-[#7AD62A]">{myCap.breakdown.problemSolving}</p>
                 <p className="text-[10px] text-slate-500">Problem Solving</p>
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function CapabilityRankingPage() {
                     <span className="text-blue-600">{entry.breakdown.technicalPerformance}</span>
                     <span className="text-purple-600">{entry.breakdown.difficulty}</span>
                     <span className="text-amber-600">{entry.breakdown.consistency}</span>
-                    <span className="text-emerald-600">{entry.breakdown.problemSolving}</span>
+                    <span className="text-[#7AD62A]">{entry.breakdown.problemSolving}</span>
                   </div>
                 </div>
               );

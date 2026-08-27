@@ -494,7 +494,7 @@ export default function CompetencyAnalyticsPage() {
               <div className="flex items-center gap-4 mb-6 p-3 rounded-lg bg-white/5 border border-white/10">
                 <div className="flex items-center gap-2">
                   {trends.overall.trend === "UP" && (
-                    <TrendingUp size={16} className="text-emerald-500" />
+                    <TrendingUp size={16} className="text-[#7AD62A]" />
                   )}
                   {trends.overall.trend === "DOWN" && (
                     <TrendingDown size={16} className="text-red-500" />
@@ -535,7 +535,7 @@ export default function CompetencyAnalyticsPage() {
                     <div
                       className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                         t.trend === "UP"
-                          ? "bg-emerald-50 text-emerald-600"
+                          ? "bg-emerald-50 text-[#7AD62A]"
                           : t.trend === "DOWN"
                           ? "bg-red-500/10 text-red-600"
                           : "bg-white/5 text-slate-500"

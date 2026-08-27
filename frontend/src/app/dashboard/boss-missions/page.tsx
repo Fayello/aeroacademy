@@ -351,7 +351,7 @@ export default function BossMissionsPage() {
                         <div key={req.domainId} className="flex items-center justify-between">
                           <span className="text-xs text-slate-600">{req.domainName}</span>
                           <div className="flex items-center gap-2">
-                            <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
                               <div
                                 className={`h-full rounded-full ${req.met ? "bg-[#7AD62A]" : "bg-amber-400"}`}
                                 style={{ width: `${Math.min(100, (req.currentRating / Math.max(req.minRating, 1)) * 100)}%` }}
@@ -438,7 +438,7 @@ export default function BossMissionsPage() {
                           <span className={`text-xs font-bold w-5 text-center ${entry.position <= 3 ? "text-amber-500" : "text-slate-400"}`}>
                             {entry.position}
                           </span>
-                          <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 overflow-hidden">
                             {entry.avatarUrl ? (
                               <img src={entry.avatarUrl} alt="" className="w-full h-full object-cover" />
                             ) : (

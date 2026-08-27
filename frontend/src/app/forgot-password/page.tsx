@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
 
         <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8">
           <div className="flex items-center gap-2.5 mb-6">
-            <div className="bg-emerald-600 p-2 rounded-xl">
+            <div className="bg-[#7AD62A] p-2 rounded-xl">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
                     <input
                       {...emailForm.register("email")}
                       type="email"
-                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all duration-200"
                       placeholder="you@example.com"
                     />
                   </div>
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#6bc422] disabled:bg-slate-300 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   {loading ? <Loader2 size={18} className="animate-spin" /> : "Send Verification Code"}
                 </button>
@@ -107,8 +107,8 @@ export default function ForgotPasswordPage() {
             </>
           ) : (
             <>
-              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-5">
-                <Mail className="text-emerald-600" size={24} />
+              <div className="w-14 h-14 bg-[#7AD62A]/10 rounded-2xl flex items-center justify-center mb-5">
+                <Mail className="text-[#7AD62A]" size={24} />
               </div>
               <h1 className="text-2xl font-bold text-white mb-2">Enter verification code</h1>
               <p className="text-slate-500 text-sm mb-1">We sent a 6-digit code to</p>
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
                     type="text"
                     inputMode="numeric"
                     maxLength={6}
-                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white text-center text-lg tracking-[0.5em] font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white text-center text-lg tracking-[0.5em] font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all duration-200"
                     placeholder="000000"
                   />
                   {resetForm.formState.errors.code && (
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
                   <input
                     {...resetForm.register("password")}
                     type="password"
-                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all duration-200"
                     placeholder="Min 8 characters"
                   />
                   {resetForm.formState.errors.password && (
@@ -148,7 +148,7 @@ export default function ForgotPasswordPage() {
                   <input
                     {...resetForm.register("confirmPassword")}
                     type="password"
-                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all duration-200"
                     placeholder="Repeat password"
                   />
                   {resetForm.formState.errors.confirmPassword && (
@@ -159,7 +159,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#6bc422] disabled:bg-slate-300 text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   {loading ? <Loader2 size={18} className="animate-spin" /> : "Reset Password"}
                 </button>

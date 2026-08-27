@@ -228,7 +228,7 @@ export default function CohortIntelligencePage() {
                     <tr key={s.id} className="border-b border-slate-50 hover:bg-white/5/50 transition-colors">
                       <td className="px-4 py-3">
                         <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                          i === 0 ? "bg-amber-100 text-amber-700" : i === 1 ? "bg-slate-200 text-slate-600" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-500"
+                          i === 0 ? "bg-amber-100 text-amber-700" : i === 1 ? "bg-white/10 text-slate-600" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-500"
                         }`}>{i + 1}</span>
                       </td>
                       <td className="px-4 py-3">

@@ -19,13 +19,13 @@ export default function RegistryPage() {
   if (!userMetrics && !timedOut) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-white/10 rounded animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((id) => (
             <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-6 space-y-3">
-              <div className="h-20 w-20 rounded-full bg-slate-200 animate-pulse mx-auto" />
-              <div className="h-5 w-32 bg-slate-200 rounded animate-pulse mx-auto" />
-              <div className="h-3 w-20 bg-slate-200 rounded animate-pulse mx-auto" />
+              <div className="h-20 w-20 rounded-full bg-white/10 animate-pulse mx-auto" />
+              <div className="h-5 w-32 bg-white/10 rounded animate-pulse mx-auto" />
+              <div className="h-3 w-20 bg-white/10 rounded animate-pulse mx-auto" />
             </div>
           ))}
         </div>

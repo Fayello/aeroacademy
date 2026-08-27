@@ -41,13 +41,13 @@ export default function TrainingPage() {
           {[1, 2].map((id) => (
             <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-6 space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-slate-200 animate-pulse" />
+                <div className="w-16 h-16 rounded-full bg-white/10 animate-pulse" />
                 <div className="space-y-2">
-                  <div className="h-5 w-32 bg-slate-200 rounded animate-pulse" />
-                  <div className="h-4 w-40 bg-slate-200 rounded animate-pulse" />
+                  <div className="h-5 w-32 bg-white/10 rounded animate-pulse" />
+                  <div className="h-4 w-40 bg-white/10 rounded animate-pulse" />
                 </div>
               </div>
-              <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
+              <div className="h-3 w-full bg-white/10 rounded animate-pulse" />
             </div>
           ))}
         </div>

@@ -257,7 +257,7 @@ export default function SkillGapPage() {
           </div>
 
           <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-slate-200" />
+            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-white/10" />
             <div className="space-y-4">
               {path.steps.map((step) => (
                 <div key={step.order} className="relative flex gap-4">

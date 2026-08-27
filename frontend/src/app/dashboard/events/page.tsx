@@ -62,8 +62,8 @@ const TYPE_STYLES: Record<
   },
   SPEEDRUN: { bg: "bg-orange-100", text: "text-orange-700", icon: Clock },
   COLLABORATIVE: {
-    bg: "bg-emerald-100",
-    text: "text-emerald-700",
+    bg: "bg-[#7AD62A]/10",
+    text: "text-[#6bc422]",
     icon: Target,
   },
 };
@@ -293,7 +293,7 @@ export default function EventsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "active"
               ? "bg-[#0F203A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-600 hover:bg-white/10"
           }`}
         >
           Active Events
@@ -303,7 +303,7 @@ export default function EventsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "my"
               ? "bg-[#0F203A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-600 hover:bg-white/10"
           }`}
         >
           My Events

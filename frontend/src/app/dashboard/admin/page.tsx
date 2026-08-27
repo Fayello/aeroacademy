@@ -42,13 +42,13 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-white/10 rounded animate-pulse" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[1, 2, 3, 4, 5, 6].map((id) => (
             <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 space-y-2">
-              <div className="h-5 w-5 bg-slate-200 rounded animate-pulse" />
-              <div className="h-6 w-12 bg-slate-200 rounded animate-pulse" />
-              <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
+              <div className="h-5 w-5 bg-white/10 rounded animate-pulse" />
+              <div className="h-6 w-12 bg-white/10 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
             </div>
           ))}
         </div>

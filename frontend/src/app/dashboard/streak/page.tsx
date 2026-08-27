@@ -113,7 +113,7 @@ export default function StreakPage() {
 
         <div className="bg-white/5 rounded-lg p-4">
           <p className="text-xs text-slate-500 mb-2">{t("streak.nextFreeze").replace("{n}", String(nextFreezeAt))}</p>
-          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-cyan-500 rounded-full transition-all duration-500"
               style={{ width: `${freezeProgress}%` }}

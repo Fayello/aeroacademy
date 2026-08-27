@@ -249,7 +249,7 @@ export default function BattlePassPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "tiers"
               ? "bg-slate-800 text-white"
-              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-500 hover:bg-white/10"
           }`}
         >
           Tiers
@@ -259,7 +259,7 @@ export default function BattlePassPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "leaderboard"
               ? "bg-slate-800 text-white"
-              : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-500 hover:bg-white/10"
           }`}
         >
           Leaderboard

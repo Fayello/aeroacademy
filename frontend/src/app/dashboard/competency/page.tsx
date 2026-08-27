@@ -168,7 +168,7 @@ export default function CompetencyPage() {
         </div>
         <Link
           href="/dashboard/analytics/competency"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-700 transition-colors self-start"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-white/10 text-xs font-medium text-slate-700 transition-colors self-start"
         >
           <BarChart3 size={14} />
           Analytics
@@ -343,7 +343,7 @@ export default function CompetencyPage() {
                           <div className="text-right shrink-0">
                             <p className={`text-sm font-bold ${
                               outcome.avgScore >= 70
-                                ? "text-emerald-600"
+                                ? "text-[#7AD62A]"
                                 : outcome.avgScore >= 40
                                 ? "text-amber-600"
                                 : "text-red-600"
@@ -367,12 +367,12 @@ export default function CompetencyPage() {
                                   href={`/dashboard/labs/${lab.id}`}
                                   className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded border ${
                                     isCompleted
-                                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                                      ? "bg-emerald-50 border-emerald-200 text-[#6bc422]"
                                       : "bg-[#0f172a] border-white/10 text-slate-600 hover:border-blue-300"
                                   }`}
                                 >
                                   {isCompleted ? (
-                                    <CheckCircle2 size={10} className="text-emerald-500" />
+                                    <CheckCircle2 size={10} className="text-[#7AD62A]" />
                                   ) : (
                                     <FlaskConical size={10} />
                                   )}
@@ -416,7 +416,7 @@ export default function CompetencyPage() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className={`text-sm font-bold ${
-                    (a.score / a.maxScore) * 100 >= 70 ? "text-emerald-600" : "text-red-600"
+                    (a.score / a.maxScore) * 100 >= 70 ? "text-[#7AD62A]" : "text-red-600"
                   }`}>
                     {a.score}/{a.maxScore}
                   </p>

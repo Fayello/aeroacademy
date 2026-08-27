@@ -44,14 +44,14 @@ function VerifyEmailContent() {
 
         <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8">
           <div className="flex items-center gap-2.5 mb-6">
-            <div className="bg-emerald-600 p-2 rounded-xl">
+            <div className="bg-[#7AD62A] p-2 rounded-xl">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
           </div>
 
-          <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-5">
-            <Mail className="text-emerald-600" size={24} />
+          <div className="w-14 h-14 bg-[#7AD62A]/10 rounded-2xl flex items-center justify-center mb-5">
+            <Mail className="text-[#7AD62A]" size={24} />
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-2">Check your email</h1>
@@ -75,7 +75,7 @@ function VerifyEmailContent() {
               <button
                 onClick={handleResend}
                 disabled={resending || cooldown > 0}
-                className="text-emerald-600 hover:text-emerald-700 font-medium disabled:text-slate-400"
+                className="text-[#7AD62A] hover:text-[#6bc422] font-medium disabled:text-slate-400"
               >
                 {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend link"}
               </button>

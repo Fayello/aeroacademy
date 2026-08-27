@@ -160,7 +160,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                     return (
                       <div key={cat} className="flex items-center gap-3">
                         <span className="text-xs text-slate-600 w-28 truncate">{cat}</span>
-                        <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
                               pct >= 80 ? "bg-[#7AD62A]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
@@ -310,7 +310,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
             {currentQ + 1} / {assessment.questions.length}
           </span>
         </div>
-        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden mb-5">
+        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-5">
           <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${progress}%` }} />
         </div>
 

@@ -51,17 +51,17 @@ export default function VerifyPage({ params }: { params: Promise<{ courseId: str
           <div className="p-8">
             {loading ? (
               <div className="text-center py-8">
-                <Loader2 size={32} className="animate-spin text-emerald-600 mx-auto" />
+                <Loader2 size={32} className="animate-spin text-[#7AD62A] mx-auto" />
                 <p className="text-sm text-slate-500 mt-3">Verifying certificate...</p>
               </div>
             ) : data?.valid ? (
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 mx-auto flex items-center justify-center">
-                  <CheckCircle2 size={32} className="text-emerald-600" />
+                <div className="w-16 h-16 rounded-full bg-[#7AD62A]/10 mx-auto flex items-center justify-center">
+                  <CheckCircle2 size={32} className="text-[#7AD62A]" />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Certificate Verified</h2>
-                  <p className="text-sm text-emerald-600 font-medium mt-1">This certificate is authentic</p>
+                  <p className="text-sm text-[#7AD62A] font-medium mt-1">This certificate is authentic</p>
                 </div>
 
                 <div className="bg-white/5 rounded-xl p-4 space-y-3 text-left">
@@ -102,7 +102,7 @@ export default function VerifyPage({ params }: { params: Promise<{ courseId: str
             <div className="mt-8 pt-6 border-t border-slate-100 text-center">
               <Link
                 href="/"
-                className="inline-flex items-center gap-1.5 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                className="inline-flex items-center gap-1.5 text-sm text-[#7AD62A] hover:text-[#6bc422] font-medium"
               >
                 <Shield size={14} />
                 Visit XpertClass Academy

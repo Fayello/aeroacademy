@@ -261,7 +261,7 @@ export default function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-[#28c840]" />
                   <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
                 </div>
-                <div className="space-y-2 text-emerald-400/70">
+                <div className="space-y-2 text-[#7AD62A]/70">
                   <div><span className="text-slate-500">$</span> docker ps</div>
                   <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
                   <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
@@ -511,7 +511,7 @@ export default function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-[#28c840]" />
                   <span className="text-slate-500 ml-2 text-xs">student@aero-lab ~ $</span>
                 </div>
-                <div className="space-y-2 text-emerald-400/70">
+                <div className="space-y-2 text-[#7AD62A]/70">
                   <div><span className="text-slate-500">$</span> docker ps</div>
                   <div className="text-slate-300">CONTAINER ID  IMAGE          STATUS   PORTS</div>
                   <div className="text-slate-300">a3f2b1c       dvwa:latest    Up 2m    0.0.0.0:8080-&gt;80</div>
@@ -778,7 +778,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3 mt-4">
                 <span className="text-xs text-slate-400">Built with</span>
                 {["NestJS", "PostgreSQL", "Docker", "Next.js"].map((tech) => (
-                  <span key={tech} className="text-xs bg-slate-200/80 text-slate-600 px-2 py-0.5 rounded">{tech}</span>
+                  <span key={tech} className="text-xs bg-white/10/80 text-slate-600 px-2 py-0.5 rounded">{tech}</span>
                 ))}
               </div>
             </div>

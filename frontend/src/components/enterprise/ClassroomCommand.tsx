@@ -211,7 +211,7 @@ export default function ClassroomCommand() {
                   </div>
                   <div className="flex items-center gap-3 mt-1.5">
                     <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${isCorrect ? "bg-[#7AD62A]" : "bg-slate-200"}`} style={{ width: isCorrect ? "100%" : "5%" }} />
+                      <div className={`h-full rounded-full ${isCorrect ? "bg-[#7AD62A]" : "bg-white/10"}`} style={{ width: isCorrect ? "100%" : "5%" }} />
                     </div>
                     <span className={`text-xs ${isCorrect ? "text-[#7AD62A] font-medium" : "text-slate-400"}`}>
                       {isCorrect ? "Done" : "Pending"}

@@ -206,25 +206,25 @@ export default function LeaderboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-40 bg-slate-200 rounded animate-pulse" />
+        <div className="h-8 w-40 bg-white/10 rounded animate-pulse" />
         <div className="flex gap-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-10 w-28 bg-slate-200 rounded-lg animate-pulse" />
+            <div key={i} className="h-10 w-28 bg-white/10 rounded-lg animate-pulse" />
           ))}
         </div>
-        <div className="h-10 w-full max-w-xs bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-10 w-full max-w-xs bg-white/10 rounded-lg animate-pulse" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((id) => (
                 <div key={id} className="angular-card border-white/10 p-5 flex items-center gap-4">
-              <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
-              <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
+              <div className="w-10 h-10 bg-white/10 rounded-xl animate-pulse" />
+              <div className="w-12 h-12 bg-white/10 rounded-xl animate-pulse" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
-                <div className="h-3 w-48 bg-slate-200 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                <div className="h-3 w-48 bg-white/10 rounded animate-pulse" />
               </div>
               <div className="text-right space-y-1">
-                <div className="h-6 w-12 bg-slate-200 rounded animate-pulse ml-auto" />
-                <div className="h-3 w-16 bg-slate-200 rounded animate-pulse ml-auto" />
+                <div className="h-6 w-12 bg-white/10 rounded animate-pulse ml-auto" />
+                <div className="h-3 w-16 bg-white/10 rounded animate-pulse ml-auto" />
               </div>
             </div>
           ))}
@@ -487,11 +487,11 @@ export default function LeaderboardPage() {
             <div className="space-y-3">
               {[1, 2, 3].map((id) => (
             <div key={id} className="angular-card border-white/10 p-5 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
-                  <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
+                  <div className="w-10 h-10 bg-white/10 rounded-xl animate-pulse" />
+                  <div className="w-12 h-12 bg-white/10 rounded-xl animate-pulse" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
-                    <div className="h-3 w-48 bg-slate-200 rounded animate-pulse" />
+                    <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                    <div className="h-3 w-48 bg-white/10 rounded animate-pulse" />
                   </div>
                 </div>
               ))}

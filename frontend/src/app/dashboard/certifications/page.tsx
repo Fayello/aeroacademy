@@ -202,7 +202,7 @@ export default function CertificationsPage() {
                           </button>
                           <button
                             onClick={() => setConfirmClaim(null)}
-                            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-medium transition-colors"
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-white/10 text-slate-600 rounded-lg text-xs font-medium transition-colors"
                           >
                             Cancel
                           </button>

@@ -110,11 +110,11 @@ export default function NotificationsPage() {
         <div className="space-y-2">
           {[1, 2, 3].map((id) => (
             <div key={id} className="angular-card bg-[#0f172a] p-4 flex items-start gap-4">
-              <div className="w-9 h-9 rounded-lg bg-slate-200 animate-pulse" />
+              <div className="w-9 h-9 rounded-lg bg-white/10 animate-pulse" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
-                <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
-                <div className="h-3 w-20 bg-slate-200 rounded animate-pulse" />
+                <div className="h-4 w-48 bg-white/10 rounded animate-pulse" />
+                <div className="h-3 w-full bg-white/10 rounded animate-pulse" />
+                <div className="h-3 w-20 bg-white/10 rounded animate-pulse" />
               </div>
             </div>
           ))}

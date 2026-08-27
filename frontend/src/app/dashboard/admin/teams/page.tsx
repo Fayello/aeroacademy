@@ -352,7 +352,7 @@ export default function AdminTeamsPage() {
                           ? "bg-slate-400 text-white"
                           : i === 2
                             ? "bg-orange-400 text-white"
-                            : "bg-slate-200 text-slate-600"
+                            : "bg-white/10 text-slate-600"
                     }`}
                   >
                     {i + 1}
@@ -394,7 +394,7 @@ export default function AdminTeamsPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search teams by name or owner..."
-          className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+          className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
         />
         {searchQuery && (
           <button
@@ -632,7 +632,7 @@ export default function AdminTeamsPage() {
             <select
               value={selectedCourseId}
               onChange={(e) => setSelectedCourseId(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
             >
               <option value="">Select a course...</option>
               {courses.map((c) => (

@@ -413,7 +413,7 @@ export default function ProfileEditPage() {
                     saveEmailPrefs(newPrefs);
                   }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    emailPrefs[pref.key] ? "bg-[#7AD62A]" : "bg-slate-200"
+                    emailPrefs[pref.key] ? "bg-[#7AD62A]" : "bg-white/10"
                   }`}
                 >
                   <span

@@ -411,7 +411,7 @@ export default function RankingPage() {
                           <RatingProgress rating={rank.rating} division={rank.division} />
                           <div className="flex items-center gap-3 text-xs text-slate-500">
                             <span>{rank.gamesPlayed} games</span>
-                            <span className="text-emerald-600">{rank.wins}W</span>
+                            <span className="text-[#7AD62A]">{rank.wins}W</span>
                             <span className="text-red-500">{rank.losses}L</span>
                           </div>
                         </div>
@@ -493,7 +493,7 @@ export default function RankingPage() {
                 <p className="text-xs text-slate-500">Global Rating</p>
               </div>
               <div className="text-center p-3 bg-emerald-50 rounded-lg">
-                <p className="text-2xl font-bold text-emerald-700">{profile.globalRank.totalWins}</p>
+                <p className="text-2xl font-bold text-[#6bc422]">{profile.globalRank.totalWins}</p>
                 <p className="text-xs text-slate-500">Total Wins</p>
               </div>
               <div className="text-center p-3 bg-red-500/10 rounded-lg">
@@ -607,7 +607,7 @@ export default function RankingPage() {
                               <td className="py-2 px-2"><DivisionBadge division={d.division} tier={d.tier} size="sm" /></td>
                               <td className="py-2 px-2 text-right font-semibold text-white">{d.rating.toLocaleString()}</td>
                               <td className="py-2 px-2 text-right text-slate-600">
-                                <span className="text-emerald-600">{d.wins}W</span> / <span className="text-red-500">{d.losses}L</span>
+                                <span className="text-[#7AD62A]">{d.wins}W</span> / <span className="text-red-500">{d.losses}L</span>
                               </td>
                             </tr>
                           ))}

@@ -109,17 +109,17 @@ export default function EnterprisePortal() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
-        <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
+        <div className="h-8 w-48 bg-white/10 rounded animate-pulse" />
+        <div className="h-10 w-full max-w-md bg-white/10 rounded-lg animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((id) => (
             <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 space-y-4">
-              <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
+              <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-slate-200 animate-pulse" />
+                <div className="w-11 h-11 rounded-full bg-white/10 animate-pulse" />
                 <div className="space-y-2">
-                  <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
-                  <div className="h-3 w-24 bg-slate-200 rounded animate-pulse" />
+                  <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                  <div className="h-3 w-24 bg-white/10 rounded animate-pulse" />
                 </div>
               </div>
             </div>
@@ -162,12 +162,12 @@ export default function EnterprisePortal() {
               <input type="text" placeholder="Search by name or institution..." className="input-field pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+              <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-white/10"}`}>
                 <Star size={12} className="inline mr-1" fill={showShortlistedOnly ? "currentColor" : "none"} />
                 Saved
               </button>
               {cities.map((city) => (
-                <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+                <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-white/10"}`}>
                   {city}
                 </button>
               ))}
@@ -230,7 +230,7 @@ export default function EnterprisePortal() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-slate-100 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -240,7 +240,7 @@ export default function EnterprisePortal() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-slate-100 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight size={16} />
               </button>

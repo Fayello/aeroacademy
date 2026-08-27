@@ -108,8 +108,8 @@ export default function StudentAnalyticsPage() {
         </div>
         <div className="angular-card bg-[#0f172a] p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <Flag size={18} className="text-emerald-600" />
+            <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <Flag size={18} className="text-[#7AD62A]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{data.stats.totalFlagsCaptured}</p>
@@ -164,7 +164,7 @@ export default function StudentAnalyticsPage() {
 
         <div className="angular-card bg-[#0f172a] p-6">
           <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-            <TrendingUp size={16} className="text-emerald-500" /> Streak History
+            <TrendingUp size={16} className="text-[#7AD62A]" /> Streak History
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -173,7 +173,7 @@ export default function StudentAnalyticsPage() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">Longest Streak</span>
-              <span className="text-lg font-bold text-emerald-600">{data.stats.longestStreak} days</span>
+              <span className="text-lg font-bold text-[#7AD62A]">{data.stats.longestStreak} days</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">Total XP</span>
@@ -203,14 +203,14 @@ export default function StudentAnalyticsPage() {
                 href={"/dashboard/courses/" + c.courseId}
                 className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-200 hover:shadow-sm transition-all"
               >
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <Award size={14} className="text-emerald-600" />
+                <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
+                  <Award size={14} className="text-[#7AD62A]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{c.title}</p>
-                  <p className="text-[11px] text-emerald-600">{c.completed}/{c.total} lessons</p>
+                  <p className="text-[11px] text-[#7AD62A]">{c.completed}/{c.total} lessons</p>
                 </div>
-                <ArrowRight size={14} className="text-emerald-400 flex-shrink-0" />
+                <ArrowRight size={14} className="text-[#7AD62A] flex-shrink-0" />
               </Link>
             ))}
           </div>
@@ -232,7 +232,7 @@ export default function StudentAnalyticsPage() {
                   <p className="text-[11px] text-slate-500">{c.completed}/{c.total} lessons completed</p>
                 </div>
                 <div className="w-24">
-                  <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full" style={{ width: c.percentage + "%" }} />
                   </div>
                   <p className="text-[10px] text-slate-400 text-right mt-1">{c.percentage}%</p>
