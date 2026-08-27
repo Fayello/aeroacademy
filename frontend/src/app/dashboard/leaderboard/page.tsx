@@ -361,17 +361,80 @@ export default function LeaderboardPage() {
         )}
       </div>
 
-      {leagueStats.season && (
-        <div className="angular-card border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-xs text-slate-500">Current Season</p>
-            <p className="text-sm font-semibold text-slate-900 truncate">{leagueStats.season.name}</p>
+      {leagueStats.season && (() => {
+        const now = new Date();
+        const end = new Date(leagueStats.season!.endDate);
+        const start = new Date(leagueStats.season!.startDate);
+        const isActive = now >= start && now <= end;
+        const daysLeft = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+        const totalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        const elapsed = totalDays - daysLeft;
+        const currentWeek = Math.floor(elapsed / 7) + 1;
+        const totalWeeks = Math.ceil(totalDays / 7);
+
+        return (
+          <div className="angular-card bg-[#0F203A] text-white overflow-hidden relative">
+            {/* Decorative circles */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#229C62]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#7AD62A]/5 rounded-full translate-y-1/2 -translate-x-1/4" />
+
+            <div className="relative z-10 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#229C62]/20 flex items-center justify-center">
+                    <Trophy size={22} className="text-[#7AD62A]" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">{leagueStats.season!.name}</h2>
+                    <p className="text-xs text-white/50">Season {currentWeek} of {totalWeeks} weeks</p>
+                  </div>
+                </div>
+                {isActive && (
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7AD62A] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#7AD62A]" />
+                    </span>
+                    <span className="text-xs font-bold text-[#7AD62A] tracking-wider">LIVE</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              <div className="mb-4">
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#7AD62A] rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (elapsed / totalDays) * 100)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between mt-1.5">
+                  <span className="text-[10px] text-white/40">{start.toLocaleDateString()}</span>
+                  <span className="text-[10px] text-white/40">{end.toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Stats row */}
+              <div className="flex items-center gap-6">
+                <div>
+                  <p className="text-2xl font-bold text-[#7AD62A]">{daysLeft}</p>
+                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Days left</p>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div>
+                  <p className="text-2xl font-bold text-white">Week {currentWeek}</p>
+                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Current week</p>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div>
+                  <p className="text-2xl font-bold text-white">{totalDays - elapsed}</p>
+                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Remaining</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-sm text-slate-500 shrink-0">
-            Ends {new Date(leagueStats.season.endDate).toLocaleDateString()}
-          </p>
-        </div>
-      )}
+        );
+      })()}
 
       {userMetrics && (() => {
         const currentLevel = getLevel(userMetrics.xp || 0);
