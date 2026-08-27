@@ -42,7 +42,7 @@ function highlightText(text: string): ReactNode {
   return parts.map((part, i) => {
     if (HIGHLIGHT_TERMS.some((t) => t.toLowerCase() === part.toLowerCase())) {
       return (
-        <span key={i} className="px-1.5 py-0.5 rounded bg-[#E9F8EE] text-[#0F203A] font-medium text-[0.9em]">
+        <span key={i} className="px-1.5 py-0.5 rounded bg-[#7AD62A]/10 text-[#0F203A] font-medium text-[0.9em]">
           {part}
         </span>
       );
@@ -216,7 +216,7 @@ export default function LessonPage() {
       <AlertCircle size={40} className="text-red-400 mb-3" />
       <p className="text-slate-700 font-medium mb-1">Something went wrong</p>
       <p className="text-sm text-slate-500 mb-4">{error}</p>
-      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#229C62] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#7AD62A] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
     </div>
   );
   if (!lesson) return null;
@@ -318,15 +318,15 @@ export default function LessonPage() {
           )}
 
           {/* Lesson Content */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">{lesson.title}</h2>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 md:p-8">
+            <h2 className="text-2xl font-bold text-white mb-6">{lesson.title}</h2>
 
             <div className="prose prose-slate max-w-none">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                   p: ({ children }) => <p>{processChildren(children)}</p>,
-                  pre: ({ children }) => <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 overflow-x-auto">{children}</pre>,
+                  pre: ({ children }) => <pre className="bg-white/5 border border-white/10 rounded-lg p-4 overflow-x-auto">{children}</pre>,
                   code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
                     const match = /language-(\w+)/.exec(className || "");
                     const isInline = !match;
@@ -338,12 +338,12 @@ export default function LessonPage() {
                       );
                     }
                     return (
-                      <div className="my-6 rounded-lg overflow-hidden border border-slate-200">
-                        <div className="flex items-center justify-between px-4 py-2 bg-slate-50 border-b border-slate-200">
+                      <div className="my-6 rounded-lg overflow-hidden border border-white/10">
+                        <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                           <span className="text-xs font-medium text-slate-500">{match[1]}</span>
                           <button
                             onClick={() => { navigator.clipboard.writeText(String(children).replace(/\n$/, "")); toast.success("Copied!"); }}
-                            className="text-xs text-slate-400 hover:text-[#229C62] transition-colors"
+                            className="text-xs text-slate-400 hover:text-[#7AD62A] transition-colors"
                           >
                             Copy
                           </button>
@@ -362,12 +362,12 @@ export default function LessonPage() {
 
             {/* Quiz Section */}
             {lesson.quiz && (
-              <div className="mt-12 pt-8 border-t border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-6">Knowledge Check</h3>
+              <div className="mt-12 pt-8 border-t border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-6">Knowledge Check</h3>
                 <div className="space-y-8">
                   {lesson.quiz.questions.map((question: QuizQuestion, qIdx: number) => (
-                    <div key={question.id} className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                      <p className="text-sm font-medium text-slate-900 mb-4">
+                    <div key={question.id} className="bg-white/5 rounded-xl p-6 border border-white/10">
+                      <p className="text-sm font-medium text-white mb-4">
                         <span className="text-slate-400 mr-2">{qIdx + 1}.</span>
                         {question.text}
                       </p>
@@ -384,19 +384,19 @@ export default function LessonPage() {
                               onClick={() => !quizSubmitted && setQuizAnswer((prev) => ({ ...prev, [question.id]: answer.id }))}
                               className={`w-full p-3 rounded-lg border text-left text-sm font-medium transition-all flex items-center justify-between ${
                                 isSelected && !quizSubmitted
-                                  ? "bg-[#E9F8EE] border-[#229C62]/30 text-[#0F203A]"
+                                  ? "bg-[#7AD62A]/10 border-[#7AD62A]/30 text-[#0F203A]"
                                   : wasSelectedAndCorrect
-                                  ? "bg-[#E9F8EE] border-[#229C62]/30 text-[#0F203A]"
+                                  ? "bg-[#7AD62A]/10 border-[#7AD62A]/30 text-[#0F203A]"
                                   : wasSelectedAndWrong
-                                  ? "bg-red-50 border-red-300 text-red-800"
+                                  ? "bg-red-500/10 border-red-300 text-red-800"
                                   : quizSubmitted
-                                  ? "bg-white border-slate-200 text-slate-400 cursor-default"
-                                  : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
+                                  ? "bg-[#0f172a] border-white/10 text-slate-400 cursor-default"
+                                  : "bg-[#0f172a] border-white/10 text-slate-700 hover:border-white/10"
                               }`}
                               disabled={quizSubmitted}
                             >
                               <span>{answer.text}</span>
-                              {wasSelectedAndCorrect && <CheckCircle size={16} className="text-[#229C62]" />}
+                              {wasSelectedAndCorrect && <CheckCircle size={16} className="text-[#7AD62A]" />}
                               {wasSelectedAndWrong && <span className="text-red-500 text-xs font-medium">Incorrect</span>}
                             </button>
                           );
@@ -437,7 +437,7 @@ export default function LessonPage() {
                     Submit answers
                   </button>
                 ) : (
-                  <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-[#E9F8EE] border-[#229C62]/20" : "bg-red-50 border-red-200"}`}>
+                  <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-[#7AD62A]/10 border-[#7AD62A]/20" : "bg-red-500/10 border-red-200"}`}>
                     <p className={`font-medium ${quizCorrect ? "text-[#0F203A]" : "text-red-800"}`}>
                       {quizCorrect ? "Great work! You passed." : "Review the corrections above and try again."}
                     </p>
@@ -458,12 +458,12 @@ export default function LessonPage() {
             {nav.prev ? (
               <Link
                 href={`/dashboard/courses/lessons/${nav.prev.id}`}
-                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#229C62] hover:bg-[#E9F8EE]/30 transition-all group flex-1 min-w-0"
+                className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#0f172a] hover:border-[#7AD62A] hover:bg-[#7AD62A]/10/30 transition-all group flex-1 min-w-0"
               >
-                <ArrowLeft size={16} className="text-slate-400 group-hover:text-[#229C62] shrink-0 transition-colors" />
+                <ArrowLeft size={16} className="text-slate-400 group-hover:text-[#7AD62A] shrink-0 transition-colors" />
                 <div className="min-w-0">
                   <p className="text-[10px] text-slate-400 uppercase tracking-wide">Previous</p>
-                  <p className="text-sm font-medium text-slate-900 truncate">{nav.prev.title}</p>
+                  <p className="text-sm font-medium text-white truncate">{nav.prev.title}</p>
                 </div>
               </Link>
             ) : <div className="flex-1" />}
@@ -471,24 +471,24 @@ export default function LessonPage() {
             {nav.next ? (
               <Link
                 href={`/dashboard/courses/lessons/${nav.next.id}`}
-                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-[#229C62] hover:bg-[#E9F8EE]/30 transition-all group flex-1 min-w-0 text-right justify-end"
+                className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#0f172a] hover:border-[#7AD62A] hover:bg-[#7AD62A]/10/30 transition-all group flex-1 min-w-0 text-right justify-end"
               >
                 <div className="min-w-0">
                   <p className="text-[10px] text-slate-400 uppercase tracking-wide">Next</p>
-                  <p className="text-sm font-medium text-slate-900 truncate">{nav.next.title}</p>
+                  <p className="text-sm font-medium text-white truncate">{nav.next.title}</p>
                 </div>
-                <ArrowRight size={16} className="text-slate-400 group-hover:text-[#229C62] shrink-0 transition-colors" />
+                <ArrowRight size={16} className="text-slate-400 group-hover:text-[#7AD62A] shrink-0 transition-colors" />
               </Link>
             ) : (
               <Link
                 href={`/dashboard/courses/${lesson.section?.courseId || ""}`}
-                className="flex items-center gap-3 p-4 rounded-xl border border-[#229C62]/30 bg-[#E9F8EE] hover:bg-[#229C62] hover:text-white transition-all group flex-1 min-w-0 text-right justify-end"
+                className="flex items-center gap-3 p-4 rounded-xl border border-[#7AD62A]/30 bg-[#7AD62A]/10 hover:bg-[#7AD62A] hover:text-white transition-all group flex-1 min-w-0 text-right justify-end"
               >
                 <div className="min-w-0">
-                  <p className="text-[10px] text-[#229C62]/70 uppercase tracking-wide group-hover:text-white/70">Done!</p>
+                  <p className="text-[10px] text-[#7AD62A]/70 uppercase tracking-wide group-hover:text-white/70">Done!</p>
                   <p className="text-sm font-medium text-[#0F203A] group-hover:text-white">Back to course</p>
                 </div>
-                <ChevronRight size={16} className="text-[#229C62] group-hover:text-white shrink-0 transition-colors" />
+                <ChevronRight size={16} className="text-[#7AD62A] group-hover:text-white shrink-0 transition-colors" />
               </Link>
             )}
           </div>
@@ -497,7 +497,7 @@ export default function LessonPage() {
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           {lesson.labId && (
-            <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
+            <div className="bg-blue-500/10 rounded-xl border border-blue-200 p-6">
               <div className="flex items-center gap-2 text-blue-700 mb-3">
                 <Microscope size={18} />
                 <h3 className="text-sm font-semibold">Practice Lab</h3>
@@ -516,9 +516,9 @@ export default function LessonPage() {
 
           {/* Section lessons list */}
           {currentSection && (
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-slate-900">{currentSection.title}</h3>
+                <h3 className="text-sm font-semibold text-white">{currentSection.title}</h3>
                 <span className="text-[10px] font-medium text-slate-400">{currentSection.lessons.length} lessons</span>
               </div>
               <div className="space-y-1">
@@ -531,18 +531,18 @@ export default function LessonPage() {
                       href={`/dashboard/courses/lessons/${l.id}`}
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                         isCurrent
-                          ? "bg-[#E9F8EE] text-[#0F203A] font-medium"
+                          ? "bg-[#7AD62A]/10 text-[#0F203A] font-medium"
                           : isPast
-                          ? "text-slate-500 hover:bg-slate-50"
-                          : "text-slate-600 hover:bg-slate-50"
+                          ? "text-slate-500 hover:bg-white/5"
+                          : "text-slate-600 hover:bg-white/5"
                       }`}
                     >
                       <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 ${
-                        isCurrent ? "bg-[#229C62] text-white" :
-                        isPast ? "bg-[#E9F8EE] text-[#229C62]" :
+                        isCurrent ? "bg-[#7AD62A] text-white" :
+                        isPast ? "bg-[#7AD62A]/10 text-[#7AD62A]" :
                         "bg-slate-100 text-slate-500"
                       }`}>
-                        {isPast ? <CheckCircle size={12} /> : isCurrent ? <span className="w-1.5 h-1.5 rounded-full bg-white" /> : i + 1}
+                        {isPast ? <CheckCircle size={12} /> : isCurrent ? <span className="w-1.5 h-1.5 rounded-full bg-[#0f172a]" /> : i + 1}
                       </span>
                       <span className="truncate">{l.title}</span>
                     </Link>
@@ -552,22 +552,22 @@ export default function LessonPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Lesson Info</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
+            <h3 className="text-sm font-semibold text-white mb-3">Lesson Info</h3>
             <div className="space-y-2 text-sm text-slate-600">
               <div className="flex justify-between">
                 <span>Section</span>
-                <span className="font-medium text-slate-900">{lesson.section?.title}</span>
+                <span className="font-medium text-white">{lesson.section?.title}</span>
               </div>
               <div className="flex justify-between">
                 <span>Status</span>
-                <span className={`font-medium ${completed ? "text-[#229C62]" : "text-slate-500"}`}>
+                <span className={`font-medium ${completed ? "text-[#7AD62A]" : "text-slate-500"}`}>
                   {completed ? "Completed" : "In progress"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>XP Reward</span>
-                <span className="font-medium text-[#229C62]">+10 XP</span>
+                <span className="font-medium text-[#7AD62A]">+10 XP</span>
               </div>
             </div>
           </div>

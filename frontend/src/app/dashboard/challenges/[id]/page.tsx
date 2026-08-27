@@ -102,7 +102,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
 
   if (!challenge) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] p-12 text-center">
         <Trophy size={32} className="text-slate-300 mx-auto mb-3" />
         <p className="text-sm text-slate-500">Challenge not found</p>
         <Link href="/dashboard/challenges" className="text-xs text-blue-600 hover:text-blue-700 mt-3 inline-block">
@@ -122,12 +122,12 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
     <div className="space-y-6 animate-in fade-in duration-500">
       <Link
         href="/dashboard/challenges"
-        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
       >
         <ArrowLeft size={14} /> Back to Challenges
       </Link>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden">
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
@@ -166,14 +166,14 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
 
         <div className="p-6 space-y-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900 mb-2">About</h2>
+            <h2 className="text-sm font-semibold text-white mb-2">About</h2>
             <p className="text-sm text-slate-600 leading-relaxed">{challenge.description}</p>
           </div>
 
           {(challenge.domain || challenge.skill) && (
             <div className="flex items-center gap-2 flex-wrap">
               {challenge.domain && (
-                <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-blue-500/10 text-blue-700 px-2 py-0.5 rounded-full">
                   {challenge.domain.name}
                 </span>
               )}
@@ -186,19 +186,19 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-slate-50 rounded-lg">
+            <div className="text-center p-3 bg-white/5 rounded-lg">
               <Target size={18} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{challenge.objectiveTarget}</p>
+              <p className="text-lg font-bold text-white">{challenge.objectiveTarget}</p>
               <p className="text-[11px] text-slate-500">{objectiveLabels[challenge.objectiveType]}</p>
             </div>
-            <div className="text-center p-3 bg-slate-50 rounded-lg">
+            <div className="text-center p-3 bg-white/5 rounded-lg">
               <Users size={18} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{challenge.userChallenges.length}</p>
+              <p className="text-lg font-bold text-white">{challenge.userChallenges.length}</p>
               <p className="text-[11px] text-slate-500">Participants</p>
             </div>
-            <div className="text-center p-3 bg-slate-50 rounded-lg">
+            <div className="text-center p-3 bg-white/5 rounded-lg">
               <Trophy size={18} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">
+              <p className="text-lg font-bold text-white">
                 {challenge.userChallenges.filter((uc) => uc.completed).length}
               </p>
               <p className="text-[11px] text-slate-500">Completed</p>
@@ -207,9 +207,9 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden">
         <div className="p-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-white flex items-center gap-2">
             <Medal size={16} className="text-amber-500" /> Leaderboard
           </h2>
         </div>
@@ -232,15 +232,15 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                 );
 
               return (
-                <div key={i} className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors">
+                <div key={i} className="px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors">
                   <div className="w-6 flex justify-center">{rankIcon}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{name}</p>
+                    <p className="text-sm font-medium text-white truncate">{name}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            entry.completed ? "bg-[#229C62]" : "bg-blue-500"
+                            entry.completed ? "bg-[#7AD62A]" : "bg-blue-500"
                           }`}
                           style={{ width: `${pct}%` }}
                         />
@@ -251,7 +251,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                     </div>
                   </div>
                   {entry.completed && (
-                    <CheckCircle2 size={16} className="text-[#229C62] flex-shrink-0" />
+                    <CheckCircle2 size={16} className="text-[#7AD62A] flex-shrink-0" />
                   )}
                 </div>
               );

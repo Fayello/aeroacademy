@@ -136,7 +136,7 @@ export default function TutorChat({
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-36 left-4 z-50 w-96 h-[500px] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+        <div className="fixed bottom-36 left-4 z-50 w-96 h-[500px] bg-[#0f172a] rounded-xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
           {/* Header */}
           <div
             className="px-4 py-3 flex items-center justify-between"
@@ -179,8 +179,8 @@ export default function TutorChat({
                   <div
                     className={`max-w-[75%] px-3 py-2 rounded-lg text-sm ${
                       msg.role === "user"
-                        ? "bg-[#229C62] text-white rounded-br-sm"
-                        : "bg-slate-100 text-slate-800 rounded-bl-sm"
+                        ? "bg-[#7AD62A] text-white rounded-br-sm"
+                        : "bg-slate-100 text-slate-200 rounded-bl-sm"
                     }`}
                   >
                     {msg.content || (
@@ -190,7 +190,7 @@ export default function TutorChat({
                       />
                     )}
                     {msg.role === "assistant" && msg.method && (
-                      <div className="flex items-center gap-1 mt-1 pt-1 border-t border-slate-200">
+                      <div className="flex items-center gap-1 mt-1 pt-1 border-t border-white/10">
                         {getMethodIcon(msg.method)}
                         <span className="text-[10px] text-slate-400 capitalize">
                           {msg.method}
@@ -217,7 +217,7 @@ export default function TutorChat({
                         <button
                           key={qi}
                           onClick={() => sendMessage(q)}
-                          className="block text-xs text-left px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:border-[#229C62] hover:text-[#229C62] hover:bg-[#E9F8EE] transition-colors"
+                          className="block text-xs text-left px-3 py-1.5 rounded-lg border border-white/10 text-slate-600 hover:border-[#7AD62A] hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                         >
                           {q}
                         </button>
@@ -253,7 +253,7 @@ export default function TutorChat({
                   <button
                     key={i}
                     onClick={() => sendMessage(s.label)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-full border border-slate-200 text-slate-600 hover:border-[#229C62] hover:text-[#229C62] hover:bg-[#E9F8EE] transition-colors"
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-full border border-white/10 text-slate-600 hover:border-[#7AD62A] hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                   >
                     <span>{s.icon}</span>
                     {s.label}
@@ -278,7 +278,7 @@ export default function TutorChat({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask a question or describe what you need help with..."
-                className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#229C62] focus:border-transparent outline-none"
+                className="flex-1 px-3 py-2 text-sm border border-white/10 rounded-lg focus:ring-2 focus:ring-[#7AD62A] focus:border-transparent outline-none"
                 disabled={loading}
               />
               <button

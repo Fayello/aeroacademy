@@ -126,7 +126,7 @@ export default function CompeteHub() {
       description: "Daily, weekly, and monthly missions to test your skills",
       icon: Target,
       color: "text-amber-600",
-      bgColor: "bg-amber-50",
+      bgColor: "bg-amber-500/10",
       href: "/dashboard/challenges",
       requiredLevel: 3,
       status: level >= 3 ? "available" : "locked",
@@ -138,7 +138,7 @@ export default function CompeteHub() {
       description: "Compete in ranked matches to climb the division ladder",
       icon: Shield,
       color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      bgColor: "bg-blue-500/10",
       href: "/dashboard/ranking",
       requiredLevel: 5,
       status: level >= 5 ? "available" : "locked",
@@ -173,7 +173,7 @@ export default function CompeteHub() {
       description: "Epic multi-stage challenges against advanced scenarios",
       icon: Swords,
       color: "text-red-600",
-      bgColor: "bg-red-50",
+      bgColor: "bg-red-500/10",
       href: "/dashboard/boss-missions",
       requiredLevel: 10,
       status: level >= 10 ? (activeBoss ? "active" : "available") : "locked",
@@ -184,8 +184,8 @@ export default function CompeteHub() {
       title: "Battle Pass",
       description: "Progress through tiers to unlock exclusive rewards",
       icon: Award,
-      color: "text-[#229C62]",
-      bgColor: "bg-[#E9F8EE]",
+      color: "text-[#7AD62A]",
+      bgColor: "bg-[#7AD62A]/10",
       href: "/dashboard/battle-pass",
       requiredLevel: 10,
       status: level >= 10 ? (battlePass ? "active" : "available") : "locked",
@@ -196,10 +196,10 @@ export default function CompeteHub() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-32 bg-gradient-to-br from-[#0F203A] to-[#229C62] rounded-2xl animate-pulse" />
+        <div className="h-32 bg-gradient-to-br from-[#0F203A] to-[#7AD62A] rounded-2xl animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-40 bg-white rounded-xl border border-slate-200 animate-pulse" />
+            <div key={i} className="h-40 bg-[#0f172a] rounded-xl border border-white/10 animate-pulse" />
           ))}
         </div>
       </div>
@@ -209,9 +209,9 @@ export default function CompeteHub() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-4 sm:p-8 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#7AD62A] p-4 sm:p-8 text-white">
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white blur-3xl" />
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#0f172a] blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#7AD62A] blur-3xl" />
         </div>
         <div className="relative z-10">
@@ -258,10 +258,10 @@ export default function CompeteHub() {
 
       {/* Active Competitions Banner */}
       {(activeSeason || activeBoss || battlePass) && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-2 h-2 rounded-full bg-[#229C62] animate-pulse" />
-            <h2 className="text-sm font-semibold text-slate-900">Active Now</h2>
+            <div className="w-2 h-2 rounded-full bg-[#7AD62A] animate-pulse" />
+            <h2 className="text-sm font-semibold text-white">Active Now</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {activeSeason && (
@@ -271,7 +271,7 @@ export default function CompeteHub() {
               >
                 <ScrollText size={20} className="text-emerald-600" />
                 <div>
-                  <p className="text-sm font-medium text-slate-900 group-hover:text-emerald-700">{activeSeason.name}</p>
+                  <p className="text-sm font-medium text-white group-hover:text-emerald-700">{activeSeason.name}</p>
                   <p className="text-xs text-slate-500">Season active</p>
                 </div>
               </Link>
@@ -279,11 +279,11 @@ export default function CompeteHub() {
             {activeBoss && (
               <Link
                 href="/dashboard/boss-missions"
-                className="flex items-center gap-3 p-3 rounded-lg bg-red-50 hover:bg-red-100 transition-colors group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-red-500/10 hover:bg-red-100 transition-colors group"
               >
                 <Swords size={20} className="text-red-600" />
                 <div>
-                  <p className="text-sm font-medium text-slate-900 group-hover:text-red-700">{activeBoss.title}</p>
+                  <p className="text-sm font-medium text-white group-hover:text-red-700">{activeBoss.title}</p>
                   <p className="text-xs text-slate-500">Boss active</p>
                 </div>
               </Link>
@@ -291,11 +291,11 @@ export default function CompeteHub() {
             {battlePass && (
               <Link
                 href="/dashboard/battle-pass"
-                className="flex items-center gap-3 p-3 rounded-lg bg-[#E9F8EE] hover:bg-[#d4f2e2] transition-colors group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-[#7AD62A]/10 hover:bg-[#d4f2e2] transition-colors group"
               >
-                <Award size={20} className="text-[#229C62]" />
+                <Award size={20} className="text-[#7AD62A]" />
                 <div>
-                  <p className="text-sm font-medium text-slate-900 group-hover:text-[#1a7a4d]">
+                  <p className="text-sm font-medium text-white group-hover:text-[#1a7a4d]">
                     Tier {battlePass.currentTier}/{battlePass.totalTiers}
                   </p>
                   <p className="text-xs text-slate-500">Battle Pass</p>
@@ -308,7 +308,7 @@ export default function CompeteHub() {
 
       {/* Compete Modes Grid */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-900 mb-3">Competition Modes</h2>
+        <h2 className="text-sm font-semibold text-white mb-3">Competition Modes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {modes.map((mode) => {
             const Icon = mode.icon;
@@ -319,16 +319,16 @@ export default function CompeteHub() {
               <Link
                 key={mode.id}
                 href={isLocked ? "#" : mode.href}
-                className={`relative group bg-white rounded-xl border p-5 transition-all ${
+                className={`relative group bg-[#0f172a] rounded-xl border p-5 transition-all ${
                   isLocked
-                    ? "border-slate-200 opacity-60 cursor-not-allowed"
-                    : "border-slate-200 hover:shadow-md hover:border-[#229C62]/30"
+                    ? "border-white/10 opacity-60 cursor-not-allowed"
+                    : "border-white/10 hover:shadow-md hover:border-[#7AD62A]/30"
                 }`}
               >
                 {isActive && (
                   <div className="absolute top-3 right-3">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#229C62] text-white text-[10px] font-semibold uppercase tracking-wide">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#7AD62A] text-white text-[10px] font-semibold uppercase tracking-wide">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#0f172a] animate-pulse" />
                       Live
                     </span>
                   </div>
@@ -342,7 +342,7 @@ export default function CompeteHub() {
                   )}
                 </div>
 
-                <h3 className="text-sm font-semibold text-slate-900 mb-1">{mode.title}</h3>
+                <h3 className="text-sm font-semibold text-white mb-1">{mode.title}</h3>
                 <p className="text-xs text-slate-500 mb-3 leading-relaxed">{mode.description}</p>
 
                 {isLocked ? (
@@ -358,7 +358,7 @@ export default function CompeteHub() {
                     )}
                     <ChevronRight
                       size={14}
-                      className="text-slate-400 group-hover:text-[#229C62] group-hover:translate-x-0.5 transition-all"
+                      className="text-slate-400 group-hover:text-[#7AD62A] group-hover:translate-x-0.5 transition-all"
                     />
                   </div>
                 )}
@@ -371,7 +371,7 @@ export default function CompeteHub() {
       {/* Leaderboards Quick Link */}
       <Link
         href="/dashboard/leaderboard"
-        className="block bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md hover:border-[#229C62]/30 transition-all group"
+        className="block bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md hover:border-[#7AD62A]/30 transition-all group"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -379,7 +379,7 @@ export default function CompeteHub() {
               <Trophy size={24} className="text-white" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">
+              <h3 className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
                 Global Leaderboards
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -389,7 +389,7 @@ export default function CompeteHub() {
           </div>
           <ChevronRight
             size={16}
-            className="text-slate-400 group-hover:text-[#229C62] group-hover:translate-x-0.5 transition-all"
+            className="text-slate-400 group-hover:text-[#7AD62A] group-hover:translate-x-0.5 transition-all"
           />
         </div>
       </Link>
@@ -397,15 +397,15 @@ export default function CompeteHub() {
       {/* My Missions Quick Link */}
       <Link
         href="/dashboard/my-missions"
-        className="block bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md hover:border-[#229C62]/30 transition-all group"
+        className="block bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md hover:border-[#7AD62A]/30 transition-all group"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#229C62] to-[#0F203A] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7AD62A] to-[#0F203A] flex items-center justify-center">
               <Play size={24} className="text-white" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">
+              <h3 className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
                 My Missions
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -415,7 +415,7 @@ export default function CompeteHub() {
           </div>
           <ChevronRight
             size={16}
-            className="text-slate-400 group-hover:text-[#229C62] group-hover:translate-x-0.5 transition-all"
+            className="text-slate-400 group-hover:text-[#7AD62A] group-hover:translate-x-0.5 transition-all"
           />
         </div>
       </Link>

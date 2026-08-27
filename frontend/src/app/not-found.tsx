@@ -12,29 +12,29 @@ export default function NotFound() {
 
   if (isDashboard) {
     return (
-      <div className="flex h-screen bg-slate-50 overflow-hidden">
+      <div className="flex h-screen bg-white/5 overflow-hidden">
         <Sidebar />
         <div className="flex-1 flex flex-col min-h-0">
           <main className="flex-1 overflow-y-auto px-4 py-8 flex flex-col items-center justify-center">
             <div className="text-center max-w-md">
-              <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                 <Shield size={32} className="text-red-400" />
               </div>
-              <h1 className="text-4xl font-bold text-slate-900 mb-2">404</h1>
+              <h1 className="text-4xl font-bold text-white mb-2">404</h1>
               <p className="text-slate-600 mb-6">
                 This page doesn&apos;t exist or has been moved.
               </p>
               <div className="flex gap-3 justify-center">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#229C62] text-white rounded-xl font-medium hover:bg-[#1e8a56] transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7AD62A] text-white rounded-xl font-medium hover:bg-[#1e8a56] transition-colors"
                 >
                   <Home size={16} />
                   Dashboard
                 </Link>
                 <button
                   onClick={() => window.history.back()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-white/10 text-slate-700 rounded-xl font-medium hover:bg-white/5 transition-colors"
                 >
                   <ArrowLeft size={16} />
                   Go back
@@ -61,7 +61,7 @@ export default function NotFound() {
         <div className="flex gap-4 justify-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#229C62] text-white rounded-xl font-semibold hover:bg-[#1e8a56] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#7AD62A] text-white rounded-xl font-semibold hover:bg-[#1e8a56] transition-colors"
           >
             <Home size={18} />
             Home

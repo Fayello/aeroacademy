@@ -70,12 +70,12 @@ function ScoreBadge({ score }: { score: number }) {
     );
   if (score >= 60)
     return (
-      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-500/10 text-amber-700 border border-amber-200">
         {score} Fair
       </span>
     );
   return (
-    <span className="px-2 py-0.5 text-xs rounded-full bg-red-50 text-red-700 border border-red-200">
+    <span className="px-2 py-0.5 text-xs rounded-full bg-red-500/10 text-red-700 border border-red-200">
       {score} Needs Work
     </span>
   );
@@ -137,7 +137,7 @@ export default function ContentRefreshDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -197,7 +197,7 @@ export default function ContentRefreshDashboard() {
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* Tabs */}
-        <div className="flex gap-1 bg-white rounded-lg p-1 border border-slate-200 w-fit">
+        <div className="flex gap-1 bg-[#0f172a] rounded-lg p-1 border border-white/10 w-fit">
           {[
             { key: "overview", label: "Overview" },
             { key: "labs", label: "Labs" },
@@ -209,8 +209,8 @@ export default function ContentRefreshDashboard() {
               onClick={() => setTab(t.key as Any)}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 tab === t.key
-                  ? "bg-[#229C62] text-white"
-                  : "text-slate-600 hover:bg-slate-50"
+                  ? "bg-[#7AD62A] text-white"
+                  : "text-slate-600 hover:bg-white/5"
               }`}
             >
               {t.label}
@@ -261,7 +261,7 @@ export default function ContentRefreshDashboard() {
               ].map((stat, i) => (
                 <div
                   key={i}
-                  className="angular-card bg-white p-4"
+                  className="angular-card bg-[#0f172a] p-4"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <stat.icon size={16} style={{ color: stat.color }} />
@@ -282,7 +282,7 @@ export default function ContentRefreshDashboard() {
 
             {/* Freshness gauges */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="angular-card bg-white p-6">
+              <div className="angular-card bg-[#0f172a] p-6">
                 <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                   <Clock size={16} className="text-blue-500" />
                   Lab Freshness
@@ -328,7 +328,7 @@ export default function ContentRefreshDashboard() {
                 </div>
               </div>
 
-              <div className="angular-card bg-white p-6">
+              <div className="angular-card bg-[#0f172a] p-6">
                 <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                   <Clock size={16} className="text-blue-500" />
                   Course Freshness
@@ -379,7 +379,7 @@ export default function ContentRefreshDashboard() {
             {/* Needs refresh */}
             {(report.labsNeedingRefresh.length > 0 ||
               report.coursesNeedingRefresh.length > 0) && (
-              <div className="angular-card bg-white p-6">
+              <div className="angular-card bg-[#0f172a] p-6">
                 <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                   <AlertTriangle size={16} className="text-amber-500" />
                   Content Needing Refresh
@@ -391,7 +391,7 @@ export default function ContentRefreshDashboard() {
                       className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-700">
                           Lab
                         </span>
                         <span className="text-sm">{lab.title}</span>
@@ -470,7 +470,7 @@ export default function ContentRefreshDashboard() {
                 {report.domainBreakdown.map((d) => (
                   <div
                     key={d.domain}
-                    className="angular-card bg-white p-4"
+                    className="angular-card bg-[#0f172a] p-4"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-sm">{d.domain}</span>
@@ -512,13 +512,13 @@ function LabScoreCard({ score }: { score: ContentRelevanceScore }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="angular-card bg-white overflow-hidden">
+    <div className="angular-card bg-[#0f172a] overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
+          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-700">
             Lab
           </span>
           <span className="font-medium text-sm text-left">{score.title}</span>
@@ -596,10 +596,10 @@ function CourseScoreCard({ score }: { score: ContentRelevanceScore }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="angular-card bg-white overflow-hidden">
+    <div className="angular-card bg-[#0f172a] overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-3">
           <span className="text-xs px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">

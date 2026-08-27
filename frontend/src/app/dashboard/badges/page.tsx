@@ -49,8 +49,8 @@ const iconMap: Record<string, typeof Trophy> = {
 };
 
 const tierColors: Record<string, string> = {
-  BRONZE: "bg-amber-50 border-amber-200 text-amber-700",
-  SILVER: "bg-slate-50 border-slate-200 text-slate-700",
+  BRONZE: "bg-amber-500/10 border-amber-200 text-amber-700",
+  SILVER: "bg-white/5 border-white/10 text-slate-700",
   GOLD: "bg-yellow-50 border-yellow-200 text-yellow-700",
   PLATINUM: "bg-purple-50 border-purple-200 text-purple-700",
 };
@@ -112,7 +112,7 @@ export default function BadgesPage() {
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <AlertTriangle size={32} className="text-red-400 mb-3" />
         <p className="text-sm text-slate-600 mb-3">{error}</p>
-        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-colors">
           Try again
         </button>
       </div>
@@ -122,7 +122,7 @@ export default function BadgesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Badges</h1>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Badges</h1>
         <p className="text-sm text-slate-500 mt-1">
           {myBadges.length} of {allBadges.length} earned
         </p>
@@ -155,7 +155,7 @@ export default function BadgesPage() {
               className={`angular-card border p-4 text-center transition-all ${
                 earned
                   ? tierColors[badge.tier] || tierColors.BRONZE
-                  : "bg-slate-50 border-slate-200 opacity-50"
+                  : "bg-white/5 border-white/10 opacity-50"
               }`}
             >
               <div
@@ -165,13 +165,13 @@ export default function BadgesPage() {
               >
                 <Icon size={20} className="text-white" />
               </div>
-              <p className="text-xs font-semibold text-slate-900">{badge.name}</p>
+              <p className="text-xs font-semibold text-white">{badge.name}</p>
               <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{badge.description}</p>
               {badge.xpReward > 0 && (
                 <p className="text-[10px] font-bold text-amber-600 mt-2">+{badge.xpReward} XP</p>
               )}
               {earned && (
-                <span className="inline-block mt-2 text-[9px] font-medium text-[#229C62] bg-[#E9F8EE] px-2 py-0.5 rounded-full">
+                <span className="inline-block mt-2 text-[9px] font-medium text-[#7AD62A] bg-[#7AD62A]/10 px-2 py-0.5 rounded-full">
                   Earned
                 </span>
               )}

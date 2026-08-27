@@ -13,7 +13,7 @@ const steps = [
     description: "Begin with the basics — complete lessons to earn XP and unlock advanced content.",
     href: "/dashboard/courses",
     cta: "Browse Courses",
-    color: "bg-[#E9F8EE] text-[#229C62]",
+    color: "bg-[#7AD62A]/10 text-[#7AD62A]",
   },
   {
     icon: Microscope,
@@ -60,7 +60,7 @@ export default function OnboardingCard() {
     <div className="card p-6 relative animate-in fade-in slide-in-from-bottom-2 duration-500">
       <button
         onClick={dismiss}
-        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+        className="absolute top-4 right-4 text-slate-400 hover:text-slate-300 transition-colors"
         aria-label="Dismiss onboarding"
       >
         <X size={16} />
@@ -71,7 +71,7 @@ export default function OnboardingCard() {
           <Icon size={20} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-slate-900">{current.title}</h3>
+          <h3 className="text-sm font-semibold text-white">{current.title}</h3>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">{current.description}</p>
           <div className="flex items-center gap-3 mt-3">
             <Link
@@ -85,14 +85,14 @@ export default function OnboardingCard() {
             {!isLast ? (
               <button
                 onClick={() => setStep(step + 1)}
-                className="text-xs text-slate-500 hover:text-slate-700 transition-colors"
+                className="text-xs text-slate-500 hover:text-slate-200 transition-colors"
               >
                 Next
               </button>
             ) : (
               <button
                 onClick={dismiss}
-                className="text-xs text-slate-500 hover:text-slate-700 transition-colors"
+                className="text-xs text-slate-500 hover:text-slate-200 transition-colors"
               >
                 Got it
               </button>
@@ -108,7 +108,7 @@ export default function OnboardingCard() {
             onClick={() => setStep(i)}
             aria-label={`Go to step ${i + 1}`}
             className={`h-1 rounded-full transition-all duration-300 ${
-              i === step ? "w-6 bg-[#229C62]" : "w-2 bg-slate-200"
+              i === step ? "w-6 bg-[#7AD62A]" : "w-2 bg-slate-200"
             }`}
           />
         ))}

@@ -93,11 +93,11 @@ function getMasteryTextColor(mastery: number): string {
 }
 
 function getMasteryBgColor(mastery: number): string {
-  if (mastery >= 80) return "bg-green-50 border-green-200";
+  if (mastery >= 80) return "bg-green-500/10 border-green-200";
   if (mastery >= 60) return "bg-lime-50 border-lime-200";
   if (mastery >= 40) return "bg-yellow-50 border-yellow-200";
   if (mastery >= 20) return "bg-orange-50 border-orange-200";
-  return "bg-red-50 border-red-200";
+  return "bg-red-500/10 border-red-200";
 }
 
 function formatLastPracticed(date: string | null, t: any): string {
@@ -161,7 +161,7 @@ export default function GenomePage() {
           <p className="text-slate-500 mb-4">{error || t("common.error")}</p>
           <button
             onClick={fetchGenome}
-            className="px-4 py-2 bg-[#229C62] text-white rounded-lg hover:bg-[#1a7a4d] transition-colors"
+            className="px-4 py-2 bg-[#7AD62A] text-white rounded-lg hover:bg-[#1a7a4d] transition-colors"
           >
             {t("common.retry")}
           </button>
@@ -180,21 +180,21 @@ export default function GenomePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#0F203A] flex items-center gap-2">
-            <Dna className="w-7 h-7 text-[#229C62]" />
+            <Dna className="w-7 h-7 text-[#7AD62A]" />
             {t("genome.title")}
           </h1>
           <p className="text-slate-500 text-sm mt-1">{t("genome.subtitle")}</p>
         </div>
         <button
           onClick={fetchGenome}
-          className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+          className="p-2 text-slate-400 hover:text-slate-300 transition-colors"
         >
           <RefreshCw className="w-5 h-5" />
         </button>
       </div>
 
       {/* Overall Mastery Card */}
-      <div className="bg-gradient-to-r from-[#0F203A] to-[#229C62] rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-[#0F203A] to-[#7AD62A] rounded-2xl p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold opacity-90">{t("genome.overall")}</h2>
@@ -223,7 +223,7 @@ export default function GenomePage() {
 
       {/* Fading Skills Warning */}
       {genome.fadingSkills.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+        <div className="bg-amber-500/10 border border-amber-200 rounded-xl p-5">
           <div className="flex items-center gap-2 text-amber-700 font-semibold mb-2">
             <AlertTriangle className="w-5 h-5" />
             {t("genome.fadingSkills")}
@@ -233,7 +233,7 @@ export default function GenomePage() {
             {genome.fadingSkills.slice(0, 5).map((skill) => (
               <div
                 key={skill.skillId}
-                className="flex items-center justify-between bg-white rounded-lg px-4 py-2 border border-amber-100"
+                className="flex items-center justify-between bg-[#0f172a] rounded-lg px-4 py-2 border border-amber-100"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -302,7 +302,7 @@ export default function GenomePage() {
           return (
             <div
               key={domain.domain}
-              className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+              className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden"
             >
               {/* Domain Header */}
               <div className={`bg-gradient-to-r ${gradient} p-4 text-white`}>
@@ -332,7 +332,7 @@ export default function GenomePage() {
                   .map((skill) => (
                     <div
                       key={skill.skillId}
-                      className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                      className="px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <div

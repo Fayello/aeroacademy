@@ -40,30 +40,30 @@ export default function NotificationBell() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
-        className="relative w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:bg-slate-50 transition-colors"
+        className="relative w-10 h-10 rounded-full bg-[#0f172a] border border-white/10 shadow-sm flex items-center justify-center hover:bg-white/5 transition-colors"
       >
         <Bell size={18} className="text-slate-600" />
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#229C62] text-white text-[10px] font-bold flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7AD62A] text-white text-[10px] font-bold flex items-center justify-center">
             {unread > 99 ? "99+" : unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-150">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f172a] border border-white/10 rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-150">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
+              <h3 className="text-sm font-semibold text-white">Notifications</h3>
               {unread > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-[#E9F8EE] text-[#0F203A] text-[10px] font-semibold">
+                <span className="px-1.5 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#0F203A] text-[10px] font-semibold">
                   {unread} new
                 </span>
               )}
             </div>
             <button
               onClick={() => void markAllRead()}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#229C62] font-medium"
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#7AD62A] font-medium"
             >
               <CheckCheck size={14} />
               Mark all read
@@ -85,8 +85,8 @@ export default function NotificationBell() {
                 <button
                   key={n.id}
                   onClick={() => handleItemClick(n)}
-                  className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 ${
-                    !n.read ? "bg-[#E9F8EE]/40" : ""
+                  className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-white/5 transition-colors border-b border-slate-50 last:border-0 ${
+                    !n.read ? "bg-[#7AD62A]/10/40" : ""
                   }`}
                 >
                   <div className="mt-0.5 shrink-0">
@@ -94,11 +94,11 @@ export default function NotificationBell() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-slate-800 truncate">
+                      <p className="text-sm font-semibold text-slate-200 truncate">
                         {n.title}
                       </p>
                       {!n.read && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#229C62] shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#7AD62A] shrink-0" />
                       )}
                     </div>
                     <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">
@@ -117,7 +117,7 @@ export default function NotificationBell() {
           <Link
             href="/dashboard/notifications"
             onClick={() => setOpen(false)}
-            className="block text-center px-4 py-3 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] border-t border-slate-100"
+            className="block text-center px-4 py-3 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 border-t border-slate-100"
           >
             View all notifications
           </Link>

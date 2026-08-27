@@ -21,21 +21,21 @@ export default function CurrencySwitcher() {
       <button
         onClick={() => setOpen(!open)}
         aria-label={`Currency: ${CURRENCIES[currency].name}`}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-[#229C62] hover:bg-[#E9F8EE]/50 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30"
       >
         {CURRENCIES[currency].symbol}
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-50 py-1 min-w-[140px]">
+        <div className="absolute right-0 top-full mt-1 bg-[#0f172a] border border-white/10 rounded-xl shadow-lg z-50 py-1 min-w-[140px]">
           {(Object.keys(CURRENCIES) as Currency[]).map((code) => (
             <button
               key={code}
               onClick={() => { setCurrency(code); setOpen(false); }}
               className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors ${
                 currency === code
-                  ? "bg-[#E9F8EE] text-[#229C62] font-semibold"
-                  : "text-slate-600 hover:bg-slate-50"
+                  ? "bg-[#7AD62A]/10 text-[#7AD62A] font-semibold"
+                  : "text-slate-300 hover:bg-white/5"
               }`}
             >
               <span className="font-mono w-8">{CURRENCIES[code].symbol}</span>

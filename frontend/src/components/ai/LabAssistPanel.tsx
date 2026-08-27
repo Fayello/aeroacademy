@@ -88,7 +88,7 @@ export default function LabAssistPanel({
 
       {/* Panel */}
       {isOpen && (
-        <div className="absolute bottom-14 right-0 w-96 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden">
+        <div className="absolute bottom-14 right-0 w-96 bg-[#0f172a] rounded-xl shadow-2xl border border-white/10 overflow-hidden">
           {/* Header */}
           <div className="px-4 py-3 border-b border-slate-100" style={{ background: "#E9F8EE" }}>
             <div className="flex items-center gap-2">
@@ -112,8 +112,8 @@ export default function LabAssistPanel({
                     onClick={() => setHintLevel(level)}
                     className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                       hintLevel === level
-                        ? "border-[#229C62] bg-[#E9F8EE] text-[#229C62]"
-                        : "border-slate-200 text-slate-500 hover:border-slate-300"
+                        ? "border-[#7AD62A] bg-[#7AD62A]/10 text-[#7AD62A]"
+                        : "border-white/10 text-slate-500 hover:border-white/10"
                     }`}
                   >
                     {hintLabels[level - 1]}
@@ -132,7 +132,7 @@ export default function LabAssistPanel({
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
                 placeholder="e.g. Trying to find the SQL injection"
-                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#229C62] focus:border-transparent outline-none"
+                className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:ring-2 focus:ring-[#7AD62A] focus:border-transparent outline-none"
               />
             </div>
 
@@ -155,7 +155,7 @@ export default function LabAssistPanel({
             {response && (
               <div className="space-y-3 pt-2 border-t border-slate-100">
                 {/* Hint */}
-                <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-100">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <Lightbulb size={12} className="text-amber-600" />
                     <span className="text-xs font-medium text-amber-700">
@@ -166,7 +166,7 @@ export default function LabAssistPanel({
                 </div>
 
                 {/* Approach */}
-                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-100">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <Target size={12} className="text-blue-600" />
                     <span className="text-xs font-medium text-blue-700">
@@ -178,14 +178,14 @@ export default function LabAssistPanel({
 
                 {/* Next steps */}
                 {response.nextSteps.length > 0 && (
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <div className="p-3 bg-white/5 rounded-lg border border-slate-100">
                     <span className="text-xs font-medium text-slate-600 block mb-1.5">
                       Next Steps
                     </span>
                     <ul className="space-y-1">
                       {response.nextSteps.map((step, i) => (
                         <li key={i} className="text-sm text-slate-700 flex items-start gap-1.5">
-                          <span className="text-[#229C62] mt-0.5">→</span>
+                          <span className="text-[#7AD62A] mt-0.5">→</span>
                           {step}
                         </li>
                       ))}

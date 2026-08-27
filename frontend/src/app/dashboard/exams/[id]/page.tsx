@@ -122,7 +122,7 @@ export default function ExamDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[#229C62]" />
+        <Loader2 size={24} className="animate-spin text-[#7AD62A]" />
       </div>
     );
   }
@@ -137,15 +137,15 @@ export default function ExamDetailPage() {
       <div>
         <Link
           href="/dashboard/exams"
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-[#229C62] transition-colors mb-3"
+          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-[#7AD62A] transition-colors mb-3"
         >
           <ChevronLeft size={16} />
           All exams
         </Link>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              <FileText size={28} className="text-[#229C62]" />
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+              <FileText size={28} className="text-[#7AD62A]" />
               {assessment.title}
             </h1>
             <p className="text-sm text-slate-500 mt-1">{assessment.description}</p>
@@ -153,7 +153,7 @@ export default function ExamDetailPage() {
           <button
             onClick={handleStart}
             disabled={starting}
-            className="px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+            className="px-4 py-2 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
           >
             {starting ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
             {starting ? "Starting..." : "Start Exam"}
@@ -163,36 +163,36 @@ export default function ExamDetailPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <Clock size={18} className="mx-auto mb-1 text-[#229C62]" />
-          <div className="text-xl font-bold text-slate-900">{assessment.timeLimit}m</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <Clock size={18} className="mx-auto mb-1 text-[#7AD62A]" />
+          <div className="text-xl font-bold text-white">{assessment.timeLimit}m</div>
           <div className="text-xs text-slate-500">Time Limit</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <Target size={18} className="mx-auto mb-1 text-[#229C62]" />
-          <div className="text-xl font-bold text-slate-900">{assessment.scenarios.length}</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <Target size={18} className="mx-auto mb-1 text-[#7AD62A]" />
+          <div className="text-xl font-bold text-white">{assessment.scenarios.length}</div>
           <div className="text-xs text-slate-500">Scenarios</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <Award size={18} className="mx-auto mb-1 text-[#229C62]" />
-          <div className="text-xl font-bold text-slate-900">{assessment.passingScore}%</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <Award size={18} className="mx-auto mb-1 text-[#7AD62A]" />
+          <div className="text-xl font-bold text-white">{assessment.passingScore}%</div>
           <div className="text-xs text-slate-500">Passing Score</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <Users size={18} className="mx-auto mb-1 text-[#229C62]" />
-          <div className="text-xl font-bold text-slate-900">{stats?.totalAttempts ?? 0}</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <Users size={18} className="mx-auto mb-1 text-[#7AD62A]" />
+          <div className="text-xl font-bold text-white">{stats?.totalAttempts ?? 0}</div>
           <div className="text-xs text-slate-500">Attempts</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <BarChart3 size={18} className="mx-auto mb-1 text-[#229C62]" />
-          <div className="text-xl font-bold text-slate-900">{stats?.avgScore ?? 0}%</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <BarChart3 size={18} className="mx-auto mb-1 text-[#7AD62A]" />
+          <div className="text-xl font-bold text-white">{stats?.avgScore ?? 0}%</div>
           <div className="text-xs text-slate-500">Avg Score</div>
         </div>
       </div>
 
       {/* Proctoring Banner */}
       {assessment.isProctored && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+        <div className="bg-amber-500/10 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
           <Shield size={20} className="text-amber-600 shrink-0" />
           <div>
             <p className="text-sm font-medium text-amber-800">Proctored Exam</p>
@@ -216,8 +216,8 @@ export default function ExamDetailPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-[#0f172a] text-white shadow-sm"
+                : "text-slate-500 hover:text-slate-200"
             }`}
           >
             {tab.label}
@@ -229,12 +229,12 @@ export default function ExamDetailPage() {
       {activeTab === "overview" && (
         <div className="space-y-4">
           {/* Learning Outcomes */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Learning Outcomes</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h3 className="text-sm font-semibold text-white mb-3">Learning Outcomes</h3>
             <div className="space-y-2">
               {assessment.outcomes.map((o) => (
                 <div key={o.outcome.code} className="flex items-center gap-2 text-sm">
-                  <span className="text-[#229C62] font-mono text-xs">{o.outcome.code}</span>
+                  <span className="text-[#7AD62A] font-mono text-xs">{o.outcome.code}</span>
                   <span className="text-slate-700">{o.outcome.title}</span>
                 </div>
               ))}
@@ -242,13 +242,13 @@ export default function ExamDetailPage() {
           </div>
 
           {/* Scenarios */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Scenarios</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h3 className="text-sm font-semibold text-white mb-3">Scenarios</h3>
             <div className="space-y-3">
               {assessment.scenarios.map((s, i) => (
-                <div key={s.id} className="p-3 bg-slate-50 rounded-lg">
+                <div key={s.id} className="p-3 bg-white/5 rounded-lg">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-900">
+                    <span className="text-sm font-medium text-white">
                       {i + 1}. {s.title}
                     </span>
                     <span className="text-xs text-slate-500">{s.maxScore} pts</span>
@@ -263,13 +263,13 @@ export default function ExamDetailPage() {
 
       {/* Attempts Tab */}
       {activeTab === "attempts" && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
           {attempts.length === 0 ? (
             <EmptyState icon={FileText} title="No attempts yet" description="" />
           ) : (
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-100">
+                <tr className="bg-white/5 border-b border-slate-100">
                   <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase">Student</th>
                   <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase">Score</th>
                   <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase">Grade</th>
@@ -280,25 +280,25 @@ export default function ExamDetailPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {attempts.map((a) => (
-                  <tr key={a.attemptId} className="hover:bg-slate-50 transition-colors">
+                  <tr key={a.attemptId} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-3">
-                      <div className="text-sm font-medium text-slate-900">
+                      <div className="text-sm font-medium text-white">
                         {a.student.name || a.student.email.split("@")[0]}
                       </div>
                     </td>
                     <td className="px-6 py-3 text-center">
-                      <span className="text-sm font-semibold text-slate-900">{a.score}%</span>
+                      <span className="text-sm font-semibold text-white">{a.score}%</span>
                     </td>
                     <td className="px-6 py-3 text-center">
                       <span
                         className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                           a.score >= 90
-                            ? "bg-[#E9F8EE] text-[#229C62]"
+                            ? "bg-[#7AD62A]/10 text-[#7AD62A]"
                             : a.score >= 70
-                            ? "bg-blue-50 text-blue-600"
+                            ? "bg-blue-500/10 text-blue-600"
                             : a.score >= 60
-                            ? "bg-amber-50 text-amber-600"
-                            : "bg-red-50 text-red-600"
+                            ? "bg-amber-500/10 text-amber-600"
+                            : "bg-red-500/10 text-red-600"
                         }`}
                       >
                         {a.letterGrade}
@@ -313,7 +313,7 @@ export default function ExamDetailPage() {
                     <td className="px-6 py-3 text-center">
                       <button
                         onClick={() => loadReport(a.attemptId)}
-                        className="text-xs text-[#229C62] hover:underline font-medium"
+                        className="text-xs text-[#7AD62A] hover:underline font-medium"
                       >
                         View Report
                       </button>
@@ -328,28 +328,28 @@ export default function ExamDetailPage() {
 
       {/* Grade Report Tab */}
       {activeTab === "report" && selectedReport && (
-        <div className="bg-white rounded-xl border border-slate-200 p-8">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-8">
           <div className="text-center mb-8">
-            <h2 className="text-xl font-bold text-slate-900 mb-1">Practical Examination Report</h2>
+            <h2 className="text-xl font-bold text-white mb-1">Practical Examination Report</h2>
             <p className="text-sm text-slate-500">{selectedReport.exam.title}</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
             <div>
               <div className="text-xs text-slate-500 uppercase mb-1">Student</div>
-              <div className="text-sm font-medium text-slate-900">
+              <div className="text-sm font-medium text-white">
                 {selectedReport.student.name || selectedReport.student.email}
               </div>
             </div>
             <div>
               <div className="text-xs text-slate-500 uppercase mb-1">Date</div>
-              <div className="text-sm font-medium text-slate-900">
+              <div className="text-sm font-medium text-white">
                 {new Date(selectedReport.date).toLocaleDateString()}
               </div>
             </div>
             <div>
               <div className="text-xs text-slate-500 uppercase mb-1">Duration</div>
-              <div className="text-sm font-medium text-slate-900">
+              <div className="text-sm font-medium text-white">
                 {selectedReport.duration} min (limit: {selectedReport.timeLimit})
               </div>
             </div>
@@ -357,37 +357,37 @@ export default function ExamDetailPage() {
 
           {/* Scores */}
           <div className="mb-8">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Scoring</h3>
+            <h3 className="text-sm font-semibold text-white mb-3">Scoring</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {Object.entries(selectedReport.scores).map(([key, value]) => (
-                <div key={key} className="text-center p-3 bg-slate-50 rounded-lg">
-                  <div className="text-lg font-bold text-slate-900">{value}%</div>
+                <div key={key} className="text-center p-3 bg-white/5 rounded-lg">
+                  <div className="text-lg font-bold text-white">{value}%</div>
                   <div className="text-xs text-slate-500 capitalize">
                     {key.replace(/([A-Z])/g, " $1").trim()}
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-4 text-center p-4 bg-[#E9F8EE] rounded-xl">
+            <div className="mt-4 text-center p-4 bg-[#7AD62A]/10 rounded-xl">
               <div className="text-3xl font-bold text-[#0F203A]">
                 {selectedReport.overallGrade}% ({selectedReport.letterGrade})
               </div>
-              <div className="text-sm text-[#229C62] mt-1">Overall Grade</div>
+              <div className="text-sm text-[#7AD62A] mt-1">Overall Grade</div>
             </div>
           </div>
 
           {/* Outcome Breakdown */}
           {selectedReport.outcomeBreakdown.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Learning Outcomes</h3>
+              <h3 className="text-sm font-semibold text-white mb-3">Learning Outcomes</h3>
               <div className="space-y-2">
                 {selectedReport.outcomeBreakdown.map((o) => (
-                  <div key={o.outcomeId} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                  <div key={o.outcomeId} className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-[#229C62]">{o.code}</span>
+                      <span className="text-xs font-mono text-[#7AD62A]">{o.code}</span>
                       <span className="text-sm text-slate-700">{o.title}</span>
                     </div>
-                    <span className="text-sm font-medium text-slate-900">{o.score}%</span>
+                    <span className="text-sm font-medium text-white">{o.score}%</span>
                   </div>
                 ))}
               </div>

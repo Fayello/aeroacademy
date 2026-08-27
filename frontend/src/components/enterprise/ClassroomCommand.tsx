@@ -146,8 +146,8 @@ export default function ClassroomCommand() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Controls */}
       <div className="card p-6 space-y-5">
-        <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-          <Shield size={16} className="text-[#229C62]" />
+        <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+          <Shield size={16} className="text-[#7AD62A]" />
           Classroom Control
         </h2>
 
@@ -184,13 +184,13 @@ export default function ClassroomCommand() {
       {/* Member progress */}
       <div className="lg:col-span-2 card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-            <Activity size={16} className="text-[#229C62]" />
+          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+            <Activity size={16} className="text-[#7AD62A]" />
             Team Progress
           </h3>
           {teamProgress && (
-            <span className="text-xs text-[#229C62] flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#229C62] animate-pulse" />
+            <span className="text-xs text-[#7AD62A] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7AD62A] animate-pulse" />
               Live
             </span>
           )}
@@ -200,25 +200,25 @@ export default function ClassroomCommand() {
           {teamProgress?.members?.map((member: MemberProgress) => {
             const isCorrect = member.labSubmissions?.some((s: { flag: LabFlag }) => s.flag.labId === selectedLab);
             return (
-              <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+              <div key={member.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors">
                 <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium text-slate-600">
                   {member.name?.[0] || '?'}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
+                    <p className="text-sm font-medium text-white truncate">{member.name}</p>
                     <span className="text-xs text-slate-500">{member.rank || 1200} ELO</span>
                   </div>
                   <div className="flex items-center gap-3 mt-1.5">
                     <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${isCorrect ? "bg-[#229C62]" : "bg-slate-200"}`} style={{ width: isCorrect ? "100%" : "5%" }} />
+                      <div className={`h-full rounded-full ${isCorrect ? "bg-[#7AD62A]" : "bg-slate-200"}`} style={{ width: isCorrect ? "100%" : "5%" }} />
                     </div>
-                    <span className={`text-xs ${isCorrect ? "text-[#229C62] font-medium" : "text-slate-400"}`}>
+                    <span className={`text-xs ${isCorrect ? "text-[#7AD62A] font-medium" : "text-slate-400"}`}>
                       {isCorrect ? "Done" : "Pending"}
                     </span>
                   </div>
                 </div>
-                {isCorrect && <CheckCircle size={16} className="text-[#229C62] shrink-0" />}
+                {isCorrect && <CheckCircle size={16} className="text-[#7AD62A] shrink-0" />}
               </div>
             );
           })}

@@ -177,7 +177,7 @@ export default function BossMissionsPage() {
       <div className="space-y-6">
         <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
         <div className="flex items-center justify-center py-20">
-          <Loader2 size={20} className="text-[#229C62] animate-spin" />
+          <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
         </div>
       </div>
     );
@@ -187,11 +187,11 @@ export default function BossMissionsPage() {
     return (
       <div className="space-y-6">
         <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
             <Swords size={28} className="text-red-500" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No boss missions active</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No boss missions active</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Boss challenges are being designed. These are high-difficulty labs that test your full skill set — stay ready.
           </p>
@@ -211,7 +211,7 @@ export default function BossMissionsPage() {
           return (
             <div
               key={boss.id}
-              className={`relative bg-white rounded-xl border border-slate-200 p-5 transition-all duration-200 hover:border-slate-300 hover:shadow-md ${expired ? "opacity-60" : ""}`}
+              className={`relative bg-[#0f172a] rounded-xl border border-white/10 p-5 transition-all duration-200 hover:border-white/10 hover:shadow-md ${expired ? "opacity-60" : ""}`}
             >
               {boss.theme && (
                 <div className="mb-2">
@@ -223,7 +223,7 @@ export default function BossMissionsPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-sm font-semibold text-slate-900 truncate">{boss.title}</h3>
+                    <h3 className="text-sm font-semibold text-white truncate">{boss.title}</h3>
                     <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${diff.className}`}>
                       {diff.label}
                     </span>
@@ -234,7 +234,7 @@ export default function BossMissionsPage() {
 
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="flex items-center gap-1.5">
-                  <Zap size={14} className="text-[#229C62]" />
+                  <Zap size={14} className="text-[#7AD62A]" />
                   <span className="text-xs font-semibold text-slate-700">{boss.xpReward} XP</span>
                 </div>
                 {boss.ratingReward > 0 && (
@@ -262,7 +262,7 @@ export default function BossMissionsPage() {
                   {boss.requiredDomains.map((req) => {
                     const DomainIcon = DOMAIN_ICONS[req.domainId] || Target;
                     return (
-                      <span key={req.domainId} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                      <span key={req.domainId} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-white/10">
                         <DomainIcon size={10} />
                         Min {req.minRating} rating
                       </span>
@@ -291,19 +291,19 @@ export default function BossMissionsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setSelectedBoss(null)}>
           <div className="absolute inset-0 bg-black/40" />
           <div
-            className="relative bg-white rounded-xl border border-slate-200 w-full max-w-lg max-h-[85vh] overflow-y-auto shadow-xl"
+            className="relative bg-[#0f172a] rounded-xl border border-white/10 w-full max-w-lg max-h-[85vh] overflow-y-auto shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {detailLoading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 size={20} className="text-[#229C62] animate-spin" />
+                <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
               </div>
             ) : selectedBoss && (
               <div className="p-6 space-y-5">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h2 className="text-lg font-semibold text-slate-900">{selectedBoss.boss.title}</h2>
+                      <h2 className="text-lg font-semibold text-white">{selectedBoss.boss.title}</h2>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${(difficultyConfig[selectedBoss.boss.difficulty] || difficultyConfig.EASY).className}`}>
                         {(difficultyConfig[selectedBoss.boss.difficulty] || difficultyConfig.EASY).label}
                       </span>
@@ -317,34 +317,34 @@ export default function BossMissionsPage() {
                   </div>
                   <button
                     onClick={() => setSelectedBoss(null)}
-                    className="shrink-0 ml-4 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                    className="shrink-0 ml-4 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-slate-300 transition-colors"
                   >
                     <XCircle size={18} />
                   </button>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-[#E9F8EE] rounded-lg p-3 text-center">
-                    <Zap size={16} className="text-[#229C62] mx-auto mb-1" />
-                    <p className="text-sm font-bold text-slate-900">{selectedBoss.boss.xpReward}</p>
+                  <div className="bg-[#7AD62A]/10 rounded-lg p-3 text-center">
+                    <Zap size={16} className="text-[#7AD62A] mx-auto mb-1" />
+                    <p className="text-sm font-bold text-white">{selectedBoss.boss.xpReward}</p>
                     <p className="text-[10px] text-slate-500">XP Reward</p>
                   </div>
                   {selectedBoss.boss.ratingReward > 0 && (
-                    <div className="bg-blue-50 rounded-lg p-3 text-center">
+                    <div className="bg-blue-500/10 rounded-lg p-3 text-center">
                       <TrendingUp size={16} className="text-blue-500 mx-auto mb-1" />
-                      <p className="text-sm font-bold text-slate-900">+{selectedBoss.boss.ratingReward}</p>
+                      <p className="text-sm font-bold text-white">+{selectedBoss.boss.ratingReward}</p>
                       <p className="text-[10px] text-slate-500">Rating</p>
                     </div>
                   )}
-                  <div className="bg-slate-50 rounded-lg p-3 text-center">
+                  <div className="bg-white/5 rounded-lg p-3 text-center">
                     <Shield size={16} className="text-amber-500 mx-auto mb-1" />
-                    <p className="text-sm font-bold text-slate-900">{selectedBoss.attemptsRemaining}</p>
+                    <p className="text-sm font-bold text-white">{selectedBoss.attemptsRemaining}</p>
                     <p className="text-[10px] text-slate-500">Attempts Left</p>
                   </div>
                 </div>
 
                 {selectedBoss.domainRequirements.requirements.length > 0 && (
-                  <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="bg-white/5 rounded-lg p-3">
                     <h4 className="text-xs font-semibold text-slate-700 mb-2">Domain Requirements</h4>
                     <div className="space-y-2">
                       {selectedBoss.domainRequirements.requirements.map((req) => (
@@ -353,15 +353,15 @@ export default function BossMissionsPage() {
                           <div className="flex items-center gap-2">
                             <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                               <div
-                                className={`h-full rounded-full ${req.met ? "bg-[#229C62]" : "bg-amber-400"}`}
+                                className={`h-full rounded-full ${req.met ? "bg-[#7AD62A]" : "bg-amber-400"}`}
                                 style={{ width: `${Math.min(100, (req.currentRating / Math.max(req.minRating, 1)) * 100)}%` }}
                               />
                             </div>
-                            <span className={`text-[10px] font-medium ${req.met ? "text-[#229C62]" : "text-amber-600"}`}>
+                            <span className={`text-[10px] font-medium ${req.met ? "text-[#7AD62A]" : "text-amber-600"}`}>
                               {req.currentRating}/{req.minRating}
                             </span>
                             {req.met ? (
-                              <CheckCircle2 size={12} className="text-[#229C62]" />
+                              <CheckCircle2 size={12} className="text-[#7AD62A]" />
                             ) : (
                               <XCircle size={12} className="text-amber-500" />
                             )}
@@ -378,30 +378,30 @@ export default function BossMissionsPage() {
                 )}
 
                 {selectedBoss.completed && (
-                  <div className="flex items-center gap-2 bg-[#E9F8EE] border border-[#229C62]/20 rounded-lg px-4 py-3">
-                    <CheckCircle2 size={18} className="text-[#229C62] shrink-0" />
+                  <div className="flex items-center gap-2 bg-[#7AD62A]/10 border border-[#7AD62A]/20 rounded-lg px-4 py-3">
+                    <CheckCircle2 size={18} className="text-[#7AD62A] shrink-0" />
                     <span className="text-sm font-medium text-[#0F203A]">Mission completed! Well done.</span>
                   </div>
                 )}
 
                 {selectedBoss.attemptsRemaining <= 0 && !selectedBoss.completed && (
-                  <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-200 rounded-lg px-4 py-3">
                     <AlertTriangle size={18} className="text-amber-500 shrink-0" />
                     <span className="text-sm font-medium text-amber-700">No attempts remaining</span>
                   </div>
                 )}
 
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-900 mb-2">Your Attempts</h4>
+                  <h4 className="text-xs font-semibold text-white mb-2">Your Attempts</h4>
                   {selectedBoss.attempts.length === 0 ? (
                     <p className="text-xs text-slate-400 py-4 text-center">No attempts yet</p>
                   ) : (
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {selectedBoss.attempts.map((attempt) => (
-                        <div key={attempt.id} className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+                        <div key={attempt.id} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
                           <div className="flex items-center gap-2">
                             {attempt.isCompleted ? (
-                              <CheckCircle2 size={14} className="text-[#229C62]" />
+                              <CheckCircle2 size={14} className="text-[#7AD62A]" />
                             ) : (
                               <XCircle size={14} className="text-red-400" />
                             )}
@@ -410,7 +410,7 @@ export default function BossMissionsPage() {
                             </span>
                           </div>
                           <div className="text-right">
-                            <span className={`text-[10px] font-medium ${attempt.isCompleted ? "text-[#229C62]" : "text-slate-400"}`}>
+                            <span className={`text-[10px] font-medium ${attempt.isCompleted ? "text-[#7AD62A]" : "text-slate-400"}`}>
                               {attempt.isCompleted ? "COMPLETED" : "FAILED"}
                             </span>
                             <p className="text-[10px] text-slate-400">
@@ -424,17 +424,17 @@ export default function BossMissionsPage() {
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-900 mb-2">Leaderboard</h4>
+                  <h4 className="text-xs font-semibold text-white mb-2">Leaderboard</h4>
                   {leaderboardLoading ? (
                     <div className="flex items-center justify-center py-6">
-                      <Loader2 size={16} className="text-[#229C62] animate-spin" />
+                      <Loader2 size={16} className="text-[#7AD62A] animate-spin" />
                     </div>
                   ) : leaderboard.length === 0 ? (
                     <p className="text-xs text-slate-400 py-4 text-center">No leaderboard entries yet</p>
                   ) : (
                     <div className="space-y-1.5 max-h-48 overflow-y-auto">
                       {leaderboard.map((entry) => (
-                        <div key={entry.userId} className="flex items-center gap-3 bg-slate-50 rounded-lg px-3 py-2">
+                        <div key={entry.userId} className="flex items-center gap-3 bg-white/5 rounded-lg px-3 py-2">
                           <span className={`text-xs font-bold w-5 text-center ${entry.position <= 3 ? "text-amber-500" : "text-slate-400"}`}>
                             {entry.position}
                           </span>

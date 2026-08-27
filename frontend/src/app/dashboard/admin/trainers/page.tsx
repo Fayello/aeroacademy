@@ -200,7 +200,7 @@ export default function AdminTrainersPage() {
             {(trainer.user?.name || "T").charAt(0)}
           </div>
           <div>
-            <p className="font-medium text-slate-900">{trainer.user?.name || "Unknown"}</p>
+            <p className="font-medium text-white">{trainer.user?.name || "Unknown"}</p>
             <p className="text-xs text-slate-500">{trainer.user?.email}</p>
           </div>
         </div>
@@ -249,7 +249,7 @@ export default function AdminTrainersPage() {
       render: (trainer: Trainer) => (
         <button
           onClick={() => openSlotsModal(trainer)}
-          className="flex items-center gap-1.5 text-[#229C62] hover:text-[#0F203A] font-medium text-sm"
+          className="flex items-center gap-1.5 text-[#7AD62A] hover:text-[#0F203A] font-medium text-sm"
         >
           <Clock size={14} />
           {trainer.slots?.length || 0} slots
@@ -323,14 +323,14 @@ export default function AdminTrainersPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
             >
               {saving ? "Saving..." : editing ? "Update Trainer" : "Add Trainer"}
             </button>
             <button
               onClick={() => setModalOpen(false)}
               disabled={saving}
-              className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+              className="px-5 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
             >
               Cancel
             </button>
@@ -348,26 +348,26 @@ export default function AdminTrainersPage() {
         <div className="space-y-6">
           {/* Existing Slots */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Current Slots</h3>
+            <h3 className="text-sm font-semibold text-white mb-3">Current Slots</h3>
             {slots.length === 0 ? (
-              <p className="text-sm text-slate-500 bg-slate-50 rounded-xl p-4 text-center">No slots configured yet.</p>
+              <p className="text-sm text-slate-500 bg-white/5 rounded-xl p-4 text-center">No slots configured yet.</p>
             ) : (
               <div className="space-y-2">
                 {slots.map((slot: TrainingSlot) => (
-                  <div key={slot.id || `${slot.dayOfWeek}-${slot.startTime}`} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div key={slot.id || `${slot.dayOfWeek}-${slot.startTime}`} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
-                        <Calendar size={14} className="text-[#229C62]" />
+                      <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
+                        <Calendar size={14} className="text-[#7AD62A]" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-900">{DAYS[slot.dayOfWeek]}</p>
+                        <p className="text-sm font-medium text-white">{DAYS[slot.dayOfWeek]}</p>
                         <p className="text-xs text-slate-500">{slot.startTime} - {slot.endTime}</p>
                       </div>
                     </div>
                     <button
                       onClick={() => handleDeleteSlot(slot.id)}
                       disabled={saving}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -378,15 +378,15 @@ export default function AdminTrainersPage() {
           </div>
 
           {/* Add New Slot */}
-          <div className="border-t border-slate-200 pt-4">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Add New Slot</h3>
+          <div className="border-t border-white/10 pt-4">
+            <h3 className="text-sm font-semibold text-white mb-3">Add New Slot</h3>
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">Day</label>
                 <select
                   value={newSlot.dayOfWeek}
                   onChange={(e) => setNewSlot({ ...newSlot, dayOfWeek: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 >
                   {DAYS.map((day, i) => (
                     <option key={i} value={i}>{day}</option>
@@ -399,7 +399,7 @@ export default function AdminTrainersPage() {
                   type="time"
                   value={newSlot.startTime}
                   onChange={(e) => setNewSlot({ ...newSlot, startTime: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 />
               </div>
               <div>
@@ -408,14 +408,14 @@ export default function AdminTrainersPage() {
                   type="time"
                   value={newSlot.endTime}
                   onChange={(e) => setNewSlot({ ...newSlot, endTime: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 />
               </div>
             </div>
             <button
               onClick={handleAddSlot}
               disabled={saving}
-              className="mt-3 flex items-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+              className="mt-3 flex items-center gap-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
             >
               <Plus size={16} /> Add Slot
             </button>

@@ -20,7 +20,7 @@ export default function DashboardError({
         <AlertTriangle size={28} className="text-red-600 dark:text-red-400" />
       </div>
       <div className="text-center">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Something went wrong</h2>
+        <h2 className="text-lg font-semibold text-white dark:text-white">Something went wrong</h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md">
           An unexpected error occurred. Please try again or reload the page.
         </p>
@@ -31,7 +31,7 @@ export default function DashboardError({
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors"
         >
           <RefreshCcw size={14} />
           Try again

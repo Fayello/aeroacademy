@@ -43,25 +43,25 @@ export default function MyBookingsPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/dashboard/training" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/training" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-200">
         <ArrowLeft size={16} /> Back to Training
       </Link>
       <PageHeader title="My Bookings" description="Manage your upcoming and past training sessions." />
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-[#229C62]" size={24} />
+          <Loader2 className="animate-spin text-[#7AD62A]" size={24} />
         </div>
       ) : bookings.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-amber-500" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No bookings yet</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No bookings yet</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
             Book a 1-on-1 session with a trainer to get personalized coaching on your weak areas.
           </p>
-          <Link href="/dashboard/training" className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all">
+          <Link href="/dashboard/training" className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#7AD62A] rounded-lg hover:bg-[#1a8050] transition-all">
             Browse Trainers
           </Link>
         </div>
@@ -69,17 +69,17 @@ export default function MyBookingsPage() {
         <div className="space-y-8">
           {upcoming.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Upcoming</h3>
+              <h3 className="text-sm font-semibold text-white mb-3">Upcoming</h3>
               <div className="space-y-3">
                 {upcoming.map((b) => (
-                  <div key={b.id} className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between">
+                  <div key={b.id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-slate-900">{b.topic}</div>
+                      <div className="font-medium text-white">{b.topic}</div>
                       <div className="text-sm text-slate-500 mt-1">
                         with {b.trainer?.user?.name || "Trainer"} | {new Date(b.date).toLocaleDateString()} | {b.startTime} - {b.endTime}
                       </div>
                       <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${
-                        b.status === "CONFIRMED" ? "bg-[#E9F8EE] text-[#0F203A]" : "bg-amber-50 text-amber-700"
+                        b.status === "CONFIRMED" ? "bg-[#7AD62A]/10 text-[#0F203A]" : "bg-amber-500/10 text-amber-700"
                       }`}>{b.status}</span>
                     </div>
                     <button
@@ -98,16 +98,16 @@ export default function MyBookingsPage() {
 
           {past.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Past</h3>
+              <h3 className="text-sm font-semibold text-white mb-3">Past</h3>
               <div className="space-y-3">
                 {past.map((b) => (
-                  <div key={b.id} className="bg-white rounded-xl border border-slate-200 p-5 opacity-70">
-                    <div className="font-medium text-slate-900">{b.topic}</div>
+                  <div key={b.id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 opacity-70">
+                    <div className="font-medium text-white">{b.topic}</div>
                     <div className="text-sm text-slate-500 mt-1">
                       with {b.trainer?.user?.name || "Trainer"} | {new Date(b.date).toLocaleDateString()} | {b.startTime} - {b.endTime}
                     </div>
                     <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${
-                      b.status === "COMPLETED" ? "bg-slate-100 text-slate-600" : "bg-red-50 text-red-600"
+                      b.status === "COMPLETED" ? "bg-slate-100 text-slate-600" : "bg-red-500/10 text-red-600"
                     }`}>{b.status}</span>
                   </div>
                 ))}

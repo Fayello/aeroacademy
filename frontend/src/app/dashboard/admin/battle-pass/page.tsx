@@ -161,14 +161,14 @@ export default function AdminBattlePassPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-[#229C62] animate-spin" />
+        <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200">
         <ArrowLeft size={14} /> Admin
       </Link>
       <PageHeader title="Battle Pass" description={`${battlePasses.length} battle passes`} action={
@@ -184,18 +184,18 @@ export default function AdminBattlePassPage() {
           placeholder="Search battle passes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+          className="w-full pl-9 pr-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
         />
       </div>
 
       <div className="space-y-3">
         {filtered.map((bp) => (
-          <div key={bp.id} className="angular-card bg-white overflow-hidden">
+          <div key={bp.id} className="angular-card bg-[#0f172a] overflow-hidden">
             <div className="flex items-center justify-between p-5">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-slate-900">{bp.title}</p>
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${bp.isActive ? "bg-[#E9F8EE] text-[#229C62]" : "bg-slate-100 text-slate-500"}`}>
+                  <p className="text-sm font-semibold text-white">{bp.title}</p>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${bp.isActive ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-slate-100 text-slate-500"}`}>
                     {bp.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
@@ -204,13 +204,13 @@ export default function AdminBattlePassPage() {
                 </p>
               </div>
               <div className="flex items-center gap-1">
-                <button onClick={() => setExpandedId(expandedId === bp.id ? null : bp.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors">
+                <button onClick={() => setExpandedId(expandedId === bp.id ? null : bp.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 transition-colors">
                   {expandedId === bp.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
-                <button onClick={() => openEdit(bp)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                <button onClick={() => openEdit(bp)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
                   <Pencil size={14} />
                 </button>
-                <button onClick={() => setDeleteDialog({ open: true, item: bp })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                <button onClick={() => setDeleteDialog({ open: true, item: bp })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -220,10 +220,10 @@ export default function AdminBattlePassPage() {
                 <p className="text-xs font-medium text-slate-500 mt-3 mb-2">Tiers</p>
                 <div className="space-y-1">
                   {bp.tiers.sort((a, b) => a.tierNumber - b.tierNumber).map((t) => (
-                    <div key={t.tierNumber} className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 text-sm">
+                    <div key={t.tierNumber} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/5 text-sm">
                       <div className="flex items-center gap-3">
                         <span className="text-xs font-mono text-slate-400 w-6">T{t.tierNumber}</span>
-                        <span className="text-sm text-slate-900">{t.title}</span>
+                        <span className="text-sm text-white">{t.title}</span>
                         {t.isPremium && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Premium</span>}
                       </div>
                       <span className="text-xs font-medium text-slate-600">{t.xpRequired.toLocaleString()} XP</span>
@@ -250,8 +250,8 @@ export default function AdminBattlePassPage() {
         size="lg"
         footer={
           <div className="flex justify-end gap-2">
-            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
+            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-white/5 rounded-lg transition-colors">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
               {modal.editing ? "Save Changes" : "Create Battle Pass"}
             </button>
@@ -265,7 +265,7 @@ export default function AdminBattlePassPage() {
               <select
                 value={form.seasonId}
                 onChange={(e) => setForm({ ...form, seasonId: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] text-sm"
               >
                 <option value="">Select season...</option>
                 {seasons.map((s) => (
@@ -279,13 +279,13 @@ export default function AdminBattlePassPage() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm font-medium text-slate-700">Tiers</p>
-              <button onClick={addTier} className="text-xs text-[#229C62] hover:text-[#0F203A] flex items-center gap-1">
+              <button onClick={addTier} className="text-xs text-[#7AD62A] hover:text-[#0F203A] flex items-center gap-1">
                 <Plus size={12} /> Add Tier
               </button>
             </div>
             <div className="space-y-3">
               {form.tiers.map((tier, idx) => (
-                <div key={idx} className="p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+                <div key={idx} className="p-3 rounded-xl border border-white/10 bg-white/5 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono text-slate-400">Tier {idx + 1}</span>
                     {form.tiers.length > 1 && (
@@ -301,7 +301,7 @@ export default function AdminBattlePassPage() {
                       type="checkbox"
                       checked={tier.isPremium}
                       onChange={(e) => updateTier(idx, "isPremium", e.target.checked)}
-                      className="rounded border-slate-300"
+                      className="rounded border-white/10"
                     />
                     <span className="text-xs text-slate-600">Premium tier</span>
                   </label>

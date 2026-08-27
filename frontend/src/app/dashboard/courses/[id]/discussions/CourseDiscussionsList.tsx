@@ -227,11 +227,11 @@ export default function CourseDiscussionsList() {
         <div>
           <Link
             href={`/dashboard/courses/${courseId}`}
-            className="text-sm text-[#229C62] hover:text-[#0F203A] transition-colors"
+            className="text-sm text-[#7AD62A] hover:text-[#0F203A] transition-colors"
           >
             ← Back to course
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900 mt-2">
+          <h1 className="text-2xl font-bold text-white mt-2">
             Course Discussions
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -240,7 +240,7 @@ export default function CourseDiscussionsList() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-xl text-sm font-medium transition-colors"
         >
           <Plus size={16} />
           New Post
@@ -248,7 +248,7 @@ export default function CourseDiscussionsList() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
           <div className="relative flex-1">
@@ -261,7 +261,7 @@ export default function CourseDiscussionsList() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search discussions..."
-              className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+              className="w-full pl-9 pr-4 py-2.5 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
             />
           </div>
 
@@ -271,8 +271,8 @@ export default function CourseDiscussionsList() {
               onClick={() => setShowTagDropdown(!showTagDropdown)}
               className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm border rounded-lg transition-colors ${
                 selectedTag
-                  ? "border-[#229C62]/30 bg-[#E9F8EE] text-[#0F203A]"
-                  : "border-slate-200 text-slate-600 hover:border-slate-300"
+                  ? "border-[#7AD62A]/30 bg-[#7AD62A]/10 text-[#0F203A]"
+                  : "border-white/10 text-slate-600 hover:border-white/10"
               }`}
             >
               <Filter size={14} />
@@ -280,14 +280,14 @@ export default function CourseDiscussionsList() {
               <ChevronDown size={14} />
             </button>
             {showTagDropdown && (
-              <div className="absolute z-20 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1">
+              <div className="absolute z-20 mt-1 w-48 bg-[#0f172a] border border-white/10 rounded-lg shadow-lg py-1">
                 <button
                   onClick={() => {
                     setSelectedTag("");
                     setShowTagDropdown(false);
                   }}
-                  className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 ${
-                    !selectedTag ? "text-[#229C62] font-medium" : "text-slate-600"
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 ${
+                    !selectedTag ? "text-[#7AD62A] font-medium" : "text-slate-600"
                   }`}
                 >
                   All Tags
@@ -299,9 +299,9 @@ export default function CourseDiscussionsList() {
                       setSelectedTag(tag);
                       setShowTagDropdown(false);
                     }}
-                    className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 ${
+                    className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 ${
                       selectedTag === tag
-                        ? "text-[#229C62] font-medium"
+                        ? "text-[#7AD62A] font-medium"
                         : "text-slate-600"
                     }`}
                   >
@@ -313,13 +313,13 @@ export default function CourseDiscussionsList() {
           </div>
 
           {/* Sort Toggle */}
-          <div className="inline-flex border border-slate-200 rounded-lg overflow-hidden">
+          <div className="inline-flex border border-white/10 rounded-lg overflow-hidden">
             <button
               onClick={() => setSortBy("recent")}
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 sortBy === "recent"
-                  ? "bg-[#229C62] text-white"
-                  : "bg-white text-slate-600 hover:bg-slate-50"
+                  ? "bg-[#7AD62A] text-white"
+                  : "bg-[#0f172a] text-slate-600 hover:bg-white/5"
               }`}
             >
               Recent
@@ -328,8 +328,8 @@ export default function CourseDiscussionsList() {
               onClick={() => setSortBy("popular")}
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 sortBy === "popular"
-                  ? "bg-[#229C62] text-white"
-                  : "bg-white text-slate-600 hover:bg-slate-50"
+                  ? "bg-[#7AD62A] text-white"
+                  : "bg-[#0f172a] text-slate-600 hover:bg-white/5"
               }`}
             >
               Popular
@@ -341,10 +341,10 @@ export default function CourseDiscussionsList() {
       {/* Posts List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-[#229C62]" size={28} />
+          <Loader2 className="animate-spin text-[#7AD62A]" size={28} />
         </div>
       ) : posts.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-12 text-center">
           <MessageSquare size={40} className="mx-auto text-slate-300 mb-3" />
           <p className="text-slate-500 font-medium">No discussions yet</p>
           <p className="text-sm text-slate-400 mt-1">
@@ -352,7 +352,7 @@ export default function CourseDiscussionsList() {
           </p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium transition-colors"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus size={14} />
             New Post
@@ -365,7 +365,7 @@ export default function CourseDiscussionsList() {
               <Link
                 key={post.id}
                 href={`/dashboard/courses/${courseId}/discussions/${post.id}`}
-                className="block bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-all duration-200"
+                className="block bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md transition-all duration-200"
               >
                 <div className="flex items-start gap-4">
                   {/* Upvote Column */}
@@ -374,13 +374,13 @@ export default function CourseDiscussionsList() {
                       size={16}
                       className={
                         post.userVote === 1
-                          ? "text-[#229C62] fill-[#229C62]"
+                          ? "text-[#7AD62A] fill-[#7AD62A]"
                           : "text-slate-300"
                       }
                     />
                     <span
                       className={`text-sm font-semibold ${
-                        post.userVote === 1 ? "text-[#229C62]" : "text-slate-500"
+                        post.userVote === 1 ? "text-[#7AD62A]" : "text-slate-500"
                       }`}
                     >
                       {post.upvotes}
@@ -397,14 +397,14 @@ export default function CourseDiscussionsList() {
                         </span>
                       )}
                       {post.resolved && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#E9F8EE] px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#7AD62A]/10 px-2 py-0.5 rounded-full">
                           <CheckCircle size={10} />
                           Resolved
                         </span>
                       )}
                     </div>
 
-                    <h3 className="text-sm font-semibold text-slate-900 mb-1 line-clamp-1">
+                    <h3 className="text-sm font-semibold text-white mb-1 line-clamp-1">
                       {post.title}
                     </h3>
                     <p className="text-sm text-slate-500 line-clamp-2 mb-3">
@@ -415,7 +415,7 @@ export default function CourseDiscussionsList() {
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Author */}
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-[#E9F8EE] flex items-center justify-center text-xs font-semibold text-[#0F203A] shrink-0">
+                          <div className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-xs font-semibold text-[#0F203A] shrink-0">
                             {(post.author.name || post.author.email)[0].toUpperCase()}
                           </div>
                           <span className="text-xs text-slate-500 truncate">
@@ -469,7 +469,7 @@ export default function CourseDiscussionsList() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-[#229C62] border border-[#229C62]/20 hover:bg-[#E9F8EE] rounded-lg transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-[#7AD62A] border border-[#7AD62A]/20 hover:bg-[#7AD62A]/10 rounded-lg transition-colors disabled:opacity-50"
               >
                 {loadingMore ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -490,14 +490,14 @@ export default function CourseDiscussionsList() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowCreateModal(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[#0f172a] rounded-2xl shadow-xl w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-slate-100">
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-white">
                 New Discussion
               </h2>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 transition-colors"
               >
                 <X size={18} />
               </button>
@@ -514,7 +514,7 @@ export default function CourseDiscussionsList() {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="What's your question or topic?"
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-3 py-2.5 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                   maxLength={200}
                 />
                 <p className="text-xs text-slate-400 mt-1">
@@ -532,7 +532,7 @@ export default function CourseDiscussionsList() {
                   onChange={(e) => setNewBody(e.target.value)}
                   placeholder="Describe your question or share your thoughts..."
                   rows={6}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-3 py-2.5 text-sm border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 />
               </div>
 
@@ -545,7 +545,7 @@ export default function CourseDiscussionsList() {
                   {newTags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#E9F8EE] px-2.5 py-1 rounded-full"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[#0F203A] bg-[#7AD62A]/10 px-2.5 py-1 rounded-full"
                     >
                       {tag}
                       <button
@@ -566,11 +566,11 @@ export default function CourseDiscussionsList() {
                     onKeyDown={handleTagKeyDown}
                     onFocus={() => setShowTagDropdown(true)}
                     placeholder="Type a tag and press Enter..."
-                    className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                    className="w-full px-3 py-2.5 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                     disabled={newTags.length >= 5}
                   />
                   {showTagDropdown && tagInput && filteredAvailableTags.length > 0 && (
-                    <div className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg py-1 max-h-40 overflow-auto">
+                    <div className="absolute z-10 mt-1 w-full bg-[#0f172a] border border-white/10 rounded-lg shadow-lg py-1 max-h-40 overflow-auto">
                       {filteredAvailableTags.map((tag) => (
                         <button
                           key={tag}
@@ -578,7 +578,7 @@ export default function CourseDiscussionsList() {
                             addTag(tag);
                             setShowTagDropdown(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-50"
+                          className="w-full px-3 py-2 text-left text-sm text-slate-600 hover:bg-white/5"
                         >
                           {tag}
                         </button>
@@ -595,14 +595,14 @@ export default function CourseDiscussionsList() {
             <div className="flex items-center justify-end gap-3 p-5 border-t border-slate-100">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white/5 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreatePost}
                 disabled={creating || !newTitle.trim() || !newBody.trim()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 {creating && <Loader2 size={14} className="animate-spin" />}
                 {creating ? "Posting..." : "Post Discussion"}

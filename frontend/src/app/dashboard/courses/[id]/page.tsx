@@ -233,7 +233,7 @@ export default function CourseBriefingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -242,7 +242,7 @@ export default function CourseBriefingPage() {
       <AlertCircle size={40} className="text-red-400 mb-3" />
       <p className="text-slate-700 font-medium mb-1">Something went wrong</p>
       <p className="text-sm text-slate-500 mb-4">{error}</p>
-      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#229C62] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#7AD62A] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
     </div>
   );
   if (!course) return null;
@@ -332,8 +332,8 @@ export default function CourseBriefingPage() {
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === tab.key
-                    ? "border-[#229C62] text-[#229C62]"
-                    : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    ? "border-[#7AD62A] text-[#7AD62A]"
+                    : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
                 }`}
               >
                 <tab.icon size={14} />
@@ -350,15 +350,15 @@ export default function CourseBriefingPage() {
           {/* Overview Tab */}
           {activeTab === "overview" && (
             <div className="space-y-6">
-              <div className="angular-card border-slate-200 p-6">
-                <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                  <Target size={18} className="text-[#229C62]" />
+              <div className="angular-card border-white/10 p-6">
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Target size={18} className="text-[#7AD62A]" />
                   What you&apos;ll learn
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {course.sections?.map((section: Section) => (
                     <div key={section.id} className="flex items-start gap-2">
-                      <CheckCircle2 size={16} className="text-[#229C62] mt-0.5 shrink-0" />
+                      <CheckCircle2 size={16} className="text-[#7AD62A] mt-0.5 shrink-0" />
                       <span className="text-sm text-slate-700">{section.title}</span>
                     </div>
                   ))}
@@ -369,14 +369,14 @@ export default function CourseBriefingPage() {
               {isEnrolled && (
                 <Link
                   href={`/dashboard/courses/${course.id}/discussions`}
-                  className="angular-card border-slate-200 p-4 flex items-center justify-between hover-lift transition-all group"
+                  className="angular-card border-white/10 p-4 flex items-center justify-between hover-lift transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
                       <MessageSquare size={20} className="text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-slate-900">Course Discussions</h3>
+                      <h3 className="text-sm font-semibold text-white">Course Discussions</h3>
                       <p className="text-xs text-slate-500">Ask questions, share tips, and help other students</p>
                     </div>
                   </div>
@@ -395,16 +395,16 @@ export default function CourseBriefingPage() {
                 const isExpanded = expandedSections.has(section.id) || isEnrolled;
 
                 return (
-                  <div key={section.id} className={`angular-card border-slate-200 overflow-hidden ${isLocked ? "opacity-60" : "hover-lift"} transition-all duration-300`}>
+                  <div key={section.id} className={`angular-card border-white/10 overflow-hidden ${isLocked ? "opacity-60" : "hover-lift"} transition-all duration-300`}>
                     <button
                       onClick={() => toggleSection(section.id)}
-                      className="w-full px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-left"
+                      className="w-full px-6 py-4 bg-white/5 border-b border-slate-100 flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-3">
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isLocked ? "text-slate-500 bg-slate-100" : "text-[#229C62] bg-[#E9F8EE]"}`}>
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isLocked ? "text-slate-500 bg-slate-100" : "text-[#7AD62A] bg-[#7AD62A]/10"}`}>
                           Module {section.order}
                         </span>
-                        <h3 className="text-sm font-semibold text-slate-900">{section.title}</h3>
+                        <h3 className="text-sm font-semibold text-white">{section.title}</h3>
                         {isLocked && (
                           <span className="flex items-center gap-1 text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
                             <Lock size={10} />
@@ -435,11 +435,11 @@ export default function CourseBriefingPage() {
                             <Link
                               key={lesson.id}
                               href={`/dashboard/courses/lessons/${lesson.id}`}
-                              className="flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+                              className="flex items-center justify-between px-6 py-3 hover:bg-white/5 transition-colors"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
-                                  <Play size={12} className="text-[#229C62]" fill="currentColor" />
+                                <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
+                                  <Play size={12} className="text-[#7AD62A]" fill="currentColor" />
                                 </div>
                                 <span className="text-sm text-slate-700">{lesson.title}</span>
                               </div>
@@ -460,10 +460,10 @@ export default function CourseBriefingPage() {
             <div className="space-y-6">
               {reviewsData && reviewsData.stats.total > 0 ? (
                 <>
-                  <div className="angular-card border-slate-200 p-6">
+                  <div className="angular-card border-white/10 p-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="text-center">
-                        <div className="text-4xl font-bold text-slate-900">{reviewsData.stats.average.toFixed(1)}</div>
+                        <div className="text-4xl font-bold text-white">{reviewsData.stats.average.toFixed(1)}</div>
                         <div className="flex items-center justify-center gap-0.5 my-2">
                           {[1, 2, 3, 4, 5].map((s) => (
                             <Star key={s} size={16} className={s <= Math.round(reviewsData.stats.average) ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
@@ -501,13 +501,13 @@ export default function CourseBriefingPage() {
                             value={myComment}
                             onChange={(e) => setMyComment(e.target.value)}
                             placeholder="Share your experience (optional)"
-                            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                            className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                             rows={3}
                           />
                           <button
                             onClick={handleSubmitReview}
                             disabled={myRating < 1 || submittingReview}
-                            className="mt-2 px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                            className="mt-2 px-4 py-2 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
                           >
                             {submittingReview ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                             {myRating > 0 && reviewsData.reviews.some((r) => r.userId === enrollment?.userId) ? "Update" : "Submit"}
@@ -519,13 +519,13 @@ export default function CourseBriefingPage() {
 
                   <div className="space-y-4">
                     {reviewsData.reviews.slice(0, 10).map((review) => (
-                      <div key={review.id} className="angular-card border-slate-200 p-4">
+                      <div key={review.id} className="angular-card border-white/10 p-4">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-sm font-semibold text-[#0F203A]">
+                          <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-sm font-semibold text-[#0F203A]">
                             {(review.user.name || review.user.email)[0].toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-800">{review.user.name || review.user.email.split("@")[0]}</p>
+                            <p className="text-sm font-medium text-slate-200">{review.user.name || review.user.email.split("@")[0]}</p>
                             <div className="flex items-center gap-2">
                               <div className="flex items-center gap-0.5">
                                 {[1, 2, 3, 4, 5].map((s) => (
@@ -542,7 +542,7 @@ export default function CourseBriefingPage() {
                   </div>
                 </>
               ) : (
-                <div className="angular-card border-slate-200 py-12 text-center">
+                <div className="angular-card border-white/10 py-12 text-center">
                   <Star size={32} className="mx-auto mb-3 text-slate-300" />
                   <p className="text-sm text-slate-500">No reviews yet. Be the first to review this course.</p>
                 </div>
@@ -553,22 +553,22 @@ export default function CourseBriefingPage() {
           {/* Progress Tab */}
           {activeTab === "progress" && (
             <div className="max-w-md">
-              <div className="angular-card border-slate-200 p-6">
+              <div className="angular-card border-white/10 p-6">
                 {isEnrolled ? (
                   <>
-                    <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mb-4">
-                      <CheckCircle2 size={24} className="text-[#229C62]" />
+                    <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center mb-4">
+                      <CheckCircle2 size={24} className="text-[#7AD62A]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Course Progress</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">Course Progress</h3>
                     <p className="text-sm text-slate-500 mb-6">Continue where you left off.</p>
 
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-600">Progress</span>
-                        <span className="font-semibold text-slate-900">{progress?.percentage || 0}%</span>
+                        <span className="font-semibold text-white">{progress?.percentage || 0}%</span>
                       </div>
                       <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-[#229C62] to-[#229C62] rounded-full transition-all duration-500" style={{ width: `${progress?.percentage || 0}%` }} />
+                        <div className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500" style={{ width: `${progress?.percentage || 0}%` }} />
                       </div>
                       {progress && (
                         <p className="text-xs text-slate-500">{progress.completed} of {progress.total} lessons completed</p>
@@ -577,16 +577,16 @@ export default function CourseBriefingPage() {
 
                     {progress && progress.percentage === 100 ? (
                       <div className="space-y-3">
-                        <div className="p-4 bg-[#E9F8EE] rounded-xl border border-[#229C62]/20">
+                        <div className="p-4 bg-[#7AD62A]/10 rounded-xl border border-[#7AD62A]/20">
                           <div className="flex items-center gap-2 mb-1">
-                            <Award size={16} className="text-[#229C62]" />
+                            <Award size={16} className="text-[#7AD62A]" />
                             <p className="text-sm font-medium text-[#0F203A]">Course Completed!</p>
                           </div>
-                          <p className="text-xs text-[#229C62]">You have earned your certification.</p>
+                          <p className="text-xs text-[#7AD62A]">You have earned your certification.</p>
                         </div>
                         <Link
                           href={"/dashboard/courses/" + course.id + "/certificate"}
-                          className="w-full py-2.5 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                          className="w-full py-2.5 px-4 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                         >
                           <Award size={14} />
                           View Certificate
@@ -595,7 +595,7 @@ export default function CourseBriefingPage() {
                     ) : (
                       <button
                         onClick={handleResumeCourse}
-                        className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                        className="w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                       >
                         <Play size={16} />
                         Continue Course
@@ -604,25 +604,25 @@ export default function CourseBriefingPage() {
                   </>
                 ) : (
                   <>
-                    <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center mb-4">
-                      <Rocket size={24} className="text-[#229C62]" />
+                    <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center mb-4">
+                      <Rocket size={24} className="text-[#7AD62A]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Ready to start?</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">Ready to start?</h3>
                     <p className="text-sm text-slate-500 mb-6">
                       Begin your learning journey with this course. You&apos;ll earn XP for each lesson completed.
                     </p>
 
                     <div className="space-y-2 mb-6 text-sm text-slate-600">
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#229C62]" />
+                        <CheckCircle2 size={14} className="text-[#7AD62A]" />
                         <span>{totalLessons} lessons with hands-on exercises</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#229C62]" />
+                        <CheckCircle2 size={14} className="text-[#7AD62A]" />
                         <span>Earn XP and climb the leaderboard</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#229C62]" />
+                        <CheckCircle2 size={14} className="text-[#7AD62A]" />
                         <span>Certificate upon completion</span>
                       </div>
                     </div>
@@ -630,14 +630,14 @@ export default function CourseBriefingPage() {
                     <button
                       onClick={handleStartCourse}
                       disabled={enrolling}
-                      className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                     >
                       {enrolling ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
                       {enrolling ? "Starting..." : "Start Now"}
                     </button>
                     <button
                       onClick={toggleFavorite}
-                      className="w-full mt-2 py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-medium transition-colors flex items-center justify-center gap-2 text-slate-600"
+                      className="w-full mt-2 py-2 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-medium transition-colors flex items-center justify-center gap-2 text-slate-600"
                     >
                       <Heart size={16} className={isFavorited ? "text-red-500 fill-red-500" : ""} />
                       {isFavorited ? "Favorited" : "Favorite"}
@@ -654,11 +654,11 @@ export default function CourseBriefingPage() {
 
         <div className="hidden lg:block w-72 shrink-0 space-y-4">
           {/* Quick Start CTA */}
-          <div className="angular-card border-slate-200 p-5">
+          <div className="angular-card border-white/10 p-5">
             {isEnrolled ? (
               <button
                 onClick={handleResumeCourse}
-                className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
               >
                 <Play size={16} />
                 Continue Course
@@ -667,7 +667,7 @@ export default function CourseBriefingPage() {
               <button
                 onClick={handleStartCourse}
                 disabled={enrolling}
-                className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
               >
                 {enrolling ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
                 {enrolling ? "Starting..." : "Start Now"}
@@ -676,7 +676,7 @@ export default function CourseBriefingPage() {
             {/* Favorite toggle */}
             <button
               onClick={toggleFavorite}
-              className="w-full mt-3 py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-medium transition-colors flex items-center justify-center gap-2 text-slate-600"
+              className="w-full mt-3 py-2 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-medium transition-colors flex items-center justify-center gap-2 text-slate-600"
             >
               <Heart size={16} className={isFavorited ? "text-red-500 fill-red-500" : ""} />
               {isFavorited ? "Favorited" : "Favorite"}
@@ -685,7 +685,7 @@ export default function CourseBriefingPage() {
 
           {/* Progress ring (if enrolled) */}
           {isEnrolled && progress && (
-            <div className="angular-card border-slate-200 p-5 text-center">
+            <div className="angular-card border-white/10 p-5 text-center">
               <div className="relative inline-block mb-3">
                 <svg width="80" height="80" viewBox="0 0 80 80" className="transform -rotate-90">
                   <circle cx="40" cy="40" r="34" fill="none" stroke="#e2e8f0" strokeWidth="6" />
@@ -695,7 +695,7 @@ export default function CourseBriefingPage() {
                     className="transition-all duration-500" />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-bold text-slate-900">{progress.percentage || 0}%</span>
+                  <span className="text-lg font-bold text-white">{progress.percentage || 0}%</span>
                 </div>
               </div>
               <p className="text-xs text-slate-500">{progress.completed} of {progress.total} lessons</p>
@@ -704,20 +704,20 @@ export default function CourseBriefingPage() {
 
           {/* Related Courses */}
           {relatedCourses.length > 0 && (
-            <div className="angular-card border-slate-200 p-5">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Related Courses</h3>
+            <div className="angular-card border-white/10 p-5">
+              <h3 className="text-sm font-semibold text-white mb-3">Related Courses</h3>
               <div className="space-y-3">
                 {relatedCourses.map((rc) => (
                   <Link
                     key={rc.id}
                     href={`/dashboard/courses/${rc.id}`}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors group"
+                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors group"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
                       <BookOpen size={14} className="text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-slate-900 line-clamp-2 group-hover:text-[#229C62] transition-colors">
+                      <p className="text-xs font-medium text-white line-clamp-2 group-hover:text-[#7AD62A] transition-colors">
                         {rc.title}
                       </p>
                       <div className="flex items-center gap-2 mt-1">

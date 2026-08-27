@@ -211,7 +211,7 @@ export default function Sidebar() {
             </div>
             <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
               <div
-                className="h-full bg-gradient-to-r from-[#7AD62A] to-[#229C62] rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
                 style={{ width: `${progress * 100}%` }}
               />
             </div>
@@ -245,7 +245,7 @@ export default function Sidebar() {
               <Link
                 key={i}
                 href={alert.href || "#"}
-                className="flex items-start gap-2 p-2 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+                className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-200 hover:bg-amber-100 transition-colors"
               >
                 <AlertIcon size={12} className="text-amber-600 mt-0.5 shrink-0" />
                 <div className="min-w-0">

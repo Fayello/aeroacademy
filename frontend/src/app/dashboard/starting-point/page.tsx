@@ -110,7 +110,7 @@ export default function StartingPointPage() {
         <PageHeader title="Your Learning Path" description="Building your skills step by step" />
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="angular-card bg-white p-6 animate-pulse">
+            <div key={i} className="angular-card bg-[#0f172a] p-6 animate-pulse">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-slate-100" />
                 <div className="flex-1 space-y-2">
@@ -133,7 +133,7 @@ export default function StartingPointPage() {
         action={
           <Link
             href="/dashboard/labs"
-            className="text-sm text-slate-500 hover:text-[#229C62] transition-colors"
+            className="text-sm text-slate-500 hover:text-[#7AD62A] transition-colors"
           >
             Browse all labs →
           </Link>
@@ -145,7 +145,7 @@ export default function StartingPointPage() {
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#229C62]/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center">
                 <Rocket size={20} className="text-[#7AD62A]" />
               </div>
               <div>
@@ -162,7 +162,7 @@ export default function StartingPointPage() {
             />
           </div>
         </div>
-        <div className="absolute top-0 right-0 w-40 h-40 bg-[#229C62]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-[#7AD62A]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
       </div>
 
       {/* Lab list */}
@@ -181,8 +181,8 @@ export default function StartingPointPage() {
                 isLocked
                   ? "border-slate-100 bg-white/50 opacity-60"
                   : isCompleted
-                  ? "border-[#229C62]/20 bg-[#E9F8EE]/30"
-                  : "border-slate-200 bg-white hover:border-slate-300"
+                  ? "border-[#7AD62A]/20 bg-[#7AD62A]/10/30"
+                  : "border-white/10 bg-[#0f172a] hover:border-white/10"
               }`}
             >
               <div className={`h-0.5 w-full ${diff.bar} opacity-40`} />
@@ -191,7 +191,7 @@ export default function StartingPointPage() {
                 <div
                   className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm ${
                     isCompleted
-                      ? "bg-[#229C62] text-white"
+                      ? "bg-[#7AD62A] text-white"
                       : isCurrent
                       ? "bg-[#0F203A] text-white"
                       : "bg-slate-100 text-slate-400"
@@ -222,7 +222,7 @@ export default function StartingPointPage() {
                       </>
                     )}
                   </div>
-                  <h3 className={`text-sm font-medium ${isLocked ? "text-slate-400" : "text-slate-900"}`}>
+                  <h3 className={`text-sm font-medium ${isLocked ? "text-slate-400" : "text-white"}`}>
                     {lab.title}
                   </h3>
                   <p className={`text-xs line-clamp-1 ${isLocked ? "text-slate-300" : "text-slate-500"}`}>
@@ -242,15 +242,15 @@ export default function StartingPointPage() {
 
       {/* Encouragement */}
       {labs.length > 0 && completedCount === labs.length && (
-        <div className="angular-card bg-[#E9F8EE] border border-[#229C62]/20 p-6 text-center">
-          <Star size={32} className="mx-auto mb-3 text-[#229C62] fill-[#229C62]" />
+        <div className="angular-card bg-[#7AD62A]/10 border border-[#7AD62A]/20 p-6 text-center">
+          <Star size={32} className="mx-auto mb-3 text-[#7AD62A] fill-[#7AD62A]" />
           <h3 className="text-lg font-bold text-[#0F203A] mb-1">Path Complete!</h3>
           <p className="text-sm text-slate-600 mb-4">
             You&apos;ve completed the beginner path. Ready for more advanced challenges?
           </p>
           <Link
             href="/dashboard/labs"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors"
           >
             Explore All Labs
             <ArrowRight size={14} />

@@ -55,7 +55,7 @@ export default function NotificationsPage() {
 
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-[#0f172a] border border-white/10 rounded-lg p-1">
           <button
             onClick={() => {
               setFilter("all");
@@ -64,7 +64,7 @@ export default function NotificationsPage() {
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               filter === "all"
                 ? "bg-slate-800 text-white"
-                : "text-slate-600 hover:bg-slate-50"
+                : "text-slate-600 hover:bg-white/5"
             }`}
           >
             All
@@ -77,7 +77,7 @@ export default function NotificationsPage() {
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               filter === "unread"
                 ? "bg-slate-800 text-white"
-                : "text-slate-600 hover:bg-slate-50"
+                : "text-slate-600 hover:bg-white/5"
             }`}
           >
             Unread {unread > 0 && `(${unread})`}
@@ -89,7 +89,7 @@ export default function NotificationsPage() {
             onClick={() =>
               void refresh({ limit: Math.max(visible.length, PAGE_SIZE), unreadOnly: filter === "unread" })
             }
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-white/5 transition-colors"
           >
             <RefreshCw size={14} />
             Refresh
@@ -97,7 +97,7 @@ export default function NotificationsPage() {
           <button
             onClick={() => void markAllRead()}
             disabled={unread === 0}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCheck size={14} />
             Mark all read
@@ -109,7 +109,7 @@ export default function NotificationsPage() {
       {loading ? (
         <div className="space-y-2">
           {[1, 2, 3].map((id) => (
-            <div key={id} className="angular-card bg-white p-4 flex items-start gap-4">
+            <div key={id} className="angular-card bg-[#0f172a] p-4 flex items-start gap-4">
               <div className="w-9 h-9 rounded-lg bg-slate-200 animate-pulse" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
@@ -120,11 +120,11 @@ export default function NotificationsPage() {
           ))}
         </div>
       ) : visible.length === 0 ? (
-        <div className="angular-card bg-white py-16 text-center">
+        <div className="angular-card bg-[#0f172a] py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
             <Bell size={28} className="text-slate-400" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+          <h3 className="text-sm font-semibold text-white mb-1">
             {filter === "unread" ? "All caught up" : "No notifications yet"}
           </h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -138,11 +138,11 @@ export default function NotificationsPage() {
           {visible.map((n) => (
             <div
               key={n.id}
-              className={`group angular-card bg-white p-4 flex items-start gap-4 transition-colors ${
-                !n.read ? "border-l-2 border-l-[#229C62] bg-[#E9F8EE]/30" : ""
+              className={`group angular-card bg-[#0f172a] p-4 flex items-start gap-4 transition-colors ${
+                !n.read ? "border-l-2 border-l-[#7AD62A] bg-[#7AD62A]/10/30" : ""
               }`}
             >
-              <div className="mt-0.5 shrink-0 w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center">
+              <div className="mt-0.5 shrink-0 w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
                 <NotificationTypeIcon type={n.type} size={18} />
               </div>
 
@@ -151,7 +151,7 @@ export default function NotificationsPage() {
                 className="flex-1 min-w-0 text-left"
               >
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-slate-900 truncate">
+                  <p className="text-sm font-semibold text-white truncate">
                     {n.title}
                   </p>
                   {!n.read && (
@@ -175,7 +175,7 @@ export default function NotificationsPage() {
                     onClick={() => void markRead(n.id)}
                     aria-label="Mark as read"
                     title="Mark as read"
-                    className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                    className="p-2 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 transition-colors"
                   >
                     <CheckCheck size={16} />
                   </button>
@@ -184,7 +184,7 @@ export default function NotificationsPage() {
                   onClick={() => void remove(n.id)}
                   aria-label="Delete notification"
                   title="Delete"
-                  className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -196,7 +196,7 @@ export default function NotificationsPage() {
             <div className="pt-4 text-center">
               <button
                 onClick={loadMore}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-white/5 transition-colors"
               >
                 Load more
               </button>

@@ -45,12 +45,12 @@ function BarChart({ data, height = 200, color = "emerald" }: { data: { label: st
 
 function HBar({ label, value, max, color = "emerald" }: { label: string; value: number; max: number; color?: string }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
-  const barColor = color === "emerald" ? "bg-[#229C62]" : color === "blue" ? "bg-blue-600" : color === "amber" ? "bg-amber-500" : color === "violet" ? "bg-violet-600" : "bg-[#229C62]";
+  const barColor = color === "emerald" ? "bg-[#7AD62A]" : color === "blue" ? "bg-blue-600" : color === "amber" ? "bg-amber-500" : color === "violet" ? "bg-violet-600" : "bg-[#7AD62A]";
   return (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
         <span className="text-slate-600 truncate">{label}</span>
-        <span className="font-semibold text-slate-900 ml-2">{value}</span>
+        <span className="font-semibold text-white ml-2">{value}</span>
       </div>
       <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
         <div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${Math.max(pct, value > 0 ? 3 : 0)}%` }} />
@@ -61,10 +61,10 @@ function HBar({ label, value, max, color = "emerald" }: { label: string; value: 
 
 function StatCard({ label, value, icon: Icon, color }: { label: string; value: number | string; icon: typeof Users; color: string }) {
   return (
-    <div className="relative overflow-hidden angular-card bg-white p-5 hover:shadow-lg transition-all duration-300">
+    <div className="relative overflow-hidden angular-card bg-[#0f172a] p-5 hover:shadow-lg transition-all duration-300">
       <div className={`absolute top-0 right-0 w-20 h-20 ${color} opacity-10 rounded-bl-full`}></div>
       <Icon size={20} className="text-slate-500 mb-3" />
-      <div className="text-2xl font-bold text-slate-900">{value}</div>
+      <div className="text-2xl font-bold text-white">{value}</div>
       <div className="text-sm text-slate-500 mt-1">{label}</div>
     </div>
   );
@@ -91,7 +91,7 @@ export default function AdminAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -109,34 +109,34 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-slate-900 border border-slate-200">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-white border border-white/10">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-              <BarChart3 size={24} className="text-[#229C62]" />
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <BarChart3 size={24} className="text-[#7AD62A]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Analytics Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
               <p className="text-sm text-slate-500">Platform performance, engagement and learning analytics</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
-            <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
-              <Users size={16} className="text-[#229C62]" />
+            <div className="flex items-center gap-2 bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm">
+              <Users size={16} className="text-[#7AD62A]" />
               <span className="font-medium">{totals.activeUsers30d} active users (30d)</span>
             </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
-              <Target size={16} className="text-[#229C62]" />
+            <div className="flex items-center gap-2 bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm">
+              <Target size={16} className="text-[#7AD62A]" />
               <span className="font-medium">{totals.flagsSolved} flags captured</span>
             </div>
             <div className="flex-1" />
             <div className="flex items-center gap-2">
               <button
                 onClick={() => downloadAnalyticsCsv(data)}
-                className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow"
+                className="bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow"
               >
-                <Download size={16} className="text-[#229C62]" />
+                <Download size={16} className="text-[#7AD62A]" />
                 CSV
               </button>
               <button
@@ -145,9 +145,9 @@ export default function AdminAnalyticsPage() {
                   downloadAnalyticsPdf(data).finally(() => setExporting(false));
                 }}
                 disabled={exporting}
-                className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
+                className="bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm flex items-center gap-2 hover:shadow transition-shadow disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {exporting ? <Loader2 size={16} className="animate-spin text-[#229C62]" /> : <FileDown size={16} className="text-[#229C62]" />}
+                {exporting ? <Loader2 size={16} className="animate-spin text-[#7AD62A]" /> : <FileDown size={16} className="text-[#7AD62A]" />}
                 {exporting ? "Generating..." : "PDF"}
               </button>
             </div>
@@ -157,13 +157,13 @@ export default function AdminAnalyticsPage() {
 
       {/* Totals */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <StatCard label="Total Users" value={totals.users} icon={Users} color="bg-[#229C62]" />
+        <StatCard label="Total Users" value={totals.users} icon={Users} color="bg-[#7AD62A]" />
         <StatCard label="Students" value={totals.students} icon={GraduationCap} color="bg-blue-500" />
         <StatCard label="Courses" value={totals.courses} icon={BookOpen} color="bg-violet-500" />
         <StatCard label="Lessons" value={totals.lessons} icon={Activity} color="bg-amber-500" />
         <StatCard label="Labs" value={totals.labs} icon={Microscope} color="bg-rose-500" />
         <StatCard label="Master Classes" value={totals.masterClasses} icon={Trophy} color="bg-cyan-500" />
-        <StatCard label="Trainers" value={totals.trainers} icon={Award} color="bg-[#229C62]" />
+        <StatCard label="Trainers" value={totals.trainers} icon={Award} color="bg-[#7AD62A]" />
         <StatCard label="Lessons Completed" value={totals.lessonsCompleted} icon={ShieldCheck} color="bg-blue-500" />
         <StatCard label="Quiz Submissions" value={totals.quizSubmissions} icon={Activity} color="bg-violet-500" />
         <StatCard label="Flags Solved" value={totals.flagsSolved} icon={Target} color="bg-amber-500" />
@@ -171,38 +171,38 @@ export default function AdminAnalyticsPage() {
 
       {/* User growth + Quiz/Flag stats */}
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 angular-card bg-white p-6">
+        <div className="lg:col-span-2 angular-card bg-[#0f172a] p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-semibold text-slate-900 flex items-center gap-2"><TrendingUp size={16} className="text-[#229C62]" /> User Growth</h3>
+              <h3 className="font-semibold text-white flex items-center gap-2"><TrendingUp size={16} className="text-[#7AD62A]" /> User Growth</h3>
               <p className="text-xs text-slate-500 mt-1">New registrations — last 30 days</p>
             </div>
-            <div className="text-2xl font-bold text-slate-900">{totals.users}</div>
+            <div className="text-2xl font-bold text-white">{totals.users}</div>
           </div>
           <BarChart data={growthData} height={200} color="emerald" />
         </div>
 
         <div className="space-y-4">
-          <div className="angular-card bg-white p-6">
-            <h3 className="font-semibold text-slate-900 mb-4">Quiz Performance</h3>
+          <div className="angular-card bg-[#0f172a] p-6">
+            <h3 className="font-semibold text-white mb-4">Quiz Performance</h3>
             <div className="space-y-3">
               <HBar label="Passed" value={data.quizStats.passed} max={data.quizStats.submissions} color="emerald" />
               <HBar label="Failed" value={data.quizStats.failed} max={data.quizStats.submissions} color="amber" />
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-sm text-slate-500">Pass rate</span>
-              <span className="text-lg font-bold text-[#229C62]">{data.quizStats.passRate}%</span>
+              <span className="text-lg font-bold text-[#7AD62A]">{data.quizStats.passRate}%</span>
             </div>
           </div>
-          <div className="angular-card bg-white p-6">
-            <h3 className="font-semibold text-slate-900 mb-4">Flag Submissions</h3>
+          <div className="angular-card bg-[#0f172a] p-6">
+            <h3 className="font-semibold text-white mb-4">Flag Submissions</h3>
             <div className="space-y-3">
               <HBar label="Correct" value={data.flagStats.correct} max={data.flagStats.correct + data.flagStats.incorrect} color="emerald" />
               <HBar label="Incorrect" value={data.flagStats.incorrect} max={data.flagStats.correct + data.flagStats.incorrect} color="red" />
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-sm text-slate-500">Accuracy</span>
-              <span className="text-lg font-bold text-[#229C62]">
+              <span className="text-lg font-bold text-[#7AD62A]">
                 {data.flagStats.correct + data.flagStats.incorrect > 0
                   ? Math.round((data.flagStats.correct / (data.flagStats.correct + data.flagStats.incorrect)) * 100)
                   : 0}%
@@ -213,8 +213,8 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Activity (14 days) */}
-      <div className="angular-card bg-white p-6">
-        <h3 className="font-semibold text-slate-900 mb-1">Learning Activity</h3>
+      <div className="angular-card bg-[#0f172a] p-6">
+        <h3 className="font-semibold text-white mb-1">Learning Activity</h3>
         <p className="text-xs text-slate-500 mb-4">Daily engagement — last 14 days</p>
         <div className="flex gap-1 items-end" style={{ height: 160 }}>
           {data.activity.map((d) => {
@@ -229,7 +229,7 @@ export default function AdminAnalyticsPage() {
                   <span>L{d.lessons} F{d.flags} Q{d.quizzes} R{d.registrations}</span>
                 </div>
                 <div className="w-full flex justify-center gap-[1px]">
-                  <div className="w-[22%] max-w-[7px] rounded-t-sm bg-[#229C62]" style={{ height: Math.max((d.lessons / max) * 130, d.lessons ? 3 : 0) }} />
+                  <div className="w-[22%] max-w-[7px] rounded-t-sm bg-[#7AD62A]" style={{ height: Math.max((d.lessons / max) * 130, d.lessons ? 3 : 0) }} />
                   <div className="w-[22%] max-w-[7px] rounded-t-sm bg-amber-500" style={{ height: Math.max((d.flags / max) * 130, d.flags ? 3 : 0) }} />
                   <div className="w-[22%] max-w-[7px] rounded-t-sm bg-violet-500" style={{ height: Math.max((d.quizzes / max) * 130, d.quizzes ? 3 : 0) }} />
                   <div className="w-[22%] max-w-[7px] rounded-t-sm bg-blue-500" style={{ height: Math.max((d.registrations / max) * 130, d.registrations ? 3 : 0) }} />
@@ -239,7 +239,7 @@ export default function AdminAnalyticsPage() {
           })}
         </div>
         <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-slate-500">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#229C62] inline-block" /> Lessons</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#7AD62A] inline-block" /> Lessons</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block" /> Flags</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-violet-500 inline-block" /> Quizzes</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block" /> Registrations</span>
@@ -248,24 +248,24 @@ export default function AdminAnalyticsPage() {
 
       {/* Distribution + Levels */}
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="angular-card bg-white p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">Role Distribution</h3>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h3 className="font-semibold text-white mb-4">Role Distribution</h3>
           <div className="space-y-3">
             {data.roleDistribution.map((r) => (
               <HBar key={r.role} label={r.role} value={r.count} max={totals.users} color="emerald" />
             ))}
           </div>
         </div>
-        <div className="angular-card bg-white p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">Division Distribution</h3>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h3 className="font-semibold text-white mb-4">Division Distribution</h3>
           <div className="space-y-3">
             {data.divisionDistribution.map((d) => (
               <HBar key={d.division} label={d.division} value={d.count} max={maxOf(data.divisionDistribution.map((x) => x.count))} color="violet" />
             ))}
           </div>
         </div>
-        <div className="angular-card bg-white p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">Users by Level</h3>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h3 className="font-semibold text-white mb-4">Users by Level</h3>
           <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
             {data.levelDistribution.length === 0 && <p className="text-sm text-slate-500">No level data yet.</p>}
             {data.levelDistribution.map((l) => (
@@ -277,8 +277,8 @@ export default function AdminAnalyticsPage() {
 
       {/* Course completion + Lab usage */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <div className="angular-card bg-white p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">Course Completion</h3>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h3 className="font-semibold text-white mb-4">Course Completion</h3>
           <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
             {data.courseStats.length === 0 && <p className="text-sm text-slate-500">No course activity yet.</p>}
             {data.courseStats.map((c) => (
@@ -288,15 +288,15 @@ export default function AdminAnalyticsPage() {
                   <span className="text-xs text-slate-500 shrink-0 ml-2">{c.completed}/{c.totalLessons} · {c.students} students</span>
                 </div>
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full rounded-full bg-[#229C62] transition-all duration-500" style={{ width: `${c.completionRate}%` }} />
+                  <div className="h-full rounded-full bg-[#7AD62A] transition-all duration-500" style={{ width: `${c.completionRate}%` }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="angular-card bg-white p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">Lab Usage</h3>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h3 className="font-semibold text-white mb-4">Lab Usage</h3>
           <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
             {data.labStats.length === 0 && <p className="text-sm text-slate-500">No lab activity yet.</p>}
             {data.labStats.map((l) => (
@@ -318,28 +318,28 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Top performers */}
-      <div className="angular-card bg-white overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-          <h3 className="font-semibold text-slate-900">Top Performers</h3>
+      <div className="angular-card bg-[#0f172a] overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+          <h3 className="font-semibold text-white">Top Performers</h3>
           <span className="text-xs text-slate-500">By XP</span>
         </div>
         <div className="divide-y divide-slate-100">
           {data.topPerformers.map((u, i) => (
-            <div key={u.id} className="px-6 py-3 flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
+            <div key={u.id} className="px-6 py-3 flex items-center gap-4 hover:bg-white/5/50 transition-colors">
               <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-amber-100 text-amber-700" : i === 1 ? "bg-slate-200 text-slate-600" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-500"}`}>
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900 truncate">{u.name}</p>
+                <p className="text-sm font-medium text-white truncate">{u.name}</p>
                 <p className="text-xs text-slate-500 truncate">{u.organization || u.city || u.email}</p>
               </div>
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
                 <span className="px-2 py-1 rounded bg-slate-100">{u.division}</span>
-                <span className="px-2 py-1 rounded bg-blue-50 text-blue-700">{u.flagsSolved} flags</span>
-                <span className="px-2 py-1 rounded bg-[#E9F8EE] text-[#0F203A]">{u.lessonsCompleted} lessons</span>
+                <span className="px-2 py-1 rounded bg-blue-500/10 text-blue-700">{u.flagsSolved} flags</span>
+                <span className="px-2 py-1 rounded bg-[#7AD62A]/10 text-[#0F203A]">{u.lessonsCompleted} lessons</span>
               </div>
               <div className="text-right">
-                <p className="font-bold text-slate-900">{u.xp.toLocaleString()}</p>
+                <p className="font-bold text-white">{u.xp.toLocaleString()}</p>
                 <p className="text-[10px] text-slate-400">XP · Lv.{u.level}</p>
               </div>
             </div>

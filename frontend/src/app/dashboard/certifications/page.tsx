@@ -91,23 +91,23 @@ export default function CertificationsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[#229C62]" />
+        <Loader2 size={24} className="animate-spin text-[#7AD62A]" />
       </div>
     );
   }
 
   const certColors: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-    XCA: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-500" },
-    XCP: { bg: "bg-[#E9F8EE]", border: "border-[#229C62]/30", text: "text-[#0F203A]", icon: "text-[#229C62]" },
-    XCE: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700", icon: "text-amber-500" },
+    XCA: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-500" },
+    XCP: { bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/30", text: "text-[#0F203A]", icon: "text-[#7AD62A]" },
+    XCE: { bg: "bg-amber-500/10", border: "border-amber-200", text: "text-amber-700", icon: "text-amber-500" },
   };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Award size={28} className="text-[#229C62]" />
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <Award size={28} className="text-[#7AD62A]" />
           Certifications
         </h1>
         <p className="text-sm text-slate-500 mt-1">
@@ -118,7 +118,7 @@ export default function CertificationsPage() {
       {/* Earned Awards */}
       {awards.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-3">Your Certifications</h2>
+          <h2 className="text-lg font-semibold text-white mb-3">Your Certifications</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {awards.map((aw) => {
               const colors = certColors[aw.certification.code] || certColors.XCA;
@@ -134,7 +134,7 @@ export default function CertificationsPage() {
                     <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
                       {aw.certification.code}
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    <h3 className="text-lg font-bold text-white mb-2">
                       {aw.certification.name}
                     </h3>
                     <div className="text-xs text-slate-500 space-y-1">
@@ -146,7 +146,7 @@ export default function CertificationsPage() {
                     </div>
                     <Link
                       href={`/credential/${aw.credentialId}`}
-                      className="inline-flex items-center gap-1 mt-3 text-xs font-medium text-[#229C62] hover:underline"
+                      className="inline-flex items-center gap-1 mt-3 text-xs font-medium text-[#7AD62A] hover:underline"
                     >
                       <ExternalLink size={10} />
                       Verify
@@ -161,7 +161,7 @@ export default function CertificationsPage() {
 
       {/* Available Certifications */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-3">Available Certifications</h2>
+        <h2 className="text-lg font-semibold text-white mb-3">Available Certifications</h2>
         <div className="space-y-4">
           {evaluations.map((ev) => {
             const colors = certColors[ev.code] || certColors.XCA;
@@ -170,7 +170,7 @@ export default function CertificationsPage() {
             return (
               <div
                 key={ev.certificationId}
-                className="angular-card bg-white overflow-hidden"
+                className="angular-card bg-[#0f172a] overflow-hidden"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -182,11 +182,11 @@ export default function CertificationsPage() {
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
                           {ev.code}
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900">{ev.name}</h3>
+                        <h3 className="text-lg font-bold text-white">{ev.name}</h3>
                       </div>
                     </div>
                     {isAwarded ? (
-                      <span className="flex items-center gap-1 px-3 py-1 bg-[#E9F8EE] text-[#229C62] rounded-full text-xs font-medium">
+                      <span className="flex items-center gap-1 px-3 py-1 bg-[#7AD62A]/10 text-[#7AD62A] rounded-full text-xs font-medium">
                         <CheckCircle2 size={12} />
                         Earned
                       </span>
@@ -196,7 +196,7 @@ export default function CertificationsPage() {
                           <button
                             onClick={() => handleAward(ev.code)}
                             disabled={awarding === ev.code}
-                            className="px-3 py-1.5 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
+                            className="px-3 py-1.5 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
                           >
                             {awarding === ev.code ? <Loader2 size={12} className="animate-spin" /> : "Confirm"}
                           </button>
@@ -210,7 +210,7 @@ export default function CertificationsPage() {
                       ) : (
                         <button
                           onClick={() => setConfirmClaim(ev.code)}
-                          className="px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                          className="px-4 py-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
                         >
                           <Award size={14} />
                           Claim
@@ -231,18 +231,18 @@ export default function CertificationsPage() {
                         key={dr.domainId}
                         className={`p-3 rounded-lg border ${
                           dr.meetsMastery && dr.meetsLabs
-                            ? "bg-[#E9F8EE] border-[#229C62]/20"
-                            : "bg-slate-50 border-slate-200"
+                            ? "bg-[#7AD62A]/10 border-[#7AD62A]/20"
+                            : "bg-white/5 border-white/10"
                         }`}
                       >
                         <div className="text-xs font-medium text-slate-700 mb-1">
                           {dr.domainName}
                         </div>
                         <div className="flex items-center gap-3 text-[10px]">
-                          <span className={dr.meetsMastery ? "text-[#229C62]" : "text-slate-500"}>
+                          <span className={dr.meetsMastery ? "text-[#7AD62A]" : "text-slate-500"}>
                             {dr.mastery}% mastery
                           </span>
-                          <span className={dr.meetsLabs ? "text-[#229C62]" : "text-slate-500"}>
+                          <span className={dr.meetsLabs ? "text-[#7AD62A]" : "text-slate-500"}>
                             {dr.labsCompleted} labs
                           </span>
                         </div>
@@ -253,13 +253,13 @@ export default function CertificationsPage() {
                   {/* Summary */}
                   <div className="flex items-center gap-4 text-xs text-slate-500">
                     <span>
-                      <span className="font-semibold text-slate-900">{ev.domainsQualified}</span>/{ev.domainResults.length} domains
+                      <span className="font-semibold text-white">{ev.domainsQualified}</span>/{ev.domainResults.length} domains
                     </span>
                     <span>
-                      <span className="font-semibold text-slate-900">{ev.assessmentsPassed}</span> assessments
+                      <span className="font-semibold text-white">{ev.assessmentsPassed}</span> assessments
                     </span>
                     <span>
-                      <span className="font-semibold text-slate-900">{ev.xp.toLocaleString()}</span> XP
+                      <span className="font-semibold text-white">{ev.xp.toLocaleString()}</span> XP
                     </span>
                   </div>
 

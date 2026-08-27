@@ -27,18 +27,18 @@ import type { Course, Section } from "@/types/api";
 
 const CATEGORIES: Record<string, { label: string; color: string; bg: string }> = {
   aerodynamics: { label: "Aerodynamics", color: "text-sky-600", bg: "bg-sky-50 border-sky-200" },
-  structures: { label: "Structures", color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
+  structures: { label: "Structures", color: "text-amber-600", bg: "bg-amber-500/10 border-amber-200" },
   propulsion: { label: "Propulsion", color: "text-rose-600", bg: "bg-rose-50 border-rose-200" },
-  avionics: { label: "Avionics", color: "text-[#229C62]", bg: "bg-[#E9F8EE] border-[#229C62]/20" },
+  avionics: { label: "Avionics", color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10 border-[#7AD62A]/20" },
   controls: { label: "Controls", color: "text-violet-600", bg: "bg-violet-50 border-violet-200" },
   composites: { label: "Composites", color: "text-cyan-600", bg: "bg-cyan-50 border-cyan-200" },
   cybersecurity: { label: "Cybersecurity", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
-  cloud: { label: "Cloud", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+  cloud: { label: "Cloud", color: "text-blue-600", bg: "bg-blue-500/10 border-blue-200" },
   devops: { label: "DevOps", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
   networking: { label: "Networking", color: "text-indigo-600", bg: "bg-indigo-50 border-indigo-200" },
   forensics: { label: "Forensics", color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
   web: { label: "Web Security", color: "text-rose-600", bg: "bg-rose-50 border-rose-200" },
-  default: { label: "Core", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+  default: { label: "Core", color: "text-blue-600", bg: "bg-blue-500/10 border-blue-200" },
 };
 
 const DIFFICULTY_MAP: Record<number, { label: string; dots: number; color: string }> = {
@@ -80,7 +80,7 @@ function StarRating({ rating }: { rating: number }) {
 
 function ShimmerSkeleton() {
   return (
-    <div className="relative overflow-hidden angular-card bg-white">
+    <div className="relative overflow-hidden angular-card bg-[#0f172a]">
       <div className="h-40 bg-slate-200">
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
       </div>
@@ -118,7 +118,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
   const cardContent = (
     <>
       {/* Cover */}
-      <div className="relative h-40 overflow-hidden bg-white border-b border-slate-200">
+      <div className="relative h-40 overflow-hidden bg-[#0f172a] border-b border-white/10">
         {course.imageUrl ? (
           <Image
             src={course.imageUrl}
@@ -149,13 +149,13 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
           </div>
           <button
             onClick={(e) => onToggleFavorite(course.id, e)}
-            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm border border-slate-200 hover:bg-white transition-colors"
+            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm border border-white/10 hover:bg-[#0f172a] transition-colors"
             aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
           </button>
           {isLocked && (
-            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-white/90 text-slate-600 border border-slate-200 backdrop-blur-sm">
+            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-white/90 text-slate-600 border border-white/10 backdrop-blur-sm">
               <Lock size={10} />
               Lv.{gate.requiredLevel}
             </span>
@@ -167,7 +167,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
       {/* Body */}
       <div className="p-5 space-y-3">
         <div>
-          <h3 className={`text-base font-semibold line-clamp-2 mb-1 ${isLocked ? "text-slate-400" : "text-slate-900 group-hover:text-slate-700 transition-colors"}`}>
+          <h3 className={`text-base font-semibold line-clamp-2 mb-1 ${isLocked ? "text-slate-400" : "text-white group-hover:text-slate-200 transition-colors"}`}>
             {course.title}
           </h3>
           <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
@@ -212,7 +212,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
         </div>
 
         {/* Action */}
-        <div className={`pt-2 border-t flex items-center justify-between text-sm font-medium ${isLocked ? "border-slate-200 text-slate-400" : "border-slate-200 text-slate-600 group-hover:text-slate-900"}`}>
+        <div className={`pt-2 border-t flex items-center justify-between text-sm font-medium ${isLocked ? "border-white/10 text-slate-400" : "border-white/10 text-slate-600 group-hover:text-white"}`}>
           <span>{isLocked ? "Locked" : isEnrolled ? "Resume" : "Begin training"}</span>
           {!isLocked && <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />}
         </div>
@@ -220,7 +220,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
     </>
   );
 
-  const baseClasses = "group relative overflow-hidden angular-card bg-white transition-all duration-300";
+  const baseClasses = "group relative overflow-hidden angular-card bg-[#0f172a] transition-all duration-300";
 
   if (isLocked) {
     return (
@@ -231,7 +231,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
   }
 
   return (
-    <Link href={`/dashboard/courses/${course.id}`} className={`${baseClasses} hover:border-slate-300 hover:shadow-md`}>
+    <Link href={`/dashboard/courses/${course.id}`} className={`${baseClasses} hover:border-white/10 hover:shadow-md`}>
       {cardContent}
     </Link>
   );
@@ -251,14 +251,14 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
   onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
   const inner = (
-    <div className={`group flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors ${isLocked ? "opacity-50" : ""}`}>
+    <div className={`group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-slate-100 hover:bg-white/5 transition-colors ${isLocked ? "opacity-50" : ""}`}>
       {/* Rank */}
       <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
 
       {/* Title + category */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`text-sm font-medium ${isLocked ? "text-slate-400" : "text-slate-900"} truncate`}>
+          <span className={`text-sm font-medium ${isLocked ? "text-slate-400" : "text-white"} truncate`}>
             {course.title}
           </span>
           {index < 2 && (
@@ -300,12 +300,12 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
       <div className="w-24 shrink-0 text-right flex items-center justify-end gap-2">
         <button
           onClick={(e) => onToggleFavorite(course.id, e)}
-          className="p-1 rounded-md hover:bg-slate-100 transition-colors"
+          className="p-1 rounded-md hover:bg-white/5 transition-colors"
           aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
         >
           <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
         </button>
-        <span className={`text-xs font-medium ${isLocked ? "text-slate-400" : "text-[#229C62] group-hover:text-[#1a7a4d]"}`}>
+        <span className={`text-xs font-medium ${isLocked ? "text-slate-400" : "text-[#7AD62A] group-hover:text-[#1a7a4d]"}`}>
           {isLocked ? "Locked" : isEnrolled ? "Resume" : "Start"}
         </span>
       </div>
@@ -449,20 +449,20 @@ export default function CoursesPage() {
       />
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200">
+      <div className="flex items-center gap-1 border-b border-white/10">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               activeTab === tab.id
-                ? "border-[#229C62] text-[#229C62]"
-                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                ? "border-[#7AD62A] text-[#7AD62A]"
+                : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
             }`}
           >
             {tab.label}
             <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              activeTab === tab.id ? "bg-[#E9F8EE] text-[#229C62]" : "bg-slate-100 text-slate-500"
+              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-slate-100 text-slate-500"
             }`}>
               {tabCounts[tab.id]}
             </span>
@@ -472,14 +472,14 @@ export default function CoursesPage() {
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Grid view"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Table view"
           >
             <List size={16} />
@@ -496,7 +496,7 @@ export default function CoursesPage() {
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-[#0f172a] border border-white/10 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
           />
         </div>
 
@@ -506,7 +506,7 @@ export default function CoursesPage() {
             className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
               !selectedCategory
                 ? "bg-slate-800 text-white border-slate-800"
-                : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
             }`}
           >
             All
@@ -520,7 +520,7 @@ export default function CoursesPage() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                   selectedCategory === cat
                     ? `${style.bg} ${style.color}`
-                    : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                    : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
                 }`}
               >
                 {style.label}
@@ -536,7 +536,7 @@ export default function CoursesPage() {
               className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                 !selectedDifficulty
                   ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                  : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
               }`}
             >
               All levels
@@ -548,7 +548,7 @@ export default function CoursesPage() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                   selectedDifficulty === d.dots
                     ? "bg-slate-800 text-white border-slate-800"
-                    : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                    : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
                 }`}
               >
                 {d.label}
@@ -560,11 +560,11 @@ export default function CoursesPage() {
 
       {/* Results */}
       {filteredCourses.length === 0 ? (
-        <div className="angular-card bg-white py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
+        <div className="angular-card bg-[#0f172a] py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
             <BookOpen size={28} className="text-blue-600" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+          <h3 className="text-sm font-semibold text-white mb-1">
             {searchQuery || selectedCategory || selectedDifficulty || activeTab !== "all"
               ? "No courses match your filters"
               : "No courses published yet"}
@@ -625,7 +625,7 @@ export default function CoursesPage() {
       ) : (
         <div className="angular-card overflow-hidden">
           {/* Table header */}
-          <div className="flex items-center gap-4 px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
             <span className="w-6 text-center shrink-0">#</span>
             <span className="flex-1">Course</span>
             <span className="hidden sm:block w-28 shrink-0">Difficulty</span>

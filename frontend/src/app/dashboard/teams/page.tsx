@@ -262,7 +262,7 @@ export default function TeamsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-[#229C62] animate-spin" />
+        <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
       </div>
     );
   }
@@ -314,7 +314,7 @@ export default function TeamsPage() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <button
           onClick={() => setSelectedTeam(null)}
-          className="text-sm text-[#229C62] hover:text-[#0F203A] font-medium"
+          className="text-sm text-[#7AD62A] hover:text-[#0F203A] font-medium"
         >
           &larr; Back to Teams
         </button>
@@ -330,13 +330,13 @@ export default function TeamsPage() {
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
               <Crown size={14} /> Owner
             </div>
-            <p className="text-sm font-semibold text-slate-900">{selectedTeam.ownerName}</p>
+            <p className="text-sm font-semibold text-white">{selectedTeam.ownerName}</p>
           </div>
           <div className="angular-card p-4">
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
               <Users size={14} /> Members
             </div>
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-white">
               {selectedTeam.memberCount}
               {selectedTeam.maxMembers ? ` / ${selectedTeam.maxMembers}` : ""}
             </p>
@@ -345,21 +345,21 @@ export default function TeamsPage() {
             <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1">
               <Trophy size={14} /> Total XP
             </div>
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-white">
               {selectedTeam.totalXp.toLocaleString()}
             </p>
           </div>
         </div>
 
         {selectedTeam.inviteCode && (
-          <div className="bg-[#E9F8EE] border border-[#229C62]/20 rounded-xl p-4 flex items-center justify-between">
+          <div className="bg-[#7AD62A]/10 border border-[#7AD62A]/20 rounded-xl p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-[#229C62] mb-0.5">Invite Code</p>
+              <p className="text-xs font-medium text-[#7AD62A] mb-0.5">Invite Code</p>
               <p className="text-lg font-mono font-bold text-[#0F203A] tracking-wider">{selectedTeam.inviteCode}</p>
             </div>
             <button
               onClick={() => copyCode(selectedTeam.inviteCode!)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229C62] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
               {copied ? "Copied!" : "Copy"}
@@ -369,7 +369,7 @@ export default function TeamsPage() {
 
         {sortedMembers.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-3">Leaderboard</h2>
+            <h2 className="text-lg font-semibold text-white mb-3">Leaderboard</h2>
             <div className="angular-card overflow-hidden">
               {sortedMembers.map((member, idx) => (
                 <div
@@ -377,13 +377,13 @@ export default function TeamsPage() {
                   className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0"
                 >
                   <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
-                  <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center">
                     <span className="text-xs font-bold text-[#0F203A]">
                       {member.name?.charAt(0)?.toUpperCase() || "?"}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
+                    <p className="text-sm font-medium text-white truncate">{member.name}</p>
                     <p className="text-[10px] text-slate-400 capitalize">{member.role?.toLowerCase()}</p>
                   </div>
                   <div className="flex items-center gap-1">
@@ -398,7 +398,7 @@ export default function TeamsPage() {
 
         {selectedTeam.courses && selectedTeam.courses.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-3">Enrolled Courses</h2>
+            <h2 className="text-lg font-semibold text-white mb-3">Enrolled Courses</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {selectedTeam.courses.map((course) => (
                 <div key={course.id} className="angular-card p-4 flex items-center gap-3">
@@ -406,10 +406,10 @@ export default function TeamsPage() {
                     <BookOpen size={16} className="text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{course.title}</p>
+                    <p className="text-sm font-medium text-white truncate">{course.title}</p>
                     {course.progress !== undefined && (
                       <div className="mt-1.5 w-full bg-slate-100 rounded-full h-1.5">
-                        <div className="bg-[#229C62] h-1.5 rounded-full transition-all" style={{ width: `${Math.min(course.progress, 100)}%` }} />
+                        <div className="bg-[#7AD62A] h-1.5 rounded-full transition-all" style={{ width: `${Math.min(course.progress, 100)}%` }} />
                       </div>
                     )}
                   </div>
@@ -433,24 +433,24 @@ export default function TeamsPage() {
       <PageHeader title="Teams" description="Create or join a team to collaborate with other engineers" />
 
       {/* Tab bar */}
-      <div className="flex items-center gap-1 border-b border-slate-200">
+      <div className="flex items-center gap-1 border-b border-white/10">
         <button
           onClick={() => setTeamTab("my-team")}
           className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
             teamTab === "my-team"
-              ? "border-[#229C62] text-[#229C62]"
-              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+              ? "border-[#7AD62A] text-[#7AD62A]"
+              : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
           }`}
         >
           My Team
-          {myTeam && <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-[#E9F8EE] text-[#229C62]">1</span>}
+          {myTeam && <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">1</span>}
         </button>
         <button
           onClick={() => setTeamTab("browse")}
           className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
             teamTab === "browse"
-              ? "border-[#229C62] text-[#229C62]"
-              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+              ? "border-[#7AD62A] text-[#7AD62A]"
+              : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
           }`}
         >
           Browse Teams
@@ -482,14 +482,14 @@ export default function TeamsPage() {
                   });
                   setShowEdit(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#229C62] bg-[#E9F8EE] rounded-lg hover:bg-[#229C62]/20 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#7AD62A] bg-[#7AD62A]/10 rounded-lg hover:bg-[#7AD62A]/20 transition-colors"
               >
                 <Pencil size={12} /> Customize
               </button>
             )}
             <button
               onClick={handleLeave}
-              className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-500/10 rounded-lg hover:bg-red-100 transition-colors"
             >
               Leave Team
             </button>
@@ -498,10 +498,10 @@ export default function TeamsPage() {
           {showEdit && (
             <div className="angular-card p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                   <Palette size={14} /> Customize Team
                 </h3>
-                <button onClick={() => setShowEdit(false)} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => setShowEdit(false)} className="text-slate-400 hover:text-slate-300">
                   <X size={16} />
                 </button>
               </div>
@@ -510,9 +510,9 @@ export default function TeamsPage() {
               <div className="flex items-center gap-4">
                 <div className="relative group">
                   {(editFields.avatarUrl || myTeam.avatarUrl) ? (
-                    <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-slate-200" />
+                    <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-white/10" />
                   ) : (
-                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200">
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-white/10">
                       <Camera size={20} className="text-slate-400" />
                     </div>
                   )}
@@ -533,11 +533,11 @@ export default function TeamsPage() {
               {/* Banner */}
               <div>
                 <label className="text-sm font-medium text-slate-700 mb-1.5 block">Banner Image</label>
-                <div className="relative group rounded-xl overflow-hidden border border-slate-200">
+                <div className="relative group rounded-xl overflow-hidden border border-white/10">
                   {(editFields.bannerUrl || myTeam.bannerUrl) ? (
                     <img src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" className="w-full h-24 object-cover" />
                   ) : (
-                    <div className="w-full h-24 bg-gradient-to-r from-[#0F203A] to-[#229C62] flex items-center justify-center">
+                    <div className="w-full h-24 bg-gradient-to-r from-[#0F203A] to-[#7AD62A] flex items-center justify-center">
                       <ImageIcon size={20} className="text-white/40" />
                     </div>
                   )}
@@ -575,35 +575,35 @@ export default function TeamsPage() {
                 value={(editFields.name as string) || ""}
                 onChange={(e) => handleEditField("name", e.target.value)}
                 placeholder="Team name"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
               />
               <input
                 type="text"
                 value={(editFields.description as string) || ""}
                 onChange={(e) => handleEditField("description", e.target.value)}
                 placeholder="Description"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
               />
               <input
                 type="text"
                 value={(editFields.motto as string) || ""}
                 onChange={(e) => handleEditField("motto", e.target.value)}
                 placeholder="Team motto (shown on banner)"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
               />
               <input
                 type="text"
                 value={(editFields.tagline as string) || ""}
                 onChange={(e) => handleEditField("tagline", e.target.value)}
                 placeholder="Short tagline"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
               />
 
               <div className="flex justify-end gap-2">
-                <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-slate-600 hover:bg-white/5 rounded-lg transition-colors">
                   Cancel
                 </button>
-                <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] transition-colors">
+                <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#0F203A] transition-colors">
                   Save Changes
                 </button>
               </div>
@@ -611,14 +611,14 @@ export default function TeamsPage() {
           )}
 
           {myTeam.inviteCode && (
-            <div className="bg-[#E9F8EE] border border-[#229C62]/20 rounded-xl p-4 flex items-center justify-between">
+            <div className="bg-[#7AD62A]/10 border border-[#7AD62A]/20 rounded-xl p-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-[#229C62] mb-0.5">Share this invite code with teammates</p>
+                <p className="text-xs font-medium text-[#7AD62A] mb-0.5">Share this invite code with teammates</p>
                 <p className="text-lg font-mono font-bold text-[#0F203A] tracking-wider">{myTeam.inviteCode}</p>
               </div>
               <button
                 onClick={() => copyCode(myTeam.inviteCode!)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229C62] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] text-white text-xs font-medium hover:bg-[#0F203A] transition-colors"
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 {copied ? "Copied!" : "Copy"}
@@ -629,30 +629,30 @@ export default function TeamsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="angular-card p-4">
               <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Crown size={14} /> Owner</div>
-              <p className="text-sm font-semibold text-slate-900">{myTeam.ownerName}</p>
+              <p className="text-sm font-semibold text-white">{myTeam.ownerName}</p>
             </div>
             <div className="angular-card p-4">
               <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Users size={14} /> Members</div>
-              <p className="text-sm font-semibold text-slate-900">{myTeam.memberCount}</p>
+              <p className="text-sm font-semibold text-white">{myTeam.memberCount}</p>
             </div>
             <div className="angular-card p-4">
               <div className="flex items-center gap-2 text-slate-500 text-xs font-medium mb-1"><Trophy size={14} /> Total XP</div>
-              <p className="text-sm font-semibold text-slate-900">{myTeam.totalXp.toLocaleString()}</p>
+              <p className="text-sm font-semibold text-white">{myTeam.totalXp.toLocaleString()}</p>
             </div>
           </div>
 
           {sortedMembers.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-3">Team Members</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">Team Members</h2>
               <div className="angular-card overflow-hidden">
                 {sortedMembers.map((member, idx) => (
                   <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0">
                     <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
-                    <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center">
                       <span className="text-xs font-bold text-[#0F203A]">{member.name?.charAt(0)?.toUpperCase() || "?"}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate">{member.name}</p>
+                      <p className="text-sm font-medium text-white truncate">{member.name}</p>
                       <p className="text-[10px] text-slate-400 capitalize">{member.role?.toLowerCase()}</p>
                     </div>
                     <div className="flex items-center gap-1">
@@ -670,23 +670,23 @@ export default function TeamsPage() {
       {/* My Team tab - no team */}
       {teamTab === "my-team" && !myTeam && (
         <div className="angular-card py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-            <Users size={28} className="text-[#229C62]" />
+          <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+            <Users size={28} className="text-[#7AD62A]" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">You haven&apos;t joined a team yet</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">You haven&apos;t joined a team yet</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
             Create a new team or join an existing one with an invite code.
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => { setShowCreate(true); setTeamTab("browse"); }}
-              className="flex items-center gap-2 px-4 py-2 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
             >
               <Plus size={16} /> Create Team
             </button>
             <button
               onClick={() => { setShowJoin(true); setTeamTab("browse"); }}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:border-[#229C62] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#0f172a] border border-white/10 text-slate-700 rounded-xl text-sm font-medium hover:border-[#7AD62A] transition-colors"
             >
               <LogIn size={16} /> Join with Code
             </button>
@@ -698,19 +698,19 @@ export default function TeamsPage() {
       {teamTab === "browse" && (
         <>
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">{error}</div>
+            <div className="bg-red-500/10 border border-red-200 rounded-xl p-3 text-sm text-red-700">{error}</div>
           )}
 
           <div className="flex gap-3 flex-wrap">
             <button
               onClick={() => { setShowCreate(true); setShowJoin(false); setError(""); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors"
             >
               <Plus size={16} /> Create Team
             </button>
             <button
               onClick={() => { setShowJoin(true); setShowCreate(false); setError(""); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:border-[#229C62] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#0f172a] border border-white/10 text-slate-700 rounded-xl text-sm font-medium hover:border-[#7AD62A] transition-colors"
             >
               <LogIn size={16} /> Join with Code
             </button>
@@ -719,8 +719,8 @@ export default function TeamsPage() {
           {showCreate && (
             <div className="angular-card p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-900">Create a Team</h3>
-            <button onClick={() => setShowCreate(false)} className="text-slate-400 hover:text-slate-600">
+            <h3 className="text-sm font-semibold text-white">Create a Team</h3>
+            <button onClick={() => setShowCreate(false)} className="text-slate-400 hover:text-slate-300">
               <X size={16} />
             </button>
           </div>
@@ -782,34 +782,34 @@ export default function TeamsPage() {
             value={createName}
             onChange={(e) => setCreateName(e.target.value)}
             placeholder="Team name"
-            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
           />
           <input
             type="text"
             value={createDesc}
             onChange={(e) => setCreateDesc(e.target.value)}
             placeholder="Description (optional)"
-            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
           />
           <input
             type="text"
             value={createMotto}
             onChange={(e) => setCreateMotto(e.target.value)}
             placeholder="Team motto (optional, shown on banner)"
-            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
           />
           <input
             type="text"
             value={createTagline}
             onChange={(e) => setCreateTagline(e.target.value)}
             placeholder="Short tagline (optional)"
-            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none"
           />
           <div className="flex gap-2">
             <button
               onClick={() => setCreateVisibility("PUBLIC")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PUBLIC" ? "bg-[#229C62] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                createVisibility === "PUBLIC" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               <Users size={12} /> Public
@@ -817,7 +817,7 @@ export default function TeamsPage() {
             <button
               onClick={() => setCreateVisibility("PRIVATE")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PRIVATE" ? "bg-[#229C62] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                createVisibility === "PRIVATE" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
               <Shield size={12} /> Private
@@ -826,7 +826,7 @@ export default function TeamsPage() {
           <button
             onClick={handleCreate}
             disabled={creating || !createName.trim()}
-            className="w-full py-2 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors disabled:opacity-50"
+            className="w-full py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors disabled:opacity-50"
           >
             {creating ? "Creating..." : "Create Team"}
           </button>
@@ -836,8 +836,8 @@ export default function TeamsPage() {
           {showJoin && (
             <div className="angular-card p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-900">Join with Invite Code</h3>
-            <button onClick={() => setShowJoin(false)} className="text-slate-400 hover:text-slate-600">
+            <h3 className="text-sm font-semibold text-white">Join with Invite Code</h3>
+            <button onClick={() => setShowJoin(false)} className="text-slate-400 hover:text-slate-300">
               <X size={16} />
             </button>
           </div>
@@ -846,13 +846,13 @@ export default function TeamsPage() {
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value)}
             placeholder="Enter 8-character invite code"
-            className="w-full px-3 py-2 text-sm font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none uppercase tracking-wider"
+            className="w-full px-3 py-2 text-sm font-mono rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none uppercase tracking-wider"
             maxLength={8}
           />
           <button
             onClick={handleJoin}
             disabled={joining || joinCode.trim().length < 4}
-            className="w-full py-2 bg-[#229C62] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors disabled:opacity-50"
+            className="w-full py-2 bg-[#7AD62A] text-white rounded-xl text-sm font-medium hover:bg-[#0F203A] transition-colors disabled:opacity-50"
           >
             {joining ? "Joining..." : "Join Team"}
           </button>
@@ -861,10 +861,10 @@ export default function TeamsPage() {
 
           {teams.length === 0 ? (
         <div className="angular-card py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-            <Users size={28} className="text-[#229C62]" />
+          <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+            <Users size={28} className="text-[#7AD62A]" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No public teams yet</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No public teams yet</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Be the first to create a team or ask a teammate for an invite code.
           </p>
@@ -875,7 +875,7 @@ export default function TeamsPage() {
             <button
               key={team.id}
               onClick={() => openTeam(team)}
-              className="angular-card overflow-hidden text-left hover-lift hover:border-[#229C62]/20 transition-all group"
+              className="angular-card overflow-hidden text-left hover-lift hover:border-[#7AD62A]/20 transition-all group"
             >
               {/* Team Banner */}
               <div
@@ -888,15 +888,15 @@ export default function TeamsPage() {
                 {team.avatarUrl ? (
                   <img src={team.avatarUrl} alt="" className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm" />
                 ) : (
-                  <div className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl bg-white flex items-center justify-center border-2 border-white shadow-sm">
-                    <Users size={16} className="text-[#229C62]" />
+                  <div className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl bg-[#0f172a] flex items-center justify-center border-2 border-white shadow-sm">
+                    <Users size={16} className="text-[#7AD62A]" />
                   </div>
                 )}
                 <ChevronRight size={16} className="absolute top-3 right-3 text-white/40 group-hover:text-white/80 transition-colors" />
               </div>
 
               <div className="p-4 pt-6">
-                <h3 className="text-sm font-semibold text-slate-900 mb-0.5">{team.name}</h3>
+                <h3 className="text-sm font-semibold text-white mb-0.5">{team.name}</h3>
                 {team.motto && (
                   <p className="text-[10px] text-slate-400 italic mb-1">&ldquo;{team.motto}&rdquo;</p>
                 )}

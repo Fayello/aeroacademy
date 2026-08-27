@@ -59,10 +59,10 @@ export default function AdminModal({ isOpen, onClose, title, children, size = "m
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={preventClose ? undefined : onClose}
       />
-      <div className={`relative w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]`}>
+      <div className={`relative w-full ${sizeClasses[size]} bg-[#0f172a] rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+          <h2 className="text-lg font-semibold text-white">{title}</h2>
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <Loader2 className="animate-spin" size={16} />
@@ -71,7 +71,7 @@ export default function AdminModal({ isOpen, onClose, title, children, size = "m
           ) : (
             <button
         onClick={preventClose ? undefined : stableClose}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+              className="p-2 text-slate-400 hover:text-slate-300 hover:bg-white/5 rounded-lg transition-all"
               aria-label="Close modal"
             >
               <X size={18} />
@@ -86,7 +86,7 @@ export default function AdminModal({ isOpen, onClose, title, children, size = "m
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl shrink-0">
+          <div className="px-6 py-4 border-t border-white/10 bg-white/5 rounded-b-2xl shrink-0">
             {footer}
           </div>
         )}
@@ -129,11 +129,11 @@ export function AdminConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-[#0f172a] rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-start gap-4 mb-4">
           <div className={`p-2 rounded-xl bg-slate-100 ${config.iconColor}`}><config.IconComponent size={24} /></div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+            <h3 className="text-lg font-semibold text-white">{title}</h3>
             <p className="text-sm text-slate-500 mt-1">{message}</p>
           </div>
         </div>
@@ -141,7 +141,7 @@ export function AdminConfirmDialog({
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+            className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
           >
             Cancel
           </button>

@@ -65,7 +65,7 @@ export default function SettingsPage() {
 
       <div className="flex flex-col sm:flex-row gap-6">
         <nav className="sm:w-56 flex-shrink-0">
-          <div className="angular-card bg-white p-2">
+          <div className="angular-card bg-[#0f172a] p-2">
             {sections.map((section) => {
               const Icon = section.icon;
               return (
@@ -74,8 +74,8 @@ export default function SettingsPage() {
                   onClick={() => setActiveSection(section.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     activeSection === section.id
-                      ? "bg-[#E9F8EE] text-[#229C62]"
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-[#7AD62A]/10 text-[#7AD62A]"
+                      : "text-slate-600 hover:bg-white/5"
                   }`}
                 >
                   <Icon size={18} />
@@ -89,44 +89,44 @@ export default function SettingsPage() {
         <div className="flex-1 min-w-0">
           {activeSection === "account" && (
             <div className="space-y-6">
-              <div className="angular-card bg-white p-6">
-                <h2 className="text-lg font-semibold text-slate-900 mb-4">Profile</h2>
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Profile</h2>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-3 border-b border-slate-100">
                     <div>
-                      <p className="text-sm font-medium text-slate-900">Name</p>
+                      <p className="text-sm font-medium text-white">Name</p>
                       <p className="text-sm text-slate-500">{user?.name || "Not set"}</p>
                     </div>
-                    <Link href="/dashboard/profile/edit" className="text-sm text-[#229C62] hover:underline">
+                    <Link href="/dashboard/profile/edit" className="text-sm text-[#7AD62A] hover:underline">
                       Edit
                     </Link>
                   </div>
                   <div className="flex items-center justify-between py-3 border-b border-slate-100">
                     <div>
-                      <p className="text-sm font-medium text-slate-900">Email</p>
+                      <p className="text-sm font-medium text-white">Email</p>
                       <p className="text-sm text-slate-500">{user?.email}</p>
                     </div>
                     <span className="text-xs text-slate-400">Verified</span>
                   </div>
                   <div className="flex items-center justify-between py-3">
                     <div>
-                      <p className="text-sm font-medium text-slate-900">Role</p>
+                      <p className="text-sm font-medium text-white">Role</p>
                       <p className="text-sm text-slate-500">{user?.role}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="angular-card bg-white p-6">
-                <h2 className="text-lg font-semibold text-slate-900 mb-4">Danger Zone</h2>
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Danger Zone</h2>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-900">Delete account</p>
+                    <p className="text-sm font-medium text-white">Delete account</p>
                     <p className="text-sm text-slate-500">Permanently delete your account and all data</p>
                   </div>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-500/10 transition-colors"
                   >
                     Delete account
                   </button>
@@ -136,8 +136,8 @@ export default function SettingsPage() {
           )}
 
           {activeSection === "notifications" && (
-            <div className="angular-card bg-white p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Email Notifications</h2>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h2 className="text-lg font-semibold text-white mb-4">Email Notifications</h2>
               <div className="space-y-4">
                 {[
                   { label: "Lab completions", description: "Get notified when you complete a lab" },
@@ -147,7 +147,7 @@ export default function SettingsPage() {
                 ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
                     <div>
-                      <p className="text-sm font-medium text-slate-900">{item.label}</p>
+                      <p className="text-sm font-medium text-white">{item.label}</p>
                       <p className="text-sm text-slate-500">{item.description}</p>
                     </div>
                     <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Coming soon</span>
@@ -159,23 +159,23 @@ export default function SettingsPage() {
 
           {activeSection === "security" && (
             <div className="space-y-6">
-              <div className="angular-card bg-white p-6">
-                <h2 className="text-lg font-semibold text-slate-900 mb-4">Password</h2>
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Password</h2>
                 <Link
                   href="/dashboard/profile/change-password"
-                  className="angular-btn inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#229C62] border border-[#229C62] hover:bg-[#E9F8EE] transition-colors"
+                  className="angular-btn inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#7AD62A] border border-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                 >
                   <Key size={16} />
                   Change password
                 </Link>
               </div>
 
-              <div className="angular-card bg-white p-6">
-                <h2 className="text-lg font-semibold text-slate-900 mb-4">Sessions</h2>
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Sessions</h2>
                 <p className="text-sm text-slate-500 mb-4">You are currently signed in on this device.</p>
                 <button
                   onClick={() => { logout(); }}
-                  className="px-4 py-2.5 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
+                  className="px-4 py-2.5 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-500/10 transition-colors"
                 >
                   Sign out
                 </button>
@@ -184,11 +184,11 @@ export default function SettingsPage() {
           )}
 
           {activeSection === "appearance" && (
-            <div className="angular-card bg-white p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Theme</h2>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h2 className="text-lg font-semibold text-white mb-4">Theme</h2>
               <div className="flex items-center justify-between py-3 border-b border-slate-100">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">Dark mode</p>
+                  <p className="text-sm font-medium text-white">Dark mode</p>
                   <p className="text-sm text-slate-500">Toggle between light and dark themes</p>
                 </div>
                 <ThemeToggle />
@@ -200,13 +200,13 @@ export default function SettingsPage() {
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+          <div className="bg-[#0f172a] rounded-2xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
                 <AlertTriangle size={20} className="text-red-500" />
               </div>
               <div>
-                <h3 id="delete-modal-title" className="font-semibold text-slate-900">Delete account</h3>
+                <h3 id="delete-modal-title" className="font-semibold text-white">Delete account</h3>
                 <p className="text-sm text-slate-500">This action cannot be undone</p>
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function SettingsPage() {
               <button
                 ref={cancelRef}
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-700 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
               >
                 Cancel
               </button>

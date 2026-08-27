@@ -58,9 +58,9 @@ function timeRemaining(endDate: string) {
 
 function positionStyle(pos: number) {
   if (pos === 1) return "bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300 text-yellow-700";
-  if (pos === 2) return "bg-gradient-to-r from-slate-50 to-gray-50 border-slate-300 text-slate-600";
+  if (pos === 2) return "bg-gradient-to-r from-slate-50 to-gray-50 border-white/10 text-slate-600";
   if (pos === 3) return "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300 text-orange-700";
-  return "bg-white border-slate-200 text-slate-700";
+  return "bg-[#0f172a] border-white/10 text-slate-700";
 }
 
 function positionBadge(pos: number) {
@@ -145,8 +145,8 @@ export default function SeasonsPage() {
       <PageHeader title="Seasons" description="Track current season progress and competition" />
 
       {activeSeason ? (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="relative bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] p-6 sm:p-8">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#7AD62A] p-6 sm:p-8">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvc3ZnPg==')] opacity-40" />
             <div className="relative z-10">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -191,11 +191,11 @@ export default function SeasonsPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-indigo-500" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No active season</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No active season</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Seasons bring themed challenges and exclusive rewards. The next one is being prepared — check back soon.
           </p>
@@ -203,13 +203,13 @@ export default function SeasonsPage() {
       )}
 
       {seasons.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
           <div className="p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4">Season History</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">Season History</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
+                  <tr className="border-b border-white/10">
                     <th className="text-left py-2.5 px-3 text-xs font-medium text-slate-500">Season</th>
                     <th className="text-left py-2.5 px-3 text-xs font-medium text-slate-500">Dates</th>
                     <th className="text-left py-2.5 px-3 text-xs font-medium text-slate-500">XP Multiplier</th>
@@ -218,10 +218,10 @@ export default function SeasonsPage() {
                 </thead>
                 <tbody>
                   {seasons.map((season) => (
-                    <tr key={season.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                    <tr key={season.id} className="border-b border-slate-100 last:border-0 hover:bg-white/5 transition-colors">
                       <td className="py-3 px-3">
                         <div>
-                          <p className="font-medium text-slate-900">{season.name}</p>
+                          <p className="font-medium text-white">{season.name}</p>
                           <p className="text-xs text-slate-500">{season.theme}</p>
                         </div>
                       </td>
@@ -250,10 +250,10 @@ export default function SeasonsPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-slate-900">Season Leaderboard</h3>
+            <h3 className="text-sm font-semibold text-white">Season Leaderboard</h3>
             <Trophy size={16} className="text-slate-400" />
           </div>
           {leaderboardLoading ? (
@@ -276,11 +276,11 @@ export default function SeasonsPage() {
                     {positionBadge(entry.position)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-slate-900 truncate">{entry.name}</p>
+                    <p className="font-medium text-white truncate">{entry.name}</p>
                     <p className="text-xs text-slate-500">{entry.division}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-semibold text-slate-900">{entry.xp.toLocaleString()} XP</p>
+                    <p className="font-semibold text-white">{entry.xp.toLocaleString()} XP</p>
                   </div>
                 </div>
               ))}

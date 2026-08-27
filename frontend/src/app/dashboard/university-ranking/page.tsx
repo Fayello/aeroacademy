@@ -53,7 +53,7 @@ export default function UniversityRankingPage() {
         <PageHeader title="University Rankings" description="Top universities by total XP" />
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="angular-card bg-white p-6 animate-pulse">
+            <div key={i} className="angular-card bg-[#0f172a] p-6 animate-pulse">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-slate-100" />
                 <div className="flex-1 space-y-2">
@@ -83,7 +83,7 @@ export default function UniversityRankingPage() {
         <div className="angular-card text-white p-5 overflow-hidden relative" style={{ backgroundColor: "#0F203A" }}>
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#229C62]/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center">
                 <Trophy size={18} className="text-[#7AD62A]" />
               </div>
               <div>
@@ -98,25 +98,25 @@ export default function UniversityRankingPage() {
               <p className="text-sm font-bold text-[#7AD62A]">{totalStudents} students · {(totalXp / 1000).toFixed(0)}k XP</p>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#229C62]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#7AD62A]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         </div>
       )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="angular-card bg-white p-4 text-center">
-          <School size={20} className="mx-auto mb-2 text-[#229C62]" />
-          <p className="text-xl font-bold text-slate-900">{universities.length}</p>
+        <div className="angular-card bg-[#0f172a] p-4 text-center">
+          <School size={20} className="mx-auto mb-2 text-[#7AD62A]" />
+          <p className="text-xl font-bold text-white">{universities.length}</p>
           <p className="text-xs text-slate-500">Universities</p>
         </div>
-        <div className="angular-card bg-white p-4 text-center">
+        <div className="angular-card bg-[#0f172a] p-4 text-center">
           <Users size={20} className="mx-auto mb-2 text-blue-500" />
-          <p className="text-xl font-bold text-slate-900">{totalStudents}</p>
+          <p className="text-xl font-bold text-white">{totalStudents}</p>
           <p className="text-xs text-slate-500">Students</p>
         </div>
-        <div className="angular-card bg-white p-4 text-center">
+        <div className="angular-card bg-[#0f172a] p-4 text-center">
           <TrendingUp size={20} className="mx-auto mb-2 text-[#7AD62A]" />
-          <p className="text-xl font-bold text-slate-900">{(totalXp / 1000).toFixed(0)}k</p>
+          <p className="text-xl font-bold text-white">{(totalXp / 1000).toFixed(0)}k</p>
           <p className="text-xs text-slate-500">Total XP</p>
         </div>
       </div>
@@ -127,14 +127,14 @@ export default function UniversityRankingPage() {
         placeholder="Search universities..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full max-w-sm px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
+        className="w-full max-w-sm px-4 py-2.5 rounded-lg border border-white/10 bg-[#0f172a] text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
       />
 
       {/* Rankings table */}
       {filtered.length === 0 ? (
-        <div className="angular-card bg-white p-12 text-center">
+        <div className="angular-card bg-[#0f172a] p-12 text-center">
           <School size={40} className="mx-auto mb-3 text-slate-300" />
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No universities found</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No universities found</h3>
           <p className="text-xs text-slate-500">
             {search ? "Try a different search term" : "Universities will appear here once students enroll"}
           </p>
@@ -152,13 +152,13 @@ export default function UniversityRankingPage() {
                 key={uni.id}
                 className={`angular-card border transition-all hover-lift ${
                   isFirst
-                    ? "border-[#7AD62A]/30 bg-[#E9F8EE]/30"
+                    ? "border-[#7AD62A]/30 bg-[#7AD62A]/10/30"
                     : isTop3
-                    ? "border-[#229C62]/15 bg-white"
-                    : "border-slate-200 bg-white"
+                    ? "border-[#7AD62A]/15 bg-[#0f172a]"
+                    : "border-white/10 bg-[#0f172a]"
                 }`}
               >
-                <div className={`h-0.5 w-full ${isFirst ? "bg-[#7AD62A]" : isTop3 ? "bg-[#229C62]" : "bg-slate-200"} opacity-40`} />
+                <div className={`h-0.5 w-full ${isFirst ? "bg-[#7AD62A]" : isTop3 ? "bg-[#7AD62A]" : "bg-slate-200"} opacity-40`} />
                 <div className="p-4 flex items-center gap-4">
                   {/* Rank */}
                   <div
@@ -166,7 +166,7 @@ export default function UniversityRankingPage() {
                       isFirst
                         ? "bg-[#7AD62A] text-[#0F203A]"
                         : isTop3
-                        ? "bg-[#229C62] text-white"
+                        ? "bg-[#7AD62A] text-white"
                         : "bg-slate-100 text-slate-600"
                     }`}
                   >
@@ -175,7 +175,7 @@ export default function UniversityRankingPage() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-slate-900 truncate">{uni.name}</h3>
+                    <h3 className="text-sm font-semibold text-white truncate">{uni.name}</h3>
                     <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
                       <span className="flex items-center gap-1">
                         <Users size={10} />
@@ -188,7 +188,7 @@ export default function UniversityRankingPage() {
 
                   {/* XP */}
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-bold text-slate-900">{uni.totalXp.toLocaleString()}</p>
+                    <p className="text-sm font-bold text-white">{uni.totalXp.toLocaleString()}</p>
                     <p className="text-xs text-slate-400">XP</p>
                   </div>
                 </div>

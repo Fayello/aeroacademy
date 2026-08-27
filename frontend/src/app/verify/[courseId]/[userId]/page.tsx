@@ -37,9 +37,9 @@ export default function VerifyPage({ params }: { params: Promise<{ courseId: str
   }, [courseId, userId]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-white/5 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-[#0f172a] rounded-2xl border border-white/10 shadow-sm overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 p-8 text-white text-center">
             <div className="w-14 h-14 rounded-full bg-white/20 mx-auto mb-3 flex items-center justify-center">
               <Shield size={28} />
@@ -60,22 +60,22 @@ export default function VerifyPage({ params }: { params: Promise<{ courseId: str
                   <CheckCircle2 size={32} className="text-emerald-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Certificate Verified</h2>
+                  <h2 className="text-lg font-bold text-white">Certificate Verified</h2>
                   <p className="text-sm text-emerald-600 font-medium mt-1">This certificate is authentic</p>
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-4 space-y-3 text-left">
+                <div className="bg-white/5 rounded-xl p-4 space-y-3 text-left">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Student</span>
-                    <span className="font-medium text-slate-900">{data.certificate?.userName}</span>
+                    <span className="font-medium text-white">{data.certificate?.userName}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Course</span>
-                    <span className="font-medium text-slate-900">{data.certificate?.courseName}</span>
+                    <span className="font-medium text-white">{data.certificate?.courseName}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Issued</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="font-medium text-white">
                       {data.certificate?.issuedAt
                         ? new Date(data.certificate.issuedAt).toLocaleDateString("en-US", {
                             year: "numeric",
@@ -93,7 +93,7 @@ export default function VerifyPage({ params }: { params: Promise<{ courseId: str
                   <XCircle size={32} className="text-red-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Certificate Not Found</h2>
+                  <h2 className="text-lg font-bold text-white">Certificate Not Found</h2>
                   <p className="text-sm text-slate-500 mt-1">{data?.reason || "This certificate could not be verified."}</p>
                 </div>
               </div>

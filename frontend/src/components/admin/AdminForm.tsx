@@ -37,7 +37,7 @@ export function AdminInput({ label, error, hint, required, className = "", ...pr
   return (
     <AdminFormField label={label} error={error} hint={hint} required={required}>
       <input
-        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm ${className}`}
+        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm ${className}`}
         {...props}
       />
     </AdminFormField>
@@ -62,7 +62,7 @@ export function AdminNumber({ label, error, hint, required, className = "", min,
         min={min}
         max={max}
         step={step}
-        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm ${className}`}
+        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm ${className}`}
         {...props}
       />
     </AdminFormField>
@@ -80,7 +80,7 @@ export function AdminTextarea({ label, error, hint, required, className = "", ..
   return (
     <AdminFormField label={label} error={error} hint={hint} required={required}>
       <textarea
-        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm resize-none ${className}`}
+        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm resize-none ${className}`}
         {...props}
       />
     </AdminFormField>
@@ -100,7 +100,7 @@ export function AdminSelect({ label, error, hint, required, options, placeholder
   return (
     <AdminFormField label={label} error={error} hint={hint} required={required}>
       <select
-        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm ${className}`}
+        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm ${className}`}
         {...props}
       >
         {placeholder && <option value="">{placeholder}</option>}
@@ -127,9 +127,9 @@ export function AdminSwitch({ label, checked, onChange, error, hint, disabled }:
       <button
         type="button"
         onClick={() => !disabled && onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? "bg-[#229C62]" : "bg-slate-300"} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? "bg-[#7AD62A]" : "bg-slate-300"} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
       >
-        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
+        <span className={`inline-block h-4 w-4 transform rounded-full bg-[#0f172a] transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
       </button>
     </AdminFormField>
   );
@@ -153,7 +153,7 @@ export function AdminCheckbox({ label, checked, onChange, error, disabled }: Adm
         disabled={disabled}
         className="sr-only"
       />
-      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${checked ? "bg-[#229C62] border-[#229C62]" : "border-slate-300 bg-white"}`}>
+      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${checked ? "bg-[#7AD62A] border-[#7AD62A]" : "border-white/10 bg-[#0f172a]"}`}>
         {checked && (
           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -181,8 +181,8 @@ export function AdminRadio({ label, options, selected, error, horizontal }: Admi
       <div className={`flex ${horizontal ? "flex-row flex-wrap gap-4" : "flex-col gap-2"}`}>
         {options.map((opt) => (
           <label key={opt.value} className="flex items-center gap-3 cursor-pointer">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selected === opt.value ? "border-[#229C62]" : "border-slate-300"}`}>
-              {selected === opt.value && <div className="w-2.5 h-2.5 rounded-full bg-[#229C62]" />}
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selected === opt.value ? "border-[#7AD62A]" : "border-white/10"}`}>
+              {selected === opt.value && <div className="w-2.5 h-2.5 rounded-full bg-[#7AD62A]" />}
             </div>
             <span className="text-sm text-slate-700">{opt.label}</span>
           </label>
@@ -209,7 +209,7 @@ export function AdminDatePicker({ label, value, onChange, error, hint, required,
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm`}
+        className={`w-full px-4 py-2.5 rounded-xl border ${error ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm`}
       />
     </AdminFormField>
   );
@@ -246,7 +246,7 @@ export function AdminTags({ label, tags, onChange, error, hint, placeholder = "A
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {tags.map((tag, i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#E9F8EE] text-[#0F203A] text-sm">
+              <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#7AD62A]/10 text-[#0F203A] text-sm">
                 {tag}
                 <button onClick={() => removeTag(i)} className="hover:text-[#0F203A] transition-colors" aria-label={`Remove tag ${tag}`}>
                   <X size={12} />
@@ -262,13 +262,13 @@ export function AdminTags({ label, tags, onChange, error, hint, placeholder = "A
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
             placeholder={placeholder}
-            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm"
+            className="flex-1 px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm"
           />
           <button
             type="button"
             onClick={addTag}
             disabled={!input.trim() || (maxTags ? tags.length >= maxTags : false)}
-            className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all disabled:opacity-50"
+            className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all disabled:opacity-50"
           >
             <Plus size={16} />
           </button>
@@ -307,16 +307,16 @@ export function AdminFileUpload({ label, accept, onChange, currentFile, error, h
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
-          dragOver ? "border-[#229C62] bg-[#E9F8EE]" : "border-slate-300 hover:border-slate-400 bg-slate-50"
+          dragOver ? "border-[#7AD62A] bg-[#7AD62A]/10" : "border-white/10 hover:border-slate-400 bg-white/5"
         }`}
       >
         <Upload size={24} className="text-slate-400 mb-2" />
         <p className="text-sm text-slate-600 font-medium">Click or drag to upload</p>
         <p className="text-xs text-slate-400 mt-1">{accept || "Any file type"}</p>
         {currentFile && (
-          <div className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-[#E9F8EE] rounded-lg">
+          <div className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-[#7AD62A]/10 rounded-lg">
             <span className="text-sm text-[#0F203A] truncate max-w-[200px]">{currentFile}</span>
-            <button onClick={(e) => { e.stopPropagation(); onChange(null); }} className="text-[#229C62] hover:text-[#229C62]" aria-label={`Remove file ${currentFile}`}>
+            <button onClick={(e) => { e.stopPropagation(); onChange(null); }} className="text-[#7AD62A] hover:text-[#7AD62A]" aria-label={`Remove file ${currentFile}`}>
               <X size={14} />
             </button>
           </div>
@@ -333,20 +333,20 @@ interface AdminStatusBadgeProps {
 }
 
 const DEFAULT_VARIANTS: Record<string, { bg: string; text: string; dot: string }> = {
-  UPCOMING: { bg: "bg-[#E9F8EE]", text: "text-[#0F203A]", dot: "bg-[#E9F8EE]0" },
-  LIVE: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
+  UPCOMING: { bg: "bg-[#7AD62A]/10", text: "text-[#0F203A]", dot: "bg-[#7AD62A]/100" },
+  LIVE: { bg: "bg-red-500/10", text: "text-red-700", dot: "bg-red-500" },
   COMPLETED: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
   CANCELLED: { bg: "bg-slate-100", text: "text-slate-500", dot: "bg-slate-400" },
-  PENDING: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
-  CONFIRMED: { bg: "bg-[#E9F8EE]", text: "text-[#0F203A]", dot: "bg-[#E9F8EE]0" },
-  ACTIVE: { bg: "bg-[#E9F8EE]", text: "text-[#0F203A]", dot: "bg-[#E9F8EE]0" },
+  PENDING: { bg: "bg-amber-500/10", text: "text-amber-700", dot: "bg-amber-500" },
+  CONFIRMED: { bg: "bg-[#7AD62A]/10", text: "text-[#0F203A]", dot: "bg-[#7AD62A]/100" },
+  ACTIVE: { bg: "bg-[#7AD62A]/10", text: "text-[#0F203A]", dot: "bg-[#7AD62A]/100" },
   INACTIVE: { bg: "bg-slate-100", text: "text-slate-500", dot: "bg-slate-400" },
-  RUNNING: { bg: "bg-[#E9F8EE]", text: "text-[#0F203A]", dot: "bg-[#E9F8EE]0" },
-  STOPPED: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
+  RUNNING: { bg: "bg-[#7AD62A]/10", text: "text-[#0F203A]", dot: "bg-[#7AD62A]/100" },
+  STOPPED: { bg: "bg-red-500/10", text: "text-red-700", dot: "bg-red-500" },
   EXPIRED: { bg: "bg-slate-100", text: "text-slate-500", dot: "bg-slate-400" },
-  PROVISIONING: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
+  PROVISIONING: { bg: "bg-amber-500/10", text: "text-amber-700", dot: "bg-amber-500" },
   ADMIN: { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
-  STUDENT: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
+  STUDENT: { bg: "bg-blue-500/10", text: "text-blue-700", dot: "bg-blue-500" },
   RECRUITER: { bg: "bg-orange-50", text: "text-orange-700", dot: "bg-orange-500" },
 };
 

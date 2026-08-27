@@ -193,7 +193,7 @@ export default function AdminTeamsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -236,52 +236,52 @@ export default function AdminTeamsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="angular-card border-slate-200 p-4">
+        <div className="angular-card border-white/10 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
               <Users size={18} className="text-indigo-600" />
             </div>
             <div>
-              <p className="text-lg font-bold text-slate-900">
+              <p className="text-lg font-bold text-white">
                 {teams.length}
               </p>
               <p className="text-xs text-slate-500">Teams</p>
             </div>
           </div>
         </div>
-        <div className="angular-card border-slate-200 p-4">
+        <div className="angular-card border-white/10 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-              <Users size={18} className="text-[#229C62]" />
+            <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <Users size={18} className="text-[#7AD62A]" />
             </div>
             <div>
-              <p className="text-lg font-bold text-slate-900">
+              <p className="text-lg font-bold text-white">
                 {totalMembers}
               </p>
               <p className="text-xs text-slate-500">Members</p>
             </div>
           </div>
         </div>
-        <div className="angular-card border-slate-200 p-4">
+        <div className="angular-card border-white/10 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
               <Trophy size={18} className="text-amber-600" />
             </div>
             <div>
-              <p className="text-lg font-bold text-slate-900">
+              <p className="text-lg font-bold text-white">
                 {totalXp.toLocaleString()}
               </p>
               <p className="text-xs text-slate-500">Total XP</p>
             </div>
           </div>
         </div>
-        <div className="angular-card border-slate-200 p-4">
+        <div className="angular-card border-white/10 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
               <BookOpen size={18} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-lg font-bold text-slate-900">
+              <p className="text-lg font-bold text-white">
                 {new Set(teams.flatMap((t) => t.enrolledCourses?.map((c) => c.id) || [])).size}
               </p>
               <p className="text-xs text-slate-500">Courses Enrolled</p>
@@ -299,7 +299,7 @@ export default function AdminTeamsPage() {
           <div className="flex items-center gap-2 ml-auto">
             <button
               onClick={() => setSelectedTeams(new Set())}
-              className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all"
+              className="p-1.5 text-slate-500 hover:text-slate-200 rounded-lg hover:bg-[#0f172a] transition-all"
               title="Clear selection"
             >
               <X size={16} />
@@ -316,15 +316,15 @@ export default function AdminTeamsPage() {
 
       {/* Leaderboard View */}
       {showLeaderboard && (
-        <div className="angular-card border-slate-200 p-6">
+        <div className="angular-card border-white/10 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <Trophy size={20} className="text-amber-500" /> Team
               Leaderboard
             </h2>
             <button
               onClick={() => setShowLeaderboard(false)}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all"
+              className="p-2 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
             >
               <X size={16} />
             </button>
@@ -335,12 +335,12 @@ export default function AdminTeamsPage() {
                 key={team.id}
                 className={`flex items-center justify-between p-3 rounded-xl transition-all ${
                   i === 0
-                    ? "bg-amber-50 border border-amber-200"
+                    ? "bg-amber-500/10 border border-amber-200"
                     : i === 1
-                      ? "bg-slate-50 border border-slate-200"
+                      ? "bg-white/5 border border-white/10"
                       : i === 2
                         ? "bg-orange-50 border border-orange-200"
-                        : "bg-white border border-slate-200"
+                        : "bg-[#0f172a] border border-white/10"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -358,7 +358,7 @@ export default function AdminTeamsPage() {
                     {i + 1}
                   </span>
                   <div>
-                    <p className="font-medium text-slate-900">{team.name}</p>
+                    <p className="font-medium text-white">{team.name}</p>
                     <p className="text-xs text-slate-500">
                       {team.owner?.name} • {team.members?.length || 0} members
                     </p>
@@ -366,7 +366,7 @@ export default function AdminTeamsPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-white">
                       {(team.xp || 0).toLocaleString()}
                     </p>
                     <p className="text-xs text-slate-500">XP</p>
@@ -394,12 +394,12 @@ export default function AdminTeamsPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search teams by name or owner..."
-          className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+          className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
           >
             <X size={14} />
           </button>
@@ -426,14 +426,14 @@ export default function AdminTeamsPage() {
         {filtered.map((team) => (
           <div
             key={team.id}
-            className={`angular-card border-slate-200 transition-all ${
+            className={`angular-card border-white/10 transition-all ${
               selectedTeams.has(team.id)
                 ? "border-indigo-400 ring-1 ring-indigo-400/40"
                 : ""
             }`}
           >
             <div
-              className="p-5 cursor-pointer hover:bg-slate-50/50 transition-colors"
+              className="p-5 cursor-pointer hover:bg-white/5/50 transition-colors"
               onClick={() => toggleExpand(team.id)}
             >
               <div className="flex items-center justify-between">
@@ -446,7 +446,7 @@ export default function AdminTeamsPage() {
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                       selectedTeams.has(team.id)
                         ? "bg-indigo-600 border-indigo-600"
-                        : "border-slate-300 hover:border-indigo-400"
+                        : "border-white/10 hover:border-indigo-400"
                     }`}
                   >
                     {selectedTeams.has(team.id) && (
@@ -470,7 +470,7 @@ export default function AdminTeamsPage() {
                     {team.name?.[0]?.toUpperCase() || "T"}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-white">
                       {team.name}
                     </h3>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -484,7 +484,7 @@ export default function AdminTeamsPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right hidden sm:block">
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-white">
                       {(team.xp || 0).toLocaleString()} XP
                     </p>
                     <p className="text-xs text-slate-500">
@@ -512,11 +512,11 @@ export default function AdminTeamsPage() {
 
             {/* Expanded Content */}
             {expanded.has(team.id) && (
-              <div className="border-t border-slate-200 px-5 py-4 bg-slate-50/50">
+              <div className="border-t border-white/10 px-5 py-4 bg-white/5/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Members */}
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                       <Users size={14} className="text-slate-500" /> Members
                     </h4>
                     {team.members?.length ? (
@@ -524,14 +524,14 @@ export default function AdminTeamsPage() {
                         {team.members.map((member) => (
                           <div
                             key={member.id}
-                            className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200"
+                            className="flex items-center justify-between p-2.5 bg-[#0f172a] rounded-lg border border-white/10"
                           >
                             <div className="flex items-center gap-2.5">
                               <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600">
                                 {(member.name || member.email)?.[0]?.toUpperCase()}
                               </div>
                               <div>
-                                <p className="text-sm font-medium text-slate-900">
+                                <p className="text-sm font-medium text-white">
                                   {member.name || "No name"}
                                 </p>
                                 <p className="text-xs text-slate-500">
@@ -546,7 +546,7 @@ export default function AdminTeamsPage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500 bg-white rounded-lg border border-slate-200 p-3 text-center">
+                      <p className="text-sm text-slate-500 bg-[#0f172a] rounded-lg border border-white/10 p-3 text-center">
                         No members.
                       </p>
                     )}
@@ -554,7 +554,7 @@ export default function AdminTeamsPage() {
 
                   {/* Enrolled Courses */}
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                       <BookOpen size={14} className="text-slate-500" /> Enrolled
                       Courses
                     </h4>
@@ -563,7 +563,7 @@ export default function AdminTeamsPage() {
                         {team.enrolledCourses.map((course) => (
                           <div
                             key={course.id}
-                            className="flex items-center gap-2.5 p-2.5 bg-white rounded-lg border border-slate-200"
+                            className="flex items-center gap-2.5 p-2.5 bg-[#0f172a] rounded-lg border border-white/10"
                           >
                             <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center">
                               <BookOpen
@@ -571,14 +571,14 @@ export default function AdminTeamsPage() {
                                 className="text-blue-600"
                               />
                             </div>
-                            <p className="text-sm font-medium text-slate-900">
+                            <p className="text-sm font-medium text-white">
                               {course.title}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500 bg-white rounded-lg border border-slate-200 p-3 text-center">
+                      <p className="text-sm text-slate-500 bg-[#0f172a] rounded-lg border border-white/10 p-3 text-center">
                         No courses enrolled.
                       </p>
                     )}
@@ -609,22 +609,22 @@ export default function AdminTeamsPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setEnrollModal({ open: false, teamIds: [] })}
           />
-          <div className="relative angular-card border-slate-200 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative angular-card border-white/10 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-white">
                 Enroll Team{enrollModal.teamIds.length !== 1 ? "s" : ""} in
                 Course
               </h3>
               <button
                 onClick={() => setEnrollModal({ open: false, teamIds: [] })}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all"
+                className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
               >
                 <X size={18} />
               </button>
             </div>
             <p className="text-sm text-slate-500 mb-4">
               Select a course to enroll{" "}
-              <span className="font-medium text-slate-900">
+              <span className="font-medium text-white">
                 {enrollModal.teamIds.length}
               </span>{" "}
               team{enrollModal.teamIds.length !== 1 ? "s" : ""}.
@@ -632,7 +632,7 @@ export default function AdminTeamsPage() {
             <select
               value={selectedCourseId}
               onChange={(e) => setSelectedCourseId(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             >
               <option value="">Select a course...</option>
               {courses.map((c) => (
@@ -644,7 +644,7 @@ export default function AdminTeamsPage() {
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setEnrollModal({ open: false, teamIds: [] })}
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>

@@ -64,7 +64,7 @@ export default function CurriculaPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[#229C62]" />
+        <Loader2 size={24} className="animate-spin text-[#7AD62A]" />
       </div>
     );
   }
@@ -79,8 +79,8 @@ export default function CurriculaPage() {
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <GraduationCap size={28} className="text-[#229C62]" />
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <GraduationCap size={28} className="text-[#7AD62A]" />
           Curricula
         </h1>
         <p className="text-sm text-slate-500 mt-1">
@@ -110,19 +110,19 @@ export default function CurriculaPage() {
               <Link
                 key={curr.id}
                 href={`/dashboard/curricula/${curr.id}`}
-                className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all group"
+                className="bg-[#0f172a] rounded-xl border border-white/10 p-6 hover:shadow-md transition-all group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-                    <GraduationCap size={24} className="text-[#229C62]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+                    <GraduationCap size={24} className="text-[#7AD62A]" />
                   </div>
                   <ChevronRight
                     size={16}
-                    className="text-slate-400 group-hover:text-[#229C62] transition-colors mt-1"
+                    className="text-slate-400 group-hover:text-[#7AD62A] transition-colors mt-1"
                   />
                 </div>
 
-                <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                <h3 className="text-lg font-semibold text-white mb-1">
                   {curr.name}
                 </h3>
                 <p className="text-xs text-slate-500 mb-4 line-clamp-2">
@@ -146,15 +146,15 @@ export default function CurriculaPage() {
 
                 <div className="flex items-center gap-4 text-xs">
                   <span className="flex items-center gap-1 text-slate-600">
-                    <Layers size={12} className="text-[#229C62]" />
+                    <Layers size={12} className="text-[#7AD62A]" />
                     {curr.modules.length} modules
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
-                    <BookOpen size={12} className="text-[#229C62]" />
+                    <BookOpen size={12} className="text-[#7AD62A]" />
                     {totalCredits} credits
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">
-                    <Users size={12} className="text-[#229C62]" />
+                    <Users size={12} className="text-[#7AD62A]" />
                     {curr._count.cohorts} cohorts
                   </span>
                 </div>

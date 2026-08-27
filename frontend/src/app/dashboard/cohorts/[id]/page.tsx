@@ -75,7 +75,7 @@ export default function CohortDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[#229C62]" />
+        <Loader2 size={24} className="animate-spin text-[#7AD62A]" />
       </div>
     );
   }
@@ -90,13 +90,13 @@ export default function CohortDetailPage() {
       <div>
         <Link
           href="/dashboard/cohorts"
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-[#229C62] transition-colors mb-3"
+          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-[#7AD62A] transition-colors mb-3"
         >
           <ChevronLeft size={16} />
           All cohorts
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Users size={28} className="text-[#229C62]" />
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <Users size={28} className="text-[#7AD62A]" />
           {dashboard.cohort.name}
         </h1>
         <p className="text-sm text-slate-500 mt-1">
@@ -106,21 +106,21 @@ export default function CohortDetailPage() {
 
       {/* Stats Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <div className="text-2xl font-bold text-slate-900">{dashboard.stats.totalStudents}</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <div className="text-2xl font-bold text-white">{dashboard.stats.totalStudents}</div>
           <div className="text-xs text-slate-500">Students</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <div className="text-2xl font-bold text-[#229C62]">{dashboard.stats.totalLabsCompleted}</div>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <div className="text-2xl font-bold text-[#7AD62A]">{dashboard.stats.totalLabsCompleted}</div>
           <div className="text-xs text-slate-500">Labs Completed</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-          <div className="text-2xl font-bold text-slate-900">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+          <div className="text-2xl font-bold text-white">
             {dashboard.stats.strongestDomain?.avgMastery ?? 0}%
           </div>
           <div className="text-xs text-slate-500">Avg Practical</div>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
           <div className="text-2xl font-bold text-red-500">{dashboard.stats.atRiskCount}</div>
           <div className="text-xs text-slate-500">At Risk</div>
         </div>
@@ -138,8 +138,8 @@ export default function CohortDetailPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-[#0f172a] text-white shadow-sm"
+                : "text-slate-500 hover:text-slate-200"
             }`}
           >
             {tab.label}
@@ -152,17 +152,17 @@ export default function CohortDetailPage() {
         <div className="space-y-4">
           {/* Strongest / Weakest */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp size={18} className="text-[#229C62]" />
-                <h3 className="text-sm font-semibold text-slate-900">Strongest Domain</h3>
+                <TrendingUp size={18} className="text-[#7AD62A]" />
+                <h3 className="text-sm font-semibold text-white">Strongest Domain</h3>
               </div>
               {dashboard.stats.strongestDomain ? (
                 <>
-                  <div className="text-2xl font-bold text-slate-900 mb-1">
+                  <div className="text-2xl font-bold text-white mb-1">
                     {dashboard.stats.strongestDomain.name}
                   </div>
-                  <div className="text-sm text-[#229C62]">
+                  <div className="text-sm text-[#7AD62A]">
                     {dashboard.stats.strongestDomain.avgMastery}% avg mastery
                   </div>
                 </>
@@ -170,14 +170,14 @@ export default function CohortDetailPage() {
                 <p className="text-sm text-slate-400">No data</p>
               )}
             </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
               <div className="flex items-center gap-2 mb-3">
                 <TrendingDown size={18} className="text-amber-500" />
-                <h3 className="text-sm font-semibold text-slate-900">Weakest Domain</h3>
+                <h3 className="text-sm font-semibold text-white">Weakest Domain</h3>
               </div>
               {dashboard.stats.weakestDomain ? (
                 <>
-                  <div className="text-2xl font-bold text-slate-900 mb-1">
+                  <div className="text-2xl font-bold text-white mb-1">
                     {dashboard.stats.weakestDomain.name}
                   </div>
                   <div className="text-sm text-amber-500">
@@ -191,14 +191,14 @@ export default function CohortDetailPage() {
           </div>
 
           {/* Domain Heatmap */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4">Domain Mastery Heatmap</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h3 className="text-sm font-semibold text-white mb-4">Domain Mastery Heatmap</h3>
             <div className="space-y-3">
               {dashboard.domains.map((d) => (
                 <div key={d.domainId}>
                   <div className="flex items-center justify-between text-sm mb-1">
                     <span className="text-slate-700">{d.name}</span>
-                    <span className="font-medium text-slate-900">{d.avgMastery}%</span>
+                    <span className="font-medium text-white">{d.avgMastery}%</span>
                   </div>
                   <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                     <div
@@ -228,10 +228,10 @@ export default function CohortDetailPage() {
 
       {/* Students Tab */}
       {activeTab === "students" && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
+              <tr className="bg-white/5 border-b border-slate-100">
                 <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase">Student</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-slate-500 uppercase">Division</th>
                 <th className="text-center px-6 py-3 text-xs font-medium text-slate-500 uppercase">Labs</th>
@@ -241,14 +241,14 @@ export default function CohortDetailPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {dashboard.members.map((m) => (
-                <tr key={m.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={m.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-xs font-semibold text-[#0F203A]">
+                      <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-xs font-semibold text-[#0F203A]">
                         {(m.name || m.email)[0].toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-slate-900">{m.name || m.email.split("@")[0]}</div>
+                        <div className="text-sm font-medium text-white">{m.name || m.email.split("@")[0]}</div>
                         <div className="text-xs text-slate-500">{m.email}</div>
                       </div>
                     </div>
@@ -259,7 +259,7 @@ export default function CohortDetailPage() {
                     <span
                       className={`text-sm font-medium ${
                         m.avgMastery >= 80
-                          ? "text-[#229C62]"
+                          ? "text-[#7AD62A]"
                           : m.avgMastery >= 60
                           ? "text-amber-500"
                           : "text-red-500"
@@ -285,10 +285,10 @@ export default function CohortDetailPage() {
               <p className="text-sm">No students at risk</p>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <AlertTriangle size={18} className="text-amber-500" />
-                <h3 className="text-sm font-semibold text-slate-900">
+                <h3 className="text-sm font-semibold text-white">
                   {dashboard.stats.atRiskCount} Students Below 50% Mastery
                 </h3>
               </div>
@@ -296,14 +296,14 @@ export default function CohortDetailPage() {
                 {dashboard.stats.atRiskStudents.map((s) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100"
+                    className="flex items-center justify-between p-3 bg-amber-500/10 rounded-lg border border-amber-100"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-xs font-semibold text-amber-700">
                         {(s.name || s.email)[0].toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-slate-900">
+                        <div className="text-sm font-medium text-white">
                           {s.name || s.email.split("@")[0]}
                         </div>
                         <div className="text-xs text-slate-500">{s.email}</div>

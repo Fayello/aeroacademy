@@ -59,7 +59,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   if (!checked) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#229C62]" size={28} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={28} />
       </div>
     );
   }

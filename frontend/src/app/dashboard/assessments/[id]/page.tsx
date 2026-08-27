@@ -101,7 +101,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
 
   if (!assessment) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] p-12 text-center">
         <ClipboardCheck size={32} className="text-slate-300 mx-auto mb-3" />
         <p className="text-sm text-slate-500">Assessment not found</p>
         <Link href="/dashboard/assessments" className="text-xs text-blue-600 hover:text-blue-700 mt-3 inline-block">
@@ -117,16 +117,16 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
       <div className="space-y-6 animate-in fade-in duration-500">
         <Link
           href="/dashboard/assessments"
-          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
         >
           <ArrowLeft size={14} /> Back to Assessments
         </Link>
 
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden">
           <div
             className={`p-6 text-white text-center ${
               passed
-                ? "bg-gradient-to-r from-[#229C62] to-[#229C62]"
+                ? "bg-gradient-to-r from-[#7AD62A] to-[#7AD62A]"
                 : "bg-gradient-to-r from-amber-500 to-amber-600"
             }`}
           >
@@ -145,7 +145,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
 
           <div className="p-6 space-y-5">
             <div className="text-center">
-              <p className="text-4xl font-bold text-slate-900">{result.percentage}%</p>
+              <p className="text-4xl font-bold text-white">{result.percentage}%</p>
               <p className="text-sm text-slate-500 mt-1">
                 {result.score} / {result.maxScore} correct
               </p>
@@ -153,7 +153,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
 
             {Object.keys(result.categoryScores).length > 0 && (
               <div>
-                <h2 className="text-sm font-semibold text-slate-900 mb-3">Category Breakdown</h2>
+                <h2 className="text-sm font-semibold text-white mb-3">Category Breakdown</h2>
                 <div className="space-y-2">
                   {Object.entries(result.categoryScores).map(([cat, scores]) => {
                     const pct = Math.round((scores.correct / scores.total) * 100);
@@ -163,7 +163,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                         <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
-                              pct >= 80 ? "bg-[#229C62]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
+                              pct >= 80 ? "bg-[#7AD62A]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
                             }`}
                             style={{ width: `${pct}%` }}
                           />
@@ -178,17 +178,17 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
 
             {result.recommendations.length > 0 && (
               <div>
-                <h2 className="text-sm font-semibold text-slate-900 mb-3">Recommended Courses</h2>
+                <h2 className="text-sm font-semibold text-white mb-3">Recommended Courses</h2>
                 <div className="space-y-2">
                   {result.recommendations.map((rec) => (
                     <Link
                       key={rec.courseId}
                       href={`/dashboard/courses/${rec.courseId}`}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                      className="flex items-center gap-3 p-3 rounded-lg border border-white/10 hover:border-blue-300 hover:bg-blue-500/10 transition-all"
                     >
                       <BookOpen size={16} className="text-blue-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">{rec.title}</p>
+                        <p className="text-sm font-medium text-white truncate">{rec.title}</p>
                         <p className="text-[11px] text-slate-500">{rec.reason}</p>
                       </div>
                       <ArrowRight size={14} className="text-slate-400 flex-shrink-0" />
@@ -206,7 +206,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                   setCurrentQ(0);
                   setShowReview(false);
                 }}
-                className="flex-1 border border-slate-200 text-slate-700 hover:bg-slate-50 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="flex-1 border border-white/10 text-slate-700 hover:bg-white/5 py-2.5 rounded-lg text-sm font-medium transition-colors"
               >
                 Retake
               </button>
@@ -228,13 +228,13 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
       <div className="space-y-6 animate-in fade-in duration-500">
         <Link
           href="/dashboard/assessments"
-          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
         >
           <ArrowLeft size={14} /> Back to Assessments
         </Link>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h1 className="text-lg font-bold text-slate-900 mb-1">{assessment.title} — Review</h1>
+        <div className="rounded-xl border border-white/10 bg-[#0f172a] p-5">
+          <h1 className="text-lg font-bold text-white mb-1">{assessment.title} — Review</h1>
           <p className="text-xs text-slate-500 mb-5">Review your answers</p>
 
           <div className="space-y-6">
@@ -242,15 +242,15 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
               const userAns = answers[q.id];
               const isCorrect = userAns === q.correctAnswer;
               return (
-                <div key={q.id} className="border border-slate-200 rounded-lg p-4">
+                <div key={q.id} className="border border-white/10 rounded-lg p-4">
                   <div className="flex items-start gap-2 mb-3">
                     {isCorrect ? (
-                      <CheckCircle2 size={16} className="text-[#229C62] mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 size={16} className="text-[#7AD62A] mt-0.5 flex-shrink-0" />
                     ) : (
                       <XCircle size={16} className="text-red-500 mt-0.5 flex-shrink-0" />
                     )}
                     <div>
-                      <p className="text-sm font-medium text-slate-900">
+                      <p className="text-sm font-medium text-white">
                         <span className="text-slate-400 mr-1">{i + 1}.</span>
                         {q.text}
                       </p>
@@ -261,14 +261,14 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
                     {q.options.map((opt) => {
                       const isUser = userAns === opt.key;
                       const isCorrectOpt = opt.key === q.correctAnswer;
-                      let style = "bg-slate-50 text-slate-600 border-slate-200";
-                      if (isCorrectOpt) style = "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20";
-                      else if (isUser && !isCorrect) style = "bg-red-50 text-red-700 border-red-200";
+                      let style = "bg-white/5 text-slate-600 border-white/10";
+                      if (isCorrectOpt) style = "bg-[#7AD62A]/10 text-[#0F203A] border-[#7AD62A]/20";
+                      else if (isUser && !isCorrect) style = "bg-red-500/10 text-red-700 border-red-200";
 
                       return (
                         <div key={opt.key} className={`text-xs p-2 rounded border ${style}`}>
                           <span className="font-medium mr-1">{opt.key}.</span> {opt.text}
-                          {isCorrectOpt && <CheckCircle2 size={12} className="inline ml-1 text-[#229C62]" />}
+                          {isCorrectOpt && <CheckCircle2 size={12} className="inline ml-1 text-[#7AD62A]" />}
                           {isUser && !isCorrect && <XCircle size={12} className="inline ml-1 text-red-500" />}
                         </div>
                       );
@@ -298,14 +298,14 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
     <div className="space-y-6 animate-in fade-in duration-500">
       <Link
         href="/dashboard/assessments"
-        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
       >
         <ArrowLeft size={14} /> Back to Assessments
       </Link>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] p-5">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-sm font-semibold text-slate-900">{assessment.title}</h1>
+          <h1 className="text-sm font-semibold text-white">{assessment.title}</h1>
           <span className="text-[11px] text-slate-500">
             {currentQ + 1} / {assessment.questions.length}
           </span>
@@ -315,10 +315,10 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
         </div>
 
         <div className="mb-4">
-          <span className="text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{q.category}</span>
+          <span className="text-[10px] text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full">{q.category}</span>
         </div>
 
-        <p className="text-sm font-medium text-slate-900 mb-4">{q.text}</p>
+        <p className="text-sm font-medium text-white mb-4">{q.text}</p>
 
         <div className="space-y-2 mb-6">
           {q.options.map((opt) => (
@@ -327,8 +327,8 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
               onClick={() => handleAnswer(q.id, opt.key)}
               className={`w-full text-left p-3 rounded-lg border text-sm transition-all ${
                 answers[q.id] === opt.key
-                  ? "border-blue-500 bg-blue-50 text-blue-700 font-medium"
-                  : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                  ? "border-blue-500 bg-blue-500/10 text-blue-700 font-medium"
+                  : "border-white/10 text-slate-600 hover:border-white/10 hover:bg-white/5"
               }`}
             >
               <span className="font-medium mr-2">{opt.key}.</span>
@@ -341,7 +341,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
           <button
             onClick={() => setCurrentQ((prev) => Math.max(0, prev - 1))}
             disabled={currentQ === 0}
-            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ArrowLeft size={14} /> Previous
           </button>
@@ -357,7 +357,7 @@ export default function AssessmentDetailPage({ params }: { params: Promise<{ id:
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex items-center gap-1 text-xs bg-[#229C62] hover:bg-[#0F203A] text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50 transition-colors"
+              className="flex items-center gap-1 text-xs bg-[#7AD62A] hover:bg-[#0F203A] text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50 transition-colors"
             >
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
               {submitting ? "Submitting..." : "Submit"}

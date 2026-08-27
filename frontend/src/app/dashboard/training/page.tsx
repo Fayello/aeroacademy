@@ -39,7 +39,7 @@ export default function TrainingPage() {
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+            <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-6 space-y-4">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-slate-200 animate-pulse" />
                 <div className="space-y-2">
@@ -52,11 +52,11 @@ export default function TrainingPage() {
           ))}
         </div>
       ) : trainers.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-amber-500" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No trainers available</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No trainers available</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             1-on-1 training sessions are being set up. Check back soon for expert-led coaching.
           </p>
@@ -67,7 +67,7 @@ export default function TrainingPage() {
             <Link
               key={trainer.id}
               href={`/dashboard/training/${trainer.id}`}
-              className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300"
+              className="group relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 hover:border-white/10 hover:shadow-md transition-all duration-300"
             >
               {/* Avatar Section */}
               <div className="p-6 pb-4">
@@ -76,7 +76,7 @@ export default function TrainingPage() {
                     {(trainer.user?.name || "T").charAt(0)}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 group-hover:text-slate-700 transition-colors text-lg">{trainer.user?.name}</h3>
+                    <h3 className="font-bold text-white group-hover:text-slate-200 transition-colors text-lg">{trainer.user?.name}</h3>
                     <div className="text-sm text-slate-500">{trainer.specialties?.join(", ") || "General"}</div>
                   </div>
                 </div>
@@ -84,7 +84,7 @@ export default function TrainingPage() {
               </div>
 
               {/* Stats */}
-              <div className="px-6 py-4 bg-slate-50 border-t border-slate-100">
+              <div className="px-6 py-4 bg-white/5 border-t border-slate-100">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1.5 text-slate-600">

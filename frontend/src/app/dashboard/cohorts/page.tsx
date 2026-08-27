@@ -51,7 +51,7 @@ export default function CohortsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[#229C62]" />
+        <Loader2 size={24} className="animate-spin text-[#7AD62A]" />
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function CohortsPage() {
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <AlertTriangle size={32} className="text-red-400 mb-3" />
         <p className="text-sm text-slate-600 mb-3">{error}</p>
-        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-colors">
           Try again
         </button>
       </div>
@@ -71,8 +71,8 @@ export default function CohortsPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Users size={28} className="text-[#229C62]" />
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <Users size={28} className="text-[#7AD62A]" />
           Cohorts
         </h1>
         <p className="text-sm text-slate-500 mt-1">
@@ -92,19 +92,19 @@ export default function CohortsPage() {
             <Link
               key={cohort.id}
               href={`/dashboard/cohorts/${cohort.id}`}
-              className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all group"
+              className="bg-[#0f172a] rounded-xl border border-white/10 p-6 hover:shadow-md transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-                  <Users size={24} className="text-[#229C62]" />
+                <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+                  <Users size={24} className="text-[#7AD62A]" />
                 </div>
                 <ChevronRight
                   size={16}
-                  className="text-slate-400 group-hover:text-[#229C62] transition-colors mt-1"
+                  className="text-slate-400 group-hover:text-[#7AD62A] transition-colors mt-1"
                 />
               </div>
 
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">{cohort.name}</h3>
+              <h3 className="text-lg font-semibold text-white mb-1">{cohort.name}</h3>
 
               <div className="flex items-center gap-3 text-xs text-slate-500 mb-3">
                 <span className="flex items-center gap-1">
@@ -119,7 +119,7 @@ export default function CohortsPage() {
 
               <div className="flex items-center gap-4 text-xs">
                 <span className="text-slate-600">
-                  <span className="font-semibold text-[#229C62]">{cohort._count.members}</span>
+                  <span className="font-semibold text-[#7AD62A]">{cohort._count.members}</span>
                   /{cohort.maxStudents} students
                 </span>
                 <span className="text-slate-500">{cohort.curriculum.degree}</span>
@@ -128,7 +128,7 @@ export default function CohortsPage() {
               {/* Progress Bar */}
               <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#229C62] rounded-full transition-all"
+                  className="h-full bg-[#7AD62A] rounded-full transition-all"
                   style={{
                     width: `${(cohort._count.members / cohort.maxStudents) * 100}%`,
                   }}

@@ -68,7 +68,7 @@ export default function StudentAnalyticsPage() {
 
   if (!data) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] p-12 text-center">
         <BarChart3 size={32} className="text-slate-300 mx-auto mb-3" />
         <p className="text-sm text-slate-500">Unable to load analytics</p>
       </div>
@@ -95,46 +95,46 @@ export default function StudentAnalyticsPage() {
       <PageHeader title="Learning Analytics" description="Your progress and activity overview" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="angular-card bg-white p-5">
+        <div className="angular-card bg-[#0f172a] p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
               <BookOpen size={18} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900">{data.stats.totalLessonsCompleted}</p>
+              <p className="text-2xl font-bold text-white">{data.stats.totalLessonsCompleted}</p>
               <p className="text-[11px] text-slate-500">Lessons Done</p>
             </div>
           </div>
         </div>
-        <div className="angular-card bg-white p-5">
+        <div className="angular-card bg-[#0f172a] p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
               <Flag size={18} className="text-emerald-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900">{data.stats.totalFlagsCaptured}</p>
+              <p className="text-2xl font-bold text-white">{data.stats.totalFlagsCaptured}</p>
               <p className="text-[11px] text-slate-500">Flags Captured</p>
             </div>
           </div>
         </div>
-        <div className="angular-card bg-white p-5">
+        <div className="angular-card bg-[#0f172a] p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
               <Flame size={18} className="text-amber-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900">{data.stats.currentStreak}</p>
+              <p className="text-2xl font-bold text-white">{data.stats.currentStreak}</p>
               <p className="text-[11px] text-slate-500">Day Streak</p>
             </div>
           </div>
         </div>
-        <div className="angular-card bg-white p-5">
+        <div className="angular-card bg-[#0f172a] p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
               <Award size={18} className="text-purple-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900">{data.stats.totalCoursesEnrolled}</p>
+              <p className="text-2xl font-bold text-white">{data.stats.totalCoursesEnrolled}</p>
               <p className="text-[11px] text-slate-500">Courses Enrolled</p>
             </div>
           </div>
@@ -142,8 +142,8 @@ export default function StudentAnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="angular-card bg-white p-6">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
             <Calendar size={16} className="text-blue-500" /> Weekly Activity
           </h2>
           <div className="flex items-end gap-2 h-32">
@@ -162,8 +162,8 @@ export default function StudentAnalyticsPage() {
           </div>
         </div>
 
-        <div className="angular-card bg-white p-6">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
             <TrendingUp size={16} className="text-emerald-500" /> Streak History
           </h2>
           <div className="space-y-4">
@@ -194,8 +194,8 @@ export default function StudentAnalyticsPage() {
       </div>
 
       {completedCourses.length > 0 && (
-        <div className="angular-card bg-white p-6">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4">Completed Courses</h2>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h2 className="text-sm font-semibold text-white mb-4">Completed Courses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {completedCourses.map((c) => (
               <Link
@@ -207,7 +207,7 @@ export default function StudentAnalyticsPage() {
                   <Award size={14} className="text-emerald-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{c.title}</p>
+                  <p className="text-sm font-medium text-white truncate">{c.title}</p>
                   <p className="text-[11px] text-emerald-600">{c.completed}/{c.total} lessons</p>
                 </div>
                 <ArrowRight size={14} className="text-emerald-400 flex-shrink-0" />
@@ -218,17 +218,17 @@ export default function StudentAnalyticsPage() {
       )}
 
       {inProgressCourses.length > 0 && (
-        <div className="angular-card bg-white p-6">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4">In Progress</h2>
+        <div className="angular-card bg-[#0f172a] p-6">
+          <h2 className="text-sm font-semibold text-white mb-4">In Progress</h2>
           <div className="space-y-3">
             {inProgressCourses.map((c) => (
               <Link
                 key={c.courseId}
                 href={"/dashboard/courses/" + c.courseId}
-                className="flex items-center gap-4 p-3 rounded-lg border border-slate-200 hover:shadow-sm transition-all"
+                className="flex items-center gap-4 p-3 rounded-lg border border-white/10 hover:shadow-sm transition-all"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900">{c.title}</p>
+                  <p className="text-sm font-medium text-white">{c.title}</p>
                   <p className="text-[11px] text-slate-500">{c.completed}/{c.total} lessons completed</p>
                 </div>
                 <div className="w-24">
@@ -245,11 +245,11 @@ export default function StudentAnalyticsPage() {
       )}
 
       {data.courseProgress.length === 0 && (
-        <div className="angular-card bg-white p-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
+        <div className="angular-card bg-[#0f172a] p-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
             <BookOpen size={28} className="text-blue-600" />
           </div>
-          <h2 className="text-sm font-semibold text-slate-900 mb-1">Your journey starts here</h2>
+          <h2 className="text-sm font-semibold text-white mb-1">Your journey starts here</h2>
           <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">Enroll in a course to start tracking your progress across domains.</p>
           <Link href="/dashboard/courses" className="btn-primary text-xs inline-flex items-center gap-1.5">
             <BookOpen size={14} /> Browse Courses

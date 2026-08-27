@@ -311,11 +311,11 @@ export default function EventsPage() {
       </div>
 
       {displayEvents.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-teal-500" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+          <h3 className="text-sm font-semibold text-white mb-1">
             {activeTab === "my" ? "No events joined yet" : "No active events"}
           </h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -341,7 +341,7 @@ export default function EventsPage() {
             return (
               <div
                 key={event.id}
-                className="bg-white rounded-xl border border-slate-200 overflow-hidden transition-all duration-200 hover:shadow-md"
+                className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden transition-all duration-200 hover:shadow-md"
               >
                 <div
                   className="p-5 cursor-pointer"
@@ -366,7 +366,7 @@ export default function EventsPage() {
                     />
                   </div>
 
-                  <h3 className="text-base font-semibold text-slate-900 mb-1">
+                  <h3 className="text-base font-semibold text-white mb-1">
                     {event.title}
                   </h3>
                   <p className="text-sm text-slate-500 line-clamp-2 mb-4">
@@ -383,7 +383,7 @@ export default function EventsPage() {
                       {event._count.participants} joined
                     </span>
                     {event.xpReward && (
-                      <span className="flex items-center gap-1 text-[#229C62] font-medium">
+                      <span className="flex items-center gap-1 text-[#7AD62A] font-medium">
                         <Zap size={12} />
                         {event.xpReward} XP
                       </span>
@@ -403,7 +403,7 @@ export default function EventsPage() {
                       </div>
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[#229C62] to-[#7AD62A] rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
                           style={{ width: `${xpPercent}%` }}
                         />
                       </div>
@@ -418,7 +418,7 @@ export default function EventsPage() {
                           handleClaim(event.id);
                         }}
                         disabled={claimLoading === event.id}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#229C62] hover:bg-[#1b8554] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#7AD62A] hover:bg-[#1b8554] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                       >
                         {claimLoading === event.id ? (
                           <Loader2 size={16} className="animate-spin" />
@@ -471,9 +471,9 @@ export default function EventsPage() {
                 </div>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-200 bg-slate-50 p-5 space-y-4 animate-in fade-in duration-200">
+                  <div className="border-t border-white/10 bg-white/5 p-5 space-y-4 animate-in fade-in duration-200">
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900 mb-1">
+                      <h4 className="text-sm font-semibold text-white mb-1">
                         About this event
                       </h4>
                       <p className="text-sm text-slate-600">
@@ -483,27 +483,27 @@ export default function EventsPage() {
 
                     {event.targetXp && progress && (
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-900 mb-2">
+                        <h4 className="text-sm font-semibold text-white mb-2">
                           Community Progress
                         </h4>
                         <div className="grid grid-cols-3 gap-3">
-                          <div className="bg-white rounded-lg border border-slate-200 p-3 text-center">
-                            <p className="text-lg font-bold text-slate-900">
+                          <div className="bg-[#0f172a] rounded-lg border border-white/10 p-3 text-center">
+                            <p className="text-lg font-bold text-white">
                               {progress.totalParticipants}
                             </p>
                             <p className="text-xs text-slate-500">
                               Participants
                             </p>
                           </div>
-                          <div className="bg-white rounded-lg border border-slate-200 p-3 text-center">
-                            <p className="text-lg font-bold text-[#229C62]">
+                          <div className="bg-[#0f172a] rounded-lg border border-white/10 p-3 text-center">
+                            <p className="text-lg font-bold text-[#7AD62A]">
                               {progress.totalProgress.toLocaleString()}
                             </p>
                             <p className="text-xs text-slate-500">
                               Total XP
                             </p>
                           </div>
-                          <div className="bg-white rounded-lg border border-slate-200 p-3 text-center">
+                          <div className="bg-[#0f172a] rounded-lg border border-white/10 p-3 text-center">
                             <p className="text-lg font-bold text-[#7AD62A]">
                               {progress.completedCount}
                             </p>
@@ -515,15 +515,15 @@ export default function EventsPage() {
 
                     {userProg && (
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-900 mb-2">
+                        <h4 className="text-sm font-semibold text-white mb-2">
                           Your Progress
                         </h4>
-                        <div className="bg-white rounded-lg border border-slate-200 p-3">
+                        <div className="bg-[#0f172a] rounded-lg border border-white/10 p-3">
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-slate-600">
                               Progress
                             </span>
-                            <span className="text-sm font-medium text-slate-900">
+                            <span className="text-sm font-medium text-white">
                               {userProg.progress}{" "}
                               {event.targetCount
                                 ? `/ ${event.targetCount}`
@@ -546,7 +546,7 @@ export default function EventsPage() {
                           )}
                           <div className="flex items-center gap-2 mt-2">
                             {userProg.completed ? (
-                              <span className="text-xs text-[#229C62] font-medium flex items-center gap-1">
+                              <span className="text-xs text-[#7AD62A] font-medium flex items-center gap-1">
                                 <CheckCircle2 size={12} /> Completed
                               </span>
                             ) : userProg.joined ? (
@@ -563,17 +563,17 @@ export default function EventsPage() {
                       progress.totalParticipants > 0 &&
                       event.targetXp && (
                         <div>
-                          <h4 className="text-sm font-semibold text-slate-900 mb-2">
+                          <h4 className="text-sm font-semibold text-white mb-2">
                             Event Stats
                           </h4>
-                          <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                          <div className="bg-[#0f172a] rounded-lg border border-white/10 overflow-hidden">
                             <div className="grid grid-cols-2 gap-3 p-3">
                               <div className="text-center">
-                                <p className="text-lg font-bold text-slate-900">{progress.totalParticipants}</p>
+                                <p className="text-lg font-bold text-white">{progress.totalParticipants}</p>
                                 <p className="text-xs text-slate-500">Participants</p>
                               </div>
                               <div className="text-center">
-                                <p className="text-lg font-bold text-[#229C62]">{progress.totalProgress.toLocaleString()}</p>
+                                <p className="text-lg font-bold text-[#7AD62A]">{progress.totalProgress.toLocaleString()}</p>
                                 <p className="text-xs text-slate-500">Total XP</p>
                               </div>
                             </div>

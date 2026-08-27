@@ -135,7 +135,7 @@ export default function MyMissionsPage() {
           <p className="text-slate-500 mb-4">{error}</p>
           <button
             onClick={fetchData}
-            className="px-4 py-2 bg-[#229C62] text-white rounded-lg hover:bg-[#1a7a4d] transition-colors"
+            className="px-4 py-2 bg-[#7AD62A] text-white rounded-lg hover:bg-[#1a7a4d] transition-colors"
           >
             {t("common.retry")}
           </button>
@@ -150,21 +150,21 @@ export default function MyMissionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#0F203A] flex items-center gap-2">
-            <Swords className="w-7 h-7 text-[#229C62]" />
+            <Swords className="w-7 h-7 text-[#7AD62A]" />
             {t("missions.title")}
           </h1>
           <p className="text-slate-500 text-sm mt-1">{t("missions.subtitle")}</p>
         </div>
         <button
           onClick={fetchData}
-          className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+          className="p-2 text-slate-400 hover:text-slate-300 transition-colors"
         >
           <RefreshCw className="w-5 h-5" />
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
         {[
           { key: "available", label: t("missions.available"), count: availableMissions.length },
           { key: "active", label: t("missions.active"), count: activeMissions.length },
@@ -177,7 +177,7 @@ export default function MyMissionsPage() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.key
                 ? "bg-[#0F203A] text-white"
-                : "text-slate-600 hover:bg-slate-100"
+                : "text-slate-600 hover:bg-white/5"
             }`}
           >
             {tab.label}
@@ -196,11 +196,11 @@ export default function MyMissionsPage() {
 
       {/* Missions Grid */}
       {displayMissions.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
             <Swords size={28} className="text-purple-500" />
           </div>
-          <h2 className="text-sm font-semibold text-slate-900 mb-1">
+          <h2 className="text-sm font-semibold text-white mb-1">
             {t("missions.noMissions")}
           </h2>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -217,7 +217,7 @@ export default function MyMissionsPage() {
             return (
               <div
                 key={mission.id}
-                className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow"
+                className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden hover:shadow-lg transition-shadow"
               >
                 {/* Mission Header */}
                 <div className={`bg-gradient-to-r ${gradient} p-4 text-white`}>
@@ -300,7 +300,7 @@ export default function MyMissionsPage() {
                   {mission.status === "AVAILABLE" && !isExpired && (
                     <button
                       onClick={() => handleAccept(mission.id)}
-                      className="w-full py-2 bg-[#229C62] text-white rounded-lg text-sm font-medium hover:bg-[#1a7a4d] transition-colors"
+                      className="w-full py-2 bg-[#7AD62A] text-white rounded-lg text-sm font-medium hover:bg-[#1a7a4d] transition-colors"
                     >
                       {t("missions.accept")}
                     </button>

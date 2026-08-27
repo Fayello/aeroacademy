@@ -56,19 +56,19 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+    <div className="min-h-screen flex items-center justify-center bg-white/5 px-6">
       <div className="w-full max-w-md">
-        <Link href="/login" className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 transition-colors">
+        <Link href="/login" className="flex items-center gap-2 text-slate-500 hover:text-slate-200 mb-8 transition-colors">
           <ArrowLeft size={16} />
           <span className="text-sm">Back to login</span>
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="bg-emerald-600 p-2 rounded-xl">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
+            <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
           </div>
 
           {step === "email" ? (
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
               <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-5">
                 <KeyRound className="text-amber-600" size={24} />
               </div>
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">Reset your password</h1>
+              <h1 className="text-2xl font-bold text-white mb-2">Reset your password</h1>
               <p className="text-slate-500 text-sm mb-6">Enter your email and we&apos;ll send you a verification code.</p>
 
               <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-5">
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
                     <input
                       {...emailForm.register("email")}
                       type="email"
-                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                       placeholder="you@example.com"
                     />
                   </div>
@@ -110,9 +110,9 @@ export default function ForgotPasswordPage() {
               <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-5">
                 <Mail className="text-emerald-600" size={24} />
               </div>
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">Enter verification code</h1>
+              <h1 className="text-2xl font-bold text-white mb-2">Enter verification code</h1>
               <p className="text-slate-500 text-sm mb-1">We sent a 6-digit code to</p>
-              <p className="text-slate-900 font-medium text-sm mb-6">{email}</p>
+              <p className="text-white font-medium text-sm mb-6">{email}</p>
 
               <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-5">
                 <div>
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
                     type="text"
                     inputMode="numeric"
                     maxLength={6}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-center text-lg tracking-[0.5em] font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white text-center text-lg tracking-[0.5em] font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="000000"
                   />
                   {resetForm.formState.errors.code && (
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
                   <input
                     {...resetForm.register("password")}
                     type="password"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Min 8 characters"
                   />
                   {resetForm.formState.errors.password && (
@@ -148,7 +148,7 @@ export default function ForgotPasswordPage() {
                   <input
                     {...resetForm.register("confirmPassword")}
                     type="password"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Repeat password"
                   />
                   {resetForm.formState.errors.confirmPassword && (
@@ -167,7 +167,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="button"
                   onClick={() => { setStep("email"); emailForm.reset(); resetForm.reset(); }}
-                  className="w-full py-2 text-sm text-slate-500 hover:text-slate-700"
+                  className="w-full py-2 text-sm text-slate-500 hover:text-slate-200"
                 >
                   Use a different email
                 </button>

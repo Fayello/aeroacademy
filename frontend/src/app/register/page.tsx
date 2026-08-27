@@ -114,18 +114,18 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#0f172a]">
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 mb-10">
             <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
             <span className="text-xl font-bold tracking-tight">
-              <span className="text-[#0F203A]">Xpert</span><span className="text-[#229C62]">Class</span>
+              <span className="text-[#0F203A]">Xpert</span><span className="text-[#7AD62A]">Class</span>
             </span>
           </Link>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Create your account</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Create your account</h1>
             <p className="text-slate-500 mt-2">Start your tech training journey today</p>
           </div>
 
@@ -134,7 +134,7 @@ export default function RegisterPage() {
             <button
               onClick={handleGoogleSignup}
               type="button"
-              className="flex items-center justify-center gap-2 px-4 py-3 border border-slate-300 rounded-xl bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 hover:border-slate-400 transition-all duration-200"
+              className="flex items-center justify-center gap-2 px-4 py-3 border border-white/10 rounded-xl bg-[#0f172a] text-slate-700 text-sm font-medium hover:bg-white/5 hover:border-slate-400 transition-all duration-200"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -148,10 +148,10 @@ export default function RegisterPage() {
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
+              <div className="w-full border-t border-white/10" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-white px-3 text-slate-400">or continue with email</span>
+              <span className="bg-[#0f172a] px-3 text-slate-400">or continue with email</span>
             </div>
           </div>
 
@@ -165,7 +165,7 @@ export default function RegisterPage() {
                   id="name"
                   {...register("name")}
                   type="text"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.name ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.name ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
                   placeholder="Your full name"
                 />
               </div>
@@ -180,7 +180,7 @@ export default function RegisterPage() {
                   id="email"
                   {...register("email")}
                   type="email"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.email ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.email ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
                   placeholder="you@example.com"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function RegisterPage() {
                   id="password"
                   {...register("password")}
                   type="password"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.password ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.password ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
                   placeholder="Min. 8 characters"
                 />
               </div>
@@ -230,8 +230,8 @@ export default function RegisterPage() {
                   { label: "Number", met: /\d/.test(passwordValue) },
                 ].map((req) => (
                   <div key={req.label} className="flex items-center gap-1 text-[10px]">
-                    {req.met ? <CheckCircle2 size={10} className="text-[#229C62]" /> : <XCircle size={10} className="text-slate-300" />}
-                    <span className={req.met ? "text-[#229C62]" : "text-slate-400"}>{req.label}</span>
+                    {req.met ? <CheckCircle2 size={10} className="text-[#7AD62A]" /> : <XCircle size={10} className="text-slate-300" />}
+                    <span className={req.met ? "text-[#7AD62A]" : "text-slate-400"}>{req.label}</span>
                   </div>
                 ))}
               </div>
@@ -245,7 +245,7 @@ export default function RegisterPage() {
                   id="confirmPassword"
                   {...register("confirmPassword")}
                   type="password"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.confirmPassword ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border ${errors.confirmPassword ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200`}
                   placeholder="Repeat your password"
                 />
               </div>
@@ -257,13 +257,13 @@ export default function RegisterPage() {
                 id="acceptTerms"
                 {...register("acceptTerms")}
                 type="checkbox"
-                className="mt-1 w-4 h-4 rounded border-slate-300 accent-[#229C62]"
+                className="mt-1 w-4 h-4 rounded border-white/10 accent-[#7AD62A]"
               />
               <label htmlFor="acceptTerms" className="text-sm text-slate-600">
                 I agree to the{" "}
-                <Link href="/terms" className="text-[#229C62] hover:underline font-medium">Terms of Service</Link>
+                <Link href="/terms" className="text-[#7AD62A] hover:underline font-medium">Terms of Service</Link>
                 {" "}and{" "}
-                <Link href="/privacy" className="text-[#229C62] hover:underline font-medium">Privacy Policy</Link>
+                <Link href="/privacy" className="text-[#7AD62A] hover:underline font-medium">Privacy Policy</Link>
               </label>
             </div>
             {errors.acceptTerms && <p className="text-xs text-red-600">{errors.acceptTerms.message}</p>}

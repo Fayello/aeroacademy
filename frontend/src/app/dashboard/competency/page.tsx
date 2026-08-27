@@ -96,11 +96,11 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 const DOMAIN_BG: Record<string, string> = {
-  SYSTEMS: "bg-blue-50 border-blue-200",
+  SYSTEMS: "bg-blue-500/10 border-blue-200",
   NETWORKING: "bg-cyan-50 border-cyan-200",
   DEVOPS: "bg-violet-50 border-violet-200",
-  DATABASES: "bg-amber-50 border-amber-200",
-  SECURITY: "bg-red-50 border-red-200",
+  DATABASES: "bg-amber-500/10 border-amber-200",
+  SECURITY: "bg-red-500/10 border-red-200",
   QA: "bg-emerald-50 border-emerald-200",
 };
 
@@ -159,7 +159,7 @@ export default function CompetencyPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             Competency Profile
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -177,48 +177,48 @@ export default function CompetencyPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Target size={16} className="text-[#229C62]" />
+            <Target size={16} className="text-[#7AD62A]" />
             <span className="text-xs font-medium text-slate-500">Outcomes</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">
+          <p className="text-2xl font-bold text-white">
             {summary.completedOutcomes}/{summary.totalOutcomes}
           </p>
           <p className="text-[11px] text-slate-400">{summary.overallPct}% complete</p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
           <div className="flex items-center gap-2 mb-2">
             <FlaskConical size={16} className="text-blue-500" />
             <span className="text-xs font-medium text-slate-500">Labs Done</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{summary.totalLabsCompleted}</p>
+          <p className="text-2xl font-bold text-white">{summary.totalLabsCompleted}</p>
           <p className="text-[11px] text-slate-400">unique labs completed</p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
           <div className="flex items-center gap-2 mb-2">
             <Award size={16} className="text-violet-500" />
             <span className="text-xs font-medium text-slate-500">Assessments</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{summary.totalAssessmentsCompleted}</p>
+          <p className="text-2xl font-bold text-white">{summary.totalAssessmentsCompleted}</p>
           <p className="text-[11px] text-slate-400">
             avg score: {summary.overallAssessmentScore}%
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle size={16} className="text-amber-500" />
             <span className="text-xs font-medium text-slate-500">Fading</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900">{summary.fadingCount}</p>
+          <p className="text-2xl font-bold text-white">{summary.fadingCount}</p>
           <p className="text-[11px] text-slate-400">outcomes need attention</p>
         </div>
       </div>
 
       {/* Recommendations */}
       {recommendations.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">
             Recommended Actions
           </h3>
           <div className="space-y-2">
@@ -227,10 +227,10 @@ export default function CompetencyPage() {
                 key={i}
                 className={`flex items-start gap-3 p-3 rounded-lg border ${
                   rec.priority === "HIGH"
-                    ? "bg-red-50 border-red-200"
+                    ? "bg-red-500/10 border-red-200"
                     : rec.priority === "MEDIUM"
-                    ? "bg-amber-50 border-amber-200"
-                    : "bg-slate-50 border-slate-200"
+                    ? "bg-amber-500/10 border-amber-200"
+                    : "bg-white/5 border-white/10"
                 }`}
               >
                 <div className="shrink-0 mt-0.5">
@@ -240,7 +240,7 @@ export default function CompetencyPage() {
                   {rec.type === "ASSESSMENT" && <Target size={14} className="text-violet-500" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900">{rec.title}</p>
+                  <p className="text-sm font-medium text-white">{rec.title}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{rec.description}</p>
                 </div>
                 {rec.link && (
@@ -259,20 +259,20 @@ export default function CompetencyPage() {
 
       {/* Domain Breakdown */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-slate-900">Domains</h3>
+        <h3 className="text-sm font-semibold text-white">Domains</h3>
         {domains.map((domain) => {
           const isExpanded = expandedDomain === domain.domainId;
           const gradientClass = DOMAIN_COLORS[domain.domainId] || "from-slate-500 to-slate-600";
-          const bgClass = DOMAIN_BG[domain.domainId] || "bg-slate-50 border-slate-200";
+          const bgClass = DOMAIN_BG[domain.domainId] || "bg-white/5 border-white/10";
 
           return (
             <div
               key={domain.domainId}
-              className={`rounded-xl border border-slate-200 bg-white overflow-hidden`}
+              className={`rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden`}
             >
               <button
                 onClick={() => setExpandedDomain(isExpanded ? null : domain.domainId)}
-                className="w-full p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors"
+                className="w-full p-4 flex items-center gap-4 hover:bg-white/5 transition-colors"
               >
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${gradientClass} flex items-center justify-center shrink-0`}>
                   <span className="text-white text-xs font-bold">
@@ -280,18 +280,18 @@ export default function CompetencyPage() {
                   </span>
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-sm font-semibold text-slate-900">{domain.domainName}</p>
+                  <p className="text-sm font-semibold text-white">{domain.domainName}</p>
                   <p className="text-xs text-slate-500">
                     {domain.completedOutcomes}/{domain.totalOutcomes} outcomes ({domain.completionPct}%)
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">{domain.avgMastery}%</p>
+                    <p className="text-sm font-bold text-white">{domain.avgMastery}%</p>
                     <p className="text-[10px] text-slate-400">mastery</p>
                   </div>
                   {domain.fadingOutcomes > 0 && (
-                    <span className="flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                    <span className="flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-200">
                       <AlertTriangle size={10} />
                       {domain.fadingOutcomes} fading
                     </span>
@@ -320,10 +320,10 @@ export default function CompetencyPage() {
                         key={outcome.id}
                         className={`p-3 rounded-lg border ${
                           outcome.isFading
-                            ? "bg-amber-50 border-amber-200"
+                            ? "bg-amber-500/10 border-amber-200"
                             : outcome.avgScore >= 70
                             ? "bg-emerald-50 border-emerald-200"
-                            : "bg-slate-50 border-slate-200"
+                            : "bg-white/5 border-white/10"
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -332,7 +332,7 @@ export default function CompetencyPage() {
                               <span className="text-[10px] font-mono font-bold text-slate-400">
                                 {outcome.code}
                               </span>
-                              <p className="text-sm font-medium text-slate-900 truncate">
+                              <p className="text-sm font-medium text-white truncate">
                                 {outcome.title}
                               </p>
                             </div>
@@ -368,7 +368,7 @@ export default function CompetencyPage() {
                                   className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded border ${
                                     isCompleted
                                       ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                                      : "bg-white border-slate-200 text-slate-600 hover:border-blue-300"
+                                      : "bg-[#0f172a] border-white/10 text-slate-600 hover:border-blue-300"
                                   }`}
                                 >
                                   {isCompleted ? (
@@ -402,16 +402,16 @@ export default function CompetencyPage() {
 
       {/* Recent Assessments */}
       {recentAssessments.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">Recent Assessments</h3>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">Recent Assessments</h3>
           <div className="space-y-2">
             {recentAssessments.map((a) => (
-              <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
                 <div className="shrink-0">
                   <Target size={14} className="text-violet-500" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900">{a.title}</p>
+                  <p className="text-sm font-medium text-white">{a.title}</p>
                   <p className="text-xs text-slate-500">{a.domain}</p>
                 </div>
                 <div className="text-right shrink-0">

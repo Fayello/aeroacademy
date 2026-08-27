@@ -46,7 +46,7 @@ function VerifyTokenForm() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-white/5">
         <div className="text-center">
           <Loader2 className="animate-spin text-emerald-600 mx-auto mb-4" size={32} />
           <p className="text-slate-500">Verifying your email...</p>
@@ -57,12 +57,12 @@ function VerifyTokenForm() {
 
   if (status === "success") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+      <div className="min-h-screen flex items-center justify-center bg-white/5 px-6">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="text-emerald-600" size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Email Verified!</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Email Verified!</h1>
           <p className="text-slate-500">Redirecting you to your dashboard...</p>
         </div>
       </div>
@@ -70,29 +70,29 @@ function VerifyTokenForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+    <div className="min-h-screen flex items-center justify-center bg-white/5 px-6">
       <div className="w-full max-w-md">
         <Link
           href="/login"
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 transition-colors"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-200 mb-8 transition-colors"
         >
           <ArrowLeft size={16} />
           <span className="text-sm">Back to login</span>
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+        <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8 text-center">
           <div className="flex items-center gap-2.5 mb-6 justify-center">
             <div className="bg-emerald-600 p-2 rounded-xl">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
+            <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
           </div>
 
           <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <AlertCircle className="text-red-600" size={24} />
           </div>
 
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Verification Failed</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Verification Failed</h1>
           <p className="text-slate-500 text-sm mb-6">{errorMessage}</p>
 
           <div className="space-y-3">
@@ -119,7 +119,7 @@ export default function VerifyPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="min-h-screen flex items-center justify-center bg-white/5">
           <Loader2 className="animate-spin text-slate-400" size={32} />
         </div>
       }

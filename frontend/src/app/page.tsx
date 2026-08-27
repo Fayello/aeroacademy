@@ -141,15 +141,15 @@ const TESTIMONIALS = [
 ];
 
 const COLOR_MAP = {
-  emerald: { bg: "bg-[#E9F8EE]", border: "border-[#229C62]/20", text: "text-[#0F203A]", icon: "text-[#229C62] bg-[#E9F8EE]", dot: "bg-[#229C62]" },
-  blue: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-600 bg-blue-100", dot: "bg-blue-500" },
-  violet: { bg: "bg-violet-50", border: "border-violet-200", text: "text-violet-700", icon: "text-violet-600 bg-violet-100", dot: "bg-violet-500" },
+  emerald: { bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/20", text: "text-[#0F203A]", icon: "text-[#7AD62A] bg-[#7AD62A]/10", dot: "bg-[#7AD62A]" },
+  blue: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-600 bg-blue-100", dot: "bg-blue-500" },
+  violet: { bg: "bg-violet-50", border: "border-violet-200", text: "text-violet-700", icon: "text-violet-600 bg-violet-500/10", dot: "bg-violet-500" },
 };
 
 const LEVEL_COLORS: Record<string, string> = {
-  Beginner: "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20",
-  Intermediate: "bg-amber-50 text-amber-700 border-amber-200",
-  Advanced: "bg-red-50 text-red-700 border-red-200",
+  Beginner: "bg-[#7AD62A]/10 text-[#0F203A] border-[#7AD62A]/20",
+  Intermediate: "bg-amber-500/10 text-amber-700 border-amber-200",
+  Advanced: "bg-red-500/10 text-red-700 border-red-200",
 };
 
 export default function LandingPage() {
@@ -181,27 +181,27 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#0f172a]">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#229C62] focus:text-white focus:rounded-xl focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#7AD62A] focus:text-white focus:rounded-xl focus:text-sm focus:font-medium"
       >
         Skip to main content
       </a>
 
       {/* ═══════════ NAVIGATION ═══════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b-2 border-[#229C62]/30 shadow-sm" : "bg-transparent border-b border-white/10"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md border-b-2 border-[#7AD62A]/30 shadow-sm" : "bg-transparent border-b border-white/10"}`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
               <span className="text-lg font-bold tracking-tight">
-                <span className={scrolled ? "text-[#0F203A]" : "text-white"}>Xpert</span><span className="text-[#229C62]">Class</span>
+                <span className={scrolled ? "text-[#0F203A]" : "text-white"}>Xpert</span><span className="text-[#7AD62A]">Class</span>
               </span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-500 hover:text-[#229C62] hover:bg-[#E9F8EE]/50" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
+                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-500 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
                   {item}
                 </a>
               ))}
@@ -237,7 +237,7 @@ export default function LandingPage() {
                 Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
-                <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40 magnetic-btn">
+                <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/20 hover:shadow-[#7AD62A]/40 magnetic-btn">
                   <span>Start Learning Free</span> <ArrowRight size={18} />
                 </Link>
                 <a href="#labs" className="btn-ghost text-sm px-6 py-3.5 text-white/60 hover:text-white">
@@ -253,7 +253,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative hidden lg:block lg:-ml-12">
-              <div className="absolute -inset-6 bg-gradient-to-br from-[#229C62]/20 via-[#7AD62A]/10 to-transparent clip-path-trapezoid blur-xl" />
+              <div className="absolute -inset-6 bg-gradient-to-br from-[#7AD62A]/20 via-[#7AD62A]/10 to-transparent clip-path-trapezoid blur-xl" />
               <div className="bg-[#0d1117] angular-card p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10 w-[440px]">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
@@ -330,25 +330,25 @@ export default function LandingPage() {
         <div className="absolute inset-0 angular-grid-bg" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="label-tracking text-[#229C62] mb-4 block">Who it&apos;s for</span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Built for every learner</h2>
+            <span className="label-tracking text-[#7AD62A] mb-4 block">Who it&apos;s for</span>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Built for every learner</h2>
             <p className="text-lg text-slate-500 mt-4 max-w-2xl mx-auto">Whether you are a student, a team lead, or an educator, there is a path designed for you.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {AUDIENCES.map((audience) => {
               const colors = COLOR_MAP[audience.color];
               return (
-                <div key={audience.tag} className="angular-card relative bg-white p-8 border border-slate-200/80 hover-glow transition-all duration-300 group overflow-hidden hover-lift">
+                <div key={audience.tag} className="angular-card relative bg-[#0f172a] p-8 border border-white/10/80 hover-glow transition-all duration-300 group overflow-hidden hover-lift">
                   <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${colors.bg} ${colors.border} ${colors.text} text-xs font-semibold mb-6 relative z-10`}>
                     <audience.icon size={14} />
                     {audience.tag}
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3 relative z-10 leading-tight group-hover:text-[#229C62] transition-colors">{audience.title}</h3>
+                  <h3 className="text-xl font-bold text-white mb-3 relative z-10 leading-tight group-hover:text-[#7AD62A] transition-colors">{audience.title}</h3>
                   <p className="text-slate-500 text-sm leading-relaxed mb-6 relative z-10">{audience.description}</p>
                   <ul className="space-y-3 mb-8 relative z-10">
                     {audience.features.map((f) => (
                       <li key={f} className="flex items-center gap-2.5 text-sm text-slate-600">
-                        <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {f}
+                        <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0" /> {f}
                       </li>
                     ))}
                   </ul>
@@ -368,27 +368,27 @@ export default function LandingPage() {
       <section id="courses" className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="label-tracking text-[#229C62] mb-4 block">Curriculum</span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">What you will learn</h2>
+            <span className="label-tracking text-[#7AD62A] mb-4 block">Curriculum</span>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">What you will learn</h2>
             <p className="text-lg text-slate-500 mt-4">Structured learning paths from fundamentals to advanced topics.</p>
           </div>
-          <div className="flex justify-center border-b border-slate-200 mb-10">
+          <div className="flex justify-center border-b border-white/10 mb-10">
             {LEARNING_PATHS.map((path, i) => (
               <button
                 key={path.tab}
                 onClick={() => setActiveTab(i)}
-                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-all ${activeTab === i ? "border-[#229C62] text-[#229C62]" : "border-transparent text-slate-400 hover:text-slate-600"}`}
+                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-all ${activeTab === i ? "border-[#7AD62A] text-[#7AD62A]" : "border-transparent text-slate-400 hover:text-slate-300"}`}
               >
                 <path.icon size={16} /> {path.tab}
               </button>
             ))}
           </div>
-          <div className="bg-white angular-card border border-slate-200/80 p-8 md:p-10 hover-lift">
+          <div className="bg-[#0f172a] angular-card border border-white/10/80 p-8 md:p-10 hover-lift">
             <div className="grid lg:grid-cols-2 gap-10">
               <div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">{LEARNING_PATHS[activeTab].title}</h3>
+                <h3 className="text-2xl font-bold text-white mb-3">{LEARNING_PATHS[activeTab].title}</h3>
                 <p className="text-slate-500 leading-relaxed mb-6">{LEARNING_PATHS[activeTab].description}</p>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E9F8EE] border border-[#229C62]/20 text-[#0F203A] text-xs font-semibold mb-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#7AD62A]/10 border border-[#7AD62A]/20 text-[#0F203A] text-xs font-semibold mb-8">
                   <Microscope size={14} /> {LEARNING_PATHS[activeTab].labHighlight}
                 </div>
                 <div>
@@ -399,9 +399,9 @@ export default function LandingPage() {
               </div>
               <div className="space-y-3">
                 {LEARNING_PATHS[activeTab].courses.map((course) => (
-                  <div key={course.name} className="flex items-center justify-between p-4 angular-card border border-slate-200/80 hover:border-[#229C62]/30 hover:bg-[#E9F8EE]/30 hover:shadow-sm transition-all duration-200">
+                  <div key={course.name} className="flex items-center justify-between p-4 angular-card border border-white/10/80 hover:border-[#7AD62A]/30 hover:bg-[#7AD62A]/10/30 hover:shadow-sm transition-all duration-200">
                     <div>
-                      <div className="font-medium text-slate-900 text-sm">{course.name}</div>
+                      <div className="font-medium text-white text-sm">{course.name}</div>
                       <div className="text-xs text-slate-400 mt-0.5">{course.lessons} lessons</div>
                     </div>
                     <span className={`text-xs font-medium px-2.5 py-1 hex-badge border ${LEVEL_COLORS[course.level] || ""}`}>{course.level}</span>
@@ -430,9 +430,9 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map((step, i) => (
               <div key={step.number} className="relative">
-                <div className="angular-card relative bg-white/[0.04] backdrop-blur-sm p-8 border border-white/[0.06] hover:border-[#229C62]/20 hover:bg-white/[0.06] transition-all duration-300 group">
-                  <div className="text-6xl font-extrabold text-[#229C62]/10 absolute top-4 right-6 group-hover:text-[#229C62]/20 transition-colors">{step.number}</div>
-                  <div className="w-16 h-16 angular-card bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#229C62]/20 group-hover-rotate relative z-10">
+                <div className="angular-card relative bg-white/[0.04] backdrop-blur-sm p-8 border border-white/[0.06] hover:border-[#7AD62A]/20 hover:bg-white/[0.06] transition-all duration-300 group">
+                  <div className="text-6xl font-extrabold text-[#7AD62A]/10 absolute top-4 right-6 group-hover:text-[#7AD62A]/20 transition-colors">{step.number}</div>
+                  <div className="w-16 h-16 angular-card bg-gradient-to-br from-[#7AD62A] to-[#1a8a55] flex items-center justify-center mb-6 shadow-lg shadow-[#7AD62A]/20 group-hover-rotate relative z-10">
                     <step.icon size={28} className="text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mt-2 mb-3 relative z-10">{step.title}</h3>
@@ -450,17 +450,17 @@ export default function LandingPage() {
       <section id="platform" className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="label-tracking text-[#229C62] mb-4 block">Capabilities</span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">The platform built for real skills</h2>
+            <span className="label-tracking text-[#7AD62A] mb-4 block">Capabilities</span>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">The platform built for real skills</h2>
             <p className="text-lg text-slate-500 mt-4">Everything you need to learn, practice, and prove your expertise.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature, i) => (
-              <div key={feature.title} className={`angular-card bg-white p-8 border border-slate-200/80 hover-glow transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
-                <div className="w-12 h-12 angular-card bg-gradient-to-br from-[#229C62] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#229C62]/15 group-hover-rotate">
+              <div key={feature.title} className={`angular-card bg-[#0f172a] p-8 border border-white/10/80 hover-glow transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
+                <div className="w-12 h-12 angular-card bg-gradient-to-br from-[#7AD62A] to-[#1a8a55] flex items-center justify-center mb-5 shadow-md shadow-[#7AD62A]/15 group-hover-rotate">
                   <feature.icon size={22} className="text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">{feature.title}</h3>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#7AD62A] transition-colors">{feature.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{feature.description}</p>
               </div>
             ))}
@@ -476,11 +476,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 hex-badge bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-6">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 hex-badge bg-blue-500/10 border border-blue-200 text-blue-700 text-xs font-semibold mb-6">
                 <Terminal size={14} /> Hands-on Labs
               </span>
-              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
-                Deploy your first lab in <span className="text-[#229C62]">30 seconds</span>
+              <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight leading-tight">
+                Deploy your first lab in <span className="text-[#7AD62A]">30 seconds</span>
               </h2>
               <p className="text-lg text-slate-500 mt-5 leading-relaxed">
                 Each lab spins up an isolated Docker container with a real terminal. No virtual machines, no complicated setup.
@@ -494,7 +494,7 @@ export default function LandingPage() {
                   "Pre-configured vulnerable applications",
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm text-slate-600">
-                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {item}
+                    <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0" /> {item}
                   </div>
                 ))}
               </div>
@@ -503,7 +503,7 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className="relative">
-              <div className="absolute -inset-6 bg-gradient-to-br from-[#229C62]/20 via-[#7AD62A]/10 to-transparent clip-path-trapezoid blur-xl" />
+              <div className="absolute -inset-6 bg-gradient-to-br from-[#7AD62A]/20 via-[#7AD62A]/10 to-transparent clip-path-trapezoid blur-xl" />
               <div className="bg-[#0d1117] angular-card p-6 font-mono text-sm overflow-hidden border border-slate-700/50 shadow-2xl relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
@@ -537,22 +537,22 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="label-tracking text-violet-600 mb-4 block">Live + Recorded</span>
-              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Master Classes</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Master Classes</h2>
               <p className="text-lg text-slate-500 mt-3">Learn from expert instructors in live sessions. Can&apos;t make it? Watch the recording.</p>
             </div>
-            <Link href="/dashboard/master-classes" className="btn-ghost text-sm mt-4 md:mt-0 text-[#229C62] hover:text-[#1a8a55]">
+            <Link href="/dashboard/master-classes" className="btn-ghost text-sm mt-4 md:mt-0 text-[#7AD62A] hover:text-[#1a8a55]">
               View All <ChevronRight size={14} />
             </Link>
           </div>
           {masterClasses.length > 0 && (
             <div className="grid md:grid-cols-3 gap-6">
               {masterClasses.map((mc: MasterClass, i) => (
-                <div key={mc.id} className={`angular-card bg-white border border-slate-200/80 overflow-hidden hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
-                  <div className="h-44 bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center relative">
+                <div key={mc.id} className={`angular-card bg-[#0f172a] border border-white/10/80 overflow-hidden hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
+                  <div className="h-44 bg-gradient-to-br from-[#0F203A] to-[#7AD62A] flex items-center justify-center relative">
                     <Video size={40} className="text-white/70" />
                     {mc.status === "LIVE" && (
                       <span className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-white text-xs font-bold hex-badge animate-pulse-glow">
-                        <span className="w-2 h-2 bg-white rounded-full" /> LIVE
+                        <span className="w-2 h-2 bg-[#0f172a] rounded-full" /> LIVE
                       </span>
                     )}
                     {mc.recordingUrl && (
@@ -563,12 +563,12 @@ export default function LandingPage() {
                   </div>
                   <div className="p-6">
                     <div className="text-xs text-violet-600 font-semibold mb-2">{mc.category || "Security"}</div>
-                    <h3 className="font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors leading-tight">{mc.title}</h3>
+                    <h3 className="font-bold text-white mb-2 group-hover:text-[#7AD62A] transition-colors leading-tight">{mc.title}</h3>
                     <p className="text-sm text-slate-500 line-clamp-2 mb-4">{mc.description}</p>
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       {mc.instructorName && (
                         <span className="flex items-center gap-1.5">
-                          <span className="w-5 h-5 rounded-full bg-[#E9F8EE] text-[#0F203A] text-[10px] font-bold flex items-center justify-center">{mc.instructorName.charAt(0)}</span>
+                          <span className="w-5 h-5 rounded-full bg-[#7AD62A]/10 text-[#0F203A] text-[10px] font-bold flex items-center justify-center">{mc.instructorName.charAt(0)}</span>
                           {mc.instructorName}
                         </span>
                       )}
@@ -595,28 +595,28 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="label-tracking text-amber-600 mb-4 block">1-on-1 Sessions</span>
-              <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Personal Training</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Personal Training</h2>
               <p className="text-lg text-slate-500 mt-3">Book private sessions with expert trainers. Tailored to your goals and schedule.</p>
             </div>
-            <Link href="/dashboard/training" className="btn-ghost text-sm mt-4 md:mt-0 text-[#229C62] hover:text-[#1a8a55]">
+            <Link href="/dashboard/training" className="btn-ghost text-sm mt-4 md:mt-0 text-[#7AD62A] hover:text-[#1a8a55]">
               Browse Trainers <ChevronRight size={14} />
             </Link>
           </div>
           {trainers.length > 0 && (
             <div className="grid md:grid-cols-3 gap-6">
               {trainers.map((trainer: Trainer, i) => (
-                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className={`angular-card bg-white p-6 border border-slate-200/80 hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
+                <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className={`angular-card bg-[#0f172a] p-6 border border-white/10/80 hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-lg">
+                    <div className="w-14 h-14 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-[#0F203A] font-bold text-lg">
                       {(trainer.user?.name || "T").charAt(0)}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 group-hover:text-[#229C62] transition-colors">{trainer.user?.name}</div>
+                      <div className="font-bold text-white group-hover:text-[#7AD62A] transition-colors">{trainer.user?.name}</div>
                       <div className="text-xs text-slate-400">{trainer.specialties?.join(", ") || "Security, Linux"}</div>
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 line-clamp-2 mb-4">{trainer.bio || "Expert trainer with years of hands-on experience."}</p>
-                  <div className="flex items-center gap-1 text-[#229C62] text-sm font-medium">
+                  <div className="flex items-center gap-1 text-[#7AD62A] text-sm font-medium">
                     Book a Session <ArrowRight size={14} />
                   </div>
                 </Link>
@@ -632,17 +632,17 @@ export default function LandingPage() {
       <section className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="label-tracking text-[#229C62] mb-4 block">Testimonials</span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">What our learners say</h2>
+            <span className="label-tracking text-[#7AD62A] mb-4 block">Testimonials</span>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">What our learners say</h2>
             <p className="text-lg text-slate-500 mt-4">Real feedback from engineers building their skills on XpertClass.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {TESTIMONIALS.map((t, i) => (
-              <div key={t.name} className={`angular-card bg-white p-8 border border-slate-200/80 hover-lift transition-all duration-300 relative overflow-hidden animate-fade-in-up animate-delay-${i + 1}`}>
-                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#229C62] to-[#7AD62A]" />
+              <div key={t.name} className={`angular-card bg-[#0f172a] p-8 border border-white/10/80 hover-lift transition-all duration-300 relative overflow-hidden animate-fade-in-up animate-delay-${i + 1}`}>
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#7AD62A] to-[#7AD62A]" />
                 <p className="text-slate-600 text-sm leading-relaxed mb-6 pl-4">&quot;{t.quote}&quot;</p>
                 <div className="pl-4">
-                  <div className="font-semibold text-slate-900 text-sm">{t.name}</div>
+                  <div className="font-semibold text-white text-sm">{t.name}</div>
                   <div className="text-xs text-slate-400">{t.role}</div>
                 </div>
               </div>
@@ -658,16 +658,16 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <SectionLabel>Simple Pricing</SectionLabel>
-            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight">Choose your plan</h2>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Choose your plan</h2>
             <p className="text-lg text-slate-500 mt-4">Start free, upgrade when you are ready. No hidden fees.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Tier */}
-            <div className="angular-card bg-white p-8 border border-slate-200/80 hover-lift transition-all duration-300">
+            <div className="angular-card bg-[#0f172a] p-8 border border-white/10/80 hover-lift transition-all duration-300">
               <div className="mb-6">
                 <span className="label-tracking text-slate-400 mb-2 block">Free</span>
                 <div className="flex items-end gap-1">
-                  <span className="text-5xl font-extrabold text-slate-900">{convert(0)}</span>
+                  <span className="text-5xl font-extrabold text-white">{convert(0)}</span>
                   <span className="text-slate-500 mb-2">/mo</span>
                 </div>
                 <p className="text-slate-500 text-sm mt-3">Everything you need to get started</p>
@@ -675,26 +675,26 @@ export default function LandingPage() {
               <ul className="space-y-3 mb-8">
                 {["All courses", "Hands-on labs", "Community access", "Basic certifications"].map((feature) => (
                   <li key={feature} className="flex items-center gap-2.5 text-sm text-slate-600">
-                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {feature}
+                    <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0" /> {feature}
                   </li>
                 ))}
               </ul>
-              <Link href="/get-started" className="angular-btn btn-ghost text-sm w-full justify-center border border-slate-200 hover:border-[#229C62] hover:text-[#229C62]">
+              <Link href="/get-started" className="angular-btn btn-ghost text-sm w-full justify-center border border-white/10 hover:border-[#7AD62A] hover:text-[#7AD62A]">
                 <span>Get Started Free</span>
               </Link>
             </div>
 
             {/* Pro Tier */}
-            <div className="angular-card bg-white p-8 border-2 border-[#229C62] hover-lift transition-all duration-300 relative">
+            <div className="angular-card bg-[#0f172a] p-8 border-2 border-[#7AD62A] hover-lift transition-all duration-300 relative">
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span className="bg-[#229C62] text-white text-xs font-bold px-4 py-1.5 hex-badge shadow-lg shadow-[#229C62]/25">
+                <span className="bg-[#7AD62A] text-white text-xs font-bold px-4 py-1.5 hex-badge shadow-lg shadow-[#7AD62A]/25">
                   Most Popular
                 </span>
               </div>
               <div className="mb-6">
-                <span className="label-tracking text-[#229C62] mb-2 block">Pro</span>
+                <span className="label-tracking text-[#7AD62A] mb-2 block">Pro</span>
                 <div className="flex items-end gap-1">
-                  <span className="text-5xl font-extrabold text-slate-900">{convert(29)}</span>
+                  <span className="text-5xl font-extrabold text-white">{convert(29)}</span>
                   <span className="text-slate-500 mb-2">/mo</span>
                 </div>
                 <p className="text-slate-500 text-sm mt-3">For serious practitioners</p>
@@ -702,11 +702,11 @@ export default function LandingPage() {
               <ul className="space-y-3 mb-8">
                 {["Everything in Free", "Priority lab access", "1-on-1 training sessions", "Advanced certifications", "Team analytics"].map((feature) => (
                   <li key={feature} className="flex items-center gap-2.5 text-sm text-slate-600">
-                    <CheckCircle2 size={16} className="text-[#229C62] shrink-0" /> {feature}
+                    <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0" /> {feature}
                   </li>
                 ))}
               </ul>
-              <Link href="/get-started" className="angular-btn btn-primary text-sm w-full justify-center shadow-lg shadow-[#229C62]/20 hover:shadow-[#229C62]/40">
+              <Link href="/get-started" className="angular-btn btn-primary text-sm w-full justify-center shadow-lg shadow-[#7AD62A]/20 hover:shadow-[#7AD62A]/40">
                 <span>Start Pro Trial</span> <ArrowRight size={14} />
               </Link>
             </div>
@@ -745,14 +745,14 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[#0F203A]" />
         <div className="absolute inset-0 angular-grid-bg" />
         <NoiseOverlay opacity={0.02} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#229C62]/[0.12] clip-path-trapezoid blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#7AD62A]/[0.12] clip-path-trapezoid blur-3xl" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight text-stroke-white">Ready to master the tech stack?</h2>
           <p className="text-lg text-white/60 mt-5 leading-relaxed max-w-xl mx-auto">
             Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-            <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#229C62]/25 hover:shadow-[#229C62]/40 magnetic-btn">
+            <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/25 hover:shadow-[#7AD62A]/40 magnetic-btn">
               <span>Start Free Today</span> <ArrowRight size={18} />
             </Link>
             <a href="#courses" className="text-white/60 hover:text-white text-sm font-medium px-6 py-4 transition-colors">
@@ -764,13 +764,13 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-200/80 bg-slate-50">
+      <footer className="border-t border-white/10/80 bg-white/5">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
                 <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
-                <span className="text-lg font-bold text-slate-900 tracking-tight">XpertClass</span>
+                <span className="text-lg font-bold text-white tracking-tight">XpertClass</span>
               </Link>
               <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
                 The platform for hands-on training in security, Linux, DevOps, and cloud infrastructure. Built for engineers, by engineers.
@@ -803,16 +803,16 @@ export default function LandingPage() {
               ],
             }).map(([category, links]) => (
               <div key={category}>
-                <h4 className="font-semibold text-slate-900 text-sm mb-4">{category}</h4>
+                <h4 className="font-semibold text-white text-sm mb-4">{category}</h4>
                 <ul className="space-y-2.5">
                   {links.map((link) => (
                     <li key={link.label}>
                       {link.href.startsWith("#") ? (
-                        <a href={link.href} className="text-sm text-slate-500 hover:text-[#229C62] transition-colors">
+                        <a href={link.href} className="text-sm text-slate-500 hover:text-[#7AD62A] transition-colors">
                           {link.label}
                         </a>
                       ) : (
-                        <Link href={link.href} className="text-sm text-slate-500 hover:text-[#229C62] transition-colors">
+                        <Link href={link.href} className="text-sm text-slate-500 hover:text-[#7AD62A] transition-colors">
                           {link.label}
                         </Link>
                       )}
@@ -823,13 +823,13 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-        <div className="border-t border-slate-200/80 py-6 px-6">
+        <div className="border-t border-white/10/80 py-6 px-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
             <p>&copy; 2026 XpertClass. All rights reserved.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-slate-600 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-slate-600 transition-colors">Terms</a>
-              <a href="mailto:contact@xpertclass.academy" className="hover:text-slate-600 transition-colors">Contact</a>
+              <a href="#" className="hover:text-slate-300 transition-colors">Privacy</a>
+              <a href="#" className="hover:text-slate-300 transition-colors">Terms</a>
+              <a href="mailto:contact@xpertclass.academy" className="hover:text-slate-300 transition-colors">Contact</a>
             </div>
           </div>
         </div>

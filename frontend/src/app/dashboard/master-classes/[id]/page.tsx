@@ -67,7 +67,7 @@ export default function MasterClassDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={24} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={24} />
       </div>
     );
   }
@@ -83,16 +83,16 @@ export default function MasterClassDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Link href="/dashboard/master-classes" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/master-classes" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-200">
         <ArrowLeft size={16} /> Back to Master Classes
       </Link>
 
-      <div className="bg-gradient-to-br from-violet-500 to-[#229C62] rounded-2xl p-8 text-white">
+      <div className="bg-gradient-to-br from-violet-500 to-[#7AD62A] rounded-2xl p-8 text-white">
         <div className="flex items-center gap-2 mb-4">
           <span className="px-2.5 py-1 bg-white/20 rounded-full text-xs font-medium">{mc.category}</span>
           {mc.status === "LIVE" && (
             <span className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500 text-xs font-bold rounded-full">
-              <span className="w-2 h-2 bg-white rounded-full animate-pulse" /> LIVE NOW
+              <span className="w-2 h-2 bg-[#0f172a] rounded-full animate-pulse" /> LIVE NOW
             </span>
           )}
           {mc.status === "UPCOMING" && (
@@ -117,15 +117,15 @@ export default function MasterClassDetailPage() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
           {mc.instructorBio && (
-            <div className="angular-card bg-white p-6">
-              <h3 className="font-bold text-slate-900 mb-2">About the Instructor</h3>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h3 className="font-bold text-white mb-2">About the Instructor</h3>
               <p className="text-sm text-slate-500">{mc.instructorBio}</p>
             </div>
           )}
 
           {mc.recordingUrl && (
-            <div className="angular-card bg-white p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Recording</h3>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h3 className="font-bold text-white mb-3">Recording</h3>
               <a href={mc.recordingUrl} target="_blank" rel="noopener noreferrer" className="btn-primary text-sm">
                 <Video size={16} /> Watch Recording
               </a>
@@ -133,12 +133,12 @@ export default function MasterClassDetailPage() {
           )}
 
           {mc.registrations && mc.registrations.length > 0 && (
-            <div className="angular-card bg-white p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Registered ({mc.registrations.length})</h3>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h3 className="font-bold text-white mb-3">Registered ({mc.registrations.length})</h3>
               <div className="space-y-2">
                 {mc.registrations.map((r) => (
                   <div key={r.id} className="flex items-center gap-3 text-sm text-slate-600">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-[#0F203A] font-bold text-xs">
                       {(r.user?.name || "U").charAt(0)}
                     </div>
                     {r.user?.name || r.user?.email}
@@ -150,11 +150,11 @@ export default function MasterClassDetailPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="angular-card bg-white p-6">
+          <div className="angular-card bg-[#0f172a] p-6">
             {mc.status === "UPCOMING" ? (
               isRegistered ? (
                 <div className="space-y-3">
-                  <div className="text-center text-sm text-[#229C62] font-medium">You are registered!</div>
+                  <div className="text-center text-sm text-[#7AD62A] font-medium">You are registered!</div>
                   <button onClick={handleUnregister} disabled={registering} className="btn-secondary w-full text-sm">
                     {registering ? <Loader2 className="animate-spin" size={14} /> : "Cancel Registration"}
                   </button>

@@ -102,7 +102,7 @@ function RiskBadge({ level }: { level: AtRiskStudent["riskLevel"] }) {
 
 function TrendIcon({ trend }: { trend: string }) {
   if (trend === "improving")
-    return <TrendingUp className="h-4 w-4 text-[#229C62]" />;
+    return <TrendingUp className="h-4 w-4 text-[#7AD62A]" />;
   if (trend === "declining")
     return <TrendingDown className="h-4 w-4 text-red-500" />;
   return <Minus className="h-4 w-4 text-slate-400" />;
@@ -229,7 +229,7 @@ export default function PredictiveAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#229C62]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#7AD62A]" />
       </div>
     );
   }
@@ -259,8 +259,8 @@ export default function PredictiveAnalyticsPage() {
             onClick={() => setActiveTab(tab)}
             className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === tab
-                ? "bg-white text-[#0F203A] shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-[#0f172a] text-[#0F203A] shadow-sm"
+                : "text-slate-500 hover:text-slate-200"
             }`}
           >
             {tab === "overview" && "Overview"}
@@ -275,10 +275,10 @@ export default function PredictiveAnalyticsPage() {
         <div className="space-y-8">
           {/* Stat Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="angular-card border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-[#E9F8EE] p-2.5">
-                  <Users className="h-5 w-5 text-[#229C62]" />
+                <div className="rounded-lg bg-[#7AD62A]/10 p-2.5">
+                  <Users className="h-5 w-5 text-[#7AD62A]" />
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Total Students</p>
@@ -288,9 +288,9 @@ export default function PredictiveAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="angular-card border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-red-50 p-2.5">
+                <div className="rounded-lg bg-red-500/10 p-2.5">
                   <AlertTriangle className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
@@ -301,10 +301,10 @@ export default function PredictiveAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="angular-card border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-[#E9F8EE] p-2.5">
-                  <BarChart3 className="h-5 w-5 text-[#229C62]" />
+                <div className="rounded-lg bg-[#7AD62A]/10 p-2.5">
+                  <BarChart3 className="h-5 w-5 text-[#7AD62A]" />
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Avg Mastery</p>
@@ -314,10 +314,10 @@ export default function PredictiveAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="angular-card border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-[#E9F8EE] p-2.5">
-                  <CheckCircle className="h-5 w-5 text-[#229C62]" />
+                <div className="rounded-lg bg-[#7AD62A]/10 p-2.5">
+                  <CheckCircle className="h-5 w-5 text-[#7AD62A]" />
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Avg Assessment</p>
@@ -330,7 +330,7 @@ export default function PredictiveAnalyticsPage() {
           </div>
 
           {/* Risk Distribution */}
-          <div className="angular-card border border-slate-200 bg-white p-6">
+          <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
             <h3 className="mb-4 text-lg font-semibold text-[#0F203A]">
               Risk Distribution
             </h3>
@@ -349,24 +349,24 @@ export default function PredictiveAnalyticsPage() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Student Trends */}
-            <div className="angular-card border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
               <h3 className="mb-4 text-lg font-semibold text-[#0F203A]">
                 Student Trends
               </h3>
               {dashboard?.trendSummary && (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between rounded-lg bg-green-50 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-green-500/10 p-3">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-[#229C62]" />
+                      <TrendingUp className="h-4 w-4 text-[#7AD62A]" />
                       <span className="text-sm font-medium text-slate-700">
                         Improving
                       </span>
                     </div>
-                    <span className="text-lg font-bold text-[#229C62]">
+                    <span className="text-lg font-bold text-[#7AD62A]">
                       {dashboard.trendSummary.improving}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-slate-50 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
                     <div className="flex items-center gap-2">
                       <Minus className="h-4 w-4 text-slate-400" />
                       <span className="text-sm font-medium text-slate-700">
@@ -377,7 +377,7 @@ export default function PredictiveAnalyticsPage() {
                       {dashboard.trendSummary.stable}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg bg-red-50 p-3">
+                  <div className="flex items-center justify-between rounded-lg bg-red-500/10 p-3">
                     <div className="flex items-center gap-2">
                       <TrendingDown className="h-4 w-4 text-red-500" />
                       <span className="text-sm font-medium text-slate-700">
@@ -393,7 +393,7 @@ export default function PredictiveAnalyticsPage() {
             </div>
 
             {/* Most Common Risk Factors */}
-            <div className="angular-card border border-slate-200 bg-white p-6">
+            <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
               <h3 className="mb-4 text-lg font-semibold text-[#0F203A]">
                 Most Common Risk Factors
               </h3>
@@ -429,8 +429,8 @@ export default function PredictiveAnalyticsPage() {
       {activeTab === "at-risk" && (
         <div className="space-y-4">
           {atRiskStudents.length === 0 && (
-            <div className="angular-card border border-slate-200 bg-white py-12 text-center">
-              <CheckCircle className="mx-auto h-12 w-12 text-[#229C62]" />
+            <div className="angular-card border border-white/10 bg-[#0f172a] py-12 text-center">
+              <CheckCircle className="mx-auto h-12 w-12 text-[#7AD62A]" />
               <p className="mt-4 text-lg font-medium text-slate-700">
                 No at-risk students identified
               </p>
@@ -444,7 +444,7 @@ export default function PredictiveAnalyticsPage() {
             return (
               <div
                 key={student.userId}
-                className="overflow-hidden angular-card border border-slate-200 bg-white"
+                className="overflow-hidden angular-card border border-white/10 bg-[#0f172a]"
               >
                 <button
                   onClick={() =>
@@ -500,7 +500,7 @@ export default function PredictiveAnalyticsPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-100 bg-slate-50 p-5">
+                  <div className="border-t border-slate-100 bg-white/5 p-5">
                     <div className="mb-4 space-y-2">
                       <h4 className="text-sm font-medium text-slate-700">
                         Risk Factors
@@ -509,7 +509,7 @@ export default function PredictiveAnalyticsPage() {
                         {student.riskFactors.map((factor, idx) => (
                           <span
                             key={idx}
-                            className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700"
+                            className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-700"
                           >
                             {factor}
                           </span>
@@ -522,7 +522,7 @@ export default function PredictiveAnalyticsPage() {
                         Trends
                       </h4>
                       <div className="grid grid-cols-3 gap-3">
-                        <div className="flex items-center gap-2 rounded-lg bg-white p-3">
+                        <div className="flex items-center gap-2 rounded-lg bg-[#0f172a] p-3">
                           <TrendIcon trend={student.trends.activityTrend} />
                           <div>
                             <p className="text-xs text-slate-400">Activity</p>
@@ -531,7 +531,7 @@ export default function PredictiveAnalyticsPage() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 rounded-lg bg-white p-3">
+                        <div className="flex items-center gap-2 rounded-lg bg-[#0f172a] p-3">
                           <TrendIcon trend={student.trends.masteryTrend} />
                           <div>
                             <p className="text-xs text-slate-400">Mastery</p>
@@ -540,7 +540,7 @@ export default function PredictiveAnalyticsPage() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 rounded-lg bg-white p-3">
+                        <div className="flex items-center gap-2 rounded-lg bg-[#0f172a] p-3">
                           <TrendIcon trend={student.trends.assessmentTrend} />
                           <div>
                             <p className="text-xs text-slate-400">Assessment</p>
@@ -553,25 +553,25 @@ export default function PredictiveAnalyticsPage() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                      <div className="rounded-lg bg-white p-3 text-center">
+                      <div className="rounded-lg bg-[#0f172a] p-3 text-center">
                         <p className="text-xs text-slate-400">Days Inactive</p>
                         <p className="mt-1 text-lg font-bold text-[#0F203A]">
                           {student.metrics.daysSinceActive}
                         </p>
                       </div>
-                      <div className="rounded-lg bg-white p-3 text-center">
+                      <div className="rounded-lg bg-[#0f172a] p-3 text-center">
                         <p className="text-xs text-slate-400">Mastery</p>
-                        <p className="mt-1 text-lg font-bold text-[#229C62]">
+                        <p className="mt-1 text-lg font-bold text-[#7AD62A]">
                           {(student.metrics.overallMastery * 100).toFixed(1)}%
                         </p>
                       </div>
-                      <div className="rounded-lg bg-white p-3 text-center">
+                      <div className="rounded-lg bg-[#0f172a] p-3 text-center">
                         <p className="text-xs text-slate-400">Assessment Avg</p>
                         <p className="mt-1 text-lg font-bold text-[#0F203A]">
                           {student.metrics.avgAssessmentScore.toFixed(1)}%
                         </p>
                       </div>
-                      <div className="rounded-lg bg-white p-3 text-center">
+                      <div className="rounded-lg bg-[#0f172a] p-3 text-center">
                         <p className="text-xs text-slate-400">Level</p>
                         <p className="mt-1 text-lg font-bold text-[#0F203A]">
                           {student.metrics.level}
@@ -597,7 +597,7 @@ export default function PredictiveAnalyticsPage() {
             <select
               value={selectedCohort}
               onChange={(e) => setSelectedCohort(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#229C62] focus:outline-none focus:ring-1 focus:ring-[#229C62]"
+              className="rounded-lg border border-white/10 bg-[#0f172a] px-3 py-2 text-sm focus:border-[#7AD62A] focus:outline-none focus:ring-1 focus:ring-[#7AD62A]"
             >
               {cohorts.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -608,7 +608,7 @@ export default function PredictiveAnalyticsPage() {
           </div>
 
           {interventions.length === 0 && (
-            <div className="angular-card border border-slate-200 bg-white py-12 text-center">
+            <div className="angular-card border border-white/10 bg-[#0f172a] py-12 text-center">
               <Target className="mx-auto h-12 w-12 text-slate-300" />
               <p className="mt-4 text-lg font-medium text-slate-700">
                 No interventions for this cohort
@@ -621,7 +621,7 @@ export default function PredictiveAnalyticsPage() {
             return (
               <div
                 key={intervention.userId}
-                className="overflow-hidden angular-card border border-slate-200 bg-white"
+                className="overflow-hidden angular-card border border-white/10 bg-[#0f172a]"
               >
                 <button
                   onClick={() =>
@@ -641,7 +641,7 @@ export default function PredictiveAnalyticsPage() {
                         {intervention.urgency}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Zap className="h-3.5 w-3.5 text-[#229C62]" />
+                        <Zap className="h-3.5 w-3.5 text-[#7AD62A]" />
                         {(intervention.successProbability * 100).toFixed(0)}%
                         success
                       </span>
@@ -655,7 +655,7 @@ export default function PredictiveAnalyticsPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-100 bg-slate-50 p-5">
+                  <div className="border-t border-slate-100 bg-white/5 p-5">
                     <h4 className="mb-3 text-sm font-medium text-slate-700">
                       Recommended Actions
                     </h4>
@@ -663,7 +663,7 @@ export default function PredictiveAnalyticsPage() {
                       {intervention.actions.map((action, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-3 rounded-lg bg-white p-4"
+                          className="flex items-start gap-3 rounded-lg bg-[#0f172a] p-4"
                         >
                           <div className="mt-0.5">
                             <InterventionIcon type={action.type} />
@@ -675,7 +675,7 @@ export default function PredictiveAnalyticsPage() {
                             <p className="mt-1 text-xs text-slate-500">
                               {action.description}
                             </p>
-                            <p className="mt-1 text-xs text-[#229C62]">
+                            <p className="mt-1 text-xs text-[#7AD62A]">
                               Expected: {action.expectedImpact}
                             </p>
                           </div>

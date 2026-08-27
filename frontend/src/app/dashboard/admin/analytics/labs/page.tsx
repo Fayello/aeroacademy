@@ -59,10 +59,10 @@ function StatCard({ label, value, icon: Icon, color, sub }: {
   label: string; value: string | number; icon: typeof Microscope; color: string; sub?: string;
 }) {
   return (
-    <div className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all duration-300">
+    <div className="relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-lg transition-all duration-300">
       <div className={`absolute top-0 right-0 w-20 h-20 ${color} opacity-10 rounded-bl-full`} />
       <Icon size={20} className="text-slate-500 mb-3" />
-      <div className="text-2xl font-bold text-slate-900">{value}</div>
+      <div className="text-2xl font-bold text-white">{value}</div>
       <div className="text-sm text-slate-500 mt-1">{label}</div>
       {sub && <div className="text-xs text-slate-400 mt-0.5">{sub}</div>}
     </div>
@@ -83,7 +83,7 @@ function CalibrationBadge({ tooEasy, tooHard }: { tooEasy: boolean; tooHard: boo
 }
 
 function RateBar({ rate, color = "emerald" }: { rate: number; color?: string }) {
-  const bg = color === "emerald" ? "bg-[#229C62]" : color === "amber" ? "bg-amber-500" : color === "red" ? "bg-red-500" : "bg-blue-600";
+  const bg = color === "emerald" ? "bg-[#7AD62A]" : color === "amber" ? "bg-amber-500" : color === "red" ? "bg-red-500" : "bg-blue-600";
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
@@ -169,13 +169,13 @@ export default function LabAnalyticsPage() {
 
   const SortIcon = ({ col }: { col: SortKey }) => {
     if (sortKey !== col) return <ChevronDown size={12} className="text-slate-300" />;
-    return sortAsc ? <ChevronUp size={12} className="text-[#229C62]" /> : <ChevronDown size={12} className="text-[#229C62]" />;
+    return sortAsc ? <ChevronUp size={12} className="text-[#7AD62A]" /> : <ChevronDown size={12} className="text-[#7AD62A]" />;
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -183,18 +183,18 @@ export default function LabAnalyticsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 border border-slate-200">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 border border-white/10">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
             <Link href="/dashboard/admin/analytics" className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
               <ArrowLeft size={18} className="text-slate-600" />
             </Link>
-            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-              <Microscope size={24} className="text-[#229C62]" />
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <Microscope size={24} className="text-[#7AD62A]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Lab Analytics</h1>
+              <h1 className="text-2xl font-bold text-white">Lab Analytics</h1>
               <p className="text-sm text-slate-500">Step-level insights, difficulty calibration, and engagement trends</p>
             </div>
           </div>
@@ -203,7 +203,7 @@ export default function LabAnalyticsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <StatCard label="Total Labs" value={totals.totalLabs} icon={Microscope} color="bg-[#229C62]" />
+        <StatCard label="Total Labs" value={totals.totalLabs} icon={Microscope} color="bg-[#7AD62A]" />
         <StatCard label="Total Attempts" value={totals.totalAttempts.toLocaleString()} icon={Target} color="bg-blue-500" />
         <StatCard label="Avg Completion" value={`${totals.avgCompletion.toFixed(1)}%`} icon={TrendingUp} color="bg-emerald-500" />
         <StatCard label="Avg Failure Rate" value={`${totals.avgFailure.toFixed(1)}%`} icon={TrendingDown} color="bg-amber-500" />
@@ -212,7 +212,7 @@ export default function LabAnalyticsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -221,13 +221,13 @@ export default function LabAnalyticsPage() {
               placeholder="Search labs by name or domain..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
             />
           </div>
           <select
             value={domainFilter}
             onChange={(e) => setDomainFilter(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] bg-white"
+            className="px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] bg-[#0f172a]"
           >
             {domains.map((d) => (
               <option key={d} value={d}>{d === "all" ? "All Domains" : d}</option>
@@ -239,9 +239,9 @@ export default function LabAnalyticsPage() {
       {/* Lab Table + Detail */}
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Table */}
-        <div className={`${selectedLab ? "lg:col-span-3" : "lg:col-span-5"} bg-white rounded-xl border border-slate-200 overflow-hidden transition-all`}>
-          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-            <h3 className="font-semibold text-slate-900">All Labs ({filtered.length})</h3>
+        <div className={`${selectedLab ? "lg:col-span-3" : "lg:col-span-5"} bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden transition-all`}>
+          <div className="px-6 py-4 border-b border-white/10 bg-white/5">
+            <h3 className="font-semibold text-white">All Labs ({filtered.length})</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -259,7 +259,7 @@ export default function LabAnalyticsPage() {
                     <th
                       key={col.key}
                       onClick={() => handleSort(col.key)}
-                      className="px-4 py-3 text-left font-medium text-slate-500 cursor-pointer hover:text-slate-700 transition-colors select-none"
+                      className="px-4 py-3 text-left font-medium text-slate-500 cursor-pointer hover:text-slate-200 transition-colors select-none"
                     >
                       <div className="flex items-center gap-1">
                         {col.label}
@@ -276,11 +276,11 @@ export default function LabAnalyticsPage() {
                     key={lab.labId}
                     onClick={() => loadInsights(lab)}
                     className={`border-b border-slate-50 cursor-pointer transition-colors ${
-                      selectedLab?.labId === lab.labId ? "bg-[#E9F8EE]/50" : "hover:bg-slate-50"
+                      selectedLab?.labId === lab.labId ? "bg-[#7AD62A]/10/50" : "hover:bg-white/5"
                     }`}
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900 truncate max-w-[200px]">{lab.title}</div>
+                      <div className="font-medium text-white truncate max-w-[200px]">{lab.title}</div>
                     </td>
                     <td className="px-4 py-3 text-slate-600">{lab.domainName || "—"}</td>
                     <td className="px-4 py-3"><DifficultyBadge difficulty={lab.difficulty} /></td>
@@ -302,30 +302,30 @@ export default function LabAnalyticsPage() {
         {/* Detail Panel */}
         {selectedLab && (
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-900 truncate pr-2">{selectedLab.title}</h3>
-                <button onClick={() => { setSelectedLab(null); setInsights(null); }} className="text-slate-400 hover:text-slate-600 transition-colors shrink-0">
+                <h3 className="font-semibold text-white truncate pr-2">{selectedLab.title}</h3>
+                <button onClick={() => { setSelectedLab(null); setInsights(null); }} className="text-slate-400 hover:text-slate-300 transition-colors shrink-0">
                   <span className="text-xs">Close</span>
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-slate-50 rounded-lg p-3">
+                <div className="bg-white/5 rounded-lg p-3">
                   <div className="text-xs text-slate-500">Attempts</div>
-                  <div className="text-lg font-bold text-slate-900">{selectedLab.totalAttempts}</div>
+                  <div className="text-lg font-bold text-white">{selectedLab.totalAttempts}</div>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3">
+                <div className="bg-white/5 rounded-lg p-3">
                   <div className="text-xs text-slate-500">Completions</div>
-                  <div className="text-lg font-bold text-[#229C62]">{selectedLab.completions}</div>
+                  <div className="text-lg font-bold text-[#7AD62A]">{selectedLab.completions}</div>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3">
+                <div className="bg-white/5 rounded-lg p-3">
                   <div className="text-xs text-slate-500">Avg Time</div>
-                  <div className="text-lg font-bold text-slate-900">{selectedLab.avgTimeMinutes.toFixed(0)}m</div>
+                  <div className="text-lg font-bold text-white">{selectedLab.avgTimeMinutes.toFixed(0)}m</div>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-3">
+                <div className="bg-white/5 rounded-lg p-3">
                   <div className="text-xs text-slate-500">Submissions</div>
-                  <div className="text-lg font-bold text-slate-900">{selectedLab.totalSubmissions}</div>
+                  <div className="text-lg font-bold text-white">{selectedLab.totalSubmissions}</div>
                 </div>
               </div>
 
@@ -336,7 +336,7 @@ export default function LabAnalyticsPage() {
                 </div>
               )}
               {insights && insights.insights.length > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                <div className="bg-amber-500/10 border border-amber-200 rounded-lg p-3 mb-4">
                   <div className="flex items-center gap-2 text-xs font-medium text-amber-700 mb-2">
                     <Zap size={12} /> AI Insights
                   </div>
@@ -394,14 +394,14 @@ export default function LabAnalyticsPage() {
 
             {/* Step Breakdown */}
             {selectedLab.stepAnalytics && selectedLab.stepAnalytics.length > 0 && (
-              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+                <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                   <Info size={14} /> Step Breakdown
                 </h3>
                 <div className="space-y-3">
                   {selectedLab.stepAnalytics.map((step, i) => {
                     const rate = step.failureRate;
-                    const barColor = rate > 70 ? "bg-red-500" : rate > 40 ? "bg-amber-500" : "bg-[#229C62]";
+                    const barColor = rate > 70 ? "bg-red-500" : rate > 40 ? "bg-amber-500" : "bg-[#7AD62A]";
                     return (
                       <div key={i}>
                         <div className="flex items-center justify-between mb-1">

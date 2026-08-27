@@ -35,10 +35,10 @@ interface DashboardData {
 }
 
 const TYPE_CONFIG = {
-  MAINTAIN: { icon: Clock, color: "text-amber-500", bg: "bg-amber-50", border: "border-amber-200" },
-  LAB: { icon: FlaskConical, color: "text-blue-500", bg: "bg-blue-50", border: "border-blue-200" },
+  MAINTAIN: { icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-200" },
+  LAB: { icon: FlaskConical, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-200" },
   OUTCOME: { icon: BookOpen, color: "text-violet-500", bg: "bg-violet-50", border: "border-violet-200" },
-  ASSESSMENT: { icon: Target, color: "text-[#229C62]", bg: "bg-[#E9F8EE]", border: "border-[#229C62]/30" },
+  ASSESSMENT: { icon: Target, color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/30" },
 };
 
 export default function NextSteps() {
@@ -67,10 +67,10 @@ export default function NextSteps() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
         <div className="flex items-center gap-2 mb-3">
-          <Zap size={16} className="text-[#229C62]" />
-          <h3 className="text-sm font-semibold text-slate-900">What should I do right now?</h3>
+          <Zap size={16} className="text-[#7AD62A]" />
+          <h3 className="text-sm font-semibold text-white">What should I do right now?</h3>
         </div>
         <div className="flex items-center justify-center py-6">
           <Loader2 size={18} className="text-slate-400 animate-spin" />
@@ -84,11 +84,11 @@ export default function NextSteps() {
   const topRecs = data.recommendations.slice(0, 3);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
+    <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Zap size={16} className="text-[#229C62]" />
-          <h3 className="text-sm font-semibold text-slate-900">What should I do right now?</h3>
+          <Zap size={16} className="text-[#7AD62A]" />
+          <h3 className="text-sm font-semibold text-white">What should I do right now?</h3>
         </div>
         <Link
           href="/dashboard/competency"
@@ -110,7 +110,7 @@ export default function NextSteps() {
                   <Icon size={14} className={config.color} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 line-clamp-1">{rec.title}</p>
+                  <p className="text-sm font-medium text-white line-clamp-1">{rec.title}</p>
                   <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{rec.description}</p>
                 </div>
               </div>

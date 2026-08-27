@@ -266,30 +266,30 @@ export default function AdminCoursesPage() {
   // === Breadcrumb ===
   const renderBreadcrumb = () => (
     <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-      <button onClick={() => { setSelectedCourse(null); setSelectedSection(null); setSelectedLesson(null); }} className="hover:text-[#229C62] transition-colors">Courses</button>
+      <button onClick={() => { setSelectedCourse(null); setSelectedSection(null); setSelectedLesson(null); }} className="hover:text-[#7AD62A] transition-colors">Courses</button>
       {selectedCourse && (
         <>
           <ChevronRight size={14} />
-          <button onClick={() => { setSelectedSection(null); setSelectedLesson(null); loadCourseDetail(selectedCourse.id); }} className="hover:text-[#229C62] transition-colors">{selectedCourse.title}</button>
+          <button onClick={() => { setSelectedSection(null); setSelectedLesson(null); loadCourseDetail(selectedCourse.id); }} className="hover:text-[#7AD62A] transition-colors">{selectedCourse.title}</button>
         </>
       )}
       {selectedSection && (
         <>
           <ChevronRight size={14} />
-          <button onClick={() => setSelectedLesson(null)} className="hover:text-[#229C62] transition-colors">{selectedSection.title}</button>
+          <button onClick={() => setSelectedLesson(null)} className="hover:text-[#7AD62A] transition-colors">{selectedSection.title}</button>
         </>
       )}
       {selectedLesson && (
         <>
           <ChevronRight size={14} />
-          <span className="text-slate-900 font-medium">{selectedLesson.title}</span>
+          <span className="text-white font-medium">{selectedLesson.title}</span>
         </>
       )}
     </div>
   );
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#229C62]" size={32} /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#7AD62A]" size={32} /></div>;
   }
 
   // === Course List View ===
@@ -316,10 +316,10 @@ export default function AdminCoursesPage() {
         </div>
 
         {selectedCourses.size > 0 && (
-          <div className="flex items-center gap-3 p-3 bg-[#E9F8EE] rounded-xl border border-[#229C62]/20">
+          <div className="flex items-center gap-3 p-3 bg-[#7AD62A]/10 rounded-xl border border-[#7AD62A]/20">
             <span className="text-sm font-medium text-[#0F203A]">{selectedCourses.size} selected</span>
             <div className="flex items-center gap-2 ml-auto">
-              <button onClick={() => setSelectedCourses(new Set())} className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all" title="Clear selection">
+              <button onClick={() => setSelectedCourses(new Set())} className="p-1.5 text-slate-500 hover:text-slate-200 rounded-lg hover:bg-[#0f172a] transition-all" title="Clear selection">
                 <X size={16} />
               </button>
               <button onClick={() => setBatchDelete({ open: true, items: courses.filter((c) => selectedCourses.has(c.id)) })} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-all">
@@ -336,10 +336,10 @@ export default function AdminCoursesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search courses..."
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+            <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300">
               <X size={14} />
             </button>
           )}
@@ -353,32 +353,32 @@ export default function AdminCoursesPage() {
               return c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
             })
             .map((course) => (
-            <div key={course.id} onClick={() => loadCourseDetail(course.id)} className={`angular-card border border-slate-200 p-5 hover-lift hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group ${selectedCourses.has(course.id) ? "border-[#229C62]/60 ring-1 ring-[#229C62]/40" : ""}`}>
+            <div key={course.id} onClick={() => loadCourseDetail(course.id)} className={`angular-card border border-white/10 p-5 hover-lift hover:shadow-lg hover:border-blue-300 cursor-pointer transition-all group ${selectedCourses.has(course.id) ? "border-[#7AD62A]/60 ring-1 ring-[#7AD62A]/40" : ""}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <button onClick={(e) => { e.stopPropagation(); toggleCourseSelection(course.id); }} className="text-slate-300 hover:text-[#229C62] transition-colors shrink-0" title={selectedCourses.has(course.id) ? "Deselect" : "Select"}>
-                    {selectedCourses.has(course.id) ? <CheckSquare size={18} className="text-[#229C62]" /> : <Square size={18} />}
+                  <button onClick={(e) => { e.stopPropagation(); toggleCourseSelection(course.id); }} className="text-slate-300 hover:text-[#7AD62A] transition-colors shrink-0" title={selectedCourses.has(course.id) ? "Deselect" : "Select"}>
+                    {selectedCourses.has(course.id) ? <CheckSquare size={18} className="text-[#7AD62A]" /> : <Square size={18} />}
                   </button>
                   <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
                     <GraduationCap size={20} className="text-blue-600 group-hover:text-white transition-colors" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{course.title}</h3>
+                    <h3 className="font-semibold text-white group-hover:text-blue-600 transition-colors">{course.title}</h3>
                     <p className="text-sm text-slate-500 line-clamp-1 max-w-lg">{course.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <p className="text-sm font-medium text-slate-900">{course.sections?.length || 0}</p>
+                    <p className="text-sm font-medium text-white">{course.sections?.length || 0}</p>
                     <p className="text-xs text-slate-500">Sections</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-slate-900">{course.sections?.reduce((acc: number, s: Section) => acc + (s.lessons?.length || s._count?.lessons || 0), 0) || 0}</p>
+                    <p className="text-sm font-medium text-white">{course.sections?.reduce((acc: number, s: Section) => acc + (s.lessons?.length || s._count?.lessons || 0), 0) || 0}</p>
                     <p className="text-xs text-slate-500">Lessons</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={(e) => { e.stopPropagation(); setCourseForm({ title: course.title, description: course.description }); setCourseModal({ open: true, editing: course }); }} className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"><Pencil size={16} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, type: "course", item: course }); }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setCourseForm({ title: course.title, description: course.description }); setCourseModal({ open: true, editing: course }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, type: "course", item: course }); }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
                     <ChevronRight size={18} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
                   </div>
                 </div>
@@ -387,7 +387,7 @@ export default function AdminCoursesPage() {
           ))}
         </div>
 
-        <AdminModal isOpen={courseModal.open} onClose={() => setCourseModal({ open: false, editing: null })} title={courseModal.editing ? "Edit Course" : "New Course"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setCourseModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveCourse} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+        <AdminModal isOpen={courseModal.open} onClose={() => setCourseModal({ open: false, editing: null })} title={courseModal.editing ? "Edit Course" : "New Course"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setCourseModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveCourse} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
           <div className="space-y-4">
             <AdminInput label="Title" value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} placeholder="Course title" required />
             <AdminTextarea label="Description" value={courseForm.description} onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })} placeholder="Course description" rows={4} required />
@@ -423,21 +423,21 @@ export default function AdminCoursesPage() {
 
         <div className="grid gap-4">
           {selectedCourse?.sections?.map((section) => (
-            <div key={section.id} onClick={() => setSelectedSection(section)} className="angular-card border border-slate-200 p-5 hover-lift hover:shadow-lg hover:border-violet-300 cursor-pointer transition-all group">
+            <div key={section.id} onClick={() => setSelectedSection(section)} className="angular-card border border-white/10 p-5 hover-lift hover:shadow-lg hover:border-violet-300 cursor-pointer transition-all group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center group-hover:bg-violet-600 transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover:bg-violet-600 transition-colors">
                     <Layers size={18} className="text-violet-600 group-hover:text-white transition-colors" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900 group-hover:text-violet-600 transition-colors">{section.title}</h3>
+                    <h3 className="font-semibold text-white group-hover:text-violet-600 transition-colors">{section.title}</h3>
                     <p className="text-sm text-slate-500">{section.lessons?.length || 0} lessons</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">Order: {section.order}</span>
-                  <button onClick={(e) => { e.stopPropagation(); setSectionForm({ title: section.title, order: section.order }); setSectionModal({ open: true, editing: section }); }} className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"><Pencil size={16} /></button>
-                  <button onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, type: "section", item: section }); }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
+                  <button onClick={(e) => { e.stopPropagation(); setSectionForm({ title: section.title, order: section.order }); setSectionModal({ open: true, editing: section }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
+                  <button onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, type: "section", item: section }); }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
                   <ChevronRight size={18} className="text-slate-400 group-hover:text-violet-600 transition-colors" />
                 </div>
               </div>
@@ -445,7 +445,7 @@ export default function AdminCoursesPage() {
           ))}
         </div>
 
-        <AdminModal isOpen={sectionModal.open} onClose={() => setSectionModal({ open: false, editing: null })} title={sectionModal.editing ? "Edit Section" : "New Section"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setSectionModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveSection} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+        <AdminModal isOpen={sectionModal.open} onClose={() => setSectionModal({ open: false, editing: null })} title={sectionModal.editing ? "Edit Section" : "New Section"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setSectionModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveSection} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
           <div className="space-y-4">
             <AdminInput label="Title" value={sectionForm.title} onChange={(e) => setSectionForm({ ...sectionForm, title: e.target.value })} placeholder="Section title" required />
             <AdminNumber label="Order" value={sectionForm.order} onChange={(e) => setSectionForm({ ...sectionForm, order: parseInt(e.target.value) || 0 })} min={0} />
@@ -461,7 +461,7 @@ export default function AdminCoursesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {renderBreadcrumb()}
-      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-[#229C62] via-[#0F203A] to-teal-800 p-8 text-white">
+      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-[#7AD62A] via-[#0F203A] to-teal-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -479,27 +479,27 @@ export default function AdminCoursesPage() {
 
       <div className="grid gap-4">
         {selectedSection?.lessons?.map((lesson) => (
-          <div key={lesson.id} className="angular-card border border-slate-200 p-5 hover-lift hover:shadow-lg transition-all group">
+          <div key={lesson.id} className="angular-card border border-white/10 p-5 hover-lift hover:shadow-lg transition-all group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-                  <BookOpen size={18} className="text-[#229C62]" />
+                <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+                  <BookOpen size={18} className="text-[#7AD62A]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">{lesson.title}</h3>
+                  <h3 className="font-semibold text-white">{lesson.title}</h3>
                   <div className="flex items-center gap-3 mt-1">
-                    {lesson.videoUrl && <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Video</span>}
+                    {lesson.videoUrl && <span className="text-xs bg-blue-500/10 text-blue-700 px-2 py-0.5 rounded-full">Video</span>}
                     {lesson.content && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Content</span>}
-                    {lesson.labId && <span className="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">Lab</span>}
+                    {lesson.labId && <span className="text-xs bg-amber-500/10 text-amber-700 px-2 py-0.5 rounded-full">Lab</span>}
                     {lesson.quiz && <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Quiz ({lesson.quiz.questions?.length || 0} Q)</span>}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">Order: {lesson.order}</span>
-                <button onClick={() => { setLessonForm({ title: lesson.title, videoUrl: lesson.videoUrl || "", content: lesson.content || "", labId: lesson.labId || "", order: lesson.order }); setLessonModal({ open: true, editing: lesson }); }} className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"><Pencil size={16} /></button>
+                <button onClick={() => { setLessonForm({ title: lesson.title, videoUrl: lesson.videoUrl || "", content: lesson.content || "", labId: lesson.labId || "", order: lesson.order }); setLessonModal({ open: true, editing: lesson }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
                 <button onClick={() => { setQuizForm(lesson.quiz?.questions?.map((q: QuizQuestion) => ({ text: q.text, answers: q.answers.map((a: QuizAnswer) => ({ text: a.text, isCorrect: a.isCorrect })) })) || []); setQuizModal({ open: true, lesson }); }} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"><HelpCircle size={16} /></button>
-                <button onClick={() => setDeleteDialog({ open: true, type: lesson.quiz ? "lesson-with-quiz" : "lesson", item: lesson })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
+                <button onClick={() => setDeleteDialog({ open: true, type: lesson.quiz ? "lesson-with-quiz" : "lesson", item: lesson })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
               </div>
             </div>
           </div>
@@ -507,7 +507,7 @@ export default function AdminCoursesPage() {
       </div>
 
       {/* Lesson Modal */}
-      <AdminModal isOpen={lessonModal.open} onClose={() => setLessonModal({ open: false, editing: null })} title={lessonModal.editing ? "Edit Lesson" : "New Lesson"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLessonModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveLesson} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+      <AdminModal isOpen={lessonModal.open} onClose={() => setLessonModal({ open: false, editing: null })} title={lessonModal.editing ? "Edit Lesson" : "New Lesson"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLessonModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveLesson} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
         <div className="space-y-4">
           <AdminInput label="Title" value={lessonForm.title} onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })} placeholder="Lesson title" required />
           <AdminInput label="Video URL" value={lessonForm.videoUrl} onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })} placeholder="https://..." hint="YouTube, Vimeo, or direct URL" />
@@ -518,32 +518,32 @@ export default function AdminCoursesPage() {
       </AdminModal>
 
       {/* Quiz Modal */}
-      <AdminModal isOpen={quizModal.open} onClose={() => setQuizModal({ open: false, lesson: null })} title="Manage Quiz" size="xl" footer={<div className="flex gap-3 justify-end"><button onClick={() => setQuizModal({ open: false, lesson: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveQuiz} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save Quiz"}</button></div>}>
+      <AdminModal isOpen={quizModal.open} onClose={() => setQuizModal({ open: false, lesson: null })} title="Manage Quiz" size="xl" footer={<div className="flex gap-3 justify-end"><button onClick={() => setQuizModal({ open: false, lesson: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveQuiz} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save Quiz"}</button></div>}>
         <div className="space-y-6">
           {quizForm.map((q, qi) => (
-            <div key={qi} className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+            <div key={qi} className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-3">
               <div className="flex items-start gap-3">
                 <span className="text-sm font-bold text-slate-500 mt-2.5">Q{qi + 1}</span>
                 <div className="flex-1 space-y-3">
-                  <input value={q.text} onChange={(e) => updateQuestion(qi, { text: e.target.value })} placeholder="Question text..." className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]" />
+                  <input value={q.text} onChange={(e) => updateQuestion(qi, { text: e.target.value })} placeholder="Question text..." className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]" />
                   <div className="space-y-2">
                     {q.answers.map((a, ai) => (
                       <div key={ai} className="flex items-center gap-2">
-                        <input type="radio" name={`q${qi}`} checked={a.isCorrect} onChange={() => { const next = [...quizForm]; next[qi].answers = next[qi].answers.map((ans, idx) => ({ ...ans, isCorrect: idx === ai })); setQuizForm(next); }} className="text-[#229C62]" />
-                        <input value={a.text} onChange={(e) => updateAnswer(qi, ai, { text: e.target.value })} placeholder={`Answer ${ai + 1}...`} className="flex-1 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#229C62]/20" />
+                        <input type="radio" name={`q${qi}`} checked={a.isCorrect} onChange={() => { const next = [...quizForm]; next[qi].answers = next[qi].answers.map((ans, idx) => ({ ...ans, isCorrect: idx === ai })); setQuizForm(next); }} className="text-[#7AD62A]" />
+                        <input value={a.text} onChange={(e) => updateAnswer(qi, ai, { text: e.target.value })} placeholder={`Answer ${ai + 1}...`} className="flex-1 px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm focus:outline-none focus:ring-1 focus:ring-[#7AD62A]/20" />
                         {q.answers.length > 2 && <button onClick={() => removeAnswer(qi, ai)} className="p-1 text-slate-400 hover:text-red-500" aria-label={`Remove answer ${ai + 1}`}><Trash2 size={14} /></button>}
                       </div>
                     ))}
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => addAnswer(qi)} className="text-xs text-[#229C62] hover:text-[#0F203A] font-medium">+ Add Answer</button>
+                    <button onClick={() => addAnswer(qi)} className="text-xs text-[#7AD62A] hover:text-[#0F203A] font-medium">+ Add Answer</button>
                   </div>
                 </div>
                 <button onClick={() => removeQuestion(qi)} className="p-1 text-slate-400 hover:text-red-500" aria-label={`Remove question ${qi + 1}`}><Trash2 size={16} /></button>
               </div>
             </div>
           ))}
-          <button onClick={addQuestion} className="flex items-center gap-2 text-sm font-medium text-[#229C62] hover:text-[#0F203A]"><Plus size={16} /> Add Question</button>
+          <button onClick={addQuestion} className="flex items-center gap-2 text-sm font-medium text-[#7AD62A] hover:text-[#0F203A]"><Plus size={16} /> Add Question</button>
         </div>
       </AdminModal>
 

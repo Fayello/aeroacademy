@@ -93,7 +93,7 @@ export default function TrainerProfilePage() {
   const weekDates = getNextWeekDates();
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#229C62]" size={24} /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#7AD62A]" size={24} /></div>;
   }
 
   if (!trainer) {
@@ -107,20 +107,20 @@ export default function TrainerProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Link href="/dashboard/training" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/training" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-200">
         <ArrowLeft size={16} /> Back to Trainers
       </Link>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
         <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-[#E9F8EE] flex items-center justify-center text-[#0F203A] font-bold text-2xl">
+          <div className="w-20 h-20 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-[#0F203A] font-bold text-2xl">
             {(trainer.user?.name || "T").charAt(0)}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{trainer.user?.name}</h1>
+            <h1 className="text-2xl font-bold text-white">{trainer.user?.name}</h1>
             <div className="text-sm text-slate-500 mt-1">{trainer.specialties?.join(", ") || "General"}</div>
             {trainer.hourlyRate && (
-              <div className="text-sm font-medium text-[#229C62] mt-1">{trainer.hourlyRate.toLocaleString()} XAF/hr</div>
+              <div className="text-sm font-medium text-[#7AD62A] mt-1">{trainer.hourlyRate.toLocaleString()} XAF/hr</div>
             )}
           </div>
         </div>
@@ -128,8 +128,8 @@ export default function TrainerProfilePage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Select a Date</h3>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="font-bold text-white mb-4">Select a Date</h3>
           <div className="grid grid-cols-7 gap-2">
             {weekDates.map((d) => {
               const isSelected = d.toDateString() === selectedDate.toDateString();
@@ -140,10 +140,10 @@ export default function TrainerProfilePage() {
                   onClick={() => setSelectedDate(d)}
                   className={`flex flex-col items-center p-2 rounded-lg text-xs transition-all ${
                     isSelected
-                      ? "bg-[#229C62] text-white"
+                      ? "bg-[#7AD62A] text-white"
                       : isToday
-                        ? "bg-[#E9F8EE] text-[#0F203A] border border-[#229C62]/20"
-                        : "hover:bg-slate-50 text-slate-600"
+                        ? "bg-[#7AD62A]/10 text-[#0F203A] border border-[#7AD62A]/20"
+                        : "hover:bg-white/5 text-slate-600"
                   }`}
                 >
                   <span className="font-medium">{DAYS[d.getDay()]}</span>
@@ -154,8 +154,8 @@ export default function TrainerProfilePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Available Slots</h3>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="font-bold text-white mb-4">Available Slots</h3>
           {slotsLoading ? (
             <div className="flex items-center justify-center py-8"><Loader2 className="animate-spin text-slate-400" size={20} /></div>
           ) : slots.length === 0 ? (
@@ -169,17 +169,17 @@ export default function TrainerProfilePage() {
                   onClick={() => setSelectedSlot(slot)}
                   className={`w-full flex items-center justify-between p-3 rounded-lg border text-sm transition-all ${
                     selectedSlot?.id === slot.id
-                      ? "border-[#229C62] bg-[#E9F8EE]"
+                      ? "border-[#7AD62A] bg-[#7AD62A]/10"
                       : slot.available
-                        ? "border-slate-200 hover:border-[#229C62]/30"
-                        : "border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed"
+                        ? "border-white/10 hover:border-[#7AD62A]/30"
+                        : "border-slate-100 bg-white/5 opacity-50 cursor-not-allowed"
                   }`}
                 >
                   <span className="flex items-center gap-2">
                     <Clock size={14} className="text-slate-400" />
                     {slot.startTime} - {slot.endTime}
                   </span>
-                  {selectedSlot?.id === slot.id && <Check size={14} className="text-[#229C62]" />}
+                  {selectedSlot?.id === slot.id && <Check size={14} className="text-[#7AD62A]" />}
                   {!slot.available && <span className="text-xs text-slate-400">Booked</span>}
                 </button>
               ))}
@@ -189,8 +189,8 @@ export default function TrainerProfilePage() {
       </div>
 
       {selectedSlot && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Book Session</h3>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="font-bold text-white mb-4">Book Session</h3>
           <div className="text-sm text-slate-500 mb-4">
             {selectedDate.toLocaleDateString()} | {selectedSlot.startTime} - {selectedSlot.endTime}
           </div>

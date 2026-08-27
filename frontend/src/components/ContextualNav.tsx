@@ -30,14 +30,14 @@ export default function ContextualNav({
       {/* Back link */}
       <Link
         href={backHref}
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 mb-3 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 mb-3 transition-colors"
       >
         <ArrowLeft size={14} />
         {backLabel}
       </Link>
 
       {/* Title */}
-      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-3">
+      <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight mb-3">
         {title}
       </h1>
 
@@ -52,8 +52,8 @@ export default function ContextualNav({
                 href={tab.href}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                   isActive
-                    ? "bg-[#E9F8EE] text-[#0F203A]"
-                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                    ? "bg-[#7AD62A]/10 text-[#7AD62A]"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                 }`}
               >
                 {tab.label}

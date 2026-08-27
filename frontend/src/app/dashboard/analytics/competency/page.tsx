@@ -172,7 +172,7 @@ export default function CompetencyAnalyticsPage() {
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard"
-          className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
         >
           <ArrowLeft size={18} className="text-slate-600" />
         </Link>
@@ -181,25 +181,25 @@ export default function CompetencyAnalyticsPage() {
 
       {/* Empty state — no data at all */}
       {!hasData && !loading ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-10 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-            <BarChart3 size={28} className="text-[#229C62]" />
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-10 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+            <BarChart3 size={28} className="text-[#7AD62A]" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-2">Your competency profile is empty</h3>
+          <h3 className="text-lg font-bold text-white mb-2">Your competency profile is empty</h3>
           <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
             Complete courses, labs, and assessments to build your competency radar. Your skills will be mapped across domains like Systems, Networking, Security, and more.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Link
               href="/dashboard/courses"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
             >
               <BookOpen size={16} />
               Browse Courses
             </Link>
             <Link
               href="/dashboard/labs"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#0f172a] border border-white/10 hover:bg-white/5 text-slate-700 text-sm font-semibold transition-colors"
             >
               <FlaskConical size={16} />
               Try a Lab
@@ -218,8 +218,8 @@ export default function CompetencyAnalyticsPage() {
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                     activeTab === tab.key
-                      ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-[#0f172a] text-white shadow-sm"
+                      : "text-slate-500 hover:text-slate-200"
                   }`}
                 >
                   <Icon size={14} />
@@ -231,8 +231,8 @@ export default function CompetencyAnalyticsPage() {
 
       {/* Radar Chart */}
       {activeTab === "radar" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">
             Domain Competency Radar
           </h3>
           {radarData.length === 0 ? (
@@ -284,13 +284,13 @@ export default function CompetencyAnalyticsPage() {
               {/* Domain Details */}
               <div className="space-y-3">
                 {radarData.map((d) => (
-                  <div key={d.domain} className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                  <div key={d.domain} className="p-3 rounded-lg bg-white/5 border border-white/10">
                     <div className="flex items-center gap-2 mb-2">
                       <div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: DOMAIN_COLORS[d.domain] || "#94a3b8" }}
                       />
-                      <span className="text-sm font-medium text-slate-900">
+                      <span className="text-sm font-medium text-white">
                         {d.displayName}
                       </span>
                       <span className="text-xs font-bold text-slate-700 ml-auto">
@@ -321,8 +321,8 @@ export default function CompetencyAnalyticsPage() {
 
       {/* Growth Trajectory */}
       {activeTab === "trajectory" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">
             Growth Trajectory (30 days)
           </h3>
           {!trajectory || trajectory.chartData.length === 0 ? (
@@ -363,8 +363,8 @@ export default function CompetencyAnalyticsPage() {
       {activeTab === "correlation" && (
         <div className="space-y-6">
           {/* Correlation Heatmap */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4">
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h3 className="text-sm font-semibold text-white mb-4">
               Cross-Domain Correlation
             </h3>
             {!correlation || correlation.correlationMatrix.length === 0 ? (
@@ -415,7 +415,7 @@ export default function CompetencyAnalyticsPage() {
                                 ? "bg-yellow-100 text-yellow-700"
                                 : corr > 0
                                 ? "bg-orange-100 text-orange-700"
-                                : "bg-slate-50 text-slate-400";
+                                : "bg-white/5 text-slate-400";
                             return (
                               <td key={col.domain} className="p-2 text-center">
                                 <div
@@ -442,7 +442,7 @@ export default function CompetencyAnalyticsPage() {
                       {correlation.strongestCorrelations.map((c, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-3 p-2 rounded-lg bg-slate-50 border border-slate-200"
+                          className="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/10"
                         >
                           <div
                             className="w-2 h-2 rounded-full"
@@ -464,7 +464,7 @@ export default function CompetencyAnalyticsPage() {
 
                 {/* Gaps */}
                 {correlation.gaps.length > 0 && (
-                  <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-200">
                     <p className="text-xs text-amber-700">
                       <strong>Gaps:</strong> No evidence in{" "}
                       {correlation.gaps.join(", ")}. Complete labs in these
@@ -480,8 +480,8 @@ export default function CompetencyAnalyticsPage() {
 
       {/* Weekly Trends */}
       {activeTab === "trends" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">
             Week-over-Week Trends
           </h3>
           {!trends || trends.trends.length === 0 ? (
@@ -491,7 +491,7 @@ export default function CompetencyAnalyticsPage() {
           ) : (
             <>
               {/* Overall */}
-              <div className="flex items-center gap-4 mb-6 p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <div className="flex items-center gap-4 mb-6 p-3 rounded-lg bg-white/5 border border-white/10">
                 <div className="flex items-center gap-2">
                   {trends.overall.trend === "UP" && (
                     <TrendingUp size={16} className="text-emerald-500" />
@@ -502,7 +502,7 @@ export default function CompetencyAnalyticsPage() {
                   {trends.overall.trend === "STABLE" && (
                     <Minus size={16} className="text-slate-400" />
                   )}
-                  <span className="text-sm font-medium text-slate-900">
+                  <span className="text-sm font-medium text-white">
                     Overall: {trends.overall.thisWeekEvidence} evidence this week
                   </span>
                 </div>
@@ -516,16 +516,16 @@ export default function CompetencyAnalyticsPage() {
                 {trends.trends.map((t) => (
                   <div
                     key={t.domainId}
-                    className="flex items-center gap-4 p-3 rounded-lg border border-slate-200"
+                    className="flex items-center gap-4 p-3 rounded-lg border border-white/10"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900">{t.domainName}</p>
+                      <p className="text-sm font-medium text-white">{t.domainName}</p>
                       <p className="text-xs text-slate-500">
                         {t.thisWeekEvidenceCount} evidence this week
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-900">
+                      <p className="text-sm font-bold text-white">
                         {t.thisWeekAvg}%
                       </p>
                       <p className="text-[10px] text-slate-400">
@@ -537,8 +537,8 @@ export default function CompetencyAnalyticsPage() {
                         t.trend === "UP"
                           ? "bg-emerald-50 text-emerald-600"
                           : t.trend === "DOWN"
-                          ? "bg-red-50 text-red-600"
-                          : "bg-slate-50 text-slate-500"
+                          ? "bg-red-500/10 text-red-600"
+                          : "bg-white/5 text-slate-500"
                       }`}
                     >
                       {t.trend === "UP" && <TrendingUp size={12} />}

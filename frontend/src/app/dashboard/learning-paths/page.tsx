@@ -48,7 +48,7 @@ interface LearningPath {
 }
 
 const difficultyColors: Record<string, string> = {
-  BEGINNER: "bg-[#E9F8EE] text-[#0F203A]",
+  BEGINNER: "bg-[#7AD62A]/10 text-[#0F203A]",
   INTERMEDIATE: "bg-amber-100 text-amber-700",
   ADVANCED: "bg-red-100 text-red-700",
   EXPERT: "bg-purple-100 text-purple-700",
@@ -80,7 +80,7 @@ export default function LearningPathsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -90,7 +90,7 @@ export default function LearningPathsPage() {
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <AlertTriangle size={32} className="text-red-400 mb-3" />
         <p className="text-sm text-slate-600 mb-3">{error}</p>
-        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-colors">
+        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-colors">
           Try again
         </button>
       </div>
@@ -129,17 +129,17 @@ export default function LearningPathsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search learning paths..."
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all bg-white"
+              className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all bg-[#0f172a]"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300">
                 <X size={14} />
               </button>
             )}
           </div>
 
           {paths.filter((p) => !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
-            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-8 text-center">
               <Search size={32} className="mx-auto mb-3 text-slate-300" />
               <p className="text-sm text-slate-500">No paths match &ldquo;{searchQuery}&rdquo;</p>
             </div>
@@ -151,12 +151,12 @@ export default function LearningPathsPage() {
             <Link
               key={path.id}
               href={`/dashboard/learning-paths/${path.id}`}
-              className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-violet-300 transition-all group"
+              className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden hover:shadow-lg hover:border-violet-300 transition-all group"
             >
               <div className="h-3 bg-gradient-to-r from-violet-500 to-indigo-500" />
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-slate-900 group-hover:text-violet-600 transition-colors">
+                  <h3 className="text-lg font-semibold text-white group-hover:text-violet-600 transition-colors">
                     {path.title}
                   </h3>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${difficultyColors[path.difficulty] || difficultyColors.BEGINNER}`}>
@@ -184,7 +184,7 @@ export default function LearningPathsPage() {
                   <div className="space-y-2">
                     {path.courses.slice(0, 3).map((lpc, i) => (
                       <div key={lpc.id} className="flex items-center gap-2 text-sm">
-                        <span className="w-5 h-5 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-[10px] font-bold shrink-0">
+                        <span className="w-5 h-5 rounded-full bg-violet-500/10 text-violet-600 flex items-center justify-center text-[10px] font-bold shrink-0">
                           {i + 1}
                         </span>
                         <span className="text-slate-700 truncate">{lpc.course.title}</span>

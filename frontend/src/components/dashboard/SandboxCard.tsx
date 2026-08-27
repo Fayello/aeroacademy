@@ -16,12 +16,12 @@ export default function SandboxCard({ logs }: SandboxCardProps) {
             <Terminal size={16} className="text-blue-600" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Lab Activity</h3>
+            <h3 className="text-sm font-semibold text-white">Lab Activity</h3>
             <p className="text-xs text-slate-500">Recent sandbox logs</p>
           </div>
         </div>
 
-        <div className="bg-slate-50 rounded-lg p-4 font-mono text-xs h-[140px] overflow-y-auto border border-slate-100">
+        <div className="bg-white/5 rounded-lg p-4 font-mono text-xs h-[140px] overflow-y-auto border border-slate-100">
           {logs.length > 0 ? (
             <div className="space-y-1.5">
               {logs.slice(0, 5).map((log, i) => (

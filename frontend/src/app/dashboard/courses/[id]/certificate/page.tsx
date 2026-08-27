@@ -147,14 +147,14 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
       <div className="space-y-6 animate-in fade-in duration-500">
         <Link
           href={"/dashboard/courses/" + id}
-          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+          className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
         >
           <ArrowLeft size={14} /> Back to Course
         </Link>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+        <div className="rounded-xl border border-white/10 bg-[#0f172a] p-12 text-center">
           <Lock size={40} className="text-slate-300 mx-auto mb-4" />
-          <h1 className="text-lg font-bold text-slate-900 mb-2">Certificate Not Available</h1>
+          <h1 className="text-lg font-bold text-white mb-2">Certificate Not Available</h1>
           <p className="text-sm text-slate-500 mb-1">
             {data?.reason === "Not enrolled"
               ? "You need to enroll in this course first."
@@ -192,13 +192,13 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
     <div className="space-y-6 animate-in fade-in duration-500">
       <Link
         href={"/dashboard/courses/" + id}
-        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
       >
         <ArrowLeft size={14} /> Back to Course
       </Link>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-        <div className="bg-gradient-to-r from-[#229C62] to-[#229C62] p-8 text-white text-center">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden">
+        <div className="bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] p-8 text-white text-center">
           <div className="w-16 h-16 rounded-full bg-white/20 mx-auto mb-3 flex items-center justify-center">
             <Award size={32} />
           </div>
@@ -208,25 +208,25 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
 
         <div className="p-6 space-y-5">
           <div className="text-center">
-            <CheckCircle2 size={40} className="text-[#229C62] mx-auto mb-2" />
-            <h2 className="text-lg font-bold text-slate-900">Congratulations!</h2>
+            <CheckCircle2 size={40} className="text-[#7AD62A] mx-auto mb-2" />
+            <h2 className="text-lg font-bold text-white">Congratulations!</h2>
             <p className="text-sm text-slate-600 mt-1">
               You have successfully completed <span className="font-medium">{cert.courseName}</span>.
             </p>
           </div>
 
-          <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+          <div className="bg-white/5 rounded-lg p-4 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Student</span>
-              <span className="font-medium text-slate-900">{cert.userName}</span>
+              <span className="font-medium text-white">{cert.userName}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Course</span>
-              <span className="font-medium text-slate-900">{cert.courseName}</span>
+              <span className="font-medium text-white">{cert.courseName}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Issued</span>
-              <span className="font-medium text-slate-900">
+              <span className="font-medium text-white">
                 {new Date(cert.issuedAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
@@ -244,7 +244,7 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
             <button
               onClick={generatePDF}
               disabled={generating}
-              className="flex-1 bg-[#229C62] hover:bg-[#0F203A] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-[#7AD62A] hover:bg-[#0F203A] text-white py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
               {generating ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
               {generating ? "Generating..." : "Download PDF"}

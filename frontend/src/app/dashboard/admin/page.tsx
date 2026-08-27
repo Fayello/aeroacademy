@@ -45,7 +45,7 @@ export default function AdminDashboardPage() {
         <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[1, 2, 3, 4, 5, 6].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 space-y-2">
+            <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 space-y-2">
               <div className="h-5 w-5 bg-slate-200 rounded animate-pulse" />
               <div className="h-6 w-12 bg-slate-200 rounded animate-pulse" />
               <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
@@ -57,12 +57,12 @@ export default function AdminDashboardPage() {
   }
 
   const cards = [
-    { label: "Students", value: stats?.totalStudents || 0, icon: Users, color: "emerald", bg: "bg-[#229C62]", trend: "+12%" },
+    { label: "Students", value: stats?.totalStudents || 0, icon: Users, color: "emerald", bg: "bg-[#7AD62A]", trend: "+12%" },
     { label: "Courses", value: stats?.totalCourses || 0, icon: GraduationCap, color: "blue", bg: "bg-blue-500", trend: "+3" },
     { label: "Labs", value: stats?.totalLabs || 0, icon: Microscope, color: "violet", bg: "bg-violet-500", trend: "+8" },
     { label: "Master Classes", value: stats?.masterClasses || 0, icon: Video, color: "amber", bg: "bg-amber-500", trend: "+2" },
     { label: "Trainers", value: stats?.trainers || 0, icon: Calendar, color: "rose", bg: "bg-rose-500", trend: "+1" },
-    { label: "Total Users", value: stats?.users || 0, icon: Users, color: "slate", bg: "bg-slate-500", trend: "+18%" },
+    { label: "Total Users", value: stats?.users || 0, icon: Users, color: "slate", bg: "bg-white/50", trend: "+18%" },
   ];
 
   const actionGroups = [
@@ -123,13 +123,13 @@ export default function AdminDashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {cards.map((card) => (
-          <div key={card.label} className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-all duration-300">
+          <div key={card.label} className="relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md transition-all duration-300">
             <div className={`absolute top-0 right-0 w-20 h-20 bg-slate-100 opacity-60 rounded-bl-full`}></div>
             <card.icon size={20} className="text-slate-600 mb-3" />
-            <div className="text-2xl font-bold text-slate-900">{card.value}</div>
+            <div className="text-2xl font-bold text-white">{card.value}</div>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-sm text-slate-500">{card.label}</span>
-              <span className="text-[10px] font-medium text-[#229C62] bg-[#E9F8EE] px-1.5 py-0.5 rounded-full">{card.trend}</span>
+              <span className="text-[10px] font-medium text-[#7AD62A] bg-[#7AD62A]/10 px-1.5 py-0.5 rounded-full">{card.trend}</span>
             </div>
           </div>
         ))}
@@ -139,17 +139,17 @@ export default function AdminDashboardPage() {
       <div className="space-y-6">
         {actionGroups.map((group) => (
           <div key={group.title}>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">{group.title}</h3>
+            <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">{group.title}</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {group.items.map((link) => (
-                <Link key={link.href} href={link.href} className="group relative overflow-hidden bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md hover:border-slate-300 transition-all duration-300">
+                <Link key={link.href} href={link.href} className="group relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md hover:border-white/10 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-slate-800 transition-colors duration-300">
                       <link.icon size={18} className="text-slate-600 group-hover:text-white transition-colors duration-300" />
                     </div>
-                    <ArrowRight size={16} className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight size={16} className="text-slate-400 group-hover:text-slate-300 group-hover:translate-x-1 transition-all" />
                   </div>
-                  <h4 className="font-semibold text-slate-900 group-hover:text-slate-700 transition-colors mb-0.5">{link.label}</h4>
+                  <h4 className="font-semibold text-white group-hover:text-slate-200 transition-colors mb-0.5">{link.label}</h4>
                   <p className="text-xs text-slate-500">{link.description}</p>
                 </Link>
               ))}

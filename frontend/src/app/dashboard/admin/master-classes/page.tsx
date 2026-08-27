@@ -190,7 +190,7 @@ export default function AdminMasterClassesPage() {
             <Video size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-medium text-slate-900">{mc.title}</p>
+            <p className="font-medium text-white">{mc.title}</p>
             <p className="text-xs text-slate-500">{mc.category}</p>
           </div>
         </div>
@@ -367,14 +367,14 @@ export default function AdminMasterClassesPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
           >
             {saving ? "Saving..." : editing ? "Update Master Class" : "Create Master Class"}
           </button>
           <button
             onClick={() => setModalOpen(false)}
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+            className="px-5 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
           >
             Cancel
           </button>
@@ -397,7 +397,7 @@ export default function AdminMasterClassesPage() {
         onClose={() => setBatchStatus({ open: false, items: [], status: "UPCOMING" })}
         title="Change Master Class Status"
       >
-        <p className="text-sm text-slate-600 mb-4">Set the status for <span className="font-semibold text-slate-900">{batchStatus.items.length}</span> selected master class{batchStatus.items.length !== 1 ? "es" : ""}.</p>
+        <p className="text-sm text-slate-600 mb-4">Set the status for <span className="font-semibold text-white">{batchStatus.items.length}</span> selected master class{batchStatus.items.length !== 1 ? "es" : ""}.</p>
         <AdminSelect
           label="Status"
           value={batchStatus.status}
@@ -413,14 +413,14 @@ export default function AdminMasterClassesPage() {
           <button
             onClick={confirmBatchStatus}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50"
           >
             {saving ? "Saving..." : "Apply Status"}
           </button>
           <button
             onClick={() => setBatchStatus({ open: false, items: [], status: "UPCOMING" })}
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+            className="px-5 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
           >
             Cancel
           </button>

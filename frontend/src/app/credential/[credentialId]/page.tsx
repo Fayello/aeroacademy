@@ -61,14 +61,14 @@ export default function VerifyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0F203A] to-[#7AD62A] flex items-center justify-center">
         <Loader2 size={32} className="animate-spin text-white" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0F203A] to-[#229C62] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F203A] to-[#7AD62A] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         {/* Logo */}
         <div className="text-center mb-6">
@@ -77,16 +77,16 @@ export default function VerifyPage() {
         </div>
 
         {/* Verification Card */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-[#0f172a] rounded-2xl shadow-2xl overflow-hidden">
           {result?.verified ? (
             <>
               {/* Success Header */}
-              <div className="bg-[#E9F8EE] p-6 text-center border-b border-[#229C62]/20">
-                <div className="w-16 h-16 rounded-full bg-[#229C62] mx-auto mb-3 flex items-center justify-center">
+              <div className="bg-[#7AD62A]/10 p-6 text-center border-b border-[#7AD62A]/20">
+                <div className="w-16 h-16 rounded-full bg-[#7AD62A] mx-auto mb-3 flex items-center justify-center">
                   <CheckCircle2 size={32} className="text-white" />
                 </div>
                 <h2 className="text-lg font-bold text-[#0F203A]">Verified Credential</h2>
-                <p className="text-sm text-[#229C62]">{result.credential}</p>
+                <p className="text-sm text-[#7AD62A]">{result.credential}</p>
                 {result.expired && (
                   <span className="inline-block mt-2 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
                     Expired
@@ -100,7 +100,7 @@ export default function VerifyPage() {
                   <User size={16} className="text-slate-400" />
                   <div>
                     <div className="text-xs text-slate-500">Holder</div>
-                    <div className="text-sm font-medium text-slate-900">{result.holder}</div>
+                    <div className="text-sm font-medium text-white">{result.holder}</div>
                   </div>
                 </div>
 
@@ -108,7 +108,7 @@ export default function VerifyPage() {
                   <Award size={16} className="text-slate-400" />
                   <div>
                     <div className="text-xs text-slate-500">Certification</div>
-                    <div className="text-sm font-medium text-slate-900">
+                    <div className="text-sm font-medium text-white">
                       {result.credential} ({result.code})
                     </div>
                   </div>
@@ -119,7 +119,7 @@ export default function VerifyPage() {
                     <Calendar size={16} className="text-slate-400" />
                     <div>
                       <div className="text-xs text-slate-500">Issued</div>
-                      <div className="text-sm font-medium text-slate-900">
+                      <div className="text-sm font-medium text-white">
                         {result.issued ? new Date(result.issued).toLocaleDateString() : "—"}
                       </div>
                     </div>
@@ -128,7 +128,7 @@ export default function VerifyPage() {
                     <Calendar size={16} className="text-slate-400" />
                     <div>
                       <div className="text-xs text-slate-500">Expires</div>
-                      <div className="text-sm font-medium text-slate-900">
+                      <div className="text-sm font-medium text-white">
                         {result.expires ? new Date(result.expires).toLocaleDateString() : "—"}
                       </div>
                     </div>
@@ -144,11 +144,11 @@ export default function VerifyPage() {
                         <div key={i}>
                           <div className="flex items-center justify-between text-sm mb-1">
                             <span className="text-slate-700">{d.domainName}</span>
-                            <span className="font-medium text-slate-900">{d.mastery}%</span>
+                            <span className="font-medium text-white">{d.mastery}%</span>
                           </div>
                           <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#229C62] rounded-full"
+                              className="h-full bg-[#7AD62A] rounded-full"
                               style={{ width: `${d.mastery}%` }}
                             />
                           </div>
@@ -165,19 +165,19 @@ export default function VerifyPage() {
                 {result.evidenceSummary && (
                   <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-100">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-slate-900">
+                      <div className="text-lg font-bold text-white">
                         {result.evidenceSummary.assessmentsPassed ?? 0}
                       </div>
                       <div className="text-[10px] text-slate-500">Assessments</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-slate-900">
+                      <div className="text-lg font-bold text-white">
                         {result.evidenceSummary.domainsQualified ?? 0}
                       </div>
                       <div className="text-[10px] text-slate-500">Domains</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-slate-900">
+                      <div className="text-lg font-bold text-white">
                         {(result.evidenceSummary.xp ?? 0).toLocaleString()}
                       </div>
                       <div className="text-[10px] text-slate-500">XP</div>
@@ -196,10 +196,10 @@ export default function VerifyPage() {
           ) : (
             /* Failure */
             <div className="p-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-red-50 mx-auto mb-4 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-red-500/10 mx-auto mb-4 flex items-center justify-center">
                 <XCircle size={32} className="text-red-500" />
               </div>
-              <h2 className="text-lg font-bold text-slate-900 mb-2">Credential Not Found</h2>
+              <h2 className="text-lg font-bold text-white mb-2">Credential Not Found</h2>
               <p className="text-sm text-slate-500 mb-4">
                 {result?.error || "This credential could not be verified."}
               </p>

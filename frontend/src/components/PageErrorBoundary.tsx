@@ -24,12 +24,12 @@ export default class PageErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[40vh] gap-4 p-8">
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-            <AlertTriangle size={24} className="text-red-600" />
+          <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+            <AlertTriangle size={24} className="text-red-400" />
           </div>
           <div className="text-center">
-            <h2 className="text-lg font-semibold text-slate-900">Something went wrong</h2>
-            <p className="text-sm text-slate-500 mt-1">
+            <h2 className="text-lg font-semibold text-white">Something went wrong</h2>
+            <p className="text-sm text-slate-400 mt-1">
               {this.props.pageName ? `Failed to load ${this.props.pageName}` : "This section encountered an error"}
             </p>
           </div>

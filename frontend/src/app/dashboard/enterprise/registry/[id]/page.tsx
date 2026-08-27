@@ -57,20 +57,20 @@ export default function CandidateRegistry() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
-      <Link href="/dashboard/enterprise" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/enterprise" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-200">
         <ChevronLeft size={16} />
         Back to talent pool
       </Link>
 
       {/* Header */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col sm:flex-row items-start gap-6">
-        <div className="w-16 h-16 rounded-full bg-[#E9F8EE] flex items-center justify-center text-2xl font-bold text-[#0F203A] shrink-0">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 flex flex-col sm:flex-row items-start gap-6">
+        <div className="w-16 h-16 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-2xl font-bold text-[#0F203A] shrink-0">
           {profile.name?.[0] || '?'}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-slate-900">{profile.name}</h1>
-            <CheckCircle size={16} className="text-[#229C62]" />
+            <h1 className="text-2xl font-semibold text-white">{profile.name}</h1>
+            <CheckCircle size={16} className="text-[#7AD62A]" />
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-500">
             <span className="flex items-center gap-1"><MapPin size={14} />{profile.city || "N/A"}</span>
@@ -87,16 +87,16 @@ export default function CandidateRegistry() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Stats */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-[#E9F8EE] flex items-center justify-center mx-auto mb-3">
-              <Shield size={28} className="text-[#229C62]" />
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 text-center">
+            <div className="w-16 h-16 rounded-full bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-3">
+              <Shield size={28} className="text-[#7AD62A]" />
             </div>
-            <p className="text-lg font-semibold text-slate-900">{profile.division}</p>
+            <p className="text-lg font-semibold text-white">{profile.division}</p>
             <p className="text-xs text-slate-500">{profile.clearance}</p>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Metrics</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h3 className="text-sm font-semibold text-white mb-3">Metrics</h3>
             <div className="space-y-2">
               {[
                 { label: "XP", value: profile.xp.toLocaleString() },
@@ -105,7 +105,7 @@ export default function CandidateRegistry() {
               ].map((stat) => (
                 <div key={stat.label} className="flex justify-between py-2 border-b border-slate-100 last:border-0 text-sm">
                   <span className="text-slate-500">{stat.label}</span>
-                  <span className="font-semibold text-slate-900">{stat.value}</span>
+                  <span className="font-semibold text-white">{stat.value}</span>
                 </div>
               ))}
             </div>
@@ -114,19 +114,19 @@ export default function CandidateRegistry() {
 
         {/* Achievements */}
         <div className="lg:col-span-2 card p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
             <Award size={16} className="text-amber-500" />
             Achievements
           </h3>
           {profile.achievements.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {profile.achievements.map((item) => (
-                <div key={item.achievement.id} className="p-4 rounded-lg bg-slate-50 border border-slate-100 flex items-start gap-3">
+                <div key={item.achievement.id} className="p-4 rounded-lg bg-white/5 border border-slate-100 flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
                     <Trophy size={18} className="text-amber-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">{item.achievement.title}</p>
+                    <p className="text-sm font-medium text-white">{item.achievement.title}</p>
                     <p className="text-xs text-slate-500 mt-0.5">{item.achievement.description}</p>
                   </div>
                 </div>

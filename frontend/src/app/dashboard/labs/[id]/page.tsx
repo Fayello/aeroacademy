@@ -295,10 +295,10 @@ export default function LabWorkspace() {
     : Infinity;
   const countdownTone =
     isExpired || minutesRemaining < 10
-      ? "bg-red-50 text-red-600"
+      ? "bg-red-500/10 text-red-600"
       : minutesRemaining < 30
-        ? "bg-amber-50 text-amber-600"
-        : "bg-[#E9F8EE] text-[#229C62]";
+        ? "bg-amber-500/10 text-amber-600"
+        : "bg-[#7AD62A]/10 text-[#7AD62A]";
 
   useEffect(() => {
     try {
@@ -593,32 +593,32 @@ export default function LabWorkspace() {
             <Lock size={28} className="text-amber-500" />
           </div>
           <div className="text-center max-w-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Lab Locked</h2>
+            <h2 className="text-lg font-semibold text-white">Lab Locked</h2>
             <p className="text-sm text-slate-500 mt-1">{gate.reason}</p>
-            <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div className="mt-4 p-4 bg-white/5 rounded-xl border border-white/10 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-600">Your level</span>
-                <span className="font-semibold text-slate-900">Level {level}</span>
+                <span className="font-semibold text-white">Level {level}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-600">Required</span>
-                <span className="font-semibold text-[#229C62]">Level {gate.requiredLevel}</span>
+                <span className="font-semibold text-[#7AD62A]">Level {gate.requiredLevel}</span>
               </div>
               <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-[#229C62] to-[#229C62] rounded-full transition-all"
+                  className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all"
                   style={{ width: `${Math.min(((level - 1) / (gate.requiredLevel - 1)) * 100, 100)}%` }}
                 />
               </div>
               <p className="text-[11px] text-slate-500">
-                Earn <span className="font-semibold text-[#229C62]">{xpNeeded} more XP</span> to unlock
+                Earn <span className="font-semibold text-[#7AD62A]">{xpNeeded} more XP</span> to unlock
               </p>
             </div>
             <div className="mt-4 flex items-center gap-3">
               <Link href="/dashboard/labs" className="btn-primary text-sm">
                 Browse Labs
               </Link>
-              <Link href="/dashboard/courses" className="text-sm text-slate-600 hover:text-slate-800 font-medium">
+              <Link href="/dashboard/courses" className="text-sm text-slate-600 hover:text-slate-200 font-medium">
                 Take a Course
               </Link>
             </div>
@@ -638,17 +638,17 @@ export default function LabWorkspace() {
       <div className="space-y-6 animate-in fade-in duration-500">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm text-slate-500">
-          <Link href="/dashboard" className="hover:text-[#229C62] transition-colors">
+          <Link href="/dashboard" className="hover:text-[#7AD62A] transition-colors">
             <Home size={14} />
           </Link>
           <ChevronRight size={12} className="text-slate-300" />
-          <Link href="/dashboard/labs" className="hover:text-[#229C62] transition-colors">Labs</Link>
+          <Link href="/dashboard/labs" className="hover:text-[#7AD62A] transition-colors">Labs</Link>
           <ChevronRight size={12} className="text-slate-300" />
-          <span className="text-slate-900 font-medium truncate max-w-[200px]">{lab.title}</span>
+          <span className="text-white font-medium truncate max-w-[200px]">{lab.title}</span>
         </nav>
 
         {/* Hero section */}
-        <div className="angular-card bg-white overflow-hidden">
+        <div className="angular-card bg-[#0f172a] overflow-hidden">
           <div className={`h-1.5 w-full ${diff?.bar || "bg-slate-300"}`} />
           <div className="p-6">
             <div className="flex items-start justify-between gap-4">
@@ -662,7 +662,7 @@ export default function LabWorkspace() {
                   <span className="text-xs text-slate-400">·</span>
                   <span className="text-xs text-slate-500">{getEstimatedTime(flags)}</span>
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
                   <LabAvatar title={lab.title} id={lab.id} size={44} />
                   {lab.title}
                 </h1>
@@ -678,7 +678,7 @@ export default function LabWorkspace() {
                 <button
                   onClick={handleLaunchAndView}
                   disabled={provisioning || isLocked}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   {provisioning ? <Loader2 className="animate-spin" size={16} /> : <Play size={16} />}
                   Start Lab
@@ -689,7 +689,7 @@ export default function LabWorkspace() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 border-b border-slate-200">
+        <div className="flex items-center gap-1 border-b border-white/10">
           {[
             { key: "play" as const, label: "Play Lab" },
             { key: "info" as const, label: "Lab Info" },
@@ -700,8 +700,8 @@ export default function LabWorkspace() {
               onClick={() => setActiveLabTab(tab.key)}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
                 activeLabTab === tab.key
-                  ? "border-[#229C62] text-[#229C62]"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                  ? "border-[#7AD62A] text-[#7AD62A]"
+                  : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
               }`}
             >
               {tab.label}
@@ -711,18 +711,18 @@ export default function LabWorkspace() {
 
         {/* Tab content */}
         {activeLabTab === "play" && (
-          <div className="angular-card bg-white p-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-              <TerminalIcon size={28} className="text-[#229C62]" />
+          <div className="angular-card bg-[#0f172a] p-8 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+              <TerminalIcon size={28} className="text-[#7AD62A]" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Ready to start?</h3>
+            <h3 className="text-lg font-bold text-white mb-2">Ready to start?</h3>
             <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
               Launch this lab to get a live interactive terminal environment. You&apos;ll have access to all tools and can work through the objectives at your own pace.
             </p>
             <button
               onClick={handleLaunchAndView}
               disabled={provisioning || isLocked}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors disabled:opacity-50"
             >
               {provisioning ? <Loader2 className="animate-spin" size={16} /> : <Play size={16} />}
               Start Machine
@@ -731,10 +731,10 @@ export default function LabWorkspace() {
         )}
 
         {activeLabTab === "info" && (
-          <div className="angular-card bg-white p-6 space-y-6">
+          <div className="angular-card bg-[#0f172a] p-6 space-y-6">
             {lab.briefing && (
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-3">Scenario</h3>
+                <h3 className="text-sm font-semibold text-white mb-3">Scenario</h3>
                 <div className="text-sm text-slate-600 leading-relaxed prose prose-sm max-w-none">
                   <ReactMarkdown>{lab.briefing}</ReactMarkdown>
                 </div>
@@ -742,11 +742,11 @@ export default function LabWorkspace() {
             )}
             {lab.tasks && lab.tasks.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-3">Objectives</h3>
+                <h3 className="text-sm font-semibold text-white mb-3">Objectives</h3>
                 <div className="space-y-2">
                   {lab.tasks.map((task: string, i: number) => (
-                    <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
-                      <span className="w-6 h-6 rounded-full bg-[#229C62]/10 flex items-center justify-center text-xs font-bold text-[#229C62] shrink-0">{i + 1}</span>
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+                      <span className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-xs font-bold text-[#7AD62A] shrink-0">{i + 1}</span>
                       <p className="text-sm text-slate-700">{task}</p>
                     </div>
                   ))}
@@ -755,13 +755,13 @@ export default function LabWorkspace() {
             )}
             {lab.flags && lab.flags.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-3">Flags</h3>
+                <h3 className="text-sm font-semibold text-white mb-3">Flags</h3>
                 <div className="space-y-3">
                   {lab.flags.map((flag: LabFlag) => (
-                    <div key={flag.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                    <div key={flag.id} className="p-4 rounded-lg bg-white/5 border border-white/10">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-slate-900">{flag.title}</span>
-                        <span className="text-sm font-bold text-[#229C62]">+{flag.points} pts</span>
+                        <span className="text-sm font-medium text-white">{flag.title}</span>
+                        <span className="text-sm font-bold text-[#7AD62A]">+{flag.points} pts</span>
                       </div>
                       <p className="text-xs text-slate-500">{flag.description}</p>
                     </div>
@@ -771,17 +771,17 @@ export default function LabWorkspace() {
             )}
             {lab.credentials && lab.credentials.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-3">Credentials</h3>
+                <h3 className="text-sm font-semibold text-white mb-3">Credentials</h3>
                 <div className="grid gap-2">
                   {lab.credentials.map((cred: LabCredential, i: number) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
                       <span className="font-medium text-slate-700">{cred.service}</span>
                       <span className="text-slate-400">·</span>
-                      <span className="font-mono text-[#229C62]">{cred.username}</span>
+                      <span className="font-mono text-[#7AD62A]">{cred.username}</span>
                       {cred.password && (
                         <>
                           <span className="text-slate-400">·</span>
-                          <span className="font-mono text-[#229C62]">{cred.password}</span>
+                          <span className="font-mono text-[#7AD62A]">{cred.password}</span>
                         </>
                       )}
                     </div>
@@ -795,10 +795,10 @@ export default function LabWorkspace() {
         {activeLabTab === "reviews" && (
           <div className="space-y-6">
             {/* Rating summary */}
-            <div className="angular-card bg-white p-6">
+            <div className="angular-card bg-[#0f172a] p-6">
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-slate-900">{reviewsData?.stats.average ? reviewsData.stats.average.toFixed(1) : "—"}</p>
+                  <p className="text-4xl font-bold text-white">{reviewsData?.stats.average ? reviewsData.stats.average.toFixed(1) : "—"}</p>
                   <div className="flex items-center gap-0.5 my-1">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <Star key={s} size={14} className={s <= Math.round(reviewsData?.stats.average || 0) ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
@@ -826,8 +826,8 @@ export default function LabWorkspace() {
             </div>
 
             {/* Write a review */}
-            <div className="angular-card bg-white p-6">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">Write a Review</h3>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h3 className="text-sm font-semibold text-white mb-3">Write a Review</h3>
               <div className="flex items-center gap-1 mb-3">
                 {[1, 2, 3, 4, 5].map((s) => (
                   <button
@@ -852,20 +852,20 @@ export default function LabWorkspace() {
                 onChange={(e) => setMyComment(e.target.value)}
                 placeholder="Share your experience with this lab (optional)..."
                 rows={3}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] resize-none transition-all"
+                className="w-full px-3 py-2 rounded-lg border border-white/10 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] resize-none transition-all"
               />
               <button
                 onClick={handleSubmitReview}
                 disabled={myRating < 1 || submittingReview}
-                className="mt-3 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="mt-3 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {submittingReview ? "Submitting..." : "Submit Review"}
               </button>
             </div>
 
             {/* Reviews list */}
-            <div className="angular-card bg-white p-6">
-              <h3 className="text-sm font-semibold text-slate-900 mb-4">Reviews</h3>
+            <div className="angular-card bg-[#0f172a] p-6">
+              <h3 className="text-sm font-semibold text-white mb-4">Reviews</h3>
               {!reviewsData || reviewsData.reviews.length === 0 ? (
                 <div className="text-center py-8">
                   <MessageSquare size={32} className="mx-auto mb-3 text-slate-300" />
@@ -874,14 +874,14 @@ export default function LabWorkspace() {
               ) : (
                 <div className="space-y-4">
                   {reviewsData.reviews.map((review) => (
-                    <div key={review.id} className="p-4 rounded-lg bg-slate-50 border border-slate-100">
+                    <div key={review.id} className="p-4 rounded-lg bg-white/5 border border-slate-100">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center text-white text-[9px] font-bold">
                             {review.user.name?.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || "?"}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-900">{review.user.name || "Anonymous"}</p>
+                            <p className="text-sm font-medium text-white">{review.user.name || "Anonymous"}</p>
                             <p className="text-[10px] text-slate-400">{new Date(review.createdAt).toLocaleDateString()}</p>
                           </div>
                         </div>
@@ -906,15 +906,15 @@ export default function LabWorkspace() {
   }
 
   return (
-    <div className={`${isFullscreen ? "fixed inset-0 z-50 bg-white" : "h-[calc(100vh-4rem)] -m-4 md:-m-8"} flex flex-col animate-in fade-in duration-500`}>
+    <div className={`${isFullscreen ? "fixed inset-0 z-50 bg-[#0f172a]" : "h-[calc(100vh-4rem)] -m-4 md:-m-8"} flex flex-col animate-in fade-in duration-500`}>
       {/* Header */}
-      <header className="h-14 border-b border-slate-200 bg-white px-4 flex items-center justify-between shrink-0">
+      <header className="h-14 border-b border-white/10 bg-[#0f172a] px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          <button onClick={() => setViewMode("info")} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={() => setViewMode("info")} className="text-slate-400 hover:text-slate-300 transition-colors">
             <ChevronLeft size={20} />
           </button>
           <div>
-            <h1 className="text-sm font-semibold text-slate-900">{lab?.title || "Lab"}</h1>
+            <h1 className="text-sm font-semibold text-white">{lab?.title || "Lab"}</h1>
             <p className="text-xs text-slate-500">Interactive Environment</p>
           </div>
         </div>
@@ -922,7 +922,7 @@ export default function LabWorkspace() {
         <div className="flex items-center gap-3">
           <Link
             href={`/dashboard/labs/${id}/discussions`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium transition-colors border border-slate-200"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white/5 text-xs font-medium transition-colors border border-white/10"
           >
             <MessageSquare size={14} />
             Discussions
@@ -930,7 +930,7 @@ export default function LabWorkspace() {
           {isFullscreen && (
             <button
               onClick={() => setIsFullscreen(false)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white/5 text-xs font-medium transition-colors"
             >
               <Minimize2 size={14} />
               Exit Fullscreen
@@ -944,13 +944,13 @@ export default function LabWorkspace() {
           )}
           {isRunning ? (
             <>
-              <span className="flex items-center gap-1.5 text-xs text-[#229C62]">
+              <span className="flex items-center gap-1.5 text-xs text-[#7AD62A]">
                 {connected ? (
-                  <Wifi size={12} className="text-[#229C62]" />
+                  <Wifi size={12} className="text-[#7AD62A]" />
                 ) : (
                   <WifiOff size={12} className="text-amber-500" />
                 )}
-                <span className={`w-2 h-2 rounded-full ${connected ? "bg-[#229C62]" : "bg-amber-500"}`} />
+                <span className={`w-2 h-2 rounded-full ${connected ? "bg-[#7AD62A]" : "bg-amber-500"}`} />
                 {connected ? "Connected" : "Connecting..."}
               </span>
               <a
@@ -966,7 +966,7 @@ export default function LabWorkspace() {
                 <RefreshCcw size={14} className={provisioning ? "animate-spin" : ""} />
                 Reset
               </button>
-              <button onClick={handleTerminate} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-50 text-xs font-medium transition-colors">
+              <button onClick={handleTerminate} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-500/10 text-xs font-medium transition-colors">
                 <Square size={12} />
                 Stop
               </button>
@@ -987,10 +987,10 @@ export default function LabWorkspace() {
 
       {/* Telemetry bar */}
       {!isFullscreen && isRunning && telemetry && (
-        <div className="h-10 border-b border-slate-200 bg-white px-4 flex items-center gap-6 text-xs text-slate-500 shrink-0">
+        <div className="h-10 border-b border-white/10 bg-[#0f172a] px-4 flex items-center gap-6 text-xs text-slate-500 shrink-0">
           <span className="font-medium">CPU</span>
           <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-            <div className={`h-full rounded-full ${telemetry.cpu > 80 ? "bg-red-500" : telemetry.cpu > 50 ? "bg-amber-500" : "bg-[#229C62]"}`} style={{ width: `${telemetry.cpu}%` }} />
+            <div className={`h-full rounded-full ${telemetry.cpu > 80 ? "bg-red-500" : telemetry.cpu > 50 ? "bg-amber-500" : "bg-[#7AD62A]"}`} style={{ width: `${telemetry.cpu}%` }} />
           </div>
           <span className="font-mono w-8">{telemetry.cpu}%</span>
           <span className="font-medium">RAM</span>
@@ -1005,15 +1005,15 @@ export default function LabWorkspace() {
       <main className="flex-1 flex min-h-0 p-4 gap-4">
         {/* Briefing panel */}
         {!isFullscreen && (
-        <div className="w-80 shrink-0 angular-card bg-white shadow-sm overflow-y-auto hidden lg:block">
+        <div className="w-80 shrink-0 angular-card bg-[#0f172a] shadow-sm overflow-y-auto hidden lg:block">
           <div className="p-5 border-b border-slate-100">
-            <h2 className="text-sm font-semibold text-slate-900">Briefing</h2>
+            <h2 className="text-sm font-semibold text-white">Briefing</h2>
           </div>
 
           {isRunning && (
-            <div className="p-4 border-b border-slate-100 bg-[#E9F8EE]/40">
+            <div className="p-4 border-b border-slate-100 bg-[#7AD62A]/10/40">
               <div className="flex items-center gap-1.5 mb-1.5">
-                <Zap size={12} className="text-[#229C62]" />
+                <Zap size={12} className="text-[#7AD62A]" />
                 <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Quick Start</h4>
               </div>
               <p className="text-[11px] text-slate-500 mb-2">
@@ -1021,7 +1021,7 @@ export default function LabWorkspace() {
               </p>
               <div className="space-y-1.5">
                 {QUICK_COMMANDS.map((cmd) => (
-                  <div key={cmd} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white border border-slate-200">
+                  <div key={cmd} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-[#0f172a] border border-white/10">
                     <button
                       onClick={() => sendCommand(cmd)}
                       className="text-[11px] font-mono text-slate-700 hover:text-[#0F203A] transition-colors text-left truncate"
@@ -1034,7 +1034,7 @@ export default function LabWorkspace() {
                         toast.success("Command copied!");
                       }}
                       title="Copy command"
-                      className="text-slate-400 hover:text-[#229C62] transition-colors shrink-0"
+                      className="text-slate-400 hover:text-[#7AD62A] transition-colors shrink-0"
                     >
                       <Copy size={11} />
                     </button>
@@ -1052,8 +1052,8 @@ export default function LabWorkspace() {
                 <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">Tasks</h4>
                 <ul className="space-y-1.5 list-none p-0">
                   {lab.tasks.map((task: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-slate-600 p-2 rounded-lg bg-slate-50">
-                      <span className="text-[#229C62] mt-1">•</span>
+                    <li key={i} className="flex gap-2 text-sm text-slate-600 p-2 rounded-lg bg-white/5">
+                      <span className="text-[#7AD62A] mt-1">•</span>
                       {task}
                     </li>
                   ))}
@@ -1075,7 +1075,7 @@ export default function LabWorkspace() {
                       navigator.clipboard.writeText(text);
                       toast.success("All credentials copied!");
                     }}
-                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-[#229C62] transition-colors"
+                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-[#7AD62A] transition-colors"
                   >
                     <Copy size={11} />
                     Copy all
@@ -1083,7 +1083,7 @@ export default function LabWorkspace() {
                 </div>
                 <div className="space-y-2">
                   {lab.credentials.map((cred: LabCredential, i: number) => (
-                    <div key={i} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                    <div key={i} className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium text-slate-700">{cred.service}</p>
                         <button
@@ -1092,13 +1092,13 @@ export default function LabWorkspace() {
                             navigator.clipboard.writeText(text);
                             toast.success("Credentials copied!");
                           }}
-                          className="text-[10px] text-slate-400 hover:text-[#229C62] transition-colors"
+                          className="text-[10px] text-slate-400 hover:text-[#7AD62A] transition-colors"
                         >
                           Copy
                         </button>
                       </div>
-                      <p className="text-slate-500">User: <span className="font-mono text-[#229C62]">{cred.username}</span></p>
-                      {cred.password && <p className="text-slate-500">Pass: <span className="font-mono text-[#229C62]">{cred.password}</span></p>}
+                      <p className="text-slate-500">User: <span className="font-mono text-[#7AD62A]">{cred.username}</span></p>
+                      {cred.password && <p className="text-slate-500">Pass: <span className="font-mono text-[#7AD62A]">{cred.password}</span></p>}
                     </div>
                   ))}
                 </div>
@@ -1108,19 +1108,19 @@ export default function LabWorkspace() {
             {lab?.flags && lab.flags.length > 0 && (
               <div className="mt-4">
                 <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                  <Shield size={12} className="text-[#229C62]" />
+                  <Shield size={12} className="text-[#7AD62A]" />
                   Flags
                 </h4>
                 <div className="space-y-3">
                   {lab.flags.map((flag: LabFlag) => (
-                    <div key={flag.id} className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                    <div key={flag.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-medium text-slate-700">{flag.title}</span>
-                        <span className="text-xs font-medium text-[#229C62]">+{flag.points} pts</span>
+                        <span className="text-xs font-medium text-[#7AD62A]">+{flag.points} pts</span>
                       </div>
                       <p className="text-xs text-slate-500 mb-3">{flag.description}</p>
                       {flag.submissions && flag.submissions.length > 0 ? (
-                        <span className="text-xs text-[#229C62] font-medium">Solved</span>
+                        <span className="text-xs text-[#7AD62A] font-medium">Solved</span>
                       ) : (
                         <FlagInput flagId={flag.id} labId={String(id)} setLab={setLab} />
                       )}
@@ -1134,8 +1134,8 @@ export default function LabWorkspace() {
         )}
 
         {/* Terminal */}
-        <div className="flex-1 flex flex-col min-w-0 angular-card bg-white shadow-sm overflow-hidden">
-          <div className="h-10 border-b border-slate-200 px-4 flex items-center gap-2 shrink-0">
+        <div className="flex-1 flex flex-col min-w-0 angular-card bg-[#0f172a] shadow-sm overflow-hidden">
+          <div className="h-10 border-b border-white/10 px-4 flex items-center gap-2 shrink-0">
             <TerminalIcon size={14} className="text-slate-400" />
             <span className="text-xs font-medium text-slate-500">Terminal</span>
 
@@ -1147,7 +1147,7 @@ export default function LabWorkspace() {
                     key={cmd}
                     onClick={() => sendCommand(cmd)}
                     title={`Run: ${cmd}`}
-                    className="px-2 py-1 rounded-md bg-slate-50 hover:bg-slate-100 text-[11px] font-mono text-slate-500 hover:text-[#0F203A] transition-colors"
+                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-white/5 text-[11px] font-mono text-slate-500 hover:text-[#0F203A] transition-colors"
                   >
                     {cmd}
                   </button>
@@ -1157,14 +1157,14 @@ export default function LabWorkspace() {
                   onClick={handleCopy}
                   disabled={!selection}
                   title="Copy selection"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
                 >
                   <Copy size={13} />
                 </button>
                 <button
                   onClick={handlePaste}
                   title="Paste from clipboard"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
                 >
                   <ClipboardPaste size={13} />
                 </button>
@@ -1172,7 +1172,7 @@ export default function LabWorkspace() {
                   onClick={() => updateFontSize(fontSize - 1)}
                   disabled={fontSize <= MIN_FONT_SIZE}
                   title="Decrease font size"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
                 >
                   <ZoomOut size={13} />
                 </button>
@@ -1180,14 +1180,14 @@ export default function LabWorkspace() {
                   onClick={() => updateFontSize(fontSize + 1)}
                   disabled={fontSize >= MAX_FONT_SIZE}
                   title="Increase font size"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
                 >
                   <ZoomIn size={13} />
                 </button>
                 <button
                   onClick={handleClear}
                   title="Clear terminal"
-                  className="ml-1 p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="ml-1 p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
                 >
                   <Eraser size={13} />
                 </button>
@@ -1202,7 +1202,7 @@ export default function LabWorkspace() {
                 </span>
                 <button
                   onClick={handleManualReconnect}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#0F203A] hover:bg-[#E9F8EE] transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#0F203A] hover:bg-[#7AD62A]/10 transition-colors"
                 >
                   <PlugZap size={12} />
                   Reconnect
@@ -1213,7 +1213,7 @@ export default function LabWorkspace() {
             <button
               onClick={() => setIsFullscreen((v) => !v)}
               title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
             >
               {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
             </button>
@@ -1222,7 +1222,7 @@ export default function LabWorkspace() {
             {isRunning ? (
               <div ref={terminalRef} className="w-full h-full" />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-500 gap-3">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-slate-500 gap-3">
                 <TerminalIcon size={28} className="text-slate-300" />
                 <div className="text-center">
                   <p className="text-sm font-medium">
@@ -1243,12 +1243,12 @@ export default function LabWorkspace() {
               </div>
             )}
             {isRunning && !connected && hasConnected && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-50">
-                <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/5">
+                <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center">
                   <WifiOff size={20} className="text-amber-500" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-slate-900">Connection lost</p>
+                  <p className="text-sm font-medium text-white">Connection lost</p>
                   <p className="text-xs text-slate-500 mt-1 max-w-xs">
                     {autoReconnecting
                       ? "Attempting to reconnect automatically..."
@@ -1257,7 +1257,7 @@ export default function LabWorkspace() {
                 </div>
                 <button
                   onClick={handleManualReconnect}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229C62] hover:bg-[#0F203A] text-white text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#0F203A] text-white text-xs font-medium transition-colors"
                 >
                   <PlugZap size={12} />
                   Reconnect
@@ -1314,13 +1314,13 @@ function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; s
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="AERO{...}"
-        className="flex-1 text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+        className="flex-1 text-xs border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
       <button
         onClick={handleSubmit}
         disabled={submitting}
-        className="px-3 py-1.5 rounded-lg bg-[#229C62] hover:bg-[#0F203A] text-white text-xs font-medium transition-colors disabled:opacity-50"
+        className="px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#0F203A] text-white text-xs font-medium transition-colors disabled:opacity-50"
       >
         {submitting ? <Loader2 className="animate-spin" size={12} /> : "Submit"}
       </button>

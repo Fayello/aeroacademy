@@ -47,7 +47,7 @@ const EMAIL_PREFS = [
 ];
 
 const AVATAR_GRADIENTS = [
-  { id: "green-lime", classes: "from-[#229C62] to-[#7AD62A]", label: "Green" },
+  { id: "green-lime", classes: "from-[#7AD62A] to-[#7AD62A]", label: "Green" },
   { id: "navy-teal", classes: "from-[#0F203A] to-teal-600", label: "Navy" },
   { id: "purple-pink", classes: "from-purple-500 to-pink-500", label: "Purple" },
   { id: "orange-red", classes: "from-orange-400 to-red-500", label: "Orange" },
@@ -81,7 +81,7 @@ export default function ProfileEditPage() {
   const [emailPrefs, setEmailPrefs] = useState<Record<string, boolean>>({});
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [showEmailPrefs, setShowEmailPrefs] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState("from-[#229C62] to-[#7AD62A]");
+  const [selectedAvatar, setSelectedAvatar] = useState("from-[#7AD62A] to-[#7AD62A]");
   const { mode, setMode } = useDisplayMode();
 
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting, isDirty } } =
@@ -183,7 +183,7 @@ export default function ProfileEditPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -208,9 +208,9 @@ export default function ProfileEditPage() {
       </div>
 
       {/* Profile Form */}
-      <div className="angular-card bg-white overflow-hidden">
+      <div className="angular-card bg-[#0f172a] overflow-hidden">
         <div className="p-6 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-900">Personal Information</h2>
+          <h2 className="text-lg font-semibold text-white">Personal Information</h2>
           <p className="text-sm text-slate-500 mt-0.5">Your public profile details</p>
         </div>
 
@@ -225,7 +225,7 @@ export default function ProfileEditPage() {
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-900">{watch("name") || "Your Name"}</p>
+                <p className="text-sm font-medium text-white">{watch("name") || "Your Name"}</p>
                 <p className="text-xs text-slate-500">{watchUsername ? `@${watchUsername}` : "No username set"}</p>
               </div>
             </div>
@@ -254,7 +254,7 @@ export default function ProfileEditPage() {
               <input
                 id="name"
                 {...register("name")}
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${errors.name ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all`}
+                className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${errors.name ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all`}
                 placeholder="Your display name"
               />
             </div>
@@ -271,7 +271,7 @@ export default function ProfileEditPage() {
               <input
                 id="username"
                 {...register("username")}
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${errors.username ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all`}
+                className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm ${errors.username ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all`}
                 placeholder="your_pseudonym"
               />
             </div>
@@ -288,7 +288,7 @@ export default function ProfileEditPage() {
             <textarea
               {...register("bio")}
               rows={3}
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm ${errors.bio ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"} bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all resize-none`}
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm ${errors.bio ? "border-red-300 ring-2 ring-red-100" : "border-white/10"} bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all resize-none`}
               placeholder="Tell us about yourself..."
             />
             <div className="flex justify-between items-center mt-1">
@@ -309,7 +309,7 @@ export default function ProfileEditPage() {
                 {...register("city")}
                 type="text"
                 placeholder="e.g. Yaoundé, Douala, Lagos..."
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
               />
             </div>
 
@@ -319,7 +319,7 @@ export default function ProfileEditPage() {
               </label>
               <select
                 {...register("timezone")}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
               >
                 {TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>{tz}</option>
@@ -335,7 +335,7 @@ export default function ProfileEditPage() {
             </label>
             <select
               {...register("organizationId")}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
+              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
             >
               <option value="">Independent Learner</option>
               {organizations.map((org) => (
@@ -348,14 +348,14 @@ export default function ProfileEditPage() {
             <button
               type="submit"
               disabled={isSubmitting || !isDirty}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#229C62] hover:bg-[#1a7a4d] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#1a7a4d] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
               {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
               Save changes
             </button>
             <Link
               href="/dashboard/profile"
-              className="flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-5 rounded-xl border border-slate-300 transition-all text-sm"
+              className="flex items-center justify-center gap-2 bg-[#0f172a] hover:bg-white/5 text-slate-700 font-medium py-2.5 px-5 rounded-xl border border-white/10 transition-all text-sm"
             >
               Cancel
             </Link>
@@ -364,18 +364,18 @@ export default function ProfileEditPage() {
       </div>
 
       {/* Email Preferences */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
         <button
           type="button"
           onClick={() => setShowEmailPrefs(!showEmailPrefs)}
-          className="w-full p-6 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
+          className="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
               <Bell size={18} className="text-amber-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Email Notifications</h2>
+              <h2 className="text-lg font-semibold text-white">Email Notifications</h2>
               <p className="text-sm text-slate-500">Choose what emails you receive</p>
             </div>
           </div>
@@ -391,11 +391,11 @@ export default function ProfileEditPage() {
             {EMAIL_PREFS.map((pref) => (
               <label
                 key={pref.key}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   {emailPrefs[pref.key] ? (
-                    <Mail size={16} className="text-[#229C62]" />
+                    <Mail size={16} className="text-[#7AD62A]" />
                   ) : (
                     <Mail size={16} className="text-slate-300" />
                   )}
@@ -413,11 +413,11 @@ export default function ProfileEditPage() {
                     saveEmailPrefs(newPrefs);
                   }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    emailPrefs[pref.key] ? "bg-[#229C62]" : "bg-slate-200"
+                    emailPrefs[pref.key] ? "bg-[#7AD62A]" : "bg-slate-200"
                   }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${
+                    className={`inline-block h-4 w-4 transform rounded-full bg-[#0f172a] transition-transform shadow-sm ${
                       emailPrefs[pref.key] ? "translate-x-6" : "translate-x-1"
                     }`}
                   />
@@ -429,14 +429,14 @@ export default function ProfileEditPage() {
       </div>
 
       {/* Display Mode */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
               <Monitor size={18} className="text-violet-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Display Mode</h2>
+              <h2 className="text-lg font-semibold text-white">Display Mode</h2>
               <p className="text-sm text-slate-500">Choose how the platform appears to you</p>
             </div>
           </div>
@@ -447,13 +447,13 @@ export default function ProfileEditPage() {
               onClick={() => setMode("PROFESSIONAL")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
                 mode === "PROFESSIONAL"
-                  ? "border-[#229C62] bg-[#E9F8EE]"
-                  : "border-slate-200 hover:border-slate-300 bg-white"
+                  ? "border-[#7AD62A] bg-[#7AD62A]/10"
+                  : "border-white/10 hover:border-white/10 bg-[#0f172a]"
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Briefcase size={16} className={mode === "PROFESSIONAL" ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="text-sm font-semibold text-slate-900">Professional</span>
+                <Briefcase size={16} className={mode === "PROFESSIONAL" ? "text-[#7AD62A]" : "text-slate-400"} />
+                <span className="text-sm font-semibold text-white">Professional</span>
               </div>
               <p className="text-xs text-slate-500">Genome, mastery, missions, labs. No XP fire, no rank badges.</p>
             </button>
@@ -463,13 +463,13 @@ export default function ProfileEditPage() {
               onClick={() => setMode("PROGRESSION")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
                 mode === "PROGRESSION"
-                  ? "border-[#229C62] bg-[#E9F8EE]"
-                  : "border-slate-200 hover:border-slate-300 bg-white"
+                  ? "border-[#7AD62A] bg-[#7AD62A]/10"
+                  : "border-white/10 hover:border-white/10 bg-[#0f172a]"
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Trophy size={16} className={mode === "PROGRESSION" ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="text-sm font-semibold text-slate-900">Progression</span>
+                <Trophy size={16} className={mode === "PROGRESSION" ? "text-[#7AD62A]" : "text-slate-400"} />
+                <span className="text-sm font-semibold text-white">Progression</span>
               </div>
               <p className="text-xs text-slate-500">XP, levels, missions, mastery, unlocks. Default experience.</p>
             </button>
@@ -479,13 +479,13 @@ export default function ProfileEditPage() {
               onClick={() => setMode("COMPETITIVE")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
                 mode === "COMPETITIVE"
-                  ? "border-[#229C62] bg-[#E9F8EE]"
-                  : "border-slate-200 hover:border-slate-300 bg-white"
+                  ? "border-[#7AD62A] bg-[#7AD62A]/10"
+                  : "border-white/10 hover:border-white/10 bg-[#0f172a]"
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Trophy size={16} className={mode === "COMPETITIVE" ? "text-[#229C62]" : "text-slate-400"} />
-                <span className="text-sm font-semibold text-slate-900">Competitive</span>
+                <Trophy size={16} className={mode === "COMPETITIVE" ? "text-[#7AD62A]" : "text-slate-400"} />
+                <span className="text-sm font-semibold text-white">Competitive</span>
               </div>
               <p className="text-xs text-slate-500">Everything: ranks, leaderboards, boss missions, seasons.</p>
             </button>

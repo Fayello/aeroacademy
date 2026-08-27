@@ -88,7 +88,7 @@ export default function CurriculumDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-[#229C62]" />
+        <Loader2 size={24} className="animate-spin text-[#7AD62A]" />
       </div>
     );
   }
@@ -150,9 +150,9 @@ export default function CurriculumDetailPage() {
           { label: "Labs", value: totalLabs, icon: Beaker },
           { label: "Cohorts", value: curriculum.cohorts.length, icon: Users },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-            <stat.icon size={18} className="mx-auto mb-1 text-[#229C62]" />
-            <div className="text-xl font-bold text-slate-900">{stat.value}</div>
+          <div key={stat.label} className="bg-[#0f172a] rounded-xl border border-white/10 p-4 text-center">
+            <stat.icon size={18} className="mx-auto mb-1 text-[#7AD62A]" />
+            <div className="text-xl font-bold text-white">{stat.value}</div>
             <div className="text-xs text-slate-500">{stat.label}</div>
           </div>
         ))}
@@ -170,8 +170,8 @@ export default function CurriculumDetailPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               activeTab === tab.key
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-[#0f172a] text-white shadow-sm"
+                : "text-slate-500 hover:text-slate-200"
             }`}
           >
             {tab.label}
@@ -183,16 +183,16 @@ export default function CurriculumDetailPage() {
       {activeTab === "overview" && (
         <div className="space-y-4">
           {/* Time Breakdown */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Time Allocation</h2>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Time Allocation</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-sm text-slate-500 mb-1">Theory Hours</div>
-                <div className="text-2xl font-bold text-slate-900">{totalTheory}h</div>
+                <div className="text-2xl font-bold text-white">{totalTheory}h</div>
               </div>
               <div>
                 <div className="text-sm text-slate-500 mb-1">Practical Hours</div>
-                <div className="text-2xl font-bold text-[#229C62]">{totalPractical}h</div>
+                <div className="text-2xl font-bold text-[#7AD62A]">{totalPractical}h</div>
               </div>
             </div>
             <div className="mt-4 h-3 bg-slate-100 rounded-full overflow-hidden flex">
@@ -201,7 +201,7 @@ export default function CurriculumDetailPage() {
                 style={{ width: `${(totalTheory / (totalTheory + totalPractical)) * 100}%` }}
               />
               <div
-                className="h-full bg-[#229C62] rounded-r-full"
+                className="h-full bg-[#7AD62A] rounded-r-full"
                 style={{ width: `${(totalPractical / (totalTheory + totalPractical)) * 100}%` }}
               />
             </div>
@@ -212,8 +212,8 @@ export default function CurriculumDetailPage() {
           </div>
 
           {/* Learning Outcomes Summary */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Learning Outcomes by Domain</h2>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Learning Outcomes by Domain</h2>
             <div className="space-y-3">
               {Object.entries(
                 curriculum.modules.flatMap((m) =>
@@ -234,7 +234,7 @@ export default function CurriculumDetailPage() {
                     {outcomes.map((o) => (
                       <span
                         key={o.code}
-                        className="px-2 py-1 bg-[#E9F8EE] text-[#0F203A] text-xs rounded-lg"
+                        className="px-2 py-1 bg-[#7AD62A]/10 text-[#0F203A] text-xs rounded-lg"
                         title={o.title}
                       >
                         {o.code}
@@ -252,14 +252,14 @@ export default function CurriculumDetailPage() {
       {activeTab === "modules" && (
         <div className="space-y-4">
           {curriculum.modules.map((mod) => (
-            <div key={mod.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
+            <div key={mod.id} className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
+              <div className="px-6 py-4 bg-white/5 border-b border-slate-100">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full text-[#229C62] bg-[#E9F8EE]">
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full text-[#7AD62A] bg-[#7AD62A]/10">
                       {mod.code}
                     </span>
-                    <h3 className="text-sm font-semibold text-slate-900">{mod.name}</h3>
+                    <h3 className="text-sm font-semibold text-white">{mod.name}</h3>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-500">
                     <span>{mod.credits} credits</span>
@@ -276,7 +276,7 @@ export default function CurriculumDetailPage() {
                     <div className="space-y-1.5">
                       {mod.outcomes.map((o) => (
                         <div key={o.outcome.id} className="flex items-center gap-2 text-sm">
-                          <span className="text-[#229C62] font-mono text-xs">{o.outcome.code}</span>
+                          <span className="text-[#7AD62A] font-mono text-xs">{o.outcome.code}</span>
                           <span className="text-slate-700">{o.outcome.title}</span>
                         </div>
                       ))}
@@ -292,7 +292,7 @@ export default function CurriculumDetailPage() {
                       ) : (
                         mod.labs.map((l) => (
                           <div key={l.lab.id} className="flex items-center gap-2 text-sm">
-                            <Beaker size={12} className="text-[#229C62]" />
+                            <Beaker size={12} className="text-[#7AD62A]" />
                             <span className="text-slate-700">{l.lab.title}</span>
                           </div>
                         ))
@@ -316,20 +316,20 @@ export default function CurriculumDetailPage() {
               <Link
                 key={cohort.id}
                 href={`/dashboard/cohorts/${cohort.id}`}
-                className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between hover:shadow-md transition-all group"
+                className="bg-[#0f172a] rounded-xl border border-white/10 p-4 flex items-center justify-between hover:shadow-md transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-                    <Users size={20} className="text-[#229C62]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+                    <Users size={20} className="text-[#7AD62A]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">{cohort.name}</h3>
+                    <h3 className="text-sm font-semibold text-white">{cohort.name}</h3>
                     <p className="text-xs text-slate-500">
                       {cohort.semester} {cohort.year} — {cohort.members.length} students
                     </p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#229C62] transition-colors" />
+                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#7AD62A] transition-colors" />
               </Link>
             ))
           )}

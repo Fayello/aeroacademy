@@ -62,8 +62,8 @@ const badgeTierColors: Record<string, string> = {
 };
 
 const badgeTierBg: Record<string, string> = {
-  BRONZE: "bg-amber-50 border-amber-200",
-  SILVER: "bg-slate-50 border-slate-300",
+  BRONZE: "bg-amber-500/10 border-amber-200",
+  SILVER: "bg-white/5 border-white/10",
   GOLD: "bg-yellow-50 border-yellow-300",
   PLATINUM: "bg-purple-50 border-purple-300",
 };
@@ -72,7 +72,7 @@ const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; n
   BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", next: "SILVER", nextAt: 800 },
   SILVER:   { color: "text-slate-500", bg: "bg-slate-200", next: "GOLD", nextAt: 1200 },
   GOLD:     { color: "text-amber-600", bg: "bg-amber-100", next: "PLATINUM", nextAt: 1600 },
-  PLATINUM: { color: "text-[#229C62]", bg: "bg-[#E9F8EE]", next: "DIAMOND", nextAt: 2000 },
+  PLATINUM: { color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", next: "DIAMOND", nextAt: 2000 },
   DIAMOND:  { color: "text-blue-600", bg: "bg-blue-100", next: "TITAN", nextAt: 2400 },
   TITAN:    { color: "text-indigo-600", bg: "bg-indigo-100", next: "", nextAt: Infinity },
 };
@@ -120,7 +120,7 @@ export default function PublicProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#229C62]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7AD62A]" />
       </div>
     );
   }
@@ -131,11 +131,11 @@ export default function PublicProfilePage() {
         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
           <Users size={32} className="text-slate-300" />
         </div>
-        <h1 className="text-xl font-semibold text-slate-900">User not found</h1>
+        <h1 className="text-xl font-semibold text-white">User not found</h1>
         <p className="text-sm text-slate-500">This user profile does not exist or has been removed.</p>
         <Link
           href="/dashboard/leaderboard"
-          className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[#229C62] hover:text-[#1a7a4d] transition-colors"
+          className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[#7AD62A] hover:text-[#1a7a4d] transition-colors"
         >
           <ArrowLeft size={16} />
           Back to Leaderboard
@@ -184,22 +184,22 @@ export default function PublicProfilePage() {
       {/* Back Button */}
       <Link
         href="/dashboard/leaderboard"
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-[#229C62] transition-colors"
+        className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-[#7AD62A] transition-colors"
       >
         <ArrowLeft size={16} />
         Back to Leaderboard
       </Link>
 
       {/* Profile Header */}
-      <div className="relative overflow-hidden bg-white rounded-xl border border-slate-200 p-6">
+      <div className="relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-6">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#E9F8EE] to-transparent rounded-bl-full opacity-60" />
         <div className="flex flex-col sm:flex-row items-start gap-5 relative">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg overflow-hidden">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#7AD62A] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg overflow-hidden">
             {getAvatarContent()}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold text-slate-900">
+              <h1 className="text-2xl font-bold text-white">
                 {user.name || user.email.split("@")[0]}
               </h1>
               <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${divInfo.bg} ${divInfo.color}`}>
@@ -214,7 +214,7 @@ export default function PublicProfilePage() {
             </div>
             <div className="flex items-center gap-3 mt-1.5 text-sm text-slate-500 flex-wrap">
               {user.username && (
-                <span className="flex items-center gap-1 text-[#229C62] font-medium">@{user.username}</span>
+                <span className="flex items-center gap-1 text-[#7AD62A] font-medium">@{user.username}</span>
               )}
               <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">{user.role}</span>
             </div>
@@ -229,7 +229,7 @@ export default function PublicProfilePage() {
                     <span className="flex items-center gap-1"><Building2 size={12} />{user.organization.name}</span>
                   )}
                   {user.team && (
-                    <span className="flex items-center gap-1 text-[#229C62] font-medium"><Users size={12} />{user.team.name}</span>
+                    <span className="flex items-center gap-1 text-[#7AD62A] font-medium"><Users size={12} />{user.team.name}</span>
                   )}
                   <span className="flex items-center gap-1">
                     <Calendar size={12} />
@@ -245,7 +245,7 @@ export default function PublicProfilePage() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total XP", value: xp.toLocaleString(), icon: TrendingUp, color: "text-[#229C62]", bg: "bg-[#E9F8EE]" },
+          { label: "Total XP", value: xp.toLocaleString(), icon: TrendingUp, color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10" },
           {
             label: "Current Streak",
             value: `${streak} day${streak !== 1 ? "s" : ""}`,
@@ -254,16 +254,16 @@ export default function PublicProfilePage() {
             bg: "bg-orange-50",
             sub: longestStreak > 0 ? `Best: ${longestStreak}` : undefined,
           },
-          { label: "Badges", value: String(userBadges.length), icon: Award, color: "text-amber-500", bg: "bg-amber-50" },
+          { label: "Badges", value: String(userBadges.length), icon: Award, color: "text-amber-500", bg: "bg-amber-500/10" },
           { label: "Achievements", value: String(achievementsCount), icon: Star, color: "text-purple-600", bg: "bg-purple-50" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all duration-300">
+          <div key={stat.label} className="bg-[#0f172a] rounded-xl border border-white/10 p-4 hover:shadow-md transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
                 <stat.icon size={18} className={stat.color} />
               </div>
               <div>
-                <p className="text-xl font-bold text-slate-900">{stat.value}</p>
+                <p className="text-xl font-bold text-white">{stat.value}</p>
                 <p className="text-xs text-slate-500">{stat.label}</p>
                 {stat.sub && <p className="text-[10px] text-slate-400">{stat.sub}</p>}
               </div>
@@ -275,25 +275,25 @@ export default function PublicProfilePage() {
       {/* Level & Division */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Level Progress */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-              <TrendingUp size={22} className="text-[#229C62]" />
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <TrendingUp size={22} className="text-[#7AD62A]" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Level {level}</h2>
+              <h2 className="text-lg font-semibold text-white">Level {level}</h2>
               <p className="text-sm text-slate-500">{xp.toLocaleString()} total XP</p>
             </div>
           </div>
           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
             <div
-              className="h-full bg-gradient-to-r from-[#229C62] to-[#7AD62A] rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
           <div className="flex items-center justify-between text-sm text-slate-500">
             <span>{xpInLevel.toLocaleString()} / 1,000 XP in this level</span>
-            <span className="font-medium text-slate-900">{Math.round(progress * 100)}%</span>
+            <span className="font-medium text-white">{Math.round(progress * 100)}%</span>
           </div>
           <p className="text-xs text-slate-400 mt-2">
             {(1000 - xpInLevel).toLocaleString()} XP to Level {level + 1}
@@ -301,7 +301,7 @@ export default function PublicProfilePage() {
         </div>
 
         {/* Division */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 hover:shadow-md transition-all duration-300">
           <div className="flex items-center gap-3 mb-4">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${divInfo.bg}`}>
               <Shield size={22} className={divInfo.color} />
@@ -321,7 +321,7 @@ export default function PublicProfilePage() {
               </div>
               <div className="flex items-center justify-between text-sm text-slate-500">
                 <span>{rank} / {divInfo.nextAt} ELO</span>
-                <span className="font-medium text-slate-900">{divInfo.next}</span>
+                <span className="font-medium text-white">{divInfo.next}</span>
               </div>
             </>
           )}
@@ -332,44 +332,44 @@ export default function PublicProfilePage() {
       </div>
 
       {/* Streaks */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
             <Flame size={18} className="text-orange-500" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Activity Streaks</h2>
+            <h2 className="text-lg font-semibold text-white">Activity Streaks</h2>
             <p className="text-xs text-slate-500">Consistency is key</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-[#E9F8EE]/40 border border-[#229C62]/10">
+          <div className="p-4 rounded-xl bg-[#7AD62A]/10/40 border border-[#7AD62A]/10">
             <div className="flex items-center gap-2 mb-1">
-              <Flame size={16} className="text-[#229C62]" />
+              <Flame size={16} className="text-[#7AD62A]" />
               <span className="text-sm font-medium text-slate-700">Current Streak</span>
             </div>
-            <p className="text-2xl font-bold text-[#229C62]">{streak}</p>
+            <p className="text-2xl font-bold text-[#7AD62A]">{streak}</p>
             <p className="text-xs text-slate-400 mt-0.5">day{streak !== 1 ? "s" : ""}</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10">
             <div className="flex items-center gap-2 mb-1">
               <Trophy size={16} className="text-amber-500" />
               <span className="text-sm font-medium text-slate-700">Longest Streak</span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">{longestStreak}</p>
+            <p className="text-2xl font-bold text-white">{longestStreak}</p>
             <p className="text-xs text-slate-400 mt-0.5">day{longestStreak !== 1 ? "s" : ""}</p>
           </div>
         </div>
       </div>
 
       {/* Lessons Completed */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
             <BookOpen size={18} className="text-purple-600" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Lessons Completed</h2>
+            <h2 className="text-lg font-semibold text-white">Lessons Completed</h2>
             <p className="text-sm text-slate-500">{lessonsCompleted} lesson{lessonsCompleted !== 1 ? "s" : ""} finished</p>
           </div>
         </div>
@@ -377,14 +377,14 @@ export default function PublicProfilePage() {
 
       {/* Pinned Badges */}
       {displayBadges.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
                 <Award size={18} className="text-amber-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-white">
                   {pinnedBadgeList.length > 0 ? "Pinned Badges" : "Badges"}
                 </h2>
                 <p className="text-xs text-slate-500">{userBadges.length} earned</p>
@@ -392,7 +392,7 @@ export default function PublicProfilePage() {
             </div>
             <Link
               href="/dashboard/badges"
-              className="text-xs text-[#229C62] hover:text-[#1a7a4d] font-medium flex items-center gap-1"
+              className="text-xs text-[#7AD62A] hover:text-[#1a7a4d] font-medium flex items-center gap-1"
             >
               View All <ChevronRight size={14} />
             </Link>
@@ -413,7 +413,7 @@ export default function PublicProfilePage() {
                   >
                     <BIcon size={18} className="text-white" />
                   </div>
-                  <p className="text-[11px] font-semibold text-slate-900 truncate">{ub.badge.name}</p>
+                  <p className="text-[11px] font-semibold text-white truncate">{ub.badge.name}</p>
                   <p className="text-[9px] text-slate-400 mt-0.5">
                     {new Date(ub.earnedAt).toLocaleDateString()}
                   </p>

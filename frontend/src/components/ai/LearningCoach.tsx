@@ -141,7 +141,7 @@ export default function LearningCoach() {
         className={`fixed bottom-24 md:bottom-8 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all ${
           isOpen
             ? "bg-slate-600 hover:bg-slate-700"
-            : "bg-[#229C62] hover:bg-[#0F203A]"
+            : "bg-[#7AD62A] hover:bg-[#0F203A]"
         }`}
       >
         {isOpen ? (
@@ -159,9 +159,9 @@ export default function LearningCoach() {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-40 md:bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-40 md:bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] max-h-[calc(100vh-8rem)] bg-[#0f172a] rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#0F203A] to-[#229C62] p-4 text-white">
+          <div className="bg-gradient-to-r from-[#0F203A] to-[#7AD62A] p-4 text-white">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                 <Bot size={18} />
@@ -181,15 +181,15 @@ export default function LearningCoach() {
                 className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.role === "assistant" && (
-                  <div className="w-6 h-6 rounded-full bg-[#E9F8EE] flex items-center justify-center shrink-0 mt-0.5">
-                    <Bot size={12} className="text-[#229C62]" />
+                  <div className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Bot size={12} className="text-[#7AD62A]" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-[#229C62] text-white rounded-br-sm"
-                      : "bg-slate-100 text-slate-800 rounded-bl-sm"
+                      ? "bg-[#7AD62A] text-white rounded-br-sm"
+                      : "bg-slate-100 text-slate-200 rounded-bl-sm"
                   }`}
                 >
                   {msg.content}
@@ -203,8 +203,8 @@ export default function LearningCoach() {
             ))}
             {loading && (
               <div className="flex gap-2">
-                <div className="w-6 h-6 rounded-full bg-[#E9F8EE] flex items-center justify-center shrink-0">
-                  <Bot size={12} className="text-[#229C62]" />
+                <div className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center shrink-0">
+                  <Bot size={12} className="text-[#7AD62A]" />
                 </div>
                 <div className="bg-slate-100 px-3 py-2 rounded-xl rounded-bl-sm">
                   <div className="flex gap-1">
@@ -221,7 +221,7 @@ export default function LearningCoach() {
                   <button
                     key={s}
                     onClick={() => { setInput(s); inputRef.current?.focus(); }}
-                    className="px-2.5 py-1 text-xs rounded-full bg-[#E9F8EE] text-[#229C62] hover:bg-[#229C62] hover:text-white transition-colors"
+                    className="px-2.5 py-1 text-xs rounded-full bg-[#7AD62A]/10 text-[#7AD62A] hover:bg-[#7AD62A] hover:text-white transition-colors"
                   >
                     {s}
                   </button>
@@ -232,7 +232,7 @@ export default function LearningCoach() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-slate-200">
+          <div className="p-3 border-t border-white/10">
             <div className="flex gap-2">
               <input
                 ref={inputRef}
@@ -242,12 +242,12 @@ export default function LearningCoach() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask your coach..."
                 disabled={loading}
-                className="flex-1 px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] outline-none disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none disabled:opacity-50"
               />
               <button
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
-                className="w-9 h-9 rounded-xl bg-[#229C62] text-white flex items-center justify-center hover:bg-[#0F203A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-9 h-9 rounded-xl bg-[#7AD62A] text-white flex items-center justify-center hover:bg-[#0F203A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send size={14} />
               </button>

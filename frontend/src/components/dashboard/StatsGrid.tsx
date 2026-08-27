@@ -16,9 +16,9 @@ export default function StatsGrid({ xp, rank, division, clearance, loading }: St
 
   const allStats = [
     config.showXp && { key: "xp", label: "Total XP", icon: Trophy, color: "text-amber-600 bg-amber-100", value: xp?.toLocaleString() || "0" },
-    config.showRanks && { key: "rank", label: "Rank (ELO)", icon: Target, color: "text-[#229C62] bg-[#E9F8EE]", value: String(rank || "1200") },
+    config.showRanks && { key: "rank", label: "Rank (ELO)", icon: Target, color: "text-[#7AD62A] bg-[#7AD62A]/10", value: String(rank || "1200") },
     config.showRanks && { key: "division", label: "Division", icon: Shield, color: "text-blue-600 bg-blue-100", value: division || "BRONZE" },
-    { key: "clearance", label: "Clearance", icon: CheckCircle, color: "text-[#229C62] bg-[#E9F8EE]", value: clearance || "STUDENT_L1" },
+    { key: "clearance", label: "Clearance", icon: CheckCircle, color: "text-[#7AD62A] bg-[#7AD62A]/10", value: clearance || "STUDENT_L1" },
   ].filter(Boolean) as { key: string; label: string; icon: typeof Trophy; color: string; value: string }[];
 
   return (
@@ -34,7 +34,7 @@ export default function StatsGrid({ xp, rank, division, clearance, loading }: St
           {loading ? (
             <div className="h-7 w-20 bg-slate-100 animate-pulse rounded" />
           ) : (
-            <p className="text-xl font-semibold text-slate-900 tracking-tight">{value}</p>
+            <p className="text-xl font-semibold text-white tracking-tight">{value}</p>
           )}
         </div>
       ))}

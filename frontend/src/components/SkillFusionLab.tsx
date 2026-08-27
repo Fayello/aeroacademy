@@ -1030,11 +1030,11 @@ export default function SkillFusionLab() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#229C62]/10 border border-[#229C62]/20 text-[#229C62]/60 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#7AD62A]/10 border border-[#7AD62A]/20 text-[#7AD62A]/60 text-xs font-semibold mb-4">
             <Atom size={14} /> Skill Fusion Lab
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Discover <span className="text-[#229C62]/60">{totalPossible}</span> real specializations
+            Discover <span className="text-[#7AD62A]/60">{totalPossible}</span> real specializations
           </h2>
           <p className="text-base sm:text-lg text-slate-400 mt-3 max-w-2xl mx-auto">
             Combine two skills to discover a real, existing career field. Each fusion explains what the field is,
@@ -1050,13 +1050,13 @@ export default function SkillFusionLab() {
             <span className="text-slate-500">pts</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/50 text-sm">
-            <Sparkles size={14} className="text-[#229C62]/60" />
-            <span className="text-[#229C62]/60 font-bold" style={countBump ? { animation: "counterBump 0.4s ease-out" } : undefined}>{totalDiscovered}</span>
+            <Sparkles size={14} className="text-[#7AD62A]/60" />
+            <span className="text-[#7AD62A]/60 font-bold" style={countBump ? { animation: "counterBump 0.4s ease-out" } : undefined}>{totalDiscovered}</span>
             <span className="text-slate-500">/ {totalPossible}</span>
           </div>
           {/* Progress bar */}
           <div className="w-32 h-2 rounded-full bg-slate-700/50 overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-[#229C62] to-[#229C62]/60 transition-all duration-500"
+            <div className="h-full rounded-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A]/60 transition-all duration-500"
               style={{ width: `${Math.min(100, (totalDiscovered / totalPossible) * 100)}%` }} />
           </div>
           {streakData.streak > 0 && (
@@ -1074,11 +1074,11 @@ export default function SkillFusionLab() {
             </div>
           )}
           <button onClick={() => setShowJournal(!showJournal)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/50 text-sm text-slate-400 hover:text-[#229C62]/60 hover:border-[#229C62]/30 transition-all cursor-pointer">
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/50 text-sm text-slate-400 hover:text-[#7AD62A]/60 hover:border-[#7AD62A]/30 transition-all cursor-pointer">
             <BookOpen size={14} /> Journal {showJournal ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
           <button onClick={() => setShowCreator(!showCreator)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#229C62]/20 border border-[#229C62]/30 text-sm text-[#229C62]/60 hover:bg-[#229C62]/30 transition-all cursor-pointer">
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7AD62A]/20 border border-[#7AD62A]/30 text-sm text-[#7AD62A]/60 hover:bg-[#7AD62A]/30 transition-all cursor-pointer">
             <Plus size={14} /> Custom Skill
           </button>
           <button onClick={() => setShowAdmin(!showAdmin)}
@@ -1102,11 +1102,11 @@ export default function SkillFusionLab() {
               return (
                 <div key={cat} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/30 text-xs">
                   <span className="text-slate-400 font-medium">{cat}</span>
-                  <span className="text-[#229C62]/60 font-bold">{cs.discovered}</span>
+                  <span className="text-[#7AD62A]/60 font-bold">{cs.discovered}</span>
                   <span className="text-slate-600">/</span>
                   <span className="text-slate-500">{cs.total}</span>
                   <div className="w-16 h-1.5 rounded-full bg-slate-700/50 overflow-hidden">
-                    <div className="h-full rounded-full bg-[#229C62]/70 transition-all duration-500"
+                    <div className="h-full rounded-full bg-[#7AD62A]/70 transition-all duration-500"
                       style={{ width: `${pct}%` }} />
                   </div>
                 </div>
@@ -1312,12 +1312,12 @@ export default function SkillFusionLab() {
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2 overflow-x-auto pb-1">
             <button onClick={() => setSelectedCategory("All")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${selectedCategory === "All" ? "bg-[#229C62] text-white" : "bg-slate-800/60 text-slate-400 hover:text-white border border-slate-700/40"}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${selectedCategory === "All" ? "bg-[#7AD62A] text-white" : "bg-slate-800/60 text-slate-400 hover:text-white border border-slate-700/40"}`}>
               All ({BASE_SKILLS.length})
             </button>
             {CATEGORIES.map(cat => (
               <button key={cat} onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${selectedCategory === cat ? "bg-[#229C62] text-white" : "bg-slate-800/60 text-slate-400 hover:text-white border border-slate-700/40"}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${selectedCategory === cat ? "bg-[#7AD62A] text-white" : "bg-slate-800/60 text-slate-400 hover:text-white border border-slate-700/40"}`}>
                 {cat}
               </button>
             ))}
@@ -1353,7 +1353,7 @@ export default function SkillFusionLab() {
           )}
           <div className="absolute bottom-3 left-3 right-3 flex justify-center pointer-events-none">
             <div className="flex items-center gap-4 px-4 py-2 rounded-xl bg-slate-800/80 backdrop-blur border border-slate-700/50 text-[10px] text-slate-400">
-              <span className="flex items-center gap-1"><span className="w-4 h-4 rounded-full bg-[#229C62]/20 border border-[#229C62]/40 flex items-center justify-center"><span className="w-1.5 h-1.5 rounded-full bg-[#229C62]/60" /></span> Click to add</span>
+              <span className="flex items-center gap-1"><span className="w-4 h-4 rounded-full bg-[#7AD62A]/20 border border-[#7AD62A]/40 flex items-center justify-center"><span className="w-1.5 h-1.5 rounded-full bg-[#7AD62A]/60" /></span> Click to add</span>
               <span className="hidden sm:flex items-center gap-1">Drag to fuse</span>
               <span className="hidden sm:flex items-center gap-1"><Zap size={10} className="text-blue-400" /> Real specializations</span>
               <span className="hidden md:flex items-center gap-1">Hover journal for details</span>

@@ -26,7 +26,7 @@ interface Talent {
 const divisionBadge: Record<string, string> = {
   TITAN: "bg-indigo-100 text-indigo-700 border-indigo-200",
   DIAMOND: "bg-blue-100 text-blue-700 border-blue-200",
-  PLATINUM: "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20",
+  PLATINUM: "bg-[#7AD62A]/10 text-[#0F203A] border-[#7AD62A]/20",
   GOLD: "bg-amber-100 text-amber-700 border-amber-200",
 };
 
@@ -113,7 +113,7 @@ export default function EnterprisePortal() {
         <div className="h-10 w-full max-w-md bg-slate-200 rounded-lg animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((id) => (
-            <div key={id} className="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+            <div key={id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 space-y-4">
               <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-slate-200 animate-pulse" />
@@ -142,10 +142,10 @@ export default function EnterprisePortal() {
 
       {(userRole === "ADMIN" || userRole === "RECRUITER") && (
         <div className="flex bg-slate-100 p-1 rounded-lg w-fit">
-          <button onClick={() => setView("TALENT")} className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${view === "TALENT" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
+          <button onClick={() => setView("TALENT")} className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${view === "TALENT" ? "bg-[#0f172a] text-white shadow-sm" : "text-slate-500 hover:text-slate-200"}`}>
             Talent Pool
           </button>
-          <button onClick={() => setView("CLASSROOM")} className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${view === "CLASSROOM" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
+          <button onClick={() => setView("CLASSROOM")} className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${view === "CLASSROOM" ? "bg-[#0f172a] text-white shadow-sm" : "text-slate-500 hover:text-slate-200"}`}>
             Classroom
           </button>
         </div>
@@ -177,12 +177,12 @@ export default function EnterprisePortal() {
           {/* Talent grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedTalent.map((t) => (
-              <div key={t.id} className="bg-white rounded-xl border border-slate-200 p-5 space-y-4 hover:shadow-md transition-shadow">
+              <div key={t.id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 space-y-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${divisionBadge[t.division] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${divisionBadge[t.division] || "bg-slate-100 text-slate-600 border-white/10"}`}>
                     {t.division}
                   </span>
-                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
+                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-300 hover:bg-white/5"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
                     <Star size={14} fill={shortlisted.has(t.id) ? "currentColor" : "none"} />
                   </button>
                 </div>
@@ -192,7 +192,7 @@ export default function EnterprisePortal() {
                     {t.name?.[0] || '?'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{t.name}</p>
+                    <p className="text-sm font-medium text-white truncate">{t.name}</p>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
                       <MapPin size={10} />
                       {t.city}
@@ -201,13 +201,13 @@ export default function EnterprisePortal() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-slate-50 rounded-lg p-2">
+                  <div className="bg-white/5 rounded-lg p-2">
                     <p className="text-slate-500">Rank</p>
-                    <p className="font-semibold text-slate-900">{t.rank || 1200}</p>
+                    <p className="font-semibold text-white">{t.rank || 1200}</p>
                   </div>
-                  <div className="bg-slate-50 rounded-lg p-2">
+                  <div className="bg-white/5 rounded-lg p-2">
                     <p className="text-slate-500">Labs</p>
-                    <p className="font-semibold text-slate-900">{t._count.labSubmissions}</p>
+                    <p className="font-semibold text-white">{t._count.labSubmissions}</p>
                   </div>
                 </div>
 
@@ -248,7 +248,7 @@ export default function EnterprisePortal() {
           )}
 
           {filteredTalent.length === 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
               <p className="text-sm font-medium text-slate-500">No candidates match your criteria.</p>
             </div>
           )}

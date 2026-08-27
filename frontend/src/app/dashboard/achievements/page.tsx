@@ -34,11 +34,11 @@ const iconMap: Record<string, typeof Trophy> = {
 };
 
 const rarityColors: Record<string, { bg: string; border: string; text: string; glow: string }> = {
-  COMMON: { bg: "bg-slate-50", border: "border-slate-200", text: "text-slate-600", glow: "" },
+  COMMON: { bg: "bg-white/5", border: "border-white/10", text: "text-slate-600", glow: "" },
   UNCOMMON: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-600", glow: "shadow-emerald-100" },
-  RARE: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-600", glow: "shadow-blue-100" },
+  RARE: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-600", glow: "shadow-blue-100" },
   EPIC: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-600", glow: "shadow-purple-100" },
-  LEGENDARY: { bg: "bg-amber-50", border: "border-amber-300", text: "text-amber-600", glow: "shadow-amber-200" },
+  LEGENDARY: { bg: "bg-amber-500/10", border: "border-amber-300", text: "text-amber-600", glow: "shadow-amber-200" },
 };
 
 const categoryIcons: Record<string, typeof Trophy> = {
@@ -86,7 +86,7 @@ export default function AchievementsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-[#229C62] animate-spin" />
+        <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
       </div>
     );
   }
@@ -94,12 +94,12 @@ export default function AchievementsPage() {
   if (error) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="angular-card bg-white p-12 text-center">
+        <div className="angular-card bg-[#0f172a] p-12 text-center">
           <AlertCircle size={32} className="text-slate-300 mx-auto mb-3" />
           <p className="text-sm text-slate-500 mb-2">{t("common.error")}</p>
           <button
             onClick={() => { setError(false); setLoading(true); window.location.reload(); }}
-            className="text-sm text-[#229C62] hover:underline font-medium"
+            className="text-sm text-[#7AD62A] hover:underline font-medium"
           >
             {t("common.retry")}
           </button>
@@ -110,13 +110,13 @@ export default function AchievementsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="angular-card bg-white p-6">
+      <div className="angular-card bg-[#0f172a] p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="bg-[#E9F8EE] p-3 rounded-xl">
-            <Trophy size={24} className="text-[#229C62]" />
+          <div className="bg-[#7AD62A]/10 p-3 rounded-xl">
+            <Trophy size={24} className="text-[#7AD62A]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{t("achievements.title")}</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight">{t("achievements.title")}</h1>
             <p className="text-sm text-slate-500">
               {t("achievements.progress").replace("{unlocked}", String(unlocked.length)).replace("{total}", String(achievements.length))}
             </p>
@@ -124,7 +124,7 @@ export default function AchievementsPage() {
         </div>
         <div className="grid grid-cols-3 gap-4 mt-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-slate-900">{unlocked.length}</p>
+            <p className="text-2xl font-bold text-white">{unlocked.length}</p>
             <p className="text-xs text-slate-500">{t("achievements.unlocked")}</p>
           </div>
           <div className="text-center">
@@ -132,7 +132,7 @@ export default function AchievementsPage() {
             <p className="text-xs text-slate-500">{t("achievements.xpEarned")}</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-[#229C62]">
+            <p className="text-2xl font-bold text-[#7AD62A]">
               {achievements.length > 0 ? Math.round((unlocked.length / achievements.length) * 100) : 0}%
             </p>
             <p className="text-xs text-slate-500">{t("achievements.complete")}</p>
@@ -159,7 +159,7 @@ export default function AchievementsPage() {
           onClick={() => setCategoryFilter("all")}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             categoryFilter === "all"
-              ? "bg-[#229C62] text-white"
+              ? "bg-[#7AD62A] text-white"
               : "bg-slate-100 text-slate-600 hover:bg-slate-200"
           }`}
         >
@@ -173,7 +173,7 @@ export default function AchievementsPage() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 categoryFilter === cat
-                  ? "bg-[#229C62] text-white"
+                  ? "bg-[#7AD62A] text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
@@ -195,14 +195,14 @@ export default function AchievementsPage() {
               className={`angular-card border p-4 transition-all ${
                 ach.unlocked
                   ? `${rarity.bg} ${rarity.border} border ${rarity.glow}`
-                  : "bg-slate-50 border-slate-200 opacity-60"
+                  : "bg-white/5 border-white/10 opacity-60"
               }`}
             >
               <div className="flex items-start gap-3">
                 <div
                   className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                     ach.unlocked
-                      ? "bg-gradient-to-br from-[#229C62] to-[#7AD62A]"
+                      ? "bg-gradient-to-br from-[#7AD62A] to-[#7AD62A]"
                       : "bg-slate-200"
                   }`}
                 >
@@ -214,7 +214,7 @@ export default function AchievementsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-slate-900 truncate">{ach.title}</h3>
+                    <h3 className="text-sm font-semibold text-white truncate">{ach.title}</h3>
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${rarity.bg} ${rarity.text} border ${rarity.border}`}>
                       {ach.rarity}
                     </span>
@@ -233,7 +233,7 @@ export default function AchievementsPage() {
                   </div>
                   <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#229C62] rounded-full transition-all duration-500"
+                      className="h-full bg-[#7AD62A] rounded-full transition-all duration-500"
                       style={{ width: `${ach.percentage}%` }}
                     />
                   </div>

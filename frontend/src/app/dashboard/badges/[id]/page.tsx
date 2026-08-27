@@ -54,8 +54,8 @@ const iconMap: Record<string, typeof Trophy> = {
 };
 
 const tierColors: Record<string, string> = {
-  BRONZE: "bg-amber-50 border-amber-200 text-amber-700",
-  SILVER: "bg-slate-50 border-slate-200 text-slate-700",
+  BRONZE: "bg-amber-500/10 border-amber-200 text-amber-700",
+  SILVER: "bg-white/5 border-white/10 text-slate-700",
   GOLD: "bg-yellow-50 border-yellow-200 text-yellow-700",
   PLATINUM: "bg-purple-50 border-purple-200 text-purple-700",
 };
@@ -128,7 +128,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
   const badge = allBadges.find((b) => b.id === id);
   if (!badge) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] p-12 text-center">
         <Award size={32} className="text-slate-300 mx-auto mb-3" />
         <p className="text-sm text-slate-500">Badge not found</p>
         <Link href="/dashboard/badges" className="text-xs text-blue-600 hover:text-blue-700 mt-3 inline-block">
@@ -149,12 +149,12 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
     <div className="space-y-6 animate-in fade-in duration-500">
       <Link
         href="/dashboard/badges"
-        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200"
       >
         <ArrowLeft size={14} /> Back to Badges
       </Link>
 
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden">
         <div className={`bg-gradient-to-r ${earned ? tierBg[badge.tier] || tierBg.BRONZE : "from-slate-400 to-slate-500"} p-8 text-white text-center`}>
           <div className="w-20 h-20 rounded-full bg-white/20 mx-auto mb-4 flex items-center justify-center">
             <Icon size={36} />
@@ -176,42 +176,42 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-slate-50 rounded-lg">
+            <div className="text-center p-3 bg-white/5 rounded-lg">
               <Sparkles size={18} className="text-amber-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{badge.xpReward}</p>
+              <p className="text-lg font-bold text-white">{badge.xpReward}</p>
               <p className="text-[11px] text-slate-500">XP Reward</p>
             </div>
-            <div className="text-center p-3 bg-slate-50 rounded-lg">
+            <div className="text-center p-3 bg-white/5 rounded-lg">
               <Users size={18} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{badge._count.users}</p>
+              <p className="text-lg font-bold text-white">{badge._count.users}</p>
               <p className="text-[11px] text-slate-500">Earned By</p>
             </div>
-            <div className="text-center p-3 bg-slate-50 rounded-lg">
-              <Target size={18} className="text-[#229C62] mx-auto mb-1" />
-              <p className="text-lg font-bold text-slate-900">{badge.tier}</p>
+            <div className="text-center p-3 bg-white/5 rounded-lg">
+              <Target size={18} className="text-[#7AD62A] mx-auto mb-1" />
+              <p className="text-lg font-bold text-white">{badge.tier}</p>
               <p className="text-[11px] text-slate-500">Tier</p>
             </div>
           </div>
 
           {earned ? (
-            <div className="flex items-center gap-2 text-[#229C62] text-sm bg-[#E9F8EE] p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-[#7AD62A] text-sm bg-[#7AD62A]/10 p-3 rounded-lg">
               <CheckCircle2 size={16} />
               <span className="font-medium">Badge Earned</span>
               {earnedBadge && (
-                <span className="text-[11px] text-[#229C62] ml-auto">
+                <span className="text-[11px] text-[#7AD62A] ml-auto">
                   {new Date(earnedBadge.earnedAt).toLocaleDateString()}
                 </span>
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-slate-500 text-sm bg-slate-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-slate-500 text-sm bg-white/5 p-3 rounded-lg">
               <Lock size={16} />
               <span className="font-medium">Not Yet Earned</span>
             </div>
           )}
 
-          <div className="bg-slate-50 rounded-lg p-4">
-            <h2 className="text-sm font-semibold text-slate-900 mb-2">Requirement</h2>
+          <div className="bg-white/5 rounded-lg p-4">
+            <h2 className="text-sm font-semibold text-white mb-2">Requirement</h2>
             <p className="text-sm text-slate-600">
               {requirementLabels[badge.requirement] || badge.requirement}
             </p>
@@ -219,7 +219,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
 
           {relatedBadges.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-slate-900 mb-3">Related Badges</h2>
+              <h2 className="text-sm font-semibold text-white mb-3">Related Badges</h2>
               <div className="grid grid-cols-3 gap-3">
                 {relatedBadges.map((rb) => {
                   const rbEarned = myBadges.some((b) => b.badgeId === rb.id);
@@ -231,7 +231,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
                       className={`rounded-lg border p-3 text-center transition-all hover:shadow-sm ${
                         rbEarned
                           ? tierColors[rb.tier] || tierColors.BRONZE
-                          : "bg-slate-50 border-slate-200 opacity-60"
+                          : "bg-white/5 border-white/10 opacity-60"
                       }`}
                     >
                       <div
@@ -241,7 +241,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
                       >
                         <RbIcon size={16} className="text-white" />
                       </div>
-                      <p className="text-[10px] font-semibold text-slate-900 truncate">{rb.name}</p>
+                      <p className="text-[10px] font-semibold text-white truncate">{rb.name}</p>
                     </Link>
                   );
                 })}

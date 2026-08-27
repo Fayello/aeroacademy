@@ -30,13 +30,13 @@ export default class RootErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#0a0f1a] px-4">
           <div className="w-full max-w-md text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-red-100 mb-6">
-              <AlertTriangle className="text-red-600" size={32} />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-red-500/10 mb-6">
+              <AlertTriangle className="text-red-400" size={32} />
             </div>
-            <h1 className="text-2xl font-semibold text-slate-900 mb-2">Something went wrong</h1>
-            <p className="text-sm text-slate-500 mb-6">
+            <h1 className="text-2xl font-semibold text-white mb-2">Something went wrong</h1>
+            <p className="text-sm text-slate-400 mb-6">
               An unexpected error occurred. Please try refreshing the page.
             </p>
             <button
@@ -51,10 +51,10 @@ export default class RootErrorBoundary extends Component<Props, State> {
             </button>
             {this.state.error && (
               <details className="mt-6 text-left">
-                <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600">
+                <summary className="text-xs text-slate-500 cursor-pointer hover:text-slate-300">
                   Error details
                 </summary>
-                <pre className="mt-2 text-xs text-red-600 bg-red-50 rounded-lg p-3 overflow-auto">
+                <pre className="mt-2 text-xs text-red-400 bg-red-500/10 rounded-lg p-3 overflow-auto">
                   {this.state.error.message}
                   {"\n"}
                   {this.state.error.stack}

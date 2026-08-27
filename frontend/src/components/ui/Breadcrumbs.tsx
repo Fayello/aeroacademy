@@ -81,16 +81,16 @@ export default function Breadcrumbs() {
 
   return (
     <nav className="flex items-center gap-1 text-sm text-slate-500 mb-4">
-      <Link href="/dashboard" className="hover:text-slate-700 transition-colors">
+      <Link href="/dashboard" className="hover:text-slate-200 transition-colors">
         <Home size={14} />
       </Link>
       {crumbs.map((crumb) => (
         <span key={crumb.href} className="flex items-center gap-1">
-          <ChevronRight size={12} className="text-slate-300" />
+          <ChevronRight size={12} className="text-slate-600" />
           {crumb.isLast ? (
-            <span className="text-slate-900 font-medium">{crumb.label}</span>
+            <span className="text-white font-medium">{crumb.label}</span>
           ) : (
-            <Link href={crumb.href} className="hover:text-slate-700 transition-colors">
+            <Link href={crumb.href} className="hover:text-slate-200 transition-colors">
               {crumb.label}
             </Link>
           )}

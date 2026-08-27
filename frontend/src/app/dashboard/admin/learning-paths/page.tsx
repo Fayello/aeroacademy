@@ -153,11 +153,11 @@ export default function AdminLearningPathsPage() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#229C62]" size={32} /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#7AD62A]" size={32} /></div>;
   }
 
   const diffColors: Record<string, string> = {
-    BEGINNER: "bg-[#E9F8EE] text-[#0F203A]",
+    BEGINNER: "bg-[#7AD62A]/10 text-[#0F203A]",
     INTERMEDIATE: "bg-amber-100 text-amber-700",
     ADVANCED: "bg-red-100 text-red-700",
     EXPERT: "bg-purple-100 text-purple-700",
@@ -182,9 +182,9 @@ export default function AdminLearningPathsPage() {
       </div>
 
       {paths.length === 0 ? (
-        <div className="angular-card bg-white p-12 text-center">
+        <div className="angular-card bg-[#0f172a] p-12 text-center">
           <Route size={48} className="mx-auto mb-4 text-slate-300" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">No learning paths yet</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">No learning paths yet</h3>
           <p className="text-sm text-slate-500 mb-4">Create your first learning path to guide students through a structured curriculum.</p>
           <button onClick={openCreate} className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-medium transition-colors">
             Create Path
@@ -193,15 +193,15 @@ export default function AdminLearningPathsPage() {
       ) : (
         <div className="grid gap-4">
           {paths.map((path) => (
-            <div key={path.id} className="angular-card bg-white p-5 hover:shadow-md transition-all">
+            <div key={path.id} className="angular-card bg-[#0f172a] p-5 hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
                     <Route size={20} className="text-violet-600" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-slate-900">{path.title}</h3>
+                      <h3 className="font-semibold text-white">{path.title}</h3>
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${diffColors[path.difficulty] || diffColors.BEGINNER}`}>
                         {path.difficulty}
                       </span>
@@ -211,16 +211,16 @@ export default function AdminLearningPathsPage() {
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <p className="text-sm font-medium text-slate-900">{path.courses?.length || 0}</p>
+                    <p className="text-sm font-medium text-white">{path.courses?.length || 0}</p>
                     <p className="text-xs text-slate-500">Courses</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-slate-900">{path._count?.enrollments || 0}</p>
+                    <p className="text-sm font-medium text-white">{path._count?.enrollments || 0}</p>
                     <p className="text-xs text-slate-500">Enrolled</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={() => openEdit(path)} className="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all"><Pencil size={16} /></button>
-                    <button onClick={() => setDeleteDialog({ open: true, item: path })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
+                    <button onClick={() => setDeleteDialog({ open: true, item: path })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
                   </div>
                 </div>
               </div>
@@ -245,7 +245,7 @@ export default function AdminLearningPathsPage() {
         title={editing ? "Edit Learning Path" : "New Learning Path"}
         footer={
           <div className="flex gap-3 justify-end">
-            <button onClick={() => setModalOpen(false)} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button>
+            <button onClick={() => setModalOpen(false)} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button>
             <button onClick={handleSave} disabled={saving} className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-50">
               {saving ? "Saving..." : "Save"}
             </button>
@@ -279,9 +279,9 @@ export default function AdminLearningPathsPage() {
                   return (
                     <div key={sc.courseId} className="flex items-center gap-2 bg-violet-50 border border-violet-200 rounded-lg px-3 py-2">
                       <span className="text-xs font-bold text-violet-600 w-5">{i + 1}.</span>
-                      <span className="text-sm text-slate-800 flex-1">{course?.title || sc.courseId}</span>
-                      <button onClick={() => moveCourse(sc.courseId, "up")} disabled={i === 0} className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-30"><ChevronUp size={14} /></button>
-                      <button onClick={() => moveCourse(sc.courseId, "down")} disabled={i === selectedCourses.length - 1} className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-30"><ChevronDown size={14} /></button>
+                      <span className="text-sm text-slate-200 flex-1">{course?.title || sc.courseId}</span>
+                      <button onClick={() => moveCourse(sc.courseId, "up")} disabled={i === 0} className="p-0.5 text-slate-400 hover:text-slate-200 disabled:opacity-30"><ChevronUp size={14} /></button>
+                      <button onClick={() => moveCourse(sc.courseId, "down")} disabled={i === selectedCourses.length - 1} className="p-0.5 text-slate-400 hover:text-slate-200 disabled:opacity-30"><ChevronDown size={14} /></button>
                       <button onClick={() => removeCourseFromPath(sc.courseId)} className="p-0.5 text-slate-400 hover:text-red-600"><X size={14} /></button>
                     </div>
                   );
@@ -290,7 +290,7 @@ export default function AdminLearningPathsPage() {
             )}
             <select
               onChange={(e) => { if (e.target.value) { addCourseToPath(e.target.value); e.target.value = ""; } }}
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
+              className="w-full px-3 py-2 border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
             >
               <option value="">Add a course...</option>
               {allCourses

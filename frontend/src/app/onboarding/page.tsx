@@ -208,7 +208,7 @@ export default function OnboardingPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 lg:px-10 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#229C62] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#7AD62A] flex items-center justify-center">
               <Shield size={18} className="text-white" />
             </div>
             <span className="text-lg font-bold text-white tracking-tight">XpertClass</span>
@@ -228,8 +228,8 @@ export default function OnboardingPage() {
             {/* ─── WELCOME SCREEN (step -1) ─── */}
             {step === -1 && (
               <div className="text-center">
-                <div className="w-20 h-20 rounded-2xl bg-[#229C62]/10 flex items-center justify-center mx-auto mb-6">
-                  <Sparkles size={36} className="text-[#229C62]" />
+                <div className="w-20 h-20 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-6">
+                  <Sparkles size={36} className="text-[#7AD62A]" />
                 </div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
                   Welcome{userName ? `, ${userName}` : ""}
@@ -239,7 +239,7 @@ export default function OnboardingPage() {
                 </p>
                 <button
                   onClick={() => setStep(0)}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
                 >
                   Get Started
                   <ArrowRight size={16} />
@@ -315,7 +315,7 @@ export default function OnboardingPage() {
                 title={
                   <>
                     How many years of experience do you have in{" "}
-                    <span className="text-[#229C62]">{selectedFieldName || "your field"}</span>?
+                    <span className="text-[#7AD62A]">{selectedFieldName || "your field"}</span>?
                   </>
                 }
                 subtitle="Select one option"
@@ -412,7 +412,7 @@ export default function OnboardingPage() {
                 <div
                   key={i}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === step ? "w-8 bg-[#229C62]" : i < step ? "w-3 bg-[#229C62]/60" : "w-3 bg-white/10"
+                    i === step ? "w-8 bg-[#7AD62A]" : i < step ? "w-3 bg-[#7AD62A]/60" : "w-3 bg-white/10"
                   }`}
                 />
               ))}
@@ -421,7 +421,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => canNext() && setStep(step + 1)}
               disabled={!canNext()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors"
             >
               Continue
               <ChevronRight size={16} />
@@ -512,14 +512,14 @@ function StepContent({
               onClick={() => onToggle(opt.id)}
               className={`flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200 group ${
                 isSelected
-                  ? "border-[#229C62] bg-[#229C62]/10"
+                  ? "border-[#7AD62A] bg-[#7AD62A]/10"
                   : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
               }`}
             >
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
-                isSelected ? "bg-[#229C62]/20" : "bg-white/5 group-hover:bg-white/8"
+                isSelected ? "bg-[#7AD62A]/20" : "bg-white/5 group-hover:bg-white/8"
               }`}>
-                <Icon size={20} className={isSelected ? "text-[#229C62]" : "text-white/50 group-hover:text-white/70"} />
+                <Icon size={20} className={isSelected ? "text-[#7AD62A]" : "text-white/50 group-hover:text-white/70"} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-semibold ${isSelected ? "text-white" : "text-white/80"}`}>{opt.label}</p>
@@ -527,15 +527,15 @@ function StepContent({
               </div>
               {multi ? (
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                  isSelected ? "border-[#229C62] bg-[#229C62]" : "border-white/20"
+                  isSelected ? "border-[#7AD62A] bg-[#7AD62A]" : "border-white/20"
                 }`}>
                   {isSelected && <Check size={12} className="text-white" />}
                 </div>
               ) : (
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                  isSelected ? "border-[#229C62] bg-[#229C62]" : "border-white/20"
+                  isSelected ? "border-[#7AD62A] bg-[#7AD62A]" : "border-white/20"
                 }`}>
-                  {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                  {isSelected && <div className="w-2 h-2 rounded-full bg-[#0f172a]" />}
                 </div>
               )}
             </button>

@@ -11,7 +11,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="min-h-screen flex items-center justify-center bg-white/5">
           <Loader2 className="animate-spin text-emerald-600" size={28} />
         </div>
       }
@@ -34,12 +34,12 @@ function ResetPasswordForm() {
 
   if (token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-white/5 px-4">
         <div className="w-full max-w-sm text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100 mb-4">
             <Lock className="text-amber-600" size={24} />
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900 mb-2">Reset link expired</h1>
+          <h1 className="text-2xl font-semibold text-white mb-2">Reset link expired</h1>
           <p className="text-sm text-slate-500 mb-6">Password reset links have been replaced with a more secure OTP code system.</p>
           <Link href="/forgot-password" className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm">
             Request a code instead
@@ -51,12 +51,12 @@ function ResetPasswordForm() {
 
   if (!email || !code) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-white/5 px-4">
         <div className="w-full max-w-sm text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-red-100 mb-4">
             <Lock className="text-red-600" size={24} />
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900 mb-2">Invalid reset link</h1>
+          <h1 className="text-2xl font-semibold text-white mb-2">Invalid reset link</h1>
           <p className="text-sm text-slate-500 mb-6">This password reset link is invalid or expired.</p>
           <Link href="/forgot-password" className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm">
             Request a new code
@@ -94,9 +94,9 @@ function ResetPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white/5 px-4">
       <div className="w-full max-w-sm">
-        <Link href="/login" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-6">
+        <Link href="/login" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-200 mb-6">
           <ChevronLeft size={16} />
           Back to sign in
         </Link>
@@ -105,11 +105,11 @@ function ResetPasswordForm() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-600 mb-4">
             <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900">Set new password</h1>
+          <h1 className="text-2xl font-semibold text-white">Set new password</h1>
           <p className="text-sm text-slate-500 mt-1">Choose a strong password for your account</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 shadow-sm p-6">
           {!success ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -119,7 +119,7 @@ function ResetPasswordForm() {
                   <input
                     id="newPassword"
                     type="password"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Min. 8 characters"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -134,7 +134,7 @@ function ResetPasswordForm() {
                   <input
                     id="confirmPassword"
                     type="password"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
                     placeholder="Repeat your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -151,7 +151,7 @@ function ResetPasswordForm() {
               <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="text-emerald-600" size={24} />
               </div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-2">Password updated</h2>
+              <h2 className="text-lg font-semibold text-white mb-2">Password updated</h2>
               <p className="text-sm text-slate-500 mb-6">Your password has been reset successfully.</p>
               <Link href="/login" className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm w-full">
                 Sign in

@@ -131,7 +131,7 @@ export default function AdminMonitoringPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -144,8 +144,8 @@ export default function AdminMonitoringPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-[#229C62]/20 backdrop-blur-sm flex items-center justify-center">
-              <Monitor size={24} className="text-[#229C62]/60" />
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/20 backdrop-blur-sm flex items-center justify-center">
+              <Monitor size={24} className="text-[#7AD62A]/60" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">Lab Monitoring</h1>
@@ -154,11 +154,11 @@ export default function AdminMonitoringPage() {
           </div>
           <div className="flex flex-wrap gap-4 mt-6">
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-              <Activity size={16} className="text-[#229C62]/60" />
+              <Activity size={16} className="text-[#7AD62A]/60" />
               <span className="text-sm font-medium">{instances.length} Active Session{instances.length !== 1 ? "s" : ""}</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-              <Users size={16} className="text-[#229C62]/60" />
+              <Users size={16} className="text-[#7AD62A]/60" />
               <span className="text-sm font-medium">{stats?.activeUsers || 0} Users Online</span>
             </div>
           </div>
@@ -167,22 +167,22 @@ export default function AdminMonitoringPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Active Containers", value: stats?.activeContainers || 0, icon: Container, bg: "bg-[#229C62]", color: "text-[#229C62]" },
+          { label: "Active Containers", value: stats?.activeContainers || 0, icon: Container, bg: "bg-[#7AD62A]", color: "text-[#7AD62A]" },
           { label: "Active Users", value: stats?.activeUsers || 0, icon: Users, bg: "bg-blue-500", color: "text-blue-600" },
           { label: "Capacity Used", value: `${capacityPercent}%`, icon: Gauge, bg: "bg-amber-500", color: "text-amber-600" },
           { label: "Max Capacity", value: stats?.maxCapacity || 0, icon: Activity, bg: "bg-violet-500", color: "text-violet-600" },
         ].map((card) => (
-          <div key={card.label} className="relative overflow-hidden angular-card bg-white p-5 hover:shadow-lg transition-all duration-300">
+          <div key={card.label} className="relative overflow-hidden angular-card bg-[#0f172a] p-5 hover:shadow-lg transition-all duration-300">
             <div className={`absolute top-0 right-0 w-20 h-20 ${card.bg} opacity-10 rounded-bl-full`}></div>
             <card.icon size={20} className={`${card.color} mb-3`} />
-            <div className="text-2xl font-bold text-slate-900">{card.value}</div>
+            <div className="text-2xl font-bold text-white">{card.value}</div>
             <div className="text-sm text-slate-500 mt-1">{card.label}</div>
           </div>
         ))}
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Active Lab Users</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Active Lab Users</h3>
         <AdminTable
           columns={[
             {
@@ -191,7 +191,7 @@ export default function AdminMonitoringPage() {
               sortable: true,
               render: (item: LabInstance) => (
                 <div>
-                  <p className="font-medium text-slate-900">{item.user?.name || "Unknown"}</p>
+                  <p className="font-medium text-white">{item.user?.name || "Unknown"}</p>
                   <p className="text-xs text-slate-500">{item.user?.email || ""}</p>
                 </div>
               ),
@@ -239,7 +239,7 @@ export default function AdminMonitoringPage() {
             { label: "Force Stop", icon: <Square size={16} />, variant: "danger", onClick: handleBatchStop },
           ]}
           headerExtra={
-            <button onClick={() => loadData()} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all">
+            <button onClick={() => loadData()} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all">
               <RefreshCw size={16} /> Refresh
             </button>
           }
@@ -247,19 +247,19 @@ export default function AdminMonitoringPage() {
       </div>
 
       {instances.length > 0 && (
-        <div className="angular-card bg-white overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+        <div className="angular-card bg-[#0f172a] overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/10 bg-white/5">
             <h4 className="text-sm font-semibold text-slate-700">Quick Actions</h4>
           </div>
           <div className="divide-y divide-slate-100">
             {instances.map((instance) => (
-              <div key={`${instance.labId}-${instance.userId}`} className="px-6 py-3 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+              <div key={`${instance.labId}-${instance.userId}`} className="px-6 py-3 flex items-center justify-between hover:bg-white/5/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
-                    <Users size={14} className="text-[#229C62]" />
+                  <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
+                    <Users size={14} className="text-[#7AD62A]" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">{instance.user?.name} &middot; {instance.lab?.title}</p>
+                    <p className="text-sm font-medium text-white">{instance.user?.name} &middot; {instance.lab?.title}</p>
                     <p className="text-xs text-slate-500">Running for {formatElapsed(instance.createdAt)}</p>
                   </div>
                 </div>

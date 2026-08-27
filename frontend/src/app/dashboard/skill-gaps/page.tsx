@@ -45,7 +45,7 @@ interface PersonalizedPath {
 
 function MasteryBar({ mastery, domain }: { mastery: number; domain: string }) {
   const color = mastery >= 70 ? "#229C62" : mastery >= 40 ? "#d97706" : "#dc2626";
-  const bgColor = mastery >= 70 ? "bg-[#229C62]" : mastery >= 40 ? "bg-amber-500" : "bg-red-500";
+  const bgColor = mastery >= 70 ? "bg-[#7AD62A]" : mastery >= 40 ? "bg-amber-500" : "bg-red-500";
 
   return (
     <div>
@@ -147,7 +147,7 @@ export default function SkillGapPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -163,25 +163,25 @@ export default function SkillGapPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 border border-slate-200">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 border border-white/10">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-              <Target size={24} className="text-[#229C62]" />
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <Target size={24} className="text-[#7AD62A]" />
             </div>
             <PageHeader title="Skill Gap Analysis" description="Your competency profile across all domains" />
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
-            <div className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
+            <div className="bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm">
               <span className="text-slate-500">Overall Score:</span>{" "}
-              <span className="font-bold text-[#229C62]">{report.overallScore}%</span>
+              <span className="font-bold text-[#7AD62A]">{report.overallScore}%</span>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
+            <div className="bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm">
               <span className="text-slate-500">Strongest:</span>{" "}
-              <span className="font-bold text-[#229C62]">{report.strongestDomain}</span>
+              <span className="font-bold text-[#7AD62A]">{report.strongestDomain}</span>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 px-4 py-2 text-sm">
+            <div className="bg-[#0f172a] rounded-lg border border-white/10 px-4 py-2 text-sm">
               <span className="text-slate-500">Weakest:</span>{" "}
               <span className="font-bold text-red-600">{report.weakestDomain}</span>
             </div>
@@ -191,10 +191,10 @@ export default function SkillGapPage() {
 
       {/* Tabs */}
       <div className="flex gap-2">
-        <button onClick={() => setActiveTab("gaps")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "gaps" ? "bg-[#229C62] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+        <button onClick={() => setActiveTab("gaps")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "gaps" ? "bg-[#7AD62A] text-white" : "bg-[#0f172a] border border-white/10 text-slate-600 hover:bg-white/5"}`}>
           <Target size={14} className="inline mr-1.5" /> Skill Gaps
         </button>
-        <button onClick={() => setActiveTab("path")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "path" ? "bg-[#229C62] text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+        <button onClick={() => setActiveTab("path")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "path" ? "bg-[#7AD62A] text-white" : "bg-[#0f172a] border border-white/10 text-slate-600 hover:bg-white/5"}`}>
           <Sparkles size={14} className="inline mr-1.5" /> Learning Path
         </button>
       </div>
@@ -202,20 +202,20 @@ export default function SkillGapPage() {
       {activeTab === "gaps" && (
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Radar Chart */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center">
-            <h3 className="font-semibold text-slate-900 mb-4">Competency Radar</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 flex flex-col items-center">
+            <h3 className="font-semibold text-white mb-4">Competency Radar</h3>
             <RadarChart domains={report.domains} />
           </div>
 
           {/* Domain Breakdown */}
           <div className="lg:col-span-2 space-y-4">
             {report.domains.map((d) => (
-              <div key={d.domain} className="bg-white rounded-xl border border-slate-200 p-5">
+              <div key={d.domain} className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-slate-900">{d.domain}</h4>
+                    <h4 className="font-semibold text-white">{d.domain}</h4>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      d.level === "Expert" ? "bg-[#E9F8EE] text-[#229C62]" :
+                      d.level === "Expert" ? "bg-[#7AD62A]/10 text-[#7AD62A]" :
                       d.level === "Advanced" ? "bg-blue-100 text-blue-700" :
                       d.level === "Intermediate" ? "bg-amber-100 text-amber-700" :
                       "bg-slate-100 text-slate-600"
@@ -232,10 +232,10 @@ export default function SkillGapPage() {
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {d.skills.slice(0, 8).map((s) => (
                       <span key={s.skill} className={`px-2 py-0.5 rounded-full text-[10px] ${
-                        s.isDecaying ? "bg-amber-50 text-amber-600" :
-                        s.mastery >= 70 ? "bg-[#E9F8EE] text-[#229C62]" :
-                        s.mastery >= 40 ? "bg-blue-50 text-blue-600" :
-                        "bg-red-50 text-red-600"
+                        s.isDecaying ? "bg-amber-500/10 text-amber-600" :
+                        s.mastery >= 70 ? "bg-[#7AD62A]/10 text-[#7AD62A]" :
+                        s.mastery >= 40 ? "bg-blue-500/10 text-blue-600" :
+                        "bg-red-500/10 text-red-600"
                       }`}>
                         {s.skill} {s.mastery.toFixed(0)}%
                       </span>
@@ -250,8 +250,8 @@ export default function SkillGapPage() {
 
       {activeTab === "path" && path && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="font-semibold text-slate-900 mb-2">{path.title}</h3>
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+            <h3 className="font-semibold text-white mb-2">{path.title}</h3>
             <p className="text-sm text-slate-500 mb-1">{path.description}</p>
             <p className="text-xs text-slate-400">Estimated time: {path.estimatedHours} hours</p>
           </div>
@@ -263,7 +263,7 @@ export default function SkillGapPage() {
                 <div key={step.order} className="relative flex gap-4">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 z-10 ${
                     step.type === "lab" ? "bg-amber-100" :
-                    step.type === "assessment" ? "bg-violet-100" :
+                    step.type === "assessment" ? "bg-violet-500/10" :
                     step.type === "course" ? "bg-blue-100" :
                     "bg-slate-100"
                   }`}>
@@ -272,9 +272,9 @@ export default function SkillGapPage() {
                      step.type === "course" ? <BookOpen size={18} className="text-blue-600" /> :
                      <Target size={18} className="text-slate-600" />}
                   </div>
-                  <div className="bg-white rounded-xl border border-slate-200 p-4 flex-1">
+                  <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-medium text-slate-900 text-sm">{step.title}</h4>
+                      <h4 className="font-medium text-white text-sm">{step.title}</h4>
                       <span className="text-xs text-slate-400">{step.estimatedMinutes}m</span>
                     </div>
                     <p className="text-xs text-slate-500">{step.description}</p>
@@ -293,23 +293,23 @@ export default function SkillGapPage() {
 
       {/* Recommendations */}
       {activeTab === "gaps" && report.recommendations.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Zap size={16} className="text-[#229C62]" /> Recommended Next Steps
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <Zap size={16} className="text-[#7AD62A]" /> Recommended Next Steps
           </h3>
           <div className="grid md:grid-cols-2 gap-3">
             {report.recommendations.map((rec, i) => (
-              <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
+              <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-slate-100 hover:bg-white/5 transition-colors">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                   rec.type === "lab" ? "bg-amber-100" :
-                  rec.type === "assessment" ? "bg-violet-100" : "bg-blue-100"
+                  rec.type === "assessment" ? "bg-violet-500/10" : "bg-blue-100"
                 }`}>
                   {rec.type === "lab" ? <Microscope size={14} className="text-amber-600" /> :
                    rec.type === "assessment" ? <ClipboardCheck size={14} className="text-violet-600" /> :
                    <BookOpen size={14} className="text-blue-600" />}
                 </div>
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-slate-900 truncate">{rec.title}</div>
+                  <div className="text-sm font-medium text-white truncate">{rec.title}</div>
                   <div className="text-xs text-slate-500">{rec.reason}</div>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${

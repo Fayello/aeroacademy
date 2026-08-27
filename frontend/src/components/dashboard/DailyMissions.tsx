@@ -104,7 +104,7 @@ function MissionCard({ mission, onClaim, claimingId }: { mission: Mission; onCla
             {claimingId === mission.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Claim'}
           </button>
         ) : mission.claimedAt ? (
-          <div className="flex-shrink-0 flex items-center gap-1 text-[#229C62]">
+          <div className="flex-shrink-0 flex items-center gap-1 text-[#7AD62A]">
             <CheckCircle2 className="w-4 h-4" />
             <span className="text-[10px] font-medium hidden sm:inline">Claimed</span>
           </div>

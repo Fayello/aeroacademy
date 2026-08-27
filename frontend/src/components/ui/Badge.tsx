@@ -5,11 +5,11 @@ interface BadgeProps {
 }
 
 const variants = {
-  emerald: "bg-[#E9F8EE] text-[#0F203A] border-[#229C62]/20",
-  blue: "bg-blue-50 text-blue-700 border-blue-200",
-  amber: "bg-amber-50 text-amber-700 border-amber-200",
-  red: "bg-red-50 text-red-700 border-red-200",
-  slate: "bg-slate-100 text-slate-600 border-slate-200",
+  emerald: "bg-[#7AD62A]/10 text-[#0F203A] border-[#7AD62A]/20",
+  blue: "bg-blue-500/10 text-blue-700 border-blue-200",
+  amber: "bg-amber-500/10 text-amber-700 border-amber-200",
+  red: "bg-red-500/10 text-red-700 border-red-200",
+  slate: "bg-slate-100 text-slate-600 border-white/10",
 };
 
 export default function Badge({ children, variant = "slate", className = "" }: BadgeProps) {

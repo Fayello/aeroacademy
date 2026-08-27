@@ -164,8 +164,8 @@ export default function AdminLabsPage() {
           columns={[
             { key: "title", label: "Lab", sortable: true, render: (lab: AdminLab) => (
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"><Microscope size={18} className="text-violet-600" /></div>
-                <div><p className="font-medium text-slate-900">{lab.title}</p><p className="text-xs text-slate-500 font-mono truncate max-w-[200px]">{lab.dockerImage}</p></div>
+                <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0"><Microscope size={18} className="text-violet-600" /></div>
+                <div><p className="font-medium text-white">{lab.title}</p><p className="text-xs text-slate-500 font-mono truncate max-w-[200px]">{lab.dockerImage}</p></div>
               </div>
             )},
             { key: "difficulty", label: "Difficulty", sortable: true, render: (lab: AdminLab) => { const d = getDifficultyLabel(lab.difficulty || 1200); return <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${d.color}`}>{d.label}</span>; }},
@@ -189,7 +189,7 @@ export default function AdminLabsPage() {
           ]}
         />
 
-        <AdminModal isOpen={labModal.open} onClose={() => setLabModal({ open: false, editing: null })} title={labModal.editing ? "Edit Lab" : "New Lab"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLabModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveLab} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+        <AdminModal isOpen={labModal.open} onClose={() => setLabModal({ open: false, editing: null })} title={labModal.editing ? "Edit Lab" : "New Lab"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLabModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveLab} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AdminInput label="Title" value={labForm.title} onChange={(e) => setLabForm({ ...labForm, title: e.target.value })} placeholder="Lab title" required />
             <AdminInput label="Docker Image" value={labForm.dockerImage} onChange={(e) => setLabForm({ ...labForm, dockerImage: e.target.value })} placeholder="e.g. vulnerables/web-dvwa" required />
@@ -211,9 +211,9 @@ export default function AdminLabsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-        <button onClick={() => setSelectedLab(null)} className="hover:text-[#229C62] transition-colors">Labs</button>
+        <button onClick={() => setSelectedLab(null)} className="hover:text-[#7AD62A] transition-colors">Labs</button>
         <ChevronRight size={14} />
-        <span className="text-slate-900 font-medium">{selectedLab?.title}</span>
+        <span className="text-white font-medium">{selectedLab?.title}</span>
       </div>
 
       <div className="relative overflow-hidden angular-card bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 p-8 text-white">
@@ -234,32 +234,32 @@ export default function AdminLabsPage() {
 
       <div className="grid gap-4">
         {selectedLab!.flags?.map((flag) => (
-          <div key={flag.id} className="angular-card bg-white p-5 hover:shadow-lg transition-all">
+          <div key={flag.id} className="angular-card bg-[#0f172a] p-5 hover:shadow-lg transition-all">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><Shield size={18} className="text-amber-600" /></div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">{flag.title}</h3>
+                  <h3 className="font-semibold text-white">{flag.title}</h3>
                   {flag.description && <p className="text-sm text-slate-500 line-clamp-1 max-w-md">{flag.description}</p>}
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs bg-[#E9F8EE] text-[#0F203A] px-2.5 py-1 rounded-full font-medium">{flag.points} pts</span>
-                <button onClick={() => { setFlagForm({ title: flag.title, description: flag.description || "", points: flag.points, correctAnswer: "" }); setFlagModal({ open: true, editing: flag }); }} className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"><Pencil size={16} /></button>
-                <button onClick={() => setDeleteDialog({ open: true, type: "flag", item: flag })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
+                <span className="text-xs bg-[#7AD62A]/10 text-[#0F203A] px-2.5 py-1 rounded-full font-medium">{flag.points} pts</span>
+                <button onClick={() => { setFlagForm({ title: flag.title, description: flag.description || "", points: flag.points, correctAnswer: "" }); setFlagModal({ open: true, editing: flag }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
+                <button onClick={() => setDeleteDialog({ open: true, type: "flag", item: flag })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
               </div>
             </div>
           </div>
         ))}
         {(!selectedLab!.flags || selectedLab!.flags.length === 0) && (
-          <div className="text-center py-12 angular-card bg-white">
+          <div className="text-center py-12 angular-card bg-[#0f172a]">
             <Shield size={40} className="mx-auto text-slate-300 mb-3" />
             <p className="text-slate-500">No flags yet. Add CTF flags for this lab.</p>
           </div>
         )}
       </div>
 
-      <AdminModal isOpen={flagModal.open} onClose={() => setFlagModal({ open: false, editing: null })} title={flagModal.editing ? "Edit Flag" : "New Flag"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setFlagModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">Cancel</button><button onClick={handleSaveFlag} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+      <AdminModal isOpen={flagModal.open} onClose={() => setFlagModal({ open: false, editing: null })} title={flagModal.editing ? "Edit Flag" : "New Flag"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setFlagModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveFlag} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
         <div className="space-y-4">
           <AdminInput label="Flag Title" value={flagForm.title} onChange={(e) => setFlagForm({ ...flagForm, title: e.target.value })} placeholder="e.g. SQL Injection Root Flag" required />
           <AdminInput label="Correct Answer" value={flagForm.correctAnswer} onChange={(e) => setFlagForm({ ...flagForm, correctAnswer: e.target.value })} placeholder="Flag answer (hashed on save)" required={!!!flagModal.editing} hint={flagModal.editing ? "Leave blank to keep current answer" : ""} />

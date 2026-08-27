@@ -72,13 +72,13 @@ interface TierDef {
 }
 
 const DIVISION_TIERS: TierDef[] = [
-  { name: "BRONZE", min: 0, max: 1499, color: "text-amber-700", bgColor: "bg-amber-50", borderColor: "border-amber-200", icon: "\u{1F949}" },
-  { name: "SILVER", min: 1500, max: 2999, color: "text-slate-600", bgColor: "bg-slate-50", borderColor: "border-slate-300", icon: "\u{1F948}" },
+  { name: "BRONZE", min: 0, max: 1499, color: "text-amber-700", bgColor: "bg-amber-500/10", borderColor: "border-amber-200", icon: "\u{1F949}" },
+  { name: "SILVER", min: 1500, max: 2999, color: "text-slate-600", bgColor: "bg-white/5", borderColor: "border-white/10", icon: "\u{1F948}" },
   { name: "GOLD", min: 3000, max: 4999, color: "text-yellow-700", bgColor: "bg-yellow-50", borderColor: "border-yellow-300", icon: "\u{1F947}" },
   { name: "PLATINUM", min: 5000, max: 7499, color: "text-cyan-700", bgColor: "bg-cyan-50", borderColor: "border-cyan-300", icon: "\u{1F48E}" },
-  { name: "DIAMOND", min: 7500, max: 10999, color: "text-blue-700", bgColor: "bg-blue-50", borderColor: "border-blue-300", icon: "\u{1F4A0}" },
+  { name: "DIAMOND", min: 7500, max: 10999, color: "text-blue-700", bgColor: "bg-blue-500/10", borderColor: "border-blue-300", icon: "\u{1F4A0}" },
   { name: "MASTER", min: 11000, max: 14999, color: "text-purple-700", bgColor: "bg-purple-50", borderColor: "border-purple-300", icon: "\u{1F451}" },
-  { name: "GRANDMASTER", min: 15000, max: 999999, color: "text-red-700", bgColor: "bg-red-50", borderColor: "border-red-300", icon: "\u{1F3C6}" },
+  { name: "GRANDMASTER", min: 15000, max: 999999, color: "text-red-700", bgColor: "bg-red-500/10", borderColor: "border-red-300", icon: "\u{1F3C6}" },
 ];
 
 const DOMAIN_ICONS: Record<string, typeof Shield> = {
@@ -249,7 +249,7 @@ export default function RankingPage() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <PageHeader title={t("nav.domain-ranking")} description="Your competitive ranking across skill domains" />
         <div className="flex items-center justify-center py-20">
-          <Loader2 size={20} className="text-[#229C62] animate-spin" />
+          <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
         </div>
       </div>
     );
@@ -259,15 +259,15 @@ export default function RankingPage() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         <PageHeader title={t("nav.domain-ranking")} description="Your competitive ranking across skill domains" />
-        <div className="angular-card border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 angular-card bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-            <Shield size={28} className="text-[#229C62]" />
+        <div className="angular-card border border-white/10 py-16 text-center">
+          <div className="w-16 h-16 angular-card bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+            <Shield size={28} className="text-[#7AD62A]" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No ranking data yet</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No ranking data yet</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Complete ranked labs to establish your technology rating. Your first few attempts will calibrate your skill level.
           </p>
-          <Link href="/dashboard/labs" className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all">
+          <Link href="/dashboard/labs" className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#7AD62A] rounded-lg hover:bg-[#1a8050] transition-all">
             Start a Lab
           </Link>
         </div>
@@ -282,8 +282,8 @@ export default function RankingPage() {
       <PageHeader title={t("nav.domain-ranking")} description="Your competitive ranking across skill domains" />
 
       {profile.globalRank ? (
-        <div className="angular-card border border-slate-200 overflow-hidden">
-          <div className="relative bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] p-6 sm:p-8">
+        <div className="angular-card border border-white/10 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#7AD62A] p-6 sm:p-8">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvc3ZnPg==')] opacity-40" />
             <div className="relative z-10">
               <div className="flex items-start gap-4">
@@ -323,7 +323,7 @@ export default function RankingPage() {
           </div>
         </div>
       ) : (
-        <div className="angular-card border border-slate-200 p-6 text-center">
+        <div className="angular-card border border-white/10 p-6 text-center">
           <Shield size={28} className="text-slate-300 mx-auto mb-2" />
           <p className="text-sm text-slate-500 mb-1">No overall rank yet</p>
           <p className="text-xs text-slate-400">Complete ranked activities to establish your rating</p>
@@ -340,7 +340,7 @@ export default function RankingPage() {
             key={key}
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === key ? "bg-[#0F203A] text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              activeTab === key ? "bg-[#0F203A] text-white" : "bg-[#0f172a] text-slate-600 border border-white/10 hover:bg-white/5"
             }`}
           >
             <Icon size={14} />
@@ -352,14 +352,14 @@ export default function RankingPage() {
       {activeTab === "overview" && (
         <>
           {profile.domainRanks.length > 0 && (
-            <div className="angular-card border border-slate-200 overflow-hidden">
+            <div className="angular-card border border-white/10 overflow-hidden">
               <div className="p-4">
                 <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Domain Divisions</h3>
                 <div className="flex flex-wrap gap-2">
                   {profile.domainRanks.map((rank) => {
                     const DomainIcon = DOMAIN_ICONS[rank.domain] || Shield;
                     return (
-                      <div key={rank.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100">
+                      <div key={rank.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-slate-100">
                         <DomainIcon size={12} className="text-slate-400" />
                         <span className="text-xs font-medium text-slate-700">{rank.domain}</span>
                         <DivisionBadge division={rank.division} tier={rank.divisionTier} size="sm" />
@@ -372,9 +372,9 @@ export default function RankingPage() {
           )}
 
           {profile.domainRanks.length > 0 && (
-            <div className="angular-card border border-slate-200 overflow-hidden">
+            <div className="angular-card border border-white/10 overflow-hidden">
               <div className="p-6">
-                <h3 className="text-sm font-semibold text-slate-900 mb-4">Domain Ratings</h3>
+                <h3 className="text-sm font-semibold text-white mb-4">Domain Ratings</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {profile.domainRanks.map((rank) => {
                     const DomainIcon = DOMAIN_ICONS[rank.domain] || Shield;
@@ -384,8 +384,8 @@ export default function RankingPage() {
                         key={rank.domainId}
                         className={`p-4 rounded-xl border transition-all cursor-pointer hover:shadow-md hover-lift ${
                           selectedDomain === rank.domainId
-                            ? "border-[#229C62] ring-1 ring-[#229C62]/30 bg-[#E9F8EE]/30"
-                            : "border-slate-200 hover:border-slate-300"
+                            ? "border-[#7AD62A] ring-1 ring-[#7AD62A]/30 bg-[#7AD62A]/10/30"
+                            : "border-white/10 hover:border-white/10"
                         }`}
                         onClick={() => setSelectedDomain(selectedDomain === rank.domainId ? null : rank.domainId)}
                       >
@@ -394,7 +394,7 @@ export default function RankingPage() {
                             <DomainIcon size={18} className="text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-900 text-sm">{rank.domain}</p>
+                            <p className="font-medium text-white text-sm">{rank.domain}</p>
                             <DivisionBadge division={rank.division} tier={rank.divisionTier} size="sm" />
                           </div>
                           {rank.isProvisional && (
@@ -403,7 +403,7 @@ export default function RankingPage() {
                         </div>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-2xl font-bold text-slate-900">{rank.rating.toLocaleString()}</span>
+                            <span className="text-2xl font-bold text-white">{rank.rating.toLocaleString()}</span>
                             {rank.careerHighRating > rank.rating && (
                               <span className="text-xs text-slate-400">Best: {rank.careerHighRating.toLocaleString()}</span>
                             )}
@@ -424,17 +424,17 @@ export default function RankingPage() {
           )}
 
           {selectedDomain && (
-            <div className="angular-card border border-slate-200 overflow-hidden">
+            <div className="angular-card border border-white/10 overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold text-slate-900">
+                  <h3 className="text-sm font-semibold text-white">
                     {profile.domainRanks.find((r) => r.domainId === selectedDomain)?.domain} Leaderboard
                   </h3>
                   <div className="flex items-center gap-2">
                     <Trophy size={16} className="text-slate-400" />
                     <button
                       onClick={() => setSelectedDomain(null)}
-                      className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                      className="text-xs text-slate-400 hover:text-slate-300 transition-colors"
                     >
                       Close
                     </button>
@@ -442,7 +442,7 @@ export default function RankingPage() {
                 </div>
                 {lbLoading ? (
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 size={20} className="text-[#229C62] animate-spin" />
+                    <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
                   </div>
                 ) : leaderboard.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12">
@@ -456,8 +456,8 @@ export default function RankingPage() {
                         key={entry.userId}
                         className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
                           entry.userId === profile.user.id
-                            ? "bg-[#E9F8EE]/50 border-[#229C62]/30"
-                            : "bg-white border-slate-100 hover:bg-slate-50"
+                            ? "bg-[#7AD62A]/10/50 border-[#7AD62A]/30"
+                            : "bg-[#0f172a] border-slate-100 hover:bg-white/5"
                         }`}
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${
@@ -466,11 +466,11 @@ export default function RankingPage() {
                           {idx < 3 ? (idx === 0 ? "\u{1F947}" : idx === 1 ? "\u{1F948}" : "\u{1F949}") : `#${idx + 1}`}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-slate-900 truncate text-sm">{entry.user?.name || "Anonymous"}</p>
+                          <p className="font-medium text-white truncate text-sm">{entry.user?.name || "Anonymous"}</p>
                           <DivisionBadge division={entry.division} tier={entry.divisionTier} size="sm" />
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-semibold text-slate-900">{entry.rating.toLocaleString()}</p>
+                          <p className="font-semibold text-white">{entry.rating.toLocaleString()}</p>
                           <p className="text-xs text-slate-500">{entry.gamesPlayed} games</p>
                         </div>
                       </div>
@@ -481,37 +481,37 @@ export default function RankingPage() {
             </div>
           )}
 
-          <div className="angular-card border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4">Quick Stats</h3>
+          <div className="angular-card border border-white/10 p-6">
+            <h3 className="text-sm font-semibold text-white mb-4">Quick Stats</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-slate-50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900">{profile.level}</p>
+              <div className="text-center p-3 bg-white/5 rounded-lg">
+                <p className="text-2xl font-bold text-white">{profile.level}</p>
                 <p className="text-xs text-slate-500">Technology Level</p>
               </div>
-              <div className="text-center p-3 bg-slate-50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900">{profile.globalRank.rating.toLocaleString()}</p>
+              <div className="text-center p-3 bg-white/5 rounded-lg">
+                <p className="text-2xl font-bold text-white">{profile.globalRank.rating.toLocaleString()}</p>
                 <p className="text-xs text-slate-500">Global Rating</p>
               </div>
               <div className="text-center p-3 bg-emerald-50 rounded-lg">
                 <p className="text-2xl font-bold text-emerald-700">{profile.globalRank.totalWins}</p>
                 <p className="text-xs text-slate-500">Total Wins</p>
               </div>
-              <div className="text-center p-3 bg-red-50 rounded-lg">
+              <div className="text-center p-3 bg-red-500/10 rounded-lg">
                 <p className="text-2xl font-bold text-red-600">{profile.globalRank.totalLosses}</p>
                 <p className="text-xs text-slate-500">Total Losses</p>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div className="text-center p-3 bg-slate-50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900">{profile.stats.labsCompleted}</p>
+              <div className="text-center p-3 bg-white/5 rounded-lg">
+                <p className="text-2xl font-bold text-white">{profile.stats.labsCompleted}</p>
                 <p className="text-xs text-slate-500">Labs Completed</p>
               </div>
-              <div className="text-center p-3 bg-slate-50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900">{profile.stats.bossMissionsCompleted}</p>
+              <div className="text-center p-3 bg-white/5 rounded-lg">
+                <p className="text-2xl font-bold text-white">{profile.stats.bossMissionsCompleted}</p>
                 <p className="text-xs text-slate-500">Boss Missions</p>
               </div>
-              <div className="text-center p-3 bg-slate-50 rounded-lg">
-                <p className="text-2xl font-bold text-slate-900">{profile.globalRank.domainCount}</p>
+              <div className="text-center p-3 bg-white/5 rounded-lg">
+                <p className="text-2xl font-bold text-white">{profile.globalRank.domainCount}</p>
                 <p className="text-xs text-slate-500">Active Domains</p>
               </div>
             </div>
@@ -520,11 +520,11 @@ export default function RankingPage() {
       )}
 
       {activeTab === "chart" && (
-        <div className="angular-card border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">Rating Progression</h3>
+        <div className="angular-card border border-white/10 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">Rating Progression</h3>
           {historyLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 size={20} className="text-[#229C62] animate-spin" />
+              <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
             </div>
           ) : chartData.length === 0 ? (
             <EmptyState icon={TrendingUp} title="No rating history" description="Complete ranked activities to see your rating progression" />
@@ -561,30 +561,30 @@ export default function RankingPage() {
         <div className="space-y-4">
           {careerLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 size={20} className="text-[#229C62] animate-spin" />
+              <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
             </div>
           ) : careerHistory.length === 0 ? (
             <EmptyState icon={History} title="No career history" description="Complete seasons to build your career history" />
           ) : (
             careerHistory.map((season) => (
-              <div key={season.seasonNumber} className="angular-card border border-slate-200 overflow-hidden">
+              <div key={season.seasonNumber} className="angular-card border border-white/10 overflow-hidden">
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-sm font-semibold text-slate-900">{season.seasonName}</h3>
+                      <h3 className="text-sm font-semibold text-white">{season.seasonName}</h3>
                       {season.theme && <p className="text-xs text-slate-500">{season.theme}</p>}
                     </div>
                     <span className="text-xs text-slate-400">S{season.seasonNumber}</span>
                   </div>
                   {season.global && (
-                    <div className="bg-slate-50 rounded-lg p-4 mb-4">
+                    <div className="bg-white/5 rounded-lg p-4 mb-4">
                       <div className="flex items-center gap-3 mb-2">
-                        <Crown size={16} className="text-[#229C62]" />
+                        <Crown size={16} className="text-[#7AD62A]" />
                         <span className="text-xs font-semibold text-slate-700">Global Technology Rank</span>
                       </div>
                       <div className="flex items-center gap-4">
                         <DivisionBadge division={season.global.division} tier={season.global.tier} size="md" />
-                        <span className="text-lg font-bold text-slate-900">{season.global.rating.toLocaleString()}</span>
+                        <span className="text-lg font-bold text-white">{season.global.rating.toLocaleString()}</span>
                         <span className="text-xs text-slate-500">{season.global.domainCount} domains | {season.global.winRate}% WR</span>
                       </div>
                     </div>
@@ -593,7 +593,7 @@ export default function RankingPage() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-slate-200">
+                          <tr className="border-b border-white/10">
                             <th className="text-left py-2 px-2 text-xs font-medium text-slate-500">Domain</th>
                             <th className="text-left py-2 px-2 text-xs font-medium text-slate-500">Division</th>
                             <th className="text-right py-2 px-2 text-xs font-medium text-slate-500">Rating</th>
@@ -603,9 +603,9 @@ export default function RankingPage() {
                         <tbody>
                           {season.domains.map((d: any) => (
                             <tr key={d.domainId} className="border-b border-slate-100 last:border-0">
-                              <td className="py-2 px-2 font-medium text-slate-900">{d.domain}</td>
+                              <td className="py-2 px-2 font-medium text-white">{d.domain}</td>
                               <td className="py-2 px-2"><DivisionBadge division={d.division} tier={d.tier} size="sm" /></td>
-                              <td className="py-2 px-2 text-right font-semibold text-slate-900">{d.rating.toLocaleString()}</td>
+                              <td className="py-2 px-2 text-right font-semibold text-white">{d.rating.toLocaleString()}</td>
                               <td className="py-2 px-2 text-right text-slate-600">
                                 <span className="text-emerald-600">{d.wins}W</span> / <span className="text-red-500">{d.losses}L</span>
                               </td>

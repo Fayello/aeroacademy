@@ -116,7 +116,7 @@ export default function OnboardingOverlay({ onComplete }: OnboardingOverlayProps
               onClick={() => setStep(i)}
               aria-label={`Go to step ${i + 1}`}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === step ? "w-6 bg-[#229C62]" : "w-2 bg-white/20 hover:bg-white/30"
+                i === step ? "w-6 bg-[#7AD62A]" : "w-2 bg-white/20 hover:bg-white/30"
               }`}
             />
           ))}
@@ -135,7 +135,7 @@ export default function OnboardingOverlay({ onComplete }: OnboardingOverlayProps
             <Link
               href={current.href}
               onClick={finish}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
             >
               {current.cta}
               <ChevronRight size={16} />
@@ -143,7 +143,7 @@ export default function OnboardingOverlay({ onComplete }: OnboardingOverlayProps
           ) : (
             <button
               onClick={next}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
             >
               {isLast ? "Get Started" : "Next"}
               <ChevronRight size={16} />

@@ -24,7 +24,7 @@ export default function BottomNav() {
   ].filter(l => l.show);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 md:hidden z-50" aria-label={t("nav.mobile")}>
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0f1a] border-t border-white/6 md:hidden z-50" aria-label={t("nav.mobile")}>
       <div className="flex justify-around items-center h-16 px-2 safe-area-pb">
         {links.map(({ href, tKey, icon: Icon, isNotifications }) => {
           const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
@@ -35,7 +35,7 @@ export default function BottomNav() {
               href={href}
               aria-current={isActive ? "page" : undefined}
               className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-                isActive ? "text-[#229C62]" : "text-slate-400 hover:text-slate-600"
+                isActive ? "text-[#7AD62A]" : "text-slate-500 hover:text-slate-300"
               }`}
             >
               <div className="relative">
@@ -43,7 +43,7 @@ export default function BottomNav() {
                 {isNotifications && <NotificationBadge className="absolute -top-2 -right-3" />}
               </div>
               <span className="text-[10px] mt-1 font-medium">{label}</span>
-              {isActive && <span className="w-1 h-1 rounded-full bg-[#229C62] mt-1" />}
+              {isActive && <span className="w-1 h-1 rounded-full bg-[#7AD62A] mt-1" />}
             </Link>
           );
         })}

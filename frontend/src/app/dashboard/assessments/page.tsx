@@ -67,11 +67,11 @@ export default function AssessmentsPage() {
       <PageHeader title="Skill Assessments" description="Evaluate your skills and get personalized recommendations" />
 
       {assessments.length === 0 ? (
-        <div className="angular-card border border-slate-200 bg-white p-12 text-center">
+        <div className="angular-card border border-white/10 bg-[#0f172a] p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
             <ClipboardCheck size={28} className="text-purple-600" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No assessments available</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No assessments available</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Skill assessments are being prepared. Complete some labs first to unlock personalized evaluations.
           </p>
@@ -82,15 +82,15 @@ export default function AssessmentsPage() {
             <Link
               key={a.id}
               href={`/dashboard/assessments/${a.id}`}
-              className="angular-card border border-slate-200 bg-white p-5 hover:border-blue-300 transition-all group"
+              className="angular-card border border-white/10 bg-[#0f172a] p-5 hover:border-blue-300 transition-all group"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-blue-50 border border-blue-200 p-2 rounded-lg">
+                  <div className="bg-blue-500/10 border border-blue-200 p-2 rounded-lg">
                     <ClipboardCheck size={18} className="text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-sm font-semibold text-white group-hover:text-blue-600 transition-colors">
                       {a.title}
                     </h3>
                     <span className="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
@@ -108,15 +108,15 @@ export default function AssessmentsPage() {
 
       {results.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Past Results</h2>
-          <div className="angular-card border border-slate-200 bg-white overflow-hidden">
+          <h2 className="text-lg font-semibold text-white mb-4">Past Results</h2>
+          <div className="angular-card border border-white/10 bg-[#0f172a] overflow-hidden">
             <div className="divide-y divide-slate-100">
               {results.map((r) => {
                 const pct = Math.round((r.score / r.maxScore) * 100);
                 return (
                   <div key={r.id} className="p-4 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-slate-900">{r.assessment.title}</p>
+                      <p className="text-sm font-medium text-white">{r.assessment.title}</p>
                       <p className="text-xs text-slate-500">
                         {new Date(r.createdAt).toLocaleDateString()} · {r.score}/{r.maxScore}
                       </p>
@@ -125,7 +125,7 @@ export default function AssessmentsPage() {
                       <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            pct >= 80 ? "bg-[#229C62]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
+                            pct >= 80 ? "bg-[#7AD62A]" : pct >= 50 ? "bg-amber-500" : "bg-red-500"
                           }`}
                           style={{ width: `${pct}%` }}
                         />

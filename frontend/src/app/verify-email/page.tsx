@@ -35,32 +35,32 @@ function VerifyEmailContent() {
   }, [email, cooldown]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+    <div className="min-h-screen flex items-center justify-center bg-white/5 px-6">
       <div className="w-full max-w-md">
-        <Link href="/login" className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 transition-colors">
+        <Link href="/login" className="flex items-center gap-2 text-slate-500 hover:text-slate-200 mb-8 transition-colors">
           <ArrowLeft size={16} />
           <span className="text-sm">Back to login</span>
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="bg-emerald-600 p-2 rounded-xl">
               <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">XpertClass</span>
+            <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
           </div>
 
           <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-5">
             <Mail className="text-emerald-600" size={24} />
           </div>
 
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Check your email</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Check your email</h1>
           <p className="text-slate-500 text-sm mb-1">
             We sent a verification link to
           </p>
-          <p className="text-slate-900 font-medium text-sm mb-6">{email || "your email"}</p>
+          <p className="text-white font-medium text-sm mb-6">{email || "your email"}</p>
 
-          <div className="bg-slate-50 rounded-xl p-4 mb-6">
+          <div className="bg-white/5 rounded-xl p-4 mb-6">
             <p className="text-sm text-slate-600 leading-relaxed">
               Click the link in the email to verify your account and start learning. The link expires in 24 hours.
             </p>
@@ -90,7 +90,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-white/5">
         <Loader2 className="animate-spin text-slate-400" size={32} />
       </div>
     }>

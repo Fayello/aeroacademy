@@ -162,7 +162,7 @@ export default function AdminTable<T extends { id: string }>({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function AdminTable<T extends { id: string }>({
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder={searchPlaceholder}
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all text-sm"
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all text-sm"
             />
           </div>
           {filters}
@@ -189,7 +189,7 @@ export default function AdminTable<T extends { id: string }>({
           {exportable && (
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
             >
               <Download size={16} /> Export
             </button>
@@ -198,12 +198,12 @@ export default function AdminTable<T extends { id: string }>({
             <div className="relative">
               <button
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
               >
                 Columns <ChevronDown size={14} />
               </button>
               {showColumnMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-lg z-20 py-1">
+                <div className="absolute right-0 mt-2 w-48 bg-[#0f172a] rounded-xl border border-white/10 shadow-lg z-20 py-1">
                   {columns.map((col) => (
                     <button
                       key={col.key}
@@ -213,9 +213,9 @@ export default function AdminTable<T extends { id: string }>({
                         else next.add(col.key);
                         setHiddenColumns(next);
                       }}
-                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 hover:bg-white/5"
                     >
-                      {hiddenColumns.has(col.key) ? <Square size={14} className="text-slate-400" /> : <CheckSquare size={14} className="text-[#229C62]" />}
+                      {hiddenColumns.has(col.key) ? <Square size={14} className="text-slate-400" /> : <CheckSquare size={14} className="text-[#7AD62A]" />}
                       {col.label}
                     </button>
                   ))}
@@ -224,7 +224,7 @@ export default function AdminTable<T extends { id: string }>({
             </div>
           )}
           {onAdd && (
-            <button onClick={onAdd} className="flex items-center gap-2 bg-[#229C62] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm">
+            <button onClick={onAdd} className="flex items-center gap-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm">
               <Plus size={16} /> {addLabel}
             </button>
           )}
@@ -233,10 +233,10 @@ export default function AdminTable<T extends { id: string }>({
 
       {/* Bulk Actions Bar */}
       {bulkActions && bulkActions.length > 0 && selected.size > 0 && (
-        <div className="flex items-center gap-3 p-3 bg-[#E9F8EE] rounded-xl border border-[#229C62]/20">
+        <div className="flex items-center gap-3 p-3 bg-[#7AD62A]/10 rounded-xl border border-[#7AD62A]/20">
           <span className="text-sm font-medium text-[#0F203A]">{selected.size} selected</span>
           <div className="flex items-center gap-2 ml-auto">
-            <button onClick={() => setSelected(new Set())} className="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white transition-all" aria-label="Clear selection">
+            <button onClick={() => setSelected(new Set())} className="p-1.5 text-slate-500 hover:text-slate-200 rounded-lg hover:bg-[#0f172a] transition-all" aria-label="Clear selection">
               <X size={16} />
             </button>
             {bulkActions.map((action, i) => (
@@ -248,7 +248,7 @@ export default function AdminTable<T extends { id: string }>({
                     ? "bg-red-600 hover:bg-red-700 text-white"
                     : action.variant === "warning"
                       ? "bg-amber-600 hover:bg-amber-700 text-white"
-                      : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-300"
+                      : "bg-[#0f172a] hover:bg-white/5 text-slate-700 border border-white/10"
                 }`}
               >
                 {action.icon}
@@ -260,16 +260,16 @@ export default function AdminTable<T extends { id: string }>({
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50">
+              <tr className="border-b border-white/10 bg-white/5">
                 {selectable && (
                   <th className="px-4 py-4 w-10">
-                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[#229C62] transition-colors" aria-label={selected.size === paginated.length && paginated.length > 0 ? "Deselect all rows" : "Select all rows"}>
+                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[#7AD62A] transition-colors" aria-label={selected.size === paginated.length && paginated.length > 0 ? "Deselect all rows" : "Select all rows"}>
                       {selected.size === paginated.length && paginated.length > 0 ? (
-                        <CheckSquare size={16} className="text-[#229C62]" />
+                        <CheckSquare size={16} className="text-[#7AD62A]" />
                       ) : (
                         <Square size={16} />
                       )}
@@ -284,10 +284,10 @@ export default function AdminTable<T extends { id: string }>({
                     {col.sortable ? (
                       <button
                         onClick={() => handleSort(col.key)}
-                        className="flex items-center gap-1 hover:text-slate-900 transition-colors"
+                        className="flex items-center gap-1 hover:text-white transition-colors"
                       >
                         {col.label}
-                        <ArrowUpDown size={12} className={sortKey === col.key ? "text-[#229C62]" : ""} />
+                        <ArrowUpDown size={12} className={sortKey === col.key ? "text-[#7AD62A]" : ""} />
                       </button>
                     ) : col.label}
                   </th>
@@ -313,13 +313,13 @@ export default function AdminTable<T extends { id: string }>({
                 paginated.map((item) => (
                   <tr
                     key={item.id}
-                    className={`transition-colors ${onRowClick ? "cursor-pointer hover:bg-[#E9F8EE]/50" : "hover:bg-slate-50/50"} ${selected.has(item.id) ? "bg-[#E9F8EE]/30" : ""}`}
+                    className={`transition-colors ${onRowClick ? "cursor-pointer hover:bg-[#7AD62A]/10/50" : "hover:bg-white/5/50"} ${selected.has(item.id) ? "bg-[#7AD62A]/10/30" : ""}`}
                     onClick={onRowClick ? () => onRowClick(item) : undefined}
                   >
                     {selectable && (
                       <td className="px-4 py-4 w-10">
-                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }} className="text-slate-400 hover:text-[#229C62] transition-colors" aria-label={selected.has(item.id) ? "Deselect row" : "Select row"}>
-                          {selected.has(item.id) ? <CheckSquare size={16} className="text-[#229C62]" /> : <Square size={16} />}
+                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(item.id); }} className="text-slate-400 hover:text-[#7AD62A] transition-colors" aria-label={selected.has(item.id) ? "Deselect row" : "Select row"}>
+                          {selected.has(item.id) ? <CheckSquare size={16} className="text-[#7AD62A]" /> : <Square size={16} />}
                         </button>
                       </td>
                     )}
@@ -334,7 +334,7 @@ export default function AdminTable<T extends { id: string }>({
                           {onView && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onView(item); }}
-                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg transition-all"
                               title="View"
                             >
                               <Eye size={16} />
@@ -343,7 +343,7 @@ export default function AdminTable<T extends { id: string }>({
                           {onEdit && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onEdit(item); }}
-                              className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"
+                              className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"
                               title="Edit"
                             >
                               <Pencil size={16} />
@@ -352,7 +352,7 @@ export default function AdminTable<T extends { id: string }>({
                           {onDelete && (
                             <button
                               onClick={(e) => { e.stopPropagation(); onDelete(item); }}
-                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
                               title="Delete"
                             >
                               <Trash2 size={16} />
@@ -370,7 +370,7 @@ export default function AdminTable<T extends { id: string }>({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
             <p className="text-sm text-slate-500">
               Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, sorted.length)} of {sorted.length} items
             </p>
@@ -378,14 +378,14 @@ export default function AdminTable<T extends { id: string }>({
               <button
                 onClick={() => setPage(1)}
                 disabled={page === 1}
-                className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-3 py-1.5 rounded-lg text-sm border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 First
               </button>
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="p-2 rounded-lg border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronLeft size={16} className="text-slate-600" />
               </button>
@@ -399,8 +399,8 @@ export default function AdminTable<T extends { id: string }>({
                     onClick={() => setPage(p)}
                     className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
                       p === page
-                        ? "bg-[#229C62] text-white"
-                        : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "bg-[#7AD62A] text-white"
+                        : "border border-white/10 text-slate-600 hover:bg-white/5"
                     }`}
                   >
                     {p}
@@ -410,14 +410,14 @@ export default function AdminTable<T extends { id: string }>({
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="p-2 rounded-lg border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronRight size={16} className="text-slate-600" />
               </button>
               <button
                 onClick={() => setPage(totalPages)}
                 disabled={page === totalPages}
-                className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-3 py-1.5 rounded-lg text-sm border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Last
               </button>

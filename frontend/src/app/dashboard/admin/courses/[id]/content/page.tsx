@@ -348,7 +348,7 @@ export default function CourseContentAdminPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -359,7 +359,7 @@ export default function CourseContentAdminPage() {
         <p>Course not found.</p>
         <Link
           href="/dashboard/admin/courses"
-          className="text-[#229C62] hover:text-[#0F203A] mt-2 inline-block"
+          className="text-[#7AD62A] hover:text-[#0F203A] mt-2 inline-block"
         >
           Back to courses
         </Link>
@@ -374,12 +374,12 @@ export default function CourseContentAdminPage() {
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
             <Link
               href="/dashboard/admin/courses"
-              className="hover:text-[#229C62] transition-colors"
+              className="hover:text-[#7AD62A] transition-colors"
             >
               Courses
             </Link>
             <span>/</span>
-            <span className="text-slate-900 font-medium">{structure.title}</span>
+            <span className="text-white font-medium">{structure.title}</span>
           </div>
           <PageHeader
             title="Course Content"
@@ -388,7 +388,7 @@ export default function CourseContentAdminPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowHistory(!showHistory)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-all"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 text-slate-600 hover:bg-white/5 text-sm font-medium transition-all"
                 >
                   <History size={14} /> History ({history.length})
                 </button>
@@ -397,7 +397,7 @@ export default function CourseContentAdminPage() {
                     setSectionForm({ title: "" });
                     setSectionModal({ open: false, editing: null });
                   }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium transition-all"
                 >
                   <Plus size={14} /> New Section
                 </button>
@@ -409,18 +409,18 @@ export default function CourseContentAdminPage() {
 
       {/* Reorder History */}
       {showHistory && history.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <h3 className="text-sm font-semibold text-slate-900 mb-3">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
+          <h3 className="text-sm font-semibold text-white mb-3">
             Reorder History
           </h3>
           <div className="space-y-1.5 max-h-48 overflow-y-auto">
             {history.map((entry, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-slate-50"
+                className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-white/5"
               >
                 <span className="text-slate-600">
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium text-white">
                     {entry.title}
                   </span>{" "}
                   moved from {entry.fromIndex + 1} to {entry.toIndex + 1}
@@ -441,10 +441,10 @@ export default function CourseContentAdminPage() {
           .map((section, si) => (
             <div
               key={section.id}
-              className="bg-white rounded-xl border border-slate-200"
+              className="bg-[#0f172a] rounded-xl border border-white/10"
             >
               {/* Section Header */}
-              <div className="p-4 border-b border-slate-200">
+              <div className="p-4 border-b border-white/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col gap-0.5">
@@ -458,7 +458,7 @@ export default function CourseContentAdminPage() {
                           )
                         }
                         disabled={si === 0}
-                        className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="p-0.5 text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       >
                         <ChevronUp size={14} />
                       </button>
@@ -472,13 +472,13 @@ export default function CourseContentAdminPage() {
                           )
                         }
                         disabled={si === (structure.sections?.length || 0) - 1}
-                        className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="p-0.5 text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       >
                         <ChevronDown size={14} />
                       </button>
                     </div>
                     <GripVertical size={16} className="text-slate-300" />
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-white">
                       {section.title}
                     </h3>
                     <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">
@@ -491,7 +491,7 @@ export default function CourseContentAdminPage() {
                         setSectionForm({ title: section.title });
                         setSectionModal({ open: true, editing: section });
                       }}
-                      className="p-2 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"
                     >
                       <Edit3 size={14} />
                     </button>
@@ -500,7 +500,7 @@ export default function CourseContentAdminPage() {
                         setBulkJson("");
                         setBulkModal({ open: true, sectionId: section.id });
                       }}
-                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg transition-all"
                       title="Bulk add lessons"
                     >
                       <Plus size={14} />
@@ -528,7 +528,7 @@ export default function CourseContentAdminPage() {
                           item: section,
                         })
                       }
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -543,7 +543,7 @@ export default function CourseContentAdminPage() {
                   .map((lesson, li) => (
                     <div
                       key={lesson.id}
-                      className="px-5 py-3 hover:bg-slate-50/50 transition-colors"
+                      className="px-5 py-3 hover:bg-white/5/50 transition-colors"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -558,7 +558,7 @@ export default function CourseContentAdminPage() {
                                 )
                               }
                               disabled={li === 0}
-                              className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                              className="p-0.5 text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             >
                               <ChevronUp size={12} />
                             </button>
@@ -574,34 +574,34 @@ export default function CourseContentAdminPage() {
                               disabled={
                                 li === (section.lessons?.length || 0) - 1
                               }
-                              className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                              className="p-0.5 text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             >
                               <ChevronDown size={12} />
                             </button>
                           </div>
                           <GripVertical size={14} className="text-slate-300" />
-                          <div className="w-7 h-7 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
+                          <div className="w-7 h-7 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
                             {lesson.videoUrl ? (
-                              <Video size={12} className="text-[#229C62]" />
+                              <Video size={12} className="text-[#7AD62A]" />
                             ) : lesson.content ? (
                               <FileText
                                 size={12}
-                                className="text-[#229C62]"
+                                className="text-[#7AD62A]"
                               />
                             ) : (
                               <FlaskConical
                                 size={12}
-                                className="text-[#229C62]"
+                                className="text-[#7AD62A]"
                               />
                             )}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-900">
+                            <p className="text-sm font-medium text-white">
                               {lesson.title}
                             </p>
                             <div className="flex items-center gap-2 mt-0.5">
                               {lesson.videoUrl && (
-                                <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] bg-blue-500/10 text-blue-700 px-1.5 py-0.5 rounded">
                                   Video
                                 </span>
                               )}
@@ -623,7 +623,7 @@ export default function CourseContentAdminPage() {
                               });
                               setLessonModal({ open: true, editing: lesson });
                             }}
-                            className="p-1.5 text-slate-400 hover:text-[#229C62] hover:bg-[#E9F8EE] rounded-lg transition-all"
+                            className="p-1.5 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"
                           >
                             <Edit3 size={13} />
                           </button>
@@ -635,7 +635,7 @@ export default function CourseContentAdminPage() {
                                 targetSectionId: "",
                               });
                             }}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg transition-all"
                             title="Move to another section"
                           >
                             <ArrowRight size={13} />
@@ -648,7 +648,7 @@ export default function CourseContentAdminPage() {
                                 item: lesson,
                               })
                             }
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
                           >
                             <Trash2 size={13} />
                           </button>
@@ -679,14 +679,14 @@ export default function CourseContentAdminPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSectionModal({ open: false, editing: null })}
           />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-white">
                 {sectionModal.editing ? "Edit Section" : "New Section"}
               </h3>
               <button
                 onClick={() => setSectionModal({ open: false, editing: null })}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all"
+                className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
               >
                 <X size={18} />
               </button>
@@ -702,21 +702,21 @@ export default function CourseContentAdminPage() {
                     setSectionForm({ title: e.target.value })
                   }
                   placeholder="Section title"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 />
               </div>
             </div>
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setSectionModal({ open: false, editing: null })}
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveSection}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -737,14 +737,14 @@ export default function CourseContentAdminPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setLessonModal({ open: false, editing: null })}
           />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-white">
                 {lessonModal.editing ? "Edit Lesson" : "New Lesson"}
               </h3>
               <button
                 onClick={() => setLessonModal({ open: false, editing: null })}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all"
+                className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
               >
                 <X size={18} />
               </button>
@@ -760,7 +760,7 @@ export default function CourseContentAdminPage() {
                     setLessonForm({ ...lessonForm, title: e.target.value })
                   }
                   placeholder="Lesson title"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 />
               </div>
               <div>
@@ -773,7 +773,7 @@ export default function CourseContentAdminPage() {
                     setLessonForm({ ...lessonForm, videoUrl: e.target.value })
                   }
                   placeholder="https://..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                 />
                 <p className="text-xs text-slate-400 mt-1">
                   YouTube, Vimeo, or direct URL
@@ -790,21 +790,21 @@ export default function CourseContentAdminPage() {
                   }
                   placeholder="Lesson content in markdown..."
                   rows={10}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] resize-y"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] resize-y"
                 />
               </div>
             </div>
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setLessonModal({ open: false, editing: null })}
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveLesson}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -827,16 +827,16 @@ export default function CourseContentAdminPage() {
               setMoveModal({ open: false, lesson: null, targetSectionId: "" })
             }
           />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-white">
                 Move Lesson
               </h3>
               <button
                 onClick={() =>
                   setMoveModal({ open: false, lesson: null, targetSectionId: "" })
                 }
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all"
+                className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
               >
                 <X size={18} />
               </button>
@@ -849,7 +849,7 @@ export default function CourseContentAdminPage() {
               onChange={(e) =>
                 setMoveModal({ ...moveModal, targetSectionId: e.target.value })
               }
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
             >
               <option value="">Select target section...</option>
               {structure.sections
@@ -865,7 +865,7 @@ export default function CourseContentAdminPage() {
                 onClick={() =>
                   setMoveModal({ open: false, lesson: null, targetSectionId: "" })
                 }
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -896,9 +896,9 @@ export default function CourseContentAdminPage() {
               setBulkJson("");
             }}
           />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-white">
                 Bulk Add Lessons
               </h3>
               <button
@@ -906,7 +906,7 @@ export default function CourseContentAdminPage() {
                   setBulkModal({ open: false, sectionId: "" });
                   setBulkJson("");
                 }}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-all"
+                className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
               >
                 <X size={18} />
               </button>
@@ -919,7 +919,7 @@ export default function CourseContentAdminPage() {
               onChange={(e) => setBulkJson(e.target.value)}
               placeholder={`[\n  { "title": "Lesson 1", "videoUrl": "https://..." },\n  { "title": "Lesson 2", "content": "Markdown content here" }\n]`}
               rows={12}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] resize-y"
+              className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] resize-y"
             />
             <div className="flex gap-3 mt-6 justify-end">
               <button
@@ -927,14 +927,14 @@ export default function CourseContentAdminPage() {
                   setBulkModal({ open: false, sectionId: "" });
                   setBulkJson("");
                 }}
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBulkAdd}
                 disabled={saving || !bulkJson.trim()}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#229C62] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -957,8 +957,8 @@ export default function CourseContentAdminPage() {
               setDeleteDialog({ open: false, type: "section", item: null })
             }
           />
-          <div className="relative bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+          <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Delete {deleteDialog.type === "section" ? "Section" : "Lesson"}
             </h3>
             <p className="text-sm text-slate-600 mb-6">
@@ -971,7 +971,7 @@ export default function CourseContentAdminPage() {
                 onClick={() =>
                   setDeleteDialog({ open: false, type: "section", item: null })
                 }
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>

@@ -5,14 +5,14 @@ export function NotificationTypeIcon({ type, size = 16 }: { type: string; size?:
     case "ACHIEVEMENT":
       return <Trophy size={size} className="text-amber-500" />;
     case "SUCCESS":
-      return <Flame size={size} className="text-[#229C62]" />;
+      return <Flame size={size} className="text-[#7AD62A]" />;
     case "BOOKING":
-      return <CalendarCheck size={size} className="text-blue-600" />;
+      return <CalendarCheck size={size} className="text-blue-400" />;
     case "WARNING":
-      return <CalendarX size={size} className="text-red-500" />;
+      return <CalendarX size={size} className="text-red-400" />;
     case "MASTERCLASS":
-      return <Video size={size} className="text-violet-500" />;
+      return <Video size={size} className="text-violet-400" />;
     default:
-      return <Info size={size} className="text-slate-400" />;
+      return <Info size={size} className="text-slate-500" />;
   }
 }

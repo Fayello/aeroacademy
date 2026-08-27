@@ -215,7 +215,7 @@ export default function LeaderboardPage() {
         <div className="h-10 w-full max-w-xs bg-slate-200 rounded-lg animate-pulse" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((id) => (
-                <div key={id} className="angular-card border-slate-200 p-5 flex items-center gap-4">
+                <div key={id} className="angular-card border-white/10 p-5 flex items-center gap-4">
               <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
               <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
               <div className="flex-1 space-y-2">
@@ -241,7 +241,7 @@ export default function LeaderboardPage() {
       />
 
       {globalProfile?.globalRank && (
-        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#229C62] rounded-xl p-4 sm:p-6 text-white">
+        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#7AD62A] rounded-xl p-4 sm:p-6 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 shrink-0">
@@ -291,7 +291,7 @@ export default function LeaderboardPage() {
             key={league}
             onClick={() => setActiveLeague(league)}
             className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeLeague === league ? "bg-slate-800 text-white border border-slate-800" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              activeLeague === league ? "bg-slate-800 text-white border border-slate-800" : "bg-[#0f172a] text-slate-600 border border-white/10 hover:bg-white/5"
             }`}
           >
             {league === "TEAMS" && <Users size={14} className="inline mr-1.5 -mt-0.5" />}
@@ -301,7 +301,7 @@ export default function LeaderboardPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
+        <div className="inline-flex rounded-lg border border-white/10 bg-[#0f172a] p-0.5">
           {([
             { key: "all" as const, label: "All Time" },
             { key: "month" as const, label: "This Month" },
@@ -312,8 +312,8 @@ export default function LeaderboardPage() {
               onClick={() => setTimeFilter(key)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
                 timeFilter === key
-                  ? "bg-[#229C62] text-white shadow-sm"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-[#7AD62A] text-white shadow-sm"
+                  : "text-slate-600 hover:text-white hover:bg-white/5"
               }`}
             >
               {label}
@@ -324,7 +324,7 @@ export default function LeaderboardPage() {
         <select
           value={domainFilter}
           onChange={(e) => setDomainFilter(e.target.value as typeof domainFilter)}
-          className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] transition-all"
+          className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#0f172a] text-sm font-medium text-slate-700 hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
         >
           <option value="all">All Domains</option>
           <option value="SECURITY">Security</option>
@@ -342,7 +342,7 @@ export default function LeaderboardPage() {
           placeholder="Search by name..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full max-w-xs px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
+          className="w-full max-w-xs px-4 py-2.5 rounded-lg border border-white/10 bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
         />
         {activeLeague === "REGIONAL" && (
           <div className="flex gap-2 flex-wrap">
@@ -351,7 +351,7 @@ export default function LeaderboardPage() {
                 key={city.name}
                 onClick={() => setSelectedCity(city.name)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCity === city.name ? "bg-slate-800 text-white border border-slate-800" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                  selectedCity === city.name ? "bg-slate-800 text-white border border-slate-800" : "bg-[#0f172a] text-slate-600 border border-white/10 hover:bg-white/5"
                 }`}
               >
                 {city.name}
@@ -375,13 +375,13 @@ export default function LeaderboardPage() {
         return (
           <div className="angular-card text-white overflow-hidden relative" style={{ backgroundColor: "#0F203A" }}>
             {/* Decorative circles */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#229C62]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#7AD62A]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#7AD62A]/5 rounded-full translate-y-1/2 -translate-x-1/4" />
 
             <div className="relative z-10 p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#229C62]/20 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center">
                     <Trophy size={22} className="text-[#7AD62A]" />
                   </div>
                   <div>
@@ -451,13 +451,13 @@ export default function LeaderboardPage() {
         ].find((u) => u.level > currentLevel);
 
         return (
-          <div className="angular-card border-slate-200 p-6">
+          <div className="angular-card border-white/10 p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
                 <TrendingUp size={22} className="text-slate-600" />
               </div>
               <div>
-                <p className="text-lg font-semibold text-slate-900">Level {currentLevel} — {userMetrics.division}</p>
+                <p className="text-lg font-semibold text-white">Level {currentLevel} — {userMetrics.division}</p>
                 <p className="text-sm text-slate-500">{xpNeeded} XP to Level {currentLevel + 1}</p>
               </div>
             </div>
@@ -469,12 +469,12 @@ export default function LeaderboardPage() {
             </div>
             <div className="flex items-center justify-between text-sm text-slate-500">
               <span>{xpInLevel.toLocaleString()} / 1,000 XP</span>
-              <span className="font-medium text-slate-900">{Math.round(progress * 100)}%</span>
+              <span className="font-medium text-white">{Math.round(progress * 100)}%</span>
             </div>
             {nextUnlock && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3">
+              <div className="mt-4 flex items-center gap-2 text-sm text-slate-600 bg-white/5 rounded-xl px-4 py-3">
                 <Lock size={14} className="text-slate-400" />
-                <span>Reach <span className="font-semibold text-slate-900">Level {nextUnlock.level}</span> to unlock {nextUnlock.label}</span>
+                <span>Reach <span className="font-semibold text-white">Level {nextUnlock.level}</span> to unlock {nextUnlock.label}</span>
               </div>
             )}
           </div>
@@ -486,7 +486,7 @@ export default function LeaderboardPage() {
           {teamsLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((id) => (
-            <div key={id} className="angular-card border-slate-200 p-5 flex items-center gap-4">
+            <div key={id} className="angular-card border-white/10 p-5 flex items-center gap-4">
                   <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse" />
                   <div className="w-12 h-12 bg-slate-200 rounded-xl animate-pulse" />
                   <div className="flex-1 space-y-2">
@@ -500,32 +500,32 @@ export default function LeaderboardPage() {
             <div
               key={team.id}
               className={`angular-card p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md hover-lift ${
-                idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
+                idx < 3 ? "border-white/10 bg-white/5" : "border-white/10"
               }`}
             >
             <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
               idx === 0 ? "bg-amber-100 text-amber-700" :
               idx === 1 ? "bg-slate-100 text-slate-500" :
               idx === 2 ? "bg-orange-100 text-orange-700" :
-              "bg-slate-50 text-slate-400"
+              "bg-white/5 text-slate-400"
             }`}>
               {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
             </div>
 
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${
-                idx === 0 ? "bg-[#229C62] text-white" :
-                idx === 1 ? "bg-[#229C62]/80 text-white" :
-                idx === 2 ? "bg-[#229C62]/60 text-white" :
-                "bg-[#E9F8EE] text-[#229C62]"
+                idx === 0 ? "bg-[#7AD62A] text-white" :
+                idx === 1 ? "bg-[#7AD62A]/80 text-white" :
+                idx === 2 ? "bg-[#7AD62A]/60 text-white" :
+                "bg-[#7AD62A]/10 text-[#7AD62A]"
               }`}>
                 <Users size={18} />
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{team.name}</p>
+                  <p className="text-sm sm:text-base font-semibold text-white truncate">{team.name}</p>
                   {team.visibility === "PRIVATE" && (
-                    <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">Private</span>
+                    <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-white/10">Private</span>
                   )}
                 </div>
                 <p className="text-sm text-slate-500 mt-0.5">
@@ -537,16 +537,16 @@ export default function LeaderboardPage() {
               </div>
 
               <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">{(team.totalXp as number || 0).toLocaleString()}</p>
+                <p className="text-2xl font-bold text-white">{(team.totalXp as number || 0).toLocaleString()}</p>
                 <p className="text-xs text-slate-400">Total XP</p>
               </div>
             </div>
           )) : (
-            <div className="angular-card border-slate-200 py-16 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-                <Users size={28} className="text-[#229C62]" />
+            <div className="angular-card border-white/10 py-16 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+                <Users size={28} className="text-[#7AD62A]" />
               </div>
-              <h3 className="text-sm font-semibold text-slate-900 mb-1">No teams yet</h3>
+              <h3 className="text-sm font-semibold text-white mb-1">No teams yet</h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 Create or join a team to appear on the team leaderboard.
               </p>
@@ -557,14 +557,14 @@ export default function LeaderboardPage() {
       <div className="space-y-3">
         {/* Sticky personal rank bar */}
         {currentUserId && userEntry && userRank && (
-          <div className="angular-card border-l-4 border-l-[#229C62] bg-[#E9F8EE]/50 p-4 sm:p-5 flex items-center gap-2 sm:gap-4">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold bg-[#229C62] text-white shrink-0">
+          <div className="angular-card border-l-4 border-l-[#7AD62A] bg-[#7AD62A]/10/50 p-4 sm:p-5 flex items-center gap-2 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold bg-[#7AD62A] text-white shrink-0">
               #{userRank}
             </div>
             <span className="text-lg sm:hidden">{getFlag(userEntry.city)}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-[#229C62] font-medium mb-0.5">Your Rank</p>
-              <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{userEntry.username || currentUser?.username || currentUser?.name || "You"}</p>
+              <p className="text-xs text-[#7AD62A] font-medium mb-0.5">Your Rank</p>
+              <p className="text-sm sm:text-base font-semibold text-white truncate">{userEntry.username || currentUser?.username || currentUser?.name || "You"}</p>
             </div>
             <div className="hidden sm:flex items-center gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1"><Trophy size={12} className="text-amber-400" />{userEntry.xp.toLocaleString()} XP</span>
@@ -572,7 +572,7 @@ export default function LeaderboardPage() {
               <span className="flex items-center gap-1"><CheckCircle size={10} />{userEntry.achievementsCount}</span>
             </div>
             <div className="text-right shrink-0">
-              <p className="text-lg sm:text-2xl font-bold text-slate-900">{userEntry.rank || 1200}</p>
+              <p className="text-lg sm:text-2xl font-bold text-white">{userEntry.rank || 1200}</p>
               <p className="text-[10px] sm:text-xs text-slate-400">{userEntry.xp.toLocaleString()} XP</p>
             </div>
           </div>
@@ -593,8 +593,8 @@ export default function LeaderboardPage() {
           <div
             key={op.id}
             className={`angular-card p-3 sm:p-4 flex items-center gap-2 sm:gap-3 transition-all hover:shadow-md hover-lift ${
-              op.id === currentUserId ? "border-slate-400 bg-slate-50 shadow-md" :
-              idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
+              op.id === currentUserId ? "border-slate-400 bg-white/5 shadow-md" :
+              idx < 3 ? "border-white/10 bg-white/5" : "border-white/10"
             }`}
           >
             {/* Rank */}
@@ -602,7 +602,7 @@ export default function LeaderboardPage() {
               idx === 0 ? "bg-amber-100 text-amber-700" :
               idx === 1 ? "bg-slate-100 text-slate-500" :
               idx === 2 ? "bg-orange-100 text-orange-700" :
-              "bg-slate-50 text-slate-400"
+              "bg-white/5 text-slate-400"
             }`}>
               {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
             </div>
@@ -614,7 +614,7 @@ export default function LeaderboardPage() {
             <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
               idx === 0 ? "bg-slate-800 text-white" :
               idx === 1 ? "bg-slate-600 text-white" :
-              idx === 2 ? "bg-slate-500 text-white" :
+              idx === 2 ? "bg-white/50 text-white" :
               "bg-slate-100 text-slate-600"
             }`}>
               {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
@@ -623,12 +623,12 @@ export default function LeaderboardPage() {
             {/* Name + meta */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{op.username || op.name}</p>
+                <p className="text-sm sm:text-base font-semibold text-white truncate">{op.username || op.name}</p>
                 <Badge variant={(DIVISION_COLORS[op.division] as "emerald" | "blue" | "amber" | "red" | "slate") || "slate"}>
                   {op.division}
                 </Badge>
                 {op.xp > 2500 && (
-                  <span className="hidden sm:inline-flex text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 items-center gap-0.5">
+                  <span className="hidden sm:inline-flex text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-white/10 items-center gap-0.5">
                     <CheckCircle size={10} /> Top talent
                   </span>
                 )}
@@ -641,23 +641,23 @@ export default function LeaderboardPage() {
 
             {/* Metrics — desktop */}
             <div className="hidden sm:flex items-center gap-4 text-xs text-slate-600 shrink-0">
-              <span className="w-16 text-right font-semibold text-slate-900">{op.xp.toLocaleString()}</span>
+              <span className="w-16 text-right font-semibold text-white">{op.xp.toLocaleString()}</span>
               <span className="w-10 text-center">Lv.{op.level}</span>
               <span className="w-10 text-center">{op.achievementsCount}</span>
             </div>
 
             {/* Rating */}
             <div className="text-right shrink-0">
-              <p className="text-lg sm:text-xl font-bold text-slate-900">{op.rank || 1200}</p>
+              <p className="text-lg sm:text-xl font-bold text-white">{op.rank || 1200}</p>
               <p className="text-[10px] sm:text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
         )        ) : (
-          <div className="angular-card border-slate-200 py-16 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
+          <div className="angular-card border-white/10 py-16 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
               <Trophy size={28} className="text-amber-500" />
             </div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-1">No rankings yet</h3>
+            <h3 className="text-sm font-semibold text-white mb-1">No rankings yet</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Complete ranked activities to appear on the leaderboard. Your first attempts will establish your position.
             </p>

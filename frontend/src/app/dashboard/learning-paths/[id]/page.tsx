@@ -56,7 +56,7 @@ interface LearningPathDetail {
 }
 
 const difficultyColors: Record<string, string> = {
-  BEGINNER: "bg-[#E9F8EE] text-[#0F203A]",
+  BEGINNER: "bg-[#7AD62A]/10 text-[#0F203A]",
   INTERMEDIATE: "bg-amber-100 text-amber-700",
   ADVANCED: "bg-red-100 text-red-700",
   EXPERT: "bg-purple-100 text-purple-700",
@@ -137,9 +137,9 @@ export default function LearningPathDetailPage() {
 
       {/* Progress */}
       {isEnrolled && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <Award size={18} className="text-violet-600" />
               Your Progress
             </h2>
@@ -162,9 +162,9 @@ export default function LearningPathDetailPage() {
 
       {/* Enroll CTA */}
       {!isEnrolled && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 flex items-center justify-between">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-1">Ready to start this path?</h3>
+            <h3 className="text-lg font-semibold text-white mb-1">Ready to start this path?</h3>
             <p className="text-sm text-slate-500">You&apos;ll be guided through {path.courseCount} courses in sequence.</p>
           </div>
           <button
@@ -180,7 +180,7 @@ export default function LearningPathDetailPage() {
 
       {/* Courses */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Courses in this path</h2>
+        <h2 className="text-lg font-semibold text-white">Courses in this path</h2>
         {path.courses.map((lpc, i) => {
           const progress = path.courseProgress[lpc.course.id];
           const completed = progress && progress.percentage === 100;
@@ -189,22 +189,22 @@ export default function LearningPathDetailPage() {
           return (
             <div
               key={lpc.id}
-              className={`bg-white rounded-xl border p-5 transition-all ${
+              className={`bg-[#0f172a] rounded-xl border p-5 transition-all ${
                 completed
-                  ? "border-[#229C62]/20 bg-[#E9F8EE]/30"
-                  : "border-slate-200 hover:shadow-md"
+                  ? "border-[#7AD62A]/20 bg-[#7AD62A]/10/30"
+                  : "border-white/10 hover:shadow-md"
               }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                   completed
-                    ? "bg-[#E9F8EE]"
+                    ? "bg-[#7AD62A]/10"
                     : started
-                      ? "bg-violet-100"
+                      ? "bg-violet-500/10"
                       : "bg-slate-100"
                 }`}>
                   {completed ? (
-                    <CheckCircle2 size={20} className="text-[#229C62]" />
+                    <CheckCircle2 size={20} className="text-[#7AD62A]" />
                   ) : (
                     <span className={`text-sm font-bold ${started ? "text-violet-600" : "text-slate-400"}`}>
                       {i + 1}
@@ -212,7 +212,7 @@ export default function LearningPathDetailPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900">{lpc.course.title}</h3>
+                  <h3 className="font-semibold text-white">{lpc.course.title}</h3>
                   <p className="text-sm text-slate-500 line-clamp-1">{lpc.course.description}</p>
                   <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
                     {lpc.course.estimatedHours && (
@@ -229,10 +229,10 @@ export default function LearningPathDetailPage() {
                 <div className="text-right shrink-0">
                   {progress && (
                     <div className="mb-2">
-                      <span className="text-sm font-bold text-slate-900">{progress.percentage}%</span>
+                      <span className="text-sm font-bold text-white">{progress.percentage}%</span>
                       <div className="w-20 h-1.5 bg-slate-100 rounded-full mt-1">
                         <div
-                          className={`h-full rounded-full ${completed ? "bg-[#229C62]" : "bg-violet-500"}`}
+                          className={`h-full rounded-full ${completed ? "bg-[#7AD62A]" : "bg-violet-500"}`}
                           style={{ width: `${progress.percentage}%` }}
                         />
                       </div>

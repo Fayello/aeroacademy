@@ -22,17 +22,17 @@ const icons = {
 };
 
 const iconColors = {
-  info: "text-blue-600 bg-blue-100",
-  warning: "text-amber-600 bg-amber-100",
-  danger: "text-red-600 bg-red-100",
-  success: "text-[#229C62] bg-[#E9F8EE]",
+  info: "text-blue-400 bg-blue-500/10",
+  warning: "text-amber-400 bg-amber-500/10",
+  danger: "text-red-400 bg-red-500/10",
+  success: "text-[#7AD62A] bg-[#7AD62A]/10",
 };
 
 const confirmStyles = {
   info: "bg-blue-600 hover:bg-blue-700 text-white",
   warning: "bg-amber-600 hover:bg-amber-700 text-white",
   danger: "bg-red-600 hover:bg-red-700 text-white",
-  success: "bg-[#229C62] hover:bg-[#0F203A] text-white",
+  success: "bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A]",
 };
 
 export default function Modal({
@@ -110,7 +110,7 @@ export default function Modal({
         aria-modal="true"
         aria-labelledby="modal-title"
         aria-describedby="modal-message"
-        className="relative bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden"
+        className="relative bg-[#0f172a] rounded-xl shadow-xl w-full max-w-md overflow-hidden"
       >
         <div className="p-6">
           <div className="flex items-start gap-4">
@@ -118,22 +118,22 @@ export default function Modal({
               <Icon size={20} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 id="modal-title" className="text-lg font-semibold text-slate-900">{title}</h3>
-              <p id="modal-message" className="mt-2 text-sm text-slate-600 leading-relaxed">{message}</p>
+              <h3 id="modal-title" className="text-lg font-semibold text-white">{title}</h3>
+              <p id="modal-message" className="mt-2 text-sm text-slate-400 leading-relaxed">{message}</p>
             </div>
             <button
               onClick={onClose}
-              className="flex-shrink-0 p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              className="flex-shrink-0 p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
               aria-label="Close"
             >
               <X size={18} />
             </button>
           </div>
         </div>
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+        <div className="px-6 py-4 bg-white/5 border-t border-white/6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
           >
             {cancelText}
           </button>

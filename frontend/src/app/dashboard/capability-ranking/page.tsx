@@ -47,11 +47,11 @@ interface MyCapability {
 
 const TIER_COLORS: Record<string, { text: string; bg: string; border: string }> = {
   EXPERT: { text: "text-purple-700", bg: "bg-purple-50", border: "border-purple-200" },
-  ADVANCED: { text: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200" },
-  INTERMEDIATE: { text: "text-[#229C62]", bg: "bg-[#E9F8EE]", border: "border-[#229C62]/30" },
-  DEVELOPING: { text: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200" },
-  NOVICE: { text: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200" },
-  UNRANKED: { text: "text-slate-400", bg: "bg-slate-50", border: "border-slate-200" },
+  ADVANCED: { text: "text-blue-700", bg: "bg-blue-500/10", border: "border-blue-200" },
+  INTERMEDIATE: { text: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/30" },
+  DEVELOPING: { text: "text-amber-700", bg: "bg-amber-500/10", border: "border-amber-200" },
+  NOVICE: { text: "text-slate-600", bg: "bg-white/5", border: "border-white/10" },
+  UNRANKED: { text: "text-slate-400", bg: "bg-white/5", border: "border-white/10" },
 };
 
 export default function CapabilityRankingPage() {
@@ -100,7 +100,7 @@ export default function CapabilityRankingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
+        <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
@@ -121,9 +121,9 @@ export default function CapabilityRankingPage() {
 
       {/* My Score */}
       {myCap && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Your Capability Score</h2>
+            <h2 className="text-lg font-semibold text-white">Your Capability Score</h2>
             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${TIER_COLORS[myCap.tier]?.text} ${TIER_COLORS[myCap.tier]?.bg} ${TIER_COLORS[myCap.tier]?.border} border`}>
               {myCap.tier}
             </span>
@@ -131,11 +131,11 @@ export default function CapabilityRankingPage() {
 
           <div className="flex items-center gap-6 mb-6">
             <div className="text-center">
-              <p className="text-4xl font-bold text-[#229C62]">{myCap.capabilityScore}</p>
+              <p className="text-4xl font-bold text-[#7AD62A]">{myCap.capabilityScore}</p>
               <p className="text-xs text-slate-500 mt-1">Capability Score</p>
             </div>
             <div className="flex-1 grid grid-cols-4 gap-3">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
+              <div className="text-center p-3 bg-blue-500/10 rounded-lg">
                 <p className="text-lg font-bold text-blue-600">{myCap.breakdown.technicalPerformance}</p>
                 <p className="text-[10px] text-slate-500">Technical</p>
               </div>
@@ -143,7 +143,7 @@ export default function CapabilityRankingPage() {
                 <p className="text-lg font-bold text-purple-600">{myCap.breakdown.difficulty}</p>
                 <p className="text-[10px] text-slate-500">Difficulty</p>
               </div>
-              <div className="text-center p-3 bg-amber-50 rounded-lg">
+              <div className="text-center p-3 bg-amber-500/10 rounded-lg">
                 <p className="text-lg font-bold text-amber-600">{myCap.breakdown.consistency}</p>
                 <p className="text-[10px] text-slate-500">Consistency</p>
               </div>
@@ -160,7 +160,7 @@ export default function CapabilityRankingPage() {
               <span>{myCap.details.assessmentsCompleted} assessments</span>
             </div>
             <div className="flex items-center gap-2 text-slate-600">
-              <Zap size={14} className="text-[#229C62]" />
+              <Zap size={14} className="text-[#7AD62A]" />
               <span>{myCap.details.labsCompleted} labs</span>
             </div>
             <div className="flex items-center gap-2 text-slate-600">
@@ -176,9 +176,9 @@ export default function CapabilityRankingPage() {
       )}
 
       {/* Leaderboard */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
         <div className="p-6 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-900">Capability Leaderboard</h2>
+          <h2 className="text-lg font-semibold text-white">Capability Leaderboard</h2>
         </div>
 
         {leaderboard.length === 0 ? (
@@ -188,7 +188,7 @@ export default function CapabilityRankingPage() {
             {leaderboard.map((entry) => {
               const tierStyle = TIER_COLORS[entry.tier] || TIER_COLORS.UNRANKED;
               return (
-                <div key={entry.userId} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors">
+                <div key={entry.userId} className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-colors">
                   <div className="w-8 text-center">
                     {entry.position <= 3 ? (
                       <span className="text-lg">
@@ -199,21 +199,21 @@ export default function CapabilityRankingPage() {
                     )}
                   </div>
 
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7AD62A] to-[#7AD62A] flex items-center justify-center shrink-0">
                     <span className="text-sm font-bold text-white">
                       {(entry.user.name || "U").charAt(0).toUpperCase()}
                     </span>
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{entry.user.name}</p>
+                    <p className="text-sm font-medium text-white truncate">{entry.user.name}</p>
                     <span className={`text-[10px] font-semibold ${tierStyle.text} ${tierStyle.bg} px-1.5 py-0.5 rounded`}>
                       {entry.tier}
                     </span>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-lg font-bold text-[#229C62]">{entry.capabilityScore}</p>
+                    <p className="text-lg font-bold text-[#7AD62A]">{entry.capabilityScore}</p>
                     <p className="text-[10px] text-slate-400">capability</p>
                   </div>
 

@@ -191,14 +191,14 @@ export default function AdminChallengesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-[#229C62] animate-spin" />
+        <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200">
         <ArrowLeft size={14} /> Admin
       </Link>
       <PageHeader title="Mission Manager" description={`${challenges.length} missions`} action={
@@ -211,7 +211,7 @@ export default function AdminChallengesPage() {
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+          className="px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0f172a] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
         >
           <option value="">All Types</option>
           {TYPE_OPTIONS.map((opt) => (
@@ -225,16 +225,16 @@ export default function AdminChallengesPage() {
             placeholder="Search by title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0f172a] text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
           />
         </div>
       </div>
 
-      <div className="angular-card bg-white overflow-hidden">
+      <div className="angular-card bg-[#0f172a] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50">
+              <tr className="border-b border-white/10 bg-white/5">
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Type</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Title</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Difficulty</th>
@@ -253,11 +253,11 @@ export default function AdminChallengesPage() {
                 const end = new Date(c.endAt);
                 const status = !c.isActive ? "Inactive" : now < start ? "Scheduled" : now > end ? "Ended" : "Active";
                 const statusColor =
-                  status === "Active" ? "text-[#229C62]" :
+                  status === "Active" ? "text-[#7AD62A]" :
                   status === "Scheduled" ? "text-blue-600" :
                   status === "Ended" ? "text-slate-400" : "text-slate-400";
                 return (
-                  <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={c.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3">
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${TYPE_COLORS[c.type] || "bg-slate-100 text-slate-600"}`}>
                         {c.type.replace(/_/g, " ")}
@@ -265,7 +265,7 @@ export default function AdminChallengesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div>
-                        <p className="text-sm font-medium text-slate-900 truncate max-w-[200px]">{c.title}</p>
+                        <p className="text-sm font-medium text-white truncate max-w-[200px]">{c.title}</p>
                         <p className="text-[11px] text-slate-400 truncate max-w-[200px]">{c.description}</p>
                       </div>
                     </td>
@@ -277,7 +277,7 @@ export default function AdminChallengesPage() {
                     <td className="px-4 py-3 text-xs text-slate-600">
                       {c.objectiveType.replace(/_/g, " ")} ({c.objectiveTarget})
                     </td>
-                    <td className="px-4 py-3 text-xs font-medium text-slate-900">{c.xpReward}</td>
+                    <td className="px-4 py-3 text-xs font-medium text-white">{c.xpReward}</td>
                     <td className="px-4 py-3 text-[11px] text-slate-500">{formatDate(c.startAt)}</td>
                     <td className="px-4 py-3 text-[11px] text-slate-500">{formatDate(c.endAt)}</td>
                     <td className="px-4 py-3">
@@ -285,10 +285,10 @@ export default function AdminChallengesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => openEdit(c)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                        <button onClick={() => openEdit(c)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
                           <Pencil size={14} />
                         </button>
-                        <button onClick={() => setDeleteDialog({ open: true, item: c })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                        <button onClick={() => setDeleteDialog({ open: true, item: c })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
                           <Trash2 size={14} />
                         </button>
                       </div>
@@ -315,8 +315,8 @@ export default function AdminChallengesPage() {
         size="lg"
         footer={
           <div className="flex justify-end gap-2">
-            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
+            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-white/5 rounded-lg transition-colors">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
               {modal.editing ? "Save Changes" : "Create Mission"}
             </button>

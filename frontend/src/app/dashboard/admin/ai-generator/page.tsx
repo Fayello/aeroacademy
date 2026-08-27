@@ -63,10 +63,10 @@ function ResultCard({ title, children }: { title: string; children: React.ReactN
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-        <h4 className="font-medium text-slate-900 text-sm">{title}</h4>
-        <button onClick={handleCopy} className="text-xs text-slate-500 hover:text-[#229C62] flex items-center gap-1 transition-colors">
+        <h4 className="font-medium text-white text-sm">{title}</h4>
+        <button onClick={handleCopy} className="text-xs text-slate-500 hover:text-[#7AD62A] flex items-center gap-1 transition-colors">
           {copied ? <Check size={12} /> : <Copy size={12} />}
           {copied ? "Copied" : "Copy"}
         </button>
@@ -89,7 +89,7 @@ function BriefingOutput({ data }: { data: BriefingResult }) {
           <ul className="space-y-1">
             {data.objectives.map((obj, i) => (
               <li key={i} className="text-sm text-slate-700 flex items-start gap-2">
-                <CheckCircle size={14} className="text-[#229C62] mt-0.5 shrink-0" />
+                <CheckCircle size={14} className="text-[#7AD62A] mt-0.5 shrink-0" />
                 {obj}
               </li>
             ))}
@@ -120,10 +120,10 @@ function QuestionsOutput({ data }: { data: QuestionsResult }) {
         <div key={i} className="border border-slate-100 rounded-lg overflow-hidden">
           <button
             onClick={() => setExpanded(expanded === i ? null : i)}
-            className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
+            className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-6 h-6 rounded-full bg-[#E9F8EE] flex items-center justify-center text-xs font-bold text-[#229C62] shrink-0">{i + 1}</span>
+              <span className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-xs font-bold text-[#7AD62A] shrink-0">{i + 1}</span>
               <span className="text-sm text-slate-700 truncate">{q.text}</span>
             </div>
             {expanded === i ? <ChevronUp size={14} className="text-slate-400 shrink-0" /> : <ChevronDown size={14} className="text-slate-400 shrink-0" />}
@@ -133,7 +133,7 @@ function QuestionsOutput({ data }: { data: QuestionsResult }) {
               <div className="space-y-1.5 mt-2">
                 {q.options.map((opt) => (
                   <div key={opt.key} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                    opt.key === q.correctAnswer ? "bg-[#E9F8EE] text-[#229C62] font-medium" : "bg-slate-50 text-slate-600"
+                    opt.key === q.correctAnswer ? "bg-[#7AD62A]/10 text-[#7AD62A] font-medium" : "bg-white/5 text-slate-600"
                   }`}>
                     <span className="w-5 h-5 rounded-full border border-current flex items-center justify-center text-xs shrink-0">{opt.key}</span>
                     {opt.text}
@@ -143,7 +143,7 @@ function QuestionsOutput({ data }: { data: QuestionsResult }) {
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-xs text-slate-400">Category:</span>
                 <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{q.category}</span>
-                <span className="text-xs text-[#229C62] font-medium">Answer: {q.correctAnswer}</span>
+                <span className="text-xs text-[#7AD62A] font-medium">Answer: {q.correctAnswer}</span>
               </div>
             </div>
           )}
@@ -160,8 +160,8 @@ function OutlineOutput({ data }: { data: OutlineResult }) {
       {data.modules.map((mod, i) => (
         <div key={i} className="border border-slate-100 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-6 rounded-full bg-[#229C62] flex items-center justify-center text-xs font-bold text-white shrink-0">{i + 1}</span>
-            <h6 className="font-medium text-slate-900 text-sm">{mod.title}</h6>
+            <span className="w-6 h-6 rounded-full bg-[#7AD62A] flex items-center justify-center text-xs font-bold text-white shrink-0">{i + 1}</span>
+            <h6 className="font-medium text-white text-sm">{mod.title}</h6>
           </div>
           <p className="text-xs text-slate-500 mb-2 ml-8">{mod.description}</p>
           <div className="ml-8 space-y-1">
@@ -169,7 +169,7 @@ function OutlineOutput({ data }: { data: OutlineResult }) {
               <div key={j} className="flex items-center gap-2 text-xs text-slate-600">
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
                   lesson.type === "lab" ? "bg-amber-100 text-amber-700" :
-                  lesson.type === "quiz" ? "bg-violet-100 text-violet-700" :
+                  lesson.type === "quiz" ? "bg-violet-500/10 text-violet-700" :
                   lesson.type === "video" ? "bg-blue-100 text-blue-700" :
                   "bg-slate-100 text-slate-600"
                 }`}>{lesson.type.toUpperCase()}</span>
@@ -186,7 +186,7 @@ function OutlineOutput({ data }: { data: OutlineResult }) {
 function CalibrationOutput({ data }: { data: CalibrationResult }) {
   if (data.suggestion === "insufficient_data") {
     return (
-      <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+      <div className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-200 rounded-lg">
         <AlertTriangle size={16} className="text-amber-600 shrink-0" />
         <div>
           <p className="text-sm font-medium text-amber-800">Insufficient Data</p>
@@ -201,33 +201,33 @@ function CalibrationOutput({ data }: { data: CalibrationResult }) {
       <div className="flex items-center justify-between">
         <div className="text-center">
           <div className="text-xs text-slate-500 mb-1">Current</div>
-          <div className="text-2xl font-bold text-slate-900">{data.currentDifficulty}</div>
+          <div className="text-2xl font-bold text-white">{data.currentDifficulty}</div>
         </div>
-        <ArrowRight size={20} className={data.changed ? "text-[#229C62]" : "text-slate-300"} />
+        <ArrowRight size={20} className={data.changed ? "text-[#7AD62A]" : "text-slate-300"} />
         <div className="text-center">
           <div className="text-xs text-slate-500 mb-1">New</div>
-          <div className={`text-2xl font-bold ${data.changed ? "text-[#229C62]" : "text-slate-900"}`}>{data.newDifficulty}</div>
+          <div className={`text-2xl font-bold ${data.changed ? "text-[#7AD62A]" : "text-white"}`}>{data.newDifficulty}</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-slate-500 mb-1">Change</div>
-          <div className={`text-lg font-bold ${data.adjustment > 0 ? "text-red-600" : data.adjustment < 0 ? "text-[#229C62]" : "text-slate-400"}`}>
+          <div className={`text-lg font-bold ${data.adjustment > 0 ? "text-red-600" : data.adjustment < 0 ? "text-[#7AD62A]" : "text-slate-400"}`}>
             {data.adjustment > 0 ? "+" : ""}{data.adjustment}
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
+        <div className="bg-white/5 rounded-lg p-3 text-center">
           <div className="text-xs text-slate-500">Completion</div>
-          <div className="text-lg font-bold text-slate-900">{data.metrics.completionRate}%</div>
+          <div className="text-lg font-bold text-white">{data.metrics.completionRate}%</div>
         </div>
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
+        <div className="bg-white/5 rounded-lg p-3 text-center">
           <div className="text-xs text-slate-500">Failure</div>
-          <div className="text-lg font-bold text-slate-900">{data.metrics.failureRate}%</div>
+          <div className="text-lg font-bold text-white">{data.metrics.failureRate}%</div>
         </div>
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
+        <div className="bg-white/5 rounded-lg p-3 text-center">
           <div className="text-xs text-slate-500">Avg Time</div>
-          <div className="text-lg font-bold text-slate-900">{data.metrics.avgTimeMinutes.toFixed(0)}m</div>
+          <div className="text-lg font-bold text-white">{data.metrics.avgTimeMinutes.toFixed(0)}m</div>
         </div>
       </div>
 
@@ -246,9 +246,9 @@ function CalibrationOutput({ data }: { data: CalibrationResult }) {
       )}
 
       {data.changed && (
-        <div className="flex items-center gap-2 p-3 bg-[#E9F8EE] rounded-lg">
-          <CheckCircle size={14} className="text-[#229C62]" />
-          <span className="text-sm text-[#229C62] font-medium">Difficulty auto-adjusted to {data.newDifficulty}</span>
+        <div className="flex items-center gap-2 p-3 bg-[#7AD62A]/10 rounded-lg">
+          <CheckCircle size={14} className="text-[#7AD62A]" />
+          <span className="text-sm text-[#7AD62A] font-medium">Difficulty auto-adjusted to {data.newDifficulty}</span>
         </div>
       )}
     </div>
@@ -336,15 +336,15 @@ export default function AIGeneratorPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 border border-slate-200">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 border border-white/10">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-[#E9F8EE] flex items-center justify-center">
-              <Sparkles size={24} className="text-[#229C62]" />
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <Sparkles size={24} className="text-[#7AD62A]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">AI Content Engine</h1>
+              <h1 className="text-2xl font-bold text-white">AI Content Engine</h1>
               <p className="text-sm text-slate-500">Generate lab briefings, assessment questions, course outlines, and calibrate difficulty</p>
             </div>
           </div>
@@ -359,29 +359,29 @@ export default function AIGeneratorPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`p-4 rounded-xl border text-left transition-all duration-200 ${
               activeTab === tab.key
-                ? "bg-[#E9F8EE] border-[#229C62] shadow-sm"
-                : "bg-white border-slate-200 hover:border-slate-300"
+                ? "bg-[#7AD62A]/10 border-[#7AD62A] shadow-sm"
+                : "bg-[#0f172a] border-white/10 hover:border-white/10"
             }`}
           >
-            <tab.icon size={18} className={activeTab === tab.key ? "text-[#229C62]" : "text-slate-400"} />
-            <div className={`text-sm font-medium mt-2 ${activeTab === tab.key ? "text-[#229C62]" : "text-slate-700"}`}>{tab.label}</div>
+            <tab.icon size={18} className={activeTab === tab.key ? "text-[#7AD62A]" : "text-slate-400"} />
+            <div className={`text-sm font-medium mt-2 ${activeTab === tab.key ? "text-[#7AD62A]" : "text-slate-700"}`}>{tab.label}</div>
             <div className="text-xs text-slate-500 mt-0.5">{tab.desc}</div>
           </button>
         ))}
       </div>
 
       {/* Input + Generate */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
         {loadingData ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="animate-spin text-[#229C62]" size={24} />
+            <Loader2 className="animate-spin text-[#7AD62A]" size={24} />
           </div>
         ) : (
           <div className="space-y-4">
             {activeTab === "briefing" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Select Lab</label>
-                <select value={selectedLab} onChange={(e) => setSelectedLab(e.target.value)} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]">
+                <select value={selectedLab} onChange={(e) => setSelectedLab(e.target.value)} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]">
                   <option value="">Choose a lab...</option>
                   {labs.map((l) => <option key={l.id} value={l.id}>{l.title} (ELO {l.difficulty})</option>)}
                 </select>
@@ -392,14 +392,14 @@ export default function AIGeneratorPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Select Assessment</label>
-                  <select value={selectedAssessment} onChange={(e) => setSelectedAssessment(e.target.value)} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]">
+                  <select value={selectedAssessment} onChange={(e) => setSelectedAssessment(e.target.value)} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]">
                     <option value="">Choose an assessment...</option>
                     {assessments.map((a) => <option key={a.id} value={a.id}>{a.title} ({a.category})</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Number of Questions</label>
-                  <input type="number" min={1} max={20} value={questionCount} onChange={(e) => setQuestionCount(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]" />
+                  <input type="number" min={1} max={20} value={questionCount} onChange={(e) => setQuestionCount(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]" />
                 </div>
               </div>
             )}
@@ -407,7 +407,7 @@ export default function AIGeneratorPage() {
             {activeTab === "outline" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Select Course</label>
-                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]">
+                <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]">
                   <option value="">Choose a course...</option>
                   {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
                 </select>
@@ -415,7 +415,7 @@ export default function AIGeneratorPage() {
             )}
 
             {activeTab === "calibrate" && (
-              <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-200 rounded-lg">
                 <AlertTriangle size={16} className="text-amber-600 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-amber-800">Auto-calibrate all labs</p>
@@ -427,7 +427,7 @@ export default function AIGeneratorPage() {
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="flex items-center gap-2 px-6 py-2.5 bg-[#229C62] text-white rounded-lg text-sm font-medium hover:bg-[#1e8a55] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#7AD62A] text-white rounded-lg text-sm font-medium hover:bg-[#1e8a55] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
               {generating ? "Generating..." : activeTab === "calibrate" ? "Calibrate All Labs" : "Generate"}
@@ -456,17 +456,17 @@ export default function AIGeneratorPage() {
       )}
 
       {activeTab === "calibrate" && calibrationAll.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-            <h3 className="font-semibold text-slate-900">Calibration Results ({calibrationAll.length} labs)</h3>
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/10 bg-white/5">
+            <h3 className="font-semibold text-white">Calibration Results ({calibrationAll.length} labs)</h3>
           </div>
           <div className="divide-y divide-slate-100">
             {calibrationAll.map((r) => (
               <div key={r.labId} className="px-6 py-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-slate-900 text-sm">{r.title}</span>
+                  <span className="font-medium text-white text-sm">{r.title}</span>
                   {r.changed ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#E9F8EE] text-[#229C62]">Adjusted</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#7AD62A]/10 text-[#7AD62A]">Adjusted</span>
                   ) : r.suggestion === "insufficient_data" ? (
                     <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">No Data</span>
                   ) : (

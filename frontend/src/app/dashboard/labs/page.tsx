@@ -112,7 +112,7 @@ export default function LabsCatalog() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((id) => (
-            <div key={id} className="angular-card border border-slate-200 p-5 space-y-3">
+            <div key={id} className="angular-card border border-white/10 p-5 space-y-3">
               <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
               <div className="h-5 w-3/4 bg-slate-200 rounded animate-pulse" />
               <div className="h-3 w-full bg-slate-200 rounded animate-pulse" />
@@ -138,7 +138,7 @@ export default function LabsCatalog() {
         style={{ backgroundColor: "#0F203A" }}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#229C62]/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center">
             <span className="text-lg">🚀</span>
           </div>
           <div>
@@ -150,20 +150,20 @@ export default function LabsCatalog() {
       </Link>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200">
+      <div className="flex items-center gap-1 border-b border-white/10">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               activeTab === tab.id
-                ? "border-[#229C62] text-[#229C62]"
-                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                ? "border-[#7AD62A] text-[#7AD62A]"
+                : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
             }`}
           >
             {tab.label}
             <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              activeTab === tab.id ? "bg-[#E9F8EE] text-[#229C62]" : "bg-slate-100 text-slate-500"
+              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-slate-100 text-slate-500"
             }`}>
               {tabCounts[tab.id]}
             </span>
@@ -173,14 +173,14 @@ export default function LabsCatalog() {
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Grid view"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Table view"
           >
             <List size={16} />
@@ -197,12 +197,12 @@ export default function LabsCatalog() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search labs..."
-            className="w-full pl-9 pr-9 py-2.5 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
+            className="w-full pl-9 pr-9 py-2.5 text-sm bg-[#0f172a] border border-white/10 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
               aria-label="Clear search"
             >
               <X size={14} />
@@ -218,7 +218,7 @@ export default function LabsCatalog() {
               className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                 difficultyFilter === d
                   ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300"
+                  : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
               }`}
             >
               {d === "ALL" ? "All levels" : d.charAt(0) + d.slice(1).toLowerCase()}
@@ -227,7 +227,7 @@ export default function LabsCatalog() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-full border border-slate-200 transition-all"
+              className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-white/5 rounded-full border border-white/10 transition-all"
             >
               Clear filters
             </button>
@@ -237,11 +237,11 @@ export default function LabsCatalog() {
 
       {/* Results */}
       {filteredLabs.length === 0 ? (
-        <div className="angular-card border border-slate-200 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
-            <Microscope size={28} className="text-[#229C62]" />
+        <div className="angular-card border border-white/10 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
+            <Microscope size={28} className="text-[#7AD62A]" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">
+          <h3 className="text-sm font-semibold text-white mb-1">
             {labs.length === 0 ? "The lab is quiet" : "No labs match your filters"}
           </h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -252,7 +252,7 @@ export default function LabsCatalog() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#229C62] rounded-lg hover:bg-[#1a8050] transition-all"
+              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#7AD62A] rounded-lg hover:bg-[#1a8050] transition-all"
             >
               Clear all filters
             </button>
@@ -274,7 +274,7 @@ export default function LabsCatalog() {
               return (
                 <div
                   key={lab.id}
-                  className="group relative angular-card border border-slate-200 overflow-hidden opacity-75"
+                  className="group relative angular-card border border-white/10 overflow-hidden opacity-75"
                   aria-label={`${lab.title} — locked, requires level ${requiredLevel}`}
                 >
                   <div className="absolute inset-0 z-20 backdrop-blur-md bg-white/80 flex flex-col items-center justify-center gap-3">
@@ -307,7 +307,7 @@ export default function LabsCatalog() {
               <Link
                 key={lab.id}
                 href={`/dashboard/labs/${lab.id}`}
-                className="group relative angular-card border border-slate-200 hover:border-slate-300 overflow-hidden transition-all duration-300 hover-lift"
+                className="group relative angular-card border border-white/10 hover:border-white/10 overflow-hidden transition-all duration-300 hover-lift"
               >
                 <div className={`h-0.5 w-full ${diff.bar} opacity-60`} />
                 <div className="p-5 space-y-3">
@@ -319,13 +319,13 @@ export default function LabsCatalog() {
                     </div>
                     {/* Status badge */}
                     {progressStatus === "COMPLETED" && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#E9F8EE] text-[#229C62]">Done</span>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
                     )}
                     {progressStatus === "IN_PROGRESS" && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">Active</span>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">Active</span>
                     )}
                   </div>
-                  <h3 className="text-sm font-medium text-slate-900 group-hover:text-slate-700 transition-colors">{lab.title}</h3>
+                  <h3 className="text-sm font-medium text-white group-hover:text-slate-200 transition-colors">{lab.title}</h3>
                   <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{lab.description}</p>
 
                   {/* Stats row */}
@@ -344,9 +344,9 @@ export default function LabsCatalog() {
                     </div>
                   )}
 
-                  <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between">
                     <span className="text-[10px] font-mono text-slate-400">{flags} OBJECTIVES</span>
-                    <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 flex items-center gap-1.5 transition-colors">
+                    <span className="text-xs font-medium text-slate-600 group-hover:text-white flex items-center gap-1.5 transition-colors">
                       LAUNCH
                       <span className="w-5 h-5 rounded-md bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center transition-all">
                         <Play size={10} fill="currentColor" />
@@ -361,7 +361,7 @@ export default function LabsCatalog() {
       ) : (
         /* Table View */
         <div className="angular-card overflow-hidden">
-          <div className="flex items-center gap-4 px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
             <span className="w-6 text-center shrink-0">#</span>
             <span className="flex-1 min-w-0">Lab</span>
             <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
@@ -380,7 +380,7 @@ export default function LabsCatalog() {
             return (
               <div key={lab.id}>
                 {isLocked ? (
-                  <div className="flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-100 opacity-50">
+                  <div className="flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-slate-100 opacity-50">
                     <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
                     <div className="flex-1 min-w-0 flex items-center gap-2">
                       <Lock size={12} className="text-slate-400 shrink-0" />
@@ -398,11 +398,11 @@ export default function LabsCatalog() {
                 ) : (
                   <Link
                     href={`/dashboard/labs/${lab.id}`}
-                    className="group flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                    className="group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-slate-100 hover:bg-white/5 transition-colors"
                   >
                     <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium text-slate-900 truncate block">{lab.title}</span>
+                      <span className="text-sm font-medium text-white truncate block">{lab.title}</span>
                     </div>
                     <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
                       <div className="flex gap-0.5">
@@ -420,13 +420,13 @@ export default function LabsCatalog() {
                     </div>
                     <div className="w-20 shrink-0 text-right">
                       {progressStatus === "COMPLETED" && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#E9F8EE] text-[#229C62]">Done</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
                       )}
                       {progressStatus === "IN_PROGRESS" && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">Active</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">Active</span>
                       )}
                       {progressStatus === "NOT_STARTED" && (
-                        <span className="text-[10px] font-medium text-[#229C62] group-hover:underline">Launch</span>
+                        <span className="text-[10px] font-medium text-[#7AD62A] group-hover:underline">Launch</span>
                       )}
                     </div>
                   </Link>

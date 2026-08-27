@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-[#0f172a]">
       <section className="bg-[#0F203A] text-white py-16 px-6 text-center">
         <h1 className="text-4xl font-bold mb-3">Privacy Policy</h1>
         <p className="text-[#7AD62A] text-sm">Last updated: August 25, 2026</p>
@@ -82,11 +82,11 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
 
-        <div className="bg-[#E9F8EE] border-l-4 border-[#229C62] p-6 rounded-r-lg">
+        <div className="bg-[#7AD62A]/10 border-l-4 border-[#7AD62A] p-6 rounded-r-lg">
           <h2 className="text-2xl font-semibold text-[#0F203A] mb-3">Contact Us</h2>
           <p>
             For questions about this policy or to exercise your data rights, contact our privacy team at{" "}
-            <a href="mailto:privacy@xpertclass.academy" className="text-[#229C62] underline font-medium">
+            <a href="mailto:privacy@xpertclass.academy" className="text-[#7AD62A] underline font-medium">
               privacy@xpertclass.academy
             </a>
             .
@@ -95,7 +95,7 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <footer className="border-t border-gray-200 py-8 text-center">
-        <Link href="/" className="text-[#229C62] hover:text-[#0F203A] font-medium transition-colors">
+        <Link href="/" className="text-[#7AD62A] hover:text-[#0F203A] font-medium transition-colors">
           Back to Home
         </Link>
       </footer>

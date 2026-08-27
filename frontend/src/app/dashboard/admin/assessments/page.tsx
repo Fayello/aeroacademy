@@ -153,14 +153,14 @@ export default function AdminAssessmentsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-[#229C62] animate-spin" />
+        <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+      <Link href="/dashboard/admin" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-200">
         <ArrowLeft size={14} /> Admin
       </Link>
       <PageHeader title="Assessments" description={`${assessments.length} assessments`} action={
@@ -171,25 +171,25 @@ export default function AdminAssessmentsPage() {
 
       <div className="space-y-3">
         {assessments.map((a) => (
-          <div key={a.id} className="angular-card bg-white overflow-hidden">
-            <div className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
+          <div key={a.id} className="angular-card bg-[#0f172a] overflow-hidden">
+            <div className="px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors">
               <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => toggleExpand(a.id)}>
                 <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                   <ClipboardCheck size={14} className="text-blue-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900">{a.title}</p>
+                  <p className="text-sm font-medium text-white">{a.title}</p>
                   <p className="text-[11px] text-slate-400">{a.questions.length} questions | {a.category}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button onClick={() => openEdit(a)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                <button onClick={() => openEdit(a)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
                   <Pencil size={14} />
                 </button>
-                <button onClick={() => setDeleteDialog({ open: true, item: a })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                <button onClick={() => setDeleteDialog({ open: true, item: a })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
                   <Trash2 size={14} />
                 </button>
-                <button onClick={() => toggleExpand(a.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+                <button onClick={() => toggleExpand(a.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-300 transition-colors">
                   {expanded.has(a.id) ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
               </div>
@@ -198,11 +198,11 @@ export default function AdminAssessmentsPage() {
               <div className="px-4 pb-4 border-t border-slate-100 pt-3 space-y-2">
                 <p className="text-xs text-slate-500">{a.description}</p>
                 {a.questions.map((q, i) => (
-                  <div key={i} className="bg-slate-50 rounded-lg p-3">
+                  <div key={i} className="bg-white/5 rounded-lg p-3">
                     <p className="text-xs font-medium text-slate-700">{i + 1}. {q.text}</p>
                     <div className="mt-1.5 grid grid-cols-2 gap-1">
                       {q.options.map((opt) => (
-                        <span key={opt.key} className={`text-[10px] px-2 py-0.5 rounded ${opt.key === q.correctAnswer ? "bg-[#E9F8EE] text-[#0F203A] font-medium" : "bg-slate-100 text-slate-500"}`}>
+                        <span key={opt.key} className={`text-[10px] px-2 py-0.5 rounded ${opt.key === q.correctAnswer ? "bg-[#7AD62A]/10 text-[#0F203A] font-medium" : "bg-slate-100 text-slate-500"}`}>
                           {opt.key}. {opt.text}
                         </span>
                       ))}
@@ -225,8 +225,8 @@ export default function AdminAssessmentsPage() {
       <AdminModal isOpen={modal.open} onClose={() => setModal({ open: false, editing: null })} title={modal.editing ? "Edit Assessment" : "Create Assessment"} size="2xl"
         footer={
           <div className="flex justify-end gap-2">
-            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#229C62] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
+            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-white/5 rounded-lg transition-colors">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
               {modal.editing ? "Save Changes" : "Create Assessment"}
             </button>
@@ -238,16 +238,16 @@ export default function AdminAssessmentsPage() {
           <AdminTextarea label="Description" required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Describe the assessment..." rows={2} />
           <AdminInput label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Web Security, Network Security" />
 
-          <div className="border border-slate-200 rounded-xl p-4 space-y-4">
+          <div className="border border-white/10 rounded-xl p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-900">Questions ({form.questions.length})</h3>
+              <h3 className="text-sm font-semibold text-white">Questions ({form.questions.length})</h3>
               <button onClick={addQuestion} className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 <Plus size={12} /> Add Question
               </button>
             </div>
 
             {form.questions.map((q, qi) => (
-              <div key={qi} className="bg-slate-50 rounded-lg p-4 space-y-3">
+              <div key={qi} className="bg-white/5 rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-slate-500">Question {qi + 1}</span>
                   {form.questions.length > 1 && (
@@ -266,7 +266,7 @@ export default function AdminAssessmentsPage() {
                         value={opt.text}
                         onChange={(e) => updateOption(qi, oi, e.target.value)}
                         placeholder={`Option ${opt.key}`}
-                        className="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                        className="flex-1 px-3 py-1.5 rounded-lg border border-white/10 text-xs bg-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
                       />
                     </div>
                   ))}

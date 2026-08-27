@@ -138,10 +138,10 @@ export default function BattlePassPage() {
   }
 
   function getPositionStyle(position: number): { bg: string; text: string; icon?: string } {
-    if (position === 1) return { bg: "bg-amber-50 border-amber-200", text: "text-amber-700", icon: "text-amber-500" };
-    if (position === 2) return { bg: "bg-slate-50 border-slate-300", text: "text-slate-600", icon: "text-slate-400" };
+    if (position === 1) return { bg: "bg-amber-500/10 border-amber-200", text: "text-amber-700", icon: "text-amber-500" };
+    if (position === 2) return { bg: "bg-white/5 border-white/10", text: "text-slate-600", icon: "text-slate-400" };
     if (position === 3) return { bg: "bg-orange-50 border-orange-200", text: "text-orange-700", icon: "text-orange-500" };
-    return { bg: "bg-white border-slate-200", text: "text-slate-700" };
+    return { bg: "bg-[#0f172a] border-white/10", text: "text-slate-700" };
   }
 
   if (loading) {
@@ -159,11 +159,11 @@ export default function BattlePassPage() {
     return (
       <div className="space-y-6">
         <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
-        <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
             <Crown size={28} className="text-purple-500" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-1">No battle pass active</h3>
+          <h3 className="text-sm font-semibold text-white mb-1">No battle pass active</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Battle passes bring tiered rewards and exclusive content. The next one is being prepared — check back soon.
           </p>
@@ -186,14 +186,14 @@ export default function BattlePassPage() {
       <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
 
       {battlePass.season && (
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
                 <Crown size={20} className="text-white" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-slate-900">{battlePass.title}</h2>
+                <h2 className="text-sm font-semibold text-white">{battlePass.title}</h2>
                 <p className="text-xs text-slate-500">{battlePass.season.name}</p>
               </div>
             </div>
@@ -223,7 +223,7 @@ export default function BattlePassPage() {
           </div>
           <div className="h-3 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#229C62] to-[#7AD62A] rounded-full transition-all duration-700 ease-out"
+              className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progress.totalTiers > 0 ? (progress.currentTier / progress.totalTiers) * 100 : 0}%` }}
             />
           </div>
@@ -283,10 +283,10 @@ export default function BattlePassPage() {
                     key={tier.tierNumber}
                     className={`relative w-44 flex-shrink-0 rounded-xl border p-4 transition-all duration-300 ${
                       isCurrent
-                        ? "bg-white border-[#229C62] shadow-lg ring-2 ring-[#229C62]/20 scale-105"
+                        ? "bg-[#0f172a] border-[#7AD62A] shadow-lg ring-2 ring-[#7AD62A]/20 scale-105"
                         : isUnlocked
-                        ? "bg-white border-[#229C62]/30"
-                        : "bg-slate-50 border-slate-200 opacity-60 hover:opacity-80"
+                        ? "bg-[#0f172a] border-[#7AD62A]/30"
+                        : "bg-white/5 border-white/10 opacity-60 hover:opacity-80"
                     } ${tier.isPremium && !isLocked ? "border-t-4 border-t-amber-400" : ""}`}
                   >
                     {tier.isPremium && (
@@ -296,16 +296,16 @@ export default function BattlePassPage() {
                     )}
 
                     <div className="flex items-center justify-between mb-3">
-                      <span className={`text-xl font-bold ${isLocked ? "text-slate-400" : "text-slate-900"}`}>
+                      <span className={`text-xl font-bold ${isLocked ? "text-slate-400" : "text-white"}`}>
                         {tier.tierNumber}
                       </span>
                       {isUnlocked && (
-                        <div className="w-7 h-7 rounded-full bg-[#229C62] flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-full bg-[#7AD62A] flex items-center justify-center">
                           <CheckCircle2 size={16} className="text-white" />
                         </div>
                       )}
                       {isCurrent && (
-                        <div className="w-7 h-7 rounded-full bg-[#229C62] flex items-center justify-center animate-pulse">
+                        <div className="w-7 h-7 rounded-full bg-[#7AD62A] flex items-center justify-center animate-pulse">
                           <Zap size={16} className="text-white" />
                         </div>
                       )}
@@ -324,17 +324,17 @@ export default function BattlePassPage() {
                       <div className="mb-3">
                         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#229C62] to-[#7AD62A] rounded-full transition-all duration-500 ease-out"
+                            className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500 ease-out"
                             style={{ width: `${xpProgress}%` }}
                           />
                         </div>
-                        <p className="text-[10px] text-[#229C62] mt-1 font-medium">{xpProgress}% complete</p>
+                        <p className="text-[10px] text-[#7AD62A] mt-1 font-medium">{xpProgress}% complete</p>
                       </div>
                     )}
 
                     {tier.rewards && (
-                      <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-slate-100" : "bg-[#E9F8EE]/50"}`}>
-                        <RewardIcon size={14} className={isLocked ? "text-slate-400" : "text-[#229C62]"} />
+                      <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-slate-100" : "bg-[#7AD62A]/10/50"}`}>
+                        <RewardIcon size={14} className={isLocked ? "text-slate-400" : "text-[#7AD62A]"} />
                         <span className={`text-[11px] font-medium ${isLocked ? "text-slate-400" : "text-slate-600"}`}>
                           {typeof tier.rewards === "string"
                             ? tier.rewards
@@ -348,7 +348,7 @@ export default function BattlePassPage() {
                     {tier.isPremium && (
                       <div className="mt-2 flex items-center gap-1">
                         <Sparkles size={10} className="text-amber-500" />
-                        <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200">
+                        <span className="text-[10px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full border border-amber-200">
                           Premium
                         </span>
                       </div>
@@ -378,11 +378,11 @@ export default function BattlePassPage() {
               description="No one has earned XP in this battle pass yet."
             />
           ) : (
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50">
+                    <tr className="border-b border-white/10 bg-white/5">
                       <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Position</th>
                       <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">User</th>
                       <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">XP</th>
@@ -396,7 +396,7 @@ export default function BattlePassPage() {
                         <tr
                           key={entry.userId}
                           className={`transition-colors ${style.bg} ${
-                            entry.position <= 3 ? "font-medium" : "hover:bg-slate-50"
+                            entry.position <= 3 ? "font-medium" : "hover:bg-white/5"
                           }`}
                         >
                           <td className="px-4 py-3">
@@ -408,7 +408,7 @@ export default function BattlePassPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-sm text-slate-900 font-medium">{entry.userId}</span>
+                            <span className="text-sm text-white font-medium">{entry.userId}</span>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <span className="text-sm text-slate-700 font-mono">{entry.totalXp.toLocaleString()}</span>
