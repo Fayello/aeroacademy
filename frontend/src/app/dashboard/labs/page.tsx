@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, Star, LayoutGrid, List, Users } from "lucide-react";
+import LabAvatar from "@/components/ui/LabAvatar";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
 import toast from "@/lib/toast";
@@ -271,6 +272,7 @@ export default function LabsCatalog() {
                   </div>
                   <div className="p-5 space-y-3">
                     <div className="flex items-start justify-between">
+                      <LabAvatar title={lab.title} id={lab.id} size={40} className="opacity-50" />
                       <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                         <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
@@ -292,6 +294,7 @@ export default function LabsCatalog() {
                 <div className={`h-0.5 w-full ${diff.bar} opacity-60`} />
                 <div className="p-5 space-y-3">
                   <div className="flex items-start justify-between">
+                    <LabAvatar title={lab.title} id={lab.id} size={40} />
                     <div className="flex items-center gap-2">
                       <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                       <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>

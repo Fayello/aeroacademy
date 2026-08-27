@@ -9,6 +9,7 @@ import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
 import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft, Home, ChevronRight, Download, FileText } from "lucide-react";
+import LabAvatar from "@/components/ui/LabAvatar";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -586,7 +587,10 @@ export default function LabWorkspace() {
                   <span className="text-xs text-slate-400">·</span>
                   <span className="text-xs text-slate-500">{getEstimatedTime(flags)}</span>
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-2">{lab.title}</h1>
+                <h1 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                  <LabAvatar title={lab.title} id={lab.id} size={44} />
+                  {lab.title}
+                </h1>
                 <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">{lab.description}</p>
               </div>
               <div className="flex items-center gap-3">
