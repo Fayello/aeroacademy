@@ -170,6 +170,9 @@ export interface LeaderboardEntry {
   division: string;
   organization: { name: string; type: string } | null;
   city: string | null;
+  country?: string | null;
+  labsSolved?: number;
+  coursesCompleted?: number;
 }
 
 export interface LeagueRegion {

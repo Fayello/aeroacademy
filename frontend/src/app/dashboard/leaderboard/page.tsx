@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboard } from "@/hooks/useDashboard";
-import { Trophy, Loader2, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network, Users } from "lucide-react";
+import { Trophy, Loader2, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network, Users, MapPin } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { fetchApi, fetchApiV2 } from "@/lib/api";
 import toast from "@/lib/toast";
@@ -33,6 +33,30 @@ const DOMAIN_ICONS: Record<string, typeof Shield> = {
 
 function romanTier(tier: number): string {
   return ["IV", "III", "II", "I"][tier - 1] || "IV";
+}
+
+const CITY_FLAGS: Record<string, string> = {
+  "yaoundé": "🇨🇲", "yaounde": "🇨🇲", "douala": "🇨🇲", "bafoussam": "🇨🇲", "bamenda": "🇨🇲",
+  "garoua": "🇨🇲", "maroua": "🇨🇲", "bertoua": "🇨🇲", "ebolowa": "🇨🇲", "kribi": "🇨🇲",
+  "limbe": "🇨🇲", "buea": "🇨🇲", "kumba": "🇨🇲", "ndjamena": "🇹🇩", "kinshasa": "🇨🇩",
+  "lagos": "🇳🇬", "abuja": "🇳🇬", "accra": "🇬🇭", "nairobi": "🇰🇪", "addis ababa": "🇪🇹",
+  "dakar": "🇸🇳", "casablanca": "🇲🇦", "tunis": "🇹🇳", "cairo": "🇪🇬", "johannesburg": "🇿🇦",
+  "cape town": "🇿🇦", "dubai": "🇦🇪", "london": "🇬🇧", "paris": "🇫🇷", "berlin": "🇩🇪",
+  "new york": "🇺🇸", "san francisco": "🇺🇸", "toronto": "🇨🇦", "montreal": "🇨🇦",
+  "tokyo": "🇯🇵", "seoul": "🇰🇷", "beijing": "🇨🇳", "shanghai": "🇨🇳", "mumbai": "🇮🇳",
+  "delhi": "🇮🇳", "bangalore": "🇮🇳", "sydney": "🇦🇺", "melbourne": "🇦🇺", "são paulo": "🇧🇷",
+  "sao paulo": "🇧🇷", "buenos aires": "🇦🇷", "mexico city": "🇲🇽", "singapore": "🇸🇬",
+  "hong kong": "🇭🇰", "istanbul": "🇹🇷", "moscow": "🇷🇺", "washington": "🇺🇸",
+};
+
+function getFlag(city: string | null): string {
+  if (!city) return "🌍";
+  return CITY_FLAGS[city.toLowerCase()] || "🌍";
+}
+
+function getCityLabel(city: string | null): string {
+  if (!city) return "—";
+  return city.charAt(0).toUpperCase() + city.slice(1);
 }
 
 export default function LeaderboardPage() {
@@ -77,7 +101,7 @@ export default function LeaderboardPage() {
         const data = await fetchApiV2<GlobalRankProfile>(`/domain-ranking/profile/${currentUserId}`);
         if (!cancelled) setGlobalProfile(data);
       } catch {
-        // silent - non-critical
+        // silent
       }
     }
     load();
@@ -168,6 +192,16 @@ export default function LeaderboardPage() {
         return true;
       });
   }, [leaderboard, filter, activeLeague, selectedCity]);
+
+  const userEntry = useMemo(() => {
+    if (!currentUserId) return null;
+    return filteredOperators.find((op) => op.id === currentUserId) || null;
+  }, [filteredOperators, currentUserId]);
+
+  const userRank = useMemo(() => {
+    if (!userEntry) return null;
+    return filteredOperators.indexOf(userEntry) + 1;
+  }, [filteredOperators, userEntry]);
 
   if (loading) {
     return (
@@ -458,35 +492,50 @@ export default function LeaderboardPage() {
         </div>
       ) : (
       <div className="space-y-3">
-        {currentUserId && currentUser && (() => {
-          const userEntry = filteredOperators.find((op) => op.id === currentUserId);
-          if (!userEntry) return null;
-          const userRank = filteredOperators.indexOf(userEntry) + 1;
-          return (
-            <div className="angular-card border-l-4 border-l-[#229C62] bg-[#E9F8EE]/50 p-4 sm:p-5 flex items-center gap-2 sm:gap-4">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold bg-[#229C62] text-white shrink-0">
-                {userRank}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-[#229C62] font-medium mb-0.5">Your Rank</p>
-                <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{userEntry.username || currentUser.username || currentUser.name || "You"}</p>
-              </div>
-              <div className="text-right shrink-0">
-                <p className="text-lg sm:text-2xl font-bold text-slate-900">{userEntry.rank || 1200}</p>
-                <p className="text-[10px] sm:text-xs text-slate-400">{userEntry.xp.toLocaleString()} XP</p>
-              </div>
+        {/* Sticky personal rank bar */}
+        {currentUserId && userEntry && userRank && (
+          <div className="angular-card border-l-4 border-l-[#229C62] bg-[#E9F8EE]/50 p-4 sm:p-5 flex items-center gap-2 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold bg-[#229C62] text-white shrink-0">
+              #{userRank}
             </div>
-          );
-        })()}
+            <span className="text-lg sm:hidden">{getFlag(userEntry.city)}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-[#229C62] font-medium mb-0.5">Your Rank</p>
+              <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{userEntry.username || currentUser?.username || currentUser?.name || "You"}</p>
+            </div>
+            <div className="hidden sm:flex items-center gap-4 text-xs text-slate-500">
+              <span className="flex items-center gap-1"><Trophy size={12} className="text-amber-400" />{userEntry.xp.toLocaleString()} XP</span>
+              <span>Lv.{userEntry.level}</span>
+              <span className="flex items-center gap-1"><CheckCircle size={10} />{userEntry.achievementsCount}</span>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="text-lg sm:text-2xl font-bold text-slate-900">{userEntry.rank || 1200}</p>
+              <p className="text-[10px] sm:text-xs text-slate-400">{userEntry.xp.toLocaleString()} XP</p>
+            </div>
+          </div>
+        )}
+
+        {/* Table header */}
+        <div className="hidden sm:grid grid-cols-[48px_40px_1fr_80px_60px_60px_80px] gap-3 px-5 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+          <span>Rank</span>
+          <span></span>
+          <span>Player</span>
+          <span className="text-right">XP</span>
+          <span className="text-center">Level</span>
+          <span className="text-center">Ach.</span>
+          <span className="text-right">Rating</span>
+        </div>
+
         {filteredOperators.length > 0 ? filteredOperators.map((op, idx) => (
           <div
             key={op.id}
-            className={`angular-card p-3 sm:p-5 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md hover-lift ${
+            className={`angular-card p-3 sm:p-4 flex items-center gap-2 sm:gap-3 transition-all hover:shadow-md hover-lift ${
               op.id === currentUserId ? "border-slate-400 bg-slate-50 shadow-md" :
               idx < 3 ? "border-slate-200 bg-slate-50" : "border-slate-200"
             }`}
           >
-            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 ${
+            {/* Rank */}
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold shrink-0 text-sm ${
               idx === 0 ? "bg-amber-100 text-amber-700" :
               idx === 1 ? "bg-slate-100 text-slate-500" :
               idx === 2 ? "bg-orange-100 text-orange-700" :
@@ -495,7 +544,11 @@ export default function LeaderboardPage() {
               {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
             </div>
 
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${
+            {/* Flag */}
+            <span className="text-base shrink-0 hidden sm:inline">{getFlag(op.city)}</span>
+
+            {/* Avatar + Info */}
+            <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
               idx === 0 ? "bg-slate-800 text-white" :
               idx === 1 ? "bg-slate-600 text-white" :
               idx === 2 ? "bg-slate-500 text-white" :
@@ -504,6 +557,7 @@ export default function LeaderboardPage() {
               {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
             </div>
 
+            {/* Name + meta */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <p className="text-sm sm:text-base font-semibold text-slate-900 truncate">{op.username || op.name}</p>
@@ -516,13 +570,22 @@ export default function LeaderboardPage() {
                   </span>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 truncate">
-                {op.organization?.name || "Independent"} \u2022 {op.city || "Unknown"}
+              <p className="text-xs text-slate-500 mt-0.5 truncate flex items-center gap-1">
+                <span className="sm:hidden">{getFlag(op.city)}</span>
+                {op.organization?.name || "Independent"} <span className="text-slate-300">·</span> {getCityLabel(op.city)}
               </p>
             </div>
 
+            {/* Metrics — desktop */}
+            <div className="hidden sm:flex items-center gap-4 text-xs text-slate-600 shrink-0">
+              <span className="w-16 text-right font-semibold text-slate-900">{op.xp.toLocaleString()}</span>
+              <span className="w-10 text-center">Lv.{op.level}</span>
+              <span className="w-10 text-center">{op.achievementsCount}</span>
+            </div>
+
+            {/* Rating */}
             <div className="text-right shrink-0">
-              <p className="text-lg sm:text-2xl font-bold text-slate-900">{op.rank || 1200}</p>
+              <p className="text-lg sm:text-xl font-bold text-slate-900">{op.rank || 1200}</p>
               <p className="text-[10px] sm:text-xs text-slate-400">{op.xp.toLocaleString()} XP</p>
             </div>
           </div>
