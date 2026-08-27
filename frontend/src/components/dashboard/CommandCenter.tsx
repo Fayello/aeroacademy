@@ -209,7 +209,7 @@ export default function CommandCenter() {
   const purpose = onboarding?.purpose || [];
   const field = onboarding?.field || [];
   const fieldCount = getFieldCount();
-  const isNewUser = !loading && xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
+  const isNewUser = !loading && userMetrics !== null && xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
 
   const primaryPurpose = purpose[0] || "other";
   const purposeTitle: Record<string, string> = {
@@ -315,7 +315,7 @@ export default function CommandCenter() {
       )}
 
       {/* ─── BEGINNER PATH CTA ─── */}
-      {!loading && xp === 0 && (
+      {!loading && userMetrics !== null && xp === 0 && (
         <Link
           href="/dashboard/starting-point"
           className="angular-card border border-dashed border-[#229C62]/30 bg-[#E9F8EE]/30 p-4 flex items-center gap-4 hover:border-[#229C62]/60 transition-all group"
