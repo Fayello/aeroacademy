@@ -11,11 +11,18 @@ import {
   Terminal,
   Target,
   ArrowRight,
-  Calendar,
   Play,
   ChevronRight,
   TrendingUp,
   Zap,
+  Pencil,
+  Award,
+  Users,
+  Building2,
+  GraduationCap,
+  Briefcase,
+  Lightbulb,
+  Sparkles,
 } from "lucide-react";
 
 interface User {
@@ -110,6 +117,17 @@ function getFocusLabel(): string {
   return "";
 }
 
+function getFieldCount(): number {
+  try {
+    const s = localStorage.getItem("onboardingSelections");
+    if (s) {
+      const parsed = JSON.parse(s);
+      return (parsed.field || []).length;
+    }
+  } catch {}
+  return 0;
+}
+
 export default function CommandCenter() {
   const [user, setUser] = useState<User | null>(() => {
     try {
@@ -189,25 +207,46 @@ export default function CommandCenter() {
   const onboarding = getOnboardingData();
   const purpose = onboarding?.purpose || [];
   const field = onboarding?.field || [];
+  const fieldCount = getFieldCount();
   const isNewUser = xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
 
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
       {/* ─── GREETING + PERSONALIZED ROLE ─── */}
-      <div className="animate-fade-in-up">
-        <p className="text-lg font-bold text-slate-900">
-          {getTimeGreeting()}, {firstName}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs text-slate-400">Your role:</span>
-          <span className="text-xs font-semibold text-[#0F203A] bg-[#E9F8EE] px-2 py-0.5 rounded">{roleLabel}</span>
-          {focusLabel && (
-            <>
-              <span className="text-xs text-slate-400">·</span>
-              <span className="text-xs font-semibold text-[#229C62]">Focused: {focusLabel}</span>
-            </>
-          )}
+      <div className="flex items-start justify-between animate-fade-in-up">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">
+            Welcome, {firstName}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Your current role is:{" "}
+            <span className="text-[#229C62] font-semibold">{roleLabel}</span>
+            {focusLabel && (
+              <>
+                , Focused on:{" "}
+                <span className="text-[#229C62] font-semibold">
+                  {focusLabel}{fieldCount > 1 ? ` +${fieldCount - 1}` : ""}
+                </span>
+              </>
+            )}
+            <button
+              onClick={() => {
+                localStorage.removeItem("onboardingComplete");
+                window.location.href = "/onboarding";
+              }}
+              className="inline-flex items-center gap-1 ml-1 text-slate-400 hover:text-[#229C62] transition-colors"
+              title="Change selections"
+            >
+              <Pencil size={12} />
+            </button>
+          </p>
         </div>
+        <Link
+          href="/dashboard/profile"
+          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium text-slate-700 transition-colors"
+        >
+          View Profile
+        </Link>
       </div>
 
       {/* ─── PERSONALIZED JOURNEY (based on onboarding purpose) ─── */}
@@ -220,11 +259,15 @@ export default function CommandCenter() {
             <div className="flex-1">
               <h3 className="text-base font-bold mb-1">
                 {purpose.includes("learn") && "Ready to start learning?"}
+                {purpose.includes("train") && "Ready to level up?"}
                 {purpose.includes("teach") && "Ready to create courses?"}
                 {purpose.includes("compete") && "Ready to compete?"}
                 {purpose.includes("certify") && "Ready to earn certifications?"}
                 {purpose.includes("team") && "Ready to train your team?"}
-                {!purpose.some((p: string) => ["learn","teach","compete","certify","team"].includes(p)) && "Welcome to XpertClass"}
+                {purpose.includes("connect") && "Ready to connect?"}
+                {purpose.includes("jobs") && "Ready to explore opportunities?"}
+                {purpose.includes("other") && "Welcome to XpertClass"}
+                {!purpose.some((p: string) => ["learn","train","teach","compete","certify","team","connect","jobs","other"].includes(p)) && "Welcome to XpertClass"}
               </h3>
               <p className="text-sm text-white/60 mb-4">
                 {field.length > 0
@@ -266,20 +309,32 @@ export default function CommandCenter() {
         </div>
       )}
 
-      {/* ─── 2 LAUNCHER CARDS ─── */}
+      {/* ─── 2 LAUNCHER CARDS (HTB-style with descriptions) ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           href="/dashboard/courses"
-          className="angular-card relative overflow-hidden p-5 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-1"
+          className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-1"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#229C62]/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+          {/* Decorative illustration area */}
+          <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-500">
+            <svg viewBox="0 0 120 120" className="w-full h-full">
+              <rect x="20" y="30" width="80" height="60" rx="8" fill="#229C62" />
+              <rect x="30" y="40" width="60" height="8" rx="2" fill="#7AD62A" />
+              <rect x="30" y="55" width="40" height="6" rx="2" fill="#7AD62A" />
+              <rect x="30" y="68" width="50" height="6" rx="2" fill="#7AD62A" />
+              <circle cx="85" cy="35" r="12" fill="#7AD62A" />
+              <path d="M81 35 L85 30 L89 35 Z" fill="#fff" />
+            </svg>
+          </div>
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-[#229C62]/20">
-              <BookOpen size={24} className="text-white" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-0.5 group-hover:text-[#229C62] transition-colors">Academy</h3>
-            <p className="text-sm text-slate-500 mb-3">Structured courses from fundamentals to advanced</p>
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#229C62]">
+            <p className="text-xs font-semibold text-[#229C62] uppercase tracking-wider mb-1">XpertClass Academy</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">
+              Learn and get certified
+            </h3>
+            <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+              Begin or advance your tech journey with structured learning paths and earn industry certifications to prove your expertise.
+            </p>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors group-hover:shadow-lg group-hover:shadow-[#229C62]/20">
               Start learning <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
@@ -287,19 +342,63 @@ export default function CommandCenter() {
 
         <Link
           href="/dashboard/labs"
-          className="angular-card relative overflow-hidden p-5 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-2"
+          className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-2"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+          {/* Decorative illustration area */}
+          <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-500">
+            <svg viewBox="0 0 120 120" className="w-full h-full">
+              <rect x="15" y="25" width="90" height="70" rx="8" fill="#7c3aed" />
+              <rect x="25" y="35" width="35" height="25" rx="4" fill="#a78bfa" />
+              <rect x="65" y="35" width="30" height="10" rx="2" fill="#a78bfa" />
+              <rect x="65" y="50" width="30" height="10" rx="2" fill="#a78bfa" />
+              <rect x="25" y="65" width="70" height="8" rx="2" fill="#a78bfa" />
+              <circle cx="90" cy="30" r="10" fill="#f472b6" />
+              <path d="M86 30 L90 25 L94 30 Z" fill="#fff" />
+            </svg>
+          </div>
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-violet-500/20">
-              <Terminal size={24} className="text-white" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-0.5 group-hover:text-[#229C62] transition-colors">Labs</h3>
-            <p className="text-sm text-slate-500 mb-3">Hands-on labs with real Docker environments</p>
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#229C62]">
+            <p className="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-1">XpertClass Labs</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">
+              Practice with hands-on Labs
+            </h3>
+            <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+              Access labs simulating real-world environments, misconfigurations, and incidents. With new content released weekly!
+            </p>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors group-hover:shadow-lg group-hover:shadow-violet-500/20">
               Start playing <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
+        </Link>
+      </div>
+
+      {/* ─── SECONDARY PRODUCT ROWS ─── */}
+      <div className="space-y-2 animate-fade-in-up animate-delay-2">
+        <Link
+          href="/dashboard/leaderboard"
+          className="angular-card bg-white flex items-center gap-4 p-4 group hover:bg-[#E9F8EE]/30 transition-colors"
+        >
+          <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+            <TrendingUp size={18} className="text-amber-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Leaderboard</p>
+            <p className="text-xs text-slate-500">Compete and climb the rankings</p>
+          </div>
+          <ChevronRight size={16} className="text-slate-300 group-hover:text-[#229C62] shrink-0" />
+        </Link>
+
+        <Link
+          href="/dashboard/teams"
+          className="angular-card bg-white flex items-center gap-4 p-4 group hover:bg-[#E9F8EE]/30 transition-colors"
+        >
+          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+            <Users size={18} className="text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Teams</p>
+            <p className="text-xs text-slate-500">Collaborate with peers and compete together</p>
+          </div>
+          <ChevronRight size={16} className="text-slate-300 group-hover:text-[#229C62] shrink-0" />
         </Link>
       </div>
 

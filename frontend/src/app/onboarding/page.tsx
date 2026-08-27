@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -26,6 +26,16 @@ import {
   Globe,
   ArrowRight,
   Check,
+  Brain,
+  Cpu,
+  BarChart3,
+  Palette,
+  Building2,
+  Users,
+  BookOpen,
+  FlaskConical,
+  Lightbulb,
+  Sparkles,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
@@ -33,7 +43,7 @@ const ONBOARDING_KEY = "onboardingComplete";
 
 const testimonials = [
   {
-    quote: "XpertClass turned me from a complete beginner into a confident SOC analyst in 6 months.",
+    quote: "XpertClass turned me from a complete beginner into a confident engineer in 6 months.",
     author: "Marie K.",
     role: "SOC Analyst at Orange Cyberdefense",
   },
@@ -52,6 +62,16 @@ const testimonials = [
     author: "Dr. Koné",
     role: "Computer Science Professor",
   },
+  {
+    quote: "The community is amazing. I found my co-founder through a team challenge on XpertClass.",
+    author: "Lucas T.",
+    role: "CTO at SecureOps",
+  },
+  {
+    quote: "I went from knowing nothing about cloud to passing the AWS Security Specialty in 4 months.",
+    author: "Fatou S.",
+    role: "Cloud Architect at Deloitte",
+  },
 ];
 
 type Selections = {
@@ -63,9 +83,11 @@ type Selections = {
   jobInterests: string[];
 };
 
+const TOTAL_STEPS = 7; // welcome + 6 questions
+
 export default function OnboardingPage() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(-1); // -1 = welcome screen
   const [selections, setSelections] = useState<Selections>({
     purpose: [],
     field: [],
@@ -75,7 +97,6 @@ export default function OnboardingPage() {
     jobInterests: [],
   });
   const [loading, setLoading] = useState(false);
-  const totalSteps = 6;
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -104,6 +125,7 @@ export default function OnboardingPage() {
       case 3: return selections.experience !== "";
       case 4: return selections.skills.length > 0;
       case 5: return selections.jobInterests.length > 0;
+      case 6: return true;
       default: return true;
     }
   };
@@ -121,9 +143,7 @@ export default function OnboardingPage() {
 
       await fetchApi("/auth/profile", {
         method: "PATCH",
-        body: JSON.stringify({
-          userExperience,
-        }),
+        body: JSON.stringify({ userExperience }),
       });
 
       localStorage.setItem(ONBOARDING_KEY, "true");
@@ -143,11 +163,40 @@ export default function OnboardingPage() {
     router.push("/dashboard");
   };
 
-  const currentTestimonial = testimonials[step % testimonials.length];
+  const userName = useMemo(() => {
+    try {
+      const s = localStorage.getItem("user");
+      if (s) {
+        const u = JSON.parse(s);
+        return u.name?.split(" ")[0] || u.email?.split("@")[0] || "";
+      }
+    } catch {}
+    return "";
+  }, []);
 
-  const progressPercent = ((step + 1) / totalSteps) * 100;
+  const currentTestimonial = testimonials[(step >= 0 ? step : 0) % testimonials.length];
+  const wizardStep = step >= 0 ? step : 0;
+  const completedSteps = Math.max(0, step + 1);
+  const progressPercent = (completedSteps / 6) * 100;
   const circumference = 2 * Math.PI * 44;
   const dashOffset = circumference - (progressPercent / 100) * circumference;
+
+  const selectedFieldName = useMemo(() => {
+    if (selections.field.length === 0) return "";
+    const labels: Record<string, string> = {
+      cybersecurity: "Cybersecurity",
+      software: "Software Engineering",
+      data: "Data Science & Analytics",
+      cloud: "Cloud Computing",
+      ai: "AI & Machine Learning",
+      devops: "DevOps & Infrastructure",
+      networking: "Networking & Systems",
+      web: "Web & Mobile Development",
+      design: "UX/UI Design",
+      other: "Technology",
+    };
+    return labels[selections.field[0]] || selections.field[0];
+  }, [selections.field]);
 
   return (
     <div className="min-h-screen bg-[#0a1628] flex">
@@ -165,23 +214,51 @@ export default function OnboardingPage() {
             onClick={handleSkip}
             className="text-sm text-white/50 hover:text-white/80 transition-colors"
           >
-            Skip for now
+            Skip onboarding
           </button>
         </div>
 
         {/* Step content */}
         <div className="flex-1 flex items-center justify-center px-6 lg:px-10 pb-8">
           <div className="w-full max-w-2xl animate-fade-in-up">
+
+            {/* ─── WELCOME SCREEN (step -1) ─── */}
+            {step === -1 && (
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-2xl bg-[#229C62]/10 flex items-center justify-center mx-auto mb-6">
+                  <Sparkles size={36} className="text-[#229C62]" />
+                </div>
+                <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+                  Welcome{userName ? `, ${userName}` : ""}
+                </h1>
+                <p className="text-base text-white/50 mb-8 max-w-md mx-auto">
+                  Let&apos;s personalize your learning experience. It only takes a minute.
+                </p>
+                <button
+                  onClick={() => setStep(0)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
+                >
+                  Get Started
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            )}
+
+            {/* ─── STEP 0: PURPOSE ─── */}
             {step === 0 && (
               <StepContent
                 title="What brings you to XpertClass?"
                 subtitle="Select all that apply. We'll tailor your experience."
                 options={[
-                  { id: "learn", label: "Learn cybersecurity skills", icon: GraduationCap, description: "Hands-on labs and courses to build real skills" },
-                  { id: "teach", label: "Teach or mentor others", icon: Briefcase, description: "Create courses, manage students, build curricula" },
-                  { id: "certify", label: "Earn certifications", icon: Award, description: "Industry-recognized credentials for your career" },
-                  { id: "compete", label: "Compete and climb rankings", icon: Target, description: "Leaderboards, challenges, and CTF events" },
-                  { id: "team", label: "Train my team", icon: Users, description: "Enterprise training with progress tracking" },
+                  { id: "learn", label: "Start learning technology skills", icon: GraduationCap, description: "Hands-on labs and courses to build real skills" },
+                  { id: "train", label: "Train and improve my skills", icon: Target, description: "Practice with real-world scenarios and challenges" },
+                  { id: "certify", label: "Earn industry-recognized certifications", icon: Award, description: "Credentials that prove your expertise to employers" },
+                  { id: "connect", label: "Connect with tech professionals", icon: Users, description: "Join a community of learners and experts" },
+                  { id: "jobs", label: "Explore job opportunities", icon: Briefcase, description: "Get discovered by top tech companies" },
+                  { id: "compete", label: "Challenge myself in competitions", icon: Zap, description: "Leaderboards, CTFs, and team challenges" },
+                  { id: "teach", label: "Teach or mentor others", icon: BookOpen, description: "Create courses, manage students, build curricula" },
+                  { id: "team", label: "Train my team", icon: Building2, description: "Enterprise training with progress tracking" },
+                  { id: "other", label: "Something else", icon: Lightbulb, description: "Just exploring — not sure yet" },
                 ]}
                 selected={selections.purpose}
                 onToggle={(id) => toggleMulti("purpose", id)}
@@ -189,17 +266,22 @@ export default function OnboardingPage() {
               />
             )}
 
+            {/* ─── STEP 1: FIELD ─── */}
             {step === 1 && (
               <StepContent
-                title="What field interests you?"
-                subtitle="Choose the domains you want to explore."
+                title="Which field do you work or study in?"
+                subtitle="Select one or more options."
                 options={[
                   { id: "cybersecurity", label: "Cybersecurity", icon: Shield, description: "Offensive & defensive security operations" },
-                  { id: "cloud", label: "Cloud Security", icon: Cloud, description: "AWS, Azure, GCP security configurations" },
-                  { id: "devops", label: "DevSecOps", icon: Terminal, description: "CI/CD pipelines, container security, IaC" },
-                  { id: "networking", label: "Network Security", icon: Network, description: "Firewalls, IDS/IPS, traffic analysis" },
-                  { id: "forensics", label: "Digital Forensics", icon: Eye, description: "Incident response, malware analysis,取证" },
-                  { id: "web", label: "Web Application Security", icon: Globe, description: "OWASP Top 10, API security, app pentesting" },
+                  { id: "software", label: "Software Engineering", icon: Code, description: "Full-stack, backend, mobile, and systems development" },
+                  { id: "data", label: "Data Science & Analytics", icon: BarChart3, description: "Data engineering, ML pipelines, business intelligence" },
+                  { id: "cloud", label: "Cloud Computing", icon: Cloud, description: "AWS, Azure, GCP — architecture and operations" },
+                  { id: "ai", label: "AI & Machine Learning", icon: Brain, description: "Deep learning, NLP, computer vision, LLMs" },
+                  { id: "devops", label: "DevOps & Infrastructure", icon: Terminal, description: "CI/CD, containers, IaC, platform engineering" },
+                  { id: "networking", label: "Networking & Systems", icon: Network, description: "Network engineering, sysadmin, infrastructure" },
+                  { id: "web", label: "Web & Mobile Development", icon: Globe, description: "Frontend, backend, React, mobile apps" },
+                  { id: "design", label: "UX/UI Design", icon: Palette, description: "Product design, user research, prototyping" },
+                  { id: "other", label: "Other Technology Field", icon: Cpu, description: "Hardware, IoT, blockchain, or something else" },
                 ]}
                 selected={selections.field}
                 onToggle={(id) => toggleMulti("field", id)}
@@ -207,6 +289,7 @@ export default function OnboardingPage() {
               />
             )}
 
+            {/* ─── STEP 2: ROLE ─── */}
             {step === 2 && (
               <StepContent
                 title="Which best describes you?"
@@ -223,15 +306,21 @@ export default function OnboardingPage() {
               />
             )}
 
+            {/* ─── STEP 3: EXPERIENCE (now field-specific) ─── */}
             {step === 3 && (
               <StepContent
-                title="What's your experience level?"
-                subtitle="Be honest — we'll adjust difficulty recommendations."
+                title={
+                  <>
+                    How many years of experience do you have in{" "}
+                    <span className="text-[#229C62]">{selectedFieldName || "your field"}</span>?
+                  </>
+                }
+                subtitle="Select one option"
                 options={[
-                  { id: "Beginner", label: "Beginner", icon: Rocket, description: "New to cybersecurity — starting from scratch" },
-                  { id: "Intermediate", label: "Intermediate", icon: Zap, description: "Some experience — completed basic courses" },
-                  { id: "Advanced", label: "Advanced", icon: Target, description: "Solid foundation — comfortable with tools" },
-                  { id: "Expert", label: "Expert", icon: Award, description: "Experienced professional — looking for challenges" },
+                  { id: "None", label: "None / 0 years (Entry Level)", icon: Rocket, description: "Just getting started — brand new to this" },
+                  { id: "1-2", label: "1-2 years (Junior Level)", icon: Zap, description: "Some experience — completed courses or projects" },
+                  { id: "3-5", label: "3-5 years (Mid Level)", icon: Target, description: "Solid foundation — comfortable with core tools" },
+                  { id: "5+", label: "5+ years (Senior/Architect Level)", icon: Award, description: "Experienced professional — looking for advanced challenges" },
                 ]}
                 selected={selections.experience ? [selections.experience] : []}
                 onToggle={(id) => setSingle("experience", id)}
@@ -239,6 +328,7 @@ export default function OnboardingPage() {
               />
             )}
 
+            {/* ─── STEP 4: SKILLS ─── */}
             {step === 4 && (
               <StepContent
                 title="What skills do you want to develop?"
@@ -247,8 +337,12 @@ export default function OnboardingPage() {
                   { id: "pentesting", label: "Penetration Testing", icon: Bug, description: "Ethical hacking, exploitation, post-exploitation" },
                   { id: "defensive", label: "Defensive Security", icon: Lock, description: "SOC operations, SIEM, threat detection" },
                   { id: "cloud-sec", label: "Cloud Security", icon: Cloud, description: "IAM, networking, storage security in cloud" },
+                  { id: "fullstack", label: "Full-Stack Development", icon: Code, description: "React, Node.js, databases, API design" },
+                  { id: "data-eng", label: "Data Engineering", icon: Database, description: "Pipelines, ETL, data warehousing" },
+                  { id: "ml-ops", label: "MLOps & AI Engineering", icon: Brain, description: "Model deployment, monitoring, infrastructure" },
+                  { id: "containers", label: "Containers & Kubernetes", icon: Server, description: "Docker, K8s, orchestration, microservices" },
+                  { id: "cicd", label: "CI/CD & Automation", icon: Terminal, description: "GitHub Actions, Jenkins, pipeline design" },
                   { id: "crypto", label: "Cryptography", icon: Database, description: "Encryption, hashing, PKI, certificates" },
-                  { id: "scripting", label: "Security Scripting", icon: Code, description: "Python, Bash, PowerShell for security" },
                   { id: "forensics-skill", label: "Forensics & IR", icon: Eye, description: "Incident response, log analysis,取证" },
                 ]}
                 selected={selections.skills}
@@ -257,49 +351,70 @@ export default function OnboardingPage() {
               />
             )}
 
+            {/* ─── STEP 5: JOB INTERESTS ─── */}
             {step === 5 && (
               <StepContent
-                title="Any specific career interests?"
-                subtitle="We'll surface relevant courses and certification paths."
+                title="Are you open to job opportunities?"
+                subtitle="Select one preference."
                 options={[
-                  { id: "soc", label: "SOC Analyst", icon: Shield, description: "Monitor, detect, and respond to threats" },
-                  { id: "pentester", label: "Penetration Tester", icon: Bug, description: "Find and exploit vulnerabilities" },
-                  { id: "cloud-eng", label: "Cloud Security Engineer", icon: Cloud, description: "Secure cloud infrastructure" },
-                  { id: "devsecops", label: "DevSecOps Engineer", icon: Terminal, description: "Integrate security into CI/CD" },
-                  { id: "forensics-eng", label: "Digital Forensics Analyst", icon: Eye, description: "Investigate security incidents" },
-                  { id: "security-arch", label: "Security Architect", icon: Server, description: "Design secure systems and networks" },
+                  { id: "yes", label: "Yes, I'm open to exploring new job opportunities", icon: Briefcase, description: "Recruiters can contact you. You'll be in the talent pool." },
+                  { id: "no", label: "No, I'm not open to new job opportunities", icon: Lock, description: "Focus on learning without recruitment outreach" },
                 ]}
                 selected={selections.jobInterests}
-                onToggle={(id) => toggleMulti("jobInterests", id)}
-                multi
+                onToggle={(id) => {
+                  setSelections((prev) => ({ ...prev, jobInterests: [id] }));
+                }}
+                multi={false}
               />
+            )}
+
+            {/* ─── STEP 6: FINISH ─── */}
+            {step === 6 && (
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-6">
+                  <Sparkles size={36} className="text-[#7AD62A]" />
+                </div>
+                <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+                  You&apos;re all set!
+                </h1>
+                <p className="text-base text-white/50 mb-8 max-w-md mx-auto">
+                  Your learning dashboard is ready. We&apos;ve personalized your experience based on your selections.
+                </p>
+                <button
+                  onClick={handleFinish}
+                  disabled={loading}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] disabled:opacity-40 text-[#0F203A] text-sm font-bold transition-colors"
+                >
+                  {loading ? "Saving..." : "Enter Dashboard"}
+                  <ArrowRight size={16} />
+                </button>
+              </div>
             )}
           </div>
         </div>
 
         {/* Bottom navigation */}
-        <div className="flex items-center justify-between px-6 lg:px-10 py-5 border-t border-white/5">
-          <button
-            onClick={() => step > 0 && setStep(step - 1)}
-            disabled={step === 0}
-            className="flex items-center gap-2 text-sm text-white/50 hover:text-white/80 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft size={16} />
-            Back
-          </button>
+        {step >= 0 && step < 6 && (
+          <div className="flex items-center justify-between px-6 lg:px-10 py-5 border-t border-white/5">
+            <button
+              onClick={() => step > 0 ? setStep(step - 1) : setStep(-1)}
+              className="flex items-center gap-2 text-sm text-white/50 hover:text-white/80 transition-colors"
+            >
+              <ChevronLeft size={16} />
+              Back
+            </button>
 
-          <div className="flex items-center gap-2">
-            {Array.from({ length: totalSteps }).map((_, i) => (
-              <div
-                key={i}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === step ? "w-8 bg-[#229C62]" : i < step ? "w-3 bg-[#229C62]/60" : "w-3 bg-white/10"
-                }`}
-              />
-            ))}
-          </div>
+            <div className="flex items-center gap-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === step ? "w-8 bg-[#229C62]" : i < step ? "w-3 bg-[#229C62]/60" : "w-3 bg-white/10"
+                  }`}
+                />
+              ))}
+            </div>
 
-          {step < totalSteps - 1 ? (
             <button
               onClick={() => canNext() && setStep(step + 1)}
               disabled={!canNext()}
@@ -308,34 +423,44 @@ export default function OnboardingPage() {
               Continue
               <ChevronRight size={16} />
             </button>
-          ) : (
-            <button
-              onClick={handleFinish}
-              disabled={!canNext() || loading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] disabled:opacity-40 disabled:cursor-not-allowed text-[#0F203A] text-sm font-bold transition-colors"
-            >
-              {loading ? "Saving..." : "Get Started"}
-              <ArrowRight size={16} />
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Right — Progress & Testimonial sidebar */}
-      <div className="hidden xl:flex w-80 bg-[#0d1d35] border-l border-white/5 flex-col items-center justify-center px-8 py-10 gap-10">
+      {/* Right — Sidebar: Incentive + Progress + Testimonial */}
+      <div className="hidden xl:flex w-80 bg-[#0d1d35] border-l border-white/5 flex-col px-8 py-10 gap-8">
+        {/* Incentive card */}
+        <div className="bg-white/[0.04] border border-white/8 rounded-xl p-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-3">
+            <FlaskConical size={24} className="text-[#7AD62A]" />
+          </div>
+          <h3 className="text-base font-bold text-white mb-2">Unlock a free course!</h3>
+          <p className="text-xs text-white/50 leading-relaxed mb-4">
+            Complete onboarding to unlock access to introductory courses and get a head start on your journey.
+          </p>
+          <div className="flex items-center gap-2 justify-center bg-white/[0.04] rounded-lg px-3 py-2">
+            <BookOpen size={14} className="text-[#7AD62A]" />
+            <span className="text-xs font-semibold text-white">
+              {completedSteps}/6 steps completed
+            </span>
+          </div>
+        </div>
+
         {/* Progress circle */}
-        <div className="relative">
-          <svg width="108" height="108" viewBox="0 0 108 108">
-            <circle cx="54" cy="54" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-            <circle
-              cx="54" cy="54" r="44" fill="none" stroke="#229C62" strokeWidth="6"
-              strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={dashOffset}
-              transform="rotate(-90 54 54)" className="transition-all duration-500"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold text-white">{step + 1}</span>
-            <span className="text-xs text-white/40">/ {totalSteps}</span>
+        <div className="flex justify-center">
+          <div className="relative">
+            <svg width="108" height="108" viewBox="0 0 108 108">
+              <circle cx="54" cy="54" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+              <circle
+                cx="54" cy="54" r="44" fill="none" stroke="#229C62" strokeWidth="6"
+                strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={dashOffset}
+                transform="rotate(-90 54 54)" className="transition-all duration-500"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-bold text-white">{completedSteps}</span>
+              <span className="text-xs text-white/40">/ 6</span>
+            </div>
           </div>
         </div>
 
@@ -362,7 +487,7 @@ function StepContent({
   onToggle,
   multi,
 }: {
-  title: string;
+  title: React.ReactNode;
   subtitle: string;
   options: { id: string; label: string; icon: any; description: string }[];
   selected: string[];
@@ -415,16 +540,5 @@ function StepContent({
         })}
       </div>
     </div>
-  );
-}
-
-function Users({ size, className }: { size: number; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
   );
 }
