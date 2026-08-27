@@ -18,13 +18,13 @@ interface StartingLab {
 }
 
 const CURATED_BEGINNER_LABS = [
-  "Start your Hacking Journey",
-  "Meow",
-  "Fawn",
-  "Dancing",
-  "Redpanda",
-  "Calculator",
-  "Sequel",
+  "First Steps in Linux",
+  "Network Basics Lab",
+  "Web Fundamentals",
+  "Database Essentials",
+  "Command Line Basics",
+  "Intro to Cybersecurity",
+  "Cloud Computing 101",
 ];
 
 function getDifficultyInfo(d: number) {
@@ -107,7 +107,7 @@ export default function StartingPointPage() {
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <PageHeader title="Starting Point" description="Your beginner journey" />
+        <PageHeader title="Your Learning Path" description="Building your skills step by step" />
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="angular-card bg-white p-6 animate-pulse">
@@ -128,14 +128,14 @@ export default function StartingPointPage() {
   return (
     <div className="p-6 space-y-6">
       <PageHeader
-        title="Starting Point"
-        description="A curated path of beginner-friendly labs to build your foundation"
+        title="Your Learning Path"
+        description="Follow this guided sequence of beginner labs to build your skills step by step"
         action={
           <Link
             href="/dashboard/labs"
             className="text-sm text-slate-500 hover:text-[#229C62] transition-colors"
           >
-            View all labs →
+            Browse all labs →
           </Link>
         }
       />
@@ -244,9 +244,9 @@ export default function StartingPointPage() {
       {labs.length > 0 && completedCount === labs.length && (
         <div className="angular-card bg-[#E9F8EE] border border-[#229C62]/20 p-6 text-center">
           <Star size={32} className="mx-auto mb-3 text-[#229C62] fill-[#229C62]" />
-          <h3 className="text-lg font-bold text-[#0F203A] mb-1">Journey Complete!</h3>
+          <h3 className="text-lg font-bold text-[#0F203A] mb-1">Path Complete!</h3>
           <p className="text-sm text-slate-600 mb-4">
-            You&apos;ve conquered the Starting Point. Ready for harder challenges?
+            You&apos;ve completed the beginner path. Ready for more advanced challenges?
           </p>
           <Link
             href="/dashboard/labs"

@@ -131,7 +131,7 @@ export default function LabsCatalog() {
         description={`${labs.length} lab${labs.length !== 1 ? "s" : ""} available`}
       />
 
-      {/* Starting Point CTA */}
+      {/* Beginner Path CTA */}
       <Link
         href="/dashboard/starting-point"
         className="angular-card bg-[#0F203A] text-white p-4 flex items-center justify-between hover:bg-[#1a3a5c] transition-colors group"
@@ -141,11 +141,11 @@ export default function LabsCatalog() {
             <span className="text-lg">🚀</span>
           </div>
           <div>
-            <h3 className="text-sm font-semibold group-hover:text-[#7AD62A] transition-colors">New to hacking?</h3>
-            <p className="text-xs text-white/60">Follow our curated beginner path — 7 labs, step by step</p>
+            <h3 className="text-sm font-semibold group-hover:text-[#7AD62A] transition-colors">Just getting started?</h3>
+            <p className="text-xs text-white/60">Follow our guided beginner path — build your skills step by step</p>
           </div>
         </div>
-        <span className="text-xs text-white/40 group-hover:text-[#7AD62A] transition-colors">Start →</span>
+        <span className="text-xs text-white/40 group-hover:text-[#7AD62A] transition-colors">Begin →</span>
       </Link>
 
       {/* Tabs */}

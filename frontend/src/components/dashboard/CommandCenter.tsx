@@ -310,7 +310,7 @@ export default function CommandCenter() {
         </div>
       )}
 
-      {/* ─── DON'T KNOW WHERE TO START? ─── */}
+      {/* ─── BEGINNER PATH CTA ─── */}
       {xp === 0 && (
         <Link
           href="/dashboard/starting-point"
@@ -320,10 +320,10 @@ export default function CommandCenter() {
             <Rocket size={18} className="text-[#229C62]" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Don&apos;t know where to start?</h3>
-            <p className="text-xs text-slate-500">Follow our curated beginner path — 7 labs, step by step</p>
+            <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Not sure where to begin?</h3>
+            <p className="text-xs text-slate-500">Try our guided beginner path — labs ordered by difficulty</p>
           </div>
-          <span className="text-xs text-[#229C62] font-medium shrink-0">Start →</span>
+          <span className="text-xs text-[#229C62] font-medium shrink-0">Begin →</span>
         </Link>
       )}
 
