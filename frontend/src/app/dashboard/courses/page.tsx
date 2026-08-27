@@ -73,7 +73,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <span className="flex items-center gap-1 text-xs">
       <Star size={12} className="text-amber-400 fill-amber-400" />
-      <span className="font-medium text-slate-700">{display > 0 ? display.toFixed(1) : "–"}</span>
+      <span className="font-medium text-slate-300">{display > 0 ? display.toFixed(1) : "–"}</span>
     </span>
   );
 }
@@ -129,8 +129,8 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
             className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-            <GraduationCap size={40} className="text-slate-300 group-hover:text-slate-400 transition-colors" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#1a2744]">
+            <GraduationCap size={40} className="text-slate-600 group-hover:text-slate-500 transition-colors" />
           </div>
         )}
 
@@ -141,7 +141,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
               {categoryStyle.label}
             </span>
             {index < 2 && (
-              <span className="text-[10px] font-semibold px-2 py-1 bg-amber-100 text-amber-700 border border-amber-200"
+              <span className="text-[10px] font-semibold px-2 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20"
                 style={{ clipPath: "polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%)" }}>
                 Staff Pick
               </span>
@@ -149,19 +149,19 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
           </div>
           <button
             onClick={(e) => onToggleFavorite(course.id, e)}
-            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm border border-white/10 hover:bg-[#0f172a] transition-colors"
+            className="p-1.5 rounded-lg bg-[#0f172a]/90 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
             aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
           </button>
           {isLocked && (
-            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-white/90 text-slate-600 border border-white/10 backdrop-blur-sm">
+            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-[#0f172a]/90 text-slate-400 border border-white/10 backdrop-blur-sm">
               <Lock size={10} />
               Lv.{gate.requiredLevel}
             </span>
           )}
         </div>
-        <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[#0f172a] to-transparent" />
       </div>
 
       {/* Body */}
@@ -182,7 +182,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
           </span>
           <div className="flex gap-0.5">
             {[1, 2, 3, 4, 5].map((dot) => (
-              <div key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= difficulty.dots ? "bg-slate-800" : "bg-slate-300"}`} />
+              <div key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= difficulty.dots ? "bg-[#7AD62A]" : "bg-white/10"}`} />
             ))}
           </div>
         </div>
@@ -212,7 +212,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
         </div>
 
         {/* Action */}
-        <div className={`pt-2 border-t flex items-center justify-between text-sm font-medium ${isLocked ? "border-white/10 text-slate-400" : "border-white/10 text-slate-600 group-hover:text-white"}`}>
+        <div className={`pt-2 border-t flex items-center justify-between text-sm font-medium ${isLocked ? "border-white/10 text-slate-400" : "border-white/10 text-slate-400 group-hover:text-white"}`}>
           <span>{isLocked ? "Locked" : isEnrolled ? "Resume" : "Begin training"}</span>
           {!isLocked && <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />}
         </div>
@@ -251,7 +251,7 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
   onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
   const inner = (
-    <div className={`group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-slate-100 hover:bg-white/5 transition-colors ${isLocked ? "opacity-50" : ""}`}>
+    <div className={`group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 hover:bg-white/5 transition-colors ${isLocked ? "opacity-50" : ""}`}>
       {/* Rank */}
       <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
 
@@ -262,7 +262,7 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
             {course.title}
           </span>
           {index < 2 && (
-            <span className="text-[9px] font-semibold px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded shrink-0">
+            <span className="text-[9px] font-semibold px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded shrink-0">
               Staff Pick
             </span>
           )}
@@ -275,7 +275,7 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
       <div className="hidden sm:flex items-center gap-1.5 w-28 shrink-0">
         <div className="flex gap-0.5">
           {[1, 2, 3, 4, 5].map((dot) => (
-            <div key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= difficulty.dots ? "bg-slate-800" : "bg-slate-300"}`} />
+            <div key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= difficulty.dots ? "bg-[#7AD62A]" : "bg-white/10"}`} />
           ))}
         </div>
         <span className="text-[10px] text-slate-500">{difficulty.label}</span>
@@ -462,7 +462,7 @@ export default function CoursesPage() {
           >
             {tab.label}
             <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-slate-100 text-slate-500"
+              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
             }`}>
               {tabCounts[tab.id]}
             </span>
@@ -472,14 +472,14 @@ export default function CoursesPage() {
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Grid view"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Table view"
           >
             <List size={16} />
@@ -505,8 +505,8 @@ export default function CoursesPage() {
             onClick={() => setSelectedCategory(null)}
             className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
               !selectedCategory
-                ? "bg-slate-800 text-white border-slate-800"
-                : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
+                ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
+                : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
             }`}
           >
             All
@@ -520,7 +520,7 @@ export default function CoursesPage() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                   selectedCategory === cat
                     ? `${style.bg} ${style.color}`
-                    : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
+                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
                 }`}
               >
                 {style.label}
@@ -534,9 +534,9 @@ export default function CoursesPage() {
             <button
               onClick={() => setSelectedDifficulty(null)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                !selectedDifficulty
-                  ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
+                  !selectedDifficulty
+                    ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
+                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
               }`}
             >
               All levels
@@ -546,9 +546,9 @@ export default function CoursesPage() {
                 key={key}
                 onClick={() => setSelectedDifficulty(selectedDifficulty === d.dots ? null : d.dots)}
                 className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                  selectedDifficulty === d.dots
-                    ? "bg-slate-800 text-white border-slate-800"
-                    : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
+                    selectedDifficulty === d.dots
+                    ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
+                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
                 }`}
               >
                 {d.label}
