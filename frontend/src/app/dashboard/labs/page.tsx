@@ -131,6 +131,23 @@ export default function LabsCatalog() {
         description={`${labs.length} lab${labs.length !== 1 ? "s" : ""} available`}
       />
 
+      {/* Starting Point CTA */}
+      <Link
+        href="/dashboard/starting-point"
+        className="angular-card bg-[#0F203A] text-white p-4 flex items-center justify-between hover:bg-[#1a3a5c] transition-colors group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#229C62]/20 flex items-center justify-center">
+            <span className="text-lg">🚀</span>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold group-hover:text-[#7AD62A] transition-colors">New to hacking?</h3>
+            <p className="text-xs text-white/60">Follow our curated beginner path — 7 labs, step by step</p>
+          </div>
+        </div>
+        <span className="text-xs text-white/40 group-hover:text-[#7AD62A] transition-colors">Start →</span>
+      </Link>
+
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-slate-200">
         {TABS.map((tab) => (
