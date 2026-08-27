@@ -226,11 +226,9 @@ export const auth = {
     fetchApi('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data: { email: string; password: string }) =>
     fetchApi('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
-  verifyEmail: (email: string, code: string) =>
-    fetchApi('/auth/verify-email', { method: 'POST', body: JSON.stringify({ email, code }) }),
   verifyEmailByToken: (token: string) =>
     fetchApi('/auth/verify-email', { method: 'POST', body: JSON.stringify({ token }) }),
-  resendOtp: (email: string) =>
+  resendVerification: (email: string) =>
     fetchApi('/auth/resend-otp', { method: 'POST', body: JSON.stringify({ email }) }),
   forgotPassword: (email: string) =>
     fetchApi('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),

@@ -200,14 +200,10 @@ export class AuthService {
       },
     });
 
-    const code = await this.otpService.create(email, 'email_verification');
-    if (code) {
-      this.emailService.sendOtpVerification(email, name || null, code).catch(() => {});
-    }
     this.emailService.sendVerificationEmail(email, name || null, verificationToken).catch(() => {});
 
     return {
-      message: 'Account created. Please check your email for a verification code.',
+      message: 'Account created. Please check your email for a verification link.',
       email,
     };
   }
@@ -252,18 +248,22 @@ export class AuthService {
   async resendOtp(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return { message: 'If an account exists, a verification code has been sent.' };
+      return { message: 'If an account exists, a verification link has been sent.' };
     }
     if (user.emailVerified) {
       return { message: 'Email already verified.' };
     }
 
-    const code = await this.otpService.create(email, 'email_verification');
-    if (code) {
-      this.emailService.sendOtpVerification(email, user.name, code).catch(() => {});
+    const verificationToken = user.verificationToken || crypto.randomBytes(32).toString('hex');
+    if (!user.verificationToken) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { verificationToken },
+      });
     }
+    this.emailService.sendVerificationEmail(email, user.name, verificationToken).catch(() => {});
 
-    return { message: 'If an account exists, a verification code has been sent.' };
+    return { message: 'If an account exists, a verification link has been sent.' };
   }
 
   async validateUser(email: string, pass: string) {

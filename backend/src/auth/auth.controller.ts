@@ -128,20 +128,13 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Audit('AUTH_VERIFY_EMAIL')
   async verifyEmail(
-    @Body('email') email: string,
-    @Body('code') code: string,
     @Body('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (token) {
-      const result = await this.authService.verifyEmailByToken(token);
-      this.setAuthCookies(res, result.access_token, result.refresh_token);
-      return result;
+    if (!token) {
+      throw new UnauthorizedException('Verification token is required');
     }
-    if (!email || !code) {
-      throw new UnauthorizedException('Email and verification code are required');
-    }
-    const result = await this.authService.verifyEmail(email, code);
+    const result = await this.authService.verifyEmailByToken(token);
     this.setAuthCookies(res, result.access_token, result.refresh_token);
     return result;
   }

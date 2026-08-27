@@ -130,11 +130,11 @@ export default function LoginPage() {
                   <p className="text-xs text-amber-600 mt-1">Please verify <span className="font-medium">{needsVerification}</span> before signing in.</p>
                   <div className="flex gap-2 mt-2">
                     <Link href={`/verify-email?email=${encodeURIComponent(needsVerification)}`} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
-                      Enter code
+                      Check email
                     </Link>
                     <span className="text-amber-300">|</span>
-                    <button type="button" onClick={async () => { await auth.resendOtp(needsVerification); toast.success("Code resent!"); }} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
-                      Resend code
+                    <button type="button" onClick={async () => { await auth.resendVerification(needsVerification); toast.success("Verification link resent!"); }} className="text-xs font-medium text-amber-700 hover:text-amber-800 underline">
+                      Resend link
                     </button>
                   </div>
                 </div>

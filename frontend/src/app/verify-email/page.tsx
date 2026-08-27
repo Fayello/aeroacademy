@@ -1,111 +1,32 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
-import { CheckCircle2, Loader2, ArrowLeft, Mail } from "lucide-react";
+import { Loader2, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
 
-function VerifyEmailForm() {
-  const router = useRouter();
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
 
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    inputRefs.current[0]?.focus();
-  }, []);
-
-  const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
-    const newCode = [...code];
-    newCode[index] = value.slice(-1);
-    setCode(newCode);
-
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (pasted) {
-      const newCode = pasted.split("").concat(Array(6 - pasted.length).fill(""));
-      setCode(newCode);
-      inputRefs.current[Math.min(pasted.length, 5)]?.focus();
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const fullCode = code.join("");
-    if (fullCode.length !== 6) {
-      toast.error("Please enter the complete 6-digit code");
-      return;
-    }
-    if (!email) {
-      toast.error("Email not found. Please register again.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await auth.verifyEmail(email, fullCode);
-      localStorage.setItem("token", res.access_token);
-      localStorage.setItem("refresh_token", res.refresh_token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      setSuccess(true);
-      toast.success("Email verified! Welcome to XpertClass.");
-      setTimeout(() => router.push("/dashboard"), 1500);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Invalid or expired code";
-      toast.error(msg);
-      setCode(["", "", "", "", "", ""]);
-      inputRefs.current[0]?.focus();
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [resent, setResent] = useState(false);
 
   const handleResend = async () => {
     if (!email) return;
     setResending(true);
     try {
-      await auth.resendOtp(email);
-      toast.success("New verification code sent!");
+      await auth.resendVerification(email);
+      setResent(true);
+      toast.success("New verification link sent!");
     } catch {
-      toast.error("Failed to resend code");
+      toast.error("Failed to resend verification link");
     } finally {
       setResending(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="text-emerald-600" size={32} />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Email Verified!</h1>
-          <p className="text-slate-500">Redirecting you to your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
@@ -127,55 +48,27 @@ function VerifyEmailForm() {
             <Mail className="text-emerald-600" size={24} />
           </div>
 
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Verify your email</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Check your email</h1>
           <p className="text-slate-500 text-sm mb-1">
-            We sent a 6-digit code to
+            We sent a verification link to
           </p>
           <p className="text-slate-900 font-medium text-sm mb-6">{email || "your email"}</p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex justify-center gap-3">
-              {code.map((digit, i) => (
-                <input
-                  key={i}
-                  ref={(el) => { inputRefs.current[i] = el; }}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(i, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(i, e)}
-                  onPaste={handlePaste}
-                  className="w-12 h-14 text-center text-xl font-bold text-slate-900 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 bg-white"
-                />
-              ))}
-            </div>
+          <div className="bg-slate-50 rounded-xl p-4 mb-6">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Click the link in the email to verify your account and start learning. The link will expire in 24 hours.
+            </p>
+          </div>
 
-            <button
-              type="submit"
-              disabled={loading || code.join("").length !== 6}
-              className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                "Verify Email"
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
+          <div className="text-center">
             <p className="text-sm text-slate-500">
-              Didn&apos;t receive the code?{" "}
+              Didn&apos;t receive the email?{" "}
               <button
                 onClick={handleResend}
-                disabled={resending}
+                disabled={resending || resent}
                 className="text-emerald-600 hover:text-emerald-700 font-medium disabled:text-slate-400"
               >
-                {resending ? "Sending..." : "Resend code"}
+                {resent ? "Sent!" : resending ? "Sending..." : "Resend link"}
               </button>
             </p>
           </div>
@@ -192,7 +85,7 @@ export default function VerifyEmailPage() {
         <Loader2 className="animate-spin text-slate-400" size={32} />
       </div>
     }>
-      <VerifyEmailForm />
+      <VerifyEmailContent />
     </Suspense>
   );
 }
