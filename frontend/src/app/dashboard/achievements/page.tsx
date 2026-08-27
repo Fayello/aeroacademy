@@ -34,9 +34,9 @@ const iconMap: Record<string, typeof Trophy> = {
 };
 
 const rarityColors: Record<string, { bg: string; border: string; text: string; glow: string }> = {
-  COMMON: { bg: "bg-white/5", border: "border-white/10", text: "text-slate-600", glow: "" },
+  COMMON: { bg: "bg-white/5", border: "border-white/10", text: "text-slate-400", glow: "" },
   UNCOMMON: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-[#7AD62A]", glow: "shadow-emerald-100" },
-  RARE: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-600", glow: "shadow-blue-100" },
+  RARE: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-400", glow: "shadow-blue-100" },
   EPIC: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-600", glow: "shadow-purple-100" },
   LEGENDARY: { bg: "bg-amber-500/10", border: "border-amber-300", text: "text-amber-600", glow: "shadow-amber-200" },
 };
@@ -148,7 +148,7 @@ export default function AchievementsPage() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filter === f
                 ? "bg-slate-800 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-white/10"
+                : "bg-white/5 text-slate-400 hover:bg-white/10"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -160,7 +160,7 @@ export default function AchievementsPage() {
           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             categoryFilter === "all"
               ? "bg-[#7AD62A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-white/10"
+              : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
           {t("achievements.allTypes")}
@@ -174,7 +174,7 @@ export default function AchievementsPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 categoryFilter === cat
                   ? "bg-[#7AD62A] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-white/10"
+                  : "bg-white/5 text-slate-400 hover:bg-white/10"
               }`}
             >
               <CatIcon size={12} />

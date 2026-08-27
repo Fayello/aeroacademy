@@ -64,7 +64,7 @@ function ResultCard({ title, children }: { title: string; children: React.ReactN
 
   return (
     <div className="bg-[#0f172a] rounded-xl border border-white/10 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
         <h4 className="font-medium text-white text-sm">{title}</h4>
         <button onClick={handleCopy} className="text-xs text-slate-500 hover:text-[#7AD62A] flex items-center gap-1 transition-colors">
           {copied ? <Check size={12} /> : <Copy size={12} />}
@@ -81,14 +81,14 @@ function BriefingOutput({ data }: { data: BriefingResult }) {
     <div className="space-y-4">
       <div>
         <h5 className="text-xs font-medium text-slate-500 mb-2">SCENARIO BRIEFING</h5>
-        <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{data.briefing}</p>
+        <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{data.briefing}</p>
       </div>
       {data.objectives.length > 0 && (
         <div>
           <h5 className="text-xs font-medium text-slate-500 mb-2">LEARNING OBJECTIVES</h5>
           <ul className="space-y-1">
             {data.objectives.map((obj, i) => (
-              <li key={i} className="text-sm text-slate-700 flex items-start gap-2">
+              <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
                 <CheckCircle size={14} className="text-[#7AD62A] mt-0.5 shrink-0" />
                 {obj}
               </li>
@@ -101,7 +101,7 @@ function BriefingOutput({ data }: { data: BriefingResult }) {
           <h5 className="text-xs font-medium text-slate-500 mb-2">PREREQUISITES</h5>
           <div className="flex flex-wrap gap-2">
             {data.prerequisites.map((prereq, i) => (
-              <span key={i} className="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-600">{prereq}</span>
+              <span key={i} className="px-2 py-1 rounded-full text-xs bg-white/5 text-slate-400">{prereq}</span>
             ))}
           </div>
         </div>
@@ -117,14 +117,14 @@ function QuestionsOutput({ data }: { data: QuestionsResult }) {
     <div className="space-y-3">
       <h5 className="text-xs font-medium text-slate-500">{data.questions.length} QUESTIONS GENERATED</h5>
       {data.questions.map((q, i) => (
-        <div key={i} className="border border-slate-100 rounded-lg overflow-hidden">
+        <div key={i} className="border border-white/10 rounded-lg overflow-hidden">
           <button
             onClick={() => setExpanded(expanded === i ? null : i)}
             className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
           >
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-xs font-bold text-[#7AD62A] shrink-0">{i + 1}</span>
-              <span className="text-sm text-slate-700 truncate">{q.text}</span>
+              <span className="text-sm text-slate-300 truncate">{q.text}</span>
             </div>
             {expanded === i ? <ChevronUp size={14} className="text-slate-400 shrink-0" /> : <ChevronDown size={14} className="text-slate-400 shrink-0" />}
           </button>
@@ -133,7 +133,7 @@ function QuestionsOutput({ data }: { data: QuestionsResult }) {
               <div className="space-y-1.5 mt-2">
                 {q.options.map((opt) => (
                   <div key={opt.key} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                    opt.key === q.correctAnswer ? "bg-[#7AD62A]/10 text-[#7AD62A] font-medium" : "bg-white/5 text-slate-600"
+                    opt.key === q.correctAnswer ? "bg-[#7AD62A]/10 text-[#7AD62A] font-medium" : "bg-white/5 text-slate-400"
                   }`}>
                     <span className="w-5 h-5 rounded-full border border-current flex items-center justify-center text-xs shrink-0">{opt.key}</span>
                     {opt.text}
@@ -142,7 +142,7 @@ function QuestionsOutput({ data }: { data: QuestionsResult }) {
               </div>
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-xs text-slate-400">Category:</span>
-                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{q.category}</span>
+                <span className="text-xs bg-white/5 text-slate-400 px-2 py-0.5 rounded-full">{q.category}</span>
                 <span className="text-xs text-[#7AD62A] font-medium">Answer: {q.correctAnswer}</span>
               </div>
             </div>
@@ -158,7 +158,7 @@ function OutlineOutput({ data }: { data: OutlineResult }) {
     <div className="space-y-4">
       <h5 className="text-xs font-medium text-slate-500">{data.modules.length} MODULES GENERATED</h5>
       {data.modules.map((mod, i) => (
-        <div key={i} className="border border-slate-100 rounded-lg p-4">
+        <div key={i} className="border border-white/10 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
             <span className="w-6 h-6 rounded-full bg-[#7AD62A] flex items-center justify-center text-xs font-bold text-white shrink-0">{i + 1}</span>
             <h6 className="font-medium text-white text-sm">{mod.title}</h6>
@@ -166,12 +166,12 @@ function OutlineOutput({ data }: { data: OutlineResult }) {
           <p className="text-xs text-slate-500 mb-2 ml-8">{mod.description}</p>
           <div className="ml-8 space-y-1">
             {mod.lessons.map((lesson, j) => (
-              <div key={j} className="flex items-center gap-2 text-xs text-slate-600">
+              <div key={j} className="flex items-center gap-2 text-xs text-slate-400">
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                  lesson.type === "lab" ? "bg-amber-100 text-amber-700" :
+                  lesson.type === "lab" ? "bg-amber-500/10 text-amber-400" :
                   lesson.type === "quiz" ? "bg-violet-500/10 text-violet-700" :
-                  lesson.type === "video" ? "bg-blue-100 text-blue-700" :
-                  "bg-slate-100 text-slate-600"
+                  lesson.type === "video" ? "bg-blue-500/10 text-blue-400" :
+                  "bg-white/5 text-slate-400"
                 }`}>{lesson.type.toUpperCase()}</span>
                 {lesson.title}
               </div>
@@ -236,7 +236,7 @@ function CalibrationOutput({ data }: { data: CalibrationResult }) {
           <h5 className="text-xs font-medium text-slate-500 mb-2">REASONS</h5>
           <ul className="space-y-1">
             {data.reasons.map((r, i) => (
-              <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+              <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
                 <Zap size={12} className="text-amber-500 mt-1 shrink-0" />
                 {r}
               </li>
@@ -364,7 +364,7 @@ export default function AIGeneratorPage() {
             }`}
           >
             <tab.icon size={18} className={activeTab === tab.key ? "text-[#7AD62A]" : "text-slate-400"} />
-            <div className={`text-sm font-medium mt-2 ${activeTab === tab.key ? "text-[#7AD62A]" : "text-slate-700"}`}>{tab.label}</div>
+            <div className={`text-sm font-medium mt-2 ${activeTab === tab.key ? "text-[#7AD62A]" : "text-slate-300"}`}>{tab.label}</div>
             <div className="text-xs text-slate-500 mt-0.5">{tab.desc}</div>
           </button>
         ))}
@@ -380,7 +380,7 @@ export default function AIGeneratorPage() {
           <div className="space-y-4">
             {activeTab === "briefing" && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Select Lab</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Select Lab</label>
                 <select value={selectedLab} onChange={(e) => setSelectedLab(e.target.value)} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]">
                   <option value="">Choose a lab...</option>
                   {labs.map((l) => <option key={l.id} value={l.id}>{l.title} (ELO {l.difficulty})</option>)}
@@ -391,14 +391,14 @@ export default function AIGeneratorPage() {
             {activeTab === "questions" && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Select Assessment</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Select Assessment</label>
                   <select value={selectedAssessment} onChange={(e) => setSelectedAssessment(e.target.value)} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]">
                     <option value="">Choose an assessment...</option>
                     {assessments.map((a) => <option key={a.id} value={a.id}>{a.title} ({a.category})</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Number of Questions</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Number of Questions</label>
                   <input type="number" min={1} max={20} value={questionCount} onChange={(e) => setQuestionCount(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]" />
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function AIGeneratorPage() {
 
             {activeTab === "outline" && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Select Course</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Select Course</label>
                 <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]">
                   <option value="">Choose a course...</option>
                   {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
@@ -468,9 +468,9 @@ export default function AIGeneratorPage() {
                   {r.changed ? (
                     <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#7AD62A]/10 text-[#7AD62A]">Adjusted</span>
                   ) : r.suggestion === "insufficient_data" ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">No Data</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">No Data</span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">OK</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-white/5 text-slate-400">OK</span>
                   )}
                 </div>
                 {r.reasons && r.reasons.length > 0 && (

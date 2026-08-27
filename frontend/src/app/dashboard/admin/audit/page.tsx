@@ -16,17 +16,17 @@ const PAGE_SIZE = 25;
 
 function ActionBadge({ action }: { action: string }) {
   const base = "px-2 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wide";
-  if (action.startsWith("AUTH_")) return <span className={`${base} bg-blue-500/10 text-blue-700`}>{action}</span>;
-  if (action.startsWith("LAB_") || action.startsWith("FLAG_")) return <span className={`${base} bg-amber-500/10 text-amber-700`}>{action}</span>;
+  if (action.startsWith("AUTH_")) return <span className={`${base} bg-blue-500/10 text-blue-400`}>{action}</span>;
+  if (action.startsWith("LAB_") || action.startsWith("FLAG_")) return <span className={`${base} bg-amber-500/10 text-amber-400`}>{action}</span>;
   if (action.startsWith("QUIZ_") || action.startsWith("LESSON_")) return <span className={`${base} bg-violet-50 text-violet-700`}>{action}</span>;
   if (action.startsWith("BOOKING_") || action.startsWith("TRAINER_") || action.startsWith("MASTERCLASS_")) return <span className={`${base} bg-[#7AD62A]/10 text-[#0F203A]`}>{action}</span>;
   if (action.includes("DELETED") || action.includes("CANCELLED") || action.includes("TERMINATED")) return <span className={`${base} bg-red-500/10 text-red-700`}>{action}</span>;
-  return <span className={`${base} bg-slate-100 text-slate-600`}>{action}</span>;
+  return <span className={`${base} bg-white/5 text-slate-400`}>{action}</span>;
 }
 
 function StatusBadge({ code }: { code: number }) {
   if (code < 400) return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-[#7AD62A]/10 text-[#0F203A]">{code}</span>;
-  if (code < 500) return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-500/10 text-amber-700">{code}</span>;
+  if (code < 500) return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-500/10 text-amber-400">{code}</span>;
   return <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-red-500/10 text-red-700">{code}</span>;
 }
 
@@ -161,7 +161,7 @@ export default function AdminAuditPage() {
         </div>
         <button
           onClick={() => { setAction(""); setStatus(""); setPage(1); setLoading(true); reloadLogs("", ""); loadSummary(); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium transition-all"
         >
           <RefreshCw size={16} /> Reset
         </button>
@@ -173,13 +173,13 @@ export default function AdminAuditPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Time</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actor</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Action</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Request</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">IP</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider w-16">Details</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Actor</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Request</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">IP</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider w-16">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -198,12 +198,12 @@ export default function AdminAuditPage() {
               ) : (
                 logs.map((log) => (
                   <tr key={log.id} className="hover:bg-white/5/50 transition-colors">
-                    <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
+                    <td className="px-6 py-4 text-sm text-slate-400 whitespace-nowrap">
                       {new Date(log.createdAt).toLocaleDateString()} <span className="text-slate-400">{new Date(log.createdAt).toLocaleTimeString()}</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-700">
+                    <td className="px-6 py-4 text-sm text-slate-300">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                        <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                           <Users size={12} className="text-slate-500" />
                         </div>
                         <div className="min-w-0">
@@ -214,8 +214,8 @@ export default function AdminAuditPage() {
                     </td>
                     <td className="px-6 py-4"><ActionBadge action={log.action} /></td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-xs font-mono text-slate-600">
-                        <span className={`px-1.5 py-0.5 rounded font-bold ${log.method === "GET" ? "bg-blue-500/10 text-blue-700" : log.method === "POST" ? "bg-[#7AD62A]/10 text-[#0F203A]" : log.method === "DELETE" ? "bg-red-500/10 text-red-700" : "bg-amber-500/10 text-amber-700"}`}>
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
+                        <span className={`px-1.5 py-0.5 rounded font-bold ${log.method === "GET" ? "bg-blue-500/10 text-blue-400" : log.method === "POST" ? "bg-[#7AD62A]/10 text-[#0F203A]" : log.method === "DELETE" ? "bg-red-500/10 text-red-700" : "bg-amber-500/10 text-amber-400"}`}>
                           {log.method}
                         </span>
                         <span className="truncate max-w-[220px]">{log.path}</span>
@@ -251,15 +251,15 @@ export default function AdminAuditPage() {
                 disabled={page === 1}
                 className="p-2 rounded-lg border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                <ChevronLeft size={16} className="text-slate-600" />
+                <ChevronLeft size={16} className="text-slate-400" />
               </button>
-              <span className="text-sm text-slate-600 font-medium">Page {page} / {totalPages}</span>
+              <span className="text-sm text-slate-400 font-medium">Page {page} / {totalPages}</span>
               <button
                 onClick={() => { const p = Math.min(totalPages, page + 1); setPage(p); setLoading(true); fetchLogs(p, action, status).then(applyLogs); }}
                 disabled={page >= totalPages}
                 className="p-2 rounded-lg border border-white/10 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                <ChevronRight size={16} className="text-slate-600" />
+                <ChevronRight size={16} className="text-slate-400" />
               </button>
             </div>
           </div>
@@ -306,7 +306,7 @@ export default function AdminAuditPage() {
               {selected.metadata && (
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">Metadata</p>
-                  <pre className="bg-white/5 border border-white/10 rounded-lg p-4 text-xs text-slate-700 overflow-x-auto max-h-64 whitespace-pre-wrap font-mono">
+                  <pre className="bg-white/5 border border-white/10 rounded-lg p-4 text-xs text-slate-300 overflow-x-auto max-h-64 whitespace-pre-wrap font-mono">
                     {JSON.stringify(selected.metadata, null, 2)}
                   </pre>
                 </div>
@@ -314,7 +314,7 @@ export default function AdminAuditPage() {
               {selected.userAgent && (
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">User Agent</p>
-                  <p className="text-xs text-slate-600 break-words">{selected.userAgent}</p>
+                  <p className="text-xs text-slate-400 break-words">{selected.userAgent}</p>
                 </div>
               )}
             </div>

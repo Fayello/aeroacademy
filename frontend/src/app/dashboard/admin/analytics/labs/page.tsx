@@ -71,8 +71,8 @@ function StatCard({ label, value, icon: Icon, color, sub }: {
 
 function DifficultyBadge({ difficulty }: { difficulty: number }) {
   if (difficulty < 1000) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Easy</span>;
-  if (difficulty < 1300) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Medium</span>;
-  if (difficulty < 1600) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">Hard</span>;
+  if (difficulty < 1300) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400">Medium</span>;
+  if (difficulty < 1600) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">Hard</span>;
   return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Expert</span>;
 }
 
@@ -86,10 +86,10 @@ function RateBar({ rate, color = "emerald" }: { rate: number; color?: string }) 
   const bg = color === "emerald" ? "bg-[#7AD62A]" : color === "amber" ? "bg-amber-500" : color === "red" ? "bg-red-500" : "bg-blue-600";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+      <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
         <div className={`h-full rounded-full ${bg} transition-all duration-500`} style={{ width: `${Math.min(rate, 100)}%` }} />
       </div>
-      <span className="text-xs font-medium text-slate-700 w-10 text-right">{rate.toFixed(1)}%</span>
+      <span className="text-xs font-medium text-slate-300 w-10 text-right">{rate.toFixed(1)}%</span>
     </div>
   );
 }
@@ -187,8 +187,8 @@ export default function LabAnalyticsPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
-            <Link href="/dashboard/admin/analytics" className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-white/10 transition-colors">
-              <ArrowLeft size={18} className="text-slate-600" />
+            <Link href="/dashboard/admin/analytics" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+              <ArrowLeft size={18} className="text-slate-400" />
             </Link>
             <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
               <Microscope size={24} className="text-[#7AD62A]" />
@@ -246,7 +246,7 @@ export default function LabAnalyticsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-white/10">
                   {[
                     { key: "title" as SortKey, label: "Lab" },
                     { key: "domainName" as SortKey, label: "Domain" },
@@ -282,12 +282,12 @@ export default function LabAnalyticsPage() {
                     <td className="px-4 py-3">
                       <div className="font-medium text-white truncate max-w-[200px]">{lab.title}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{lab.domainName || "—"}</td>
+                    <td className="px-4 py-3 text-slate-400">{lab.domainName || "—"}</td>
                     <td className="px-4 py-3"><DifficultyBadge difficulty={lab.difficulty} /></td>
-                    <td className="px-4 py-3 font-medium text-slate-700">{lab.totalAttempts}</td>
+                    <td className="px-4 py-3 font-medium text-slate-300">{lab.totalAttempts}</td>
                     <td className="px-4 py-3 min-w-[140px]"><RateBar rate={lab.completionRate} color="emerald" /></td>
                     <td className="px-4 py-3 min-w-[140px]"><RateBar rate={lab.failureRate} color="amber" /></td>
-                    <td className="px-4 py-3 text-slate-600">{lab.avgTimeMinutes.toFixed(0)}m</td>
+                    <td className="px-4 py-3 text-slate-400">{lab.avgTimeMinutes.toFixed(0)}m</td>
                     <td className="px-4 py-3"><CalibrationBadge tooEasy={lab.tooEasy} tooHard={lab.tooHard} /></td>
                   </tr>
                 ))}
@@ -337,7 +337,7 @@ export default function LabAnalyticsPage() {
               )}
               {insights && insights.insights.length > 0 && (
                 <div className="bg-amber-500/10 border border-amber-200 rounded-lg p-3 mb-4">
-                  <div className="flex items-center gap-2 text-xs font-medium text-amber-700 mb-2">
+                  <div className="flex items-center gap-2 text-xs font-medium text-amber-400 mb-2">
                     <Zap size={12} /> AI Insights
                   </div>
                   <ul className="space-y-1">
@@ -405,11 +405,11 @@ export default function LabAnalyticsPage() {
                     return (
                       <div key={i}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-slate-700 truncate max-w-[180px]">{step.step}</span>
+                          <span className="text-sm text-slate-300 truncate max-w-[180px]">{step.step}</span>
                           <span className="text-xs text-slate-500 shrink-0 ml-2">{step.completions}/{step.attempts}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                          <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
                             <div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${Math.min(100 - rate, 100)}%` }} />
                           </div>
                           <span className="text-xs font-medium w-10 text-right" style={{ color: rate > 70 ? "#dc2626" : rate > 40 ? "#d97706" : "#229C62" }}>

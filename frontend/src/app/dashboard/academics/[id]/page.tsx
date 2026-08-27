@@ -40,7 +40,7 @@ interface StudentGrades {
 
 function getGradeColor(grade: number): string {
   if (grade >= 90) return "text-[#7AD62A] bg-emerald-50";
-  if (grade >= 80) return "text-blue-600 bg-blue-500/10";
+  if (grade >= 80) return "text-blue-400 bg-blue-500/10";
   if (grade >= 70) return "text-amber-600 bg-amber-500/10";
   return "text-red-600 bg-red-500/10";
 }
@@ -126,7 +126,7 @@ export default function CohortDetailPage() {
         </div>
 
         {/* Overall Progress Bar */}
-        <div className="mt-4 h-3 bg-slate-100 rounded-full overflow-hidden">
+        <div className="mt-4 h-3 bg-white/5 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${getGradeBarColor(grades?.finalGrade ?? 0)}`}
             style={{ width: `${Math.min(grades?.finalGrade ?? 0, 100)}%` }}
@@ -141,8 +141,8 @@ export default function CohortDetailPage() {
             <div key={cat.category} className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                    <BarChart3 size={16} className="text-slate-600" />
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                    <BarChart3 size={16} className="text-slate-400" />
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-white">{cat.category}</h3>
@@ -159,7 +159,7 @@ export default function CohortDetailPage() {
               </div>
 
               {cat.average !== null && (
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+                <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-4">
                   <div
                     className={`h-full rounded-full transition-all ${getGradeBarColor(cat.average)}`}
                     style={{ width: `${Math.min(cat.average, 100)}%` }}

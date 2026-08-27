@@ -64,7 +64,7 @@ function getLetterGrade(gpa: number): string {
 
 function getGradeColor(grade: number): string {
   if (grade >= 90) return "text-[#7AD62A] bg-emerald-50";
-  if (grade >= 80) return "text-blue-600 bg-blue-500/10";
+  if (grade >= 80) return "text-blue-400 bg-blue-500/10";
   if (grade >= 70) return "text-amber-600 bg-amber-500/10";
   return "text-red-600 bg-red-500/10";
 }
@@ -141,7 +141,7 @@ export default function AcademicsPage() {
         <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <Award size={20} className="text-blue-600" />
+              <Award size={20} className="text-blue-400" />
             </div>
             <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Letter Grade</span>
           </div>
@@ -246,10 +246,10 @@ export default function AcademicsPage() {
               </thead>
               <tbody>
                 {gpa.transcript.map((row) => (
-                  <tr key={row.cohortId} className="border-b border-slate-100 last:border-0">
+                  <tr key={row.cohortId} className="border-b border-white/10 last:border-0">
                     <td className="py-3 font-medium text-white">{row.cohortName}</td>
-                    <td className="py-3 text-slate-600">{row.curriculum}</td>
-                    <td className="py-3 text-slate-600">
+                    <td className="py-3 text-slate-400">{row.curriculum}</td>
+                    <td className="py-3 text-slate-400">
                       {row.semester ? `${row.semester} ` : ""}{row.year}
                     </td>
                     <td className="py-3 text-right">

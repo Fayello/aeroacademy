@@ -119,16 +119,16 @@ export default function AdminBadgesPage() {
   };
 
   const tierColors: Record<string, string> = {
-    BRONZE: "bg-amber-100 text-amber-700",
-    SILVER: "bg-white/10 text-slate-700",
+    BRONZE: "bg-amber-500/10 text-amber-400",
+    SILVER: "bg-white/10 text-slate-300",
     GOLD: "bg-yellow-100 text-yellow-700",
     PLATINUM: "bg-purple-100 text-purple-700",
   };
 
   const categoryColors: Record<string, string> = {
-    MILESTONE: "bg-blue-100 text-blue-700",
+    MILESTONE: "bg-blue-500/10 text-blue-400",
     SKILL: "bg-[#7AD62A]/10 text-[#0F203A]",
-    ENGAGEMENT: "bg-orange-100 text-orange-700",
+    ENGAGEMENT: "bg-orange-500/10 text-orange-400",
     STREAK: "bg-red-100 text-red-700",
     LEVEL: "bg-indigo-100 text-indigo-700",
   };
@@ -175,17 +175,17 @@ export default function AdminBadgesPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColors[b.category] || "bg-slate-100 text-slate-600"}`}>
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${categoryColors[b.category] || "bg-white/5 text-slate-400"}`}>
                       {b.category}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${tierColors[b.tier] || "bg-slate-100 text-slate-600"}`}>
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${tierColors[b.tier] || "bg-white/5 text-slate-400"}`}>
                       {b.tier}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-xs font-medium text-white">{b.xpReward}</td>
-                  <td className="px-4 py-3 text-xs text-slate-600">{b._count.users}</td>
+                  <td className="px-4 py-3 text-xs text-slate-400">{b._count.users}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => openEdit(b)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
@@ -213,7 +213,7 @@ export default function AdminBadgesPage() {
       <AdminModal isOpen={modal.open} onClose={() => setModal({ open: false, editing: null })} title={modal.editing ? "Edit Badge" : "Create Badge"} size="lg"
         footer={
           <div className="flex justify-end gap-2">
-            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-600 hover:bg-white/5 rounded-lg transition-colors">Cancel</button>
+            <button onClick={() => setModal({ open: false, editing: null })} className="px-4 py-2 text-sm text-slate-400 hover:bg-white/5 rounded-lg transition-colors">Cancel</button>
             <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm bg-[#7AD62A] text-white rounded-lg hover:bg-[#0F203A] disabled:opacity-50 transition-colors flex items-center gap-1.5">
               {saving && <Loader2 size={14} className="animate-spin" />}
               {modal.editing ? "Save Changes" : "Create Badge"}

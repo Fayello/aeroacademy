@@ -49,10 +49,10 @@ function HBar({ label, value, max, color = "emerald" }: { label: string; value: 
   return (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
-        <span className="text-slate-600 truncate">{label}</span>
+        <span className="text-slate-400 truncate">{label}</span>
         <span className="font-semibold text-white ml-2">{value}</span>
       </div>
-      <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+      <div className="h-2 rounded-full bg-white/5 overflow-hidden">
         <div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${Math.max(pct, value > 0 ? 3 : 0)}%` }} />
       </div>
     </div>
@@ -189,7 +189,7 @@ export default function AdminAnalyticsPage() {
               <HBar label="Passed" value={data.quizStats.passed} max={data.quizStats.submissions} color="emerald" />
               <HBar label="Failed" value={data.quizStats.failed} max={data.quizStats.submissions} color="amber" />
             </div>
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
               <span className="text-sm text-slate-500">Pass rate</span>
               <span className="text-lg font-bold text-[#7AD62A]">{data.quizStats.passRate}%</span>
             </div>
@@ -200,7 +200,7 @@ export default function AdminAnalyticsPage() {
               <HBar label="Correct" value={data.flagStats.correct} max={data.flagStats.correct + data.flagStats.incorrect} color="emerald" />
               <HBar label="Incorrect" value={data.flagStats.incorrect} max={data.flagStats.correct + data.flagStats.incorrect} color="red" />
             </div>
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
               <span className="text-sm text-slate-500">Accuracy</span>
               <span className="text-lg font-bold text-[#7AD62A]">
                 {data.flagStats.correct + data.flagStats.incorrect > 0
@@ -284,10 +284,10 @@ export default function AdminAnalyticsPage() {
             {data.courseStats.map((c) => (
               <div key={c.courseId}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-slate-600 truncate">{c.courseTitle}</span>
+                  <span className="text-sm text-slate-400 truncate">{c.courseTitle}</span>
                   <span className="text-xs text-slate-500 shrink-0 ml-2">{c.completed}/{c.totalLessons} · {c.students} students</span>
                 </div>
-                <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-2 rounded-full bg-white/5 overflow-hidden">
                   <div className="h-full rounded-full bg-[#7AD62A] transition-all duration-500" style={{ width: `${c.completionRate}%` }} />
                 </div>
               </div>
@@ -303,14 +303,14 @@ export default function AdminAnalyticsPage() {
               <div key={l.labId} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-slate-600 truncate">{l.labTitle}</span>
+                    <span className="text-sm text-slate-400 truncate">{l.labTitle}</span>
                     <span className="text-xs text-slate-500 shrink-0 ml-2">{l.starts} starts · {l.solvers} solvers</span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-2 rounded-full bg-white/5 overflow-hidden">
                     <div className="h-full rounded-full bg-blue-600 transition-all duration-500" style={{ width: `${(l.starts / maxLabStarts) * 100}%` }} />
                   </div>
                 </div>
-                <span className="shrink-0 text-[10px] font-mono px-2 py-1 rounded bg-slate-100 text-slate-500">{l.difficulty}</span>
+                <span className="shrink-0 text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-500">{l.difficulty}</span>
               </div>
             ))}
           </div>
@@ -326,7 +326,7 @@ export default function AdminAnalyticsPage() {
         <div className="divide-y divide-slate-100">
           {data.topPerformers.map((u, i) => (
             <div key={u.id} className="px-6 py-3 flex items-center gap-4 hover:bg-white/5/50 transition-colors">
-              <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-amber-100 text-amber-700" : i === 1 ? "bg-white/10 text-slate-600" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-500"}`}>
+              <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${i === 0 ? "bg-amber-500/10 text-amber-400" : i === 1 ? "bg-white/10 text-slate-400" : i === 2 ? "bg-orange-500/10 text-orange-400" : "bg-white/5 text-slate-500"}`}>
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
@@ -334,8 +334,8 @@ export default function AdminAnalyticsPage() {
                 <p className="text-xs text-slate-500 truncate">{u.organization || u.city || u.email}</p>
               </div>
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
-                <span className="px-2 py-1 rounded bg-slate-100">{u.division}</span>
-                <span className="px-2 py-1 rounded bg-blue-500/10 text-blue-700">{u.flagsSolved} flags</span>
+                <span className="px-2 py-1 rounded bg-white/5">{u.division}</span>
+                <span className="px-2 py-1 rounded bg-blue-500/10 text-blue-400">{u.flagsSolved} flags</span>
                 <span className="px-2 py-1 rounded bg-[#7AD62A]/10 text-[#0F203A]">{u.lessonsCompleted} lessons</span>
               </div>
               <div className="text-right">
