@@ -78,8 +78,6 @@ const TABS: { key: TabKey; label: string; icon: any }[] = [
   { key: "overview", label: "Overview", icon: Target },
   { key: "lessons", label: "Lessons", icon: BookOpen },
   { key: "reviews", label: "Reviews", icon: Star },
-  { key: "walkthroughs", label: "Walkthroughs", icon: FileText },
-  { key: "activity", label: "Activity", icon: Activity },
   { key: "progress", label: "Progress", icon: CheckCircle2 },
 ];
 
@@ -513,43 +511,6 @@ export default function CourseBriefingPage() {
                   <p className="text-sm text-slate-500">No reviews yet. Be the first to review this course.</p>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Walkthroughs Tab */}
-          {activeTab === "walkthroughs" && (
-            <div className="angular-card border-slate-200 py-12 text-center">
-              <FileText size={32} className="mx-auto mb-3 text-slate-300" />
-              <h3 className="text-sm font-semibold text-slate-900 mb-1">Community Walkthroughs</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
-                Walkthroughs and study guides from the community will appear here. Share your own guide to help other students.
-              </p>
-              {isEnrolled && (
-                <Link
-                  href={`/dashboard/courses/${course.id}/discussions`}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  <MessageSquare size={14} />
-                  Start a discussion
-                </Link>
-              )}
-            </div>
-          )}
-
-          {/* Activity Tab */}
-          {activeTab === "activity" && (
-            <div className="angular-card border-slate-200 py-12 text-center">
-              <Activity size={32} className="mx-auto mb-3 text-slate-300" />
-              <h3 className="text-sm font-semibold text-slate-900 mb-1">Recent Activity</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Recent completions and updates from students enrolled in this course will appear here.
-              </p>
-              <div className="mt-4 space-y-2 max-w-xs mx-auto">
-                <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2">
-                  <CheckCircle2 size={12} className="text-[#229C62] shrink-0" />
-                  <span>Course enrollment activity will show here</span>
-                </div>
-              </div>
             </div>
           )}
 

@@ -554,7 +554,8 @@ export default function ProfilePage() {
             {streak > 0 ? `${streak} day streak` : "Start a streak today"}
           </div>
         </div>
-        <div className="min-w-[720px]">
+        <div className="overflow-x-auto -mx-6 px-6">
+          <div className="min-w-[720px]">
           <div className="flex mb-1 ml-8">
             {heatmapMonths.map((m, i) => {
               const nextWeek = i < heatmapMonths.length - 1 ? heatmapMonths[i + 1].weekIndex : 53;
@@ -595,9 +596,10 @@ export default function ProfilePage() {
                   })}
                 </div>
               ))}
-            </div>
           </div>
         </div>
+        </div>
+      </div>
       </div>
 
       {/* Learning Progress */}

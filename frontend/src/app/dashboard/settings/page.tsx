@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import { logout } from "@/lib/auth";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   User,
   Bell,
@@ -60,10 +61,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-slate-500 mt-1">Manage your account preferences</p>
-      </div>
+      <PageHeader title="Settings" description="Manage your account preferences" />
 
       <div className="flex flex-col sm:flex-row gap-6">
         <nav className="sm:w-56 flex-shrink-0">

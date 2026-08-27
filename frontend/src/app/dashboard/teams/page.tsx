@@ -751,7 +751,7 @@ export default function TeamsPage() {
             </div>
             <button
               onClick={() => bannerRef.current?.click()}
-              className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-black/40 text-white text-[10px] opacity-0 group-hover:opacity-100 hover:bg-black/60 transition-all flex items-center gap-1"
+              className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-black/40 text-white text-[10px] sm:opacity-0 sm:group-hover:opacity-100 hover:bg-black/60 transition-all flex items-center gap-1"
             >
               <Camera size={10} /> Banner
             </button>

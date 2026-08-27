@@ -20,7 +20,8 @@ export default function CurrencySwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-[#229C62] hover:bg-[#E9F8EE]/50 rounded-lg transition-all"
+        aria-label={`Currency: ${CURRENCIES[currency].name}`}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-[#229C62] hover:bg-[#E9F8EE]/50 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30"
       >
         {CURRENCIES[currency].symbol}
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />

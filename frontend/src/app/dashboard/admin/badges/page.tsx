@@ -136,7 +136,7 @@ export default function AdminBadgesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-blue-500 animate-spin" />
+        <Loader2 size={20} className="text-[#229C62] animate-spin" />
       </div>
     );
   }

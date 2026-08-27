@@ -153,7 +153,7 @@ export default function AdminLearningPathsPage() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-violet-600" size={32} /></div>;
+    return <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#229C62]" size={32} /></div>;
   }
 
   const diffColors: Record<string, string> = {

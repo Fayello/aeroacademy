@@ -121,7 +121,7 @@ export default function LabWorkspace() {
   const sessionEndedRef = useRef(false);
   const [hasConnected, setHasConnected] = useState(false);
   const [viewMode, setViewMode] = useState<"info" | "workspace">("info");
-  const [activeLabTab, setActiveLabTab] = useState<"play" | "info" | "walkthroughs" | "reviews" | "activity">("play");
+  const [activeLabTab, setActiveLabTab] = useState<"play" | "info" | "reviews">("play");
 
   const clearReconnectTimer = useCallback(() => {
     if (reconnectTimerRef.current) {
@@ -618,9 +618,7 @@ export default function LabWorkspace() {
           {[
             { key: "play" as const, label: "Play Lab" },
             { key: "info" as const, label: "Lab Info" },
-            { key: "walkthroughs" as const, label: "Walkthroughs" },
             { key: "reviews" as const, label: "Reviews" },
-            { key: "activity" as const, label: "Activity" },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -719,80 +717,6 @@ export default function LabWorkspace() {
           </div>
         )}
 
-        {activeLabTab === "walkthroughs" && (
-          <div className="space-y-6">
-            {/* Official Writeup */}
-            <div className="angular-card bg-white p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
-                  <Download size={16} className="text-[#229C62]" />
-                </div>
-                <h3 className="text-sm font-semibold text-slate-900">Official Writeup</h3>
-              </div>
-              {lab?.flags && lab.flags.length > 0 ? (
-                <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <FileText size={20} className="text-slate-400" />
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">{lab.title?.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-writeup.pdf</p>
-                      <p className="text-xs text-slate-400">Official XpertClass walkthrough</p>
-                    </div>
-                  </div>
-                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-400 text-sm font-medium cursor-not-allowed">
-                    <Download size={14} />
-                    Coming Soon
-                  </span>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-500">No official writeup available yet for this lab.</p>
-              )}
-            </div>
-
-            {/* Video Walkthroughs */}
-            <div className="angular-card bg-white p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-                  <Play size={16} className="text-red-500" />
-                </div>
-                <h3 className="text-sm font-semibold text-slate-900">Video Walkthroughs</h3>
-              </div>
-              {lab?.videoUrl ? (
-                <div className="aspect-video rounded-xl overflow-hidden bg-slate-900">
-                  <iframe
-                    src={lab.videoUrl.replace('watch?v=', 'embed/')}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Video Walkthrough"
-                  />
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Play size={32} className="mx-auto mb-3 text-slate-300" />
-                  <p className="text-sm text-slate-500 mb-1">No video walkthrough yet</p>
-                  <p className="text-xs text-slate-400">Be the first to record and share a walkthrough for this lab!</p>
-                </div>
-              )}
-            </div>
-
-            {/* Community Walkthroughs */}
-            <div className="angular-card bg-white p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <Users size={16} className="text-blue-500" />
-                </div>
-                <h3 className="text-sm font-semibold text-slate-900">Community Walkthroughs</h3>
-              </div>
-              <div className="space-y-4">
-                <p className="text-sm text-slate-500">Share your approach to solving this lab. Help others learn from your perspective.</p>
-                <div className="p-4 rounded-lg bg-slate-50 border border-dashed border-slate-300 text-center">
-                  <p className="text-sm text-slate-400">Community walkthroughs coming soon. Check back later!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {activeLabTab === "reviews" && (
           <div className="space-y-6">
             {/* Rating summary */}
@@ -829,13 +753,6 @@ export default function LabWorkspace() {
                 <p className="text-sm text-slate-500">No reviews yet. Be the first to review this lab!</p>
               </div>
             </div>
-          </div>
-        )}
-
-        {activeLabTab === "activity" && (
-          <div className="angular-card bg-white p-8 text-center">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Activity</h3>
-            <p className="text-xs text-slate-500">Your activity timeline for this lab will appear here.</p>
           </div>
         )}
       </div>

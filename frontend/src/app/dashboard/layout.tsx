@@ -156,10 +156,10 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
 
         {/* Upgrade CTA */}
         <Link
-          href="/dashboard/settings"
+          href="/dashboard/profile/edit"
           className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-bold transition-colors shadow-sm shadow-[#7AD62A]/20"
         >
-          Upgrade
+          Edit Profile
         </Link>
 
         <CurrencySwitcher />

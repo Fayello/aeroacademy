@@ -272,7 +272,8 @@ export default function Sidebar() {
                 key={section.id}
                 href={item.href}
                 title={collapsed ? section.label : undefined}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                aria-current={isActive ? "page" : undefined}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
                   isActive
                     ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -301,7 +302,8 @@ export default function Sidebar() {
                 key={section.id}
                 href={item.href}
                 title={collapsed ? item.label : undefined}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                aria-current={isActive ? "page" : undefined}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
                   isActive
                     ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -318,7 +320,8 @@ export default function Sidebar() {
               <button
                 onClick={() => toggleSection(section.id)}
                 title={collapsed ? section.label : undefined}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                aria-expanded={isExpanded}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
                   isActive
                     ? "bg-[#E9F8EE] text-[#0F203A]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -350,7 +353,8 @@ export default function Sidebar() {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
+                        aria-current={isItemActive ? "page" : undefined}
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
                           isItemActive
                             ? "bg-[#E9F8EE] text-[#0F203A]"
                             : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
@@ -378,7 +382,8 @@ export default function Sidebar() {
             <Link
               href="/dashboard/admin"
               title={collapsed ? "Admin Panel" : undefined}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              aria-current={pathname.startsWith("/dashboard/admin") ? "page" : undefined}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
                 pathname.startsWith("/dashboard/admin")
                   ? "bg-[#E9F8EE] text-[#0F203A]"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -396,7 +401,8 @@ export default function Sidebar() {
         <Link
           href="/dashboard/notifications"
           title={collapsed ? "Notifications" : undefined}
-          className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+          aria-current={pathname === "/dashboard/notifications" ? "page" : undefined}
+          className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
             pathname === "/dashboard/notifications"
               ? "bg-[#E9F8EE] text-[#0F203A]"
               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -414,7 +420,8 @@ export default function Sidebar() {
         <Link
           href="/dashboard/profile"
           title={collapsed ? "Profile" : undefined}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+          aria-current={pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/") ? "page" : undefined}
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
             pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/")
               ? "bg-[#E9F8EE] text-[#0F203A]"
               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -426,7 +433,8 @@ export default function Sidebar() {
         <Link
           href="/dashboard/settings"
           title={collapsed ? "Settings" : undefined}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+          aria-current={pathname === "/dashboard/settings" ? "page" : undefined}
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
             pathname === "/dashboard/settings"
               ? "bg-[#E9F8EE] text-[#0F203A]"
               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -442,7 +450,7 @@ export default function Sidebar() {
         <button
           onClick={logout}
           title={collapsed ? "Log out" : undefined}
-          className={`flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors ${collapsed ? "justify-center px-2" : ""}`}
+          className={`flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 ${collapsed ? "justify-center px-2" : ""}`}
         >
           <LogOut size={14} />
           {!collapsed && "Log out"}
