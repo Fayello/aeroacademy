@@ -241,7 +241,9 @@ export default function LeaderboardPage() {
       />
 
       {globalProfile?.globalRank && (
-        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#7AD62A] rounded-xl p-4 sm:p-6 text-white">
+        <div className="bg-gradient-to-r from-[#0F203A] via-[#0F203A] to-[#7AD62A] rounded-2xl p-4 sm:p-6 text-white border border-white/[0.06] shadow-lg shadow-black/20 relative overflow-hidden">
+          <div className="absolute inset-0 dot-grid-bg opacity-[0.03] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[#7AD62A]/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 shrink-0">
@@ -451,7 +453,7 @@ export default function LeaderboardPage() {
         ].find((u) => u.level > currentLevel);
 
         return (
-          <div className="angular-card border-white/10 p-6">
+          <div className="angular-card border-white/6 p-6 relative overflow-hidden">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
                 <TrendingUp size={22} className="text-[#7AD62A]" />

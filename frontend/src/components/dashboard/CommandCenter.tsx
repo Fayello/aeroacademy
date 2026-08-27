@@ -227,9 +227,10 @@ export default function CommandCenter() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* ─── GREETING HERO ─── */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1a3a5c] p-6 lg:p-8 animate-fade-in-up">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1a3a5c] p-6 lg:p-8 animate-fade-in-up border border-white/[0.06] shadow-lg shadow-black/20">
         <div className="absolute inset-0 dot-grid-bg opacity-[0.04] pointer-events-none" />
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#7AD62A]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#7AD62A]/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
         <div className="relative z-10 flex items-start justify-between">
           <div>
             <p className="text-sm text-white/50 mb-1">{getTimeGreeting()}</p>
@@ -255,7 +256,7 @@ export default function CommandCenter() {
           </div>
           <Link
             href="/dashboard/profile"
-            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-slate-200 transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-slate-200 transition-all hover:border-white/20 backdrop-blur-sm"
           >
             View Profile
           </Link>
@@ -264,7 +265,8 @@ export default function CommandCenter() {
 
       {/* ─── PERSONALIZED JOURNEY (based on onboarding purpose) ─── */}
       {isNewUser && purpose.length > 0 && (
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-5 animate-fade-in-up animate-delay-1">
+        <div className="angular-card bg-[#0f172a] border border-white/6 p-5 animate-fade-in-up animate-delay-1 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7AD62A]/30 to-transparent" />
           <div className="flex items-start gap-4">
             <div className="w-11 h-11 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center shrink-0">
               <Zap size={20} className="text-[#7AD62A]" />
@@ -334,9 +336,10 @@ export default function CommandCenter() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           href="/dashboard/courses"
-          className="angular-card relative overflow-hidden p-6 group hover-lift transition-all duration-300 animate-fade-in-up animate-delay-1"
+          className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-1"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-[#7AD62A]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#7AD62A]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-500">
             <svg viewBox="0 0 120 120" className="w-full h-full">
               <rect x="20" y="30" width="80" height="60" rx="8" fill="#7AD62A" />
@@ -362,9 +365,10 @@ export default function CommandCenter() {
 
         <Link
           href="/dashboard/labs"
-          className="angular-card relative overflow-hidden p-6 group hover-lift transition-all duration-300 animate-fade-in-up animate-delay-2"
+          className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-2"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-violet-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="absolute top-0 right-0 w-40 h-40 opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-500">
             <svg viewBox="0 0 120 120" className="w-full h-full">
               <rect x="15" y="25" width="90" height="70" rx="8" fill="#7c3aed" />
@@ -478,22 +482,22 @@ export default function CommandCenter() {
 
       {/* ─── STATS ROW ─── */}
       <div className="grid grid-cols-3 gap-3 animate-fade-in-up animate-delay-3">
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-2">
+        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] hover:border-[#7AD62A]/20 transition-all duration-300">
+          <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-[#7AD62A]/20 transition-colors">
             <FlaskConical size={16} className="text-[#7AD62A]" />
           </div>
           <p className="text-xl font-bold text-white">{labsCompleted}</p>
           <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Labs Done</p>
         </div>
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center mx-auto mb-2">
+        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] hover:border-violet-400/20 transition-all duration-300">
+          <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-violet-500/20 transition-colors">
             <Award size={16} className="text-violet-400" />
           </div>
           <p className="text-xl font-bold text-white">{outcomesCompleted}</p>
           <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Skills Mastered</p>
         </div>
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-2">
+        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] hover:border-amber-400/20 transition-all duration-300">
+          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-500/20 transition-colors">
             <Zap size={16} className="text-amber-400" />
           </div>
           <p className="text-xl font-bold text-white">{userMetrics?.streak || 0}</p>

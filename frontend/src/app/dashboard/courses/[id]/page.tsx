@@ -261,8 +261,9 @@ export default function CourseBriefingPage() {
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-6">
           {/* Hero Header */}
-          <div className="relative overflow-hidden angular-card p-6 sm:p-8 text-white" style={{ background: "linear-gradient(135deg, #0F203A, #1a3a5c, #229C62)" }}>
+          <div className="relative overflow-hidden angular-card p-6 sm:p-8 text-white border border-white/[0.06] shadow-lg shadow-black/20" style={{ background: "linear-gradient(135deg, #0F203A, #1a3a5c, #7AD62A)" }}>
             <div className="absolute inset-0 angular-grid-bg opacity-[0.04] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#7AD62A]/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
             <div className="relative z-10">
               <Link
                 href="/dashboard/courses"
