@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode, type ReactElement, cloneElement } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
@@ -22,6 +22,44 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
 import type { Lesson, QuizQuestion, QuizAnswer, QuizSubmissionResult } from "@/types/api";
+
+const HIGHLIGHT_TERMS = [
+  "module", "modules", "path", "paths", "section", "sections",
+  "hands-on", "interactive", "guided learning", "skills assessment",
+  "exam", "certification", "certificate", "labs", "lab",
+  "enrollment", "enroll", "prerequisite", "difficulty",
+  "Beginner", "Easy", "Medium", "Hard", "Fundamental",
+  "Offensive", "Defensive", "Purple", "General",
+  "XP", "streak", "rank", "division",
+];
+
+function highlightText(text: string): ReactNode {
+  if (!text || text.length < 2) return text;
+  const escaped = HIGHLIGHT_TERMS.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const regex = new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
+  const parts = text.split(regex);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => {
+    if (HIGHLIGHT_TERMS.some((t) => t.toLowerCase() === part.toLowerCase())) {
+      return (
+        <span key={i} className="px-1.5 py-0.5 rounded bg-[#E9F8EE] text-[#0F203A] font-medium text-[0.9em]">
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
+function processChildren(children: ReactNode): ReactNode {
+  if (typeof children === "string") return highlightText(children);
+  if (Array.isArray(children)) return children.map((child) => processChildren(child));
+  if (children && typeof children === "object" && "props" in children) {
+    const el = children as ReactElement<{ children?: ReactNode }>;
+    return cloneElement(el, { children: processChildren(el.props.children) });
+  }
+  return children;
+}
 
 interface SectionWithLessons {
   id: string;
@@ -279,6 +317,7 @@ export default function LessonPage() {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
+                  p: ({ children }) => <p>{processChildren(children)}</p>,
                   pre: ({ children }) => <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 overflow-x-auto">{children}</pre>,
                   code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
                     const match = /language-(\w+)/.exec(className || "");
