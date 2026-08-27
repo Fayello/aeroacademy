@@ -7,7 +7,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import {
   FlaskConical,
   BookOpen,
-  Clock,
+  Rocket,
   Terminal,
   Target,
   ArrowRight,
@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Zap,
   Pencil,
+  Clock,
   Award,
   Users,
   Building2,
@@ -307,6 +308,23 @@ export default function CommandCenter() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ─── DON'T KNOW WHERE TO START? ─── */}
+      {xp === 0 && (
+        <Link
+          href="/dashboard/starting-point"
+          className="angular-card border border-dashed border-[#229C62]/30 bg-[#E9F8EE]/30 p-4 flex items-center gap-4 hover:border-[#229C62]/60 transition-all group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-[#229C62]/10 flex items-center justify-center shrink-0 group-hover:bg-[#229C62]/20 transition-colors">
+            <Rocket size={18} className="text-[#229C62]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Don&apos;t know where to start?</h3>
+            <p className="text-xs text-slate-500">Follow our curated beginner path — 7 labs, step by step</p>
+          </div>
+          <span className="text-xs text-[#229C62] font-medium shrink-0">Start →</span>
+        </Link>
       )}
 
       {/* ─── 2 LAUNCHER CARDS (HTB-style with descriptions) ─── */}
