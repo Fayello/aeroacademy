@@ -36,6 +36,7 @@ import {
   FlaskConical,
   Lightbulb,
   Sparkles,
+  Smartphone,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 
@@ -334,16 +335,16 @@ export default function OnboardingPage() {
                 title="What skills do you want to develop?"
                 subtitle="Select multiple — we'll recommend labs and courses."
                 options={[
-                  { id: "pentesting", label: "Penetration Testing", icon: Bug, description: "Ethical hacking, exploitation, post-exploitation" },
-                  { id: "defensive", label: "Defensive Security", icon: Lock, description: "SOC operations, SIEM, threat detection" },
-                  { id: "cloud-sec", label: "Cloud Security", icon: Cloud, description: "IAM, networking, storage security in cloud" },
                   { id: "fullstack", label: "Full-Stack Development", icon: Code, description: "React, Node.js, databases, API design" },
-                  { id: "data-eng", label: "Data Engineering", icon: Database, description: "Pipelines, ETL, data warehousing" },
-                  { id: "ml-ops", label: "MLOps & AI Engineering", icon: Brain, description: "Model deployment, monitoring, infrastructure" },
+                  { id: "cloud", label: "Cloud & Infrastructure", icon: Cloud, description: "AWS, Azure, GCP, Terraform, IaC" },
                   { id: "containers", label: "Containers & Kubernetes", icon: Server, description: "Docker, K8s, orchestration, microservices" },
+                  { id: "data-eng", label: "Data Engineering", icon: Database, description: "Pipelines, ETL, data warehousing, SQL" },
+                  { id: "ml-ops", label: "AI & Machine Learning", icon: Brain, description: "Model training, deployment, MLOps" },
                   { id: "cicd", label: "CI/CD & Automation", icon: Terminal, description: "GitHub Actions, Jenkins, pipeline design" },
-                  { id: "crypto", label: "Cryptography", icon: Database, description: "Encryption, hashing, PKI, certificates" },
-                  { id: "forensics-skill", label: "Forensics & IR", icon: Eye, description: "Incident response, log analysis,取证" },
+                  { id: "networking", label: "Networking & Systems", icon: Network, description: "TCP/IP, Linux admin, system design" },
+                  { id: "cybersecurity", label: "Security & Compliance", icon: Shield, description: "AppSec, cloud security, compliance frameworks" },
+                  { id: "mobile", label: "Mobile Development", icon: Smartphone, description: "React Native, Flutter, iOS/Android" },
+                  { id: "design", label: "UX/UI Design", icon: Palette, description: "Figma, user research, design systems" },
                 ]}
                 selected={selections.skills}
                 onToggle={(id) => toggleMulti("skills", id)}

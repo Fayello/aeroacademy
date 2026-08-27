@@ -8,7 +8,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft, Home, ChevronRight } from "lucide-react";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -558,11 +558,16 @@ export default function LabWorkspace() {
   if (viewMode === "info" && lab && !isRunning) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        {/* Back button */}
-        <Link href="/dashboard/labs" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#229C62] transition-colors">
-          <ChevronLeft size={16} />
-          Back to Labs
-        </Link>
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-sm text-slate-500">
+          <Link href="/dashboard" className="hover:text-[#229C62] transition-colors">
+            <Home size={14} />
+          </Link>
+          <ChevronRight size={12} className="text-slate-300" />
+          <Link href="/dashboard/labs" className="hover:text-[#229C62] transition-colors">Labs</Link>
+          <ChevronRight size={12} className="text-slate-300" />
+          <span className="text-slate-900 font-medium truncate max-w-[200px]">{lab.title}</span>
+        </nav>
 
         {/* Hero section */}
         <div className="angular-card bg-white overflow-hidden">
