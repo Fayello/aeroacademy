@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Shield,
   Award,
+  Flame,
   Settings,
   ClipboardCheck,
   Route,
@@ -25,6 +26,7 @@ import {
   Bell,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
+import { fetchApi } from "@/lib/api";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import NotificationBadge from "@/components/ui/NotificationBadge";
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -56,6 +58,7 @@ export default function Sidebar() {
   const [xp, setXp] = useState(0);
   const [division, setDivision] = useState("Bronze");
   const [collapsed, setCollapsed] = useState(false);
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     setCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
@@ -87,6 +90,12 @@ export default function Sidebar() {
       setDivision(localStorage.getItem("division") || "Bronze");
     } catch {}
   }, [pathname]);
+
+  useEffect(() => {
+    fetchApi<{ currentStreak: number }>("/dashboard/streak")
+      .then((data) => setStreak(data.currentStreak || 0))
+      .catch(() => {});
+  }, []);
 
   // Build sections from navigation context
   const sections = useMemo(() => {
@@ -211,7 +220,13 @@ export default function Sidebar() {
                 <Shield size={10} className="text-[#7AD62A]" />
                 <span>Season 1</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/60 font-medium">{divisionLabel}</span>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1 text-white/60">
+                  <Flame size={10} className="text-orange-400" />
+                  {streak}d
+                </span>
+                <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/60 font-medium">{divisionLabel}</span>
+              </div>
             </div>
           </div>
         </div>
