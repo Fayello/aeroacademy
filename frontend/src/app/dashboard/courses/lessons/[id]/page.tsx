@@ -226,7 +226,7 @@ export default function LessonPage() {
   return (
     <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-6 sm:p-8 text-white mb-6">
+      <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 text-white mb-6" style={{ background: "linear-gradient(135deg, #0F203A, #1a3a5c, #229C62)" }}>
         <div className="absolute inset-0 angular-grid-bg opacity-[0.04] pointer-events-none" />
         <div className="relative z-10">
           <Link

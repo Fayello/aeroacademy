@@ -64,7 +64,7 @@ export default function StreakPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="angular-card bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] p-8 text-white">
+      <div className="angular-card p-8 text-white" style={{ background: "linear-gradient(135deg, #0F203A, #1a3a5c)" }}>
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-white/10 p-3 rounded-xl">
             <Flame size={28} className="text-orange-400" />

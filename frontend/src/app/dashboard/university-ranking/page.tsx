@@ -80,7 +80,7 @@ export default function UniversityRankingPage() {
 
       {/* Season banner */}
       {season && (
-        <div className="angular-card bg-[#0F203A] text-white p-5 overflow-hidden relative">
+        <div className="angular-card text-white p-5 overflow-hidden relative" style={{ backgroundColor: "#0F203A" }}>
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#229C62]/20 flex items-center justify-center">

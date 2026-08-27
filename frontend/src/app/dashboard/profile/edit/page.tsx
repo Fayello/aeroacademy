@@ -191,7 +191,7 @@ export default function ProfileEditPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="angular-card relative overflow-hidden bg-gradient-to-br from-[#0F203A] via-[#229C62] to-[#7AD62A] p-8 text-white">
+      <div className="angular-card relative overflow-hidden p-8 text-white" style={{ background: "linear-gradient(135deg, #0F203A, #229C62, #7AD62A)" }}>
         <div className="absolute inset-0 angular-grid-bg opacity-[0.06] pointer-events-none" />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-4 right-4 w-32 h-32 rounded-full bg-white/20 blur-2xl" />

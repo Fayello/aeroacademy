@@ -134,7 +134,8 @@ export default function LabsCatalog() {
       {/* Beginner Path CTA */}
       <Link
         href="/dashboard/starting-point"
-        className="angular-card bg-[#0F203A] text-white p-4 flex items-center justify-between hover:bg-[#1a3a5c] transition-colors group"
+        className="angular-card text-white p-4 flex items-center justify-between hover:bg-[#1a3a5c] transition-colors group"
+        style={{ backgroundColor: "#0F203A" }}
       >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#229C62]/20 flex items-center justify-center">

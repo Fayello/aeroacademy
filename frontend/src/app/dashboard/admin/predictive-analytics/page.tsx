@@ -239,7 +239,7 @@ export default function PredictiveAnalyticsPage() {
   return (
     <div className="space-y-8 p-6">
       {/* Hero Header */}
-      <div className="angular-card bg-[#0F203A] p-8 text-white">
+      <div className="angular-card p-8 text-white" style={{ backgroundColor: "#0F203A" }}>
         <div className="flex items-center gap-3">
           <ShieldAlert className="h-8 w-8 text-[#7AD62A]" />
           <div>

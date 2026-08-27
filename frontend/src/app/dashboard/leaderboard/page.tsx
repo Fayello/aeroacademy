@@ -373,7 +373,7 @@ export default function LeaderboardPage() {
         const totalWeeks = Math.ceil(totalDays / 7);
 
         return (
-          <div className="angular-card bg-[#0F203A] text-white overflow-hidden relative">
+          <div className="angular-card text-white overflow-hidden relative" style={{ backgroundColor: "#0F203A" }}>
             {/* Decorative circles */}
             <div className="absolute top-0 right-0 w-48 h-48 bg-[#229C62]/10 rounded-full -translate-y-1/3 translate-x-1/3" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#7AD62A]/5 rounded-full translate-y-1/2 -translate-x-1/4" />

@@ -141,7 +141,7 @@ export default function StartingPointPage() {
       />
 
       {/* Progress card */}
-      <div className="angular-card bg-[#0F203A] text-white p-6 overflow-hidden relative">
+      <div className="angular-card text-white p-6 overflow-hidden relative" style={{ backgroundColor: "#0F203A" }}>
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
