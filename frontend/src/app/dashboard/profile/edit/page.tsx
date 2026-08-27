@@ -209,7 +209,7 @@ export default function ProfileEditPage() {
 
       {/* Profile Form */}
       <div className="angular-card bg-[#0f172a] overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
+        <div className="p-6 border-b border-white/10">
           <h2 className="text-lg font-semibold text-white">Personal Information</h2>
           <p className="text-sm text-slate-500 mt-0.5">Your public profile details</p>
         </div>
@@ -217,7 +217,7 @@ export default function ProfileEditPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
           {/* Avatar */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Avatar</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Avatar</label>
             <div className="flex items-center gap-4">
               <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${selectedAvatar} flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg transition-all duration-200`}>
                 <span className="text-xl font-bold text-white">
@@ -248,7 +248,7 @@ export default function ProfileEditPage() {
 
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1.5">Display Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1.5">Display Name</label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
@@ -263,7 +263,7 @@ export default function ProfileEditPage() {
 
           {/* Username */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-1.5">
               Username <span className="text-slate-400 font-normal">(pseudonym)</span>
             </label>
             <div className="relative">
@@ -284,7 +284,7 @@ export default function ProfileEditPage() {
 
           {/* Bio */}
           <div>
-            <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-1.5">Bio</label>
+            <label htmlFor="bio" className="block text-sm font-medium text-slate-300 mb-1.5">Bio</label>
             <textarea
               {...register("bio")}
               rows={3}
@@ -302,7 +302,7 @@ export default function ProfileEditPage() {
           {/* City + Timezone Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label htmlFor="city" className="block text-sm font-medium text-slate-300 mb-1.5">
                 <MapPin size={13} className="inline mr-1" />City
               </label>
               <input
@@ -314,7 +314,7 @@ export default function ProfileEditPage() {
             </div>
 
             <div>
-              <label htmlFor="timezone" className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label htmlFor="timezone" className="block text-sm font-medium text-slate-300 mb-1.5">
                 <Globe size={13} className="inline mr-1" />Timezone
               </label>
               <select
@@ -330,7 +330,7 @@ export default function ProfileEditPage() {
 
           {/* Organization */}
           <div>
-            <label htmlFor="org" className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label htmlFor="org" className="block text-sm font-medium text-slate-300 mb-1.5">
               <Building2 size={13} className="inline mr-1" />Organization
             </label>
             <select
@@ -355,7 +355,7 @@ export default function ProfileEditPage() {
             </button>
             <Link
               href="/dashboard/profile"
-              className="flex items-center justify-center gap-2 bg-[#0f172a] hover:bg-white/5 text-slate-700 font-medium py-2.5 px-5 rounded-xl border border-white/10 transition-all text-sm"
+              className="flex items-center justify-center gap-2 bg-[#0f172a] hover:bg-white/5 text-slate-300 font-medium py-2.5 px-5 rounded-xl border border-white/10 transition-all text-sm"
             >
               Cancel
             </Link>
@@ -372,7 +372,7 @@ export default function ProfileEditPage() {
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-              <Bell size={18} className="text-amber-600" />
+              <Bell size={18} className="text-amber-400" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-white">Email Notifications</h2>
@@ -400,7 +400,7 @@ export default function ProfileEditPage() {
                     <Mail size={16} className="text-slate-300" />
                   )}
                   <div>
-                    <p className="text-sm font-medium text-slate-700">{pref.label}</p>
+                    <p className="text-sm font-medium text-slate-300">{pref.label}</p>
                     <p className="text-xs text-slate-400">{pref.desc}</p>
                   </div>
                 </div>

@@ -137,11 +137,11 @@ const badgeTierBg: Record<string, string> = {
 };
 
 const DIVISION_INFO: Record<string, { color: string; bg: string; icon: string; next: string; nextAt: number }> = {
-  BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", icon: "bronze", next: "SILVER", nextAt: 800 },
+  BRONZE:   { color: "text-amber-400", bg: "bg-amber-500/10", icon: "bronze", next: "SILVER", nextAt: 800 },
   SILVER:   { color: "text-slate-500", bg: "bg-white/10", icon: "silver", next: "GOLD", nextAt: 1200 },
-  GOLD:     { color: "text-amber-600", bg: "bg-amber-100", icon: "gold", next: "PLATINUM", nextAt: 1600 },
+  GOLD:     { color: "text-amber-400", bg: "bg-amber-500/10", icon: "gold", next: "PLATINUM", nextAt: 1600 },
   PLATINUM: { color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", icon: "platinum", next: "DIAMOND", nextAt: 2000 },
-  DIAMOND:  { color: "text-blue-600", bg: "bg-blue-100", icon: "diamond", next: "TITAN", nextAt: 2400 },
+  DIAMOND:  { color: "text-blue-400", bg: "bg-blue-500/10", icon: "diamond", next: "TITAN", nextAt: 2400 },
   TITAN:    { color: "text-indigo-600", bg: "bg-indigo-100", icon: "titan", next: "", nextAt: Infinity },
 };
 
@@ -163,11 +163,11 @@ const ACTIVITY_ICONS: Record<string, typeof Flag> = {
 };
 
 const ACTIVITY_COLORS: Record<string, string> = {
-  LAB_STARTED: "bg-blue-100 text-blue-600",
-  LAB_STOPPED: "bg-slate-100 text-slate-500",
+  LAB_STARTED: "bg-blue-500/10 text-blue-400",
+  LAB_STOPPED: "bg-white/5 text-slate-500",
   FLAG_SOLVED: "bg-[#7AD62A]/10 text-[#7AD62A]",
   LESSON_COMPLETED: "bg-purple-100 text-purple-600",
-  QUIZ_PASSED: "bg-amber-100 text-amber-600",
+  QUIZ_PASSED: "bg-amber-500/10 text-amber-400",
   COURSE_COMPLETED: "bg-green-100 text-green-600",
 };
 
@@ -359,7 +359,7 @@ export default function ProfilePage() {
                 {division}
               </span>
               {user.clearance && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/5 text-slate-400">
                   <Medal size={12} />
                   {user.clearance.replace("_", " ")}
                 </span>
@@ -370,11 +370,11 @@ export default function ProfilePage() {
                 <span className="flex items-center gap-1 text-[#7AD62A] font-medium">@{user.username}</span>
               )}
               <span>{user.email}</span>
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">{user.role}</span>
+              <span className="px-2 py-0.5 rounded-full bg-white/5 text-slate-400 text-xs font-medium">{user.role}</span>
             </div>
             {(user.bio || user.city || user.organization || user.team) && (
               <div className="mt-3 space-y-1">
-                {user.bio && <p className="text-sm text-slate-600">{user.bio}</p>}
+                {user.bio && <p className="text-sm text-slate-400">{user.bio}</p>}
                 <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
                   {user.city && (
                     <span className="flex items-center gap-1"><MapPin size={12} />{user.city}</span>
@@ -399,13 +399,13 @@ export default function ProfilePage() {
                 navigator.clipboard.writeText(url);
                 toast.success("Profile link copied!");
               }}
-              className="border border-white/10 text-slate-700 hover:bg-white/5 font-medium py-2 px-3 rounded-lg text-sm transition-all flex items-center gap-1.5"
+              className="border border-white/10 text-slate-300 hover:bg-white/5 font-medium py-2 px-3 rounded-lg text-sm transition-all flex items-center gap-1.5"
               title="Copy profile link"
             >
               <ExternalLink size={14} />
               Share
             </button>
-            <Link href="/dashboard/profile/edit" className="border border-white/10 text-slate-700 hover:bg-white/5 font-medium py-2 px-4 rounded-lg text-sm transition-all">
+            <Link href="/dashboard/profile/edit" className="border border-white/10 text-slate-300 hover:bg-white/5 font-medium py-2 px-4 rounded-lg text-sm transition-all">
               Edit profile
             </Link>
           </div>
@@ -417,7 +417,7 @@ export default function ProfilePage() {
         {[
           { label: "Total XP", value: xp.toLocaleString(), icon: TrendingUp, color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10" },
           { label: "Current Streak", value: `${streak} day${streak !== 1 ? "s" : ""}`, icon: Flame, color: "text-orange-500", bg: "bg-orange-50", sub: longestStreak > 0 ? `Best: ${longestStreak}` : undefined },
-          { label: "Flags Solved", value: String(flagsSolved), icon: Flag, color: "text-blue-600", bg: "bg-blue-500/10" },
+          { label: "Flags Solved", value: String(flagsSolved), icon: Flag, color: "text-blue-400", bg: "bg-blue-500/10" },
           { label: "Days Active", value: String(daysActive), icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
         ].map((stat) => (
           <div key={stat.label} className="angular-card border-white/10 p-4 hover-lift transition-all duration-300">
@@ -452,7 +452,7 @@ export default function ProfilePage() {
             </div>
           )}
         </div>
-        <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-4">
+        <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-4">
           <div
             className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
             style={{ width: `${completenessScore}%` }}
@@ -466,7 +466,7 @@ export default function ProfilePage() {
                 <Link
                   key={f.label}
                   href={f.link}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs font-medium text-slate-600 hover:border-[#7AD62A]/40 hover:text-[#7AD62A] transition-all"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs font-medium text-slate-400 hover:border-[#7AD62A]/40 hover:text-[#7AD62A] transition-all"
                 >
                   <Target size={12} className="text-slate-400" />
                   {f.label}
@@ -491,7 +491,7 @@ export default function ProfilePage() {
               <p className="text-sm text-slate-500">{xp.toLocaleString()} total XP</p>
             </div>
           </div>
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+          <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-2">
             <div
               className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
               style={{ width: `${Math.round(progress * 100)}%` }}
@@ -519,7 +519,7 @@ export default function ProfilePage() {
           </div>
           {divInfo.next && (
             <>
-              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+              <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-2">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(100, (rank / divInfo.nextAt) * 100)}%` }}
@@ -582,7 +582,7 @@ export default function ProfilePage() {
                 <div key={wi} className="flex flex-col gap-[3px]">
                   {week.map((cell) => {
                     const color =
-                      cell.count === 0 ? "bg-slate-100" :
+                      cell.count === 0 ? "bg-white/5" :
                       cell.count <= 2 ? "bg-green-200" :
                       cell.count <= 4 ? "bg-green-400" :
                       "bg-green-600";
@@ -618,10 +618,10 @@ export default function ProfilePage() {
             {enrolledCourses.slice(0, 6).map((cp) => (
               <div key={cp.courseId} className="group">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-slate-700 group-hover:text-white transition-colors">{cp.title}</span>
+                  <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{cp.title}</span>
                   <span className="text-xs font-medium text-slate-500">{cp.completed}/{cp.total} lessons ({cp.percentage}%)</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
                     style={{ width: `${cp.percentage}%` }}
@@ -664,7 +664,7 @@ export default function ProfilePage() {
                     <h3 className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">{lp.learningPath.title}</h3>
                     <p className="text-xs text-slate-500 mt-0.5">{lp.learningPath.courseCount} courses</p>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-semibold">In Progress</span>
+                  <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-semibold">In Progress</span>
                 </div>
               </Link>
             ))}
@@ -703,7 +703,7 @@ export default function ProfilePage() {
                 }`}
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2 ${
-                  unlocked ? "bg-[#7AD62A]/10" : "bg-slate-100"
+                  unlocked ? "bg-[#7AD62A]/10" : "bg-white/5"
                 }`}>
                   {unlocked ? (
                     <Icon size={18} className="text-[#7AD62A]" />
@@ -711,7 +711,7 @@ export default function ProfilePage() {
                     <Lock size={18} className="text-slate-400" />
                   )}
                 </div>
-                <p className="text-xs font-medium text-slate-700">{label}</p>
+                <p className="text-xs font-medium text-slate-300">{label}</p>
                 <p className={`text-[10px] mt-1 ${unlocked ? "text-[#7AD62A]" : "text-slate-400"}`}>
                   {unlocked ? "Unlocked" : `Lv.${reqLevel}`}
                 </p>
@@ -727,7 +727,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <Ticket size={18} className="text-amber-600" />
+                <Ticket size={18} className="text-amber-400" />
               </div>
               <h2 className="text-lg font-semibold text-white">Certifications</h2>
             </div>
@@ -739,7 +739,7 @@ export default function ProfilePage() {
             {certificates.map((cert) => (
               <div key={cert.courseId} className="p-4 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
                 <div className="flex items-center gap-2 mb-2">
-                  <GraduationCap size={18} className="text-amber-600" />
+                  <GraduationCap size={18} className="text-amber-400" />
                   <span className="text-sm font-semibold text-white">{cert.courseName}</span>
                 </div>
                 <p className="text-xs text-slate-500">Issued {cert.certificate?.issuedAt ? new Date(cert.certificate.issuedAt).toLocaleDateString() : ""}</p>
@@ -760,7 +760,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <Award size={18} className="text-amber-600" />
+                <Award size={18} className="text-amber-400" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-white">Badges</h2>
@@ -775,7 +775,7 @@ export default function ProfilePage() {
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-3">
                 <Pin size={14} className="text-[#7AD62A]" />
-                <span className="text-xs font-semibold text-slate-700">Pinned</span>
+                <span className="text-xs font-semibold text-slate-300">Pinned</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {pinnedBadges.map((ub) => {
@@ -863,7 +863,7 @@ export default function ProfilePage() {
           <div className="space-y-2 max-h-[360px] overflow-y-auto">
             {userMetrics?.achievements && userMetrics.achievements.length > 0 ? (
               userMetrics.achievements.slice(0, 8).map((ach: Achievement) => (
-                <div key={ach.id} className="p-3 rounded-xl bg-white/5 border border-slate-100 hover:shadow-sm transition-all">
+                <div key={ach.id} className="p-3 rounded-xl bg-white/5 border border-white/10 hover:shadow-sm transition-all">
                   <div className="flex items-center gap-2">
                     <Star size={14} className="text-amber-500" fill="currentColor" />
                     <p className="text-sm font-medium text-white">{ach.title?.replaceAll("_", " ")}</p>
@@ -894,7 +894,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <Activity size={18} className="text-blue-600" />
+                <Activity size={18} className="text-blue-400" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-white">Recent Activity</h2>
@@ -906,7 +906,7 @@ export default function ProfilePage() {
             {activity.length > 0 ? (
               activity.slice(0, 8).map((evt) => {
                 const Icon = ACTIVITY_ICONS[evt.type] || Flag;
-                const colorClass = ACTIVITY_COLORS[evt.type] || "bg-slate-100 text-slate-500";
+                const colorClass = ACTIVITY_COLORS[evt.type] || "bg-white/5 text-slate-500";
                 const meta = evt.metadata as Record<string, unknown>;
                 return (
                   <div key={evt.id} className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors">
@@ -914,7 +914,7 @@ export default function ProfilePage() {
                       <Icon size={14} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-slate-700">
+                      <p className="text-sm text-slate-300">
                         {formatActivityType(evt.type)}
                         {typeof meta.lessonTitle === "string" && <span className="font-medium"> {meta.lessonTitle.substring(0, 40)}</span>}
                         {typeof meta.labTitle === "string" && <span className="font-medium"> {meta.labTitle.substring(0, 40)}</span>}
@@ -964,7 +964,7 @@ export default function ProfilePage() {
               className="flex items-center gap-3 p-3 rounded-lg border border-white/10 hover:border-[#7AD62A]/30 hover:bg-[#7AD62A]/10/50 transition-all"
             >
               <Icon size={16} className="text-slate-400" />
-              <span className="text-sm text-slate-700">{label}</span>
+              <span className="text-sm text-slate-300">{label}</span>
             </Link>
           ))}
         </div>

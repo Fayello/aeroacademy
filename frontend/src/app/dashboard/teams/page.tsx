@@ -322,7 +322,7 @@ export default function TeamsPage() {
         <TeamHeader team={selectedTeam} />
 
         {selectedTeam.description && (
-          <p className="text-sm text-slate-600">{selectedTeam.description}</p>
+          <p className="text-sm text-slate-400">{selectedTeam.description}</p>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -374,7 +374,7 @@ export default function TeamsPage() {
               {sortedMembers.map((member, idx) => (
                 <div
                   key={member.id}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0"
+                  className="flex items-center gap-3 px-4 py-3 border-b border-white/10 last:border-b-0"
                 >
                   <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
                   <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center">
@@ -388,7 +388,7 @@ export default function TeamsPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Star size={12} className="text-amber-400" />
-                    <span className="text-sm font-semibold text-slate-700">{member.xp?.toLocaleString() || 0}</span>
+                    <span className="text-sm font-semibold text-slate-300">{member.xp?.toLocaleString() || 0}</span>
                   </div>
                 </div>
               ))}
@@ -402,13 +402,13 @@ export default function TeamsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {selectedTeam.courses.map((course) => (
                 <div key={course.id} className="angular-card p-4 flex items-center gap-3">
-                  <div className="bg-blue-100 p-2 rounded-lg">
+                  <div className="bg-blue-500/10 p-2 rounded-lg">
                     <BookOpen size={16} className="text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">{course.title}</p>
                     {course.progress !== undefined && (
-                      <div className="mt-1.5 w-full bg-slate-100 rounded-full h-1.5">
+                      <div className="mt-1.5 w-full bg-white/5 rounded-full h-1.5">
                         <div className="bg-[#7AD62A] h-1.5 rounded-full transition-all" style={{ width: `${Math.min(course.progress, 100)}%` }} />
                       </div>
                     )}
@@ -454,7 +454,7 @@ export default function TeamsPage() {
           }`}
         >
           Browse Teams
-          <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">{teams.length}</span>
+          <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-white/5 text-slate-500">{teams.length}</span>
         </button>
       </div>
 
@@ -512,7 +512,7 @@ export default function TeamsPage() {
                   {(editFields.avatarUrl || myTeam.avatarUrl) ? (
                     <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-white/10" />
                   ) : (
-                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-white/10">
+                    <div className="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
                       <Camera size={20} className="text-slate-400" />
                     </div>
                   )}
@@ -525,14 +525,14 @@ export default function TeamsPage() {
                   <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleAvatarUpload(e, "edit")} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Team Avatar</p>
+                  <p className="text-sm font-medium text-slate-300">Team Avatar</p>
                   <p className="text-xs text-slate-400">Square image, recommended 128x128</p>
                 </div>
               </div>
 
               {/* Banner */}
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-1.5 block">Banner Image</label>
+                <label className="text-sm font-medium text-slate-300 mb-1.5 block">Banner Image</label>
                 <div className="relative group rounded-xl overflow-hidden border border-white/10">
                   {(editFields.bannerUrl || myTeam.bannerUrl) ? (
                     <img src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" className="w-full h-24 object-cover" />
@@ -553,7 +553,7 @@ export default function TeamsPage() {
 
               {/* Colors */}
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-2 block">Team Colors</label>
+                <label className="text-sm font-medium text-slate-300 mb-2 block">Team Colors</label>
                 <div className="flex flex-wrap gap-2">
                   {PRESET_COLORS.map((preset) => (
                     <button
@@ -646,7 +646,7 @@ export default function TeamsPage() {
               <h2 className="text-lg font-semibold text-white mb-3">Team Members</h2>
               <div className="angular-card overflow-hidden">
                 {sortedMembers.map((member, idx) => (
-                  <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0">
+                  <div key={member.id} className="flex items-center gap-3 px-4 py-3 border-b border-white/10 last:border-b-0">
                     <span className="text-sm font-bold text-slate-400 w-6 text-center">{idx + 1}</span>
                     <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center">
                       <span className="text-xs font-bold text-[#0F203A]">{member.name?.charAt(0)?.toUpperCase() || "?"}</span>
@@ -657,7 +657,7 @@ export default function TeamsPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Star size={12} className="text-amber-400" />
-                      <span className="text-sm font-semibold text-slate-700">{member.xp?.toLocaleString() || 0}</span>
+                      <span className="text-sm font-semibold text-slate-300">{member.xp?.toLocaleString() || 0}</span>
                     </div>
                   </div>
                 ))}
@@ -686,7 +686,7 @@ export default function TeamsPage() {
             </button>
             <button
               onClick={() => { setShowJoin(true); setTeamTab("browse"); }}
-              className="flex items-center gap-2 px-4 py-2 bg-[#0f172a] border border-white/10 text-slate-700 rounded-xl text-sm font-medium hover:border-[#7AD62A] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#0f172a] border border-white/10 text-slate-300 rounded-xl text-sm font-medium hover:border-[#7AD62A] transition-colors"
             >
               <LogIn size={16} /> Join with Code
             </button>
@@ -710,7 +710,7 @@ export default function TeamsPage() {
             </button>
             <button
               onClick={() => { setShowJoin(true); setShowCreate(false); setError(""); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#0f172a] border border-white/10 text-slate-700 rounded-xl text-sm font-medium hover:border-[#7AD62A] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#0f172a] border border-white/10 text-slate-300 rounded-xl text-sm font-medium hover:border-[#7AD62A] transition-colors"
             >
               <LogIn size={16} /> Join with Code
             </button>
@@ -809,7 +809,7 @@ export default function TeamsPage() {
             <button
               onClick={() => setCreateVisibility("PUBLIC")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PUBLIC" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-white/10"
+                createVisibility === "PUBLIC" ? "bg-[#7AD62A] text-white" : "bg-white/5 text-slate-400 hover:bg-white/10"
               }`}
             >
               <Users size={12} /> Public
@@ -817,7 +817,7 @@ export default function TeamsPage() {
             <button
               onClick={() => setCreateVisibility("PRIVATE")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                createVisibility === "PRIVATE" ? "bg-[#7AD62A] text-white" : "bg-slate-100 text-slate-600 hover:bg-white/10"
+                createVisibility === "PRIVATE" ? "bg-[#7AD62A] text-white" : "bg-white/5 text-slate-400 hover:bg-white/10"
               }`}
             >
               <Shield size={12} /> Private
