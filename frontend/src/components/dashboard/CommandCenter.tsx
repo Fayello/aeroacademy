@@ -61,6 +61,14 @@ interface CompetencyData {
   }[];
 }
 
+function getOnboardingData() {
+  try {
+    const s = localStorage.getItem("onboardingSelections");
+    if (s) return JSON.parse(s);
+  } catch {}
+  return null;
+}
+
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return "Good morning";
@@ -178,6 +186,10 @@ export default function CommandCenter() {
   const outcomesCompleted = competency?.summary?.completedOutcomes || 0;
   const roleLabel = getRoleLabel();
   const focusLabel = getFocusLabel();
+  const onboarding = getOnboardingData();
+  const purpose = onboarding?.purpose || [];
+  const field = onboarding?.field || [];
+  const isNewUser = xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
 
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
@@ -197,6 +209,62 @@ export default function CommandCenter() {
           )}
         </div>
       </div>
+
+      {/* ─── PERSONALIZED JOURNEY (based on onboarding purpose) ─── */}
+      {isNewUser && purpose.length > 0 && (
+        <div className="angular-card bg-gradient-to-r from-[#0F203A] to-[#1a3a5c] p-6 text-white animate-fade-in-up animate-delay-1">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center shrink-0">
+              <Zap size={22} className="text-[#7AD62A]" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-base font-bold mb-1">
+                {purpose.includes("learn") && "Ready to start learning?"}
+                {purpose.includes("teach") && "Ready to create courses?"}
+                {purpose.includes("compete") && "Ready to compete?"}
+                {purpose.includes("certify") && "Ready to earn certifications?"}
+                {purpose.includes("team") && "Ready to train your team?"}
+                {!purpose.some((p: string) => ["learn","teach","compete","certify","team"].includes(p)) && "Welcome to XpertClass"}
+              </h3>
+              <p className="text-sm text-white/60 mb-4">
+                {field.length > 0
+                  ? `Based on your interest in ${field[0].replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}, we recommend starting with:`
+                  : "Here's your recommended first step:"}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {purpose.includes("learn") && (
+                  <Link href="/dashboard/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                    <BookOpen size={14} /> Browse Courses
+                  </Link>
+                )}
+                {purpose.includes("teach") && (
+                  <Link href="/dashboard/admin/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                    <BookOpen size={14} /> Create a Course
+                  </Link>
+                )}
+                {purpose.includes("compete") && (
+                  <Link href="/dashboard/leaderboard" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                    <TrendingUp size={14} /> View Leaderboard
+                  </Link>
+                )}
+                {purpose.includes("certify") && (
+                  <Link href="/dashboard/certifications" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                    <Target size={14} /> View Certifications
+                  </Link>
+                )}
+                {purpose.includes("team") && (
+                  <Link href="/dashboard/teams" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                    <FlaskConical size={14} /> Create a Team
+                  </Link>
+                )}
+                <Link href="/dashboard/labs" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-colors">
+                  <Terminal size={14} /> Try a Lab
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── 2 LAUNCHER CARDS ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -289,7 +357,7 @@ export default function CommandCenter() {
         </div>
       )}
 
-      {/* ─── QUICK STATS ROW (compact) ─── */}
+      {/* ─── QUICK STATS ROW ─── */}
       <div className="grid grid-cols-3 gap-3 animate-fade-in-up animate-delay-3">
         <div className="angular-card bg-white p-3 text-center">
           <p className="text-xl font-bold text-slate-900">{labsCompleted}</p>
@@ -305,8 +373,8 @@ export default function CommandCenter() {
         </div>
       </div>
 
-      {/* ─── ENGINEERING PROFILE (compact, inline) ─── */}
-      {domains.length > 0 && (
+      {/* ─── ENGINEERING PROFILE (compact) ─── */}
+      {domains.length > 0 && domains.some((d) => d.score > 0) && (
         <div className="angular-card bg-white p-4 animate-fade-in-up animate-delay-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-slate-900">Your Skills</h2>
@@ -318,7 +386,7 @@ export default function CommandCenter() {
             </Link>
           </div>
           <div className="flex flex-wrap gap-2">
-            {domains.slice(0, 6).map((d) => (
+            {domains.filter((d) => d.score > 0).slice(0, 6).map((d) => (
               <div key={d.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100">
                 <div className="w-2 h-2 rounded-full bg-[#229C62]" />
                 <span className="text-xs font-medium text-slate-700">{d.domainDisplayName || d.domainName}</span>
@@ -329,7 +397,7 @@ export default function CommandCenter() {
         </div>
       )}
 
-      {/* ─── RECOMMENDED (if any) ─── */}
+      {/* ─── RECOMMENDED ─── */}
       {topRecs.length > 0 && (
         <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-5">
           <div className="flex items-center gap-2 mb-3">

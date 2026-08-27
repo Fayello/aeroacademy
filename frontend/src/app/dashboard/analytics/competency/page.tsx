@@ -29,6 +29,8 @@ import {
   Loader2,
   ArrowLeft,
   Zap,
+  BookOpen,
+  FlaskConical,
 } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
@@ -156,6 +158,7 @@ export default function CompetencyAnalyticsPage() {
     );
   }
 
+  const hasData = radarData.some((d) => d.combined > 0);
   const tabs = [
     { key: "radar" as const, label: "Radar", icon: BarChart3 },
     { key: "trajectory" as const, label: "Trajectory", icon: TrendingUp },
@@ -168,7 +171,7 @@ export default function CompetencyAnalyticsPage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link
-          href="/dashboard/competency"
+          href="/dashboard"
           className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
         >
           <ArrowLeft size={18} className="text-slate-600" />
@@ -176,26 +179,55 @@ export default function CompetencyAnalyticsPage() {
         <PageHeader title="Competency Analytics" description="Deep insights into your competency patterns" />
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                activeTab === tab.key
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
+      {/* Empty state — no data at all */}
+      {!hasData && !loading ? (
+        <div className="bg-white rounded-xl border border-slate-200 p-10 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#E9F8EE] flex items-center justify-center mx-auto mb-4">
+            <BarChart3 size={28} className="text-[#229C62]" />
+          </div>
+          <h3 className="text-lg font-bold text-slate-900 mb-2">Your competency profile is empty</h3>
+          <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
+            Complete courses, labs, and assessments to build your competency radar. Your skills will be mapped across domains like Systems, Networking, Security, and more.
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <Link
+              href="/dashboard/courses"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
             >
-              <Icon size={14} />
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+              <BookOpen size={16} />
+              Browse Courses
+            </Link>
+            <Link
+              href="/dashboard/labs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-colors"
+            >
+              <FlaskConical size={16} />
+              Try a Lab
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Tabs */}
+          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                    activeTab === tab.key
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  <Icon size={14} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
 
       {/* Radar Chart */}
       {activeTab === "radar" && (
@@ -521,6 +553,8 @@ export default function CompetencyAnalyticsPage() {
             </>
           )}
         </div>
+      )}
+      </>
       )}
     </div>
   );
