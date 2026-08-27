@@ -93,8 +93,8 @@ export default function StreakPage() {
 
       <div className="angular-card bg-[#0f172a] p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="bg-cyan-50 p-2 rounded-lg">
-            <Snowflake size={20} className="text-cyan-600" />
+          <div className="bg-cyan-500/10 p-2 rounded-lg">
+            <Snowflake size={20} className="text-cyan-400" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-white">{t("streak.freezes")}</h2>
@@ -106,7 +106,7 @@ export default function StreakPage() {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm text-slate-600">{t("streak.available")}</span>
-              <span className="text-lg font-bold text-cyan-600">{streak.streakFreezes}</span>
+              <span className="text-lg font-bold text-cyan-400">{streak.streakFreezes}</span>
             </div>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function StreakPage() {
                 key={days}
                 className={`rounded-lg border p-3 text-center ${
                   reached
-                    ? "bg-amber-500/10 border-amber-200"
+                    ? "bg-amber-500/10 border-amber-500/20"
                     : "bg-white/5 border-white/10 opacity-50"
                 }`}
               >

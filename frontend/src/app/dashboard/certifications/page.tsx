@@ -97,9 +97,9 @@ export default function CertificationsPage() {
   }
 
   const certColors: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-    XCA: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-500" },
-    XCP: { bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/30", text: "text-[#0F203A]", icon: "text-[#7AD62A]" },
-    XCE: { bg: "bg-amber-500/10", border: "border-amber-200", text: "text-amber-700", icon: "text-amber-500" },
+    XCA: { bg: "bg-blue-500/10", border: "border-blue-500/20", text: "text-blue-400", icon: "text-blue-400" },
+    XCP: { bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/30", text: "text-[#7AD62A]", icon: "text-[#7AD62A]" },
+    XCE: { bg: "bg-amber-500/10", border: "border-amber-500/20", text: "text-amber-400", icon: "text-amber-400" },
   };
 
   return (
@@ -196,13 +196,13 @@ export default function CertificationsPage() {
                           <button
                             onClick={() => handleAward(ev.code)}
                             disabled={awarding === ev.code}
-                            className="px-3 py-1.5 bg-[#7AD62A] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
+                            className="px-3 py-1.5 bg-[#7AD62A] hover:bg-[#6bc422] disabled:opacity-50 text-[#0F203A] rounded-lg text-xs font-medium transition-colors"
                           >
                             {awarding === ev.code ? <Loader2 size={12} className="animate-spin" /> : "Confirm"}
                           </button>
                           <button
                             onClick={() => setConfirmClaim(null)}
-                            className="px-3 py-1.5 bg-slate-100 hover:bg-white/10 text-slate-600 rounded-lg text-xs font-medium transition-colors"
+                            className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg text-xs font-medium transition-colors"
                           >
                             Cancel
                           </button>
@@ -210,14 +210,14 @@ export default function CertificationsPage() {
                       ) : (
                         <button
                           onClick={() => setConfirmClaim(ev.code)}
-                          className="px-4 py-2 bg-[#7AD62A] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                          className="px-4 py-2 bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
                         >
                           <Award size={14} />
                           Claim
                         </button>
                       )
                     ) : (
-                      <span className="flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-500 rounded-full text-xs font-medium">
+                      <span className="flex items-center gap-1 px-3 py-1 bg-white/5 text-slate-400 rounded-full text-xs font-medium">
                         <Lock size={12} />
                         Requirements pending
                       </span>
@@ -235,7 +235,7 @@ export default function CertificationsPage() {
                             : "bg-white/5 border-white/10"
                         }`}
                       >
-                        <div className="text-xs font-medium text-slate-700 mb-1">
+                        <div className="text-xs font-medium text-slate-300 mb-1">
                           {dr.domainName}
                         </div>
                         <div className="flex items-center gap-3 text-[10px]">

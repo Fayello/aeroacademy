@@ -291,7 +291,7 @@ export default function LeaderboardPage() {
             key={league}
             onClick={() => setActiveLeague(league)}
             className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
-              activeLeague === league ? "bg-slate-800 text-white border border-slate-800" : "bg-[#0f172a] text-slate-600 border border-white/10 hover:bg-white/5"
+              activeLeague === league ? "bg-[#7AD62A] text-[#0F203A] border border-[#7AD62A]" : "bg-[#0f172a] text-slate-400 border border-white/10 hover:bg-white/5"
             }`}
           >
             {league === "TEAMS" && <Users size={14} className="inline mr-1.5 -mt-0.5" />}
@@ -312,8 +312,8 @@ export default function LeaderboardPage() {
               onClick={() => setTimeFilter(key)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
                 timeFilter === key
-                  ? "bg-[#7AD62A] text-white shadow-sm"
-                  : "text-slate-600 hover:text-white hover:bg-white/5"
+                ? "bg-[#7AD62A] text-[#0F203A] shadow-sm"
+                   : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
             >
               {label}
@@ -324,7 +324,7 @@ export default function LeaderboardPage() {
         <select
           value={domainFilter}
           onChange={(e) => setDomainFilter(e.target.value as typeof domainFilter)}
-          className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#0f172a] text-sm font-medium text-slate-700 hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
+          className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#0f172a] text-sm font-medium text-slate-300 hover:border-white/10 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
         >
           <option value="all">All Domains</option>
           <option value="SECURITY">Security</option>
@@ -351,7 +351,7 @@ export default function LeaderboardPage() {
                 key={city.name}
                 onClick={() => setSelectedCity(city.name)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCity === city.name ? "bg-slate-800 text-white border border-slate-800" : "bg-[#0f172a] text-slate-600 border border-white/10 hover:bg-white/5"
+                  selectedCity === city.name ? "bg-[#7AD62A] text-[#0F203A] border border-[#7AD62A]" : "bg-[#0f172a] text-slate-400 border border-white/10 hover:bg-white/5"
                 }`}
               >
                 {city.name}
@@ -453,27 +453,27 @@ export default function LeaderboardPage() {
         return (
           <div className="angular-card border-white/10 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
-                <TrendingUp size={22} className="text-slate-600" />
+              <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+                <TrendingUp size={22} className="text-[#7AD62A]" />
               </div>
               <div>
                 <p className="text-lg font-semibold text-white">Level {currentLevel} — {userMetrics.division}</p>
                 <p className="text-sm text-slate-500">{xpNeeded} XP to Level {currentLevel + 1}</p>
               </div>
             </div>
-            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+            <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-slate-800 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-[#7AD62A] to-[#6bc422] rounded-full transition-all duration-500"
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
-            <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="flex items-center justify-between text-sm text-slate-400">
               <span>{xpInLevel.toLocaleString()} / 1,000 XP</span>
               <span className="font-medium text-white">{Math.round(progress * 100)}%</span>
             </div>
             {nextUnlock && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-slate-600 bg-white/5 rounded-xl px-4 py-3">
-                <Lock size={14} className="text-slate-400" />
+              <div className="mt-4 flex items-center gap-2 text-sm text-slate-400 bg-white/5 rounded-xl px-4 py-3">
+                <Lock size={14} className="text-slate-500" />
                 <span>Reach <span className="font-semibold text-white">Level {nextUnlock.level}</span> to unlock {nextUnlock.label}</span>
               </div>
             )}
@@ -525,7 +525,7 @@ export default function LeaderboardPage() {
                 <div className="flex items-center gap-2">
                   <p className="text-sm sm:text-base font-semibold text-white truncate">{team.name}</p>
                   {team.visibility === "PRIVATE" && (
-                    <span className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-white/10">Private</span>
+                    <span className="text-[10px] font-medium text-slate-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">Private</span>
                   )}
                 </div>
                 <p className="text-sm text-slate-500 mt-0.5">
@@ -593,7 +593,7 @@ export default function LeaderboardPage() {
           <div
             key={op.id}
             className={`angular-card p-3 sm:p-4 flex items-center gap-2 sm:gap-3 transition-all hover:shadow-md hover-lift ${
-              op.id === currentUserId ? "border-slate-400 bg-white/5 shadow-md" :
+              op.id === currentUserId ? "border-[#7AD62A] bg-[#7AD62A]/5 shadow-md" :
               idx < 3 ? "border-white/10 bg-white/5" : "border-white/10"
             }`}
           >
@@ -612,10 +612,10 @@ export default function LeaderboardPage() {
 
             {/* Avatar + Info */}
             <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
-              idx === 0 ? "bg-slate-800 text-white" :
-              idx === 1 ? "bg-slate-600 text-white" :
-              idx === 2 ? "bg-white/50 text-white" :
-              "bg-slate-100 text-slate-600"
+              idx === 0 ? "bg-[#7AD62A] text-[#0F203A]" :
+              idx === 1 ? "bg-[#7AD62A]/80 text-[#0F203A]" :
+              idx === 2 ? "bg-[#7AD62A]/60 text-white" :
+              "bg-white/5 text-slate-400"
             }`}>
               {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
             </div>
@@ -628,7 +628,7 @@ export default function LeaderboardPage() {
                   {op.division}
                 </Badge>
                 {op.xp > 2500 && (
-                  <span className="hidden sm:inline-flex text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-white/10 items-center gap-0.5">
+                  <span className="hidden sm:inline-flex text-[10px] font-medium text-[#7AD62A] bg-[#7AD62A]/10 px-2 py-0.5 rounded-full border border-[#7AD62A]/20 items-center gap-0.5">
                     <CheckCircle size={10} /> Top talent
                   </span>
                 )}
