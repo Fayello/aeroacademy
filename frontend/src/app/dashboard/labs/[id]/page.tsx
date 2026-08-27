@@ -18,6 +18,34 @@ import Modal from "@/components/Modal";
 import { getLevel, getLabLock } from "@/lib/levelGating";
 import type { LabTelemetry } from "@/types/api";
 
+interface ReviewUser {
+  id: string;
+  name: string | null;
+  email: string;
+  division: string;
+}
+
+interface LabReview {
+  id: string;
+  userId: string;
+  labId: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  user: ReviewUser;
+}
+
+interface ReviewStats {
+  average: number;
+  total: number;
+  distribution: Record<number, number>;
+}
+
+interface ReviewsData {
+  reviews: LabReview[];
+  stats: ReviewStats;
+}
+
 interface LabCredential {
   service: string;
   username: string;
@@ -120,6 +148,55 @@ export default function LabWorkspace() {
   const [hasConnected, setHasConnected] = useState(false);
   const [viewMode, setViewMode] = useState<"info" | "workspace">("info");
   const [activeLabTab, setActiveLabTab] = useState<"play" | "info" | "reviews">("play");
+  const [reviewsData, setReviewsData] = useState<ReviewsData | null>(null);
+  const [myRating, setMyRating] = useState(0);
+  const [myComment, setMyComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
+
+  // Load lab reviews
+  useEffect(() => {
+    if (activeLabTab !== "reviews" || !id) return;
+    let cancelled = false;
+    fetchApi(`/labs/${id}/reviews`)
+      .then((data) => { if (!cancelled) setReviewsData(data as ReviewsData); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [activeLabTab, id]);
+
+  // Load existing user review
+  useEffect(() => {
+    if (!reviewsData || !id) return;
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const user = JSON.parse(stored);
+        const existing = reviewsData.reviews.find((r) => r.userId === user.id);
+        if (existing) {
+          setMyRating(existing.rating);
+          setMyComment(existing.comment || "");
+        }
+      }
+    } catch {}
+  }, [reviewsData, id]);
+
+  const handleSubmitReview = useCallback(async () => {
+    if (myRating < 1) return;
+    setSubmittingReview(true);
+    try {
+      await fetchApi(`/labs/${id}/reviews`, {
+        method: "POST",
+        body: JSON.stringify({ rating: myRating, comment: myComment || undefined }),
+      });
+      toast.success("Review submitted!");
+      const data = await fetchApi(`/labs/${id}/reviews`);
+      setReviewsData(data as ReviewsData);
+    } catch {
+      toast.error("Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
+    }
+  }, [id, myRating, myComment]);
 
   const clearReconnectTimer = useCallback(() => {
     if (reconnectTimerRef.current) {
@@ -721,16 +798,29 @@ export default function LabWorkspace() {
             <div className="angular-card bg-white p-6">
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-slate-900">—</p>
+                  <p className="text-4xl font-bold text-slate-900">{reviewsData?.stats.average ? reviewsData.stats.average.toFixed(1) : "—"}</p>
                   <div className="flex items-center gap-0.5 my-1">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={14} className="text-slate-200" />
+                      <Star key={s} size={14} className={s <= Math.round(reviewsData?.stats.average || 0) ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
                     ))}
                   </div>
-                  <p className="text-xs text-slate-400">No ratings yet</p>
+                  <p className="text-xs text-slate-400">{reviewsData?.stats.total || 0} ratings</p>
                 </div>
                 <div className="flex-1 space-y-1.5">
-                  <p className="text-sm text-slate-400 text-center py-4">Reviews coming soon. Be the first to rate this lab!</p>
+                  {[5, 4, 3, 2, 1].map((star) => {
+                    const count = reviewsData?.stats.distribution[star] || 0;
+                    const total = reviewsData?.stats.total || 1;
+                    return (
+                      <div key={star} className="flex items-center gap-2">
+                        <span className="text-xs text-slate-500 w-3">{star}</span>
+                        <Star size={10} className="text-amber-400 fill-amber-400" />
+                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${(count / total) * 100}%` }} />
+                        </div>
+                        <span className="text-xs text-slate-400 w-6 text-right">{count}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -738,18 +828,76 @@ export default function LabWorkspace() {
             {/* Write a review */}
             <div className="angular-card bg-white p-6">
               <h3 className="text-sm font-semibold text-slate-900 mb-3">Write a Review</h3>
-              <div className="p-4 rounded-lg bg-slate-50 border border-dashed border-slate-300 text-center">
-                <p className="text-sm text-slate-400">Review submission coming soon. Check back later!</p>
+              <div className="flex items-center gap-1 mb-3">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <button
+                    key={s}
+                    onMouseEnter={() => setHoverRating(s)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => setMyRating(s)}
+                    className="p-0.5"
+                  >
+                    <Star
+                      size={20}
+                      className={`transition-colors ${
+                        s <= (hoverRating || myRating) ? "text-amber-400 fill-amber-400" : "text-slate-300"
+                      }`}
+                    />
+                  </button>
+                ))}
+                {myRating > 0 && <span className="text-sm text-slate-500 ml-2">{myRating}/5</span>}
               </div>
+              <textarea
+                value={myComment}
+                onChange={(e) => setMyComment(e.target.value)}
+                placeholder="Share your experience with this lab (optional)..."
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] resize-none transition-all"
+              />
+              <button
+                onClick={handleSubmitReview}
+                disabled={myRating < 1 || submittingReview}
+                className="mt-3 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {submittingReview ? "Submitting..." : "Submit Review"}
+              </button>
             </div>
 
             {/* Reviews list */}
             <div className="angular-card bg-white p-6">
               <h3 className="text-sm font-semibold text-slate-900 mb-4">Reviews</h3>
-              <div className="text-center py-8">
-                <MessageSquare size={32} className="mx-auto mb-3 text-slate-300" />
-                <p className="text-sm text-slate-500">No reviews yet. Be the first to review this lab!</p>
-              </div>
+              {!reviewsData || reviewsData.reviews.length === 0 ? (
+                <div className="text-center py-8">
+                  <MessageSquare size={32} className="mx-auto mb-3 text-slate-300" />
+                  <p className="text-sm text-slate-500">No reviews yet. Be the first to review this lab!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {reviewsData.reviews.map((review) => (
+                    <div key={review.id} className="p-4 rounded-lg bg-slate-50 border border-slate-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center text-white text-[9px] font-bold">
+                            {review.user.name?.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || "?"}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-900">{review.user.name || "Anonymous"}</p>
+                            <p className="text-[10px] text-slate-400">{new Date(review.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} size={12} className={s <= review.rating ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
+                          ))}
+                        </div>
+                      </div>
+                      {review.comment && (
+                        <p className="text-sm text-slate-600">{review.comment}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
