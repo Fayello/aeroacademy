@@ -47,8 +47,8 @@ interface Cohort {
 
 function ScoreBadge({ score }: { score: number }) {
   if (score >= 80) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#7AD62A]/10 text-[#7AD62A]">{score}%</span>;
-  if (score >= 60) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">{score}%</span>;
-  return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">{score}%</span>;
+  if (score >= 60) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400">{score}%</span>;
+  return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400">{score}%</span>;
 }
 
 export default function CohortIntelligencePage() {
@@ -115,7 +115,7 @@ export default function CohortIntelligencePage() {
           </div>
         ) : (
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Select Cohort</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Select Cohort</label>
             <select
               value={selectedCohort}
               onChange={(e) => loadCohort(e.target.value)}
@@ -172,14 +172,14 @@ export default function CohortIntelligencePage() {
                 {data.categorySummary.map((cat) => (
                   <div key={cat.category}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-slate-700">{cat.category}</span>
+                      <span className="text-sm font-medium text-slate-300">{cat.category}</span>
                       <div className="flex items-center gap-3 text-xs text-slate-500">
                         <span>{cat.attempts} attempts</span>
                         <span>Range: {cat.minScore}%-{cat.maxScore}%</span>
                         <ScoreBadge score={cat.avgScore} />
                       </div>
                     </div>
-                    <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
                       <div className={`h-full rounded-full transition-all duration-500 ${
                         cat.avgScore >= 70 ? "bg-[#7AD62A]" : cat.avgScore >= 50 ? "bg-amber-500" : "bg-red-500"
                       }`} style={{ width: `${cat.avgScore}%` }} />
@@ -203,7 +203,7 @@ export default function CohortIntelligencePage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100">
+                  <tr className="border-b border-white/10">
                     <th className="px-4 py-3 text-left font-medium text-slate-500 w-8">#</th>
                     {[
                       { key: "name" as const, label: "Student" },
@@ -228,7 +228,7 @@ export default function CohortIntelligencePage() {
                     <tr key={s.id} className="border-b border-slate-50 hover:bg-white/5/50 transition-colors">
                       <td className="px-4 py-3">
                         <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                          i === 0 ? "bg-amber-100 text-amber-700" : i === 1 ? "bg-white/10 text-slate-600" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-500"
+                          i === 0 ? "bg-amber-500/10 text-amber-400" : i === 1 ? "bg-white/10 text-slate-400" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-white/5 text-slate-500"
                         }`}>{i + 1}</span>
                       </td>
                       <td className="px-4 py-3">
@@ -236,7 +236,7 @@ export default function CohortIntelligencePage() {
                         <div className="text-xs text-slate-400">{s.email}</div>
                       </td>
                       <td className="px-4 py-3"><ScoreBadge score={s.avgScore} /></td>
-                      <td className="px-4 py-3 text-slate-600">{s.totalAssessments}</td>
+                      <td className="px-4 py-3 text-slate-400">{s.totalAssessments}</td>
                     </tr>
                   ))}
                   {sortedStudents.length === 0 && (

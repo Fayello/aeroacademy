@@ -359,11 +359,11 @@ export default function AdminCoursesPage() {
                   <button onClick={(e) => { e.stopPropagation(); toggleCourseSelection(course.id); }} className="text-slate-300 hover:text-[#7AD62A] transition-colors shrink-0" title={selectedCourses.has(course.id) ? "Deselect" : "Select"}>
                     {selectedCourses.has(course.id) ? <CheckSquare size={18} className="text-[#7AD62A]" /> : <Square size={18} />}
                   </button>
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
-                    <GraduationCap size={20} className="text-blue-600 group-hover:text-white transition-colors" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                    <GraduationCap size={20} className="text-blue-400 group-hover:text-white transition-colors" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white group-hover:text-blue-600 transition-colors">{course.title}</h3>
+                    <h3 className="font-semibold text-white group-hover:text-blue-400 transition-colors">{course.title}</h3>
                     <p className="text-sm text-slate-500 line-clamp-1 max-w-lg">{course.description}</p>
                   </div>
                 </div>
@@ -379,7 +379,7 @@ export default function AdminCoursesPage() {
                   <div className="flex items-center gap-2">
                     <button onClick={(e) => { e.stopPropagation(); setCourseForm({ title: course.title, description: course.description }); setCourseModal({ open: true, editing: course }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
                     <button onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, type: "course", item: course }); }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
-                    <ChevronRight size={18} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                    <ChevronRight size={18} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
                   </div>
                 </div>
               </div>
@@ -387,7 +387,7 @@ export default function AdminCoursesPage() {
           ))}
         </div>
 
-        <AdminModal isOpen={courseModal.open} onClose={() => setCourseModal({ open: false, editing: null })} title={courseModal.editing ? "Edit Course" : "New Course"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setCourseModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveCourse} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+        <AdminModal isOpen={courseModal.open} onClose={() => setCourseModal({ open: false, editing: null })} title={courseModal.editing ? "Edit Course" : "New Course"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setCourseModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveCourse} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
           <div className="space-y-4">
             <AdminInput label="Title" value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} placeholder="Course title" required />
             <AdminTextarea label="Description" value={courseForm.description} onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })} placeholder="Course description" rows={4} required />
@@ -435,7 +435,7 @@ export default function AdminCoursesPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">Order: {section.order}</span>
+                  <span className="text-xs bg-white/5 text-slate-400 px-2 py-1 rounded-lg">Order: {section.order}</span>
                   <button onClick={(e) => { e.stopPropagation(); setSectionForm({ title: section.title, order: section.order }); setSectionModal({ open: true, editing: section }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
                   <button onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, type: "section", item: section }); }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
                   <ChevronRight size={18} className="text-slate-400 group-hover:text-violet-600 transition-colors" />
@@ -445,7 +445,7 @@ export default function AdminCoursesPage() {
           ))}
         </div>
 
-        <AdminModal isOpen={sectionModal.open} onClose={() => setSectionModal({ open: false, editing: null })} title={sectionModal.editing ? "Edit Section" : "New Section"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setSectionModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveSection} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+        <AdminModal isOpen={sectionModal.open} onClose={() => setSectionModal({ open: false, editing: null })} title={sectionModal.editing ? "Edit Section" : "New Section"} footer={<div className="flex gap-3 justify-end"><button onClick={() => setSectionModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveSection} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
           <div className="space-y-4">
             <AdminInput label="Title" value={sectionForm.title} onChange={(e) => setSectionForm({ ...sectionForm, title: e.target.value })} placeholder="Section title" required />
             <AdminNumber label="Order" value={sectionForm.order} onChange={(e) => setSectionForm({ ...sectionForm, order: parseInt(e.target.value) || 0 })} min={0} />
@@ -488,15 +488,15 @@ export default function AdminCoursesPage() {
                 <div>
                   <h3 className="font-semibold text-white">{lesson.title}</h3>
                   <div className="flex items-center gap-3 mt-1">
-                    {lesson.videoUrl && <span className="text-xs bg-blue-500/10 text-blue-700 px-2 py-0.5 rounded-full">Video</span>}
-                    {lesson.content && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Content</span>}
-                    {lesson.labId && <span className="text-xs bg-amber-500/10 text-amber-700 px-2 py-0.5 rounded-full">Lab</span>}
+                    {lesson.videoUrl && <span className="text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full">Video</span>}
+                    {lesson.content && <span className="text-xs bg-white/5 text-slate-400 px-2 py-0.5 rounded-full">Content</span>}
+                    {lesson.labId && <span className="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full">Lab</span>}
                     {lesson.quiz && <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Quiz ({lesson.quiz.questions?.length || 0} Q)</span>}
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">Order: {lesson.order}</span>
+                <span className="text-xs bg-white/5 text-slate-400 px-2 py-1 rounded-lg">Order: {lesson.order}</span>
                 <button onClick={() => { setLessonForm({ title: lesson.title, videoUrl: lesson.videoUrl || "", content: lesson.content || "", labId: lesson.labId || "", order: lesson.order }); setLessonModal({ open: true, editing: lesson }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>
                 <button onClick={() => { setQuizForm(lesson.quiz?.questions?.map((q: QuizQuestion) => ({ text: q.text, answers: q.answers.map((a: QuizAnswer) => ({ text: a.text, isCorrect: a.isCorrect })) })) || []); setQuizModal({ open: true, lesson }); }} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"><HelpCircle size={16} /></button>
                 <button onClick={() => setDeleteDialog({ open: true, type: lesson.quiz ? "lesson-with-quiz" : "lesson", item: lesson })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={16} /></button>
@@ -507,7 +507,7 @@ export default function AdminCoursesPage() {
       </div>
 
       {/* Lesson Modal */}
-      <AdminModal isOpen={lessonModal.open} onClose={() => setLessonModal({ open: false, editing: null })} title={lessonModal.editing ? "Edit Lesson" : "New Lesson"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLessonModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveLesson} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+      <AdminModal isOpen={lessonModal.open} onClose={() => setLessonModal({ open: false, editing: null })} title={lessonModal.editing ? "Edit Lesson" : "New Lesson"} size="lg" footer={<div className="flex gap-3 justify-end"><button onClick={() => setLessonModal({ open: false, editing: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveLesson} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
         <div className="space-y-4">
           <AdminInput label="Title" value={lessonForm.title} onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })} placeholder="Lesson title" required />
           <AdminInput label="Video URL" value={lessonForm.videoUrl} onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })} placeholder="https://..." hint="YouTube, Vimeo, or direct URL" />
@@ -518,7 +518,7 @@ export default function AdminCoursesPage() {
       </AdminModal>
 
       {/* Quiz Modal */}
-      <AdminModal isOpen={quizModal.open} onClose={() => setQuizModal({ open: false, lesson: null })} title="Manage Quiz" size="xl" footer={<div className="flex gap-3 justify-end"><button onClick={() => setQuizModal({ open: false, lesson: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveQuiz} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save Quiz"}</button></div>}>
+      <AdminModal isOpen={quizModal.open} onClose={() => setQuizModal({ open: false, lesson: null })} title="Manage Quiz" size="xl" footer={<div className="flex gap-3 justify-end"><button onClick={() => setQuizModal({ open: false, lesson: null })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSaveQuiz} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save Quiz"}</button></div>}>
         <div className="space-y-6">
           {quizForm.map((q, qi) => (
             <div key={qi} className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-3">

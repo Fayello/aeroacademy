@@ -25,9 +25,9 @@ interface Talent {
 
 const divisionBadge: Record<string, string> = {
   TITAN: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  DIAMOND: "bg-blue-100 text-blue-700 border-blue-200",
+  DIAMOND: "bg-blue-500/10 text-blue-400 border-blue-200",
   PLATINUM: "bg-[#7AD62A]/10 text-[#0F203A] border-[#7AD62A]/20",
-  GOLD: "bg-amber-100 text-amber-700 border-amber-200",
+  GOLD: "bg-amber-500/10 text-amber-400 border-amber-200",
 };
 
 const PAGE_SIZE = 12;
@@ -141,7 +141,7 @@ export default function EnterprisePortal() {
       </div>
 
       {(userRole === "ADMIN" || userRole === "RECRUITER") && (
-        <div className="flex bg-slate-100 p-1 rounded-lg w-fit">
+        <div className="flex bg-white/5 p-1 rounded-lg w-fit">
           <button onClick={() => setView("TALENT")} className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${view === "TALENT" ? "bg-[#0f172a] text-white shadow-sm" : "text-slate-500 hover:text-slate-200"}`}>
             Talent Pool
           </button>
@@ -162,12 +162,12 @@ export default function EnterprisePortal() {
               <input type="text" placeholder="Search by name or institution..." className="input-field pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-white/10"}`}>
+              <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-slate-800 text-white border border-slate-800" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}>
                 <Star size={12} className="inline mr-1" fill={showShortlistedOnly ? "currentColor" : "none"} />
                 Saved
               </button>
               {cities.map((city) => (
-                <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-slate-800 text-white border border-slate-800" : "bg-slate-100 text-slate-600 hover:bg-white/10"}`}>
+                <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-slate-800 text-white border border-slate-800" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}>
                   {city}
                 </button>
               ))}
@@ -179,16 +179,16 @@ export default function EnterprisePortal() {
             {paginatedTalent.map((t) => (
               <div key={t.id} className="bg-[#0f172a] rounded-xl border border-white/10 p-5 space-y-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${divisionBadge[t.division] || "bg-slate-100 text-slate-600 border-white/10"}`}>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${divisionBadge[t.division] || "bg-white/5 text-slate-400 border-white/10"}`}>
                     {t.division}
                   </span>
-                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-300 hover:bg-white/5"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
+                  <button onClick={() => handleToggleShortlist(t.id)} className={`p-1.5 rounded-lg transition-colors ${shortlisted.has(t.id) ? "bg-white/5 text-slate-300" : "text-slate-400 hover:text-slate-300 hover:bg-white/5"}`} aria-label={shortlisted.has(t.id) ? `Remove ${t.name} from shortlist` : `Add ${t.name} to shortlist`}>
                     <Star size={14} fill={shortlisted.has(t.id) ? "currentColor" : "none"} />
                   </button>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-sm font-semibold text-slate-600">
+                  <div className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center text-sm font-semibold text-slate-400">
                     {t.name?.[0] || '?'}
                   </div>
                   <div className="min-w-0">
@@ -216,7 +216,7 @@ export default function EnterprisePortal() {
                   <span className="truncate">{t.organization?.name || "Independent"}</span>
                 </div>
 
-                <div className="flex gap-2 pt-2 border-t border-slate-100">
+                <div className="flex gap-2 pt-2 border-t border-white/10">
                   <Link href={`/dashboard/enterprise/registry/${t.id}`} className="flex-1 btn-primary text-xs py-2 justify-center">
                     View Profile
                   </Link>
@@ -230,17 +230,17 @@ export default function EnterprisePortal() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft size={16} />
               </button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-slate-400">
                 Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight size={16} />
               </button>

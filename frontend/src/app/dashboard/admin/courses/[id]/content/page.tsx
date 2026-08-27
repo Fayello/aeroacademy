@@ -388,7 +388,7 @@ export default function CourseContentAdminPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowHistory(!showHistory)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 text-slate-600 hover:bg-white/5 text-sm font-medium transition-all"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 text-slate-400 hover:bg-white/5 text-sm font-medium transition-all"
                 >
                   <History size={14} /> History ({history.length})
                 </button>
@@ -419,7 +419,7 @@ export default function CourseContentAdminPage() {
                 key={i}
                 className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-white/5"
               >
-                <span className="text-slate-600">
+                <span className="text-slate-400">
                   <span className="font-medium text-white">
                     {entry.title}
                   </span>{" "}
@@ -481,7 +481,7 @@ export default function CourseContentAdminPage() {
                     <h3 className="font-semibold text-white">
                       {section.title}
                     </h3>
-                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">
+                    <span className="text-xs bg-white/5 text-slate-400 px-2 py-0.5 rounded-lg">
                       {section.lessons?.length || 0} lessons
                     </span>
                   </div>
@@ -601,12 +601,12 @@ export default function CourseContentAdminPage() {
                             </p>
                             <div className="flex items-center gap-2 mt-0.5">
                               {lesson.videoUrl && (
-                                <span className="text-[10px] bg-blue-500/10 text-blue-700 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded">
                                   Video
                                 </span>
                               )}
                               {lesson.content && (
-                                <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] bg-white/5 text-slate-400 px-1.5 py-0.5 rounded">
                                   Content
                                 </span>
                               )}
@@ -693,7 +693,7 @@ export default function CourseContentAdminPage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <label className="block text-xs font-medium text-slate-400 mb-1.5">
                   Title
                 </label>
                 <input
@@ -709,7 +709,7 @@ export default function CourseContentAdminPage() {
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setSectionModal({ open: false, editing: null })}
-                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -751,7 +751,7 @@ export default function CourseContentAdminPage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <label className="block text-xs font-medium text-slate-400 mb-1.5">
                   Title
                 </label>
                 <input
@@ -764,7 +764,7 @@ export default function CourseContentAdminPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <label className="block text-xs font-medium text-slate-400 mb-1.5">
                   Video URL
                 </label>
                 <input
@@ -780,7 +780,7 @@ export default function CourseContentAdminPage() {
                 </p>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <label className="block text-xs font-medium text-slate-400 mb-1.5">
                   Content (Markdown)
                 </label>
                 <textarea
@@ -797,7 +797,7 @@ export default function CourseContentAdminPage() {
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setLessonModal({ open: false, editing: null })}
-                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -841,7 +841,7 @@ export default function CourseContentAdminPage() {
                 <X size={18} />
               </button>
             </div>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-sm text-slate-400 mb-4">
               Move &quot;{moveModal.lesson.title}&quot; to another section.
             </p>
             <select
@@ -865,7 +865,7 @@ export default function CourseContentAdminPage() {
                 onClick={() =>
                   setMoveModal({ open: false, lesson: null, targetSectionId: "" })
                 }
-                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -927,7 +927,7 @@ export default function CourseContentAdminPage() {
                   setBulkModal({ open: false, sectionId: "" });
                   setBulkJson("");
                 }}
-                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -961,7 +961,7 @@ export default function CourseContentAdminPage() {
             <h3 className="text-lg font-semibold text-white mb-2">
               Delete {deleteDialog.type === "section" ? "Section" : "Lesson"}
             </h3>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-400 mb-6">
               {deleteDialog.type === "section"
                 ? `Delete "${(deleteDialog.item as Section)?.title}" and all its lessons?`
                 : `Delete "${(deleteDialog.item as Lesson)?.title}"?`}
@@ -971,7 +971,7 @@ export default function CourseContentAdminPage() {
                 onClick={() =>
                   setDeleteDialog({ open: false, type: "section", item: null })
                 }
-                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium"
+                className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 text-sm font-medium"
               >
                 Cancel
               </button>

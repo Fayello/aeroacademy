@@ -69,11 +69,11 @@ const badgeTierBg: Record<string, string> = {
 };
 
 const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; nextAt: number }> = {
-  BRONZE:   { color: "text-amber-700", bg: "bg-amber-100", next: "SILVER", nextAt: 800 },
+  BRONZE:   { color: "text-amber-400", bg: "bg-amber-500/10", next: "SILVER", nextAt: 800 },
   SILVER:   { color: "text-slate-500", bg: "bg-white/10", next: "GOLD", nextAt: 1200 },
-  GOLD:     { color: "text-amber-600", bg: "bg-amber-100", next: "PLATINUM", nextAt: 1600 },
+  GOLD:     { color: "text-amber-600", bg: "bg-amber-500/10", next: "PLATINUM", nextAt: 1600 },
   PLATINUM: { color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", next: "DIAMOND", nextAt: 2000 },
-  DIAMOND:  { color: "text-blue-600", bg: "bg-blue-100", next: "TITAN", nextAt: 2400 },
+  DIAMOND:  { color: "text-blue-400", bg: "bg-blue-500/10", next: "TITAN", nextAt: 2400 },
   TITAN:    { color: "text-indigo-600", bg: "bg-indigo-100", next: "", nextAt: Infinity },
 };
 
@@ -128,7 +128,7 @@ export default function PublicProfilePage() {
   if (notFound || !user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
           <Users size={32} className="text-slate-300" />
         </div>
         <h1 className="text-xl font-semibold text-white">User not found</h1>
@@ -207,7 +207,7 @@ export default function PublicProfilePage() {
                 {division}
               </span>
               {user.clearance && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/5 text-slate-400">
                   {user.clearance.replace("_", " ")}
                 </span>
               )}
@@ -216,11 +216,11 @@ export default function PublicProfilePage() {
               {user.username && (
                 <span className="flex items-center gap-1 text-[#7AD62A] font-medium">@{user.username}</span>
               )}
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">{user.role}</span>
+              <span className="px-2 py-0.5 rounded-full bg-white/5 text-slate-400 text-xs font-medium">{user.role}</span>
             </div>
             {(user.bio || user.city || user.organization || user.team) && (
               <div className="mt-3 space-y-1">
-                {user.bio && <p className="text-sm text-slate-600">{user.bio}</p>}
+                {user.bio && <p className="text-sm text-slate-400">{user.bio}</p>}
                 <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
                   {user.city && (
                     <span className="flex items-center gap-1"><MapPin size={12} />{user.city}</span>
@@ -285,7 +285,7 @@ export default function PublicProfilePage() {
               <p className="text-sm text-slate-500">{xp.toLocaleString()} total XP</p>
             </div>
           </div>
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+          <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-2">
             <div
               className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
               style={{ width: `${Math.round(progress * 100)}%` }}
@@ -313,7 +313,7 @@ export default function PublicProfilePage() {
           </div>
           {divInfo.next && (
             <>
-              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-2">
+              <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-2">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(100, (rank / divInfo.nextAt) * 100)}%` }}
@@ -346,7 +346,7 @@ export default function PublicProfilePage() {
           <div className="p-4 rounded-xl bg-[#7AD62A]/10/40 border border-[#7AD62A]/10">
             <div className="flex items-center gap-2 mb-1">
               <Flame size={16} className="text-[#7AD62A]" />
-              <span className="text-sm font-medium text-slate-700">Current Streak</span>
+              <span className="text-sm font-medium text-slate-300">Current Streak</span>
             </div>
             <p className="text-2xl font-bold text-[#7AD62A]">{streak}</p>
             <p className="text-xs text-slate-400 mt-0.5">day{streak !== 1 ? "s" : ""}</p>
@@ -354,7 +354,7 @@ export default function PublicProfilePage() {
           <div className="p-4 rounded-xl bg-white/5 border border-white/10">
             <div className="flex items-center gap-2 mb-1">
               <Trophy size={16} className="text-amber-500" />
-              <span className="text-sm font-medium text-slate-700">Longest Streak</span>
+              <span className="text-sm font-medium text-slate-300">Longest Streak</span>
             </div>
             <p className="text-2xl font-bold text-white">{longestStreak}</p>
             <p className="text-xs text-slate-400 mt-0.5">day{longestStreak !== 1 ? "s" : ""}</p>

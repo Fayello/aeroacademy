@@ -51,12 +51,12 @@ export default function RegistryPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Clearance status */}
         <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 text-center">
-          <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-            <Shield size={36} className="text-slate-600" />
+          <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+            <Shield size={36} className="text-slate-400" />
           </div>
           <p className="text-lg font-semibold text-white">{userMetrics.division}</p>
           <p className="text-xs text-slate-500 mt-1">Level {userMetrics.level}</p>
-          <div className="mt-4 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium border border-white/10 inline-block">
+          <div className="mt-4 px-3 py-1.5 bg-white/5 text-slate-300 rounded-full text-xs font-medium border border-white/10 inline-block">
             {userMetrics.clearance}
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function RegistryPage() {
               { label: "XP Earned", value: userMetrics.xp.toLocaleString() },
               { label: "Achievements", value: userMetrics.achievements?.length || 0 },
             ].map((stat) => (
-              <div key={stat.label} className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+              <div key={stat.label} className="flex justify-between items-center py-2 border-b border-white/10 last:border-0">
                 <span className="text-sm text-slate-500">{stat.label}</span>
                 <span className="text-sm font-semibold text-white">{stat.value}</span>
               </div>
@@ -89,7 +89,7 @@ export default function RegistryPage() {
               type="text"
               readOnly
               value={`${typeof window !== 'undefined' ? window.location.origin : ''}/verify/${userMetrics.id}`}
-              className="bg-transparent text-xs text-slate-600 font-mono flex-1 outline-none"
+              className="bg-transparent text-xs text-slate-400 font-mono flex-1 outline-none"
             />
             <button
               onClick={() => {
@@ -108,20 +108,20 @@ export default function RegistryPage() {
       {/* Achievements */}
       <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
         <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-          <Award size={16} className="text-slate-600" />
+          <Award size={16} className="text-slate-400" />
           Achievements
         </h3>
         {userMetrics.achievements?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {userMetrics.achievements.map((achievement: Achievement) => (
-              <div key={achievement.id} className="p-4 rounded-lg bg-white/5 border border-slate-100 flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                  <Trophy size={18} className="text-slate-600" />
+              <div key={achievement.id} className="p-4 rounded-lg bg-white/5 border border-white/10 flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                  <Trophy size={18} className="text-slate-400" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-white">{achievement.title}</p>
-                    <CheckCircle size={12} className="text-slate-600" />
+                    <CheckCircle size={12} className="text-slate-400" />
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">{achievement.description}</p>
                 </div>
@@ -130,7 +130,7 @@ export default function RegistryPage() {
           </div>
         ) : (
           <div className="text-center py-8">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3">
               <Award size={20} className="text-slate-400" />
             </div>
             <p className="text-sm font-medium text-white">No achievements yet</p>

@@ -346,7 +346,7 @@ export default function LabDiscussionPostClient() {
     return (
       <div
         key={comment.id}
-        className={`${depth > 0 ? "ml-6 sm:ml-10 pl-4 border-l-2 border-slate-100" : ""}`}
+        className={`${depth > 0 ? "ml-6 sm:ml-10 pl-4 border-l-2 border-white/10" : ""}`}
       >
         <div className="py-4">
           <div className="flex items-center justify-between gap-2 mb-2">
@@ -420,7 +420,7 @@ export default function LabDiscussionPostClient() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-700 whitespace-pre-wrap">
+            <p className="text-sm text-slate-300 whitespace-pre-wrap">
               {comment.body}
             </p>
           )}
@@ -538,7 +538,7 @@ export default function LabDiscussionPostClient() {
         <div className="p-6">
           <div className="flex items-center gap-2 flex-wrap mb-3">
             {post.pinned && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full">
                 <Pin size={10} />
                 Pinned
               </span>
@@ -573,7 +573,7 @@ export default function LabDiscussionPostClient() {
             </div>
           </div>
 
-          <div className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+          <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
             {post.body}
           </div>
 
@@ -582,7 +582,7 @@ export default function LabDiscussionPostClient() {
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full"
+                  className="text-xs font-medium text-slate-500 bg-white/5 px-2.5 py-1 rounded-full"
                 >
                   {tag}
                 </span>
@@ -590,7 +590,7 @@ export default function LabDiscussionPostClient() {
             </div>
           )}
 
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
             <div className="flex items-center gap-4">
               <button
                 onClick={handleVotePost}
@@ -649,7 +649,7 @@ export default function LabDiscussionPostClient() {
           Comments ({comments.length})
         </h2>
 
-        <div className="mb-6 pb-6 border-b border-slate-100">
+        <div className="mb-6 pb-6 border-b border-white/10">
           <div className="flex gap-3">
             <div className="w-8 h-8 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-sm font-semibold text-[#0F203A] shrink-0">
               {currentUserId

@@ -270,7 +270,7 @@ export default function LabDiscussionsList() {
               className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm border rounded-lg transition-colors ${
                 selectedTag
                   ? "border-[#7AD62A]/30 bg-[#7AD62A]/10 text-[#0F203A]"
-                  : "border-white/10 text-slate-600 hover:border-white/10"
+                  : "border-white/10 text-slate-400 hover:border-white/10"
               }`}
             >
               <Filter size={14} />
@@ -285,7 +285,7 @@ export default function LabDiscussionsList() {
                     setShowTagDropdown(false);
                   }}
                   className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 ${
-                    !selectedTag ? "text-[#7AD62A] font-medium" : "text-slate-600"
+                    !selectedTag ? "text-[#7AD62A] font-medium" : "text-slate-400"
                   }`}
                 >
                   All Tags
@@ -300,7 +300,7 @@ export default function LabDiscussionsList() {
                     className={`w-full px-3 py-2 text-left text-sm hover:bg-white/5 ${
                       selectedTag === tag
                         ? "text-[#7AD62A] font-medium"
-                        : "text-slate-600"
+                        : "text-slate-400"
                     }`}
                   >
                     {tag}
@@ -316,7 +316,7 @@ export default function LabDiscussionsList() {
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 sortBy === "recent"
                   ? "bg-[#7AD62A] text-white"
-                  : "bg-[#0f172a] text-slate-600 hover:bg-white/5"
+                  : "bg-[#0f172a] text-slate-400 hover:bg-white/5"
               }`}
             >
               Recent
@@ -326,7 +326,7 @@ export default function LabDiscussionsList() {
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 sortBy === "popular"
                   ? "bg-[#7AD62A] text-white"
-                  : "bg-[#0f172a] text-slate-600 hover:bg-white/5"
+                  : "bg-[#0f172a] text-slate-400 hover:bg-white/5"
               }`}
             >
               Popular
@@ -386,7 +386,7 @@ export default function LabDiscussionsList() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       {post.pinned && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
                           <Pin size={10} />
                           Pinned
                         </span>
@@ -428,7 +428,7 @@ export default function LabDiscussionsList() {
                             {post.tags.slice(0, 3).map((tag) => (
                               <span
                                 key={tag}
-                                className="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full"
+                                className="text-[10px] font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-full"
                               >
                                 {tag}
                               </span>
@@ -482,7 +482,7 @@ export default function LabDiscussionsList() {
             onClick={() => setShowCreateModal(false)}
           />
           <div className="relative bg-[#0f172a] rounded-2xl shadow-xl w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
+            <div className="flex items-center justify-between p-5 border-b border-white/10">
               <h2 className="text-lg font-semibold text-white">
                 New Discussion
               </h2>
@@ -496,7 +496,7 @@ export default function LabDiscussionsList() {
 
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">
                   Title
                 </label>
                 <input
@@ -513,7 +513,7 @@ export default function LabDiscussionsList() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">
                   Body
                 </label>
                 <textarea
@@ -526,7 +526,7 @@ export default function LabDiscussionsList() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">
                   Tags
                 </label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
@@ -566,7 +566,7 @@ export default function LabDiscussionsList() {
                             addTag(tag);
                             setShowTagDropdown(false);
                           }}
-                          className="w-full px-3 py-2 text-left text-sm text-slate-600 hover:bg-white/5"
+                          className="w-full px-3 py-2 text-left text-sm text-slate-400 hover:bg-white/5"
                         >
                           {tag}
                         </button>
@@ -580,10 +580,10 @@ export default function LabDiscussionsList() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-5 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-3 p-5 border-t border-white/10">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white/5 rounded-lg transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/5 rounded-lg transition-colors"
               >
                 Cancel
               </button>

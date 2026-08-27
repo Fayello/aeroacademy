@@ -50,10 +50,10 @@ function MasteryBar({ mastery, domain }: { mastery: number; domain: string }) {
   return (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
-        <span className="text-slate-700 font-medium">{domain}</span>
+        <span className="text-slate-300 font-medium">{domain}</span>
         <span className="font-semibold" style={{ color }}>{mastery.toFixed(0)}%</span>
       </div>
-      <div className="h-3 rounded-full bg-slate-100 overflow-hidden">
+      <div className="h-3 rounded-full bg-white/5 overflow-hidden">
         <div className={`h-full rounded-full ${bgColor} transition-all duration-700`} style={{ width: `${mastery}%` }} />
       </div>
     </div>
@@ -191,10 +191,10 @@ export default function SkillGapPage() {
 
       {/* Tabs */}
       <div className="flex gap-2">
-        <button onClick={() => setActiveTab("gaps")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "gaps" ? "bg-[#7AD62A] text-white" : "bg-[#0f172a] border border-white/10 text-slate-600 hover:bg-white/5"}`}>
+        <button onClick={() => setActiveTab("gaps")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "gaps" ? "bg-[#7AD62A] text-white" : "bg-[#0f172a] border border-white/10 text-slate-400 hover:bg-white/5"}`}>
           <Target size={14} className="inline mr-1.5" /> Skill Gaps
         </button>
-        <button onClick={() => setActiveTab("path")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "path" ? "bg-[#7AD62A] text-white" : "bg-[#0f172a] border border-white/10 text-slate-600 hover:bg-white/5"}`}>
+        <button onClick={() => setActiveTab("path")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "path" ? "bg-[#7AD62A] text-white" : "bg-[#0f172a] border border-white/10 text-slate-400 hover:bg-white/5"}`}>
           <Sparkles size={14} className="inline mr-1.5" /> Learning Path
         </button>
       </div>
@@ -216,9 +216,9 @@ export default function SkillGapPage() {
                     <h4 className="font-semibold text-white">{d.domain}</h4>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                       d.level === "Expert" ? "bg-[#7AD62A]/10 text-[#7AD62A]" :
-                      d.level === "Advanced" ? "bg-blue-100 text-blue-700" :
-                      d.level === "Intermediate" ? "bg-amber-100 text-amber-700" :
-                      "bg-slate-100 text-slate-600"
+                      d.level === "Advanced" ? "bg-blue-500/10 text-blue-400" :
+                      d.level === "Intermediate" ? "bg-amber-500/10 text-amber-400" :
+                      "bg-white/5 text-slate-400"
                     }`}>{d.level}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-500">
@@ -234,7 +234,7 @@ export default function SkillGapPage() {
                       <span key={s.skill} className={`px-2 py-0.5 rounded-full text-[10px] ${
                         s.isDecaying ? "bg-amber-500/10 text-amber-600" :
                         s.mastery >= 70 ? "bg-[#7AD62A]/10 text-[#7AD62A]" :
-                        s.mastery >= 40 ? "bg-blue-500/10 text-blue-600" :
+                        s.mastery >= 40 ? "bg-blue-500/10 text-blue-400" :
                         "bg-red-500/10 text-red-600"
                       }`}>
                         {s.skill} {s.mastery.toFixed(0)}%
@@ -262,15 +262,15 @@ export default function SkillGapPage() {
               {path.steps.map((step) => (
                 <div key={step.order} className="relative flex gap-4">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 z-10 ${
-                    step.type === "lab" ? "bg-amber-100" :
+                    step.type === "lab" ? "bg-amber-500/10" :
                     step.type === "assessment" ? "bg-violet-500/10" :
-                    step.type === "course" ? "bg-blue-100" :
-                    "bg-slate-100"
+                    step.type === "course" ? "bg-blue-500/10" :
+                    "bg-white/5"
                   }`}>
                     {step.type === "lab" ? <Microscope size={18} className="text-amber-600" /> :
                      step.type === "assessment" ? <ClipboardCheck size={18} className="text-violet-600" /> :
-                     step.type === "course" ? <BookOpen size={18} className="text-blue-600" /> :
-                     <Target size={18} className="text-slate-600" />}
+                     step.type === "course" ? <BookOpen size={18} className="text-blue-400" /> :
+                     <Target size={18} className="text-slate-400" />}
                   </div>
                   <div className="bg-[#0f172a] rounded-xl border border-white/10 p-4 flex-1">
                     <div className="flex items-center justify-between mb-1">
@@ -280,7 +280,7 @@ export default function SkillGapPage() {
                     <p className="text-xs text-slate-500">{step.description}</p>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {step.skillTargets.map((s) => (
-                        <span key={s} className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-500">{s}</span>
+                        <span key={s} className="px-1.5 py-0.5 rounded text-[10px] bg-white/5 text-slate-500">{s}</span>
                       ))}
                     </div>
                   </div>
@@ -299,23 +299,23 @@ export default function SkillGapPage() {
           </h3>
           <div className="grid md:grid-cols-2 gap-3">
             {report.recommendations.map((rec, i) => (
-              <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-slate-100 hover:bg-white/5 transition-colors">
+              <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-white/10 hover:bg-white/5 transition-colors">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                  rec.type === "lab" ? "bg-amber-100" :
-                  rec.type === "assessment" ? "bg-violet-500/10" : "bg-blue-100"
+                  rec.type === "lab" ? "bg-amber-500/10" :
+                  rec.type === "assessment" ? "bg-violet-500/10" : "bg-blue-500/10"
                 }`}>
                   {rec.type === "lab" ? <Microscope size={14} className="text-amber-600" /> :
                    rec.type === "assessment" ? <ClipboardCheck size={14} className="text-violet-600" /> :
-                   <BookOpen size={14} className="text-blue-600" />}
+                   <BookOpen size={14} className="text-blue-400" />}
                 </div>
                 <div className="min-w-0">
                   <div className="text-sm font-medium text-white truncate">{rec.title}</div>
                   <div className="text-xs text-slate-500">{rec.reason}</div>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0 ${
-                  rec.priority === "high" ? "bg-red-100 text-red-700" :
-                  rec.priority === "medium" ? "bg-amber-100 text-amber-700" :
-                  "bg-slate-100 text-slate-600"
+                  rec.priority === "high" ? "bg-red-500/10 text-red-400" :
+                  rec.priority === "medium" ? "bg-amber-500/10 text-amber-400" :
+                  "bg-white/5 text-slate-400"
                 }`}>{rec.priority}</span>
               </div>
             ))}

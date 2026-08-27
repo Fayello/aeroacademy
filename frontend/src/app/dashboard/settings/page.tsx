@@ -75,7 +75,7 @@ export default function SettingsPage() {
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     activeSection === section.id
                       ? "bg-[#7AD62A]/10 text-[#7AD62A]"
-                      : "text-slate-600 hover:bg-white/5"
+                      : "text-slate-400 hover:bg-white/5"
                   }`}
                 >
                   <Icon size={18} />
@@ -92,7 +92,7 @@ export default function SettingsPage() {
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">Profile</h2>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                  <div className="flex items-center justify-between py-3 border-b border-white/10">
                     <div>
                       <p className="text-sm font-medium text-white">Name</p>
                       <p className="text-sm text-slate-500">{user?.name || "Not set"}</p>
@@ -101,7 +101,7 @@ export default function SettingsPage() {
                       Edit
                     </Link>
                   </div>
-                  <div className="flex items-center justify-between py-3 border-b border-slate-100">
+                  <div className="flex items-center justify-between py-3 border-b border-white/10">
                     <div>
                       <p className="text-sm font-medium text-white">Email</p>
                       <p className="text-sm text-slate-500">{user?.email}</p>
@@ -145,12 +145,12 @@ export default function SettingsPage() {
                   { label: "Leaderboard changes", description: "Weekly leaderboard rank updates" },
                   { label: "New courses", description: "When new courses are added" },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
+                  <div key={item.label} className="flex items-center justify-between py-3 border-b border-white/10 last:border-0">
                     <div>
                       <p className="text-sm font-medium text-white">{item.label}</p>
                       <p className="text-sm text-slate-500">{item.description}</p>
                     </div>
-                    <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Coming soon</span>
+                    <span className="text-xs text-slate-400 bg-white/5 px-3 py-1 rounded-full">Coming soon</span>
                   </div>
                 ))}
               </div>
@@ -186,7 +186,7 @@ export default function SettingsPage() {
           {activeSection === "appearance" && (
             <div className="angular-card bg-[#0f172a] p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Theme</h2>
-              <div className="flex items-center justify-between py-3 border-b border-slate-100">
+              <div className="flex items-center justify-between py-3 border-b border-white/10">
                 <div>
                   <p className="text-sm font-medium text-white">Dark mode</p>
                   <p className="text-sm text-slate-500">Toggle between light and dark themes</p>
@@ -210,14 +210,14 @@ export default function SettingsPage() {
                 <p className="text-sm text-slate-500">This action cannot be undone</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-400 mb-6">
               All your data including progress, certificates, and lab history will be permanently deleted.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 ref={cancelRef}
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-slate-700 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-300 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
               >
                 Cancel
               </button>

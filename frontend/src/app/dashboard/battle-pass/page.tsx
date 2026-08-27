@@ -138,10 +138,10 @@ export default function BattlePassPage() {
   }
 
   function getPositionStyle(position: number): { bg: string; text: string; icon?: string } {
-    if (position === 1) return { bg: "bg-amber-500/10 border-amber-200", text: "text-amber-700", icon: "text-amber-500" };
-    if (position === 2) return { bg: "bg-white/5 border-white/10", text: "text-slate-600", icon: "text-slate-400" };
-    if (position === 3) return { bg: "bg-orange-50 border-orange-200", text: "text-orange-700", icon: "text-orange-500" };
-    return { bg: "bg-[#0f172a] border-white/10", text: "text-slate-700" };
+    if (position === 1) return { bg: "bg-amber-500/10 border-amber-200", text: "text-amber-400", icon: "text-amber-500" };
+    if (position === 2) return { bg: "bg-white/5 border-white/10", text: "text-slate-400", icon: "text-slate-400" };
+    if (position === 3) return { bg: "bg-orange-50 border-orange-200", text: "text-orange-400", icon: "text-orange-500" };
+    return { bg: "bg-[#0f172a] border-white/10", text: "text-slate-300" };
   }
 
   if (loading) {
@@ -249,7 +249,7 @@ export default function BattlePassPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "tiers"
               ? "bg-slate-800 text-white"
-              : "bg-slate-100 text-slate-500 hover:bg-white/10"
+              : "bg-white/5 text-slate-500 hover:bg-white/10"
           }`}
         >
           Tiers
@@ -259,7 +259,7 @@ export default function BattlePassPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "leaderboard"
               ? "bg-slate-800 text-white"
-              : "bg-slate-100 text-slate-500 hover:bg-white/10"
+              : "bg-white/5 text-slate-500 hover:bg-white/10"
           }`}
         >
           Leaderboard
@@ -312,7 +312,7 @@ export default function BattlePassPage() {
                       {isLocked && <Lock size={16} className="text-slate-400" />}
                     </div>
 
-                    <p className={`text-xs font-semibold mb-1 ${isLocked ? "text-slate-400" : "text-slate-700"}`}>
+                    <p className={`text-xs font-semibold mb-1 ${isLocked ? "text-slate-400" : "text-slate-300"}`}>
                       {tier.title}
                     </p>
 
@@ -322,7 +322,7 @@ export default function BattlePassPage() {
 
                     {isCurrent && (
                       <div className="mb-3">
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500 ease-out"
                             style={{ width: `${xpProgress}%` }}
@@ -333,9 +333,9 @@ export default function BattlePassPage() {
                     )}
 
                     {tier.rewards && (
-                      <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-slate-100" : "bg-[#7AD62A]/10/50"}`}>
+                      <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-white/5" : "bg-[#7AD62A]/10/50"}`}>
                         <RewardIcon size={14} className={isLocked ? "text-slate-400" : "text-[#7AD62A]"} />
-                        <span className={`text-[11px] font-medium ${isLocked ? "text-slate-400" : "text-slate-600"}`}>
+                        <span className={`text-[11px] font-medium ${isLocked ? "text-slate-400" : "text-slate-400"}`}>
                           {typeof tier.rewards === "string"
                             ? tier.rewards
                             : Array.isArray(tier.rewards)
@@ -389,7 +389,7 @@ export default function BattlePassPage() {
                       <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Tiers</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/10">
                     {leaderboard.map((entry) => {
                       const style = getPositionStyle(entry.position);
                       return (
@@ -411,10 +411,10 @@ export default function BattlePassPage() {
                             <span className="text-sm text-white font-medium">{entry.userId}</span>
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className="text-sm text-slate-700 font-mono">{entry.totalXp.toLocaleString()}</span>
+                            <span className="text-sm text-slate-300 font-mono">{entry.totalXp.toLocaleString()}</span>
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className="text-sm text-slate-700">{entry.tiersUnlocked}</span>
+                            <span className="text-sm text-slate-300">{entry.tiersUnlocked}</span>
                           </td>
                         </tr>
                       );

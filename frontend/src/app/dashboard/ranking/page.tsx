@@ -72,13 +72,13 @@ interface TierDef {
 }
 
 const DIVISION_TIERS: TierDef[] = [
-  { name: "BRONZE", min: 0, max: 1499, color: "text-amber-700", bgColor: "bg-amber-500/10", borderColor: "border-amber-200", icon: "\u{1F949}" },
-  { name: "SILVER", min: 1500, max: 2999, color: "text-slate-600", bgColor: "bg-white/5", borderColor: "border-white/10", icon: "\u{1F948}" },
+  { name: "BRONZE", min: 0, max: 1499, color: "text-amber-400", bgColor: "bg-amber-500/10", borderColor: "border-amber-200", icon: "\u{1F949}" },
+  { name: "SILVER", min: 1500, max: 2999, color: "text-slate-400", bgColor: "bg-white/5", borderColor: "border-white/10", icon: "\u{1F948}" },
   { name: "GOLD", min: 3000, max: 4999, color: "text-yellow-700", bgColor: "bg-yellow-50", borderColor: "border-yellow-300", icon: "\u{1F947}" },
-  { name: "PLATINUM", min: 5000, max: 7499, color: "text-cyan-700", bgColor: "bg-cyan-50", borderColor: "border-cyan-300", icon: "\u{1F48E}" },
-  { name: "DIAMOND", min: 7500, max: 10999, color: "text-blue-700", bgColor: "bg-blue-500/10", borderColor: "border-blue-300", icon: "\u{1F4A0}" },
-  { name: "MASTER", min: 11000, max: 14999, color: "text-purple-700", bgColor: "bg-purple-50", borderColor: "border-purple-300", icon: "\u{1F451}" },
-  { name: "GRANDMASTER", min: 15000, max: 999999, color: "text-red-700", bgColor: "bg-red-500/10", borderColor: "border-red-300", icon: "\u{1F3C6}" },
+  { name: "PLATINUM", min: 5000, max: 7499, color: "text-cyan-400", bgColor: "bg-cyan-50", borderColor: "border-cyan-300", icon: "\u{1F48E}" },
+  { name: "DIAMOND", min: 7500, max: 10999, color: "text-blue-400", bgColor: "bg-blue-500/10", borderColor: "border-blue-300", icon: "\u{1F4A0}" },
+  { name: "MASTER", min: 11000, max: 14999, color: "text-violet-400", bgColor: "bg-purple-50", borderColor: "border-purple-300", icon: "\u{1F451}" },
+  { name: "GRANDMASTER", min: 15000, max: 999999, color: "text-red-400", bgColor: "bg-red-500/10", borderColor: "border-red-300", icon: "\u{1F3C6}" },
 ];
 
 const DOMAIN_ICONS: Record<string, typeof Shield> = {
@@ -122,10 +122,10 @@ function RatingProgress({ rating, division }: { rating: number; division: string
     <div className="w-full">
       <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
         <span>{tierDef.min.toLocaleString()}</span>
-        <span className="font-medium text-slate-700">{rating.toLocaleString()}</span>
+        <span className="font-medium text-slate-300">{rating.toLocaleString()}</span>
         <span>{tierDef.max.toLocaleString()}</span>
       </div>
-      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
         <div className={`h-full rounded-full bg-gradient-to-r ${tierDef.bgColor.replace("bg-", "from-")} to-current`} style={{ width: `${progress}%` }} />
       </div>
     </div>
@@ -340,7 +340,7 @@ export default function RankingPage() {
             key={key}
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === key ? "bg-[#0F203A] text-white" : "bg-[#0f172a] text-slate-600 border border-white/10 hover:bg-white/5"
+              activeTab === key ? "bg-[#0F203A] text-white" : "bg-[#0f172a] text-slate-400 border border-white/10 hover:bg-white/5"
             }`}
           >
             <Icon size={14} />
@@ -359,9 +359,9 @@ export default function RankingPage() {
                   {profile.domainRanks.map((rank) => {
                     const DomainIcon = DOMAIN_ICONS[rank.domain] || Shield;
                     return (
-                      <div key={rank.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-slate-100">
+                      <div key={rank.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                         <DomainIcon size={12} className="text-slate-400" />
-                        <span className="text-xs font-medium text-slate-700">{rank.domain}</span>
+                        <span className="text-xs font-medium text-slate-300">{rank.domain}</span>
                         <DivisionBadge division={rank.division} tier={rank.divisionTier} size="sm" />
                       </div>
                     );
@@ -457,11 +457,11 @@ export default function RankingPage() {
                         className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
                           entry.userId === profile.user.id
                             ? "bg-[#7AD62A]/10/50 border-[#7AD62A]/30"
-                            : "bg-[#0f172a] border-slate-100 hover:bg-white/5"
+                            : "bg-[#0f172a] border-white/10 hover:bg-white/5"
                         }`}
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${
-                          idx === 0 ? "bg-yellow-500 text-white" : idx === 1 ? "bg-slate-400 text-white" : idx === 2 ? "bg-orange-500 text-white" : "bg-slate-100 text-slate-500"
+                          idx === 0 ? "bg-yellow-500 text-white" : idx === 1 ? "bg-slate-400 text-white" : idx === 2 ? "bg-orange-500 text-white" : "bg-white/5 text-slate-500"
                         }`}>
                           {idx < 3 ? (idx === 0 ? "\u{1F947}" : idx === 1 ? "\u{1F948}" : "\u{1F949}") : `#${idx + 1}`}
                         </div>
@@ -580,7 +580,7 @@ export default function RankingPage() {
                     <div className="bg-white/5 rounded-lg p-4 mb-4">
                       <div className="flex items-center gap-3 mb-2">
                         <Crown size={16} className="text-[#7AD62A]" />
-                        <span className="text-xs font-semibold text-slate-700">Global Technology Rank</span>
+                        <span className="text-xs font-semibold text-slate-300">Global Technology Rank</span>
                       </div>
                       <div className="flex items-center gap-4">
                         <DivisionBadge division={season.global.division} tier={season.global.tier} size="md" />
@@ -602,11 +602,11 @@ export default function RankingPage() {
                         </thead>
                         <tbody>
                           {season.domains.map((d: any) => (
-                            <tr key={d.domainId} className="border-b border-slate-100 last:border-0">
+                            <tr key={d.domainId} className="border-b border-white/10 last:border-0">
                               <td className="py-2 px-2 font-medium text-white">{d.domain}</td>
                               <td className="py-2 px-2"><DivisionBadge division={d.division} tier={d.tier} size="sm" /></td>
                               <td className="py-2 px-2 text-right font-semibold text-white">{d.rating.toLocaleString()}</td>
-                              <td className="py-2 px-2 text-right text-slate-600">
+                              <td className="py-2 px-2 text-right text-slate-400">
                                 <span className="text-[#7AD62A]">{d.wins}W</span> / <span className="text-red-500">{d.losses}L</span>
                               </td>
                             </tr>

@@ -54,13 +54,13 @@ const TYPE_STYLES: Record<
   string,
   { bg: string; text: string; icon: typeof Zap }
 > = {
-  COMMUNITY_XP: { bg: "bg-blue-100", text: "text-blue-700", icon: Zap },
+  COMMUNITY_XP: { bg: "bg-blue-500/10", text: "text-blue-400", icon: Zap },
   TEAM_COMPETITION: {
-    bg: "bg-purple-100",
-    text: "text-purple-700",
+    bg: "bg-violet-500/10",
+    text: "text-violet-400",
     icon: Users,
   },
-  SPEEDRUN: { bg: "bg-orange-100", text: "text-orange-700", icon: Clock },
+  SPEEDRUN: { bg: "bg-orange-500/10", text: "text-orange-400", icon: Clock },
   COLLABORATIVE: {
     bg: "bg-[#7AD62A]/10",
     text: "text-[#6bc422]",
@@ -71,8 +71,8 @@ const TYPE_STYLES: Record<
 function getEventStyles(type: string) {
   return (
     TYPE_STYLES[type] || {
-      bg: "bg-slate-100",
-      text: "text-slate-700",
+      bg: "bg-white/5",
+      text: "text-slate-300",
       icon: Zap,
     }
   );
@@ -293,7 +293,7 @@ export default function EventsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "active"
               ? "bg-[#0F203A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-white/10"
+              : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
           Active Events
@@ -303,7 +303,7 @@ export default function EventsPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "my"
               ? "bg-[#0F203A] text-white"
-              : "bg-slate-100 text-slate-600 hover:bg-white/10"
+              : "bg-white/5 text-slate-400 hover:bg-white/10"
           }`}
         >
           My Events
@@ -396,12 +396,12 @@ export default function EventsPage() {
                         <span className="text-xs text-slate-500">
                           Community Progress
                         </span>
-                        <span className="text-xs font-medium text-slate-700">
+                        <span className="text-xs font-medium text-slate-300">
                           {progress.totalProgress.toLocaleString()} /{" "}
                           {event.targetXp.toLocaleString()} XP
                         </span>
                       </div>
-                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500"
                           style={{ width: `${xpPercent}%` }}
@@ -429,7 +429,7 @@ export default function EventsPage() {
                       </button>
                     ) : userProg?.joined ? (
                       <div className="flex gap-2">
-                        <div className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 text-sm font-medium rounded-lg">
+                        <div className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 text-slate-400 text-sm font-medium rounded-lg">
                           <CheckCircle2 size={16} />
                           In Progress
                         </div>
@@ -476,7 +476,7 @@ export default function EventsPage() {
                       <h4 className="text-sm font-semibold text-white mb-1">
                         About this event
                       </h4>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-400">
                         {event.description}
                       </p>
                     </div>
@@ -520,7 +520,7 @@ export default function EventsPage() {
                         </h4>
                         <div className="bg-[#0f172a] rounded-lg border border-white/10 p-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-slate-400">
                               Progress
                             </span>
                             <span className="text-sm font-medium text-white">
@@ -531,7 +531,7 @@ export default function EventsPage() {
                             </span>
                           </div>
                           {event.targetCount && (
-                            <div className="mt-2 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="mt-2 h-2 bg-white/5 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-blue-500 rounded-full transition-all duration-500"
                                 style={{
@@ -550,7 +550,7 @@ export default function EventsPage() {
                                 <CheckCircle2 size={12} /> Completed
                               </span>
                             ) : userProg.joined ? (
-                              <span className="text-xs text-blue-600 font-medium flex items-center gap-1">
+                              <span className="text-xs text-blue-400 font-medium flex items-center gap-1">
                                 <Clock size={12} /> In Progress
                               </span>
                             ) : null}
