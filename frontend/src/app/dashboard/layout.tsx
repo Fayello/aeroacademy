@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, Search, Bell, ChevronRight, CheckCheck, Loader2, LogOut, Settings, User as UserIcon } from "lucide-react";
+import { Menu, Search, Bell, ChevronRight, CheckCheck, Loader2, LogOut, Settings, User as UserIcon, Zap, Command } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import LearningCoach from "@/components/ai/LearningCoach";
@@ -71,15 +71,30 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const [user, setUser] = useState<{ name?: string; avatarUrl?: string } | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [xp, setXp] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const { notifications, unread, loading, markRead, markAllRead } = useNotifications();
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("user");
       if (stored) setUser(JSON.parse(stored));
+      setXp(parseInt(localStorage.getItem("xp") || "0", 10));
     } catch {}
+  }, []);
+
+  // Ctrl+/ keyboard shortcut for search
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "/") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -101,39 +116,63 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     ? user.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)
     : "?";
 
+  const level = Math.floor(xp / 1000) + 1;
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center gap-3 px-4 md:pl-64 relative overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-40 h-12 bg-white border-b border-slate-200 flex items-center gap-2 px-3 md:pl-64 relative overflow-hidden">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.02] pointer-events-none" />
       <button
         onClick={onToggleSidebar}
-        className="hidden lg:flex p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+        className="hidden lg:flex p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
         aria-label="Toggle sidebar"
       >
-        <Menu size={20} />
+        <Menu size={18} />
       </button>
 
-      <div className="flex-1 max-w-md mx-auto">
+      {/* Search with Ctrl+/ hint */}
+      <div className="flex-1 max-w-lg mx-auto">
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
+            ref={searchRef}
             type="text"
             placeholder="Search courses, labs..."
-            className="w-full h-9 pl-9 pr-4 rounded-lg bg-slate-100 border border-transparent focus:border-[#229C62] focus:bg-white focus:outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-colors"
+            className="w-full h-8 pl-8 pr-14 rounded-lg bg-slate-100 border border-transparent focus:border-[#229C62] focus:bg-white focus:outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-colors"
           />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white border border-slate-200 rounded shadow-sm">⌘</kbd>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white border border-slate-200 rounded shadow-sm">/</kbd>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
+        {/* XP Counter */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#E9F8EE] border border-[#229C62]/20">
+          <Zap size={12} className="text-[#7AD62A]" />
+          <span className="text-xs font-bold text-[#0F203A]">{xp.toLocaleString()}</span>
+          <span className="text-[10px] text-[#229C62] font-medium">Lv{level}</span>
+        </div>
+
+        {/* Upgrade CTA */}
+        <Link
+          href="/dashboard/settings"
+          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-bold transition-colors shadow-sm shadow-[#7AD62A]/20"
+        >
+          Upgrade
+        </Link>
+
         <CurrencySwitcher />
+
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setNotifOpen((o) => !o)}
             aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
-            className="relative w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+            className="relative w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
           >
-            <Bell size={18} />
+            <Bell size={16} />
             {unread > 0 && (
-              <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-[#229C62] text-white text-[9px] font-bold flex items-center justify-center">
+              <span className="absolute top-0.5 right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-[#229C62] text-white text-[8px] font-bold flex items-center justify-center">
                 {unread > 99 ? "99+" : unread}
               </span>
             )}
@@ -221,9 +260,9 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             aria-label="User menu"
           >
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+              <img src={user.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover border border-slate-200" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center text-white text-[10px] font-bold">
                 {initials}
               </div>
             )}
@@ -298,7 +337,7 @@ export default function DashboardLayout({
             </a>
             <DashboardHeader onToggleSidebar={toggleSidebar} />
             <Sidebar />
-            <main id="main-content" className="pt-14 pb-20 md:pb-0 md:pl-64 min-h-screen" role="main">
+            <main id="main-content" className="pt-12 pb-20 md:pb-0 md:pl-64 min-h-screen" role="main">
               <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
                 <Breadcrumbs />
                 <PageErrorBoundary>

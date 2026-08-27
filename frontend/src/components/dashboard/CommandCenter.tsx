@@ -4,18 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
-import { useDisplayMode } from "@/lib/displayMode";
-import { getLevel, getLevelProgress } from "@/lib/levelGating";
+import { useNavigation } from "@/lib/navigation";
 import {
   FlaskConical,
   BookOpen,
-  Play,
   Clock,
   ChevronRight,
   Terminal,
   Trophy,
-  Flame,
-  TrendingUp,
   Target,
   Award,
   Check,
@@ -23,7 +19,6 @@ import {
   ArrowRight,
   Calendar,
   Sparkles,
-  Rocket,
 } from "lucide-react";
 import { DomainBar } from "@/components/ui/DomainVisual";
 
@@ -78,30 +73,6 @@ function getTimeGreeting(): string {
   return "Good evening";
 }
 
-function ProgressRing({ progress, size = 80, stroke = 6 }: { progress: number; size?: number; stroke?: number }) {
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - progress * circumference;
-
-  return (
-    <svg width={size} height={size} className="transform -rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
-      <circle
-        cx={size / 2} cy={size / 2} r={radius} fill="none"
-        stroke="url(#progressGradient)" strokeWidth={stroke}
-        strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
-        className="transition-all duration-700 ease-out"
-      />
-      <defs>
-        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#7AD62A" />
-          <stop offset="100%" stopColor="#229C62" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
-
 export default function CommandCenter() {
   const [user, setUser] = useState<User | null>(() => {
     try {
@@ -117,15 +88,10 @@ export default function CommandCenter() {
   const [labsLoading, setLabsLoading] = useState(true);
   const [compLoading, setCompLoading] = useState(true);
   const [aiLoading, setAiLoading] = useState(true);
-  const { config } = useDisplayMode();
   const { userMetrics } = useDashboard();
+  const { nav } = useNavigation();
 
   const xp = userMetrics?.xp || 0;
-  const level = getLevel(xp);
-  const progress = getLevelProgress(xp);
-  const streak = userMetrics?.streak || 0;
-  const division = userMetrics?.division || "Bronze";
-  const clearance = userMetrics?.clearance || "Level 1";
 
   useEffect(() => {
     let cancelled = false;
@@ -220,33 +186,57 @@ export default function CommandCenter() {
   const topRecs = aiRecommendations.length > 0
     ? aiRecommendations.map(r => ({ ...r, link: r.type === 'lab' ? '/dashboard/labs' : r.type === 'course' ? '/dashboard/courses' : '/dashboard/assessments' }))
     : competency?.recommendations?.slice(0, 3) || [];
-  const nextObjective = activeLabs[0] || topRecs[0] || null;
   const isNewUser = !labsLoading && !compLoading && (userMetrics?.xp ?? 0) === 0 && activeLabs.length === 0;
+
+  // Derive focus from onboarding selections
+  const focusFromStorage = (() => {
+    try {
+      const s = localStorage.getItem("onboardingSelections");
+      if (s) {
+        const parsed = JSON.parse(s);
+        const skills = parsed.skills || [];
+        const roles = parsed.role || "";
+        if (skills.length > 0) return skills[0].replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+        if (roles) return roles;
+      }
+    } catch {}
+    return "Cybersecurity";
+  })();
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* ─── GREETING ─── */}
+      {/* ─── GREETING + ROLE LINE ─── */}
       <div className="animate-fade-in-up">
         <p className="text-slate-500 text-sm font-medium">
           {getTimeGreeting()}, <span className="text-slate-900">{firstName}</span>
         </p>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-xs text-slate-400">Your role:</span>
+          <span className="text-xs font-semibold text-[#0F203A] bg-[#E9F8EE] px-2 py-0.5 rounded">{nav.role || "Learner"}</span>
+          <span className="text-xs text-slate-400">Focused:</span>
+          <span className="text-xs font-semibold text-[#229C62]">{focusFromStorage}</span>
+          <button className="text-[10px] text-slate-400 hover:text-[#229C62] transition-colors" title="Edit focus">
+            ✎
+          </button>
+        </div>
       </div>
 
-      {/* ─── LARGE PRODUCT CARDS ─── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* ─── 2 LARGE PRODUCT CARDS (Launcher) ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           href="/dashboard/courses"
           className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-1"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#229C62]/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#7AD62A]/5 rounded-full translate-y-1/2 -translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-blue-500/20">
-              <BookOpen size={24} className="text-white" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#229C62] to-[#7AD62A] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-[#229C62]/20">
+              <BookOpen size={28} className="text-white" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Academy</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Academy</h3>
             <p className="text-sm text-slate-500 mb-4 leading-relaxed">Structured courses from fundamentals to advanced security operations</p>
             <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#229C62]">
-              Explore courses <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              Start learning <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
         </Link>
@@ -255,167 +245,112 @@ export default function CommandCenter() {
           href="/dashboard/labs"
           className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-2"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-pink-500/5 rounded-full translate-y-1/2 -translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-emerald-500/20">
-              <Terminal size={24} className="text-white" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-violet-500/20">
+              <Terminal size={28} className="text-white" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Labs</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Labs</h3>
             <p className="text-sm text-slate-500 mb-4 leading-relaxed">Hands-on labs with real Docker environments and live sandboxes</p>
             <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#229C62]">
-              Launch a lab <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </span>
-          </div>
-        </Link>
-
-        <Link
-          href="/dashboard/leaderboard"
-          className="angular-card relative overflow-hidden p-6 group hover-lift hover-glow transition-all duration-300 animate-fade-in-up animate-delay-3"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500" />
-          <div className="relative z-10">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-lg shadow-amber-500/20">
-              <Trophy size={24} className="text-white" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#229C62] transition-colors">Compete</h3>
-            <p className="text-sm text-slate-500 mb-4 leading-relaxed">Leaderboard, challenges, and team competitions</p>
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#229C62]">
-              View rankings <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              Start playing <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
         </Link>
       </div>
 
-      {/* ─── DON'T KNOW WHERE TO START? ─── */}
-      {isNewUser && (
-        <div className="angular-card bg-gradient-to-r from-[#0F203A] to-[#1a3a5c] p-6 text-white animate-fade-in-up animate-delay-2">
-          <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center shrink-0">
-              <Rocket size={22} className="text-[#7AD62A]" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base font-bold mb-1">Don&apos;t know where to start?</h3>
-              <p className="text-sm text-white/60 mb-4">
-                We recommend starting with a beginner lab to get hands-on experience right away.
-              </p>
-              <Link
-                href="/dashboard/labs"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
-              >
-                <Play size={14} />
-                Start your first lab
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── NEXT OBJECTIVE ─── */}
-      {(labsLoading || aiLoading || compLoading) && !nextObjective ? (
-        <div className="angular-card bg-white p-5 animate-pulse">
-          <div className="h-3 w-32 bg-slate-100 rounded mb-3" />
+      {/* ─── QUICK ACCESS ROWS ─── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-fade-in-up animate-delay-3">
+        <Link
+          href="/dashboard/master-classes"
+          className="angular-card bg-white p-4 hover-lift transition-all duration-300 group"
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-slate-100" />
-            <div className="flex-1 space-y-2">
-              <div className="h-4 w-40 bg-slate-100 rounded" />
-              <div className="h-3 w-24 bg-slate-100 rounded" />
+            <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <FlaskConical size={18} className="text-orange-500" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Master Classes</p>
+              <p className="text-[10px] text-slate-400">Expert-led sessions</p>
             </div>
           </div>
-        </div>
-      ) : !isNewUser && nextObjective ? (
+        </Link>
+
+        <Link
+          href="/dashboard/leaderboard"
+          className="angular-card bg-white p-4 hover-lift transition-all duration-300 group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Trophy size={18} className="text-amber-500" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Compete</p>
+              <p className="text-[10px] text-slate-400">Leaderboards & CTFs</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/certifications"
+          className="angular-card bg-white p-4 hover-lift transition-all duration-300 group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#E9F8EE] flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Award size={18} className="text-[#229C62]" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Certifications</p>
+              <p className="text-[10px] text-slate-400">Earn credentials</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/dashboard/training"
+          className="angular-card bg-white p-4 hover-lift transition-all duration-300 group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Calendar size={18} className="text-blue-500" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Training</p>
+              <p className="text-[10px] text-slate-400">1-on-1 coaching</p>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {/* ─── NEXT OBJECTIVE (if active lab) ─── */}
+      {!isNewUser && activeLabs[0] && (
         <div className="angular-card bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-5 sm:p-6 text-white relative overflow-hidden animate-fade-in-up animate-delay-2">
           <div className="absolute inset-0 angular-grid-bg opacity-[0.04] pointer-events-none" />
           <div className="relative z-10">
             <p className="text-xs text-white/50 uppercase tracking-wide font-medium mb-3">Continue where you left off</p>
-            {activeLabs[0] ? (
-              <Link
-                href={`/dashboard/labs/${activeLabs[0].labId}`}
-                className="group flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#229C62] flex items-center justify-center">
-                    <FlaskConical size={18} className="text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
-                      {activeLabs[0].lab.title}
-                    </p>
-                    <p className="text-xs text-white/50">
-                      Active lab · Difficulty {activeLabs[0].lab.difficulty}
-                    </p>
-                  </div>
+            <Link
+              href={`/dashboard/labs/${activeLabs[0].labId}`}
+              className="group flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#229C62] flex items-center justify-center">
+                  <FlaskConical size={18} className="text-white" />
                 </div>
-                <div className="flex items-center gap-2 text-[#7AD62A]">
-                  <span className="text-sm font-medium">Continue</span>
-                  <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                <div>
+                  <p className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
+                    {activeLabs[0].lab.title}
+                  </p>
+                  <p className="text-xs text-white/50">
+                    Active lab · Difficulty {activeLabs[0].lab.difficulty}
+                  </p>
                 </div>
-              </Link>
-            ) : topRecs[0] ? (
-              <Link
-                href={topRecs[0].link || "/dashboard/labs"}
-                className="group flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                    <Target size={18} className="text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
-                      {topRecs[0].title}
-                    </p>
-                    <p className="text-xs text-white/50">{topRecs[0].description}</p>
-                  </div>
-                </div>
-                <ArrowRight size={16} className="text-white/50 group-hover:text-[#7AD62A] group-hover:translate-x-0.5 transition-all" />
-              </Link>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-
-      {/* ─── PROGRESS RING + STATS ─── */}
-      {config.showXp && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-1 flex flex-col items-center text-center">
-            <div className="relative mb-2">
-              <ProgressRing progress={progress} size={72} stroke={5} />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-lg font-bold text-slate-900">{level}</span>
               </div>
-            </div>
-            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Level</span>
-            <p className="text-[10px] text-slate-400 mt-0.5">{xp.toLocaleString()} XP</p>
-          </div>
-
-          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-2 flex flex-col items-center text-center">
-            <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center mb-2">
-              <Award size={20} className="text-amber-600" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Season</span>
-            <p className="text-sm font-bold text-slate-900 mt-1">{division}</p>
-            <p className="text-[10px] text-slate-400">{clearance}</p>
-          </div>
-
-          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-3 flex flex-col items-center text-center">
-            <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center mb-2">
-              <Flame size={20} className="text-orange-500" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Streak</span>
-            <p className="text-2xl font-bold text-slate-900 mt-1">{streak}</p>
-            <p className="text-[10px] text-slate-400">day{streak !== 1 ? "s" : ""}</p>
-          </div>
-
-          <div className="angular-card bg-white p-4 hover-lift transition-all duration-300 animate-fade-in-up animate-delay-4 flex flex-col items-center text-center">
-            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-2">
-              <FlaskConical size={20} className="text-blue-600" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Labs Done</span>
-            <p className="text-2xl font-bold text-slate-900 mt-1">
-              {competency?.summary?.totalLabsCompleted || 0}
-            </p>
-            <p className="text-[10px] text-slate-400">
-              {competency?.summary?.completedOutcomes || 0} outcomes
-            </p>
+              <div className="flex items-center gap-2 text-[#7AD62A]">
+                <span className="text-sm font-medium">Continue</span>
+                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
           </div>
         </div>
       )}

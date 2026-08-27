@@ -54,6 +54,7 @@ export default function Sidebar() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [xp, setXp] = useState(0);
+  const [division, setDivision] = useState("Bronze");
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function Sidebar() {
         if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
         else setUserRole("STUDENT");
         setXp(parseInt(localStorage.getItem("xp") || "0", 10));
+        setDivision(localStorage.getItem("division") || "Bronze");
       } catch {
         setUserRole("STUDENT");
       }
@@ -82,6 +84,7 @@ export default function Sidebar() {
   useEffect(() => {
     try {
       setXp(parseInt(localStorage.getItem("xp") || "0", 10));
+      setDivision(localStorage.getItem("division") || "Bronze");
     } catch {}
   }, [pathname]);
 
@@ -131,7 +134,7 @@ export default function Sidebar() {
 
   if (loading) {
     return (
-    <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+    <aside className={`fixed left-0 top-12 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
       <div className="absolute inset-0 scanline-overlay pointer-events-none" />
         <div className="p-5 flex items-center gap-3">
@@ -151,6 +154,9 @@ export default function Sidebar() {
       </aside>
     );
   }
+
+  const divisionLabel = division || "Bronze";
+  const seasonWeek = 14;
 
   return (
       <aside className={`fixed left-0 top-14 bottom-0 bg-white border-r border-slate-200 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
@@ -181,6 +187,39 @@ export default function Sidebar() {
       </div>
 
       <div className="px-3"><div className="h-px bg-slate-100" /></div>
+
+      {/* ─── PROGRESS CARD (always visible at top) ─── */}
+      {!collapsed ? (
+        <div className="mx-3 mt-3 p-3.5 rounded-xl bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1a3a5c] text-white relative overflow-hidden">
+          <div className="absolute inset-0 dot-grid-bg opacity-[0.06] pointer-events-none" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center gap-2">
+                <Award size={14} className="text-[#7AD62A]" />
+                <span className="text-xs font-bold text-white">Beginner Lv{level}</span>
+              </div>
+              <span className="text-[10px] font-mono text-white/40">{xp.toLocaleString()} XP</span>
+            </div>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
+              <div
+                className="h-full bg-gradient-to-r from-[#7AD62A] to-[#229C62] rounded-full transition-all duration-500"
+                style={{ width: `${progress * 100}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px]">
+              <div className="flex items-center gap-1.5 text-white/50">
+                <Shield size={10} className="text-[#7AD62A]" />
+                <span>Season 1</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/60 font-medium">{divisionLabel}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mx-1.5 mt-2 p-2 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center" title={`Level ${level} — ${xp.toLocaleString()} XP — ${divisionLabel}`}>
+          <Award size={16} className="text-[#7AD62A]" />
+        </div>
+      )}
 
       {/* Alerts */}
       {!collapsed && nav.alerts.length > 0 && (
@@ -336,28 +375,6 @@ export default function Sidebar() {
           </>
         )}
       </nav>
-
-      {/* Progress Footer */}
-      <div className="px-3 pb-2 shrink-0">
-        {collapsed ? (
-          <div className="p-2 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center" title={`Level ${level} - ${xp.toLocaleString()} XP`}>
-            <Award size={16} className="text-[#7AD62A]" />
-          </div>
-        ) : (
-          <div className="p-3 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] text-white">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">Level {level}</span>
-              <span className="text-[10px] font-mono text-white/40">{xp.toLocaleString()} XP</span>
-            </div>
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#7AD62A] to-[#229C62] rounded-full transition-all duration-500"
-                style={{ width: `${progress * 100}%` }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Bottom */}
       <div className={`px-3 pb-3 shrink-0 space-y-1.5 ${collapsed ? "px-2" : ""}`}>
