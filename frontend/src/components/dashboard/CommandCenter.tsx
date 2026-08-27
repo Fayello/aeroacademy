@@ -123,13 +123,29 @@ export default function CommandCenter() {
 
   useEffect(() => {
     let cancelled = false;
+    // Safety timeout — never spin longer than 16s even if APIs hang
+    const safety = setTimeout(() => { if (!cancelled) setLoading(false); }, 16000);
     async function load() {
       try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) setUser(JSON.parse(storedUser));
-
-        const userId = JSON.parse(storedUser || "{}").id;
-        if (!userId) return;
+        let storedUser = localStorage.getItem("user");
+        let parsed: any = null;
+        try { parsed = storedUser ? JSON.parse(storedUser) : null; } catch { parsed = null; }
+        // Fallback: try to fetch user if not in localStorage
+        if (!parsed?.id) {
+          try {
+            const me = await fetchApi<{ id: string; email: string; name?: string }>("/auth/me");
+            if (me?.id) {
+              parsed = me;
+              localStorage.setItem("user", JSON.stringify(me));
+            }
+          } catch { /* keep parsed as is */ }
+        }
+        if (parsed) setUser(parsed);
+        const userId = parsed?.id;
+        if (!userId) {
+          if (!cancelled) setLoading(false);
+          return;
+        }
 
         const [labsData, compData, acadData, aiRecs] = await Promise.allSettled([
           fetchApi<ActiveLab[]>("/dashboard/active-labs"),
@@ -146,21 +162,21 @@ export default function CommandCenter() {
         ]);
 
         if (!cancelled) {
-          if (labsData.status === "fulfilled") setActiveLabs(labsData.value);
-          if (compData.status === "fulfilled") setCompetency(compData.value);
+          if (labsData.status === "fulfilled" && Array.isArray(labsData.value)) setActiveLabs(labsData.value);
+          if (compData.status === "fulfilled" && compData.value) setCompetency(compData.value);
           if (acadData.status === "fulfilled" && acadData.value) setAcademic(acadData.value);
           if (aiRecs.status === "fulfilled" && aiRecs.value?.recommendations) {
             setAiRecommendations(aiRecs.value.recommendations);
           }
 
-          const recs = compData.status === "fulfilled" ? compData.value?.recommendations || [] : [];
+          const recs = compData.status === "fulfilled" ? (compData.value as any)?.recommendations || [] : [];
           const weekly: { title: string; done: boolean }[] = [];
-          if (labsData.status === "fulfilled") {
-            for (const lab of labsData.value.slice(0, 2)) {
+          if (labsData.status === "fulfilled" && Array.isArray(labsData.value)) {
+            for (const lab of (labsData.value as ActiveLab[]).slice(0, 2)) {
               weekly.push({ title: lab.lab.title, done: false });
             }
           }
-          for (const rec of recs.slice(0, 3)) {
+          for (const rec of (recs as any[]).slice(0, 3)) {
             weekly.push({ title: rec.title, done: false });
           }
           setWeeklyItems(weekly.slice(0, 4));
@@ -168,11 +184,12 @@ export default function CommandCenter() {
       } catch {
         // silent
       } finally {
+        clearTimeout(safety);
         if (!cancelled) setLoading(false);
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => { cancelled = true; clearTimeout(safety); };
   }, []);
 
   if (loading) {

@@ -47,13 +47,22 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const onboardingDone = localStorage.getItem("onboardingComplete");
     if (!onboardingDone) {
+      // Give the router a moment; show a brief loading state then redirect
+      // Don't block forever — if redirect fails, still render dashboard
       router.replace("/onboarding");
-      return;
+      const t = setTimeout(() => setChecked(true), 2000);
+      return () => clearTimeout(t);
     }
     setChecked(true);
   }, [router]);
 
-  if (!checked) return null;
+  if (!checked) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="animate-spin text-[#229C62]" size={28} />
+      </div>
+    );
+  }
   return <>{children}</>;
 }
 
@@ -259,12 +268,11 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("sidebar-collapsed") === "true";
-    }
-    return false;
-  });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    setSidebarCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => {

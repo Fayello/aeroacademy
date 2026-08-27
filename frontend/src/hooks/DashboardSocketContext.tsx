@@ -59,10 +59,12 @@ export function DashboardSocketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    // In production API_URL is "" (relative) — use current origin for socket so it hits nginx proxy
+    const socketUrl = API_URL || (typeof window !== "undefined" ? window.location.origin : "");
 
     let s: Socket;
     function connectSocket(authToken?: string | null) {
-      s = io(`${API_URL}/dashboard`, {
+      s = io(`${socketUrl}/dashboard`, {
         auth: authToken ? { token: authToken } : {},
         withCredentials: true,
         reconnection: true,
