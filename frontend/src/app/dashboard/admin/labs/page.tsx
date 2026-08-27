@@ -9,12 +9,11 @@ import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
 import type { AdminLab, AdminLabFlag } from "@/types/api";
+import { getDifficultyStyle } from "@/lib/labs";
 
 function getDifficultyLabel(d: number) {
-  if (d < 1100) return { label: "Beginner", color: "bg-[#E9F8EE] text-[#0F203A]" };
-  if (d < 1300) return { label: "Intermediate", color: "bg-amber-100 text-amber-700" };
-  if (d < 1500) return { label: "Advanced", color: "bg-orange-100 text-orange-700" };
-  return { label: "Expert", color: "bg-red-100 text-red-700" };
+  const s = getDifficultyStyle(d);
+  return { label: s.label.charAt(0) + s.label.slice(1).toLowerCase(), color: s.badge };
 }
 
 export default function AdminLabsPage() {

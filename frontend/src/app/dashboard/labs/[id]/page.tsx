@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { fetchApi, API_URL } from "@/lib/api";
+import { getDifficultyStyle } from "@/lib/labs";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
@@ -72,11 +73,8 @@ const MIN_FONT_SIZE = 10;
 const MAX_FONT_SIZE = 24;
 
 function getDifficultyInfo(difficulty: number) {
-  if (difficulty < 400) return { label: "VERY EASY", color: "text-emerald-600", bar: "bg-emerald-500", dot: "bg-emerald-500" };
-  if (difficulty < 800) return { label: "EASY", color: "text-green-600", bar: "bg-green-500", dot: "bg-green-500" };
-  if (difficulty < 1200) return { label: "MEDIUM", color: "text-amber-600", bar: "bg-amber-500", dot: "bg-amber-500" };
-  if (difficulty < 1600) return { label: "HARD", color: "text-orange-600", bar: "bg-orange-500", dot: "bg-orange-500" };
-  return { label: "INSANE", color: "text-red-600", bar: "bg-red-500", dot: "bg-red-500" };
+  const s = getDifficultyStyle(difficulty);
+  return { label: s.label, color: s.color, bar: s.bar, dot: s.dot };
 }
 
 function getEstimatedTime(flags: number) {

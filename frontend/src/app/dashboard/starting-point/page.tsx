@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
+import { getDifficultyStyle } from "@/lib/labs";
 import { Rocket, Star, CheckCircle, Clock, Lock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
@@ -28,9 +29,8 @@ const CURATED_BEGINNER_LABS = [
 ];
 
 function getDifficultyInfo(d: number) {
-  if (d < 400) return { label: "VERY EASY", color: "text-emerald-600", bar: "bg-emerald-500", dot: "bg-emerald-500", bg: "bg-emerald-50" };
-  if (d < 800) return { label: "EASY", color: "text-green-600", bar: "bg-green-500", dot: "bg-green-500", bg: "bg-green-50" };
-  return { label: "MEDIUM", color: "text-amber-600", bar: "bg-amber-500", dot: "bg-amber-500", bg: "bg-amber-50" };
+  const s = getDifficultyStyle(d);
+  return { label: s.label, color: s.color, bar: s.bar, dot: s.dot, bg: s.dot.replace("bg-", "bg-") + "/10" };
 }
 
 export default function StartingPointPage() {
