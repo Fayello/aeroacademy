@@ -209,7 +209,20 @@ export default function CommandCenter() {
   const purpose = onboarding?.purpose || [];
   const field = onboarding?.field || [];
   const fieldCount = getFieldCount();
-  const isNewUser = xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
+  const isNewUser = !loading && xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
+
+  const primaryPurpose = purpose[0] || "other";
+  const purposeTitle: Record<string, string> = {
+    learn: "Ready to start learning?",
+    train: "Ready to level up?",
+    teach: "Ready to create courses?",
+    compete: "Ready to compete?",
+    certify: "Ready to earn certifications?",
+    team: "Ready to train your team?",
+    connect: "Ready to connect?",
+    jobs: "Ready to explore opportunities?",
+    other: "Welcome to XpertClass",
+  };
 
   return (
     <div className="space-y-5 animate-in fade-in duration-500">
@@ -259,16 +272,7 @@ export default function CommandCenter() {
             </div>
             <div className="flex-1">
               <h3 className="text-base font-bold mb-1">
-                {purpose.includes("learn") && "Ready to start learning?"}
-                {purpose.includes("train") && "Ready to level up?"}
-                {purpose.includes("teach") && "Ready to create courses?"}
-                {purpose.includes("compete") && "Ready to compete?"}
-                {purpose.includes("certify") && "Ready to earn certifications?"}
-                {purpose.includes("team") && "Ready to train your team?"}
-                {purpose.includes("connect") && "Ready to connect?"}
-                {purpose.includes("jobs") && "Ready to explore opportunities?"}
-                {purpose.includes("other") && "Welcome to XpertClass"}
-                {!purpose.some((p: string) => ["learn","train","teach","compete","certify","team","connect","jobs","other"].includes(p)) && "Welcome to XpertClass"}
+                {purposeTitle[primaryPurpose] || "Welcome to XpertClass"}
               </h3>
               <p className="text-sm text-white/60 mb-4">
                 {field.length > 0
@@ -276,27 +280,27 @@ export default function CommandCenter() {
                   : "Here's your recommended first step:"}
               </p>
               <div className="flex flex-wrap gap-2">
-                {purpose.includes("learn") && (
+                {primaryPurpose === "learn" && (
                   <Link href="/dashboard/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
                     <BookOpen size={14} /> Browse Courses
                   </Link>
                 )}
-                {purpose.includes("teach") && (
+                {primaryPurpose === "teach" && (
                   <Link href="/dashboard/admin/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
                     <BookOpen size={14} /> Create a Course
                   </Link>
                 )}
-                {purpose.includes("compete") && (
+                {primaryPurpose === "compete" && (
                   <Link href="/dashboard/leaderboard" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
                     <TrendingUp size={14} /> View Leaderboard
                   </Link>
                 )}
-                {purpose.includes("certify") && (
+                {primaryPurpose === "certify" && (
                   <Link href="/dashboard/certifications" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
                     <Target size={14} /> View Certifications
                   </Link>
                 )}
-                {purpose.includes("team") && (
+                {primaryPurpose === "team" && (
                   <Link href="/dashboard/teams" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
                     <FlaskConical size={14} /> Create a Team
                   </Link>
@@ -311,7 +315,7 @@ export default function CommandCenter() {
       )}
 
       {/* ─── BEGINNER PATH CTA ─── */}
-      {xp === 0 && (
+      {!loading && xp === 0 && (
         <Link
           href="/dashboard/starting-point"
           className="angular-card border border-dashed border-[#229C62]/30 bg-[#E9F8EE]/30 p-4 flex items-center gap-4 hover:border-[#229C62]/60 transition-all group"
