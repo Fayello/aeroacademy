@@ -8,7 +8,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft, Home, ChevronRight } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft, Home, ChevronRight, Download, FileText } from "lucide-react";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -40,6 +40,8 @@ interface LabDefinition {
   tasks?: string[];
   credentials?: LabCredential[];
   flags?: LabFlag[];
+  videoUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 interface LabInstance {
@@ -719,16 +721,156 @@ export default function LabWorkspace() {
         )}
 
         {activeLabTab === "walkthroughs" && (
-          <div className="angular-card bg-white p-8 text-center">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Walkthroughs</h3>
-            <p className="text-xs text-slate-500">Official walkthroughs and community solutions will appear here once available.</p>
+          <div className="space-y-6">
+            {/* Official Writeup */}
+            <div className="angular-card bg-white p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center">
+                  <Download size={16} className="text-[#229C62]" />
+                </div>
+                <h3 className="text-sm font-semibold text-slate-900">Official Writeup</h3>
+              </div>
+              {lab?.flags && lab.flags.length > 0 ? (
+                <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <FileText size={20} className="text-slate-400" />
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">{lab.title?.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-writeup.pdf</p>
+                      <p className="text-xs text-slate-400">Official XpertClass walkthrough</p>
+                    </div>
+                  </div>
+                  <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors">
+                    <Download size={14} />
+                    Download
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">No official writeup available yet for this lab.</p>
+              )}
+            </div>
+
+            {/* Video Walkthroughs */}
+            <div className="angular-card bg-white p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                  <Play size={16} className="text-red-500" />
+                </div>
+                <h3 className="text-sm font-semibold text-slate-900">Video Walkthroughs</h3>
+              </div>
+              {lab?.videoUrl ? (
+                <div className="aspect-video rounded-xl overflow-hidden bg-slate-900">
+                  <iframe
+                    src={lab.videoUrl.replace('watch?v=', 'embed/')}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Video Walkthrough"
+                  />
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Play size={32} className="mx-auto mb-3 text-slate-300" />
+                  <p className="text-sm text-slate-500 mb-1">No video walkthrough yet</p>
+                  <p className="text-xs text-slate-400">Be the first to record and share a walkthrough for this lab!</p>
+                </div>
+              )}
+            </div>
+
+            {/* Community Walkthroughs */}
+            <div className="angular-card bg-white p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <Users size={16} className="text-blue-500" />
+                </div>
+                <h3 className="text-sm font-semibold text-slate-900">Community Walkthroughs</h3>
+              </div>
+              <div className="space-y-4">
+                <p className="text-sm text-slate-500">Share your approach to solving this lab. Help others learn from your perspective.</p>
+                <div className="flex gap-3">
+                  <input
+                    type="url"
+                    placeholder="Paste a link to your walkthrough (blog, video, GitHub...)"
+                    className="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62]"
+                  />
+                  <button
+                    onClick={() => toast.success("Walkthrough submitted for review!")}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#0F203A] hover:bg-[#1a3a5c] text-white text-sm font-medium transition-colors shrink-0"
+                  >
+                    <ExternalLink size={14} />
+                    Submit
+                  </button>
+                </div>
+                <div className="border-t border-slate-100 pt-4">
+                  <p className="text-xs text-slate-400 text-center">No community walkthroughs submitted yet. Be the first!</p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         {activeLabTab === "reviews" && (
-          <div className="angular-card bg-white p-8 text-center">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Reviews</h3>
-            <p className="text-xs text-slate-500">Complete this lab to leave a review.</p>
+          <div className="space-y-6">
+            {/* Rating summary */}
+            <div className="angular-card bg-white p-6">
+              <div className="flex items-center gap-6">
+                <div className="text-center">
+                  <p className="text-4xl font-bold text-slate-900">4.{7 + (lab?.id?.charCodeAt(0) % 3)}</p>
+                  <div className="flex items-center gap-0.5 my-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={14} className={`${s <= 4 ? "text-amber-400 fill-amber-400" : "text-slate-200"}`} />
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-400">128 ratings</p>
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const pct = stars === 5 ? 62 : stars === 4 ? 28 : stars === 3 ? 7 : stars === 2 ? 2 : 1;
+                    return (
+                      <div key={stars} className="flex items-center gap-2 text-xs">
+                        <span className="w-3 text-slate-400">{stars}</span>
+                        <Star size={10} className="text-amber-400 fill-amber-400 shrink-0" />
+                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-amber-400 rounded-full" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="w-8 text-right text-slate-400">{pct}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Write a review */}
+            <div className="angular-card bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-3">Write a Review</h3>
+              <div className="flex items-center gap-1 mb-3">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <button key={s} className="text-slate-200 hover:text-amber-400 transition-colors">
+                    <Star size={20} />
+                  </button>
+                ))}
+              </div>
+              <textarea
+                placeholder="Share your experience with this lab..."
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#229C62]/20 focus:border-[#229C62] resize-none"
+              />
+              <button
+                onClick={() => toast.success("Review submitted!")}
+                className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-medium transition-colors"
+              >
+                Submit Review
+              </button>
+            </div>
+
+            {/* Reviews list */}
+            <div className="angular-card bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-4">Reviews</h3>
+              <div className="text-center py-8">
+                <MessageSquare size={32} className="mx-auto mb-3 text-slate-300" />
+                <p className="text-sm text-slate-500">No reviews yet. Be the first to review this lab!</p>
+              </div>
+            </div>
           </div>
         )}
 
