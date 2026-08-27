@@ -133,6 +133,16 @@ export default function ProfileEditPage() {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
   const onSubmit = async (values: ProfileValues) => {
     try {
       const payload: Record<string, string> = {};

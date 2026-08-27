@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/api";
@@ -12,21 +12,27 @@ function VerifyEmailContent() {
   const email = searchParams.get("email") || "";
 
   const [resending, setResending] = useState(false);
-  const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
-  const handleResend = async () => {
-    if (!email) return;
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
+
+  const handleResend = useCallback(async () => {
+    if (!email || cooldown > 0) return;
     setResending(true);
     try {
       await auth.resendVerification(email);
-      setResent(true);
       toast.success("New verification link sent!");
+      setCooldown(30);
     } catch {
       toast.error("Failed to resend verification link");
     } finally {
       setResending(false);
     }
-  };
+  }, [email, cooldown]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
@@ -56,7 +62,10 @@ function VerifyEmailContent() {
 
           <div className="bg-slate-50 rounded-xl p-4 mb-6">
             <p className="text-sm text-slate-600 leading-relaxed">
-              Click the link in the email to verify your account and start learning. The link will expire in 24 hours.
+              Click the link in the email to verify your account and start learning. The link expires in 24 hours.
+            </p>
+            <p className="text-xs text-slate-400 mt-2">
+              Check your spam or junk folder if you don&apos;t see it.
             </p>
           </div>
 
@@ -65,10 +74,10 @@ function VerifyEmailContent() {
               Didn&apos;t receive the email?{" "}
               <button
                 onClick={handleResend}
-                disabled={resending || resent}
+                disabled={resending || cooldown > 0}
                 className="text-emerald-600 hover:text-emerald-700 font-medium disabled:text-slate-400"
               >
-                {resent ? "Sent!" : resending ? "Sending..." : "Resend link"}
+                {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend link"}
               </button>
             </p>
           </div>

@@ -152,10 +152,7 @@ export default function SettingsPage() {
                       <p className="text-sm font-medium text-slate-900">{item.label}</p>
                       <p className="text-sm text-slate-500">{item.description}</p>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" defaultChecked />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#229C62]" />
-                    </label>
+                    <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Coming soon</span>
                   </div>
                 ))}
               </div>

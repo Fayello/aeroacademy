@@ -24,6 +24,7 @@ import {
   Activity,
   ExternalLink,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
@@ -218,7 +219,14 @@ export default function CourseBriefingPage() {
       </div>
     );
   }
-  if (error) return <div role="alert" className="text-red-600 p-4">{error}</div>;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <AlertCircle size={40} className="text-red-400 mb-3" />
+      <p className="text-slate-700 font-medium mb-1">Something went wrong</p>
+      <p className="text-sm text-slate-500 mb-4">{error}</p>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#229C62] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
+    </div>
+  );
   if (!course) return null;
 
   const isEnrolled = !!enrollment;
@@ -593,7 +601,7 @@ export default function CourseBriefingPage() {
                         className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                       >
                         <Play size={16} />
-                        Resume Course
+                        Continue Course
                       </button>
                     )}
                   </>
@@ -650,7 +658,7 @@ export default function CourseBriefingPage() {
                 className="w-full py-3 px-4 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
               >
                 <Play size={16} />
-                Resume Course
+                Continue Course
               </button>
             ) : (
               <button

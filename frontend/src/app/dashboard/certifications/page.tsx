@@ -50,6 +50,7 @@ export default function CertificationsPage() {
   const [awards, setAwards] = useState<AwardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [awarding, setAwarding] = useState<string | null>(null);
+  const [confirmClaim, setConfirmClaim] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -190,18 +191,31 @@ export default function CertificationsPage() {
                         Earned
                       </span>
                     ) : ev.eligible ? (
-                      <button
-                        onClick={() => handleAward(ev.code)}
-                        disabled={awarding === ev.code}
-                        className="px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
-                      >
-                        {awarding === ev.code ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
+                      confirmClaim === ev.code ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleAward(ev.code)}
+                            disabled={awarding === ev.code}
+                            className="px-3 py-1.5 bg-[#229C62] hover:bg-[#0F203A] disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
+                          >
+                            {awarding === ev.code ? <Loader2 size={12} className="animate-spin" /> : "Confirm"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmClaim(null)}
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-medium transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmClaim(ev.code)}
+                          className="px-4 py-2 bg-[#229C62] hover:bg-[#0F203A] text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                        >
                           <Award size={14} />
-                        )}
-                        {awarding === ev.code ? "Awarding..." : "Claim"}
-                      </button>
+                          Claim
+                        </button>
+                      )
                     ) : (
                       <span className="flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-500 rounded-full text-xs font-medium">
                         <Lock size={12} />

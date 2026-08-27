@@ -205,7 +205,7 @@ export default function Sidebar() {
             <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-2">
                 <Award size={14} className="text-[#7AD62A]" />
-                <span className="text-xs font-bold text-white">Beginner Lv{level}</span>
+                <span className="text-xs font-bold text-white">{level < 4 ? "Beginner" : level < 7 ? "Intermediate" : level < 10 ? "Advanced" : "Expert"} Lv{level}</span>
               </div>
               <span className="text-[10px] font-mono text-white/40">{xp.toLocaleString()} XP</span>
             </div>

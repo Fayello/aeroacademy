@@ -42,7 +42,7 @@ export default function LoginPage() {
       localStorage.setItem("token", res.access_token);
       localStorage.setItem("refresh_token", res.refresh_token);
       localStorage.setItem("user", JSON.stringify(res.user));
-      Cookies.set("token", res.access_token, { expires: 7, path: "/" });
+      Cookies.set("token", res.access_token, { expires: rememberMe ? 30 : 1, path: "/" });
       initTokenRefresh();
       toast.success("Welcome back!");
       router.push("/dashboard");

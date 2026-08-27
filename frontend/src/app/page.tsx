@@ -245,7 +245,7 @@ export default function LandingPage() {
                 </a>
               </div>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-white/40">
-                {["No credit card required", `${stats.totalLabs || 37}+ hands-on labs`, "Free tier available"].map((item) => (
+                {["No credit card required", `${stats.totalLabs || 35}+ hands-on labs`, "Free tier available"].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
                     <CheckCircle2 size={14} className="text-[#7AD62A]" /> {item}
                   </div>
@@ -288,7 +288,7 @@ export default function LandingPage() {
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers Training", icon: Users },
               { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Hands-on Labs", icon: Terminal },
               { value: stats.totalCourses || "7", label: "Expert Courses", icon: BookOpen },
-              { value: "95%", label: "Completion Rate", icon: Award },
+              { value: "50+", label: "Video Lessons", icon: Award },
             ].map((s, i) => (
               <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />

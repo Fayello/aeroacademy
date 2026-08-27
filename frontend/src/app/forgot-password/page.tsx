@@ -14,7 +14,7 @@ type EmailValues = z.infer<typeof emailSchema>;
 
 const resetSchema = z.object({
   code: z.string().length(6, "Enter the 6-digit code"),
-  password: z.string().min(8, "At least 8 characters"),
+  password: z.string().min(8, "At least 8 characters").regex(/[A-Z]/, "Add an uppercase letter").regex(/[a-z]/, "Add a lowercase letter").regex(/[0-9]/, "Add a number"),
   confirmPassword: z.string(),
 }).refine((d) => d.password === d.confirmPassword, { message: "Passwords don't match", path: ["confirmPassword"] });
 type ResetValues = z.infer<typeof resetSchema>;

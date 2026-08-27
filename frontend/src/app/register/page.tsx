@@ -36,7 +36,7 @@ const BENEFITS = [
   "Earn XP & climb the leaderboard",
   "Deploy real Docker sandbox labs",
   "Earn industry-recognized certifications",
-  "Join a community of 500+ engineers",
+  "Join a community of engineers",
 ];
 
 export default function RegisterPage() {

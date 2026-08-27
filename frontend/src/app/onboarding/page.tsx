@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "@/lib/toast";
 import {
   ChevronRight,
   ChevronLeft,
@@ -153,6 +154,7 @@ export default function OnboardingPage() {
     } catch {
       localStorage.setItem(ONBOARDING_KEY, "true");
       localStorage.setItem("onboardingSelections", JSON.stringify(selections));
+      toast.success("Welcome to XpertClass!");
       router.push("/dashboard");
     } finally {
       setLoading(false);
@@ -435,9 +437,9 @@ export default function OnboardingPage() {
           <div className="w-14 h-14 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-3">
             <FlaskConical size={24} className="text-[#7AD62A]" />
           </div>
-          <h3 className="text-base font-bold text-white mb-2">Unlock a free course!</h3>
+          <h3 className="text-base font-bold text-white mb-2">Personalize your experience</h3>
           <p className="text-xs text-white/50 leading-relaxed mb-4">
-            Complete onboarding to unlock access to introductory courses and get a head start on your journey.
+            Your selections help us recommend the right courses, labs, and learning paths for you.
           </p>
           <div className="flex items-center gap-2 justify-center bg-white/[0.04] rounded-lg px-3 py-2">
             <BookOpen size={14} className="text-[#7AD62A]" />

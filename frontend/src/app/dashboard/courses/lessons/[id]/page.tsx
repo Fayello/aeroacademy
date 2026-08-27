@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode, type ReactElement, cloneElement } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 type ReactPlayerComponent = React.ComponentType<{
@@ -210,7 +210,14 @@ export default function LessonPage() {
       </div>
     );
   }
-  if (error) return <div role="alert" className="text-red-600 p-4">{error}</div>;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <AlertCircle size={40} className="text-red-400 mb-3" />
+      <p className="text-slate-700 font-medium mb-1">Something went wrong</p>
+      <p className="text-sm text-slate-500 mb-4">{error}</p>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#229C62] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
+    </div>
+  );
   if (!lesson) return null;
 
   const nav = findLessonNav();
