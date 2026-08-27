@@ -398,9 +398,9 @@ export default function LabWorkspace() {
       theme: {
         background: "#0f172a",
         foreground: "#94a3b8",
-        cursor: "#229C62",
+        cursor: "#7AD62A",
         cursorAccent: "#0f172a",
-        selectionBackground: "rgba(5, 150, 105, 0.3)",
+        selectionBackground: "rgba(122, 214, 42, 0.3)",
       },
       fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
       fontSize: savedFontSize,
@@ -589,19 +589,19 @@ export default function LabWorkspace() {
       const xpNeeded = gate.requiredLevel * 1000 - level * 1000;
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-in fade-in duration-500">
-          <div className="w-16 h-16 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center">
-            <Lock size={28} className="text-amber-500" />
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+            <Lock size={28} className="text-amber-400" />
           </div>
           <div className="text-center max-w-sm">
             <h2 className="text-lg font-semibold text-white">Lab Locked</h2>
             <p className="text-sm text-slate-500 mt-1">{gate.reason}</p>
             <div className="mt-4 p-4 bg-white/5 rounded-xl border border-white/10 space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600">Your level</span>
+                <span className="text-slate-400">Your level</span>
                 <span className="font-semibold text-white">Level {level}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600">Required</span>
+                <span className="text-slate-400">Required</span>
                 <span className="font-semibold text-[#7AD62A]">Level {gate.requiredLevel}</span>
               </div>
               <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -618,7 +618,7 @@ export default function LabWorkspace() {
               <Link href="/dashboard/labs" className="btn-primary text-sm">
                 Browse Labs
               </Link>
-              <Link href="/dashboard/courses" className="text-sm text-slate-600 hover:text-slate-200 font-medium">
+              <Link href="/dashboard/courses" className="text-sm text-slate-400 hover:text-slate-200 font-medium">
                 Take a Course
               </Link>
             </div>
@@ -747,7 +747,7 @@ export default function LabWorkspace() {
                   {lab.tasks.map((task: string, i: number) => (
                     <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
                       <span className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-xs font-bold text-[#7AD62A] shrink-0">{i + 1}</span>
-                      <p className="text-sm text-slate-700">{task}</p>
+                      <p className="text-sm text-slate-300">{task}</p>
                     </div>
                   ))}
                 </div>
@@ -775,7 +775,7 @@ export default function LabWorkspace() {
                 <div className="grid gap-2">
                   {lab.credentials.map((cred: LabCredential, i: number) => (
                     <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
-                      <span className="font-medium text-slate-700">{cred.service}</span>
+                      <span className="font-medium text-slate-300">{cred.service}</span>
                       <span className="text-slate-400">·</span>
                       <span className="font-mono text-[#7AD62A]">{cred.username}</span>
                       {cred.password && (
@@ -814,7 +814,7 @@ export default function LabWorkspace() {
                       <div key={star} className="flex items-center gap-2">
                         <span className="text-xs text-slate-500 w-3">{star}</span>
                         <Star size={10} className="text-amber-400 fill-amber-400" />
-                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                           <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${(count / total) * 100}%` }} />
                         </div>
                         <span className="text-xs text-slate-400 w-6 text-right">{count}</span>
@@ -852,7 +852,7 @@ export default function LabWorkspace() {
                 onChange={(e) => setMyComment(e.target.value)}
                 placeholder="Share your experience with this lab (optional)..."
                 rows={3}
-                className="w-full px-3 py-2 rounded-lg border border-white/10 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] resize-none transition-all"
+                className="w-full px-3 py-2 rounded-lg border border-white/10 bg-[#0f172a] text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] resize-none transition-all"
               />
               <button
                 onClick={handleSubmitReview}
@@ -874,7 +874,7 @@ export default function LabWorkspace() {
               ) : (
                 <div className="space-y-4">
                   {reviewsData.reviews.map((review) => (
-                    <div key={review.id} className="p-4 rounded-lg bg-white/5 border border-slate-100">
+                    <div key={review.id} className="p-4 rounded-lg bg-white/5 border border-white/10">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center text-white text-[9px] font-bold">
@@ -892,7 +892,7 @@ export default function LabWorkspace() {
                         </div>
                       </div>
                       {review.comment && (
-                        <p className="text-sm text-slate-600">{review.comment}</p>
+                        <p className="text-sm text-slate-300">{review.comment}</p>
                       )}
                     </div>
                   ))}
@@ -972,7 +972,7 @@ export default function LabWorkspace() {
               </button>
             </>
           ) : instance?.status === "PROVISIONING" || provisioning ? (
-            <span className="flex items-center gap-2 text-xs text-amber-600">
+            <span className="flex items-center gap-2 text-xs text-amber-400">
               <Loader2 className="animate-spin" size={14} />
               Provisioning...
             </span>
@@ -989,12 +989,12 @@ export default function LabWorkspace() {
       {!isFullscreen && isRunning && telemetry && (
         <div className="h-10 border-b border-white/10 bg-[#0f172a] px-4 flex items-center gap-6 text-xs text-slate-500 shrink-0">
           <span className="font-medium">CPU</span>
-          <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+          <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div className={`h-full rounded-full ${telemetry.cpu > 80 ? "bg-red-500" : telemetry.cpu > 50 ? "bg-amber-500" : "bg-[#7AD62A]"}`} style={{ width: `${telemetry.cpu}%` }} />
           </div>
           <span className="font-mono w-8">{telemetry.cpu}%</span>
           <span className="font-medium">RAM</span>
-          <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+          <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div className="h-full bg-blue-500 rounded-full" style={{ width: `${telemetry.memory}%` }} />
           </div>
           <span className="font-mono w-8">{telemetry.memory}%</span>
@@ -1006,15 +1006,15 @@ export default function LabWorkspace() {
         {/* Briefing panel */}
         {!isFullscreen && (
         <div className="w-80 shrink-0 angular-card bg-[#0f172a] shadow-sm overflow-y-auto hidden lg:block">
-          <div className="p-5 border-b border-slate-100">
+          <div className="p-5 border-b border-white/10">
             <h2 className="text-sm font-semibold text-white">Briefing</h2>
           </div>
 
           {isRunning && (
-            <div className="p-4 border-b border-slate-100 bg-[#7AD62A]/10/40">
+            <div className="p-4 border-b border-white/10 bg-[#7AD62A]/5">
               <div className="flex items-center gap-1.5 mb-1.5">
                 <Zap size={12} className="text-[#7AD62A]" />
-                <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Quick Start</h4>
+                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Quick Start</h4>
               </div>
               <p className="text-[11px] text-slate-500 mb-2">
                 Click a command to send it straight to the terminal:
@@ -1024,7 +1024,7 @@ export default function LabWorkspace() {
                   <div key={cmd} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-[#0f172a] border border-white/10">
                     <button
                       onClick={() => sendCommand(cmd)}
-                      className="text-[11px] font-mono text-slate-700 hover:text-[#0F203A] transition-colors text-left truncate"
+                      className="text-[11px] font-mono text-slate-300 hover:text-white transition-colors text-left truncate"
                     >
                       {cmd}
                     </button>
@@ -1049,10 +1049,10 @@ export default function LabWorkspace() {
 
             {lab?.tasks && Array.isArray(lab.tasks) && (
               <div className="mt-4">
-                <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">Tasks</h4>
+                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide mb-2">Tasks</h4>
                 <ul className="space-y-1.5 list-none p-0">
                   {lab.tasks.map((task: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-slate-600 p-2 rounded-lg bg-white/5">
+                    <li key={i} className="flex gap-2 text-sm text-slate-300 p-2 rounded-lg bg-white/5">
                       <span className="text-[#7AD62A] mt-1">•</span>
                       {task}
                     </li>
@@ -1064,7 +1064,7 @@ export default function LabWorkspace() {
             {lab?.credentials && Array.isArray(lab.credentials) && (
               <div className="mt-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Credentials</h4>
+                  <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Credentials</h4>
                   <button
                     onClick={() => {
                       const text = lab.credentials
@@ -1085,7 +1085,7 @@ export default function LabWorkspace() {
                   {lab.credentials.map((cred: LabCredential, i: number) => (
                     <div key={i} className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-slate-700">{cred.service}</p>
+                        <p className="font-medium text-slate-300">{cred.service}</p>
                         <button
                           onClick={() => {
                             const text = `User: ${cred.username}${cred.password ? `\nPass: ${cred.password}` : ''}`;
@@ -1107,7 +1107,7 @@ export default function LabWorkspace() {
 
             {lab?.flags && lab.flags.length > 0 && (
               <div className="mt-4">
-                <h4 className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                   <Shield size={12} className="text-[#7AD62A]" />
                   Flags
                 </h4>
@@ -1115,7 +1115,7 @@ export default function LabWorkspace() {
                   {lab.flags.map((flag: LabFlag) => (
                     <div key={flag.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-slate-700">{flag.title}</span>
+                        <span className="text-xs font-medium text-slate-300">{flag.title}</span>
                         <span className="text-xs font-medium text-[#7AD62A]">+{flag.points} pts</span>
                       </div>
                       <p className="text-xs text-slate-500 mb-3">{flag.description}</p>
@@ -1147,7 +1147,7 @@ export default function LabWorkspace() {
                     key={cmd}
                     onClick={() => sendCommand(cmd)}
                     title={`Run: ${cmd}`}
-                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-white/5 text-[11px] font-mono text-slate-500 hover:text-[#0F203A] transition-colors"
+                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-[#7AD62A]/10 text-[11px] font-mono text-slate-500 hover:text-white transition-colors"
                   >
                     {cmd}
                   </button>
@@ -1257,7 +1257,7 @@ export default function LabWorkspace() {
                 </div>
                 <button
                   onClick={handleManualReconnect}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#0F203A] text-white text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-medium transition-colors"
                 >
                   <PlugZap size={12} />
                   Reconnect
@@ -1314,13 +1314,13 @@ function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; s
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="AERO{...}"
-        className="flex-1 text-xs border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
+        className="flex-1 text-xs border border-white/10 bg-[#0f172a] text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
-      <button
+              <button
         onClick={handleSubmit}
         disabled={submitting}
-        className="px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#0F203A] text-white text-xs font-medium transition-colors disabled:opacity-50"
+        className="px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-medium transition-colors disabled:opacity-50"
       >
         {submitting ? <Loader2 className="animate-spin" size={12} /> : "Submit"}
       </button>

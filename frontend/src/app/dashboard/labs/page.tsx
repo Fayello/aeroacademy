@@ -163,7 +163,7 @@ export default function LabsCatalog() {
           >
             {tab.label}
             <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-slate-100 text-slate-500"
+              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
             }`}>
               {tabCounts[tab.id]}
             </span>
@@ -173,14 +173,14 @@ export default function LabsCatalog() {
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Grid view"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-slate-700" : "text-slate-400 hover:text-slate-300"}`}
+            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
             aria-label="Table view"
           >
             <List size={16} />
@@ -217,8 +217,8 @@ export default function LabsCatalog() {
               onClick={() => setDifficultyFilter(d)}
               className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                 difficultyFilter === d
-                  ? "bg-slate-800 text-white border-slate-800"
-                  : "bg-slate-100 text-slate-500 border-white/10 hover:border-white/10"
+                  ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
+                  : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
               }`}
             >
               {d === "ALL" ? "All levels" : d.charAt(0) + d.slice(1).toLowerCase()}
@@ -227,7 +227,7 @@ export default function LabsCatalog() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-white/5 rounded-full border border-white/10 transition-all"
+              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-white/5 rounded-full border border-white/10 transition-all"
             >
               Clear filters
             </button>
@@ -277,13 +277,13 @@ export default function LabsCatalog() {
                   className="group relative angular-card border border-white/10 overflow-hidden opacity-75"
                   aria-label={`${lab.title} — locked, requires level ${requiredLevel}`}
                 >
-                  <div className="absolute inset-0 z-20 backdrop-blur-md bg-white/80 flex flex-col items-center justify-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center">
-                      <Lock size={20} className="text-amber-500" />
+                  <div className="absolute inset-0 z-20 backdrop-blur-md bg-[#0a0f1a]/90 flex flex-col items-center justify-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                      <Lock size={20} className="text-amber-400" />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-mono text-slate-700 mb-1">LEVEL {requiredLevel} REQUIRED</p>
-                      <div className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+                      <p className="text-xs font-mono text-slate-300 mb-1">LEVEL {requiredLevel} REQUIRED</p>
+                      <div className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">
                         Earn {xpNeeded > 0 ? xpNeeded : 500} more XP to unlock
                       </div>
                     </div>
@@ -322,7 +322,7 @@ export default function LabsCatalog() {
                       <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
                     )}
                     {progressStatus === "IN_PROGRESS" && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">Active</span>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Active</span>
                     )}
                   </div>
                   <h3 className="text-sm font-medium text-white group-hover:text-slate-200 transition-colors">{lab.title}</h3>
@@ -339,16 +339,16 @@ export default function LabsCatalog() {
                   {flags > 0 && progress > 0 && (
                     <div className="space-y-1">
                       <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full bg-slate-800 transition-all duration-500" style={{ width: `${progress}%` }} />
+                        <div className="h-full rounded-full bg-gradient-to-r from-[#7AD62A] to-[#6bc422] transition-all duration-500" style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   )}
 
                   <div className="pt-3 border-t border-white/10 flex items-center justify-between">
                     <span className="text-[10px] font-mono text-slate-400">{flags} OBJECTIVES</span>
-                    <span className="text-xs font-medium text-slate-600 group-hover:text-white flex items-center gap-1.5 transition-colors">
+                    <span className="text-xs font-medium text-slate-400 group-hover:text-white flex items-center gap-1.5 transition-colors">
                       LAUNCH
-                      <span className="w-5 h-5 rounded-md bg-slate-100 group-hover:bg-white/10 flex items-center justify-center transition-all">
+                      <span className="w-5 h-5 rounded-md bg-white/5 group-hover:bg-[#7AD62A]/10 flex items-center justify-center transition-all">
                         <Play size={10} fill="currentColor" />
                       </span>
                     </span>
@@ -380,7 +380,7 @@ export default function LabsCatalog() {
             return (
               <div key={lab.id}>
                 {isLocked ? (
-                  <div className="flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-slate-100 opacity-50">
+                  <div className="flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 opacity-50">
                     <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
                     <div className="flex-1 min-w-0 flex items-center gap-2">
                       <Lock size={12} className="text-slate-400 shrink-0" />
@@ -389,7 +389,7 @@ export default function LabsCatalog() {
                     <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
                       <div className="flex gap-0.5">
                         {[1, 2, 3, 4, 5].map((d) => (
-                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-slate-300"}`} />
+                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
                         ))}
                       </div>
                     </div>
@@ -398,7 +398,7 @@ export default function LabsCatalog() {
                 ) : (
                   <Link
                     href={`/dashboard/labs/${lab.id}`}
-                    className="group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-slate-100 hover:bg-white/5 transition-colors"
+                    className="group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 hover:bg-white/5 transition-colors"
                   >
                     <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
                     <div className="flex-1 min-w-0">
@@ -407,7 +407,7 @@ export default function LabsCatalog() {
                     <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
                       <div className="flex gap-0.5">
                         {[1, 2, 3, 4, 5].map((d) => (
-                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-slate-300"}`} />
+                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
                         ))}
                       </div>
                       <span className="text-[10px] text-slate-500">{diff.label}</span>
@@ -423,7 +423,7 @@ export default function LabsCatalog() {
                         <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
                       )}
                       {progressStatus === "IN_PROGRESS" && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">Active</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Active</span>
                       )}
                       {progressStatus === "NOT_STARTED" && (
                         <span className="text-[10px] font-medium text-[#7AD62A] group-hover:underline">Launch</span>
