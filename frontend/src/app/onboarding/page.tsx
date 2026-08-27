@@ -208,10 +208,10 @@ export default function OnboardingPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 lg:px-10 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#7AD62A] flex items-center justify-center">
-              <Shield size={18} className="text-white" />
-            </div>
-            <span className="text-lg font-bold text-white tracking-tight">XpertClass</span>
+            <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+            <span className="text-lg font-bold tracking-tight">
+              <span className="text-white">Xpert</span><span className="text-[#7AD62A]">Class</span>
+            </span>
           </Link>
           <button
             onClick={handleSkip}
@@ -239,7 +239,7 @@ export default function OnboardingPage() {
                 </p>
                 <button
                   onClick={() => setStep(0)}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors"
                 >
                   Get Started
                   <ArrowRight size={16} />
@@ -421,7 +421,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => canNext() && setStep(step + 1)}
               disabled={!canNext()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] disabled:opacity-40 disabled:cursor-not-allowed text-[#0F203A] text-sm font-semibold transition-colors"
             >
               Continue
               <ChevronRight size={16} />
@@ -455,7 +455,7 @@ export default function OnboardingPage() {
             <svg width="108" height="108" viewBox="0 0 108 108">
               <circle cx="54" cy="54" r="44" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
               <circle
-                cx="54" cy="54" r="44" fill="none" stroke="#229C62" strokeWidth="6"
+                cx="54" cy="54" r="44" fill="none"                 stroke="#7AD62A" strokeWidth="6"
                 strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={dashOffset}
                 transform="rotate(-90 54 54)" className="transition-all duration-500"
               />
