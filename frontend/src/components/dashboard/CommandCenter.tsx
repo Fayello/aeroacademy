@@ -7,7 +7,6 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { useDisplayMode } from "@/lib/displayMode";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import {
-  Loader2,
   FlaskConical,
   BookOpen,
   Play,
@@ -104,13 +103,20 @@ function ProgressRing({ progress, size = 80, stroke = 6 }: { progress: number; s
 }
 
 export default function CommandCenter() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const s = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      return s ? JSON.parse(s) : null;
+    } catch { return null; }
+  });
   const [activeLabs, setActiveLabs] = useState<ActiveLab[]>([]);
   const [competency, setCompetency] = useState<CompetencyData | null>(null);
   const [academic, setAcademic] = useState<AcademicData | null>(null);
   const [weeklyItems, setWeeklyItems] = useState<{ title: string; done: boolean }[]>([]);
   const [aiRecommendations, setAiRecommendations] = useState<{ title: string; description: string; priority: string; type: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [labsLoading, setLabsLoading] = useState(true);
+  const [compLoading, setCompLoading] = useState(true);
+  const [aiLoading, setAiLoading] = useState(true);
   const { config } = useDisplayMode();
   const { userMetrics } = useDashboard();
 
@@ -123,82 +129,90 @@ export default function CommandCenter() {
 
   useEffect(() => {
     let cancelled = false;
-    // Safety timeout — never spin longer than 16s even if APIs hang
-    const safety = setTimeout(() => { if (!cancelled) setLoading(false); }, 16000);
-    async function load() {
+
+    async function ensureUser(): Promise<string | null> {
+      // user already set from localStorage initializer; fallback to /auth/me if missing
+      let parsed: any = null;
       try {
-        let storedUser = localStorage.getItem("user");
-        let parsed: any = null;
-        try { parsed = storedUser ? JSON.parse(storedUser) : null; } catch { parsed = null; }
-        // Fallback: try to fetch user if not in localStorage
-        if (!parsed?.id) {
-          try {
-            const me = await fetchApi<{ id: string; email: string; name?: string }>("/auth/me");
-            if (me?.id) {
-              parsed = me;
-              localStorage.setItem("user", JSON.stringify(me));
-            }
-          } catch { /* keep parsed as is */ }
-        }
-        if (parsed) setUser(parsed);
-        const userId = parsed?.id;
-        if (!userId) {
-          if (!cancelled) setLoading(false);
-          return;
-        }
-
-        const [labsData, compData, acadData, aiRecs] = await Promise.allSettled([
-          fetchApi<ActiveLab[]>("/dashboard/active-labs"),
-          fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`),
-          fetchApi<any>("/academic/my-courses").then((courses) => {
-            if (!courses || courses.length === 0) return null;
-            const cohortName = courses[0]?.cohortName || "My Cohort";
-            return {
-              cohortName,
-              courses: courses.map((c: any) => ({ id: c.id, title: c.title, weight: c.weight })),
-            };
-          }),
-          fetchApi<any>("/ai/recommendations"),
-        ]);
-
-        if (!cancelled) {
-          if (labsData.status === "fulfilled" && Array.isArray(labsData.value)) setActiveLabs(labsData.value);
-          if (compData.status === "fulfilled" && compData.value) setCompetency(compData.value);
-          if (acadData.status === "fulfilled" && acadData.value) setAcademic(acadData.value);
-          if (aiRecs.status === "fulfilled" && aiRecs.value?.recommendations) {
-            setAiRecommendations(aiRecs.value.recommendations);
-          }
-
-          const recs = compData.status === "fulfilled" ? (compData.value as any)?.recommendations || [] : [];
-          const weekly: { title: string; done: boolean }[] = [];
-          if (labsData.status === "fulfilled" && Array.isArray(labsData.value)) {
-            for (const lab of (labsData.value as ActiveLab[]).slice(0, 2)) {
-              weekly.push({ title: lab.lab.title, done: false });
-            }
-          }
-          for (const rec of (recs as any[]).slice(0, 3)) {
-            weekly.push({ title: rec.title, done: false });
-          }
-          setWeeklyItems(weekly.slice(0, 4));
-        }
-      } catch {
-        // silent
-      } finally {
-        clearTimeout(safety);
-        if (!cancelled) setLoading(false);
+        const s = localStorage.getItem("user");
+        parsed = s ? JSON.parse(s) : null;
+      } catch { parsed = null; }
+      if (parsed?.id) {
+        if (!cancelled) setUser(parsed);
+        return parsed.id as string;
       }
+      try {
+        const me = await fetchApi<{ id: string; email: string; name?: string }>("/auth/me");
+        if (me?.id) {
+          localStorage.setItem("user", JSON.stringify(me));
+          if (!cancelled) setUser(me as any);
+          return me.id;
+        }
+      } catch { /* ignore */ }
+      return null;
     }
+
+    async function load() {
+      const userId = await ensureUser();
+      if (!userId) {
+        if (!cancelled) { setLabsLoading(false); setCompLoading(false); setAiLoading(false); }
+        return;
+      }
+
+      // Fire each request independently so the fastest renders first.
+      // Active labs — usually fast (<200ms)
+      fetchApi<ActiveLab[]>("/dashboard/active-labs")
+        .then((data) => { if (!cancelled && Array.isArray(data)) setActiveLabs(data); })
+        .catch(() => {})
+        .finally(() => { if (!cancelled) setLabsLoading(false); });
+
+      // Academic — fast
+      fetchApi<any>("/academic/my-courses")
+        .then((courses) => {
+          if (!courses || courses.length === 0) return;
+          const cohortName = courses[0]?.cohortName || "My Cohort";
+          if (!cancelled) setAcademic({ cohortName, courses: courses.map((c: any) => ({ id: c.id, title: c.title, weight: c.weight })) });
+        })
+        .catch(() => {});
+
+      // Competency — heavy (DB heavy). Derive weekly items after it resolves.
+      fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`)
+        .then((data) => {
+          if (cancelled || !data) return;
+          setCompetency(data);
+          const recs = (data as any)?.recommendations || [];
+          const weekly: { title: string; done: boolean }[] = [];
+          // Labs may not have arrived yet — include recs only
+          for (const rec of (recs as any[]).slice(0, 3)) weekly.push({ title: rec.title, done: false });
+          if (weekly.length) setWeeklyItems((prev) => (prev.length === 0 ? weekly.slice(0, 4) : prev));
+        })
+        .catch(() => {})
+        .finally(() => { if (!cancelled) setCompLoading(false); });
+
+      // AI recommendations — slowest (Ollama, 2-8s). Don't block anything.
+      fetchApi<any>("/ai/recommendations")
+        .then((data) => { if (!cancelled && data?.recommendations) setAiRecommendations(data.recommendations); })
+        .catch(() => {})
+        .finally(() => { if (!cancelled) setAiLoading(false); });
+    }
+
     load();
-    return () => { cancelled = true; clearTimeout(safety); };
+
+    // Enrich weekly items once activeLabs arrive (even if competency already set)
+    // This is handled by a separate effect below watching activeLabs + competency
+
+    return () => { cancelled = true; };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#229C62]" size={32} />
-      </div>
-    );
-  }
+  // Merge weekly items when both labs and competency are available
+  useEffect(() => {
+    if (activeLabs.length === 0 && !competency?.recommendations?.length) return;
+    const recs = competency?.recommendations || [];
+    const weekly: { title: string; done: boolean }[] = [];
+    for (const lab of activeLabs.slice(0, 2)) weekly.push({ title: lab.lab.title, done: false });
+    for (const rec of recs.slice(0, 3)) weekly.push({ title: rec.title, done: false });
+    if (weekly.length) setWeeklyItems(weekly.slice(0, 4));
+  }, [activeLabs, competency]);
 
   const userName = user?.name || user?.email?.split("@")[0] || "Engineer";
   const firstName = userName.split(" ")[0];
@@ -207,7 +221,7 @@ export default function CommandCenter() {
     ? aiRecommendations.map(r => ({ ...r, link: r.type === 'lab' ? '/dashboard/labs' : r.type === 'course' ? '/dashboard/courses' : '/dashboard/assessments' }))
     : competency?.recommendations?.slice(0, 3) || [];
   const nextObjective = activeLabs[0] || topRecs[0] || null;
-  const isNewUser = (userMetrics?.xp ?? 0) === 0 && activeLabs.length === 0;
+  const isNewUser = !labsLoading && !compLoading && (userMetrics?.xp ?? 0) === 0 && activeLabs.length === 0;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -296,8 +310,19 @@ export default function CommandCenter() {
         </div>
       )}
 
-      {/* ─── NEXT OBJECTIVE (if active) ─── */}
-      {!isNewUser && nextObjective && (
+      {/* ─── NEXT OBJECTIVE ─── */}
+      {(labsLoading || aiLoading || compLoading) && !nextObjective ? (
+        <div className="angular-card bg-white p-5 animate-pulse">
+          <div className="h-3 w-32 bg-slate-100 rounded mb-3" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-slate-100" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-40 bg-slate-100 rounded" />
+              <div className="h-3 w-24 bg-slate-100 rounded" />
+            </div>
+          </div>
+        </div>
+      ) : !isNewUser && nextObjective ? (
         <div className="angular-card bg-gradient-to-br from-[#0F203A] via-[#1a3a5c] to-[#229C62] p-5 sm:p-6 text-white relative overflow-hidden animate-fade-in-up animate-delay-2">
           <div className="absolute inset-0 angular-grid-bg opacity-[0.04] pointer-events-none" />
           <div className="relative z-10">
@@ -346,7 +371,7 @@ export default function CommandCenter() {
             ) : null}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* ─── PROGRESS RING + STATS ─── */}
       {config.showXp && (
@@ -396,7 +421,19 @@ export default function CommandCenter() {
       )}
 
       {/* ─── THIS WEEK ─── */}
-      {weeklyItems.length > 0 && (
+      {compLoading && weeklyItems.length === 0 ? (
+        <div className="angular-card bg-white p-5 animate-pulse">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-4 h-4 bg-slate-100 rounded" />
+            <div className="h-4 w-20 bg-slate-100 rounded" />
+          </div>
+          <div className="space-y-2">
+            {[1,2,3].map((i) => (
+              <div key={i} className="h-10 bg-slate-50 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      ) : weeklyItems.length > 0 ? (
         <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-3">
           <div className="flex items-center gap-2 mb-4">
             <Calendar size={16} className="text-[#229C62]" />
@@ -419,10 +456,22 @@ export default function CommandCenter() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* ─── ENGINEERING PROFILE ─── */}
-      {domains.length > 0 && (
+      {compLoading ? (
+        <div className="angular-card bg-white p-5 animate-pulse">
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-4 w-28 bg-slate-100 rounded" />
+            <div className="h-3 w-16 bg-slate-100 rounded" />
+          </div>
+          <div className="space-y-2.5">
+            {[1,2,3,4].map((i) => (
+              <div key={i} className="h-6 bg-slate-50 rounded" />
+            ))}
+          </div>
+        </div>
+      ) : domains.length > 0 ? (
         <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-slate-900">Engineering Profile</h2>
@@ -439,7 +488,7 @@ export default function CommandCenter() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* ─── ACADEMIC (if enrolled) ─── */}
       {academic && (
@@ -463,7 +512,19 @@ export default function CommandCenter() {
       )}
 
       {/* ─── RECOMMENDED ─── */}
-      {topRecs.length > 0 && (
+      {(aiLoading || compLoading) && topRecs.length === 0 ? (
+        <div className="angular-card bg-white p-5 animate-pulse">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-4 h-4 bg-slate-100 rounded" />
+            <div className="h-4 w-36 bg-slate-100 rounded" />
+          </div>
+          <div className="space-y-2">
+            {[1,2,3].map((i) => (
+              <div key={i} className="h-14 bg-slate-50 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      ) : topRecs.length > 0 ? (
         <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-5">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={16} className="text-[#229C62]" />
@@ -493,7 +554,7 @@ export default function CommandCenter() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
