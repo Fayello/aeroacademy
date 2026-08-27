@@ -671,4 +671,31 @@ export class CoursesService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  // === FAVORITES ===
+
+  async getMyFavorites(userId: string) {
+    const favorites = await this.prisma.courseFavorite.findMany({
+      where: { userId },
+      select: { courseId: true },
+    });
+    return favorites.map((f) => f.courseId);
+  }
+
+  async toggleFavorite(userId: string, courseId: string) {
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) throw new NotFoundException('Course not found');
+
+    const existing = await this.prisma.courseFavorite.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+
+    if (existing) {
+      await this.prisma.courseFavorite.delete({ where: { id: existing.id } });
+      return { favorited: false };
+    } else {
+      await this.prisma.courseFavorite.create({ data: { userId, courseId } });
+      return { favorited: true };
+    }
+  }
 }

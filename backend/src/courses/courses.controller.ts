@@ -266,4 +266,19 @@ export class CoursesController {
   ) {
     return this.coursesService.createReview(req.user.id, courseId, body.rating, body.comment);
   }
+
+  // === FAVORITES ===
+
+  @Get('my-favorites')
+  async getMyFavorites(@Request() req: RequestWithUser) {
+    return this.coursesService.getMyFavorites(req.user.id);
+  }
+
+  @Post(':courseId/favorite')
+  async toggleFavorite(
+    @Request() req: RequestWithUser,
+    @Param('courseId') courseId: string,
+  ) {
+    return this.coursesService.toggleFavorite(req.user.id, courseId);
+  }
 }

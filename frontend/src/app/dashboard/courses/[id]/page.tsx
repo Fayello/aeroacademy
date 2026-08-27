@@ -25,9 +25,11 @@ import {
   ExternalLink,
   ArrowRight,
   AlertCircle,
+  Heart,
 } from "lucide-react";
 import Link from "next/link";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
+import toast from "@/lib/toast";
 import type { Course, Section, Lesson } from "@/types/api";
 
 interface Enrollment {
@@ -107,6 +109,17 @@ export default function CourseBriefingPage() {
   const [hoverRating, setHoverRating] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [relatedCourses, setRelatedCourses] = useState<any[]>([]);
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  const toggleFavorite = async () => {
+    if (!id) return;
+    try {
+      const res = await fetchApi(`/courses/${id}/favorite`, { method: "POST" }) as { favorited: boolean };
+      setIsFavorited(res.favorited);
+    } catch {
+      toast.error("Failed to update favorite");
+    }
+  };
 
   useEffect(() => {
     try {
@@ -120,16 +133,18 @@ export default function CourseBriefingPage() {
     let cancelled = false;
     async function loadCourse() {
       try {
-        const [courseData, progressData, enrollmentData, reviewsResult] = await Promise.all([
+        const [courseData, progressData, enrollmentData, reviewsResult, favoritesResult] = await Promise.all([
           fetchApi<any>(`/courses/${id}`),
           fetchApi(`/progress/course/${id}`).catch(() => null),
           fetchApi(`/courses/${id}/enrollment`).catch(() => null),
           fetchApi(`/courses/${id}/reviews`).catch(() => null),
+          fetchApi<string[]>("/courses/my-favorites").catch(() => []),
         ]);
         if (!cancelled) {
           setCourse(courseData);
           setProgress(progressData);
           setEnrollment(enrollmentData);
+          setIsFavorited((favoritesResult as string[]).includes(id as string));
           if (reviewsResult) {
             setReviewsData(reviewsResult as ReviewsData);
             const existing = (reviewsResult as ReviewsData).reviews?.find(
@@ -620,6 +635,13 @@ export default function CourseBriefingPage() {
                       {enrolling ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
                       {enrolling ? "Starting..." : "Start Now"}
                     </button>
+                    <button
+                      onClick={toggleFavorite}
+                      className="w-full mt-2 py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-medium transition-colors flex items-center justify-center gap-2 text-slate-600"
+                    >
+                      <Heart size={16} className={isFavorited ? "text-red-500 fill-red-500" : ""} />
+                      {isFavorited ? "Favorited" : "Favorite"}
+                    </button>
                     <p className="text-xs text-slate-400 text-center mt-3">
                       We&apos;ll send you a welcome email with your learning roadmap
                     </p>
@@ -630,7 +652,6 @@ export default function CourseBriefingPage() {
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="hidden lg:block w-72 shrink-0 space-y-4">
           {/* Quick Start CTA */}
           <div className="angular-card border-slate-200 p-5">
@@ -652,6 +673,14 @@ export default function CourseBriefingPage() {
                 {enrolling ? "Starting..." : "Start Now"}
               </button>
             )}
+            {/* Favorite toggle */}
+            <button
+              onClick={toggleFavorite}
+              className="w-full mt-3 py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-medium transition-colors flex items-center justify-center gap-2 text-slate-600"
+            >
+              <Heart size={16} className={isFavorited ? "text-red-500 fill-red-500" : ""} />
+              {isFavorited ? "Favorited" : "Favorite"}
+            </button>
           </div>
 
           {/* Progress ring (if enrolled) */}

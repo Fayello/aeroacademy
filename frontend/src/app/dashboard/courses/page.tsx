@@ -18,6 +18,7 @@ import {
   List,
   Users,
   Award,
+  Heart,
 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
@@ -101,7 +102,7 @@ function ShimmerSkeleton() {
   );
 }
 
-function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonCount, categoryStyle, difficulty, gate }: {
+function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonCount, categoryStyle, difficulty, gate, isFavorited, onToggleFavorite }: {
   course: Course & { averageRating?: number; _count?: any };
   index: number;
   isLocked: boolean;
@@ -111,6 +112,8 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
   categoryStyle: any;
   difficulty: any;
   gate: any;
+  isFavorited: boolean;
+  onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
   const cardContent = (
     <>
@@ -144,6 +147,13 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
               </span>
             )}
           </div>
+          <button
+            onClick={(e) => onToggleFavorite(course.id, e)}
+            className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm border border-slate-200 hover:bg-white transition-colors"
+            aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
+          </button>
           {isLocked && (
             <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-white/90 text-slate-600 border border-slate-200 backdrop-blur-sm">
               <Lock size={10} />
@@ -227,7 +237,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
   );
 }
 
-function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCount, categoryStyle, difficulty, gate }: {
+function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCount, categoryStyle, difficulty, gate, isFavorited, onToggleFavorite }: {
   course: Course & { averageRating?: number; _count?: any };
   index: number;
   isLocked: boolean;
@@ -237,6 +247,8 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
   categoryStyle: any;
   difficulty: any;
   gate: any;
+  isFavorited: boolean;
+  onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
   const inner = (
     <div className={`group flex items-center gap-4 px-4 py-3 bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors ${isLocked ? "opacity-50" : ""}`}>
@@ -285,7 +297,14 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
       </div>
 
       {/* Action */}
-      <div className="w-24 shrink-0 text-right">
+      <div className="w-24 shrink-0 text-right flex items-center justify-end gap-2">
+        <button
+          onClick={(e) => onToggleFavorite(course.id, e)}
+          className="p-1 rounded-md hover:bg-slate-100 transition-colors"
+          aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
+        </button>
         <span className={`text-xs font-medium ${isLocked ? "text-slate-400" : "text-[#229C62] group-hover:text-[#1a7a4d]"}`}>
           {isLocked ? "Locked" : isEnrolled ? "Resume" : "Start"}
         </span>
@@ -312,6 +331,23 @@ export default function CoursesPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  const toggleFavorite = async (courseId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const res = await fetchApi(`/courses/${courseId}/favorite`, { method: "POST" }) as { favorited: boolean };
+      setFavorites((prev) => {
+        const next = new Set(prev);
+        if (res.favorited) next.add(courseId);
+        else next.delete(courseId);
+        return next;
+      });
+    } catch {
+      toast.error("Failed to update favorite");
+    }
+  };
 
   useEffect(() => {
     try {
@@ -325,6 +361,12 @@ export default function CoursesPage() {
     const q = searchParams.get("q");
     if (q) setSearchQuery(q);
   }, [searchParams]);
+
+  useEffect(() => {
+    fetchApi("/courses/my-favorites")
+      .then((ids) => setFavorites(new Set(ids as string[])))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -574,6 +616,8 @@ export default function CoursesPage() {
                 categoryStyle={categoryStyle}
                 difficulty={difficulty}
                 gate={gate}
+                isFavorited={favorites.has(course.id)}
+                onToggleFavorite={toggleFavorite}
               />
             );
           })}
@@ -616,6 +660,8 @@ export default function CoursesPage() {
                 categoryStyle={categoryStyle}
                 difficulty={difficulty}
                 gate={gate}
+                isFavorited={favorites.has(course.id)}
+                onToggleFavorite={toggleFavorite}
               />
             );
           })}
