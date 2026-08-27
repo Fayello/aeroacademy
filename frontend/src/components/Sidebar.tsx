@@ -143,7 +143,7 @@ export default function Sidebar() {
 
   if (loading) {
     return (
-    <aside className={`fixed left-0 top-12 bottom-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+    <aside className={`fixed left-0 top-12 bottom-0 bg-[#0a0f1a] border-r border-white/6 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
       <div className="absolute inset-0 scanline-overlay pointer-events-none" />
         <div className="p-5 flex items-center gap-3">
@@ -151,14 +151,14 @@ export default function Sidebar() {
           {!collapsed && (
             <div>
               <h1 className="text-sm font-bold tracking-tight">
-                <span className="text-[#0F203A]">Xpert</span>
-                <span className="text-[#229C62]">Class</span>
+                <span className="text-white">Xpert</span>
+                <span className="text-[#7AD62A]">Class</span>
               </h1>
             </div>
           )}
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-5 h-5 border-2 border-[#229C62] border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#7AD62A] border-t-transparent rounded-full animate-spin" />
         </div>
       </aside>
     );
@@ -168,7 +168,7 @@ export default function Sidebar() {
   const seasonWeek = 14;
 
   return (
-      <aside className={`fixed left-0 top-12 bottom-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+      <aside className={`fixed left-0 top-12 bottom-0 bg-[#0a0f1a] border-r border-white/6 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
         <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
       {/* Logo */}
       <div className={`flex items-center gap-3 ${collapsed ? "p-3 justify-center" : "p-5"}`}>
@@ -176,11 +176,11 @@ export default function Sidebar() {
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-bold tracking-tight">
-              <span className="text-[#0F203A] dark:text-white">Xpert</span>
-              <span className="text-[#229C62]">Class</span>
+              <span className="text-white">Xpert</span>
+              <span className="text-[#7AD62A]">Class</span>
             </h1>
             {nav.experience !== "INDIVIDUAL" && (
-              <span className="text-[9px] font-semibold text-[#229C62] bg-[#E9F8EE] px-1.5 py-0.5 rounded uppercase tracking-wider">
+              <span className="text-[9px] font-semibold text-[#7AD62A] bg-[#7AD62A]/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
                 {nav.experience === "UNIVERSITY" ? "University" : nav.experience === "CORPORATE" ? "Enterprise" : nav.experience === "INSTRUCTOR" ? "Instructor" : nav.experience}
               </span>
             )}
@@ -188,14 +188,14 @@ export default function Sidebar() {
         )}
         <button
           onClick={toggleCollapsed}
-          className="p-1 rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+          className="p-1 rounded-md text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors shrink-0"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
 
-      <div className="px-3"><div className="h-px bg-slate-100 dark:bg-slate-700" /></div>
+      <div className="px-3"><div className="h-px bg-white/6" /></div>
 
       {/* ─── PROGRESS CARD (always visible at top) ─── */}
       {!collapsed ? (
@@ -273,13 +273,13 @@ export default function Sidebar() {
                 href={item.href}
                 title={collapsed ? section.label : undefined}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
                   isActive
-                    ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-[#7AD62A]/10 text-white"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
                 } ${collapsed ? "justify-center" : ""}`}
               >
-                <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+                <Icon size={16} className={isActive ? "text-[#7AD62A]" : "text-slate-500"} />
                 {!collapsed && <span className="truncate">{section.label}</span>}
               </Link>
             );
@@ -303,13 +303,13 @@ export default function Sidebar() {
                 href={item.href}
                 title={collapsed ? item.label : undefined}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
                   isActive
-                    ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-[#7AD62A]/10 text-white"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
                 } ${collapsed ? "justify-center" : ""}`}
               >
-                <ItemIcon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+                <ItemIcon size={16} className={isActive ? "text-[#7AD62A]" : "text-slate-500"} />
                 {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
@@ -321,20 +321,20 @@ export default function Sidebar() {
                 onClick={() => toggleSection(section.id)}
                 title={collapsed ? section.label : undefined}
                 aria-expanded={isExpanded}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
                   isActive
-                    ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-[#7AD62A]/10 text-white"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
                 } ${collapsed ? "justify-center" : ""}`}
               >
-                <Icon size={16} className={isActive ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+                <Icon size={16} className={isActive ? "text-[#7AD62A]" : "text-slate-500"} />
                 {!collapsed && (
                   <>
                     <span className="flex-1 text-left truncate">{section.label}</span>
                     {section.items.length > 1 && (
                       <ChevronDown
                         size={12}
-                        className={`text-slate-400 dark:text-slate-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                        className={`text-slate-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
                       />
                     )}
                   </>
@@ -342,7 +342,7 @@ export default function Sidebar() {
               </button>
 
               {!collapsed && section.items.length > 1 && isExpanded && (
-                <div className="ml-4 mt-0.5 mb-1 space-y-0.5 border-l border-slate-100 dark:border-slate-700 pl-3">
+                <div className="ml-4 mt-0.5 mb-1 space-y-0.5 border-l border-white/6 pl-3">
                   {section.items.map((item) => {
                     const ItemIcon = ICON_MAP[item.icon] || Target;
                     const isItemActive =
@@ -354,13 +354,13 @@ export default function Sidebar() {
                         key={item.href}
                         href={item.href}
                         aria-current={isItemActive ? "page" : undefined}
-                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
                           isItemActive
-                            ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"
+                            ? "bg-[#7AD62A]/10 text-white"
+                            : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                         }`}
                       >
-                        <ItemIcon size={12} className={isItemActive ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+                        <ItemIcon size={12} className={isItemActive ? "text-[#7AD62A]" : "text-slate-500"} />
                         <span className="truncate">{item.label}</span>
                       </Link>
                     );
@@ -375,21 +375,21 @@ export default function Sidebar() {
         {isAdmin && (
           <>
             {!collapsed && (
-              <div className="pt-2 mt-2 border-t border-slate-100 dark:border-slate-700">
-                <p className="px-3 mb-1 text-[9px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Admin</p>
+              <div className="pt-2 mt-2 border-t border-white/6">
+                <p className="px-3 mb-1 text-[9px] font-semibold text-slate-500 uppercase tracking-wider">Admin</p>
               </div>
             )}
             <Link
               href="/dashboard/admin"
               title={collapsed ? "Admin Panel" : undefined}
               aria-current={pathname.startsWith("/dashboard/admin") ? "page" : undefined}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
                 pathname.startsWith("/dashboard/admin")
-                  ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-                  : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-[#7AD62A]/10 text-white"
+                  : "text-slate-300 hover:bg-white/5 hover:text-white"
               } ${collapsed ? "justify-center" : ""}`}
             >
-              <Shield size={16} className={pathname.startsWith("/dashboard/admin") ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+              <Shield size={16} className={pathname.startsWith("/dashboard/admin") ? "text-[#7AD62A]" : "text-slate-500"} />
               {!collapsed && "Admin Panel"}
             </Link>
           </>
@@ -402,13 +402,13 @@ export default function Sidebar() {
           href="/dashboard/notifications"
           title={collapsed ? "Notifications" : undefined}
           aria-current={pathname === "/dashboard/notifications" ? "page" : undefined}
-          className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+          className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
             pathname === "/dashboard/notifications"
-              ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-              : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+              ? "bg-[#7AD62A]/10 text-white"
+              : "text-slate-300 hover:bg-white/5 hover:text-white"
           } ${collapsed ? "justify-center px-2" : ""}`}
         >
-          <Bell size={16} className={pathname === "/dashboard/notifications" ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+          <Bell size={16} className={pathname === "/dashboard/notifications" ? "text-[#7AD62A]" : "text-slate-500"} />
           {!collapsed && (
             <>
               <span className="flex-1">Notifications</span>
@@ -421,26 +421,26 @@ export default function Sidebar() {
           href="/dashboard/profile"
           title={collapsed ? "Profile" : undefined}
           aria-current={pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/") ? "page" : undefined}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
             pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/")
-              ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-              : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+              ? "bg-[#7AD62A]/10 text-white"
+              : "text-slate-300 hover:bg-white/5 hover:text-white"
           } ${collapsed ? "justify-center px-2" : ""}`}
         >
-          <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+          <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#7AD62A]" : "text-slate-500"} />
           {!collapsed && "Profile"}
         </Link>
         <Link
           href="/dashboard/settings"
           title={collapsed ? "Settings" : undefined}
           aria-current={pathname === "/dashboard/settings" ? "page" : undefined}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#229C62]/30 ${
+          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
             pathname === "/dashboard/settings"
-              ? "bg-[#E9F8EE] dark:bg-[#229C62]/10 text-[#0F203A] dark:text-white"
-              : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+              ? "bg-[#7AD62A]/10 text-white"
+              : "text-slate-300 hover:bg-white/5 hover:text-white"
           } ${collapsed ? "justify-center px-2" : ""}`}
         >
-          <Settings size={16} className={pathname === "/dashboard/settings" ? "text-[#229C62]" : "text-slate-400 dark:text-slate-500"} />
+          <Settings size={16} className={pathname === "/dashboard/settings" ? "text-[#7AD62A]" : "text-slate-500"} />
           {!collapsed && "Settings"}
         </Link>
         <div className={`flex items-center justify-between px-1 ${collapsed ? "flex-col gap-1" : ""}`}>
@@ -450,7 +450,7 @@ export default function Sidebar() {
         <button
           onClick={logout}
           title={collapsed ? "Log out" : undefined}
-          className={`flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 ${collapsed ? "justify-center px-2" : ""}`}
+          className={`flex items-center gap-2.5 w-full px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-red-900/20 hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 ${collapsed ? "justify-center px-2" : ""}`}
         >
           <LogOut size={14} />
           {!collapsed && "Log out"}

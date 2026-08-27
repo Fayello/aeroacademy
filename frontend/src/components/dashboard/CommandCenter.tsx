@@ -229,16 +229,16 @@ export default function CommandCenter() {
       {/* ─── GREETING + PERSONALIZED ROLE ─── */}
       <div className="flex items-start justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">
+          <h1 className="text-2xl lg:text-3xl font-bold text-white">
             Welcome, {firstName}
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-400 mt-1">
             Your current role is:{" "}
-            <span className="text-[#229C62] font-semibold">{roleLabel}</span>
+            <span className="text-[#7AD62A] font-semibold">{roleLabel}</span>
             {focusLabel && (
               <>
                 , Focused on:{" "}
-                <span className="text-[#229C62] font-semibold">
+                <span className="text-[#7AD62A] font-semibold">
                   {focusLabel}{fieldCount > 1 ? ` +${fieldCount - 1}` : ""}
                 </span>
               </>
@@ -248,7 +248,7 @@ export default function CommandCenter() {
                 localStorage.removeItem("onboardingComplete");
                 window.location.href = "/onboarding";
               }}
-              className="inline-flex items-center gap-1 ml-1 text-slate-400 hover:text-[#229C62] transition-colors"
+              className="inline-flex items-center gap-1 ml-1 text-slate-500 hover:text-[#7AD62A] transition-colors"
               title="Change selections"
             >
               <Pencil size={12} />
@@ -257,7 +257,7 @@ export default function CommandCenter() {
         </div>
         <Link
           href="/dashboard/profile"
-          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium text-slate-700 transition-colors"
+          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 text-sm font-medium text-slate-200 transition-colors"
         >
           View Profile
         </Link>
@@ -281,27 +281,27 @@ export default function CommandCenter() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {primaryPurpose === "learn" && (
-                  <Link href="/dashboard/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                  <Link href="/dashboard/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors">
                     <BookOpen size={14} /> Browse Courses
                   </Link>
                 )}
                 {primaryPurpose === "teach" && (
-                  <Link href="/dashboard/admin/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                  <Link href="/dashboard/admin/courses" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors">
                     <BookOpen size={14} /> Create a Course
                   </Link>
                 )}
                 {primaryPurpose === "compete" && (
-                  <Link href="/dashboard/leaderboard" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                  <Link href="/dashboard/leaderboard" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors">
                     <TrendingUp size={14} /> View Leaderboard
                   </Link>
                 )}
                 {primaryPurpose === "certify" && (
-                  <Link href="/dashboard/certifications" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                  <Link href="/dashboard/certifications" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors">
                     <Target size={14} /> View Certifications
                   </Link>
                 )}
                 {primaryPurpose === "team" && (
-                  <Link href="/dashboard/teams" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors">
+                  <Link href="/dashboard/teams" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors">
                     <FlaskConical size={14} /> Create a Team
                   </Link>
                 )}
@@ -318,16 +318,16 @@ export default function CommandCenter() {
       {!loading && userMetrics !== null && xp === 0 && (
         <Link
           href="/dashboard/starting-point"
-          className="angular-card border border-dashed border-[#229C62]/30 bg-[#E9F8EE]/30 p-4 flex items-center gap-4 hover:border-[#229C62]/60 transition-all group"
+          className="angular-card border border-dashed border-[#7AD62A]/30 bg-[#7AD62A]/5 p-4 flex items-center gap-4 hover:border-[#7AD62A]/60 transition-all group"
         >
-          <div className="w-10 h-10 rounded-xl bg-[#229C62]/10 flex items-center justify-center shrink-0 group-hover:bg-[#229C62]/20 transition-colors">
-            <Rocket size={18} className="text-[#229C62]" />
+          <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center shrink-0 group-hover:bg-[#7AD62A]/20 transition-colors">
+            <Rocket size={18} className="text-[#7AD62A]" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Not sure where to begin?</h3>
-            <p className="text-xs text-slate-500">Try our guided beginner path — labs ordered by difficulty</p>
+            <h3 className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">Not sure where to begin?</h3>
+            <p className="text-xs text-slate-400">Try our guided beginner path — labs ordered by difficulty</p>
           </div>
-          <span className="text-xs text-[#229C62] font-medium shrink-0">Begin →</span>
+          <span className="text-xs text-[#7AD62A] font-medium shrink-0">Begin →</span>
         </Link>
       )}
 
@@ -349,14 +349,14 @@ export default function CommandCenter() {
             </svg>
           </div>
           <div className="relative z-10">
-            <p className="text-xs font-semibold text-[#229C62] uppercase tracking-wider mb-1">XpertClass Academy</p>
-            <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">
+            <p className="text-xs font-semibold text-[#7AD62A] uppercase tracking-wider mb-1">XpertClass Academy</p>
+            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#7AD62A] transition-colors">
               Learn and get certified
             </h3>
-            <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+            <p className="text-sm text-slate-400 mb-4 leading-relaxed">
               Begin or advance your tech journey with structured learning paths and earn industry certifications to prove your expertise.
             </p>
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#229C62] hover:bg-[#1d8a56] text-white text-sm font-semibold transition-colors group-hover:shadow-lg group-hover:shadow-[#229C62]/20">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors group-hover:shadow-lg group-hover:shadow-[#7AD62A]/20">
               Start learning <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
@@ -379,11 +379,11 @@ export default function CommandCenter() {
             </svg>
           </div>
           <div className="relative z-10">
-            <p className="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-1">XpertClass Labs</p>
-            <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#229C62] transition-colors">
+            <p className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-1">XpertClass Labs</p>
+            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#7AD62A] transition-colors">
               Practice with hands-on Labs
             </h3>
-            <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+            <p className="text-sm text-slate-400 mb-4 leading-relaxed">
               Access labs simulating real-world environments, misconfigurations, and incidents. With new content released weekly!
             </p>
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors group-hover:shadow-lg group-hover:shadow-violet-500/20">
@@ -397,55 +397,55 @@ export default function CommandCenter() {
       <div className="space-y-2 animate-fade-in-up animate-delay-2">
         <Link
           href="/dashboard/leaderboard"
-          className="angular-card bg-white flex items-center gap-4 p-4 group hover:bg-[#E9F8EE]/30 transition-colors"
+          className="angular-card bg-[#0f172a] flex items-center gap-4 p-4 group hover:bg-[#7AD62A]/5 transition-colors"
         >
-          <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
-            <TrendingUp size={18} className="text-amber-600" />
+          <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+            <TrendingUp size={18} className="text-amber-400" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Leaderboard</p>
-            <p className="text-xs text-slate-500">Compete and climb the rankings</p>
+            <p className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">Leaderboard</p>
+            <p className="text-xs text-slate-400">Compete and climb the rankings</p>
           </div>
-          <ChevronRight size={16} className="text-slate-300 group-hover:text-[#229C62] shrink-0" />
+          <ChevronRight size={16} className="text-slate-600 group-hover:text-[#7AD62A] shrink-0" />
         </Link>
 
         <Link
           href="/dashboard/teams"
-          className="angular-card bg-white flex items-center gap-4 p-4 group hover:bg-[#E9F8EE]/30 transition-colors"
+          className="angular-card bg-[#0f172a] flex items-center gap-4 p-4 group hover:bg-[#7AD62A]/5 transition-colors"
         >
-          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-            <Users size={18} className="text-blue-600" />
+          <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+            <Users size={18} className="text-blue-400" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-900 group-hover:text-[#229C62] transition-colors">Teams</p>
-            <p className="text-xs text-slate-500">Collaborate with peers and compete together</p>
+            <p className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">Teams</p>
+            <p className="text-xs text-slate-400">Collaborate with peers and compete together</p>
           </div>
-          <ChevronRight size={16} className="text-slate-300 group-hover:text-[#229C62] shrink-0" />
+          <ChevronRight size={16} className="text-slate-600 group-hover:text-[#7AD62A] shrink-0" />
         </Link>
       </div>
 
       {/* ─── ACTIVE PROGRESS (labs running + courses enrolled) ─── */}
       {(activeLabs.length > 0 || enrolledCourses.length > 0) && (
-        <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-3">
+        <div className="angular-card bg-[#0f172a] p-5 animate-fade-in-up animate-delay-3">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp size={16} className="text-[#229C62]" />
-            <h2 className="text-sm font-semibold text-slate-900">Your Progress</h2>
+            <TrendingUp size={16} className="text-[#7AD62A]" />
+            <h2 className="text-sm font-semibold text-white">Your Progress</h2>
           </div>
           <div className="space-y-2">
             {activeLabs.slice(0, 2).map((lab) => (
               <Link
                 key={lab.id}
                 href={`/dashboard/labs/${lab.labId}`}
-                className="flex items-center gap-3 p-3 rounded-lg bg-[#E9F8EE]/50 hover:bg-[#E9F8EE] transition-colors group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-[#7AD62A]/5 hover:bg-[#7AD62A]/10 transition-colors group"
               >
-                <div className="w-9 h-9 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
-                  <FlaskConical size={16} className="text-violet-600" />
+                <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                  <FlaskConical size={16} className="text-violet-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate group-hover:text-[#229C62] transition-colors">{lab.lab.title}</p>
-                  <p className="text-[11px] text-slate-400">Active lab · Difficulty {lab.lab.difficulty}</p>
+                  <p className="text-sm font-medium text-white truncate group-hover:text-[#7AD62A] transition-colors">{lab.lab.title}</p>
+                  <p className="text-[11px] text-slate-500">Active lab · Difficulty {lab.lab.difficulty}</p>
                 </div>
-                <div className="flex items-center gap-1 text-[#229C62]">
+                <div className="flex items-center gap-1 text-[#7AD62A]">
                   <Play size={12} fill="currentColor" />
                   <span className="text-xs font-medium">Resume</span>
                 </div>
@@ -455,23 +455,23 @@ export default function CommandCenter() {
               <Link
                 key={course.id}
                 href={`/dashboard/courses/${course.id}`}
-                className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 hover:bg-[#E9F8EE]/50 transition-colors group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-[#7AD62A]/5 transition-colors group"
               >
-                <div className="w-9 h-9 rounded-lg bg-[#E9F8EE] flex items-center justify-center shrink-0">
-                  <BookOpen size={16} className="text-[#229C62]" />
+                <div className="w-9 h-9 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center shrink-0">
+                  <BookOpen size={16} className="text-[#7AD62A]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate group-hover:text-[#229C62] transition-colors">{course.title}</p>
+                  <p className="text-sm font-medium text-white truncate group-hover:text-[#7AD62A] transition-colors">{course.title}</p>
                   {course.progress != null && (
                     <div className="flex items-center gap-2 mt-1">
-                      <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#229C62] rounded-full" style={{ width: `${course.progress}%` }} />
+                      <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#7AD62A] rounded-full" style={{ width: `${course.progress}%` }} />
                       </div>
-                      <span className="text-[10px] text-slate-400 font-medium">{course.progress}%</span>
+                      <span className="text-[10px] text-slate-500 font-medium">{course.progress}%</span>
                     </div>
                   )}
                 </div>
-                <ChevronRight size={14} className="text-slate-300 group-hover:text-[#229C62] shrink-0" />
+                <ChevronRight size={14} className="text-slate-600 group-hover:text-[#7AD62A] shrink-0" />
               </Link>
             ))}
           </div>
@@ -480,38 +480,38 @@ export default function CommandCenter() {
 
       {/* ─── QUICK STATS ROW ─── */}
       <div className="grid grid-cols-3 gap-3 animate-fade-in-up animate-delay-3">
-        <div className="angular-card bg-white p-3 text-center">
-          <p className="text-xl font-bold text-slate-900">{labsCompleted}</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-medium mt-0.5">Labs Done</p>
+        <div className="angular-card bg-[#0f172a] p-3 text-center">
+          <p className="text-xl font-bold text-white">{labsCompleted}</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Labs Done</p>
         </div>
-        <div className="angular-card bg-white p-3 text-center">
-          <p className="text-xl font-bold text-slate-900">{outcomesCompleted}</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-medium mt-0.5">Skills Mastered</p>
+        <div className="angular-card bg-[#0f172a] p-3 text-center">
+          <p className="text-xl font-bold text-white">{outcomesCompleted}</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Skills Mastered</p>
         </div>
-        <div className="angular-card bg-white p-3 text-center">
-          <p className="text-xl font-bold text-slate-900">{userMetrics?.streak || 0}</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-medium mt-0.5">Day Streak</p>
+        <div className="angular-card bg-[#0f172a] p-3 text-center">
+          <p className="text-xl font-bold text-white">{userMetrics?.streak || 0}</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Day Streak</p>
         </div>
       </div>
 
       {/* ─── ENGINEERING PROFILE (compact) ─── */}
       {domains.length > 0 && domains.some((d) => d.score > 0) && (
-        <div className="angular-card bg-white p-4 animate-fade-in-up animate-delay-4">
+        <div className="angular-card bg-[#0f172a] p-4 animate-fade-in-up animate-delay-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-900">Your Skills</h2>
+            <h2 className="text-sm font-semibold text-white">Your Skills</h2>
             <Link
               href="/dashboard/analytics/competency"
-              className="text-xs text-[#229C62] hover:text-[#1a7a4d] font-medium flex items-center gap-1"
+              className="text-xs text-[#7AD62A] hover:text-[#6bc422] font-medium flex items-center gap-1"
             >
               Full profile <ArrowRight size={12} />
             </Link>
           </div>
           <div className="flex flex-wrap gap-2">
             {domains.filter((d) => d.score > 0).slice(0, 6).map((d) => (
-              <div key={d.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100">
-                <div className="w-2 h-2 rounded-full bg-[#229C62]" />
-                <span className="text-xs font-medium text-slate-700">{d.domainDisplayName || d.domainName}</span>
-                <span className="text-[10px] text-slate-400 font-mono">{d.score}%</span>
+              <div key={d.domainId} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/6">
+                <div className="w-2 h-2 rounded-full bg-[#7AD62A]" />
+                <span className="text-xs font-medium text-slate-200">{d.domainDisplayName || d.domainName}</span>
+                <span className="text-[10px] text-slate-500 font-mono">{d.score}%</span>
               </div>
             ))}
           </div>
@@ -520,31 +520,31 @@ export default function CommandCenter() {
 
       {/* ─── RECOMMENDED ─── */}
       {topRecs.length > 0 && (
-        <div className="angular-card bg-white p-5 animate-fade-in-up animate-delay-5">
+        <div className="angular-card bg-[#0f172a] p-5 animate-fade-in-up animate-delay-5">
           <div className="flex items-center gap-2 mb-3">
             <Zap size={16} className="text-[#7AD62A]" />
-            <h2 className="text-sm font-semibold text-slate-900">Suggested next</h2>
+            <h2 className="text-sm font-semibold text-white">Suggested next</h2>
           </div>
           <div className="space-y-2">
             {topRecs.map((rec, i) => (
               <Link
                 key={i}
                 href={rec.link || "/dashboard/labs"}
-                className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 hover:bg-[#E9F8EE]/50 transition-colors group"
+                className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-[#7AD62A]/5 transition-colors group"
               >
-                <div className="w-8 h-8 rounded-lg bg-[#E9F8EE] flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                  {rec.type === "LAB" && <FlaskConical size={14} className="text-[#229C62]" />}
-                  {rec.type === "OUTCOME" && <BookOpen size={14} className="text-violet-500" />}
-                  {rec.type === "ASSESSMENT" && <Target size={14} className="text-blue-500" />}
-                  {rec.type === "MAINTAIN" && <Clock size={14} className="text-amber-500" />}
+                <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                  {rec.type === "LAB" && <FlaskConical size={14} className="text-[#7AD62A]" />}
+                  {rec.type === "OUTCOME" && <BookOpen size={14} className="text-violet-400" />}
+                  {rec.type === "ASSESSMENT" && <Target size={14} className="text-blue-400" />}
+                  {rec.type === "MAINTAIN" && <Clock size={14} className="text-amber-400" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 group-hover:text-[#229C62] transition-colors">
+                  <p className="text-sm font-medium text-white group-hover:text-[#7AD62A] transition-colors">
                     {rec.title}
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">{rec.description}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{rec.description}</p>
                 </div>
-                <ArrowRight size={14} className="text-slate-300 group-hover:text-[#229C62] shrink-0 mt-1 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight size={14} className="text-slate-600 group-hover:text-[#7AD62A] shrink-0 mt-1 group-hover:translate-x-0.5 transition-all" />
               </Link>
             ))}
           </div>
