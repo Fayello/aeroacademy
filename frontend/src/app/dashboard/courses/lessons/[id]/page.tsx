@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 type ReactPlayerComponent = React.ComponentType<{
@@ -95,13 +95,15 @@ export default function LessonPage() {
     return () => { cancelled = true; };
   }, [id]);
 
-  const handleMarkComplete = async () => {
+  const handleMarkComplete = async (andNext = false) => {
     setModalConfig({
       isOpen: true,
       title: "Mark as complete",
-      message: "This will record your progress. You can still review the material afterward.",
+      message: andNext
+        ? "This will record your progress and take you to the next lesson."
+        : "This will record your progress. You can still review the material afterward.",
       type: "success",
-      confirmText: "Mark complete",
+      confirmText: andNext ? "Complete & next" : "Mark complete",
       onConfirm: async () => {
         setSaving(true);
         try {
@@ -112,6 +114,12 @@ export default function LessonPage() {
           setCompleted(true);
           setCourseProgress((prev) => prev ? { ...prev, completed: prev.completed + 1, percentage: Math.min(100, ((prev.completed + 1) / prev.total) * 100) } : prev);
           toast.success("Lesson completed! +10 XP earned");
+          if (andNext) {
+            const nav = findLessonNav();
+            if (nav.next) {
+              setTimeout(() => router.push(`/dashboard/courses/lessons/${nav.next!.id}`), 600);
+            }
+          }
         } catch (err) {
           toast.error(err instanceof Error ? err.message : "Failed to record progress.");
         } finally {
@@ -214,7 +222,7 @@ export default function LessonPage() {
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{lesson.title}</h1>
             </div>
             <button
-              onClick={handleMarkComplete}
+              onClick={() => handleMarkComplete()}
               disabled={saving || completed}
               className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all shrink-0 ${
                 completed
@@ -231,6 +239,16 @@ export default function LessonPage() {
                 </span>
               )}
             </button>
+            {!completed && nav.next && (
+              <button
+                onClick={() => handleMarkComplete(true)}
+                disabled={saving}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-[#7AD62A] text-[#0F203A] hover:bg-[#6bc424] transition-all shrink-0 disabled:opacity-50"
+              >
+                <Sparkles size={14} />
+                Complete & next
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -452,24 +470,37 @@ export default function LessonPage() {
           {/* Section lessons list */}
           {currentSection && (
             <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">{currentSection.title}</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-slate-900">{currentSection.title}</h3>
+                <span className="text-[10px] font-medium text-slate-400">{currentSection.lessons.length} lessons</span>
+              </div>
               <div className="space-y-1">
-                {currentSection.lessons.map((l, i) => (
-                  <Link
-                    key={l.id}
-                    href={`/dashboard/courses/lessons/${l.id}`}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-                      l.id === id
-                        ? "bg-[#E9F8EE] text-[#0F203A] font-medium"
-                        : "text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 bg-slate-100 text-slate-500">
-                      {l.id === id ? <CheckCircle size={12} className="text-[#229C62]" /> : i + 1}
-                    </span>
-                    <span className="truncate">{l.title}</span>
-                  </Link>
-                ))}
+                {currentSection.lessons.map((l, i) => {
+                  const isCurrent = l.id === id;
+                  const isPast = currentSection.lessons.findIndex((sl) => sl.id === id) > i;
+                  return (
+                    <Link
+                      key={l.id}
+                      href={`/dashboard/courses/lessons/${l.id}`}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                        isCurrent
+                          ? "bg-[#E9F8EE] text-[#0F203A] font-medium"
+                          : isPast
+                          ? "text-slate-500 hover:bg-slate-50"
+                          : "text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 ${
+                        isCurrent ? "bg-[#229C62] text-white" :
+                        isPast ? "bg-[#E9F8EE] text-[#229C62]" :
+                        "bg-slate-100 text-slate-500"
+                      }`}>
+                        {isPast ? <CheckCircle size={12} /> : isCurrent ? <span className="w-1.5 h-1.5 rounded-full bg-white" /> : i + 1}
+                      </span>
+                      <span className="truncate">{l.title}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
