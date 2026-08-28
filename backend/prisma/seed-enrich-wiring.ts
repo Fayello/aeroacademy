@@ -129,6 +129,13 @@ export async function wireLabCourseLinks(prisma: PrismaClient): Promise<void> {
       continue;
     }
 
+    const labAlreadyUsed = await prisma.lesson.findFirst({ where: { labId: lab.id } });
+    if (labAlreadyUsed && labAlreadyUsed.id !== lesson.id) {
+      console.log(`  ⏭ Lab "${w.labTitle}" already linked to "${labAlreadyUsed.title}" — skipping`);
+      skipped++;
+      continue;
+    }
+
     await prisma.lesson.update({
       where: { id: lesson.id },
       data: { labId: lab.id },
