@@ -555,7 +555,7 @@ export class LabsService implements OnModuleInit {
   async findAll(opts?: { skip?: number; take?: number; userId?: string; userRole?: string }) {
     const labs = await this.prisma.lab.findMany({
       skip: opts?.skip ?? 0,
-      take: opts?.take ?? 50,
+      take: opts?.take ?? 200,
       include: {
         flags: {
           include: {

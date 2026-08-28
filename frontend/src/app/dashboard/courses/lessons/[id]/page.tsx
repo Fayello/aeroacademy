@@ -42,7 +42,7 @@ function highlightText(text: string): ReactNode {
   return parts.map((part, i) => {
     if (HIGHLIGHT_TERMS.some((t) => t.toLowerCase() === part.toLowerCase())) {
       return (
-        <span key={i} className="px-1.5 py-0.5 rounded bg-[#7AD62A]/10 text-[#0F203A] font-medium text-[0.9em]">
+        <span key={i} className="px-1.5 py-0.5 rounded bg-[#7AD62A]/15 text-[#7AD62A] font-medium text-[0.9em] border border-[#7AD62A]/20">
           {part}
         </span>
       );
@@ -321,18 +321,18 @@ export default function LessonPage() {
           <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 md:p-8">
             <h2 className="text-2xl font-bold text-white mb-6">{lesson.title}</h2>
 
-            <div className="prose prose-slate max-w-none">
+            <div className="prose prose-invert prose-slate max-w-none prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-strong:text-white prose-a:text-[#7AD62A] prose-code:text-[#7AD62A] prose-blockquote:text-slate-400 prose-blockquote:border-l-[#7AD62A]/30">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  p: ({ children }) => <p>{processChildren(children)}</p>,
+                  p: ({ children }) => <p className="text-slate-300 leading-relaxed">{processChildren(children)}</p>,
                   pre: ({ children }) => <pre className="bg-white/5 border border-white/10 rounded-lg p-4 overflow-x-auto">{children}</pre>,
                   code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
                     const match = /language-(\w+)/.exec(className || "");
                     const isInline = !match;
                     if (isInline) {
                       return (
-                        <code className="bg-slate-100 text-[#0F203A] px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                        <code className="bg-white/10 text-[#7AD62A] px-1.5 py-0.5 rounded text-sm font-mono border border-white/10" {...props}>
                           {children}
                         </code>
                       );
@@ -384,14 +384,14 @@ export default function LessonPage() {
                               onClick={() => !quizSubmitted && setQuizAnswer((prev) => ({ ...prev, [question.id]: answer.id }))}
                               className={`w-full p-3 rounded-lg border text-left text-sm font-medium transition-all flex items-center justify-between ${
                                 isSelected && !quizSubmitted
-                                  ? "bg-[#7AD62A]/10 border-[#7AD62A]/30 text-[#0F203A]"
+                                  ? "bg-[#7AD62A]/20 border-[#7AD62A]/40 text-white"
                                   : wasSelectedAndCorrect
-                                  ? "bg-[#7AD62A]/10 border-[#7AD62A]/30 text-[#0F203A]"
+                                  ? "bg-[#7AD62A]/20 border-[#7AD62A]/40 text-white"
                                   : wasSelectedAndWrong
-                                  ? "bg-red-500/10 border-red-300 text-red-800"
+                                  ? "bg-red-500/10 border-red-400/30 text-red-400"
                                   : quizSubmitted
                                   ? "bg-[#0f172a] border-white/10 text-slate-400 cursor-default"
-                                  : "bg-[#0f172a] border-white/10 text-slate-700 hover:border-white/10"
+                                  : "bg-[#0f172a] border-white/10 text-slate-300 hover:border-white/20 hover:text-white"
                               }`}
                               disabled={quizSubmitted}
                             >

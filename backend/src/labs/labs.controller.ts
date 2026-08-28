@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   Request,
   ParseUUIDPipe,
@@ -42,8 +43,13 @@ export class LabsController {
   @ApiBearerAuth('JWT-auth')
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findAll(@Request() req: RequestWithUser) {
-    return this.labsService.findAll({ userId: req.user.id, userRole: req.user.role });
+  async findAll(@Request() req: RequestWithUser, @Query('take') take?: string, @Query('skip') skip?: string) {
+    return this.labsService.findAll({
+      userId: req.user.id,
+      userRole: req.user.role,
+      take: take ? parseInt(take, 10) : undefined,
+      skip: skip ? parseInt(skip, 10) : undefined,
+    });
   }
 
   @ApiBearerAuth('JWT-auth')
