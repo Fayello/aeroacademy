@@ -19,6 +19,11 @@ async function main() {
   const { seedEnrichLabs } = await import('./seed-enrich-labs');
   await seedEnrichLabs(prisma, process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!');
 
+  // Phase 3b: IT labs
+  console.log('\n--- Phase 3b: Seeding IT labs ---');
+  const { seedEnrichITLabs } = await import('./seed-enrich-it-labs');
+  await seedEnrichITLabs(prisma, process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!');
+
   // Phase 4: New courses
   console.log('\n--- Phase 4: Seeding new courses ---');
   const { seedEnrichCoursesNew } = await import('./seed-enrich-courses-new');
