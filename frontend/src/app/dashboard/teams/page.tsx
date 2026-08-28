@@ -365,8 +365,7 @@ export default function TeamsPage() {
               {copied ? "Copied!" : "Copy"}
             </button>
           </div>
-        </div>
-      )}
+        )}
 
       {sortedMembers.length > 0 && (
           <div>
