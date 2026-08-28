@@ -46,6 +46,11 @@ export async function createCourseWithQuizzes(
   estimatedHours: number,
   sectionsData: SectionData[]
 ) {
+  const existing = await prisma.course.findFirst({ where: { title } });
+  if (existing) {
+    console.log(`  Skipped (exists): ${title}`);
+    return existing;
+  }
   const course = await prisma.course.create({
     data: {
       title,
