@@ -241,7 +241,7 @@ export default function CourseBriefingPage() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <AlertCircle size={40} className="text-red-400 mb-3" />
       <p className="text-white font-medium mb-1">Something went wrong</p>
-      <p className="text-sm text-slate-500 mb-4">{error}</p>
+      <p className="text-sm text-slate-400 mb-4">{error}</p>
       <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#7AD62A] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
     </div>
   );
@@ -331,10 +331,10 @@ export default function CourseBriefingPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === tab.key
                     ? "border-[#7AD62A] text-[#7AD62A]"
-                    : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
+                    : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
                 }`}
               >
                 <tab.icon size={14} />
@@ -378,7 +378,7 @@ export default function CourseBriefingPage() {
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-white">Course Discussions</h3>
-                      <p className="text-xs text-slate-500">Ask questions, share tips, and help other students</p>
+                      <p className="text-xs text-slate-400">Ask questions, share tips, and help other students</p>
                     </div>
                   </div>
                   <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-400 transition-colors" />
@@ -402,7 +402,7 @@ export default function CourseBriefingPage() {
                       className="w-full px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-3">
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isLocked ? "text-slate-500 bg-white/5" : "text-[#7AD62A] bg-[#7AD62A]/10"}`}>
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isLocked ? "text-slate-400 bg-white/5" : "text-[#7AD62A] bg-[#7AD62A]/10"}`}>
                           Module {section.order}
                         </span>
                         <h3 className="text-sm font-semibold text-white">{section.title}</h3>
@@ -414,7 +414,7 @@ export default function CourseBriefingPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-500">{section.lessons.length} lessons</span>
+                        <span className="text-xs text-slate-400">{section.lessons.length} lessons</span>
                         <ChevronRight size={16} className={`text-slate-400 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                       </div>
                     </button>
@@ -470,7 +470,7 @@ export default function CourseBriefingPage() {
                             <Star key={s} size={16} className={s <= Math.round(reviewsData.stats.average) ? "text-amber-400 fill-amber-400" : "text-slate-200"} />
                           ))}
                         </div>
-                        <p className="text-sm text-slate-500">{reviewsData.stats.total} review{reviewsData.stats.total !== 1 ? "s" : ""}</p>
+                        <p className="text-sm text-slate-400">{reviewsData.stats.total} review{reviewsData.stats.total !== 1 ? "s" : ""}</p>
                       </div>
                       <div className="space-y-1.5">
                         {[5, 4, 3, 2, 1].map((star) => {
@@ -478,7 +478,7 @@ export default function CourseBriefingPage() {
                           const pct = reviewsData.stats.total > 0 ? (count / reviewsData.stats.total) * 100 : 0;
                           return (
                             <div key={star} className="flex items-center gap-2 text-sm">
-                              <span className="w-3 text-slate-500 text-right">{star}</span>
+                              <span className="w-3 text-slate-400 text-right">{star}</span>
                               <Star size={12} className="text-amber-400 fill-amber-400 shrink-0" />
                               <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                                 <div className="h-full bg-amber-400 rounded-full" style={{ width: `${pct}%` }} />
@@ -545,7 +545,7 @@ export default function CourseBriefingPage() {
               ) : (
                 <div className="angular-card border-white/10 py-12 text-center">
                   <Star size={32} className="mx-auto mb-3 text-slate-300" />
-                  <p className="text-sm text-slate-500">No reviews yet. Be the first to review this course.</p>
+                  <p className="text-sm text-slate-400">No reviews yet. Be the first to review this course.</p>
                 </div>
               )}
             </div>
@@ -561,7 +561,7 @@ export default function CourseBriefingPage() {
                       <CheckCircle2 size={24} className="text-[#7AD62A]" />
                     </div>
                     <h3 className="text-lg font-semibold text-white mb-2">Course Progress</h3>
-                    <p className="text-sm text-slate-500 mb-6">Continue where you left off.</p>
+                    <p className="text-sm text-slate-400 mb-6">Continue where you left off.</p>
 
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
@@ -572,7 +572,7 @@ export default function CourseBriefingPage() {
                         <div className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-500" style={{ width: `${progress?.percentage || 0}%` }} />
                       </div>
                       {progress && (
-                        <p className="text-xs text-slate-500">{progress.completed} of {progress.total} lessons completed</p>
+                        <p className="text-xs text-slate-400">{progress.completed} of {progress.total} lessons completed</p>
                       )}
                     </div>
 
@@ -609,7 +609,7 @@ export default function CourseBriefingPage() {
                       <Rocket size={24} className="text-[#7AD62A]" />
                     </div>
                     <h3 className="text-lg font-semibold text-white mb-2">Ready to start?</h3>
-                    <p className="text-sm text-slate-500 mb-6">
+                    <p className="text-sm text-slate-400 mb-6">
                       Begin your learning journey with this course. You&apos;ll earn XP for each lesson completed.
                     </p>
 
@@ -699,7 +699,7 @@ export default function CourseBriefingPage() {
                   <span className="text-lg font-bold text-white">{progress.percentage || 0}%</span>
                 </div>
               </div>
-              <p className="text-xs text-slate-500">{progress.completed} of {progress.total} lessons</p>
+              <p className="text-xs text-slate-400">{progress.completed} of {progress.total} lessons</p>
             </div>
           )}
 
@@ -723,7 +723,7 @@ export default function CourseBriefingPage() {
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         {rc.reviewStats?.average > 0 && (
-                          <span className="flex items-center gap-0.5 text-[10px] text-slate-500">
+                          <span className="flex items-center gap-0.5 text-[10px] text-slate-400">
                             <Star size={8} className="text-amber-400 fill-amber-400" />
                             {rc.reviewStats.average.toFixed(1)}
                           </span>

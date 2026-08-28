@@ -130,7 +130,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#1a2744]">
-            <GraduationCap size={40} className="text-slate-600 group-hover:text-slate-500 transition-colors" />
+            <GraduationCap size={40} className="text-slate-400 group-hover:text-slate-300 transition-colors" />
           </div>
         )}
 
@@ -170,7 +170,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
           <h3 className={`text-base font-semibold line-clamp-2 mb-1 ${isLocked ? "text-slate-400" : "text-white group-hover:text-slate-200 transition-colors"}`}>
             {course.title}
           </h3>
-          <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-slate-300 line-clamp-2 leading-relaxed">
             {course.description || "Comprehensive training module."}
           </p>
         </div>
@@ -188,7 +188,7 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
         </div>
 
         {/* Stats row */}
-        <div className="flex items-center gap-3 text-xs text-slate-500">
+        <div className="flex items-center gap-3 text-xs text-slate-400">
           <StarRating rating={course.averageRating || 0} />
           <span>·</span>
           <span className="flex items-center gap-1">
@@ -278,7 +278,7 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
             <div key={dot} className={`w-1.5 h-1.5 rounded-full ${dot <= difficulty.dots ? "bg-[#7AD62A]" : "bg-white/10"}`} />
           ))}
         </div>
-        <span className="text-[10px] text-slate-500">{difficulty.label}</span>
+        <span className="text-[10px] text-slate-400">{difficulty.label}</span>
       </div>
 
       {/* Rating */}
@@ -287,12 +287,12 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
       </div>
 
       {/* Enrolled */}
-      <div className="hidden md:block w-16 text-xs text-slate-500 shrink-0">
+      <div className="hidden md:block w-16 text-xs text-slate-400 shrink-0">
         {course._count?.enrollments || 0}
       </div>
 
       {/* Modules */}
-      <div className="hidden lg:block w-20 text-xs text-slate-500 shrink-0">
+      <div className="hidden lg:block w-20 text-xs text-slate-400 shrink-0">
         {sectionCount} modules
       </div>
 
@@ -457,7 +457,7 @@ export default function CoursesPage() {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               activeTab === tab.id
                 ? "border-[#7AD62A] text-[#7AD62A]"
-                : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
+                : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
             }`}
           >
             {tab.label}
@@ -569,7 +569,7 @@ export default function CoursesPage() {
               ? "No courses match your filters"
               : "No courses published yet"}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
             {searchQuery || selectedCategory || selectedDifficulty || activeTab !== "all"
               ? "Try adjusting your search or clearing filters."
               : "Courses will appear here once published by an administrator."}
@@ -625,7 +625,7 @@ export default function CoursesPage() {
       ) : (
         <div className="angular-card overflow-hidden">
           {/* Table header */}
-          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
             <span className="w-6 text-center shrink-0">#</span>
             <span className="flex-1">Course</span>
             <span className="hidden sm:block w-28 shrink-0">Difficulty</span>

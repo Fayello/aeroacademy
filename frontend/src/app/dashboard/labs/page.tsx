@@ -158,7 +158,7 @@ export default function LabsCatalog() {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               activeTab === tab.id
                 ? "border-[#7AD62A] text-[#7AD62A]"
-                : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
+                : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
             }`}
           >
             {tab.label}
@@ -244,7 +244,7 @@ export default function LabsCatalog() {
           <h3 className="text-sm font-semibold text-white mb-1">
             {labs.length === 0 ? "The lab is quiet" : "No labs match your filters"}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
             {labs.length === 0
               ? "Lab environments are being prepared. Check back soon."
               : "Try adjusting your search or clearing filters."}
@@ -326,10 +326,10 @@ export default function LabsCatalog() {
                     )}
                   </div>
                   <h3 className="text-sm font-medium text-white group-hover:text-slate-200 transition-colors">{lab.title}</h3>
-                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{lab.description}</p>
+                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">{lab.description}</p>
 
                   {/* Stats row */}
-                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                  <div className="flex items-center gap-3 text-xs text-slate-400">
                     <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags}</span>
                     <span>·</span>
                     <span className="flex items-center gap-1"><Clock size={10} />{getEstimatedTime(flags)}</span>
@@ -361,7 +361,7 @@ export default function LabsCatalog() {
       ) : (
         /* Table View */
         <div className="angular-card overflow-hidden">
-          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
             <span className="w-6 text-center shrink-0">#</span>
             <span className="flex-1 min-w-0">Lab</span>
             <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
@@ -410,12 +410,12 @@ export default function LabsCatalog() {
                           <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
                         ))}
                       </div>
-                      <span className="text-[10px] text-slate-500">{diff.label}</span>
+                      <span className="text-[10px] text-slate-400">{diff.label}</span>
                     </div>
-                    <div className="hidden md:block w-20 text-xs text-slate-500 shrink-0">
+                    <div className="hidden md:block w-20 text-xs text-slate-400 shrink-0">
                       {solvedFlags}/{flags}
                     </div>
-                    <div className="hidden lg:block w-20 text-xs text-slate-500 shrink-0">
+                    <div className="hidden lg:block w-20 text-xs text-slate-400 shrink-0">
                       {getEstimatedTime(flags)}
                     </div>
                     <div className="w-20 shrink-0 text-right">

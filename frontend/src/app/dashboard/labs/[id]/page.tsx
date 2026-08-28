@@ -578,7 +578,7 @@ export default function LabWorkspace() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <Loader2 className="animate-spin text-slate-400" size={32} />
-        <p className="text-sm text-slate-500">Loading lab...</p>
+        <p className="text-sm text-slate-400">Loading lab...</p>
       </div>
     );
   }
@@ -594,7 +594,7 @@ export default function LabWorkspace() {
           </div>
           <div className="text-center max-w-sm">
             <h2 className="text-lg font-semibold text-white">Lab Locked</h2>
-            <p className="text-sm text-slate-500 mt-1">{gate.reason}</p>
+            <p className="text-sm text-slate-400 mt-1">{gate.reason}</p>
             <div className="mt-4 p-4 bg-white/5 rounded-xl border border-white/10 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-400">Your level</span>
@@ -610,7 +610,7 @@ export default function LabWorkspace() {
                   style={{ width: `${Math.min(((level - 1) / (gate.requiredLevel - 1)) * 100, 100)}%` }}
                 />
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-400">
                 Earn <span className="font-semibold text-[#7AD62A]">{xpNeeded} more XP</span> to unlock
               </p>
             </div>
@@ -637,7 +637,7 @@ export default function LabWorkspace() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-sm text-slate-500">
+        <nav className="flex items-center gap-1.5 text-sm text-slate-400">
           <Link href="/dashboard" className="hover:text-[#7AD62A] transition-colors">
             <Home size={14} />
           </Link>
@@ -658,21 +658,21 @@ export default function LabWorkspace() {
                     <span className={`text-[11px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
                   )}
                   <span className="text-xs text-slate-400">·</span>
-                  <span className="text-xs text-slate-500">{flags} objectives</span>
+                  <span className="text-xs text-slate-400">{flags} objectives</span>
                   <span className="text-xs text-slate-400">·</span>
-                  <span className="text-xs text-slate-500">{getEstimatedTime(flags)}</span>
+                  <span className="text-xs text-slate-400">{getEstimatedTime(flags)}</span>
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
                   <LabAvatar title={lab.title} id={lab.id} size={44} />
                   {lab.title}
                 </h1>
-                <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">{lab.description}</p>
+                <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">{lab.description}</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <div className="flex items-center gap-1.5 justify-end">
                     <Users size={12} className="text-slate-400" />
-                    <span className="text-xs text-slate-500">{solvedFlags}/{flags} solved</span>
+                    <span className="text-xs text-slate-400">{solvedFlags}/{flags} solved</span>
                   </div>
                 </div>
                 <button
@@ -701,7 +701,7 @@ export default function LabWorkspace() {
               className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
                 activeLabTab === tab.key
                   ? "border-[#7AD62A] text-[#7AD62A]"
-                  : "border-transparent text-slate-500 hover:text-slate-200 hover:border-white/10"
+                  : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
               }`}
             >
               {tab.label}
@@ -716,7 +716,7 @@ export default function LabWorkspace() {
               <TerminalIcon size={28} className="text-[#7AD62A]" />
             </div>
             <h3 className="text-lg font-bold text-white mb-2">Ready to start?</h3>
-            <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
+            <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
               Launch this lab to get a live interactive terminal environment. You&apos;ll have access to all tools and can work through the objectives at your own pace.
             </p>
             <button
@@ -735,7 +735,7 @@ export default function LabWorkspace() {
             {lab.briefing && (
               <div>
                 <h3 className="text-sm font-semibold text-white mb-3">Scenario</h3>
-                <div className="text-sm text-slate-600 leading-relaxed prose prose-sm max-w-none">
+                <div className="text-sm text-slate-300 leading-relaxed prose prose-sm prose-invert max-w-none">
                   <ReactMarkdown>{lab.briefing}</ReactMarkdown>
                 </div>
               </div>
@@ -763,7 +763,7 @@ export default function LabWorkspace() {
                         <span className="text-sm font-medium text-white">{flag.title}</span>
                         <span className="text-sm font-bold text-[#7AD62A]">+{flag.points} pts</span>
                       </div>
-                      <p className="text-xs text-slate-500">{flag.description}</p>
+                      <p className="text-xs text-slate-400">{flag.description}</p>
                     </div>
                   ))}
                 </div>
@@ -812,7 +812,7 @@ export default function LabWorkspace() {
                     const total = reviewsData?.stats.total || 1;
                     return (
                       <div key={star} className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 w-3">{star}</span>
+                        <span className="text-xs text-slate-400 w-3">{star}</span>
                         <Star size={10} className="text-amber-400 fill-amber-400" />
                         <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                           <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${(count / total) * 100}%` }} />
@@ -845,7 +845,7 @@ export default function LabWorkspace() {
                     />
                   </button>
                 ))}
-                {myRating > 0 && <span className="text-sm text-slate-500 ml-2">{myRating}/5</span>}
+                {myRating > 0 && <span className="text-sm text-slate-400 ml-2">{myRating}/5</span>}
               </div>
               <textarea
                 value={myComment}
@@ -869,7 +869,7 @@ export default function LabWorkspace() {
               {!reviewsData || reviewsData.reviews.length === 0 ? (
                 <div className="text-center py-8">
                   <MessageSquare size={32} className="mx-auto mb-3 text-slate-300" />
-                  <p className="text-sm text-slate-500">No reviews yet. Be the first to review this lab!</p>
+                  <p className="text-sm text-slate-400">No reviews yet. Be the first to review this lab!</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -915,14 +915,14 @@ export default function LabWorkspace() {
           </button>
           <div>
             <h1 className="text-sm font-semibold text-white">{lab?.title || "Lab"}</h1>
-            <p className="text-xs text-slate-500">Interactive Environment</p>
+            <p className="text-xs text-slate-400">Interactive Environment</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href={`/dashboard/labs/${id}/discussions`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white/5 text-xs font-medium transition-colors border border-white/10"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 text-xs font-medium transition-colors border border-white/10"
           >
             <MessageSquare size={14} />
             Discussions
@@ -930,7 +930,7 @@ export default function LabWorkspace() {
           {isFullscreen && (
             <button
               onClick={() => setIsFullscreen(false)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white/5 text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 text-xs font-medium transition-colors"
             >
               <Minimize2 size={14} />
               Exit Fullscreen
@@ -987,7 +987,7 @@ export default function LabWorkspace() {
 
       {/* Telemetry bar */}
       {!isFullscreen && isRunning && telemetry && (
-        <div className="h-10 border-b border-white/10 bg-[#0f172a] px-4 flex items-center gap-6 text-xs text-slate-500 shrink-0">
+        <div className="h-10 border-b border-white/10 bg-[#0f172a] px-4 flex items-center gap-6 text-xs text-slate-400 shrink-0">
           <span className="font-medium">CPU</span>
           <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div className={`h-full rounded-full ${telemetry.cpu > 80 ? "bg-red-500" : telemetry.cpu > 50 ? "bg-amber-500" : "bg-[#7AD62A]"}`} style={{ width: `${telemetry.cpu}%` }} />
@@ -1016,7 +1016,7 @@ export default function LabWorkspace() {
                 <Zap size={12} className="text-[#7AD62A]" />
                 <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Quick Start</h4>
               </div>
-              <p className="text-[11px] text-slate-500 mb-2">
+              <p className="text-[11px] text-slate-400 mb-2">
                 Click a command to send it straight to the terminal:
               </p>
               <div className="space-y-1.5">
@@ -1044,7 +1044,7 @@ export default function LabWorkspace() {
             </div>
           )}
 
-          <div className="p-5 prose prose-sm prose-slate max-w-none">
+          <div className="p-5 prose prose-sm prose-invert max-w-none">
             <ReactMarkdown>{lab?.briefing || lab?.description}</ReactMarkdown>
 
             {lab?.tasks && Array.isArray(lab.tasks) && (
@@ -1097,8 +1097,8 @@ export default function LabWorkspace() {
                           Copy
                         </button>
                       </div>
-                      <p className="text-slate-500">User: <span className="font-mono text-[#7AD62A]">{cred.username}</span></p>
-                      {cred.password && <p className="text-slate-500">Pass: <span className="font-mono text-[#7AD62A]">{cred.password}</span></p>}
+                      <p className="text-slate-400">User: <span className="font-mono text-[#7AD62A]">{cred.username}</span></p>
+                      {cred.password && <p className="text-slate-400">Pass: <span className="font-mono text-[#7AD62A]">{cred.password}</span></p>}
                     </div>
                   ))}
                 </div>
@@ -1118,7 +1118,7 @@ export default function LabWorkspace() {
                         <span className="text-xs font-medium text-slate-300">{flag.title}</span>
                         <span className="text-xs font-medium text-[#7AD62A]">+{flag.points} pts</span>
                       </div>
-                      <p className="text-xs text-slate-500 mb-3">{flag.description}</p>
+                      <p className="text-xs text-slate-400 mb-3">{flag.description}</p>
                       {flag.submissions && flag.submissions.length > 0 ? (
                         <span className="text-xs text-[#7AD62A] font-medium">Solved</span>
                       ) : (
@@ -1137,7 +1137,7 @@ export default function LabWorkspace() {
         <div className="flex-1 flex flex-col min-w-0 angular-card bg-[#0f172a] shadow-sm overflow-hidden">
           <div className="h-10 border-b border-white/10 px-4 flex items-center gap-2 shrink-0">
             <TerminalIcon size={14} className="text-slate-400" />
-            <span className="text-xs font-medium text-slate-500">Terminal</span>
+            <span className="text-xs font-medium text-slate-400">Terminal</span>
 
             {isRunning && connected && (
               <div className="ml-auto flex items-center gap-1">
@@ -1147,7 +1147,7 @@ export default function LabWorkspace() {
                     key={cmd}
                     onClick={() => sendCommand(cmd)}
                     title={`Run: ${cmd}`}
-                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-[#7AD62A]/10 text-[11px] font-mono text-slate-500 hover:text-white transition-colors"
+                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-[#7AD62A]/10 text-[11px] font-mono text-slate-400 hover:text-white transition-colors"
                   >
                     {cmd}
                   </button>
@@ -1202,7 +1202,7 @@ export default function LabWorkspace() {
                 </span>
                 <button
                   onClick={handleManualReconnect}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#0F203A] hover:bg-[#7AD62A]/10 transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                 >
                   <PlugZap size={12} />
                   Reconnect
@@ -1222,7 +1222,7 @@ export default function LabWorkspace() {
             {isRunning ? (
               <div ref={terminalRef} className="w-full h-full" />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-slate-500 gap-3">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-slate-400 gap-3">
                 <TerminalIcon size={28} className="text-slate-300" />
                 <div className="text-center">
                   <p className="text-sm font-medium">
@@ -1249,7 +1249,7 @@ export default function LabWorkspace() {
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-medium text-white">Connection lost</p>
-                  <p className="text-xs text-slate-500 mt-1 max-w-xs">
+                  <p className="text-xs text-slate-400 mt-1 max-w-xs">
                     {autoReconnecting
                       ? "Attempting to reconnect automatically..."
                       : "The connection to your terminal was lost. Click below to re-establish the session."}

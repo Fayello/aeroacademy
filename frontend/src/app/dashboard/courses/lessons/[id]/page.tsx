@@ -214,8 +214,8 @@ export default function LessonPage() {
   if (error) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <AlertCircle size={40} className="text-red-400 mb-3" />
-      <p className="text-slate-700 font-medium mb-1">Something went wrong</p>
-      <p className="text-sm text-slate-500 mb-4">{error}</p>
+      <p className="text-white font-medium mb-1">Something went wrong</p>
+      <p className="text-sm text-slate-400 mb-4">{error}</p>
       <button onClick={() => window.location.reload()} className="px-4 py-2 bg-[#7AD62A] hover:bg-[#1d8a56] text-white rounded-lg text-sm font-medium transition-colors">Try again</button>
     </div>
   );
@@ -340,7 +340,7 @@ export default function LessonPage() {
                     return (
                       <div className="my-6 rounded-lg overflow-hidden border border-white/10">
                         <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
-                          <span className="text-xs font-medium text-slate-500">{match[1]}</span>
+                          <span className="text-xs font-medium text-slate-400">{match[1]}</span>
                           <button
                             onClick={() => { navigator.clipboard.writeText(String(children).replace(/\n$/, "")); toast.success("Copied!"); }}
                             className="text-xs text-slate-400 hover:text-[#7AD62A] transition-colors"
@@ -437,8 +437,8 @@ export default function LessonPage() {
                     Submit answers
                   </button>
                 ) : (
-                  <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-[#7AD62A]/10 border-[#7AD62A]/20" : "bg-red-500/10 border-red-200"}`}>
-                    <p className={`font-medium ${quizCorrect ? "text-[#0F203A]" : "text-red-800"}`}>
+                  <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-[#7AD62A]/10 border-[#7AD62A]/20" : "bg-red-500/10 border-red-500/20"}`}>
+                    <p className={`font-medium ${quizCorrect ? "text-[#7AD62A]" : "text-red-400"}`}>
                       {quizCorrect ? "Great work! You passed." : "Review the corrections above and try again."}
                     </p>
                     <button
@@ -497,12 +497,12 @@ export default function LessonPage() {
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           {lesson.labId && (
-            <div className="bg-blue-500/10 rounded-xl border border-blue-200 p-6">
-              <div className="flex items-center gap-2 text-blue-700 mb-3">
+            <div className="bg-blue-500/10 rounded-xl border border-white/10 p-6">
+              <div className="flex items-center gap-2 text-blue-400 mb-3">
                 <Microscope size={18} />
                 <h3 className="text-sm font-semibold">Practice Lab</h3>
               </div>
-              <p className="text-sm text-slate-600 mb-4">
+              <p className="text-sm text-slate-400 mb-4">
                 Apply what you learned in a hands-on sandbox environment.
               </p>
               <button
@@ -531,16 +531,16 @@ export default function LessonPage() {
                       href={`/dashboard/courses/lessons/${l.id}`}
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                         isCurrent
-                          ? "bg-[#7AD62A]/10 text-[#0F203A] font-medium"
+                          ? "bg-[#7AD62A]/20 text-white font-medium"
                           : isPast
-                          ? "text-slate-500 hover:bg-white/5"
-                          : "text-slate-600 hover:bg-white/5"
+                          ? "text-slate-400 hover:bg-white/5"
+                          : "text-slate-400 hover:bg-white/5"
                       }`}
                     >
                       <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 ${
                         isCurrent ? "bg-[#7AD62A] text-white" :
                         isPast ? "bg-[#7AD62A]/10 text-[#7AD62A]" :
-                        "bg-slate-100 text-slate-500"
+                        "bg-white/10 text-slate-400"
                       }`}>
                         {isPast ? <CheckCircle size={12} /> : isCurrent ? <span className="w-1.5 h-1.5 rounded-full bg-[#0f172a]" /> : i + 1}
                       </span>
@@ -554,14 +554,14 @@ export default function LessonPage() {
 
           <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
             <h3 className="text-sm font-semibold text-white mb-3">Lesson Info</h3>
-            <div className="space-y-2 text-sm text-slate-600">
+            <div className="space-y-2 text-sm text-slate-400">
               <div className="flex justify-between">
                 <span>Section</span>
                 <span className="font-medium text-white">{lesson.section?.title}</span>
               </div>
               <div className="flex justify-between">
                 <span>Status</span>
-                <span className={`font-medium ${completed ? "text-[#7AD62A]" : "text-slate-500"}`}>
+                <span className={`font-medium ${completed ? "text-[#7AD62A]" : "text-slate-400"}`}>
                   {completed ? "Completed" : "In progress"}
                 </span>
               </div>
