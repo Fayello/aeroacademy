@@ -24,6 +24,11 @@ async function main() {
   const { seedEnrichCoursesNew } = await import('./seed-enrich-courses-new');
   await seedEnrichCoursesNew(prisma);
 
+  // Phase 4b: Backfill missing lessons (52)
+  console.log('\n--- Phase 4b: Backfilling 52 missing lessons ---');
+  const { seedEnrichCoursesNewPart2 } = await import('./seed-enrich-courses-new-part2');
+  await seedEnrichCoursesNewPart2(prisma);
+
   // Phase 5: Enrich existing courses
   console.log('\n--- Phase 5: Enriching existing courses ---');
   const { seedEnrichCourses } = await import('./seed-enrich-courses');
