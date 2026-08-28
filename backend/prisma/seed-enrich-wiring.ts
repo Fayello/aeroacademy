@@ -2,80 +2,84 @@ import { PrismaClient } from "@prisma/client";
 
 interface Wiring {
   courseTitle: string;
-  lessonTitle: string;
+  lessonTitle: string; // substring match (contains, case-insensitive)
   labTitle: string;
 }
 
 const wirings: Wiring[] = [
   // Containerization & DevOps
-  { courseTitle: "Containerization & DevOps", lessonTitle: "Docker Build & Registry", labTitle: "Docker Build, Push & Registry" },
-  { courseTitle: "Containerization & DevOps", lessonTitle: "Nginx Reverse Proxy", labTitle: "Nginx Reverse Proxy & Load Balancer" },
-  { courseTitle: "Containerization & DevOps", lessonTitle: "Redis Caching", labTitle: "Redis Caching & Session Management" },
-  { courseTitle: "Containerization & DevOps", lessonTitle: "Monitoring", labTitle: "Prometheus + Grafana Monitoring Stack" },
-  { courseTitle: "Containerization & DevOps", lessonTitle: "Compose", labTitle: "Docker Compose Multi-Service Stack" },
-  { courseTitle: "Containerization & DevOps", lessonTitle: "Kubernetes", labTitle: "Kubernetes Cluster Setup" },
-  { courseTitle: "Containerization & DevOps", lessonTitle: "CI/CD", labTitle: "CI/CD Pipeline with GitHub Actions" },
+  { courseTitle: "Containerization & DevOps", lessonTitle: "Image Building", labTitle: "Container Image Scanning & Registry Security" },
+  { courseTitle: "Containerization & DevOps", lessonTitle: "Docker Compose", labTitle: "Docker Compose Multi-Service Stack" },
+  { courseTitle: "Containerization & DevOps", lessonTitle: "Monitoring & Observability", labTitle: "Prometheus + Grafana Monitoring Stack" },
+  { courseTitle: "Containerization & DevOps", lessonTitle: "CI/CD Pipeline", labTitle: "CI/CD Pipeline with GitHub Actions" },
+  { courseTitle: "Containerization & DevOps", lessonTitle: "Infrastructure as Code", labTitle: "Terraform Security & IaC Scanning" },
+  { courseTitle: "Containerization & DevOps", lessonTitle: "GitOps", labTitle: "GitOps Security with ArgoCD" },
 
-  // Web Server Admin
-  { courseTitle: "Web Server Admin", lessonTitle: "Nginx Mastery", labTitle: "Nginx Mastery: Architecture & Configuration" },
-  { courseTitle: "Web Server Admin", lessonTitle: "SSL", labTitle: "Let's Encrypt SSL Automation with Certbot" },
+  // Web Server Administration
+  { courseTitle: "Web Server Administration", lessonTitle: "Nginx Architecture", labTitle: "Nginx Security Hardening" },
+  { courseTitle: "Web Server Administration", lessonTitle: "Reverse Proxy", labTitle: "Reverse Proxy & Load Balancer Security" },
+  { courseTitle: "Web Server Administration", lessonTitle: "SSL/TLS", labTitle: "TLS/SSL Certificate Management" },
+  { courseTitle: "Web Server Administration", lessonTitle: "Zero-Downtime", labTitle: "Web Server Hardening CIS Benchmark" },
 
   // Linux Fundamentals
-  { courseTitle: "Linux Fundamentals", lessonTitle: "Shell Scripting", labTitle: "Linux Fundamentals: Text Processing & Shell Scripting" },
+  { courseTitle: "Linux Fundamentals — From Zero to Command Line Hero", lessonTitle: "Shell Scripting", labTitle: "Linux Fundamentals: Text Processing & Shell Scripting" },
 
   // Networking & Security
-  { courseTitle: "Networking & Security", lessonTitle: "Firewall", labTitle: "iptables to nftables Migration" },
-  { courseTitle: "Networking & Security", lessonTitle: "VPN", labTitle: "WireGuard VPN Configuration" },
+  { courseTitle: "Networking & Security", lessonTitle: "Firewall Types", labTitle: "Firewall Configuration with iptables" },
+  { courseTitle: "Networking & Security", lessonTitle: "WireGuard", labTitle: "VPN Configuration with WireGuard" },
+  { courseTitle: "Networking & Security", lessonTitle: "Packet Analysis", labTitle: "Packet Analysis with Wireshark/tshark" },
+  { courseTitle: "Networking & Security", lessonTitle: "Intrusion Detection", labTitle: "Intrusion Detection with Suricata" },
+  { courseTitle: "Networking & Security", lessonTitle: "Zero Trust", labTitle: "Zero Trust Architecture Implementation" },
 
-  // Advanced Web Vulns
-  { courseTitle: "Advanced Web Vulns", lessonTitle: "SQLi", labTitle: "Advanced Web Exploitation Sandbox" },
-  { courseTitle: "Advanced Web Vulns", lessonTitle: "Juice Shop", labTitle: "Broken Authentication Sandbox" },
+  // Advanced Web Vulnerabilities
+  { courseTitle: "Advanced Web Vulnerabilities", lessonTitle: "SQL Injection Beyond", labTitle: "SQL Injection Deep Dive" },
+  { courseTitle: "Advanced Web Vulnerabilities", lessonTitle: "JWT Security", labTitle: "JWT Security Pitfalls" },
+  { courseTitle: "Advanced Web Vulnerabilities", lessonTitle: "Server-Side Request Forgery", labTitle: "Server-Side Request Forgery (SSRF)" },
+  { courseTitle: "Advanced Web Vulnerabilities", lessonTitle: "GraphQL", labTitle: "API Security Testing (REST & GraphQL)" },
 
   // Product Security SDL
-  { courseTitle: "Product Security SDL", lessonTitle: "SAST, DAST & SCA Integration", labTitle: "" },
+  { courseTitle: "Product Security Architecture & SDL", lessonTitle: "SAST, DAST", labTitle: "Static Application Security Testing (SAST)" },
+  { courseTitle: "Product Security Architecture & SDL", lessonTitle: "Software Composition", labTitle: "Software Composition Analysis (SCA)" },
 
-  // Malware Analysis
-  { courseTitle: "Malware Analysis", lessonTitle: "YARA", labTitle: "Static Malware Analysis with YARA Rules" },
-  { courseTitle: "Malware Analysis", lessonTitle: "Dynamic", labTitle: "Dynamic Malware Analysis in Sandbox" },
-  { courseTitle: "Malware Analysis", lessonTitle: "PE Analysis", labTitle: "PE Header Analysis & Import Table Inspection" },
-  { courseTitle: "Malware Analysis", lessonTitle: "Volatility", labTitle: "Memory Forensics with Volatility" },
+  // Malware Analysis & RE
+  { courseTitle: "Malware Analysis & Reverse Engineering", lessonTitle: "YARA", labTitle: "Steganography & Covert Channel Detection" },
+  { courseTitle: "Malware Analysis & Reverse Engineering", lessonTitle: "Memory Forensics", labTitle: "Memory Forensics with Volatility" },
 
-  // IR/Forensics
-  { courseTitle: "IR/Forensics", lessonTitle: "Suricata", labTitle: "Suricata IDS Rule Writing" },
-  { courseTitle: "IR/Forensics", lessonTitle: "Elasticsearch", labTitle: "Elasticsearch SIEM Query Language" },
-  { courseTitle: "IR/Forensics", lessonTitle: "Kibana", labTitle: "Kibana Security Incident Dashboard" },
+  // Incident Response & Digital Forensics
+  { courseTitle: "Incident Response & Digital Forensics", lessonTitle: "Forensic Acquisition", labTitle: "Digital Forensics & Incident Response" },
+  { courseTitle: "Incident Response & Digital Forensics", lessonTitle: "Log Management", labTitle: "Secure Logging, Monitoring & Incident Response" },
 
-  // Python for Cybersecurity
-  { courseTitle: "Python for Cybersecurity", lessonTitle: "Flask", labTitle: "Python Flask CRUD Application" },
-  { courseTitle: "Python for Cybersecurity", lessonTitle: "Scapy", labTitle: "Python Network Scanner with Scapy" },
+  // Cloud Security & Hardening (new course)
+  { courseTitle: "Cloud Security & Hardening", lessonTitle: "Cloud Reconnaissance", labTitle: "Cloud Penetration Testing (AWS/Azure/GCP)" },
+  { courseTitle: "Cloud Security & Hardening", lessonTitle: "Docker Security", labTitle: "Docker Security Hardening" },
+  { courseTitle: "Cloud Security & Hardening", lessonTitle: "Serverless Security", labTitle: "Serverless Security Testing" },
+  { courseTitle: "Cloud Security & Hardening", lessonTitle: "IAM Attack", labTitle: "AWS IAM Security & Policy Analysis" },
 
-  // Full-Stack JS
-  { courseTitle: "Full-Stack JS", lessonTitle: "REST API", labTitle: "Node.js REST API from Scratch" },
-  { courseTitle: "Full-Stack JS", lessonTitle: "React", labTitle: "React Component Architecture" },
-  { courseTitle: "Full-Stack JS", lessonTitle: "WebSocket", labTitle: "WebSocket Real-Time Chat Application" },
+  // Python for Cybersecurity & Automation
+  { courseTitle: "Python for Cybersecurity & Automation", lessonTitle: "Packet Crafting", labTitle: "Network Reconnaissance with Nmap" },
+  { courseTitle: "Python for Cybersecurity & Automation", lessonTitle: "Custom Exploit", labTitle: "Memory Safety & Buffer Overflow Exploitation" },
+
+  // Full-Stack JS Development
+  { courseTitle: "Full-Stack JavaScript Development", lessonTitle: "Express.js REST", labTitle: "Secure Node.js Development" },
+  { courseTitle: "Full-Stack JavaScript Development", lessonTitle: "Docker Deployment", labTitle: "Docker Security Hardening" },
 
   // API Design & Security
-  { courseTitle: "API Design & Security", lessonTitle: "OAuth2", labTitle: "OAuth2 & OpenID Connect Implementation" },
-  { courseTitle: "API Design & Security", lessonTitle: "GraphQL", labTitle: "GraphQL Server & Schema Design" },
+  { courseTitle: "API Design & Security", lessonTitle: "OAuth 2.0", labTitle: "OAuth 2.0 & OIDC Security Testing" },
+  { courseTitle: "API Design & Security", lessonTitle: "Rate Limiting", labTitle: "API Security Best Practices" },
+  { courseTitle: "API Design & Security", lessonTitle: "OWASP API", labTitle: "OWASP Top 10 Prevention Workshop" },
 
-  // Database Admin
-  { courseTitle: "Database Admin", lessonTitle: "PostgreSQL Schema", labTitle: "PostgreSQL Schema Design & Migrations" },
-  { courseTitle: "Database Admin", lessonTitle: "Backup", labTitle: "Database Backup & Recovery Strategies" },
+  // Database Administration & Security
+  { courseTitle: "Database Administration & Security", lessonTitle: "Backup & Recovery", labTitle: "Database Backup & Recovery Security" },
+  { courseTitle: "Database Administration & Security", lessonTitle: "MongoDB Security", labTitle: "MongoDB NoSQL Injection & Security" },
 
-  // IaC (note: lab titles intentionally swapped per spec)
-  { courseTitle: "IaC", lessonTitle: "Terraform", labTitle: "Ansible Playbook Mastery" },
-  { courseTitle: "IaC", lessonTitle: "Ansible", labTitle: "Terraform Fundamentals" },
+  // Infrastructure as Code
+  { courseTitle: "Infrastructure as Code", lessonTitle: "Terraform", labTitle: "Terraform Security & IaC Scanning" },
 
-  // K8s
-  { courseTitle: "K8s", lessonTitle: "K8s RBAC", labTitle: "Kubernetes RBAC & NetworkPolicies" },
+  // Kubernetes Administration & Security
+  { courseTitle: "Kubernetes Administration & Security", lessonTitle: "RBAC", labTitle: "Kubernetes Security Hardening" },
 
-  // SRE
-  { courseTitle: "SRE", lessonTitle: "Prometheus+Grafana", labTitle: "Prometheus + Grafana Monitoring Stack" },
-
-  // UAT
-  { courseTitle: "UAT", lessonTitle: "Selenium", labTitle: "Selenium Browser Automation Fundamentals" },
-  { courseTitle: "UAT", lessonTitle: "API Testing", labTitle: "API Testing with Newman/Postman" },
-  { courseTitle: "UAT", lessonTitle: "Performance", labTitle: "Performance Testing with k6" },
+  // Site Reliability Engineering
+  { courseTitle: "Site Reliability Engineering", lessonTitle: "Monitoring Architecture", labTitle: "Prometheus + Grafana Monitoring Stack" },
 ];
 
 export async function wireLabCourseLinks(prisma: PrismaClient): Promise<void> {
@@ -86,7 +90,6 @@ export async function wireLabCourseLinks(prisma: PrismaClient): Promise<void> {
   let notFound = 0;
 
   for (const w of wirings) {
-    // Look up course
     const course = await prisma.course.findFirst({ where: { title: w.courseTitle } });
     if (!course) {
       console.log(`  ⚠ Course not found: "${w.courseTitle}" — skipping`);
@@ -94,9 +97,12 @@ export async function wireLabCourseLinks(prisma: PrismaClient): Promise<void> {
       continue;
     }
 
-    // Look up lesson within the course
+    // Use contains for lesson title (case-insensitive substring match)
     const lesson = await prisma.lesson.findFirst({
-      where: { section: { courseId: course.id }, title: w.lessonTitle },
+      where: {
+        section: { courseId: course.id },
+        title: { contains: w.lessonTitle, mode: "insensitive" },
+      },
     });
     if (!lesson) {
       console.log(`  ⚠ Lesson not found: "${w.lessonTitle}" in "${w.courseTitle}" — skipping`);
@@ -104,21 +110,18 @@ export async function wireLabCourseLinks(prisma: PrismaClient): Promise<void> {
       continue;
     }
 
-    // Skip if lesson already has a lab linked
     if (lesson.labId) {
-      console.log(`  ⏭ Lesson "${w.lessonTitle}" already linked to lab — skipping`);
+      console.log(`  ⏭ Lesson "${lesson.title}" already linked — skipping`);
       skipped++;
       continue;
     }
 
-    // For wirings with no lab (SAST/SCA), just skip lab lookup
     if (!w.labTitle) {
-      console.log(`  ℹ No lab specified for "${w.lessonTitle}" — skipping lab link`);
+      console.log(`  ℹ No lab specified for "${w.lessonTitle}" — skipping`);
       skipped++;
       continue;
     }
 
-    // Look up lab
     const lab = await prisma.lab.findFirst({ where: { title: w.labTitle } });
     if (!lab) {
       console.log(`  ⚠ Lab not found: "${w.labTitle}" — skipping`);
@@ -126,13 +129,12 @@ export async function wireLabCourseLinks(prisma: PrismaClient): Promise<void> {
       continue;
     }
 
-    // Wire it
     await prisma.lesson.update({
       where: { id: lesson.id },
       data: { labId: lab.id },
     });
 
-    console.log(`  ✅ "${w.lessonTitle}" (${w.courseTitle}) → "${w.labTitle}"`);
+    console.log(`  ✅ "${lesson.title}" (${w.courseTitle}) → "${w.labTitle}"`);
     wired++;
   }
 
