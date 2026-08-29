@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, type ReactNode, type ReactElement, cloneElement } from "react";
+import { useEffect, useState, useRef, type ReactNode, type ReactElement, cloneElement } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp, AlertCircle, Play } from "lucide-react";
+import mermaid from "mermaid";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 type ReactPlayerComponent = React.ComponentType<{
@@ -59,6 +60,95 @@ function processChildren(children: ReactNode): ReactNode {
     return cloneElement(el, { children: processChildren(el.props.children) });
   }
   return children;
+}
+
+function MermaidDiagram({ chart }: { chart: string }) {
+  const [svg, setSvg] = useState<string>("");
+  const [error, setError] = useState(false);
+  const idRef = useRef(`mermaid-${Math.random().toString(36).slice(2, 9)}`);
+
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "dark",
+      securityLevel: "loose",
+      themeVariables: {
+        primaryColor: "#229C62",
+        primaryTextColor: "#fff",
+        primaryBorderColor: "#7AD62A",
+        lineColor: "#7AD62A",
+        secondaryColor: "#0F203A",
+        tertiaryColor: "#1a3a5c",
+        background: "#0f172a",
+        mainBkg: "#0F203A",
+        nodeBorder: "#7AD62A",
+        clusterBkg: "#1e293b",
+        titleColor: "#fff",
+        textColor: "#cbd5e1",
+      },
+    });
+
+    let cancelled = false;
+    mermaid
+      .render(idRef.current, chart)
+      .then(({ svg }: { svg: string }) => {
+        if (!cancelled) setSvg(svg);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [chart]);
+
+  if (error) {
+    return (
+      <div className="my-6 rounded-lg border border-red-400/20 bg-red-500/10 p-4">
+        <p className="text-sm text-red-400">Failed to render Mermaid diagram.</p>
+        <pre className="mt-2 text-xs text-slate-400 overflow-x-auto">{chart}</pre>
+      </div>
+    );
+  }
+
+  if (!svg) {
+    return (
+      <div className="my-6 flex justify-center bg-white/5 border border-white/10 rounded-lg p-6">
+        <span className="text-sm text-slate-400 animate-pulse">Rendering diagram...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="mermaid my-6 flex justify-center overflow-x-auto rounded-lg border border-white/10 bg-white/5 p-4 prose-invert"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
+}
+
+function VideoPlaceholder() {
+  return (
+    <div className="aspect-video bg-[#0f172a] rounded-xl border border-white/10 flex flex-col items-center justify-center p-6 text-center shadow-lg">
+      <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+        <Play size={28} className="text-slate-500 ml-0.5" />
+      </div>
+      <p className="text-white font-medium">Video coming soon — Harvard lecture in production</p>
+      <p className="text-xs text-slate-400 mt-2 flex items-center gap-2">
+        <span className="inline-flex items-center gap-1">
+          <Play size={12} /> Duration: ~12 min
+        </span>
+        <span className="w-1 h-1 bg-slate-600 rounded-full" />
+        <span>In production</span>
+      </p>
+      <button
+        onClick={() => toast.success("You'll be notified when the video is ready!")}
+        className="mt-5 inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-[#0F203A] font-medium text-sm transition-colors"
+      >
+        Notify me
+      </button>
+    </div>
+  );
 }
 
 interface SectionWithLessons {
@@ -302,7 +392,7 @@ export default function LessonPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           {/* Video Player */}
-          {lesson.videoUrl && (
+          {lesson.videoUrl ? (
             <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden relative shadow-lg">
               <ReactPlayer
                 url={lesson.videoUrl}
@@ -315,6 +405,8 @@ export default function LessonPage() {
                 onPause={() => setPlaying(false)}
               />
             </div>
+          ) : (
+            <VideoPlaceholder />
           )}
 
           {/* Lesson Content */}
@@ -326,7 +418,14 @@ export default function LessonPage() {
                 remarkPlugins={[remarkGfm]}
                 components={{
                   p: ({ children }) => <p className="text-slate-300 leading-relaxed">{processChildren(children)}</p>,
-                  pre: ({ children }) => <pre className="bg-white/5 border border-white/10 rounded-lg p-4 overflow-x-auto">{children}</pre>,
+                  pre: ({ children }) => {
+                    const childArray = Array.isArray(children) ? children : [children];
+                    const hasMermaid = childArray.some(
+                      (c) => c && typeof c === "object" && "props" in c && c.props !== null && typeof c.props === "object" && "chart" in c.props
+                    );
+                    if (hasMermaid) return <>{children}</>;
+                    return <pre className="bg-white/5 border border-white/10 rounded-lg p-4 overflow-x-auto">{children}</pre>;
+                  },
                   code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
                     const match = /language-(\w+)/.exec(className || "");
                     const isInline = !match;
@@ -336,6 +435,9 @@ export default function LessonPage() {
                           {children}
                         </code>
                       );
+                    }
+                    if (match[1] === "mermaid") {
+                      return <MermaidDiagram chart={String(children).replace(/\n$/, "")} />;
                     }
                     return (
                       <div className="my-6 rounded-lg overflow-hidden border border-white/10">

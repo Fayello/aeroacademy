@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Providers from "./providers";
@@ -8,18 +8,37 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const viewport: Viewport = {
+  themeColor: "#0F203A",
+  width: "device-width",
+  initialScale: 1,
+  colorScheme: "dark light",
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://xpertclass.academy"),
   title: {
     default: "XpertClass | Master Tech Skills with Hands-On Labs",
     template: "%s | XpertClass",
   },
   description: "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.",
   keywords: ["security training", "linux training", "devops", "cloud", "cybersecurity", "CTF", "labs", "penetration testing", "master classes", "1-on-1 training"],
+  manifest: "/manifest.json",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/logo-icon.svg", type: "image/svg+xml" }],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "XpertClass",
+  },
   openGraph: {
     title: "XpertClass | Master Tech Skills with Hands-On Labs",
     description: "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure.",
     type: "website",
     siteName: "XpertClass",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
@@ -37,9 +56,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* PWA: manifest is also declared via metadata.manifest; keep explicit link for broader compat */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0F203A" />
+        <link rel="apple-touch-icon" href="/logo-icon.svg" />
       </head>
       <body className={inter.className}>
         <RootErrorBoundary>
@@ -66,6 +86,12 @@ export default function RootLayout({
             error: {
               iconTheme: { primary: "#dc2626", secondary: "#ffffff" },
             },
+          }}
+        />
+        {/* PWA: register service worker */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});}`,
           }}
         />
       </body>
