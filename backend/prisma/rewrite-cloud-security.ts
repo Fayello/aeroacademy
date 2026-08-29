@@ -40,7 +40,7 @@ function buildContent(title: string, course: string, section: string): string {
 }
 
 export async function rewriteCloudSecurity(prisma: any) {
-  console.log("  Rewriting Cloud Security & Hardening (16 lessons) — Harvard standard");
+  console.log("  Rewriting Cloud Security & Hardening (16 lessons) — Harvard/Yale senior-professor standard");
   const course = await prisma.course.findFirst({ where: { title: "Cloud Security & Hardening" } });
   if (!course) { console.log("  Course not found"); return; }
   const sections = await prisma.section.findMany({ where: { courseId: course.id } });
@@ -75,3 +75,6 @@ export async function rewriteCloudSecurity(prisma: any) {
   }
   console.log(`  Cloud Security rewritten: ${updated} lessons`);
 }
+
+const prismaExec = new PrismaClient();
+rewriteCloudSecurity(prismaExec).catch(console.error).finally(() => prismaExec.$disconnect());
