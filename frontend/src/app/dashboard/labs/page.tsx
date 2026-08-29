@@ -27,32 +27,56 @@ export default function LabsCatalog() {
   const [level, setLevel] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
+  const [domainFilter, setDomainFilter] = useState("ALL");
+  const [sortBy, setSortBy] = useState<"featured" | "domain" | "difficulty" | "title">("featured");
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const DIFFICULTIES = ["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
+  const DOMAINS = ["ALL", "Systems", "Networking", "Web Security", "Cloud", "Databases", "DevOps", "AI & MLOps", "IT Ops"];
 
-  const filteredLabs = (labs || []).filter((lab) => {
-    const q = searchQuery.trim().toLowerCase();
-    const matchesSearch =
-      !q ||
-      lab.title?.toLowerCase().includes(q) ||
-      lab.description?.toLowerCase().includes(q);
+  function getLabDomain(lab: Lab): string {
+    const t = `${lab.title} ${lab.description}`.toLowerCase();
+    if (/(samba|active directory|ad |ldap|kerberos|bloodhound)/.test(t)) return "Systems";
+    if (/(bind|dns|dhcp|nfs|iscsi|lvm|wireguard|vpn|bgp|evpn|nat|iptables|vrrp|haproxy)/.test(t)) return "Networking";
+    if (/(juice|dvwa|webgoat|nodegoat|vapi|xss|sql injection|ssrf|api security|owasp|waf)/.test(t)) return "Web Security";
+    if (/(aws|azure|gcp|cloud|terraform|s3|iam)/.test(t)) return "Cloud";
+    if (/(postgres|mysql|mariadb|galera|mongo|redis|elasticsearch|clickhouse|citus|vitess)/.test(t)) return "Databases";
+    if (/(docker|kubernetes|k8s|helm|argo|flagger|jenkins|gitlab|ansible|prometheus|grafana|elk|zabbix|wazuh)/.test(t)) return "DevOps";
+    if (/(qdrant|vllm|kubeflow|feast|llm|vector|mlops|gpu|kali|parrot|exploit|rop|crypto|side-channel|firmware|apt|fuzz)/.test(t)) return t.includes("qdrant") || t.includes("vllm") || t.includes("kubeflow") || t.includes("feast") || t.includes("gpu") ? "AI & MLOps" : "Security";
+    if (/(snipe|cockpit|nextcloud|mail|postfix|rsyslog|vault|finops|beyondcorp|tinkerbell|k3s|ceph|trino)/.test(t)) return "IT Ops";
+    return "Systems";
+  }
 
-    const diff = getDifficultyStyle(lab.difficulty || 1200);
-    const matchesDifficulty = difficultyFilter === "ALL" || diff.label === difficultyFilter;
+  const filteredLabs = (labs || [])
+    .filter((lab) => {
+      const q = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        lab.title?.toLowerCase().includes(q) ||
+        lab.description?.toLowerCase().includes(q);
 
-    const progressStatus = getProgressStatus(lab.flags);
-    const matchesTab =
-      activeTab === "all" ||
-      (activeTab === "not-started" && progressStatus === "NOT_STARTED") ||
-      (activeTab === "in-progress" && progressStatus === "IN_PROGRESS") ||
-      (activeTab === "completed" && progressStatus === "COMPLETED");
+      const diff = getDifficultyStyle(lab.difficulty || 1200);
+      const matchesDifficulty = difficultyFilter === "ALL" || diff.label === difficultyFilter;
+      const matchesDomain = domainFilter === "ALL" || getLabDomain(lab) === domainFilter;
 
-    return matchesSearch && matchesDifficulty && matchesTab;
-  });
+      const progressStatus = getProgressStatus(lab.flags);
+      const matchesTab =
+        activeTab === "all" ||
+        (activeTab === "not-started" && progressStatus === "NOT_STARTED") ||
+        (activeTab === "in-progress" && progressStatus === "IN_PROGRESS") ||
+        (activeTab === "completed" && progressStatus === "COMPLETED");
 
-  const hasActiveFilters = searchQuery !== "" || difficultyFilter !== "ALL" || activeTab !== "all";
+      return matchesSearch && matchesDifficulty && matchesDomain && matchesTab;
+    })
+    .sort((a, b) => {
+      if (sortBy === "domain") return getLabDomain(a).localeCompare(getLabDomain(b));
+      if (sortBy === "difficulty") return (a.difficulty || 1200) - (b.difficulty || 1200);
+      if (sortBy === "title") return a.title.localeCompare(b.title);
+      return 0;
+    });
+
+  const hasActiveFilters = searchQuery !== "" || difficultyFilter !== "ALL" || domainFilter !== "ALL" || activeTab !== "all";
 
   const tabCounts = {
     all: labs.length,
@@ -64,6 +88,7 @@ export default function LabsCatalog() {
   const clearFilters = () => {
     setSearchQuery("");
     setDifficultyFilter("ALL");
+    setDomainFilter("ALL");
     setActiveTab("all");
   };
 
@@ -224,6 +249,34 @@ export default function LabsCatalog() {
               {d === "ALL" ? "All levels" : d.charAt(0) + d.slice(1).toLowerCase()}
             </button>
           ))}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-slate-400 mr-1">Domain:</span>
+          {DOMAINS.map((d) => (
+            <button
+              key={d}
+              onClick={() => setDomainFilter(d)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                domainFilter === d
+                  ? "bg-[#0F203A] text-[#7AD62A] border-[#7AD62A]/30"
+                  : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
+              }`}
+            >
+              {d === "ALL" ? "All domains" : d}
+            </button>
+          ))}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="ml-2 px-2 py-1.5 text-xs font-medium rounded-full border bg-white/5 text-slate-400 border-white/10 focus:outline-none focus:border-[#7AD62A]/30"
+            aria-label="Sort labs"
+          >
+            <option value="featured">Sort: Featured</option>
+            <option value="domain">Sort: Domain</option>
+            <option value="difficulty">Sort: Difficulty</option>
+            <option value="title">Sort: Title</option>
+          </select>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
