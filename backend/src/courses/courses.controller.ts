@@ -19,9 +19,7 @@ import { BatchIdsDto } from '../common/batch.dto';
 import type { RequestWithUser } from '../common/request-with-user';
 
 @ApiTags('courses')
-@ApiBearerAuth('JWT-auth')
 @Controller('v1/courses')
-@UseGuards(AuthGuard('jwt'))
 export class CoursesController {
   constructor(private coursesService: CoursesService) {}
 
@@ -30,21 +28,29 @@ export class CoursesController {
     return this.coursesService.findAll();
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('my-enrollments')
   async getMyEnrollments(@Request() req: RequestWithUser) {
     return this.coursesService.getEnrollmentsForUser(req.user.id);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('recommendations')
   async getRecommendations(@Request() req: RequestWithUser) {
     return this.coursesService.getRecommendations(req.user.id);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Post(':id/enroll')
   async enroll(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.coursesService.enroll(req.user.id, id);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id/enrollment')
   async getEnrollment(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.coursesService.getEnrollment(req.user.id, id);
@@ -60,18 +66,20 @@ export class CoursesController {
     return this.coursesService.findOne(id);
   }
 
-  @Post()
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('COURSE_CREATED')
+  @Post()
   async create(@Body() body: { title: string; description: string }) {
     return this.coursesService.create(body);
   }
 
-  @Patch(':id')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('COURSE_UPDATED')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() body: { title?: string; description?: string },
@@ -79,18 +87,20 @@ export class CoursesController {
     return this.coursesService.update(id, body);
   }
 
-  @Delete(':id')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('COURSE_DELETED')
+  @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
   }
 
-  @Post('batch/delete')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('COURSES_DELETED_BATCH')
+  @Post('batch/delete')
   async batchRemove(@Body() body: BatchIdsDto) {
     return this.coursesService.batchRemove(body.ids);
   }
@@ -102,10 +112,11 @@ export class CoursesController {
     return this.coursesService.findSections(courseId);
   }
 
-  @Post(':courseId/sections')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('SECTION_CREATED')
+  @Post(':courseId/sections')
   async createSection(
     @Param('courseId') courseId: string,
     @Body() body: { title: string; order?: number },
@@ -114,7 +125,8 @@ export class CoursesController {
   }
 
   @Patch(':courseId/sections/:sectionId')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('SECTION_UPDATED')
   async updateSection(
@@ -126,7 +138,8 @@ export class CoursesController {
   }
 
   @Delete(':courseId/sections/:sectionId')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('SECTION_DELETED')
   async removeSection(
@@ -144,7 +157,8 @@ export class CoursesController {
   }
 
   @Post(':courseId/sections/:sectionId/lessons')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('LESSON_CREATED')
   async createLesson(
@@ -162,7 +176,8 @@ export class CoursesController {
   }
 
   @Patch(':courseId/sections/:sectionId/lessons/:lessonId')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('LESSON_UPDATED')
   async updateLesson(
@@ -181,7 +196,8 @@ export class CoursesController {
   }
 
   @Delete(':courseId/sections/:sectionId/lessons/:lessonId')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('LESSON_DELETED')
   async removeLesson(@Param('lessonId') lessonId: string) {
@@ -196,7 +212,8 @@ export class CoursesController {
   }
 
   @Post(':courseId/sections/:sectionId/lessons/:lessonId/quiz')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('QUIZ_CREATED')
   async createQuiz(
@@ -213,7 +230,8 @@ export class CoursesController {
   }
 
   @Patch(':courseId/sections/:sectionId/lessons/:lessonId/quiz/:quizId')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('QUIZ_UPDATED')
   async updateQuiz(
@@ -231,13 +249,16 @@ export class CoursesController {
   }
 
   @Delete(':courseId/sections/:sectionId/lessons/:lessonId/quiz/:quizId')
-  @UseGuards(RolesGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('QUIZ_DELETED')
   async removeQuiz(@Param('quizId') quizId: string) {
     return this.coursesService.removeQuiz(quizId);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get(':courseId/certificate')
   async getCertificate(
     @Request() req: RequestWithUser,
@@ -248,6 +269,8 @@ export class CoursesController {
 
   // === REVIEWS ===
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('my-reviews')
   async getMyReviews(@Request() req: RequestWithUser) {
     return this.coursesService.getMyReviews(req.user.id);
@@ -258,6 +281,8 @@ export class CoursesController {
     return this.coursesService.getCourseReviews(courseId);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Post(':courseId/reviews')
   async createReview(
     @Request() req: RequestWithUser,
@@ -269,11 +294,15 @@ export class CoursesController {
 
   // === FAVORITES ===
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Get('my-favorites')
   async getMyFavorites(@Request() req: RequestWithUser) {
     return this.coursesService.getMyFavorites(req.user.id);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
   @Post(':courseId/favorite')
   async toggleFavorite(
     @Request() req: RequestWithUser,

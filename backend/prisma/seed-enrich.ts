@@ -34,6 +34,13 @@ async function main() {
   const { seedEnrichExpertITLabs } = await import('./seed-enrich-expert-it-labs');
   await seedEnrichExpertITLabs(prisma, process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!');
 
+  // Phase 3e: Scale to 300 labs (+82)
+  console.log('\n--- Phase 3e: Scaling to 300 labs (+82) ---');
+  try {
+    const { seedScale82Labs } = await import('./seed-scale-82-labs');
+    await seedScale82Labs(prisma, process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!');
+  } catch (e) { console.log('  Note: scale-82 not yet run', (e as Error).message.slice(0,120)); }
+
   // Phase 4: New courses
   console.log('\n--- Phase 4: Seeding new courses ---');
   const { seedEnrichCoursesNew } = await import('./seed-enrich-courses-new');
@@ -43,6 +50,13 @@ async function main() {
   console.log('\n--- Phase 4b: Backfilling 52 missing lessons ---');
   const { seedEnrichCoursesNewPart2 } = await import('./seed-enrich-courses-new-part2');
   await seedEnrichCoursesNewPart2(prisma);
+
+  // Phase 4c: 3 new Harvard courses (AI, Blockchain, Quantum)
+  console.log('\n--- Phase 4c: Seeding 3 new courses (AI/Blockchain/Quantum) ---');
+  try {
+    const { seedNewThreeCourses } = await import('./seed-new-three-courses');
+    await seedNewThreeCourses(prisma);
+  } catch (e) { console.log('  Note: seed-new-three-courses not yet run', (e as Error).message.slice(0,120)); }
 
   // Phase 5: Enrich existing courses
   console.log('\n--- Phase 5: Enriching existing courses ---');
@@ -58,6 +72,13 @@ async function main() {
   console.log('\n--- Phase 7: Wiring labs to courses ---');
   const { wireLabCourseLinks } = await import('./seed-enrich-wiring');
   await wireLabCourseLinks(prisma);
+
+  // Phase 8: Skill graph wiring
+  console.log('\n--- Phase 8: Skill graph wiring ---');
+  try {
+    const { seedSkillsWiring } = await import('./seed-skills-wiring');
+    await seedSkillsWiring(prisma);
+  } catch (e) { console.log('  Note: skills wiring not yet run', (e as Error).message.slice(0,120)); }
 
   console.log('\n=== Enrichment seed complete ===');
 

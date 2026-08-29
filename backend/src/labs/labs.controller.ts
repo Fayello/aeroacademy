@@ -33,9 +33,7 @@ export class LabsController {
     return { status: 'OK', timestamp: new Date() };
   }
 
-  @ApiBearerAuth('JWT-auth')
   @Get('stats')
-  @UseGuards(AuthGuard('jwt'))
   async getStats() {
     return this.labsService.getGlobalStats();
   }
@@ -47,6 +45,14 @@ export class LabsController {
     return this.labsService.findAll({
       userId: req.user.id,
       userRole: req.user.role,
+      take: take ? parseInt(take, 10) : undefined,
+      skip: skip ? parseInt(skip, 10) : undefined,
+    });
+  }
+
+  @Get('public')
+  async findAllPublic(@Query('take') take?: string, @Query('skip') skip?: string) {
+    return this.labsService.findAll({
       take: take ? parseInt(take, 10) : undefined,
       skip: skip ? parseInt(skip, 10) : undefined,
     });
