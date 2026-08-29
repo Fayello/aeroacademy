@@ -43,10 +43,11 @@ async function main() {
 
     await prisma.lesson.update({ where: { id: lesson.id }, data: { content } });
 
-    // Extend quiz from 4 to 6 questions if currently 4
+    // Extend quiz to 6 questions if fewer
     const quiz = await prisma.quiz.findFirst({ where: { lessonId: lesson.id }, include: { questions: true } });
-    if (quiz && quiz.questions.length === 4) {
-      const extra = [
+    if (quiz && quiz.questions.length < 6) {
+      const needed = 6 - quiz.questions.length;
+      const extraAll = [
         { text: `Which metric best indicates successful implementation of "${lesson.title}"?`, answers: [
           { text: "Measurable improvement in availability, performance, or security posture against baseline", isCorrect: true },
           { text: "Number of configuration files created", isCorrect: false },
@@ -59,7 +60,20 @@ async function main() {
           { text: "Avoiding any monitoring to reduce overhead", isCorrect: false },
           { text: "Using default configurations without adaptation", isCorrect: false },
         ]},
+        { text: `What best practices should be followed when implementing "${lesson.title}"?`, answers: [
+          { text: "Automation, immutable infrastructure, defense in depth, and comprehensive observability", isCorrect: true },
+          { text: "Manual configuration for flexibility", isCorrect: false },
+          { text: "Single-layer security controls", isCorrect: false },
+          { text: "Minimal logging to save storage", isCorrect: false },
+        ]},
+        { text: `Which pitfall should be avoided when deploying "${lesson.title}"?`, answers: [
+          { text: "Over-provisioning without monitoring and hardcoding credentials in code", isCorrect: true },
+          { text: "Using version control for infrastructure code", isCorrect: false },
+          { text: "Implementing automated testing in CI/CD", isCorrect: false },
+          { text: "Establishing baseline metrics before optimization", isCorrect: false },
+        ]},
       ];
+      const extra = extraAll.slice(0, needed);
       for (const q of extra) {
         await prisma.question.create({ data: { quizId: quiz.id, text: q.text, answers: { create: q.answers } } });
       }
