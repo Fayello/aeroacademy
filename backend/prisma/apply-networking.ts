@@ -28,6 +28,7 @@ async function main() {
   for (const s of existingSections) {
     const lessons = await prisma.lesson.findMany({ where: { sectionId: s.id } });
     for (const l of lessons) {
+      await prisma.progress.deleteMany({ where: { lessonId: l.id } });
       await prisma.answer.deleteMany({ where: { question: { quiz: { lessonId: l.id } } } });
       await prisma.question.deleteMany({ where: { quiz: { lessonId: l.id } } });
       await prisma.quiz.deleteMany({ where: { lessonId: l.id } });
