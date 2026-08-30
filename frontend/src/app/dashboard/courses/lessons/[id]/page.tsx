@@ -128,27 +128,7 @@ function MermaidDiagram({ chart }: { chart: string }) {
 }
 
 function VideoPlaceholder() {
-  return (
-    <div className="aspect-video bg-[#0f172a] rounded-xl border border-white/10 flex flex-col items-center justify-center p-6 text-center shadow-lg">
-      <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
-        <Play size={28} className="text-slate-500 ml-0.5" />
-      </div>
-      <p className="text-white font-medium">Video coming soon — Harvard lecture in production</p>
-      <p className="text-xs text-slate-400 mt-2 flex items-center gap-2">
-        <span className="inline-flex items-center gap-1">
-          <Play size={12} /> Duration: ~12 min
-        </span>
-        <span className="w-1 h-1 bg-slate-600 rounded-full" />
-        <span>In production</span>
-      </p>
-      <button
-        onClick={() => toast.success("You'll be notified when the video is ready!")}
-        className="mt-5 inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#1d8a56] text-[#0F203A] font-medium text-sm transition-colors"
-      >
-        Notify me
-      </button>
-    </div>
-  );
+  return null;
 }
 
 interface SectionWithLessons {
