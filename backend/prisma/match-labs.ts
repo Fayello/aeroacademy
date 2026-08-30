@@ -138,7 +138,12 @@ async function main() {
   console.log('Cleared existing lab assignments');
   
   const labs = await prisma.lab.findMany({ select: { id: true, title: true } });
-  const usedLabIds = new Set<string>();
+  // Also gather all labIds already assigned to ANY lesson
+  const allUsedLabIds = await prisma.lesson.findMany({
+    where: { labId: { not: null } },
+    select: { labId: true },
+  });
+  const usedLabIds = new Set<string>(allUsedLabIds.map(l => l.labId!));
   
   for (const courseId of courseIds) {
     const lessons = await prisma.lesson.findMany({
