@@ -128,6 +128,15 @@ function scorematch(lessonTitle: string, labTitle: string, keywords: string[]): 
 }
 
 async function main() {
+  // First clear all existing lab assignments for these courses
+  for (const courseId of courseIds) {
+    await prisma.lesson.updateMany({
+      where: { section: { courseId }, labId: { not: null } },
+      data: { labId: null },
+    });
+  }
+  console.log('Cleared existing lab assignments');
+  
   const labs = await prisma.lab.findMany({ select: { id: true, title: true } });
   const usedLabIds = new Set<string>();
   
