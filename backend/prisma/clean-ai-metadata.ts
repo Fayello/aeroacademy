@@ -31,8 +31,9 @@ function cleanContent(content: string): string {
     cleaned = cleaned.replace(pattern, '');
   }
 
-  // Remove "Voice: ..." lines
+  // Remove "Voice: ..." lines (both plain and bold)
   cleaned = cleaned.replace(/^Voice:.*$/gm, '');
+  cleaned = cleaned.replace(/^\*\*Voice:?\*\*.*$/gm, '');
 
   // Clean up multiple blank lines
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
@@ -54,6 +55,7 @@ async function main() {
         { content: { contains: 'Status: DRAFT' } },
         { content: { contains: 'Draft: LLM' } },
         { content: { contains: 'Voice:' } },
+        { content: { contains: '**Voice:**' } },
       ]
     }
   });
