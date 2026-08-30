@@ -129,6 +129,7 @@ function scorematch(lessonTitle: string, labTitle: string, keywords: string[]): 
 
 async function main() {
   const labs = await prisma.lab.findMany({ select: { id: true, title: true } });
+  const usedLabIds = new Set<string>();
   
   for (const courseId of courseIds) {
     const lessons = await prisma.lesson.findMany({
@@ -144,6 +145,7 @@ async function main() {
       let bestScore = 0;
       
       for (const lab of labs) {
+        if (usedLabIds.has(lab.id)) continue; // skip already used labs
         const score = scorematch(lesson.title, lab.title, keywords);
         if (score > bestScore) {
           bestScore = score;
@@ -157,13 +159,14 @@ async function main() {
           where: { id: lesson.id },
           data: { labId: bestLab.id },
         });
+        usedLabIds.add(bestLab.id);
       } else {
         console.log(`  "${lesson.title}" → NO MATCH (best: ${bestLab?.title} score: ${bestScore})`);
       }
     }
   }
   
-  console.log('\nDone');
+  console.log(`\nDone — ${usedLabIds.size} labs attached`);
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());
