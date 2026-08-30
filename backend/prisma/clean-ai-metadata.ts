@@ -31,9 +31,10 @@ function cleanContent(content: string): string {
     cleaned = cleaned.replace(pattern, '');
   }
 
-  // Remove "Voice: ..." lines (both plain and bold)
+  // Remove "Voice: ..." lines (plain, bold, and list item formats)
   cleaned = cleaned.replace(/^Voice:.*$/gm, '');
   cleaned = cleaned.replace(/^\*\*Voice:?\*\*.*$/gm, '');
+  cleaned = cleaned.replace(/^- \*\*Voice:?\*\*.*$/gm, '');
 
   // Clean up multiple blank lines
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
