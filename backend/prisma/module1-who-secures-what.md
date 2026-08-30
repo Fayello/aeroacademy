@@ -1,10 +1,5 @@
 # Module 1 — Who Secures What?
 
-**Course:** Cloud Security Engineering | **Path:** Cloud Security (1 of 8) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 15 min theory + 10 min interactive scenario + 5 min assessment | **Prerequisite:** None
-
----
-
 ## Learning Objective
 
 > **Given a cloud workload description, can the learner correctly determine what the provider secures, what they secure, and where responsibility changes as abstraction increases?**
@@ -183,17 +178,4 @@ Rationale: Module 2 assumes you can place workloads. If you cannot, least-privil
 - IBM Cost of a Data Breach, cloud breach analysis (82% hybrid/multicloud, not misconfig causation). https://www.ibm.com/think/insights/compelling-cloud-native-data-protection
 - CSA CCM v4. https://cloudsecurityalliance.org/research/cloud-controls-matrix/
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-30)
-- **Fact extraction:** 7 claims (NIST 800-145 vs 800-210, S3 default, Lambda serverless, IBM 82% wording, EC2/RDS/Lambda/S3 boundaries)
-- **Verification:** Against NIST, AWS/Azure/GCP docs, CISA, OCC (Capital One) — 4 corrections applied (see §1, §2, §5)
-- **Technical review:** Pending instructor
-- **Pedagogical review:** Single objective, one scenario, limited scope — as audited
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PEDAGOGICAL_REVIEW → INSTRUCTOR_APPROVAL → PUBLISHED
-
-> AI-generated content is never directly eligible for publication.
-
-*Module 1 as published will be ~15 min theory + 10 min scenario. No lab in this module — hands-on value is in Module 2 (IAM lab) where you will break and harden a policy with `simulate-principal-policy` and CSPM, building on the placement skill proven here.*

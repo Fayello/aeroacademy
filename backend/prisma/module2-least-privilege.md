@@ -1,10 +1,5 @@
 # Module 2 — Least Privilege
 
-**Course:** Cloud Security Engineering | **Path:** Cloud Security (2 of 8) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 20 min theory + 15 min IAM lab + 10 min assessment | **Prerequisite:** Module 1 — Who Secures What? (≥80%)
-
----
-
 ## Learning Objective
 
 > **Given a cloud permission requirement, can the learner write a policy that grants exactly what is needed — no more — and predict whether a request will be allowed or denied?**
@@ -252,15 +247,4 @@ If you passed Module 1, you can place workloads. If you passed Module 2, you can
 - AWS IAM Condition Keys — `aws:SecureTransport`, `aws:RequestedRegion`, `aws:SourceIp`, `aws:PrincipalOrgID`. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
 - IBM Cost of a Data Breach 2023 — misconfiguration analysis. https://www.ibm.com/reports/data-breach
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Fact extraction:** 5 claims (IAM evaluation order, CIS 1.16, condition keys, STS 1h, IBM misconfig)
-- **Verification:** Against NIST 800-210, AWS IAM docs, CIS — 0 corrections needed on re-check
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PEDAGOGICAL_REVIEW → INSTRUCTOR_APPROVAL → PUBLISHED
-
-> AI-generated content is never directly eligible for publication.
-
-*Module 2 as published: 20 min theory + 15 min lab (isolated, no billing, graded). No WAF/GuardDuty/SSRF — those are Modules 3–6. One coherent problem: least privilege.*
