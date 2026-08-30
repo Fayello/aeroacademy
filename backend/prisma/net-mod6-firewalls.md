@@ -1,15 +1,11 @@
 # Module 6 — Firewalls
 
-**Course:** Networking | **Path:** Networking (6 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 5 — Switching and VLANs
 
----
 
 ## What You'll Actually Do
 
 You need to filter traffic — allow HTTP, block SSH from the internet, rate-limit connections, and prevent SYN floods. You'll configure iptables/nftables, set up stateful filtering, and create firewall rules that actually protect.
 
----
 
 ## iptables — The Classic
 
@@ -42,7 +38,6 @@ iptables -A INPUT -j DROP
 
 **Order matters.** Rules are evaluated top to bottom. First match wins.
 
----
 
 ## Stateful Filtering
 
@@ -56,7 +51,6 @@ iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
 
 This is the most important iptables concept. Without stateful filtering, you'd have to allow every possible response port.
 
----
 
 ## Rate Limiting
 
@@ -72,7 +66,6 @@ iptables -A INPUT -p tcp --syn -m limit --limit 1/s --limit-burst 3 -j ACCEPT
 iptables -A INPUT -p tcp --syn -j DROP
 ```
 
----
 
 ## nftables — The Successor
 
@@ -92,7 +85,6 @@ nft add rule inet filter input tcp dport { 22, 80, 443 } accept
 
 **nftables is simpler** than iptables. Same concepts, cleaner syntax. Ubuntu22.04+ uses nftables by default.
 
----
 
 ## Logging
 
@@ -104,7 +96,6 @@ iptables -A INPUT -j LOG --log-prefix "IPT-DROP: " --log-level 4
 iptables -A INPUT -m limit --limit 5/minute -j LOG --log-prefix "IPT-DROP: "
 ```
 
----
 
 ## Real Task: Lock Down a Server
 
@@ -138,7 +129,6 @@ iptables -A INPUT -j DROP
 iptables-save > /etc/iptables/rules.v4
 ```
 
----
 
 ## Assessment
 
@@ -159,30 +149,21 @@ iptables-save > /etc/iptables/rules.v4
 - Logging working: 15%
 - nftables migrated: 10%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO6 — Firewall Configuration`
 - **Mastery:** `UserSkill: networking-firewalls`
 
----
 
 ## Unlock
 
 Module7 — VPN Technologies. You can filter traffic. Now you learn how to tunnel it.
 
----
 
 ## Sources
 
 - `man iptables`, `man nft`, `man conntrack`
 - netfilter documentation
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network security engineer who's written thousands of firewall rules
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

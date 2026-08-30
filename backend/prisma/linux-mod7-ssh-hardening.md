@@ -1,15 +1,9 @@
 # Module 7 — SSH and Remote Administration
 
-**Course:** Linux Fundamentals | **Path:** Linux (7 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 6 — Package Management
-
----
 
 ## What You'll Actually Do
 
 Your server's SSH is running with default settings. Password authentication is on, root login is allowed, and there's no rate limiting. You'll lock it down: key-only auth, disable root login, change the port, and set up fail2ban. This is the difference between "we have a server" and "we have a server nobody can break into."
-
----
 
 ## SSH Keys — Ditch the Password
 
@@ -34,8 +28,6 @@ ssh -i ~/.ssh/id_ed25519 alice@server
 ```
 
 **Why ed25519 over RSA:** Shorter keys, faster, more secure. RSA2048 is still fine but ed25519 is better.
-
----
 
 ## Harden sshd_config
 
@@ -73,8 +65,6 @@ systemctl restart sshd
 ```
 
 **IMPORTANT:** Before you restart sshd, make sure you can SSH in with keys. Open a new terminal and test. If you lock yourself out, you'll need console access from your hosting provider.
-
----
 
 ## fail2ban — Ban IPs That Try Too Hard
 
@@ -115,8 +105,6 @@ fail2ban-client status sshd
 fail2ban-client set sshd unbanip 198.51.100.50
 ```
 
----
-
 ## SSH Tunneling — Access Services Securely
 
 Your app runs on port8080 on the server but you don't want to expose it. Tunnel it:
@@ -140,8 +128,6 @@ ssh -J alice@bastion:22 bob@internal-server
 ```
 
 Traffic goes through bastion to reach the internal server. Common in cloud setups where internal servers don't have public IPs.
-
----
 
 ## Real Task: Lock Down a Server
 
@@ -171,8 +157,6 @@ sudo systemctl enable --now fail2ban
 ssh -p 2222 -i ~/.ssh/id_ed25519 deploy@server
 ```
 
----
-
 ## Failure Scenario: Locked Out
 
 You edit `sshd_config`, set `PermitRootLogin no`, then restart sshd. Your only way in was root with a password. You're locked out.
@@ -180,8 +164,6 @@ You edit `sshd_config`, set `PermitRootLogin no`, then restart sshd. Your only w
 **Fix:** Use your hosting provider's console (AWS EC2 Instance Connect, DigitalOcean Recovery Mode, etc.) to log in and fix the config.
 
 **Prevention:** Always test SSH in a new terminal before restarting sshd. Keep a backup session open.
-
----
 
 ## Assessment
 
@@ -203,20 +185,14 @@ You edit `sshd_config`, set `PermitRootLogin no`, then restart sshd. Your only w
 - fail2ban configured and running: 25%
 - Tunnel tested: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO7 — SSH Hardening`
 - **Mastery:** `UserSkill: linux-ssh-security`
 
----
-
 ## Unlock
 
 Module8 — Shell Scripting. You can secure the front door. Now you learn how to automate the boring stuff.
-
----
 
 ## Sources
 
@@ -224,10 +200,3 @@ Module8 — Shell Scripting. You can secure the front door. Now you learn how to
 - `man fail2ban-client`
 - OpenSSH manual
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Engineer who locked himself out of production once
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

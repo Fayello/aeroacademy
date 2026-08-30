@@ -1,15 +1,11 @@
 # Module 3 — DNS
 
-**Course:** Networking | **Path:** Networking (3 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 2 — Subnetting
 
----
 
 ## What You'll Actually Do
 
 "Can't reach the website." Is it DNS? You'll trace a DNS query from your machine to the root servers, set up authoritative DNS, configure split-horizon DNS, and debug DNS failures.
 
----
 
 ## How DNS Works
 
@@ -24,7 +20,6 @@ Your machine → Recursive resolver → Root server → TLD server → Authorita
 5. Authoritative says: "It's `93.184.216.34`"
 6. Resolver caches it and returns the answer
 
----
 
 ## Record Types
 
@@ -39,7 +34,6 @@ Your machine → Recursive resolver → Root server → TLD server → Authorita
 | PTR | Reverse lookup | `34.216.184.93 → example.com` |
 | SOA | Zone authority | Start of authority record |
 
----
 
 ## DNS Queries
 
@@ -66,7 +60,6 @@ dig -x 93.184.216.34
 dig @8.8.8.8 example.com
 ```
 
----
 
 ## Setting Up Authoritative DNS
 
@@ -100,7 +93,6 @@ apt install bind9
 systemctl restart named
 ```
 
----
 
 ## Split-Horizon DNS
 
@@ -118,7 +110,6 @@ app.example.com.  A  93.184.216.34
 
 Useful for exposing web services externally while keeping internal IPs private.
 
----
 
 ## DNS Caching and TTL
 
@@ -133,7 +124,6 @@ resolvectl flush-caches
 # Set low (300) for fast changes, high (86400) for stable records
 ```
 
----
 
 ## DNS Failures
 
@@ -152,7 +142,6 @@ dig @8.8.8.8 example.com
 ss -ulnp | grep :53
 ```
 
----
 
 ## Assessment
 
@@ -171,30 +160,21 @@ ss -ulnp | grep :53
 - Split-horizon working: 25%
 - Debug completed: 20%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO3 — DNS Resolution & Management`
 - **Mastery:** `UserSkill: networking-dns`
 
----
 
 ## Unlock
 
 Module4 — Routing. You can resolve names. Now you learn how packets find their way.
 
----
 
 ## Sources
 
 - RFC1034, RFC1035 (DNS)
 - `man dig`, `man host`, `man named`
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's debugged DNS at2 AM
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

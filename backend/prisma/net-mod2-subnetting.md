@@ -1,15 +1,11 @@
 # Module 2 — Subnetting and IP Addressing
 
-**Course:** Networking | **Path:** Networking (2 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 1 — How Packets Move
 
----
 
 ## What You'll Actually Do
 
 You're designing a network for3 departments: Engineering (50 hosts), Finance (20 hosts), IT (10 hosts). You need to subnet a `10.0.0.0/24` network so each department gets its own subnet, with room to grow.
 
----
 
 ## IP Addressing — The Basics
 
@@ -31,7 +27,6 @@ ip addr show
 192.168.0.0/16    (192.168.0.0 — 192.168.255.255)
 ```
 
----
 
 ## CIDR — Classless Inter-Domain Routing
 
@@ -51,7 +46,6 @@ Forget classful (A, B, C). Use CIDR.
 
 **Formula:** Usable hosts = 2^(32-CIDR) - 2
 
----
 
 ## Subnetting Practice
 
@@ -85,7 +79,6 @@ ipcalc 10.0.0.0/26
 # Hosts/Net: 62
 ```
 
----
 
 ## VLSM — Variable Length Subnet Masking
 
@@ -97,7 +90,6 @@ All subnets /24 → 3 × 254 = 762 addresses, only90 needed.
 **With VLSM (efficient):**
 62 + 30 + 14 = 106 addresses, much less waste.
 
----
 
 ## Supernetting — Route Aggregation
 
@@ -116,7 +108,6 @@ Combine multiple small networks into one larger one for routing:
 
 This reduces routing table size. ISPs and large networks do this constantly.
 
----
 
 ## IPv6 — The Future (That's Already Here)
 
@@ -139,7 +130,6 @@ ip -6 addr show
 
 **Dual stack:** Most networks run IPv4 and IPv6 simultaneously.
 
----
 
 ## Real Task: Design a Network
 
@@ -162,7 +152,6 @@ ip addr show
 ipcalc 10.0.0.0/26
 ```
 
----
 
 ## Assessment
 
@@ -182,30 +171,21 @@ ipcalc 10.0.0.0/26
 - Subnets configured: 20%
 - Connectivity tested: 15%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO2 — Subnetting & IP Addressing`
 - **Mastery:** `UserSkill: networking-subnetting`
 
----
 
 ## Unlock
 
 Module3 — DNS. You can address networks. Now you learn how names resolve.
 
----
 
 ## Sources
 
 - RFC1918, RFC4632 (CIDR)
 - `man ipcalc`
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's subnetted more networks than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

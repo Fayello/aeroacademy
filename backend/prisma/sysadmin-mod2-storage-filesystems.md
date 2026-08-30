@@ -1,15 +1,9 @@
 # Module 2 — Storage and Filesystems
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (2 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 1 — Boot Process
-
----
 
 ## What You'll Actually Do
 
 Disk is full. You need to expand the partition, resize the filesystem, add a new disk, set up LVM, and configure NFS mounts. This is the part where "df -h" stops being optional.
-
----
 
 ## Disk Identification
 
@@ -25,8 +19,6 @@ fdisk -l /dev/sda
 ```
 
 `sda` = first SCSI/SATA disk. `sdb` = second. `nvme0n1` = first NVMe.
-
----
 
 ## Partitions
 
@@ -46,8 +38,6 @@ fdisk /dev/sdb
 parted /dev/sdb mklabel gpt
 parted /dev/sdb mkpart primary ext4 0% 100%
 ```
-
----
 
 ## Filesystems
 
@@ -76,8 +66,6 @@ mount -a
 **ext4 vs xfs:**
 - ext4: mature, flexible, supports shrinking
 - xfs: better for large files, high performance, can't shrink
-
----
 
 ## LVM — Logical Volume Manager
 
@@ -118,8 +106,6 @@ xfs_growfs /data                  # xfs
 lvcreate -L 10G -s -n data_snap /dev/data_vg/data_lv
 ```
 
----
-
 ## RAID — Redundancy
 
 ```bash
@@ -144,8 +130,6 @@ update-initramfs -u
 | RAID6 | 4 | 2 | Large volumes, high tolerance |
 | RAID10 | 4 | N/2 | Performance + redundancy |
 
----
-
 ## NFS — Network Filesystem
 
 **Server:**
@@ -166,8 +150,6 @@ mount -t nfs 10.0.0.1:/srv/nfs/share /mnt/nfs
 echo "10.0.0.1:/srv/nfs/share /mnt/nfs nfs defaults,_netdev 0 0" >> /etc/fstab
 ```
 
----
-
 ## Disk Monitoring
 
 ```bash
@@ -185,8 +167,6 @@ if [ $USAGE -gt 80 ]; then
     echo "Disk usage: ${USAGE}%" | mail -s "Disk Alert" admin@company.com
 fi
 ```
-
----
 
 ## Real Task: Expand Disk Without Downtime
 
@@ -215,8 +195,6 @@ df -h /
 
 No downtime. No unmount. Just grow.
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -236,29 +214,16 @@ No downtime. No unmount. Just grow.
 - Monitoring configured: 10%
 - Partition growth tested: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO2 — Storage & Filesystem Management`
 - **Mastery:** `UserSkill: linux-storage-lvm`
 
----
-
 ## Unlock
 
 Module3 — User Administration at Scale. You can manage disks. Now you learn how to manage users across systems.
-
----
 
 ## Sources
 
 - `man fdisk`, `man parted`, `man lvm`, `man mdadm`, `man nfs`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's expanded disks at2 AM
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

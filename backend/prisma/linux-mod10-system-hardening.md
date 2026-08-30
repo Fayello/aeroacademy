@@ -1,15 +1,9 @@
 # Module 10 — System Hardening Basics
 
-**Course:** Linux Fundamentals | **Path:** Linux (10 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 9 — Log Management
-
----
 
 ## What You'll Actually Do
 
 Your server works. Now make it so nobody can break into it. Disable unnecessary services, lock down permissions, configure auditing, and apply a basic CIS benchmark. This is the difference between "it works" and "it works and nobody can get in."
-
----
 
 ## Remove Unnecessary Services
 
@@ -30,8 +24,6 @@ systemctl disable --now bluetooth     # bluetooth
 ss -tlnp
 ```
 If you see a port you don't recognize, find the process and decide if it should be there.
-
----
 
 ## Kernel Hardening — sysctl
 
@@ -64,8 +56,6 @@ EOF
 
 sysctl -p
 ```
-
----
 
 ## File Permission Hardening
 
@@ -101,8 +91,6 @@ cat /etc/cron.allow    # only these users can use cron
 cat /etc/cron.deny     # these users cannot
 ```
 
----
-
 ## Firewall — Default Deny
 
 ```bash
@@ -116,8 +104,6 @@ ufw enable
 
 If you need more ports, add them explicitly. Don't open everything "just in case."
 
----
-
 ## SSH Hardening (Summary from Module7)
 
 Already done. Key points:
@@ -126,8 +112,6 @@ Already done. Key points:
 - `AllowUsers alice bob`
 - fail2ban enabled
 - Non-standard port
-
----
 
 ## Auditd — Track What Happens
 
@@ -164,8 +148,6 @@ augenrules --load
 ```bash
 ausearch -k identity --start today
 ```
-
----
 
 ## CIS Benchmark — The Basics
 
@@ -206,8 +188,6 @@ PASS_MIN_DAYS   7
 PASS_WARN_AGE   14
 ```
 
----
-
 ## Real Task: Harden a New Server
 
 ```bash
@@ -246,8 +226,6 @@ apt install -y unattended-upgrades
 dpkg-reconfigure -plow unattended-upgrades
 ```
 
----
-
 ## Failure Scenario: Hardened Too Much
 
 You disable ICMP:
@@ -258,8 +236,6 @@ net.ipv4.icmp_echo_ignore_all = 1
 Now `ping` doesn't work. Monitoring tools can't reach the server. You can't debug network issues.
 
 **Lesson:** Hardening is about risk, not paranoia. Disable what you don't need, but keep what helps you operate.
-
----
 
 ## Assessment
 
@@ -282,14 +258,10 @@ Now `ping` doesn't work. Monitoring tools can't reach the server. You can't debu
 - Password policy set: 10%
 - Banner added: 5%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO10 — System Hardening Basics`
 - **Mastery:** `UserSkill: linux-hardening` — final competency for Linux Fundamentals
-
----
 
 ## Course Complete
 
@@ -307,8 +279,6 @@ You can now:
 
 **Next course:** Linux Systems Administration (deeper) or Linux Internals (under the hood).
 
----
-
 ## Sources
 
 - CIS Amazon Linux2 Benchmark
@@ -316,10 +286,3 @@ You can now:
 - `man sysctl`, `man auditd`, `man auditctl`
 - NIST SP 800-123 — Guide to General Server Security
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Engineer who's hardened more servers than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

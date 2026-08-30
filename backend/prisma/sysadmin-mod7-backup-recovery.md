@@ -1,15 +1,9 @@
 # Module 7 — Backup and Recovery
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (7 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 6 — Security Hardening
-
----
 
 ## What You'll Actually Do
 
 Something got deleted. A disk failed. You need to restore from backup. But first, you need to have backups. You'll set up automated backups with rotation, test restores, and configure offsite replication.
-
----
 
 ## Backup Types
 
@@ -18,8 +12,6 @@ Something got deleted. A disk failed. You need to restore from backup. But first
 | Full | Everything | Slow | High |
 | Incremental | Changed since last backup | Fast | Low |
 | Differential | Changed since last full | Medium | Medium |
-
----
 
 ## tar — The Basics
 
@@ -37,8 +29,6 @@ tar -xzf backup.tar.gz -C /
 tar -tzf backup.tar.gz
 ```
 
----
-
 ## rsync — Incremental Backups
 
 ```bash
@@ -53,8 +43,6 @@ rsync -avz --link-dest=/backup/latest /var/www/ /backup/$(date +%Y%m%d)/
 ```
 
 `--link-dest` hardlinks unchanged files from the previous backup. Saves space.
-
----
 
 ## Automated Backup Script
 
@@ -85,8 +73,6 @@ echo "$(date): Backup complete — full-${DATE}.tar.gz"
 0 2 * * * /opt/scripts/backup.sh >> /var/log/backup.log 2>&1
 ```
 
----
-
 ## Database Backups
 
 **PostgreSQL:**
@@ -105,8 +91,6 @@ mysqldump -u root -p mydb > /backup/mydb-$(date +%Y%m%d).sql
 mysql -u root -p mydb < /backup/mydb-20250115.sql
 ```
 
----
-
 ## Testing Restores
 
 **The most important part:** If you haven't tested a restore, you don't have a backup.
@@ -120,8 +104,6 @@ tar -xzf /backup/full-20250115.tar.gz -C /tmp/restore-test
 ls -la /tmp/restore-test/var/www/
 diff -r /var/www/ /tmp/restore-test/var/www/
 ```
-
----
 
 ## LVM Snapshots for Zero-Downtime Backups
 
@@ -140,8 +122,6 @@ tar -czf /backup/www-$(date +%Y%m%d).tar.gz /mnt/snapshot
 umount /mnt/snapshot
 lvremove -f /dev/data_vg/www_snap
 ```
-
----
 
 ## Assessment
 
@@ -162,30 +142,17 @@ lvremove -f /dev/data_vg/www_snap
 - Restore tested: 15%
 - LVM snapshot: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO7 — Backup & Recovery`
 - **Mastery:** `UserSkill: linux-backup-recovery`
 
----
-
 ## Unlock
 
 Module8 — Monitoring and Logging. You can recover from failures. Now you learn how to detect them before they happen.
-
----
 
 ## Sources
 
 - `man tar`, `man rsync`, `man pg_dump`
 - `man lvcreate`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's restored from backup at3 AM
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

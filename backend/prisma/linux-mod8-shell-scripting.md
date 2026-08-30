@@ -1,15 +1,9 @@
 # Module 8 — Shell Scripting
 
-**Course:** Linux Fundamentals | **Path:** Linux (8 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 7 — SSH and Remote Administration
-
----
 
 ## What You'll Actually Do
 
 You're doing the same5 commands every morning. Check disk, check services, check logs. You'll write a script that does it for you. Then you'll write a deploy script. Then a backup script. The shell isn't just for typing commands — it's for automating them.
-
----
 
 ## Your First Script
 
@@ -45,8 +39,6 @@ done
 
 `$?` — exit code of the last command. `0` = success, non-zero = failure.
 
----
-
 ## Conditionals
 
 ```bash
@@ -74,8 +66,6 @@ fi
 | `$a -ne $b` | Not equal |
 | `$a -gt $b` | Greater than |
 | `$a -lt $b` | Less than |
-
----
 
 ## Loops
 
@@ -105,8 +95,6 @@ done
 
 That's a simple health check. Runs every30 seconds. If nginx is down, restart it. In production, you'd use systemd for this, but this works for a quick check.
 
----
-
 ## Functions
 
 ```bash
@@ -129,8 +117,6 @@ check_service redis
 ```
 
 **`local`** — variable is scoped to the function. Without `local`, it leaks to the global scope.
-
----
 
 ## Arguments and Input
 
@@ -157,8 +143,6 @@ echo "Backup created: $BACKUP_FILE"
 
 `$0` — script name. `$1`, `$2` — arguments. `$#` — number of arguments. `$@` — all arguments.
 
----
-
 ## Error Handling
 
 ```bash
@@ -179,8 +163,6 @@ echo "Deployment complete"
 ```
 
 Without `set -e`, if `npm install` fails, the script continues and deploys a broken build. With `set -e`, it stops immediately.
-
----
 
 ## Real Task: Automated Backup Script
 
@@ -218,8 +200,6 @@ echo "[$(date)] Backup size: $SIZE"
 echo "0 2 * * * /opt/scripts/backup.sh >> /var/log/backup.log 2>&1" | crontab -
 ```
 
----
-
 ## Failure Scenario: The Script That Deleted Everything
 
 ```bash
@@ -246,8 +226,6 @@ rm -rf "$DIR"/*   # Quoted — won't expand to empty
 
 Always quote variables. Always use `set -euo pipefail`. Always test with `echo` before `rm`.
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -267,20 +245,14 @@ Always quote variables. Always use `set -euo pipefail`. Always test with `echo` 
 - Cron job configured: 10%
 - Error handling present: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO8 — Shell Scripting`
 - **Mastery:** `UserSkill: linux-shell-scripting`
 
----
-
 ## Unlock
 
 Module9 — Log Management and Troubleshooting. You can automate. Now you learn how to read what the system is telling you.
-
----
 
 ## Sources
 
@@ -288,10 +260,3 @@ Module9 — Log Management and Troubleshooting. You can automate. Now you learn 
 - `info bash` — more readable than man
 - GNU Bash Reference Manual
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Engineer who wrote a deploy script that deleted production once
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

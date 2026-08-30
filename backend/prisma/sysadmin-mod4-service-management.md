@@ -1,15 +1,9 @@
 # Module 4 — Service Management
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (4 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 3 — User Administration
-
----
 
 ## What You'll Actually Do
 
 Your stack is nginx + postgresql + redis + a Node.js app. Each has its own config, its own logs, its own restart behavior. You'll manage them all — individually and as a stack. When one dies, you'll know before users do.
-
----
 
 ## systemd Deep Dive — Beyond Start/Stop
 
@@ -49,8 +43,6 @@ Environment=NODE_ENV=production
 EnvironmentFile=/opt/myapp/.env
 ```
 
----
-
 ## Multi-Instance Services
 
 Run multiple copies of the same service:
@@ -74,8 +66,6 @@ systemctl start app@3000
 systemctl start app@3001
 systemctl start app@3002
 ```
-
----
 
 ## Monitoring Service Health
 
@@ -106,8 +96,6 @@ WatchdogSec=30
 # If it doesn't, systemd restarts it
 ```
 
----
-
 ## Managing a Full Stack
 
 **nginx + app + database:**
@@ -132,8 +120,6 @@ WantedBy=multi-user.target
 
 Now `systemctl start myapp-stack` starts nginx, and it requires postgresql and redis to be running first.
 
----
-
 ## Log Rotation for Services
 
 ```bash
@@ -153,8 +139,6 @@ cat > /etc/logrotate.d/myapp << 'EOF'
 }
 EOF
 ```
-
----
 
 ## Real Task: Deploy a Complete Stack
 
@@ -198,8 +182,6 @@ systemctl status myapp
 curl -I http://localhost
 ```
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -219,30 +201,17 @@ curl -I http://localhost
 - Log rotation: 10%
 - Full stack deployed: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO4 — Service Management`
 - **Mastery:** `UserSkill: linux-service-management`
 
----
-
 ## Unlock
 
 Module5 — Network Configuration. You can manage services. Now you learn how to configure the network they run on.
-
----
 
 ## Sources
 
 - `man systemd.service`, `man systemd.unit`
 - `man logrotate`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's managed multi-service stacks in production
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

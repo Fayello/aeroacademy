@@ -1,15 +1,9 @@
 # Module 3 — Processes and Systemd
 
-**Course:** Linux Fundamentals | **Path:** Linux (3 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 2 — Users, Groups, and Permissions
-
----
 
 ## What You'll Actually Do
 
 Something is eating your CPU. A service won't start. You need to figure out what's running, kill the thing that's misbehaving, and make sure nginx survives a reboot. That's this module.
-
----
 
 ## Every Running Thing Is a Process
 
@@ -56,8 +50,6 @@ kill -9 1337     # sends SIGKILL (forced kill — last resort)
 ```
 
 Always try `kill` first (SIGTERM). Let the process clean up. `kill -9` is for when the process is ignoring SIGTERM. Use it rarely.
-
----
 
 ## systemd — The Init System
 
@@ -113,8 +105,6 @@ systemctl is-enabled nginx
 # enabled
 ```
 
----
-
 ## Service Files — How systemd Knows What to Run
 
 systemd reads service files from `/lib/systemd/system/` and `/etc/systemd/system/`. The ones in `/etc/systemd/system/` override the ones in `/lib/systemd/system/`.
@@ -160,8 +150,6 @@ systemctl status myapp     # check it
 journalctl -u myapp -f    # follow logs in real-time
 ```
 
----
-
 ## Signals — How Processes Communicate
 
 Processes talk to each other through signals. You've used two already:
@@ -175,8 +163,6 @@ Processes talk to each other through signals. You've used two already:
 | `SIGCONT` | 18 | Resume | `kill -CONT` |
 
 nginx understands SIGHUP — it reloads config without dropping connections. That's why `systemctl reload nginx` works. Your custom app might not handle SIGHUP — test it.
-
----
 
 ## Real Task: Fix a Broken Service
 
@@ -211,8 +197,6 @@ systemctl status nginx
 
 That's real debugging. Not reading Stack Overflow — checking logs, finding the conflict, fixing it.
 
----
-
 ## Failure Scenario: Zombie Processes
 
 A process exits but its parent doesn't collect its exit status. It becomes a zombie — uses no resources, but shows up in `ps`.
@@ -230,8 +214,6 @@ kill -9 9998   # kill the parent, zombie gets reaped
 ```
 
 If the parent is PID 1 (init/systemd), the zombie will be cleaned up on the next service restart. Usually not a problem unless you have hundreds of them.
-
----
 
 ## Assessment
 
@@ -254,20 +236,14 @@ If the parent is PID 1 (init/systemd), the zombie will be cleaned up on the next
 - Survives kill -9 (Restart=always): 20%
 - Enabled on boot: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO3 — Process & Service Management`
 - **Mastery:** `UserSkill: linux-systemd` — +0.5 clean, +0.3 with hints
 
----
-
 ## Unlock
 
 Module4 — Networking from the Command Line. You can manage services. Now you learn how they talk to each other.
-
----
 
 ## Sources
 
@@ -275,10 +251,3 @@ Module4 — Networking from the Command Line. You can manage services. Now you l
 - `man kill`, `man signal`
 - `man ps`, `man top`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31) with practitioner review
-- **Voice:** Sysadmin debugging at3 AM
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

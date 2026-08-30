@@ -1,15 +1,11 @@
 # Module 8 — Network Troubleshooting
 
-**Course:** Networking | **Path:** Networking (8 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 7 — VPN Technologies
 
----
 
 ## What You'll Actually Do
 
 "The network is down." You need to systematically figure out where. You'll follow a troubleshooting methodology, use the right tools at each layer, and fix the problem — not just guess.
 
----
 
 ## The Methodology
 
@@ -23,7 +19,6 @@ Don't randomly run commands. Follow layers:
 5. Application — DNS resolving? Service responding? TLS valid?
 ```
 
----
 
 ## Layer1-2: Physical and Link
 
@@ -45,7 +40,6 @@ arp -a
 show mac address-table
 ```
 
----
 
 ## Layer3: Network
 
@@ -66,7 +60,6 @@ iptables -L -n -v | grep DROP
 ufw status
 ```
 
----
 
 ## Layer4: Transport
 
@@ -82,7 +75,6 @@ ss -tanp | grep ESTABLISHED
 # → Service not listening or firewall blocking
 ```
 
----
 
 ## Layer7: Application
 
@@ -99,7 +91,6 @@ curl -vk https://example.com
 openssl s_client -connect example.com:443
 ```
 
----
 
 ## Common Scenarios
 
@@ -124,7 +115,6 @@ cat /etc/resolv.conf       # What resolver am I using?
 systemd-resolved --statistics  # Cache stats
 ```
 
----
 
 ## Real Task: Debug a Production Issue
 
@@ -162,7 +152,6 @@ curl http://127.0.0.1:3000/health
 # The502 might be intermittent — check if app crashes under load
 ```
 
----
 
 ## Assessment
 
@@ -181,30 +170,21 @@ curl http://127.0.0.1:3000/health
 - Performance debugged: 20%
 - VPN debugged: 20%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO8 — Network Troubleshooting`
 - **Mastery:** `UserSkill: networking-troubleshooting`
 
----
 
 ## Unlock
 
 Module9 — Packet Analysis. You can troubleshoot systematically. Now you learn how to see what's actually on the wire.
 
----
 
 ## Sources
 
 - `man tcpdump`, `man ss`, `man ping`, `man traceroute`
 - `man dig`, `man curl`, `man openssl`
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's debugged more outages than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

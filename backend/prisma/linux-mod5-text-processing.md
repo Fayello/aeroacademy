@@ -1,15 +1,9 @@
 # Module 5 — Text Processing and Pipelines
 
-**Course:** Linux Fundamentals | **Path:** Linux (5 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 4 — Networking
-
----
 
 ## What You'll Actually Do
 
 You have a 2GB log file. You need to find every failed login from IP `198.51.100.50` in the last hour, count them, and pipe the result to an email. You're not opening this in a text editor. You're using the shell.
-
----
 
 ## Pipes — The Core Idea
 
@@ -24,8 +18,6 @@ cat /var/log/auth.log | grep "Failed password" | wc -l
 - `wc -l` counts the lines
 
 That's a pipeline. Three small tools doing one thing each, connected.
-
----
 
 ## grep — Find the Lines You Want
 
@@ -72,8 +64,6 @@ grep "Failed password" /var/log/auth.log | awk '{print $11}' | sort | uniq -c | 
 ```
 This extracts the IP addresses, counts unique occurrences, sorts by count, and shows the top10 attackers.
 
----
-
 ## sed — Stream Editor
 
 sed edits text as it flows through. Good for search-and-replace.
@@ -104,8 +94,6 @@ sed -i 's/DEBUG/INFO/' /etc/myapp/config.conf
 sed -i 's/listen 127.0.0.1:8080/listen 0.0.0.0:8080/' /etc/nginx/sites-available/myapp
 systemctl reload nginx
 ```
-
----
 
 ## awk — Column Processing
 
@@ -142,8 +130,6 @@ awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -5
 # 876  10.0.0.15
 ```
 
----
-
 ## sort, uniq, wc — The Supporting Cast
 
 **sort:**
@@ -168,8 +154,6 @@ wc -w file.txt    # words
 wc -c file.txt    # bytes
 ```
 
----
-
 ## cut and paste — Column Operations
 
 **Cut by delimiter:**
@@ -186,8 +170,6 @@ cut -d: -f1,3 /etc/passwd
 cut -c1-10 file.txt
 ```
 First10 characters of each line.
-
----
 
 ## xargs — Build Commands from Input
 
@@ -208,8 +190,6 @@ find /var/log -name "*.gz" -mtime +7 | xargs rm
 cat hosts.txt | xargs -P 4 -I {} ssh {} "uptime"
 ```
 Runs `uptime` on 4 hosts in parallel.
-
----
 
 ## Real Task: Log Analysis Pipeline
 
@@ -236,8 +216,6 @@ grep "Accepted publickey" /var/log/auth.log \
 
 Each pipeline is small. Each command does one thing. Chained together, they answer complex questions in seconds.
 
----
-
 ## Failure Scenario: The awk That Broke Production
 
 You write:
@@ -260,8 +238,6 @@ You think `$2` is the IP. But the nginx log format is:
 
 **Lesson:** Always check the actual format of the file before writing a pipeline. `head -1` or `awk 'NR==1'` to see one line first.
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -281,30 +257,17 @@ You think `$2` is the IP. But the nginx log format is:
 - Pipeline produces correct output: 30%
 - Clean execution: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO5 — Text Processing & Pipelines`
 - **Mastery:** `UserSkill: linux-text-processing` — +0.5 clean, +0.3 with hints
 
----
-
 ## Unlock
 
 Module6 — Package Management. You can process data. Now you learn how to install and manage software.
-
----
 
 ## Sources
 
 - `man grep`, `man sed`, `man awk`, `man sort`, `man uniq`, `man cut`, `man xargs`
 - `info awk` — GNU awk manual (more detailed than man page)
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31) with practitioner review
-- **Voice:** Engineer who's parsed too many logs at3 AM
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

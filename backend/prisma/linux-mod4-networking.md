@@ -1,15 +1,9 @@
 # Module 4 — Networking from the Command Line
 
-**Course:** Linux Fundamentals | **Path:** Linux (4 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 3 — Processes and Systemd
-
----
 
 ## What You'll Actually Do
 
 Your app is deployed but users can't reach it. You need to figure out if the port is open, if the firewall is blocking traffic, if DNS resolves, and if packets are getting through. All from the command line. No GUI. No "click here" buttons.
-
----
 
 ## Your Network Interfaces
 
@@ -44,8 +38,6 @@ ip route show
 ```
 
 The gateway is where traffic goes when the destination is not on your local network.
-
----
 
 ## DNS — How Names Become IPs
 
@@ -84,8 +76,6 @@ cat /etc/hosts
 
 Local overrides. If you add `10.0.0.5 myapp.local` to `/etc/hosts`, your server will resolve `myapp.local` to `10.0.0.5` without asking DNS.
 
----
-
 ## Connectivity Testing
 
 **Ping:**
@@ -113,8 +103,6 @@ ss -tlnp | grep :80
 ```bash
 ss -tlnp | grep :443
 ```
-
----
 
 ## Firewalls — iptables and ufw
 
@@ -160,8 +148,6 @@ iptables -L -n
 
 The order matters. Rules are evaluated top to bottom. First match wins.
 
----
-
 ## Network Troubleshooting — The Real Debugging Flow
 
 Users say "the app is down." You don't panic. You check in order:
@@ -197,8 +183,6 @@ tcpdump -i ens3 port 80 -n
 ```
 You see SYN packets coming in but no response? Service is not accepting connections. SYN comes in, SYN-ACK goes out, then RST? Service is crashing.
 
----
-
 ## Real Task: Network Debugging
 
 Your web app is on port8080. Users can't reach it from outside.
@@ -232,8 +216,6 @@ curl -I http://server_ip:8080
 
 That's the real flow. Check each layer until you find it.
 
----
-
 ## Failure Scenario: DNS Cache Poisoning
 
 Your `/etc/resolv.conf` points to a DNS server that's been compromised. It resolves `myapp.example.com` to an attacker's IP. Users connecting to your app are actually connecting to the attacker.
@@ -250,8 +232,6 @@ dig @8.8.8.8 myapp.example.com
 ```
 
 **Fix:** Update `/etc/resolv.conf` to use a trusted DNS server, or investigate why your DNS server is returning wrong answers.
-
----
 
 ## Assessment
 
@@ -272,20 +252,14 @@ dig @8.8.8.8 myapp.example.com
 - Debug completed: 30%
 - tcpdump used: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO4 — Network Fundamentals`
 - **Mastery:** `UserSkill: linux-networking` — +0.5 clean, +0.3 with hints
 
----
-
 ## Unlock
 
 Module5 — Text Processing and Pipelines. You can make services talk. Now you learn how to process the data they produce.
-
----
 
 ## Sources
 
@@ -294,10 +268,3 @@ Module5 — Text Processing and Pipelines. You can make services talk. Now you l
 - `man tcpdump`
 - `man netcat`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31) with practitioner review
-- **Voice:** Network engineer debugging packet flow
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

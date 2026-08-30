@@ -1,15 +1,9 @@
 # Module 9 — Virtualization
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (9 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 8 — Monitoring and Logging
-
----
 
 ## What You'll Actually Do
 
 You need to run multiple isolated environments on one physical server. You'll set up KVM virtual machines, manage them with libvirt, and understand when to use VMs vs containers.
-
----
 
 ## KVM — Kernel-based Virtual Machine
 
@@ -23,8 +17,6 @@ grep -cE '(vmx|svm)' /proc/cpuinfo
 lsmod | grep kvm
 # kvm_intel  or  kvm_amd
 ```
-
----
 
 ## Creating VMs with virt-install
 
@@ -40,8 +32,6 @@ virt-install \
   --cdrom /var/lib/libvirt/images/ubuntu-22.04-server.iso \
   --boot cdrom,hd
 ```
-
----
 
 ## Managing VMs
 
@@ -69,8 +59,6 @@ virsh snapshot-revert web-server --snapshotname "clean-install"
 virsh undefine web-server --remove-all-storage
 ```
 
----
-
 ## Networking
 
 **NAT (default):** VMs can reach the internet through the host. Host can reach VMs. VMs can't reach each other directly.
@@ -83,8 +71,6 @@ virsh net-define-bridge.xml
 virsh net-start production
 virsh net-autostart production
 ```
-
----
 
 ## Templates and Cloud-Init
 
@@ -109,8 +95,6 @@ virt-install \
   --cloud-init user-data=cloud-init.yaml
 ```
 
----
-
 ## VMs vs Containers
 
 | Feature | VM | Container |
@@ -122,8 +106,6 @@ virt-install \
 | Use case | Different OS, strong isolation | Microservices, CI/CD |
 
 **Rule of thumb:** Containers for applications, VMs for environments.
-
----
 
 ## Real Task: Deploy a VM Farm
 
@@ -150,8 +132,6 @@ done
 virsh list --all
 ```
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -171,30 +151,17 @@ virsh list --all
 - Template deployed: 15%
 - Comparison documented: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO9 — Virtualization`
 - **Mastery:** `UserSkill: linux-virtualization`
 
----
-
 ## Unlock
 
 Module10 — Automation with Ansible. You can virtualize. Now you learn how to automate across all of them.
-
----
 
 ## Sources
 
 - `man virsh`, `man virt-install`, `man virt-sysprep`
 - libvirt documentation
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Engineer who's managed VM farms in production
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

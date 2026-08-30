@@ -1,17 +1,11 @@
 # Module 1 — SSH into a Box and Don't Get Lost
 
-**Course:** Linux Fundamentals | **Path:** Linux (1 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** None
-
----
 
 ## What You'll Actually Do
 
 You get a server. IP address, username, password. You need to log in, find your way around, figure out what's installed, where things live, and how to get back out — without breaking anything.
 
 That's it. No theory about "the history of Unix." No table of keyboard shortcuts you'll never memorize. You'll SSH in, poke around, and learn enough to not be lost.
-
----
 
 ## The Shell Is Not a Mystery
 
@@ -34,8 +28,6 @@ You type `ls`. The shell finds `/bin/ls`, runs it, and prints the output. You ty
 
 Try it. SSH in, type `pwd`. You'll see `/home/youruser`. That's your home directory. Type `ls` — probably empty. Type `cd /` — now you're at the root of the filesystem. Type `ls` again — you'll see `bin`, `etc`, `home`, `var`, `tmp`, and others.
 
----
-
 ## The Filesystem Hierarchy Is Not Random
 
 Linux has a directory structure. Every directory has a purpose. You don't need to memorize all of them — you need to know where things live.
@@ -57,8 +49,6 @@ Linux has a directory structure. Every directory has a purpose. You don't need t
 Type `ls /etc` and scroll through it. You'll see files you recognize — `passwd`, `shadow`, `hosts`, `ssh`. These are config files. You'll work with them later.
 
 Type `ls /var/log` and look at what's there. `syslog`, `auth.log`, `dmesg`. These are logs. When something breaks, you look here first.
-
----
 
 ## Finding Things When You Don't Know Where They Are
 
@@ -93,8 +83,6 @@ Arrow keys to scroll, `q` to quit. Yes, you'll use `man` more than you think.
 history | grep ssh
 ```
 Useful when you ran a command 20 minutes ago and can't remember what it was.
-
----
 
 ## Files Are Just Bytes
 
@@ -153,8 +141,6 @@ rm -rf mydir
 ```
 `-r` recursive (delete everything inside). `-f` force (don't ask). `rm -rf` is the command that makes sysadmins sweat. Use it carefully.
 
----
-
 ## Permissions — Who Can Do What
 
 Every file and directory has permissions. They look like this:
@@ -191,8 +177,6 @@ chown alice:devops deploy.sh
 ```
 
 **Why this matters:** If your deploy script has `644` permissions, it won't execute. If your private key has `644` permissions, SSH will refuse to use it ("bad permissions"). You'll hit this. It's annoying until you understand it.
-
----
 
 ## Putting It Together: Your First Real Task
 
@@ -233,8 +217,6 @@ ls -la /opt/myapp/
 
 You've just set up a basic app directory with proper ownership and permissions. That's real work.
 
----
-
 ## Failure Scenario: What Happens When Permissions Are Wrong
 
 You create a deploy script:
@@ -264,8 +246,6 @@ chmod 755 /opt/myapp/deploy.sh
 
 You'll see "Permission denied" a hundred times before you learn to check `ls -la` first. That's normal.
 
----
-
 ## Assessment
 
 **Pass threshold:** Complete the lab, not score on a quiz.
@@ -291,8 +271,6 @@ You'll see "Permission denied" a hundred times before you learn to check `ls -la
 
 **If you need hints:** That's fine for first attempt. Mastery is measured on clean execution.
 
----
-
 ## Evidence Generated
 
 Upon completion:
@@ -302,13 +280,9 @@ Upon completion:
 
 If cohort shows <70% on permissions (step5), the adaptive engine proposes a micro-lesson: *"Why 644 breaks your deploy script."*
 
----
-
 ## Unlock
 
 Module2 — Users, Groups, and Permission Management unlocks when this module is complete. Not XP, not time. You can SSH in, navigate, create files, and set permissions. Module2 assumes that and goes deeper.
-
----
 
 ## Sources
 
@@ -317,10 +291,3 @@ Module2 — Users, Groups, and Permission Management unlocks when this module is
 - Linux Foundation — Linux System Administrator's Guide
 - `ssh_config(5)`, `sshd_config(5)` — SSH configuration
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31) with practitioner review
-- **Voice:** Nouh Thierry Fayell Kuobi — 6 years production Linux administration
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

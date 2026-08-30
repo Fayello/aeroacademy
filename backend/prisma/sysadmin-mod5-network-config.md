@@ -1,15 +1,9 @@
 # Module 5 — Network Configuration
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (5 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 4 — Service Management
-
----
 
 ## What You'll Actually Do
 
 New server arrives. You need to configure static IPs, set up VLANs, configure bonding, manage DNS, and set up network monitoring. Not just "ping works" — production networking.
-
----
 
 ## Netplan (Ubuntu) / NetworkManager
 
@@ -53,8 +47,6 @@ network:
       addresses: [10.100.0.5/24]
 ```
 
----
-
 ## Routing
 
 ```bash
@@ -72,8 +64,6 @@ routes:
   - to: 192.168.2.0/24
     via: 10.0.0.254
 ```
-
----
 
 ## DNS Configuration
 
@@ -96,8 +86,6 @@ EOF
 systemctl status systemd-resolved
 resolvectl status
 ```
-
----
 
 ## Firewall — iptables Deep Dive
 
@@ -127,8 +115,6 @@ ufw allow from 10.0.0.0/24 to any port 22
 ufw deny from 198.51.100.50
 ```
 
----
-
 ## Network Monitoring
 
 ```bash
@@ -148,8 +134,6 @@ iftop       # real-time bandwidth by connection
 nethogs     # bandwidth by process
 ```
 
----
-
 ## Bonding Types
 
 | Mode | Name | Load balancing | Fault tolerance |
@@ -163,8 +147,6 @@ nethogs     # bandwidth by process
 | 6 | balance-alb | Adaptive | Yes |
 
 **Most common:** Mode1 (active-backup) for redundancy, Mode4 (802.3ad) for throughput.
-
----
 
 ## Real Task: Configure Production Networking
 
@@ -209,8 +191,6 @@ ufw enable
 tcpdump -i ens3 -c 100 -n port 80
 ```
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -230,30 +210,17 @@ tcpdump -i ens3 -c 100 -n port 80
 - Traffic captured: 15%
 - Monitoring tested: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO5 — Network Configuration`
 - **Mastery:** `UserSkill: linux-network-config`
 
----
-
 ## Unlock
 
 Module6 — Security Hardening. You can configure the network. Now you learn how to secure it.
-
----
 
 ## Sources
 
 - `man netplan`, `man iptables`, `man tcpdump`
 - `man ss`, `man ip`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's configured production switches
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

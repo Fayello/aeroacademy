@@ -1,15 +1,9 @@
 # Module 8 — Monitoring and Logging
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (8 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 7 — Backup and Recovery
-
----
 
 ## What You'll Actually Do
 
 Something is wrong but nobody has complained yet. You need to know before users do. You'll set up monitoring with Prometheus/Grafana, configure alerts, centralize logs with the ELK stack, and build dashboards that actually tell you something.
-
----
 
 ## System Monitoring — The Basics
 
@@ -31,8 +25,6 @@ iotop              # I/O by process
 iftop              # bandwidth by connection
 nethogs            # bandwidth by process
 ```
-
----
 
 ## Prometheus + Grafana
 
@@ -76,8 +68,6 @@ apt install prometheus-node-exporter
 systemctl enable --now prometheus-node-exporter
 ```
 
----
-
 ## Alerting
 
 **Prometheus alert rules:**
@@ -99,8 +89,6 @@ groups:
         labels:
           severity: critical
 ```
-
----
 
 ## Centralized Logging — ELK
 
@@ -135,8 +123,6 @@ filebeat setup
 systemctl enable --now filebeat
 ```
 
----
-
 ## Log Analysis
 
 ```bash
@@ -152,8 +138,6 @@ awk '{print $7}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -1
 # Security events
 grep "Failed password" /var/log/auth.log | awk '{print $11}' | sort | uniq -c | sort -rn | head -5
 ```
-
----
 
 ## Real Task: Set Up Complete Monitoring
 
@@ -186,8 +170,6 @@ curl http://localhost:9090/metrics | head -5
 # Check Grafana dashboard
 ```
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -207,20 +189,14 @@ curl http://localhost:9090/metrics | head -5
 - Filebeat shipping logs: 10%
 - Log analysis working: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO8 — Monitoring & Logging`
 - **Mastery:** `UserSkill: linux-monitoring`
 
----
-
 ## Unlock
 
 Module9 — Virtualization. You can monitor systems. Now you learn how to virtualize them.
-
----
 
 ## Sources
 
@@ -228,10 +204,3 @@ Module9 — Virtualization. You can monitor systems. Now you learn how to virtua
 - Prometheus documentation
 - Elasticsearch documentation
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Engineer who's built monitoring stacks from scratch
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

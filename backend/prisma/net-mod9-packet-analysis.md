@@ -1,15 +1,11 @@
 # Module 9 — Packet Analysis
 
-**Course:** Networking | **Path:** Networking (9 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 8 — Network Troubleshooting
 
----
 
 ## What You'll Actually Do
 
 Something weird is happening on the network. You need to capture packets, analyze them, and figure out what's going on. You'll use tcpdump to capture,Wireshark to analyze, and understand what you're looking at.
 
----
 
 ## tcpdump — Capture on the Command Line
 
@@ -43,7 +39,6 @@ tcpdump -i ens3 -X port 80
 tcpdump -i ens3 -vvv port 53
 ```
 
----
 
 ## Reading tcpdump Output
 
@@ -61,7 +56,6 @@ tcpdump -i ens3 -n port 80
 - `[F]` — FIN (connection closing)
 - `[R]` — RST (connection reset)
 
----
 
 ## Analyzing Common Issues
 
@@ -87,7 +81,6 @@ tcpdump -i ens3 port 443 -tttt
 # Measure time between ClientHello and ServerHello
 ```
 
----
 
 ## Packet Dissection
 
@@ -106,7 +99,6 @@ tcpdump -i ens3 'greater 1000'   # packets >1000 bytes
 tcpdump -i ens3 'less 100'       # packets <100 bytes
 ```
 
----
 
 ## Real Task: Debug with Packet Capture
 
@@ -132,7 +124,6 @@ tcpdump -r debug.pcap -n | head -20
 # → Server application is crashing on that request
 ```
 
----
 
 ## Assessment
 
@@ -153,20 +144,17 @@ tcpdump -r debug.pcap -n | head -20
 - TLS handshake analyzed: 15%
 - Filter written: 10%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO9 — Packet Analysis`
 - **Mastery:** `UserSkill: networking-packet-analysis`
 
----
 
 ## Unlock
 
 Module10 — Network Security Monitoring. You can analyze packets. Now you learn how to detect threats.
 
----
 
 ## Sources
 
@@ -174,10 +162,4 @@ Module10 — Network Security Monitoring. You can analyze packets. Now you learn
 - Wireshark documentation
 - RFC793 (TCP)
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's analyzed more pcap files than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

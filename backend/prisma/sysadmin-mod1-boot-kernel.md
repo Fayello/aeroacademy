@@ -1,15 +1,9 @@
 # Module 1 — Boot Process and Kernel Management
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (1 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Linux Fundamentals
-
----
 
 ## What You'll Actually Do
 
 Server won't boot. You need to figure out why — bad kernel update? Corrupted initramfs? Mount failure? You'll trace the boot process from power-on to login prompt, and fix what's broken.
-
----
 
 ## Boot Sequence — What Happens When You Press Power
 
@@ -26,8 +20,6 @@ BIOS/UEFI → Bootloader (GRUB) → Kernel → initramfs → systemd → login
 **initramfs:** Temporary root filesystem with drivers needed to mount the real root.
 
 **systemd:** PID 1. Starts all services.
-
----
 
 ## GRUB — The Bootloader
 
@@ -55,8 +47,6 @@ grep menuentry /boot/grub/grub.cfg
 sudo grub-set-default 0
 sudo update-grub
 ```
-
----
 
 ## Kernel — What's Running
 
@@ -94,8 +84,6 @@ sysctl -w net.ipv4.ip_forward=1  # set one (temporary)
 
 Make permanent in `/etc/sysctl.conf`.
 
----
-
 ## initramfs — The Temporary Root
 
 If the kernel can't mount root, initramfs has the drivers.
@@ -124,8 +112,6 @@ Then regenerate:
 ```bash
 update-initramfs -u -k all
 ```
-
----
 
 ## systemd — The Boot Manager
 
@@ -158,8 +144,6 @@ systemd-analyze blame | head -10
 systemd-analyze critical-chain
 ```
 
----
-
 ## Recovery — When Boot Fails
 
 **Boot into rescue mode:**
@@ -189,8 +173,6 @@ fsck -f /dev/sda1
 ```
 Run when filesystem is unmounted. If root, boot from live USB.
 
----
-
 ## Real Task: Fix a Server That Won't Boot
 
 ```bash
@@ -215,8 +197,6 @@ nano /root/etc/fstab
 update-initramfs -u
 ```
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -236,30 +216,17 @@ update-initramfs -u
 - Module blacklisted: 20%
 - Rescue mode tested: 20%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO1 — Boot Process & Kernel Management`
 - **Mastery:** `UserSkill: linux-boot-kernel`
 
----
-
 ## Unlock
 
 Module2 — Storage and Filesystems. You can boot the server. Now you learn how to manage what's on the disk.
-
----
 
 ## Sources
 
 - `man grub`, `man modprobe`, `man sysctl`, `man systemd-analyze`
 - `man fsck`, `man lsinitramfs`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's fixed more boot failures than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

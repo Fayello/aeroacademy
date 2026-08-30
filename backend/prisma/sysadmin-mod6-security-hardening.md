@@ -1,15 +1,9 @@
 # Module 6 — Security Hardening
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (6 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 5 — Network Configuration
-
----
 
 ## What You'll Actually Do
 
 Apply CIS benchmarks, configure auditd, set up AppArmor/SELinux, harden SSH, disable unnecessary services, and verify your hardening with a scan. This is the difference between "we have a server" and "we have a server that passes audit."
-
----
 
 ## CIS Benchmark — Key Controls
 
@@ -49,8 +43,6 @@ sysctl -p
 -a always,exit -F arch=b64 -S execve -k exec
 ```
 
----
-
 ## AppArmor / SELinux
 
 **AppArmor (Ubuntu default):**
@@ -83,8 +75,6 @@ restorecon -Rv /var/www/html
 semanage port -a -t http_port_t -p tcp 8080
 ```
 
----
-
 ## SSH Hardening (Production)
 
 ```bash
@@ -101,8 +91,6 @@ AllowTcpForwarding no
 Protocol 2
 ```
 
----
-
 ## Remove Unnecessary Services
 
 ```bash
@@ -115,8 +103,6 @@ systemctl disable --now cups avahi-daemon bluetooth
 # Check listening ports
 ss -tlnp
 ```
-
----
 
 ## Vulnerability Scanning
 
@@ -133,8 +119,6 @@ oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_cis \
 apt install lynis
 lynis audit system
 ```
-
----
 
 ## Real Task: Harden a Server
 
@@ -168,8 +152,6 @@ systemctl disable --now cups avahi-daemon
 lynis audit system
 ```
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -189,30 +171,17 @@ lynis audit system
 - Services cleaned: 10%
 - Scan completed: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO6 — Security Hardening`
 - **Mastery:** `UserSkill: linux-security-hardening`
 
----
-
 ## Unlock
 
 Module7 — Backup and Recovery. You can secure the server. Now you learn how to recover when things go wrong.
-
----
 
 ## Sources
 
 - CIS Benchmarks
 - `man auditd`, `man apparmor`, `man lynis`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Security engineer who's passed more audits than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

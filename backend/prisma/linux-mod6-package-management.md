@@ -1,15 +1,9 @@
 # Module 6 — Package Management
 
-**Course:** Linux Fundamentals | **Path:** Linux (6 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 20 min | **Prerequisite:** Module 5 — Text Processing
-
----
 
 ## What You'll Actually Do
 
 You need to install nginx, but the version in the default repo is old. You add a repo, install the right version, pin it so it doesn't auto-upgrade, and remove the old one. That's package management.
-
----
 
 ## apt (Debian/Ubuntu)
 
@@ -56,8 +50,6 @@ apt autoremove    # remove unused dependencies
 apt clean         # clear downloaded package cache
 ```
 
----
-
 ## Adding Third-Party Repos
 
 Default repos don't always have what you need. You add a repo.
@@ -77,8 +69,6 @@ apt-mark hold nginx
 apt-mark unhold nginx    # release the pin
 ```
 
----
-
 ## yum/dnf (RHEL/CentOS/Fedora)
 
 ```bash
@@ -91,8 +81,6 @@ yum info nginx
 ```
 
 Same idea, different commands.
-
----
 
 ## dpkg — Low-Level Package Operations
 
@@ -115,8 +103,6 @@ dpkg -S /usr/sbin/nginx
 # nginx: /usr/sbin/nginx
 ```
 
----
-
 ## Real Task: Install and Pin Specific Version
 
 You need nginx1.24, not the default:
@@ -137,8 +123,6 @@ apt-mark showhold
 
 Now `apt upgrade` won't touch nginx until you `apt-mark unhold`.
 
----
-
 ## Failure Scenario: Dependency Hell
 
 You install `package-a` which requires `lib-foo >= 2.0`. You install `package-b` which requires `lib-foo < 2.0`. They conflict.
@@ -155,8 +139,6 @@ apt install package-a package-b
 3. Use containers or isolated environments to avoid the conflict entirely
 
 In production, this is why we use Docker. Different apps, different dependencies, no conflict.
-
----
 
 ## Assessment
 
@@ -176,20 +158,14 @@ In production, this is why we use Docker. Different apps, different dependencies
 - File list checked: 20%
 - Removal complete: 30%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO6 — Package Management`
 - **Mastery:** `UserSkill: linux-package-management`
 
----
-
 ## Unlock
 
 Module7 — SSH and Remote Administration. You can install software. Now you learn how to secure the front door.
-
----
 
 ## Sources
 
@@ -197,10 +173,3 @@ Module7 — SSH and Remote Administration. You can install software. Now you lea
 - Debian Wiki — Apt
 - Red Hat Wiki — Yum
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's pinned the wrong package version at2 AM
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

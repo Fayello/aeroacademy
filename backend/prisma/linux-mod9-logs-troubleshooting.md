@@ -1,15 +1,9 @@
 # Module 9 — Log Management and Troubleshooting
 
-**Course:** Linux Fundamentals | **Path:** Linux (9 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 8 — Shell Scripting
-
----
 
 ## What You'll Actually Do
 
 Something broke. Users are complaining. You don't know what happened. You look at the logs, find the error, trace it back to the cause, and fix it. This is what you actually do as a sysadmin — not configure servers, but figure out why they stopped working.
-
----
 
 ## Where Logs Live
 
@@ -23,8 +17,6 @@ Something broke. Users are complaining. You don't know what happened. You look a
   error.log              # What went wrong
 /var/log/postgresql/     # Database logs
 ```
-
----
 
 ## journalctl — The systemd Way
 
@@ -68,8 +60,6 @@ journalctl --disk-usage
 sudo journalctl --vacuum-size=500M
 ```
 
----
-
 ## Reading nginx Logs
 
 **Access log (who asked for what):**
@@ -104,8 +94,6 @@ tail -50 /var/log/nginx/error.log
 grep " 500 " /var/log/nginx/access.log | tail -20
 ```
 
----
-
 ## auth.log — Security Events
 
 **Failed SSH attempts:**
@@ -123,8 +111,6 @@ grep "Accepted" /var/log/auth.log
 grep "sudo" /var/log/auth.log | tail -20
 ```
 
----
-
 ## dmesg — Kernel and Hardware
 
 ```bash
@@ -140,8 +126,6 @@ dmesg | grep -i "oom"
 ```
 
 When your app disappears and you see this, it ran out of memory and the kernel killed it.
-
----
 
 ## Troubleshooting Flow
 
@@ -180,8 +164,6 @@ history | tail -30
 ls -lt /etc/nginx/ | head -5
 ```
 
----
-
 ## Real Task: Debug a Crashed App
 
 Your app is down. `systemctl status myapp` shows `failed`.
@@ -213,8 +195,6 @@ ss -tlnp | grep :5432
 
 Redis is running on PostgreSQL's port. Fix the config and restart both.
 
----
-
 ## Log Rotation
 
 Logs grow. `logrotate` keeps them in check.
@@ -241,8 +221,6 @@ cat /etc/logrotate.d/nginx
 - `compress` — gzip old logs
 - `create 0640 www-data adm` — create new log with these permissions
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -262,30 +240,17 @@ cat /etc/logrotate.d/nginx
 - Diagnosis completed: 30%
 - logrotate configured: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO9 — Log Analysis & Troubleshooting`
 - **Mastery:** `UserSkill: linux-troubleshooting`
 
----
-
 ## Unlock
 
 Module10 — System Hardening Basics. You can find and fix problems. Now you learn how to prevent them.
-
----
 
 ## Sources
 
 - `man journalctl`, `man dmesg`, `man logrotate`
 - `man tail`, `man grep`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's traced more segfaults than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

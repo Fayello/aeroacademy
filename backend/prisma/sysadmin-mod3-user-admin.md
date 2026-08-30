@@ -1,15 +1,9 @@
 # Module 3 — User Administration at Scale
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (3 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 2 — Storage and Filesystems
-
----
 
 ## What You'll Actually Do
 
 You have50 servers. Users come and go. You need to create accounts, manage SSH keys, enforce password policies, handle sudo access, and offboard people cleanly — across all servers, not just one.
-
----
 
 ## Centralized Identity — LDAP/Active Directory
 
@@ -35,8 +29,6 @@ krb5_store_password_if_offline = True
 ```
 
 Now `id alice` works on every server that uses SSSD. Create user in AD → available everywhere.
-
----
 
 ## Password Policies
 
@@ -65,8 +57,6 @@ chage -M 0 alice   # forces change on next login
 chage -l alice     # show policy
 ```
 
----
-
 ## SSH Key Management
 
 **Deploy keys to all servers:**
@@ -85,8 +75,6 @@ done
 **Centralized keys with LDAP:**
 Store SSH public keys in LDAP attribute `sshPublicKey`. All servers read from LDAP.
 
----
-
 ## Sudo Management
 
 **Grant sudo to a group:**
@@ -104,8 +92,6 @@ grep sudo /var/log/auth.log | tail -20
 ```bash
 rm /etc/sudoers.d/devops
 ```
-
----
 
 ## Offboarding — When Someone Leaves
 
@@ -136,8 +122,6 @@ echo "Offboarded: $USER"
 
 **Do this for every server.** With Ansible, you do it once for all.
 
----
-
 ## Audit User Activity
 
 ```bash
@@ -155,8 +139,6 @@ ps aux | awk '{print $1}' | sort | uniq -c | sort -rn | head -10
 # Check for orphaned files
 find / -nouser -o -nogroup 2>/dev/null
 ```
-
----
 
 ## Real Task: Onboard a New Team
 
@@ -185,8 +167,6 @@ for user in alice bob charlie; do
 done
 ```
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -204,30 +184,17 @@ done
 - Offboarding script works: 25%
 - Audit completed: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO3 — User Administration at Scale`
 - **Mastery:** `UserSkill: linux-user-admin`
 
----
-
 ## Unlock
 
 Module4 — Service Management. You can manage users. Now you learn how to manage complex service stacks.
-
----
 
 ## Sources
 
 - `man useradd`, `man usermod`, `man userdel`, `man chage`
 - `man sudoers`, `man sssd`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Sysadmin who's on/offboarded hundreds of users
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

@@ -1,15 +1,9 @@
 # Module 10 — Automation with Ansible
 
-**Course:** Linux Systems Administration | **Path:** Linux Sysadmin (10 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 9 — Virtualization
-
----
 
 ## What You'll Actually Do
 
 You have50 servers. You need to update them all, deploy a new service, and change a config. One by one? No. You'll write Ansible playbooks that do it across all servers in parallel.
-
----
 
 ## Ansible — Agentless Automation
 
@@ -43,8 +37,6 @@ ansible all -m ping
 # db1 | SUCCESS => {"ping": "pong"}
 ```
 
----
-
 ## Ad-Hoc Commands
 
 ```bash
@@ -61,19 +53,10 @@ ansible web -m apt -a "name=nginx state=present" --become
 ansible web -m copy -a "src=./config.conf dest=/etc/nginx/config.conf" --become
 ```
 
----
-
 ## Playbooks — The Real Power
 
 ```yaml
 # deploy-web.yml
----
-- hosts: web
-  become: yes
-  vars:
-    app_version: "1.2.3"
-    app_port: 8080
-
   tasks:
     - name: Install dependencies
       apt:
@@ -119,8 +102,6 @@ ansible web -m copy -a "src=./config.conf dest=/etc/nginx/config.conf" --become
 ansible-playbook deploy-web.yml
 ```
 
----
-
 ## Roles — Reusable Playbooks
 
 ```
@@ -137,17 +118,6 @@ roles/
 
 **Use a role:**
 ```yaml
----
-- hosts: web
-  become: yes
-  roles:
-    - nginx
-    - postgresql
-    - { role: myapp, app_port: 8080 }
-```
-
----
-
 ## Variables and Templates
 
 **Jinja2 template:**
@@ -177,21 +147,10 @@ app_version: "1.2.3"
 app_port: 8081
 ```
 
----
-
 ## Real Task: Automate Server Fleet
 
 ```yaml
 # fleet-setup.yml
----
-- hosts: all
-  become: yes
-  tasks:
-    - name: Update system
-      apt:
-        upgrade: yes
-        update_cache: yes
-
     - name: Install monitoring
       apt:
         name: prometheus-node-exporter
@@ -235,8 +194,6 @@ ansible-playbook fleet-setup.yml
 
 One playbook,50 servers,5 minutes. That's automation.
 
----
-
 ## Ansible Vault — Secrets
 
 ```bash
@@ -252,8 +209,6 @@ ansible-playbook deploy.yml --ask-vault-pass
 # Or use vault password file
 ansible-playbook deploy.yml --vault-password-file=.vault_pass
 ```
-
----
 
 ## Assessment
 
@@ -276,14 +231,10 @@ ansible-playbook deploy.yml --vault-password-file=.vault_pass
 - SSH hardened: 10%
 - Vault used: 10%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `SYS-LO10 — Automation with Ansible`
 - **Mastery:** `UserSkill: linux-ansible-automation` — final competency for Linux Systems Administration
-
----
 
 ## Course Complete
 
@@ -301,17 +252,8 @@ You can now:
 
 **Next course:** Linux Internals (under the hood) or Networking (deeper).
 
----
-
 ## Sources
 
 - `man ansible`, `man ansible-playbook`
 - Ansible documentation
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Engineer who's automated his way out of50-server updates
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

@@ -1,17 +1,11 @@
 # Module 2 — Users, Groups, and Permission Management
 
-**Course:** Linux Fundamentals | **Path:** Linux (2 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 1 — SSH and Navigation
-
----
 
 ## What You'll Actually Do
 
 You need to create users for your team. Alice needs access to the web app. Bob needs access to the database. Charlie is an intern who should see logs but not touch anything. You'll create them, put them in groups, set permissions so they can do their jobs without breaking each other's work.
 
 This is the part where "just give everyone root" stops being funny and starts being a liability.
-
----
 
 ## Users and Groups
 
@@ -59,8 +53,6 @@ usermod -aG docker alice   # add to docker group (append, don't overwrite)
 usermod -s /sbin/nologin charlie  # disable login
 ```
 
----
-
 ## Groups
 
 Groups control shared access. If Alice and Bob are both in the `devops` group, and a directory is owned by `devops`, they both have access.
@@ -95,8 +87,6 @@ cat /etc/group | grep devops
 # devops:x:1002:alice,bob
 ```
 
----
-
 ## Permission Models: Owner, Group, Other
 
 You saw this in Module1. Now you understand what it actually means.
@@ -110,8 +100,6 @@ You saw this in Module1. Now you understand what it actually means.
 - **Other:** r-- — can only read
 
 **The practical consequence:** If Bob is in `devops`, he can run `deploy.sh` but can't edit it. If Charlie is not in `devops`, he can only read it (if he knows the path).
-
----
 
 ## Special Permissions
 
@@ -140,8 +128,6 @@ ls -la / | grep tmp
 ```
 The `t` means: anyone can create files in `/tmp`, but only the owner can delete their own. Without this, anyone could delete anyone else's files in `/tmp`.
 
----
-
 ## umask — Default Permissions
 
 When you create a file, it gets default permissions. That's controlled by `umask`.
@@ -161,8 +147,6 @@ umask 027
 ```
 
 In production, `027` or `022` is common. `000` is dangerous — everyone gets full access to everything you create.
-
----
 
 ## ACLs — When Owner/Group/Other Isn't Enough
 
@@ -189,8 +173,6 @@ setfacl -x u:alice /home/bob/secret.txt
 ```
 
 ACLs are useful when you have complex access requirements but don't want to create a group for every combination.
-
----
 
 ## Real Task: Multi-User Permission Setup
 
@@ -245,8 +227,6 @@ cat /var/www/myapp/db.conf
 
 Bob is in both groups — he can read the config and work on the web app. Alice can work on the web app but can't see database credentials. Charlie can't log in at all.
 
----
-
 ## Failure Scenario: The Permission Mess
 
 You create a directory with `777`:
@@ -277,8 +257,6 @@ chmod 2775 /var/shared
 
 Now users in `shared` can collaborate without being able to delete each other's files.
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -298,21 +276,15 @@ Now users in `shared` can collaborate without being able to delete each other's 
 - Access control verified: 25%
 - Clean execution, no hints: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `LIN-LO2 — User & Group Permission Management`
 - **Mastery:** `UserSkill: linux-permissions` — +0.5 clean, +0.3 with hints
 - **Telemetry:** `permission_accuracy`, `group_management`, `acl_usage`, `time_on_lab`
 
----
-
 ## Unlock
 
 Module3 — Processes and Systemd. You can manage users and permissions. Now you learn what happens when a service starts.
-
----
 
 ## Sources
 
@@ -322,10 +294,3 @@ Module3 — Processes and Systemd. You can manage users and permissions. Now you
 - `man umask`
 - Linux Foundation — System Administrator's Guide
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31) with practitioner review
-- **Voice:** Production sysadmin perspective
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

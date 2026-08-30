@@ -1,15 +1,11 @@
 # Module 5 — Switching and VLANs
 
-**Course:** Networking | **Path:** Networking (5 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 4 — Routing
 
----
 
 ## What You'll Actually Do
 
 Your network is flat — everything on the same broadcast domain. Engineering can see Finance traffic. You'll segment with VLANs, configure trunk ports, and set up inter-VLAN routing.
 
----
 
 ## How Switches Work
 
@@ -25,7 +21,6 @@ arp -a
 
 When a switch receives a frame, it learns the source MAC and maps it to a port. Future frames to that MAC go directly to that port.
 
----
 
 ## VLANs — Virtual LANs
 
@@ -39,7 +34,6 @@ Port 21-24: VLAN 30 (IT)
 
 Traffic on VLAN10 never reaches VLAN20 unless explicitly routed.
 
----
 
 ## Configuring VLANs on Linux
 
@@ -57,7 +51,6 @@ ip addr add 10.0.20.1/24 dev ens3.20
 
 Now your server has interfaces on two VLANs.
 
----
 
 ## Trunk Ports
 
@@ -75,7 +68,6 @@ ip link add link ens3 name ens3.10 type vlan id 10
 ip link add link ens3 name ens3.20 type vlan id 20
 ```
 
----
 
 ## Inter-VLAN Routing
 
@@ -99,7 +91,6 @@ iptables -t nat -A POSTROUTING -s 10.0.20.0/24 -o ens0 -j MASQUERADE
 
 Now VLAN10 and VLAN20 can reach the internet through the Linux router.
 
----
 
 ## Port Security
 
@@ -113,7 +104,6 @@ switchport port-security violation shutdown
 bridge fdb add 00:1a:2b:3c:4d:5e dev ens3 master
 ```
 
----
 
 ## Real Task: Segment a Flat Network
 
@@ -136,7 +126,6 @@ iptables -t nat -A POSTROUTING -s 10.0.20.0/24 -o ens0 -j MASQUERADE
 # From VLAN10 host: ping internet → should work
 ```
 
----
 
 ## Assessment
 
@@ -155,30 +144,21 @@ iptables -t nat -A POSTROUTING -s 10.0.20.0/24 -o ens0 -j MASQUERADE
 - Connectivity tested: 20%
 - Isolation verified: 15%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO5 — Switching & VLAN Segmentation`
 - **Mastery:** `UserSkill: networking-switching-vlans`
 
----
 
 ## Unlock
 
 Module6 — Firewalls. You can segment networks. Now you learn how to filter traffic.
 
----
 
 ## Sources
 
 - IEEE802.1Q
 - `man ip-link`, `man bridge`
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's segmented production networks
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

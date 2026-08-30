@@ -1,15 +1,11 @@
 # Module 4 — Routing
 
-**Course:** Networking | **Path:** Networking (4 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 3 — DNS
 
----
 
 ## What You'll Actually Do
 
 Traffic from your server goes to the wrong destination. You need to check routing tables, add static routes, configure policy-based routing, and understand how OSPF/BGP work at a high level.
 
----
 
 ## Routing Tables
 
@@ -24,7 +20,6 @@ ip route show
 - `10.0.0.0/24` — directly connected
 - `192.168.2.0/24 via 10.0.0.254` — static route
 
----
 
 ## Static Routes
 
@@ -47,7 +42,6 @@ routes:
     via: 10.0.0.254
 ```
 
----
 
 ## Routing Metrics
 
@@ -59,7 +53,6 @@ ip route add 192.168.2.0/24 via 10.0.1.254 metric 200
 
 Traffic goes through `10.0.0.254` (metric100) unless it's down, then falls back to `10.0.1.254` (metric200).
 
----
 
 ## Policy-Based Routing
 
@@ -79,7 +72,6 @@ ip rule add fwmark 1 table isp2
 iptables -t mangle -A PREROUTING -p tcp --dport 8080 -j MARK --set-mark 1
 ```
 
----
 
 ## Dynamic Routing — OSPF and BGP
 
@@ -97,7 +89,6 @@ iptables -t mangle -A PREROUTING -p tcp --dport 8080 -j MARK --set-mark 1
 
 **You don't configure BGP from scratch.** You configure it on routers. But you need to understand it to debug connectivity issues.
 
----
 
 ## traceroute — Path Discovery
 
@@ -112,7 +103,6 @@ traceroute google.com
 
 Each hop is a router. If a hop shows `* * *`, it's either blocking ICMP or dropping packets.
 
----
 
 ## Real Task: Fix Routing
 
@@ -135,7 +125,6 @@ traceroute 192.168.2.1
 # 2  192.168.2.1  5.678 ms
 ```
 
----
 
 ## Assessment
 
@@ -154,30 +143,21 @@ traceroute 192.168.2.1
 - Traceroute completed: 15%
 - Diagnosis correct: 25%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO4 — Routing & Traffic Path`
 - **Mastery:** `UserSkill: networking-routing`
 
----
 
 ## Unlock
 
 Module5 — Switching and VLANs. You can route between networks. Now you learn how to segment them.
 
----
 
 ## Sources
 
 - `man ip-route`, `man ip-rule`
 - RFC2328 (OSPF), RFC4271 (BGP)
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's debugged routing loops
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

@@ -1,15 +1,9 @@
 # Module 10 — Network Security Monitoring
 
-**Course:** Networking | **Path:** Networking (10 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 30 min | **Prerequisite:** Module 9 — Packet Analysis
-
----
 
 ## What You'll Actually Do
 
 Something malicious is happening on your network. You need to detect it. You'll set up intrusion detection with Snort/Suricata, configure network-based monitoring, and respond to threats.
-
----
 
 ## IDS/IPS — Intrusion Detection/Prevention
 
@@ -45,8 +39,6 @@ alert tcp any any -> $HOME_NET 22 (msg:"SSH brute force attempt"; \
   sid:1000001; rev:1;)
 ```
 
----
-
 ## Network Flow Analysis
 
 **NetFlow/sFlow** exports metadata about connections (who talked to whom, when, how much).
@@ -59,8 +51,6 @@ nfdump -R /var/log/nfsen/2025/01/15 -s srcip/bytes -n 20
 # Find longest connections
 nfdump -R /var/log/nfsen/2025/01/15 -s duration -n 10
 ```
-
----
 
 ## Zeek (formerly Bro)
 
@@ -83,8 +73,6 @@ awk '{print $3}' /var/log/zeek/conn.log | cut -d: -f1 | sort -u | wc -l
 # Long connections (potential data exfiltration)
 awk '$9 > 3600' /var/log/zeek/conn.log | head -20
 ```
-
----
 
 ## Alert Response
 
@@ -111,8 +99,6 @@ ufw deny from $SRC_IP
 tcpdump -i ens3 host $SRC_IP -w /tmp/investigate.pcap
 ```
 
----
-
 ## Network Monitoring Stack
 
 ```
@@ -120,8 +106,6 @@ Suricata (IDS) → EVE JSON → Logstash → Elasticsearch → Kibana
 Zeek (analysis) → conn.log → Filebeat → Elasticsearch → Kibana
 NetFlow → nfdump / Elastic SIEM
 ```
-
----
 
 ## Real Task: Detect and Respond
 
@@ -152,8 +136,6 @@ grep "198.51.100.50" /var/log/auth.log | grep "Accepted"
 echo "SSH brute force blocked: 47 attempts from 198.51.100.50" > /var/log/incident-$(date +%Y%m%d).log
 ```
 
----
-
 ## Assessment
 
 **Lab task (25 min):**
@@ -173,14 +155,10 @@ echo "SSH brute force blocked: 47 attempts from 198.51.100.50" > /var/log/incide
 - Attack detected: 15%
 - Response documented: 15%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO10 — Network Security Monitoring`
 - **Mastery:** `UserSkill: networking-security-monitoring` — final competency for Networking
-
----
 
 ## Course Complete
 
@@ -198,18 +176,9 @@ You can now:
 
 **Next course:** Linux Internals or Security Engineering.
 
----
-
 ## Sources
 
 - Suricata documentation
 - Zeek documentation
 - `man tcpdump`, `man nfdump`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network security engineer who's built monitoring stacks
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

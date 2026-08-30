@@ -1,15 +1,9 @@
 # Module 1 — How Packets Actually Move
 
-**Course:** Networking | **Path:** Networking (1 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** None
-
----
 
 ## What You'll Actually Do
 
 A user says "the internet is slow." You need to figure out where — DNS? Latency? Packet loss? MTU? You'll trace a packet from the application layer down to the wire and back, and learn where things break.
-
----
 
 ## OSI Is a Model, Not a Rule
 
@@ -26,8 +20,6 @@ OSI has7 layers. TCP/IP has4. Nobody uses OSI exactly, but everyone uses the voc
 | 1 | Physical | Bits on the wire | Cables, switches, signals |
 
 **When debugging:** Start at layer7 (application) and work down. "Can't reach website" → DNS? IP routing? Link down? Cable unplugged?
-
----
 
 ## TCP — The Reliable One
 
@@ -55,8 +47,6 @@ LISTEN → SYN_SENT → ESTABLISHED → FIN_WAIT → TIME_WAIT → CLOSED
 
 You'll see `TIME_WAIT` a lot. It's normal — TCP holds the socket for2×MSL after close to handle delayed packets.
 
----
-
 ## UDP — The Fast One
 
 No handshake. No acknowledgment. Send and forget.
@@ -69,8 +59,6 @@ Used for DNS queries, video streaming, gaming, VoIP. If a packet is lost, too ba
 
 **When to use UDP:** When speed matters more than reliability. DNS, real-time video, SNMP.
 
----
-
 ## ARP — How IP Becomes MAC
 
 IP addresses route between networks. MAC addresses deliver on the local network.
@@ -81,8 +69,6 @@ arp -a
 ```
 
 When your server sends a packet to `10.0.0.1`, it broadcasts: "Who has `10.0.0.1`? Tell `10.0.0.5`." The owner replies with its MAC address.
-
----
 
 ## MTU — The Maximum Size
 
@@ -99,8 +85,6 @@ ping -M do -s 1500 10.0.0.1
 **Path MTU discovery:** TCP automatically discovers the smallest MTU along the path and adjusts. If broken, you get silent packet drops.
 
 **VPN/SSH tunnels reduce MTU** because they add headers. If your VPN connection hangs, check MTU.
-
----
 
 ## Real Task: Trace a Packet
 
@@ -123,8 +107,6 @@ ip -s link show ens3
 
 You just traced a packet from application to wire. That's how you debug.
 
----
-
 ## Assessment
 
 **Lab task (20 min):**
@@ -144,30 +126,17 @@ You just traced a packet from application to wire. That's how you debug.
 - MTU tested: 20%
 - TCP states identified: 20%
 
----
-
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO1 — Packet Flow & Protocol Layers`
 - **Mastery:** `UserSkill: networking-foundations`
 
----
-
 ## Unlock
 
 Module2 — Subnetting and IP Addressing. You know how packets move. Now you learn how to address them.
-
----
 
 ## Sources
 
 - RFC793 (TCP), RFC768 (UDP), RFC826 (ARP)
 - `man tcpdump`, `man dig`, `man traceroute`
 
----
-
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's traced more packets than he can count
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED

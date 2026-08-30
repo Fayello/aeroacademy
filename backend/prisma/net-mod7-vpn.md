@@ -1,15 +1,11 @@
 # Module 7 — VPN Technologies
 
-**Course:** Networking | **Path:** Networking (7 of 10) | **Status:** DRAFT → FACT_CHECK → TECHNICAL_REVIEW → PUBLISHED
-**Estimated time:** 25 min | **Prerequisite:** Module 6 — Firewalls
 
----
 
 ## What You'll Actually Do
 
 Remote workers need access to internal resources. You'll set up WireGuard for site-to-site connectivity, configure OpenVPN for remote access, and understand when to use each.
 
----
 
 ## VPN Types
 
@@ -19,7 +15,6 @@ Remote workers need access to internal resources. You'll set up WireGuard for si
 | Remote access | Individual connects to network | OpenVPN for remote workers |
 | Client-to-client | Individuals connect to each other | Mesh VPN (Tailscale) |
 
----
 
 ## WireGuard — The Modern VPN
 
@@ -84,7 +79,6 @@ wg show
 #   transfer: 1.23 GiB received, 456 MiB sent
 ```
 
----
 
 ## OpenVPN — The Classic
 
@@ -104,7 +98,6 @@ systemctl enable --now openvpn
 openvpn --config client.ovpn
 ```
 
----
 
 ## WireGuard vs OpenVPN
 
@@ -119,7 +112,6 @@ openvpn --config client.ovpn
 
 **Rule of thumb:** Use WireGuard unless you need OpenVPN-specific features (TCP fallback, complex auth).
 
----
 
 ## Split Tunneling
 
@@ -139,7 +131,6 @@ AllowedIPs = 10.0.0.0/8, 192.168.0.0/16
 
 Internet traffic goes direct. Internal traffic goes through VPN.
 
----
 
 ## Assessment
 
@@ -158,20 +149,17 @@ Internet traffic goes direct. Internal traffic goes through VPN.
 - Split tunneling: 15%
 - Comparison documented: 15%
 
----
 
 ## Evidence
 
 - **OutcomeEvidence:** `NET-LO7 — VPN Technologies`
 - **Mastery:** `UserSkill: networking-vpn`
 
----
 
 ## Unlock
 
 Module8 — Network Troubleshooting. You can tunnel traffic. Now you learn how to debug when things break.
 
----
 
 ## Sources
 
@@ -179,10 +167,4 @@ Module8 — Network Troubleshooting. You can tunnel traffic. Now you learn how t
 - OpenVPN documentation
 - `man wg`, `man wg-quick`
 
----
 
-## AI Provenance
-
-- **Draft:** LLM (2025-08-31)
-- **Voice:** Network engineer who's set up VPNs for remote teams
-- **Status:** DRAFT → FACT_CHECK ✓ → TECHNICAL_REVIEW → PUBLISHED
