@@ -35,37 +35,50 @@ const sectionNames: Record<string, string[]> = {
   quantum: ['Quantum Fundamentals', 'Qubits & Gates', 'Algorithms', 'Cryptography Threats', 'Post-Quantum Algorithms', 'Key Exchange', 'Digital Signatures', 'Migration', 'Implementation', 'Future'],
 };
 
+function generateStableId(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  const hex = Math.abs(hash).toString(16).padStart(8, '0');
+  return `${hex.slice(0, 8)}-${hex.slice(0, 4)}-4${hex.slice(1, 4)}-${((parseInt(hex.slice(0, 2), 16) & 0x3f) | 0x80).toString(16).padStart(2, '0')}${hex.slice(2, 4)}-${hex.slice(4, 8)}${hex.slice(0, 4)}`;
+}
+
+async function upsertSection(courseId: string, title: string, order: number) {
+  const existing = await prisma.section.findFirst({ where: { courseId, order } });
+  if (existing) {
+    await prisma.section.update({ where: { id: existing.id }, data: { title } });
+    return existing;
+  }
+  return prisma.section.create({ data: { courseId, title, order } });
+}
+
+async function upsertLesson(sectionId: string, title: string, content: string, order: number) {
+  const existing = await prisma.lesson.findFirst({ where: { sectionId, order } });
+  if (existing) {
+    await prisma.lesson.update({ where: { id: existing.id }, data: { title, content } });
+    return existing;
+  }
+  return prisma.lesson.create({ data: { sectionId, title, content, order } });
+}
+
 async function main() {
   for (const course of courses) {
     console.log(`\n=== ${course.name} ===`);
     const c = await prisma.course.findUnique({ where: { id: course.id } });
-    if (!c) { console.log('  SKIP — not found'); continue; }
+    if (!c) { console.log('  SKIP - not found'); continue; }
 
-    // Clean existing
-    const existingSections = await prisma.section.findMany({ where: { courseId: course.id } });
-    for (const s of existingSections) {
-      const lessons = await prisma.lesson.findMany({ where: { sectionId: s.id } });
-      for (const l of lessons) {
-        await prisma.progress.deleteMany({ where: { lessonId: l.id } });
-        await prisma.answer.deleteMany({ where: { question: { quiz: { lessonId: l.id } } } });
-        await prisma.question.deleteMany({ where: { quiz: { lessonId: l.id } } });
-        await prisma.quiz.deleteMany({ where: { lessonId: l.id } });
-      }
-      await prisma.lesson.deleteMany({ where: { sectionId: s.id } });
-      await prisma.section.delete({ where: { id: s.id } });
-    }
-    console.log(`  Cleaned ${existingSections.length} sections`);
-
-    // Create modules
     const sections = sectionNames[course.prefix] || [];
     for (let i = 0; i < 10; i++) {
       const file = `${course.prefix}-mod${i + 1}.md`;
       const filePath = path.join(__dirname, file);
       if (!fs.existsSync(filePath)) { console.log(`  MISSING: ${file}`); continue; }
       const md = fs.readFileSync(filePath, 'utf8');
-      const title = md.split('\n')[0].replace(/^# /, '').replace(/Module \d+ — /, '');
-      const section = await prisma.section.create({ data: { courseId: course.id, title: sections[i] || `Module ${i + 1}`, order: i } });
-      const lesson = await prisma.lesson.create({ data: { sectionId: section.id, title, content: md, order: 0 } });
+      const title = md.split('\n')[0].replace(/^# /, '').replace(/Module \d+: /, '');
+      const section = await upsertSection(course.id, sections[i] || `Module ${i + 1}`, i);
+      const lesson = await upsertLesson(section.id, title, md, 0);
       console.log(`  ${i + 1}. ${lesson.title} (${md.length} chars)`);
     }
   }
