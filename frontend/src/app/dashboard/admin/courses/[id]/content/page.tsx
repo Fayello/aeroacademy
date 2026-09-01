@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
@@ -60,7 +60,6 @@ interface ReorderEntry {
 
 export default function CourseContentAdminPage() {
   const params = useParams();
-  const router = useRouter();
   const courseId = params.id as string;
 
   const [structure, setStructure] = useState<CourseStructure | null>(null);
@@ -84,6 +83,7 @@ export default function CourseContentAdminPage() {
     videoUrl: "",
     content: "",
   });
+  const [activeSectionId, setActiveSectionId] = useState("");
 
   // Move lesson
   const [moveModal, setMoveModal] = useState<{
@@ -122,7 +122,10 @@ export default function CourseContentAdminPage() {
   }, [courseId]);
 
   useEffect(() => {
-    loadStructure();
+    const timeoutId = window.setTimeout(() => {
+      void loadStructure();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, [loadStructure]);
 
   const pushHistory = (
@@ -194,13 +197,13 @@ export default function CourseContentAdminPage() {
       toast.error("Title is required");
       return;
     }
-    if (!lessonModal.editing?.sectionId && !bulkModal.sectionId) {
+    if (!lessonModal.editing?.sectionId && !activeSectionId) {
       toast.error("No section selected");
       return;
     }
     setSaving(true);
     try {
-      const sectionId = lessonModal.editing?.sectionId || bulkModal.sectionId;
+      const sectionId = lessonModal.editing?.sectionId || activeSectionId;
       const payload = {
         title: lessonForm.title,
         videoUrl: lessonForm.videoUrl || null,
@@ -227,6 +230,7 @@ export default function CourseContentAdminPage() {
         toast.success("Lesson created");
       }
       setLessonModal({ open: false, editing: null });
+      setActiveSectionId("");
       loadStructure();
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -315,12 +319,6 @@ export default function CourseContentAdminPage() {
     if (newIndex < 0 || newIndex >= items.length) return;
 
     const item = items[index];
-    const newOrder = items.map((it, i) => {
-      if (i === index) return { ...it, order: items[newIndex].order };
-      if (i === newIndex) return { ...it, order: item.order };
-      return it;
-    });
-
     pushHistory(type, item.title, index, newIndex, item.id);
 
     try {
@@ -395,7 +393,7 @@ export default function CourseContentAdminPage() {
                 <button
                   onClick={() => {
                     setSectionForm({ title: "" });
-                    setSectionModal({ open: false, editing: null });
+                    setSectionModal({ open: true, editing: null });
                   }}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium transition-all"
                 >
@@ -404,6 +402,32 @@ export default function CourseContentAdminPage() {
               </div>
             }
           />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Content Structure</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Keep course order explicit and defensible</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              This workflow controls the exact sequence learners see. Use it to keep section boundaries clear, lesson order deliberate, and delivery records consistent.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Sections</p>
+              <p className="mt-2 text-sm font-semibold text-white">{structure.sections.length} ordered groups</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Lessons</p>
+              <p className="mt-2 text-sm font-semibold text-white">{structure.sections.reduce((sum, section) => sum + (section.lessons?.length || 0), 0)} mapped lessons</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Operator rule</p>
+              <p className="mt-2 text-sm font-semibold text-white">Reorder with intent, not trial and error</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -512,8 +536,8 @@ export default function CourseContentAdminPage() {
                           videoUrl: "",
                           content: "",
                         });
+                        setActiveSectionId(section.id);
                         setLessonModal({ open: true, editing: null });
-                        lessonModal.editing = { ...({} as Lesson), sectionId: section.id };
                       }}
                       className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
                       title="Add lesson"
@@ -537,7 +561,7 @@ export default function CourseContentAdminPage() {
               </div>
 
               {/* Lessons */}
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-white/10">
                 {section.lessons
                   ?.sort((a: Lesson, b: Lesson) => a.order - b.order)
                   .map((lesson, li) => (
@@ -735,7 +759,10 @@ export default function CourseContentAdminPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setLessonModal({ open: false, editing: null })}
+            onClick={() => {
+              setLessonModal({ open: false, editing: null });
+              setActiveSectionId("");
+            }}
           />
           <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
@@ -743,7 +770,10 @@ export default function CourseContentAdminPage() {
                 {lessonModal.editing ? "Edit Lesson" : "New Lesson"}
               </h3>
               <button
-                onClick={() => setLessonModal({ open: false, editing: null })}
+                onClick={() => {
+                  setLessonModal({ open: false, editing: null });
+                  setActiveSectionId("");
+                }}
                 className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
               >
                 <X size={18} />

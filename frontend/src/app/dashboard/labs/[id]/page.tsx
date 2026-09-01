@@ -9,7 +9,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, ArrowLeft, Home, ChevronRight, Download, FileText } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, Home, ChevronRight } from "lucide-react";
 import LabAvatar from "@/components/ui/LabAvatar";
 import toast from "@/lib/toast";
 import Link from "next/link";
@@ -67,6 +67,7 @@ interface LabDefinition {
   briefing?: string | null;
   basePath?: string;
   difficulty: number;
+  isLocked?: boolean;
   tasks?: string[];
   credentials?: LabCredential[];
   flags?: LabFlag[];
@@ -167,17 +168,21 @@ export default function LabWorkspace() {
   // Load existing user review
   useEffect(() => {
     if (!reviewsData || !id) return;
-    try {
-      const stored = localStorage.getItem("user");
-      if (stored) {
-        const user = JSON.parse(stored);
-        const existing = reviewsData.reviews.find((r) => r.userId === user.id);
-        if (existing) {
-          setMyRating(existing.rating);
-          setMyComment(existing.comment || "");
+    const timeoutId = window.setTimeout(() => {
+      try {
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          const user = JSON.parse(stored) as { id?: string };
+          const existing = reviewsData.reviews.find((r) => r.userId === user.id);
+          if (existing) {
+            setMyRating(existing.rating);
+            setMyComment(existing.comment || "");
+          }
         }
-      }
-    } catch {}
+      } catch {}
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [reviewsData, id]);
 
   const handleSubmitReview = useCallback(async () => {
@@ -301,10 +306,14 @@ export default function LabWorkspace() {
         : "bg-[#7AD62A]/10 text-[#7AD62A]";
 
   useEffect(() => {
-    try {
-      const saved = parseInt(window.localStorage.getItem("xterm:fontSize") || "", 10);
-      if (saved >= MIN_FONT_SIZE && saved <= MAX_FONT_SIZE) setFontSize(saved);
-    } catch {}
+    const timeoutId = window.setTimeout(() => {
+      try {
+        const saved = parseInt(window.localStorage.getItem("xterm:fontSize") || "", 10);
+        if (saved >= MIN_FONT_SIZE && saved <= MAX_FONT_SIZE) setFontSize(saved);
+      } catch {}
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
@@ -631,7 +640,7 @@ export default function LabWorkspace() {
   const diff = lab ? getDifficultyInfo(lab.difficulty || 1200) : null;
   const flags = lab?.flags?.length || 0;
   const solvedFlags = lab?.flags?.filter((f: LabFlag) => f.submissions && f.submissions.length > 0).length || 0;
-  const isLocked = lab ? (lab as any).isLocked ?? false : false;
+  const isLocked = lab?.isLocked ?? false;
 
   if (viewMode === "info" && lab && !isRunning) {
     return (
@@ -906,26 +915,27 @@ export default function LabWorkspace() {
   }
 
   return (
-    <div className={`${isFullscreen ? "fixed inset-0 z-50 bg-[#0f172a]" : "h-[calc(100vh-4rem)] -m-4 md:-m-8"} flex flex-col animate-in fade-in duration-500`}>
+    <div className={`${isFullscreen ? "fixed inset-0 z-50 bg-[#0f172a]" : "min-h-[calc(100vh-4rem)] -mx-4 md:-m-8"} flex flex-col animate-in fade-in duration-500`}>
       {/* Header */}
-      <header className="h-14 border-b border-white/10 bg-[#0f172a] px-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
+      <header className="border-b border-white/10 bg-[#0f172a] px-4 py-3 shrink-0">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-4 min-w-0">
           <button onClick={() => setViewMode("info")} className="text-slate-400 hover:text-slate-300 transition-colors">
             <ChevronLeft size={20} />
           </button>
-          <div>
-            <h1 className="text-sm font-semibold text-white">{lab?.title || "Lab"}</h1>
+          <div className="min-w-0">
+            <h1 className="text-sm font-semibold text-white truncate">{lab?.title || "Lab"}</h1>
             <p className="text-xs text-slate-400">Interactive Environment</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/dashboard/labs/${id}/discussions`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 text-xs font-medium transition-colors border border-white/10"
           >
             <MessageSquare size={14} />
-            Discussions
+            <span className="hidden sm:inline">Discussions</span>
           </Link>
           {isFullscreen && (
             <button
@@ -960,7 +970,7 @@ export default function LabWorkspace() {
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition-colors"
               >
                 <ExternalLink size={12} />
-                Open UI
+                <span className="hidden sm:inline">Open UI</span>
               </a>
               <button onClick={handleReset} disabled={provisioning} className="btn-ghost text-xs">
                 <RefreshCcw size={14} className={provisioning ? "animate-spin" : ""} />
@@ -983,29 +993,36 @@ export default function LabWorkspace() {
             </button>
           )}
         </div>
+        </div>
       </header>
 
       {/* Telemetry bar */}
       {!isFullscreen && isRunning && telemetry && (
-        <div className="h-10 border-b border-white/10 bg-[#0f172a] px-4 flex items-center gap-6 text-xs text-slate-400 shrink-0">
-          <span className="font-medium">CPU</span>
-          <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className={`h-full rounded-full ${telemetry.cpu > 80 ? "bg-red-500" : telemetry.cpu > 50 ? "bg-amber-500" : "bg-[#7AD62A]"}`} style={{ width: `${telemetry.cpu}%` }} />
+        <div className="border-b border-white/10 bg-[#0f172a] px-4 py-3 shrink-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400">
+            <div className="flex items-center gap-3">
+              <span className="font-medium w-8 shrink-0">CPU</span>
+              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full ${telemetry.cpu > 80 ? "bg-red-500" : telemetry.cpu > 50 ? "bg-amber-500" : "bg-[#7AD62A]"}`} style={{ width: `${telemetry.cpu}%` }} />
+              </div>
+              <span className="font-mono w-8 text-right">{telemetry.cpu}%</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-medium w-8 shrink-0">RAM</span>
+              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${telemetry.memory}%` }} />
+              </div>
+              <span className="font-mono w-8 text-right">{telemetry.memory}%</span>
+            </div>
           </div>
-          <span className="font-mono w-8">{telemetry.cpu}%</span>
-          <span className="font-medium">RAM</span>
-          <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${telemetry.memory}%` }} />
-          </div>
-          <span className="font-mono w-8">{telemetry.memory}%</span>
         </div>
       )}
 
       {/* Main content */}
-      <main className="flex-1 flex min-h-0 p-4 gap-4">
+      <main className="flex-1 flex min-h-0 flex-col p-3 sm:p-4 gap-4 lg:flex-row">
         {/* Briefing panel */}
         {!isFullscreen && (
-        <div className="w-80 shrink-0 angular-card bg-[#0f172a] shadow-sm overflow-y-auto hidden lg:block">
+        <div className="angular-card bg-[#0f172a] shadow-sm overflow-y-auto w-full lg:w-80 lg:shrink-0">
           <div className="p-5 border-b border-white/10">
             <h2 className="text-sm font-semibold text-white">Briefing</h2>
           </div>
@@ -1135,12 +1152,12 @@ export default function LabWorkspace() {
 
         {/* Terminal */}
         <div className="flex-1 flex flex-col min-w-0 angular-card bg-[#0f172a] shadow-sm overflow-hidden">
-          <div className="h-10 border-b border-white/10 px-4 flex items-center gap-2 shrink-0">
+          <div className="border-b border-white/10 px-3 sm:px-4 py-2 flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center">
             <TerminalIcon size={14} className="text-slate-400" />
             <span className="text-xs font-medium text-slate-400">Terminal</span>
 
             {isRunning && connected && (
-              <div className="ml-auto flex items-center gap-1">
+              <div className="sm:ml-auto flex flex-wrap items-center gap-1">
                 <span className="text-[10px] text-slate-400 mr-1 hidden sm:block">Quick:</span>
                 {QUICK_COMMANDS.map((cmd) => (
                   <button
@@ -1152,7 +1169,7 @@ export default function LabWorkspace() {
                     {cmd}
                   </button>
                 ))}
-                <div className="w-px h-4 bg-white/10 mx-1" />
+                <div className="hidden sm:block w-px h-4 bg-white/10 mx-1" />
                 <button
                   onClick={handleCopy}
                   disabled={!selection}
@@ -1195,7 +1212,7 @@ export default function LabWorkspace() {
             )}
 
             {isRunning && !connected && (
-              <div className="ml-auto flex items-center gap-2">
+              <div className="sm:ml-auto flex items-center gap-2">
                 <span className="flex items-center gap-1.5 text-xs text-amber-600">
                   <Loader2 className="animate-spin" size={12} />
                   Connecting...
@@ -1218,7 +1235,7 @@ export default function LabWorkspace() {
               {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
             </button>
           </div>
-          <div className="flex-1 min-h-0 relative">
+          <div className="flex-1 min-h-[360px] lg:min-h-0 relative">
             {isRunning ? (
               <div ref={terminalRef} className="w-full h-full" />
             ) : (

@@ -169,7 +169,7 @@ export default function LabsCatalog() {
       {/* Beginner Path CTA */}
       <Link
         href="/dashboard/starting-point"
-        className="angular-card text-white p-4 flex items-center justify-between hover:bg-[#1a3a5c] transition-colors group"
+        className="angular-card group flex flex-col gap-3 p-4 text-white transition-colors hover:bg-[#1a3a5c] sm:flex-row sm:items-center sm:justify-between"
         style={{ backgroundColor: "#0F203A" }}
       >
         <div className="flex items-center gap-3">
@@ -181,7 +181,7 @@ export default function LabsCatalog() {
             <p className="text-xs text-white/60">Follow our guided beginner path — build your skills step by step</p>
           </div>
         </div>
-        <span className="text-xs text-white/40 group-hover:text-[#7AD62A] transition-colors">Begin →</span>
+        <span className="text-xs text-white/40 transition-colors group-hover:text-[#7AD62A] sm:shrink-0">Begin →</span>
       </Link>
 
       {focusLabel && (
@@ -205,47 +205,54 @@ export default function LabsCatalog() {
       )}
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-white/10">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-              activeTab === tab.id
-                ? "border-[#7AD62A] text-[#7AD62A]"
-                : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
-            }`}
-          >
-            {tab.label}
-            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
-            }`}>
-              {tabCounts[tab.id]}
-            </span>
-          </button>
-        ))}
+      <div className="flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="overflow-x-auto -mx-1 px-1">
+          <div className="flex min-w-max items-center gap-1">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "border-[#7AD62A] text-[#7AD62A]"
+                    : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
+                }`}
+              >
+                {tab.label}
+                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+                  activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
+                }`}>
+                  {tabCounts[tab.id]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <div className="ml-auto flex items-center gap-1">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
-            aria-label="Grid view"
-          >
-            <LayoutGrid size={16} />
-          </button>
-          <button
-            onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
-            aria-label="Table view"
-          >
-            <List size={16} />
-          </button>
+        <div className="flex items-center justify-between gap-3 sm:justify-end">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 sm:hidden">View mode</p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
+              aria-label="Grid view"
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
+              aria-label="Table view"
+            >
+              <List size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Search & Difficulty Filters */}
       <div className="space-y-3">
-        <div className="relative max-w-md">
+        <div className="relative max-w-none sm:max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -282,7 +289,7 @@ export default function LabsCatalog() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-400 mr-1">Domain:</span>
+          <span className="mr-1 w-full text-xs text-slate-400 sm:w-auto">Domain:</span>
           {DOMAINS.map((d) => (
             <button
               key={d}
@@ -299,7 +306,7 @@ export default function LabsCatalog() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "featured" | "domain" | "difficulty" | "title")}
-            className="ml-2 px-2 py-1.5 text-xs font-medium rounded-full border bg-white/5 text-slate-400 border-white/10 focus:outline-none focus:border-[#7AD62A]/30"
+            className="w-full sm:w-auto sm:ml-2 px-2 py-1.5 text-xs font-medium rounded-full border bg-white/5 text-slate-400 border-white/10 focus:outline-none focus:border-[#7AD62A]/30"
             aria-label="Sort labs"
           >
             <option value="featured">Sort: Featured</option>
@@ -342,7 +349,7 @@ export default function LabsCatalog() {
           )}
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredLabs.map((lab) => {
             const diff = getDifficultyStyle(lab.difficulty || 1200);
             const flags = lab.flags?.length || 0;
@@ -372,8 +379,8 @@ export default function LabsCatalog() {
                     </div>
                   </div>
                   <div className="p-5 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <LabAvatar title={lab.title} id={lab.id} size={40} className="opacity-50" />
+                  <div className="flex items-start justify-between gap-2">
+                    <LabAvatar title={lab.title} id={lab.id} size={40} className="opacity-50" />
                       <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                         <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
@@ -394,9 +401,9 @@ export default function LabsCatalog() {
               >
                 <div className={`h-0.5 w-full ${diff.bar} opacity-60`} />
                 <div className="p-5 space-y-3">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <LabAvatar title={lab.title} id={lab.id} size={40} />
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                       <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
                     </div>
@@ -412,9 +419,9 @@ export default function LabsCatalog() {
                   <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">{lab.description}</p>
 
                   {/* Stats row */}
-                  <div className="flex items-center gap-3 text-xs text-slate-400">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
                     <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags}</span>
-                    <span>·</span>
+                    <span className="hidden sm:inline">·</span>
                     <span className="flex items-center gap-1"><Clock size={10} />{getEstimatedTime(flags)}</span>
                   </div>
 
@@ -443,80 +450,144 @@ export default function LabsCatalog() {
         </div>
       ) : (
         /* Table View */
-        <div className="angular-card overflow-hidden">
-          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-            <span className="w-6 text-center shrink-0">#</span>
-            <span className="flex-1 min-w-0">Lab</span>
-            <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
-            <span className="hidden md:block w-20 shrink-0">Progress</span>
-            <span className="hidden lg:block w-20 shrink-0">Time</span>
-            <span className="w-20 shrink-0 text-right">Status</span>
-          </div>
-          {filteredLabs.map((lab, index) => {
-            const diff = getDifficultyStyle(lab.difficulty || 1200);
-            const flags = lab.flags?.length || 0;
-            const solvedFlags = getSolvedCount(lab.flags);
-            const isLocked = lab.isLocked ?? false;
-            const progressStatus = getProgressStatus(lab.flags);
+        <>
+          <div className="angular-card overflow-hidden hidden md:block">
+            <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="w-6 text-center shrink-0">#</span>
+              <span className="flex-1 min-w-0">Lab</span>
+              <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
+              <span className="hidden md:block w-20 shrink-0">Progress</span>
+              <span className="hidden lg:block w-20 shrink-0">Time</span>
+              <span className="w-20 shrink-0 text-right">Status</span>
+            </div>
+            {filteredLabs.map((lab, index) => {
+              const diff = getDifficultyStyle(lab.difficulty || 1200);
+              const flags = lab.flags?.length || 0;
+              const solvedFlags = getSolvedCount(lab.flags);
+              const isLocked = lab.isLocked ?? false;
+              const progressStatus = getProgressStatus(lab.flags);
 
-            return (
-              <div key={lab.id}>
-                {isLocked ? (
-                  <div className="flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 opacity-50">
-                    <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
-                    <div className="flex-1 min-w-0 flex items-center gap-2">
-                      <Lock size={12} className="text-slate-400 shrink-0" />
-                      <span className="text-sm text-slate-400 truncate">{lab.title}</span>
-                    </div>
-                    <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((d) => (
-                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
-                        ))}
+              return (
+                <div key={lab.id}>
+                  {isLocked ? (
+                    <div className="flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 opacity-50">
+                      <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <Lock size={12} className="text-slate-400 shrink-0" />
+                        <span className="text-sm text-slate-400 truncate">{lab.title}</span>
                       </div>
+                      <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
+                        <div className="flex gap-0.5">
+                          {[1, 2, 3, 4, 5].map((d) => (
+                            <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
+                          ))}
+                        </div>
+                      </div>
+                      <span className="w-20 shrink-0 text-right text-xs text-slate-400">Locked</span>
                     </div>
-                    <span className="w-20 shrink-0 text-right text-xs text-slate-400">Locked</span>
+                  ) : (
+                    <Link
+                      href={`/dashboard/labs/${lab.id}`}
+                      className="group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 hover:bg-white/5 transition-colors"
+                    >
+                      <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium text-white truncate block">{lab.title}</span>
+                      </div>
+                      <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
+                        <div className="flex gap-0.5">
+                          {[1, 2, 3, 4, 5].map((d) => (
+                            <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
+                          ))}
+                        </div>
+                        <span className="text-[10px] text-slate-400">{diff.label}</span>
+                      </div>
+                      <div className="hidden md:block w-20 text-xs text-slate-400 shrink-0">
+                        {solvedFlags}/{flags}
+                      </div>
+                      <div className="hidden lg:block w-20 text-xs text-slate-400 shrink-0">
+                        {getEstimatedTime(flags)}
+                      </div>
+                      <div className="w-20 shrink-0 text-right">
+                        {progressStatus === "COMPLETED" && (
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
+                        )}
+                        {progressStatus === "IN_PROGRESS" && (
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Active</span>
+                        )}
+                        {progressStatus === "NOT_STARTED" && (
+                          <span className="text-[10px] font-medium text-[#7AD62A] group-hover:underline">Launch</span>
+                        )}
+                      </div>
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="space-y-3 md:hidden">
+            {filteredLabs.map((lab) => {
+              const diff = getDifficultyStyle(lab.difficulty || 1200);
+              const flags = lab.flags?.length || 0;
+              const solvedFlags = getSolvedCount(lab.flags);
+              const isLocked = lab.isLocked ?? false;
+              const requiredLevel = lab.requiredLevel ?? 1;
+              const progressStatus = getProgressStatus(lab.flags);
+              const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;
+
+              if (isLocked) {
+                const xpNeeded = requiredLevel * 1000 - level * 1000;
+                return (
+                  <div key={lab.id} className="angular-card border border-white/10 p-4 space-y-3 opacity-80">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <LabAvatar title={lab.title} id={lab.id} size={36} className="opacity-50" />
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-medium text-slate-300 truncate">{lab.title}</h3>
+                          <p className="text-[11px] text-slate-500">{diff.label}</p>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-1 text-[10px] font-medium text-amber-400">
+                        <Lock size={10} />
+                        Locked
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 leading-relaxed">{lab.description}</p>
+                    <p className="text-xs text-amber-300">Earn {xpNeeded > 0 ? xpNeeded : 500} more XP to unlock level {requiredLevel}.</p>
                   </div>
-                ) : (
-                  <Link
-                    href={`/dashboard/labs/${lab.id}`}
-                    className="group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 hover:bg-white/5 transition-colors"
-                  >
-                    <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium text-white truncate block">{lab.title}</span>
-                    </div>
-                    <div className="hidden sm:flex items-center gap-1.5 w-24 shrink-0">
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((d) => (
-                          <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
-                        ))}
+                );
+              }
+
+              return (
+                <Link key={lab.id} href={`/dashboard/labs/${lab.id}`} className="angular-card border border-white/10 p-4 block">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <LabAvatar title={lab.title} id={lab.id} size={36} />
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-medium text-white truncate">{lab.title}</h3>
+                        <p className="text-[11px] text-slate-400">{getLabDomain(lab)} · {diff.label}</p>
                       </div>
-                      <span className="text-[10px] text-slate-400">{diff.label}</span>
                     </div>
-                    <div className="hidden md:block w-20 text-xs text-slate-400 shrink-0">
-                      {solvedFlags}/{flags}
+                    <span className="text-[10px] font-medium text-[#7AD62A] shrink-0">
+                      {progressStatus === "COMPLETED" ? "Done" : progressStatus === "IN_PROGRESS" ? "Active" : "Launch"}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs text-slate-300 line-clamp-2 leading-relaxed">{lab.description}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+                    <span className="flex items-center gap-1"><Shield size={10} />{solvedFlags}/{flags}</span>
+                    <span className="flex items-center gap-1"><Clock size={10} />{getEstimatedTime(flags)}</span>
+                  </div>
+                  {flags > 0 && progress > 0 && (
+                    <div className="mt-3 h-1 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#7AD62A] to-[#6bc422]" style={{ width: `${progress}%` }} />
                     </div>
-                    <div className="hidden lg:block w-20 text-xs text-slate-400 shrink-0">
-                      {getEstimatedTime(flags)}
-                    </div>
-                    <div className="w-20 shrink-0 text-right">
-                      {progressStatus === "COMPLETED" && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
-                      )}
-                      {progressStatus === "IN_PROGRESS" && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Active</span>
-                      )}
-                      {progressStatus === "NOT_STARTED" && (
-                        <span className="text-[10px] font-medium text-[#7AD62A] group-hover:underline">Launch</span>
-                      )}
-                    </div>
-                  </Link>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

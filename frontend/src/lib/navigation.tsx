@@ -53,7 +53,7 @@ const DEFAULT_CONTEXT: NavigationContext = {
   sections: [
     {
       id: "dashboard",
-      label: "Command Center",
+      label: "Dashboard",
       items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Dashboard" }],
     },
     {
@@ -81,6 +81,133 @@ const DEFAULT_CONTEXT: NavigationContext = {
   showAdmin: false,
 };
 
+function getFallbackContext(experience: UserExperience, role: string, level: number): NavigationContext {
+  if (role === "ADMIN" || experience === "ADMIN") {
+    return {
+      experience: role === "ADMIN" ? "ADMIN" : experience,
+      level,
+      role,
+      sections: [
+        {
+          id: "dashboard",
+          label: "Operations",
+          items: [{ href: "/dashboard/admin", tKey: "nav.adminDashboard", icon: "ShieldCheck", label: "Admin Overview" }],
+        },
+        {
+          id: "platform",
+          label: "Platform Control",
+          items: [
+            { href: "/dashboard/admin/users", tKey: "nav.users", icon: "Users", label: "Users" },
+            { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Lab Monitoring" },
+            { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
+          ],
+        },
+        {
+          id: "delivery",
+          label: "Delivery Systems",
+          items: [
+            { href: "/dashboard/admin/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
+            { href: "/dashboard/admin/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+            { href: "/dashboard/admin/assessments", tKey: "nav.assessments", icon: "ClipboardCheck", label: "Assessments" },
+          ],
+        },
+        {
+          id: "intelligence",
+          label: "Analytics",
+          items: [
+            { href: "/dashboard/admin/analytics", tKey: "nav.analytics", icon: "TrendingUp", label: "Analytics" },
+            { href: "/dashboard/admin/cohort-intelligence", tKey: "nav.cohorts", icon: "Users", label: "Cohort Intelligence" },
+            { href: "/dashboard/admin/predictive-analytics", tKey: "nav.predictive", icon: "ShieldAlert", label: "Predictive Analytics" },
+          ],
+        },
+      ],
+      alerts: [],
+      showTeach: true,
+      showAcademic: true,
+      showAdmin: true,
+    };
+  }
+
+  if (experience === "UNIVERSITY" || role === "INSTRUCTOR") {
+    return {
+      experience,
+      level,
+      role,
+      sections: [
+        {
+          id: "dashboard",
+          label: "Overview",
+          items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Academic Overview" }],
+        },
+        {
+          id: "academics",
+          label: "Academic Delivery",
+          items: [
+            { href: "/dashboard/academics", tKey: "nav.academics", icon: "GraduationCap", label: "Academic Record" },
+            { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
+            { href: "/dashboard/gradebook", tKey: "nav.gradebook", icon: "ClipboardCheck", label: "Gradebook" },
+          ],
+        },
+        {
+          id: "practice",
+          label: "Labs and Readiness",
+          items: [
+            { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+            { href: "/dashboard/exams", tKey: "nav.exams", icon: "ShieldCheck", label: "Practical Exams" },
+          ],
+        },
+      ],
+      alerts: [],
+      showTeach: true,
+      showAcademic: true,
+      showAdmin: role === "ADMIN",
+    };
+  }
+
+  if (experience === "CORPORATE") {
+    return {
+      experience,
+      level,
+      role,
+      sections: [
+        {
+          id: "dashboard",
+          label: "Overview",
+          items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Capability Overview" }],
+        },
+        {
+          id: "enterprise",
+          label: "Institutional Tools",
+          items: [
+            { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Building2", label: "Enterprise Portal" },
+            { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
+            { href: "/dashboard/gradebook", tKey: "nav.gradebook", icon: "ClipboardCheck", label: "Gradebook" },
+          ],
+        },
+        {
+          id: "evidence",
+          label: "Evidence",
+          items: [
+            { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+            { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
+          ],
+        },
+      ],
+      alerts: [],
+      showTeach: false,
+      showAcademic: true,
+      showAdmin: role === "ADMIN",
+    };
+  }
+
+  return {
+    ...DEFAULT_CONTEXT,
+    experience,
+    level,
+    role,
+  };
+}
+
 interface NavigationContextValue {
   nav: NavigationContext;
   loading: boolean;
@@ -90,7 +217,18 @@ interface NavigationContextValue {
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
-  const [nav, setNav] = useState<NavigationContext>(DEFAULT_CONTEXT);
+  const [nav, setNav] = useState<NavigationContext>(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const experience = (user.userExperience || user.experience || DEFAULT_CONTEXT.experience) as UserExperience;
+      const role = user.role || DEFAULT_CONTEXT.role;
+      const xp = Number(localStorage.getItem("xp") || user.xp || 0);
+      const level = Math.floor(xp / 1000) + 1;
+      return getFallbackContext(experience, role, level);
+    } catch {
+      return DEFAULT_CONTEXT;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -98,14 +236,27 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       const result = await fetchApi<NavigationContext>("/navigation/context");
       setNav(result);
     } catch {
-      // use default
+      try {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const experience = (user.userExperience || user.experience || DEFAULT_CONTEXT.experience) as UserExperience;
+        const role = user.role || DEFAULT_CONTEXT.role;
+        const xp = Number(localStorage.getItem("xp") || user.xp || 0);
+        const level = Math.floor(xp / 1000) + 1;
+        setNav(getFallbackContext(experience, role, level));
+      } catch {
+        setNav(DEFAULT_CONTEXT);
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    load();
+    const timeoutId = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [load]);
 
   const refresh = useCallback(async () => {

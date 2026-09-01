@@ -77,11 +77,16 @@ export default function AdminAnalyticsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetchApi("/admin/analytics/overview")
-      .then((d) => { if (!cancelled) setData(d); })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+    const timeoutId = window.setTimeout(() => {
+      fetchApi("/admin/analytics/overview")
+        .then((d) => { if (!cancelled) setData(d); })
+        .catch(() => {})
+        .finally(() => { if (!cancelled) setLoading(false); });
+    }, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
   }, []);
 
   const growthData = useMemo(() => (data?.userGrowth || []).map((d) => ({ label: d.date.slice(5), value: d.count })), [data]);
@@ -109,7 +114,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-white border border-white/10">
+      <div className="relative overflow-hidden angular-card border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
@@ -118,7 +123,7 @@ export default function AdminAnalyticsPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
-              <p className="text-sm text-slate-500">Platform performance, engagement and learning analytics</p>
+              <p className="text-sm text-slate-300">Platform performance, engagement, and learning analytics</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
@@ -152,6 +157,27 @@ export default function AdminAnalyticsPage() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">How to use this page</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Start with totals and growth, then move to assessment and lab signals before interpreting distribution or leaderboard data.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Decision support</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Use this surface to spot delivery bottlenecks, uneven engagement, and capability gaps rather than treating it as a raw vanity dashboard.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Export workflow</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            CSV is best for operational analysis, while PDF is better for institutional reporting and executive review.
+          </p>
         </div>
       </div>
 

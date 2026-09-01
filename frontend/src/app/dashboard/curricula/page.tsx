@@ -13,8 +13,11 @@ import {
   Building2,
   Clock,
   Layers,
+  FileCheck,
+  ClipboardCheck,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface CurriculumModule {
   id: string;
@@ -77,15 +80,34 @@ export default function CurriculaPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <GraduationCap size={28} className="text-[#7AD62A]" />
-          Curricula
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Academic programs and course structures
-        </p>
+      <PageHeader title="Curricula" description="Academic programs and course structures" />
+
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Program Architecture</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Design learning structure that institutions can defend</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Curricula connect modules, outcomes, labs, and cohorts into one academic system. That structure is what makes the certification and university story credible.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-2">
+                <ClipboardCheck size={15} className="text-[#7AD62A]" />
+                <p className="text-sm font-semibold text-white">Curricula listed</p>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-white">{curricula.length}</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-2">
+                <FileCheck size={15} className="text-[#7AD62A]" />
+                <p className="text-sm font-semibold text-white">What to review</p>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-300">Check whether modules, outcomes, labs, and cohorts align into a coherent academic route.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Curriculum Cards */}
@@ -156,6 +178,14 @@ export default function CurriculaPage() {
                   <span className="flex items-center gap-1 text-slate-600">
                     <Users size={12} className="text-[#7AD62A]" />
                     {curr._count.cohorts} cohorts
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-600">
+                    <ClipboardCheck size={12} className="text-[#7AD62A]" />
+                    {totalOutcomes} outcomes
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-600">
+                    <FileCheck size={12} className="text-[#7AD62A]" />
+                    {totalLabs} labs
                   </span>
                 </div>
               </Link>

@@ -148,44 +148,68 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const level = Math.floor(xp / 1000) + 1;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 h-12 bg-[#0a0f1a] border-b border-white/6 flex items-center gap-2 px-3 md:pl-64 relative overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-64 md:py-0 relative overflow-hidden">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.02] pointer-events-none" />
-      <button
-        onClick={onToggleSidebar}
-        className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-colors"
-        aria-label="Toggle sidebar"
-      >
-        <Menu size={18} />
-      </button>
+      <div className="relative flex flex-col gap-2.5 md:flex-row md:items-center md:gap-2">
+        <div className="flex items-center gap-2 md:hidden">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7AD62A]/10 border border-[#7AD62A]/20">
+              <Zap size={14} className="text-[#7AD62A]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Dashboard</p>
+              <p className="truncate text-xs text-slate-400">Learning, labs, and certification progress</p>
+            </div>
+          </div>
 
-      {/* Search with Ctrl+/ hint */}
-      <div className="flex-1 max-w-lg mx-auto">
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-          <input
-            ref={searchRef}
-            type="text"
-            placeholder="Search course catalog..."
-            aria-label="Search course catalog"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && searchValue.trim()) {
-                router.push(`/dashboard/courses?q=${encodeURIComponent(searchValue.trim())}`);
-                setSearchValue("");
-                searchRef.current?.blur();
-              }
-            }}
-            className="w-full h-8 pl-8 pr-14 rounded-lg bg-white/5 border border-transparent focus:border-[#7AD62A] focus:bg-white/8 focus:outline-none text-sm text-slate-200 placeholder:text-slate-500 transition-colors"
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
-            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">{shortcutKey}</kbd>
-            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">/</kbd>
+          <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 rounded-lg border border-[#7AD62A]/20 bg-[#7AD62A]/10 px-2 py-1">
+              <Zap size={11} className="text-[#7AD62A]" />
+              <span className="text-[10px] font-bold text-white">{xp.toLocaleString()}</span>
+              <span className="text-[9px] font-medium text-[#7AD62A]">Lv{level}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-1.5">
+        <button
+          onClick={onToggleSidebar}
+          className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-colors"
+          aria-label="Toggle sidebar"
+        >
+          <Menu size={18} />
+        </button>
+
+        {/* Search with Ctrl+/ hint */}
+        <div className="flex-1 max-w-none md:max-w-lg md:mx-auto">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search course catalog..."
+              aria-label="Search course catalog"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && searchValue.trim()) {
+                  router.push(`/dashboard/courses?q=${encodeURIComponent(searchValue.trim())}`);
+                  setSearchValue("");
+                  searchRef.current?.blur();
+                }
+              }}
+              className="w-full h-9 md:h-8 pl-8 pr-4 md:pr-14 rounded-lg bg-white/5 border border-transparent focus:border-[#7AD62A] focus:bg-white/8 focus:outline-none text-sm text-slate-200 placeholder:text-slate-500 transition-colors"
+            />
+            <div className="absolute right-2 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 pointer-events-none md:flex">
+              <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">{shortcutKey}</kbd>
+              <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">/</kbd>
+            </div>
+          </div>
+          <p className="mt-1 px-1 text-[10px] text-slate-500 md:hidden">
+            Search courses and press Enter to open the catalog results.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-end gap-1.5 md:justify-start">
         {/* XP Counter */}
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#7AD62A]/10 border border-[#7AD62A]/20">
           <Zap size={12} className="text-[#7AD62A]" />
@@ -201,13 +225,15 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           Edit Profile
         </Link>
 
-        <CurrencySwitcher />
+        <div className="hidden sm:block">
+          <CurrencySwitcher />
+        </div>
 
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setNotifOpen((o) => !o)}
             aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
-            className="relative w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-colors"
+            className="relative flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] px-2.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200 sm:h-8 sm:min-w-0 sm:border-0 sm:bg-transparent sm:px-0"
           >
             <Bell size={16} />
             {unread > 0 && (
@@ -218,8 +244,8 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f172a] border border-white/10 rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-150">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/6">
+            <div className="absolute right-0 mt-2 w-[min(24rem,calc(100vw-1rem))] sm:w-96 bg-[#0f172a] border border-white/10 rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-150">
+              <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/6">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-semibold text-white">Notifications</h3>
                   {unread > 0 && (
@@ -230,7 +256,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
                 </div>
                 <button
                   onClick={() => void markAllRead()}
-                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-[#7AD62A] font-medium"
+                  className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-[#7AD62A] font-medium"
                 >
                   <CheckCheck size={14} />
                   Mark all read
@@ -295,7 +321,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         <div ref={userMenuRef} className="relative">
           <button
             onClick={() => setUserMenuOpen((o) => !o)}
-            className="flex items-center gap-2 p-1 rounded-lg hover:bg-white/5 transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1 transition-colors hover:bg-white/5 sm:border-0 sm:bg-transparent sm:px-1"
             aria-label="User menu"
           >
             {user?.avatarUrl ? (
@@ -337,6 +363,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           )}
         </div>
       </div>
+      </div>
     </header>
   );
 }
@@ -367,9 +394,11 @@ export default function DashboardLayout({
             </a>
             <DashboardHeader onToggleSidebar={toggleSidebar} />
             <Sidebar />
-            <main id="main-content" className="pt-12 pb-20 md:pb-0 md:pl-64 min-h-screen" role="main">
+            <main id="main-content" className="pt-32 pb-20 sm:pt-28 md:pt-12 md:pb-0 md:pl-64 min-h-screen" role="main">
               <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
-                <Breadcrumbs />
+                <div className="hidden md:block">
+                  <Breadcrumbs />
+                </div>
                 <PageErrorBoundary>
                   <OnboardingGuard>{children}</OnboardingGuard>
                 </PageErrorBoundary>

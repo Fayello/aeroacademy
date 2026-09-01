@@ -7,7 +7,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
-import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
+import { AdminInput, AdminTextarea, AdminSelect } from "@/components/admin/AdminForm";
 import PageHeader from "@/components/ui/PageHeader";
 
 interface AssessmentQuestion {
@@ -32,6 +32,7 @@ export default function AdminAssessmentsPage() {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; item: AssessmentItem | null }>({ open: false, item: null });
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const categorySummary = Array.from(new Set(assessments.map((assessment) => assessment.category).filter(Boolean))).length;
 
   const [form, setForm] = useState({
     title: "",
@@ -53,7 +54,12 @@ export default function AdminAssessmentsPage() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void load();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [load]);
 
   const openCreate = () => {
     setForm({
@@ -117,8 +123,8 @@ export default function AdminAssessmentsPage() {
     }
     setSaving(true);
     try {
-      await fetchApi("/assessments", {
-        method: "POST",
+      await fetchApi(modal.editing ? `/assessments/${modal.editing.id}` : "/assessments", {
+        method: modal.editing ? "PATCH" : "POST",
         body: JSON.stringify(form),
       });
       toast.success(modal.editing ? "Assessment updated" : "Assessment created");
@@ -169,6 +175,28 @@ export default function AdminAssessmentsPage() {
         </button>
       } />
 
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Assessment Governance</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Manage readiness checks with defensible structure</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Review category coverage, question quality, and answer integrity before publishing changes so assessments remain credible evaluation tools.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Assessment bank</p>
+              <p className="mt-2 text-sm font-semibold text-white">{assessments.length} active assessments</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Category coverage</p>
+              <p className="mt-2 text-sm font-semibold text-white">{categorySummary} tracked domains</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-3">
         {assessments.map((a) => (
           <div key={a.id} className="angular-card bg-[#0f172a] overflow-hidden">
@@ -196,13 +224,13 @@ export default function AdminAssessmentsPage() {
             </div>
             {expanded.has(a.id) && (
               <div className="px-4 pb-4 border-t border-white/10 pt-3 space-y-2">
-                <p className="text-xs text-slate-500">{a.description}</p>
+                <p className="text-xs text-slate-400">{a.description}</p>
                 {a.questions.map((q, i) => (
                   <div key={i} className="bg-white/5 rounded-lg p-3">
                     <p className="text-xs font-medium text-slate-300">{i + 1}. {q.text}</p>
                     <div className="mt-1.5 grid grid-cols-2 gap-1">
                       {q.options.map((opt) => (
-                        <span key={opt.key} className={`text-[10px] px-2 py-0.5 rounded ${opt.key === q.correctAnswer ? "bg-[#7AD62A]/10 text-[#0F203A] font-medium" : "bg-white/5 text-slate-500"}`}>
+                        <span key={opt.key} className={`text-[10px] px-2 py-0.5 rounded ${opt.key === q.correctAnswer ? "bg-[#7AD62A]/10 text-[#0F203A] font-medium" : "bg-white/5 text-slate-400"}`}>
                           {opt.key}. {opt.text}
                         </span>
                       ))}

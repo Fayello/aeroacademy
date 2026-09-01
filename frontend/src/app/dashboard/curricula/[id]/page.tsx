@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -16,6 +16,8 @@ import {
   Clock,
   Target,
   Beaker,
+  FileCheck,
+  ClipboardCheck,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 
@@ -63,7 +65,6 @@ interface Curriculum {
 
 export default function CurriculumDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -111,7 +112,6 @@ export default function CurriculumDetailPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
-      {/* Hero Header */}
       <div className="relative overflow-hidden rounded-2xl p-8 text-white" style={{ background: "linear-gradient(135deg, #0F203A, #229C62, #0d9488)" }}>
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
@@ -138,6 +138,36 @@ export default function CurriculumDetailPage() {
               {curriculum.year}
             </span>
           </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <ClipboardCheck size={16} className="text-[#7AD62A]" />
+            <h2 className="text-sm font-semibold text-white">Program intent</h2>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            This page should make it obvious how academic structure leads into practical capability, not just course delivery.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <FileCheck size={16} className="text-[#7AD62A]" />
+            <h2 className="text-sm font-semibold text-white">Review standard</h2>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Inspect time balance, outcome mapping, lab coverage, and cohort deployment before calling a curriculum complete.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <Users size={16} className="text-[#7AD62A]" />
+            <h2 className="text-sm font-semibold text-white">Operational use</h2>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            A strong curriculum should be teachable by instructors, understandable by learners, and reviewable by institutions.
+          </p>
         </div>
       </div>
 

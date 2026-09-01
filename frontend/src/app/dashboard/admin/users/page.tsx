@@ -3,12 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
-import { Users, Shield, GraduationCap, UserCheck, Trash2 } from "lucide-react";
+import { Users, Shield, GraduationCap, UserCheck, Trash2, ClipboardCheck, AlertTriangle } from "lucide-react";
 import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminSelect, AdminNumber, AdminTextarea, AdminStatusBadge } from "@/components/admin/AdminForm";
 import type { AdminUser, UserStats } from "@/types/api";
+import PageHeader from "@/components/ui/PageHeader";
 
 type EditingUser = Pick<AdminUser, "id" | "name" | "email" | "role" | "bio" | "city" | "xp"> | null;
 
@@ -133,6 +134,9 @@ export default function AdminUsersPage() {
   };
 
   const getRoleStats = (role: string) => stats?.byRole?.find((r) => r.role === role)?._count || 0;
+  const recruiterCount = getRoleStats("RECRUITER");
+  const adminCount = getRoleStats("ADMIN");
+  const studentCount = getRoleStats("STUDENT");
 
   const columns = [
     {
@@ -146,7 +150,7 @@ export default function AdminUsersPage() {
           </div>
           <div>
             <p className="font-medium text-white">{user.name || "No name"}</p>
-            <p className="text-xs text-slate-500">{user.email}</p>
+            <p className="text-xs text-slate-400">{user.email}</p>
           </div>
         </div>
       ),
@@ -160,28 +164,28 @@ export default function AdminUsersPage() {
       key: "xp",
       label: "XP",
       sortable: true,
-      render: (user: AdminUser) => <span className="font-mono text-sm text-slate-700">{(user.xp || 0).toLocaleString()}</span>,
+      render: (user: AdminUser) => <span className="font-mono text-sm text-slate-200">{(user.xp || 0).toLocaleString()}</span>,
     },
     {
       key: "level",
       label: "Level",
-      render: (user: AdminUser) => <span className="text-sm font-medium text-slate-700">Lv.{Math.floor((user.xp || 0) / 1000) + 1}</span>,
+      render: (user: AdminUser) => <span className="text-sm font-medium text-slate-200">Lv.{Math.floor((user.xp || 0) / 1000) + 1}</span>,
     },
     {
       key: "division",
       label: "Division",
-      render: (user: AdminUser) => <span className="text-sm text-slate-600">{user.division}</span>,
+      render: (user: AdminUser) => <span className="text-sm text-slate-300">{user.division}</span>,
     },
     {
       key: "organization",
       label: "Organization",
-      render: (user: AdminUser) => <span className="text-sm text-slate-600">{user.organization?.name || "-"}</span>,
+      render: (user: AdminUser) => <span className="text-sm text-slate-300">{user.organization?.name || "-"}</span>,
     },
     {
       key: "_count",
       label: "Activity",
       render: (user: AdminUser) => (
-        <div className="flex gap-2 text-xs text-slate-500">
+        <div className="flex gap-2 text-xs text-slate-400">
           <span>{user._count?.progress || 0} lessons</span>
           <span>{user._count?.labSubmissions || 0} labs</span>
         </div>
@@ -191,49 +195,116 @@ export default function AdminUsersPage() {
       key: "createdAt",
       label: "Joined",
       sortable: true,
-      render: (user: AdminUser) => <span className="text-sm text-slate-500">{new Date(user.createdAt).toLocaleDateString()}</span>,
+      render: (user: AdminUser) => <span className="text-sm text-slate-400">{new Date(user.createdAt).toLocaleDateString()}</span>,
     },
   ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-[#7AD62A] via-[#0F203A] to-teal-800 p-8 text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10 flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center"><Users size={28} /></div>
+      <PageHeader
+        title="User Management"
+        description="Control platform access, role hygiene, and account quality from one governed workflow"
+      />
+
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6 sm:p-7">
+        <div className="absolute inset-0 dot-grid-bg opacity-[0.04] pointer-events-none" />
+        <div className="relative grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <h1 className="text-2xl font-bold">Manage Users</h1>
-            <p className="text-white/80 text-sm">{stats?.total || 0} total users</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Access Governance</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Manage people, not just records</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
+              Review role distribution, learner activity, and organization linkage together so account changes stay deliberate and defensible.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Total accounts</p>
+                <p className="mt-2 text-sm font-semibold text-white">{stats?.total || 0} visible users</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Role-sensitive users</p>
+                <p className="mt-2 text-sm font-semibold text-white">{adminCount + recruiterCount} admin and recruiter accounts</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Primary population</p>
+                <p className="mt-2 text-sm font-semibold text-white">{studentCount} learner accounts</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[#7AD62A]/20 bg-[#0b1627]/80 p-5">
+            <div className="flex items-center gap-2">
+              <ClipboardCheck size={16} className="text-[#7AD62A]" />
+              <p className="text-sm font-semibold text-white">Recommended review order</p>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[
+                "Check role filters before applying bulk edits.",
+                "Review organization and activity signals before changing access.",
+                "Reserve deletions for clear account cleanup, not normal role changes.",
+              ].map((item) => (
+                <div key={item} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-300">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="angular-card bg-[#0f172a] p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center"><Users size={18} className="text-[#7AD62A]" /></div>
-            <div><p className="text-lg font-bold text-white">{stats?.total || 0}</p><p className="text-xs text-slate-500">Total</p></div>
+            <div><p className="text-lg font-bold text-white">{stats?.total || 0}</p><p className="text-xs text-slate-400">Total</p></div>
           </div>
         </div>
         <div className="angular-card bg-[#0f172a] p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"><GraduationCap size={18} className="text-blue-600" /></div>
-            <div><p className="text-lg font-bold text-white">{getRoleStats("STUDENT")}</p><p className="text-xs text-slate-500">Students</p></div>
+            <div><p className="text-lg font-bold text-white">{studentCount}</p><p className="text-xs text-slate-400">Students</p></div>
           </div>
         </div>
         <div className="angular-card bg-[#0f172a] p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center"><Shield size={18} className="text-purple-600" /></div>
-            <div><p className="text-lg font-bold text-white">{getRoleStats("ADMIN")}</p><p className="text-xs text-slate-500">Admins</p></div>
+            <div><p className="text-lg font-bold text-white">{adminCount}</p><p className="text-xs text-slate-400">Admins</p></div>
           </div>
         </div>
         <div className="angular-card bg-[#0f172a] p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center"><UserCheck size={18} className="text-orange-600" /></div>
-            <div><p className="text-lg font-bold text-white">{getRoleStats("RECRUITER")}</p><p className="text-xs text-slate-500">Recruiters</p></div>
+            <div><p className="text-lg font-bold text-white">{recruiterCount}</p><p className="text-xs text-slate-400">Recruiters</p></div>
           </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={16} className="text-amber-400" />
+            <h3 className="text-sm font-semibold text-white">Role-change caution</h3>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Treat admin and recruiter assignments as governance events. Review account activity and organization context before promoting access.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <ClipboardCheck size={16} className="text-[#7AD62A]" />
+            <h3 className="text-sm font-semibold text-white">What to check first</h3>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Filter by role, scan organization linkage, then use activity counts to confirm whether the account is active, dormant, or misconfigured.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <UserCheck size={16} className="text-[#7AD62A]" />
+            <h3 className="text-sm font-semibold text-white">Bulk actions</h3>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Use bulk role changes for planned access reviews. Use bulk deletion only for clear cleanup cases where records should not remain active.
+          </p>
         </div>
       </div>
 
@@ -253,7 +324,7 @@ export default function AdminUsersPage() {
           { label: "Delete", icon: <Trash2 size={16} />, variant: "danger", onClick: handleBatchDelete },
         ]}
         filters={
-          <select value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); loadUsers(e.target.value); }} className="px-3 py-2.5 rounded-xl border border-white/10 text-sm bg-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20">
+          <select value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); loadUsers(e.target.value); }} className="rounded-xl border border-white/10 bg-[#0f172a] px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20">
             <option value="">All Roles</option>
             <option value="STUDENT">Students</option>
             <option value="ADMIN">Admins</option>
@@ -263,7 +334,7 @@ export default function AdminUsersPage() {
       />
 
       {/* Edit Modal (view-only for users) */}
-      <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Edit User" footer={<div className="flex gap-3 justify-end"><button onClick={() => setModalOpen(false)} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={handleSave} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
+      <AdminModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Edit User" footer={<div className="flex gap-3 justify-end"><button onClick={() => setModalOpen(false)} className="rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-200 hover:bg-white/5">Cancel</button><button onClick={handleSave} disabled={saving} className="rounded-xl bg-[#7AD62A] px-4 py-2.5 text-sm font-medium text-[#0F203A] hover:bg-[#6bc422] disabled:opacity-50">{saving ? "Saving..." : "Save"}</button></div>}>
         <div className="space-y-4">
           <AdminInput label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Full name" />
           <AdminInput label="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" required />
@@ -276,8 +347,8 @@ export default function AdminUsersPage() {
 
       <AdminConfirmDialog isOpen={deleteDialog.isOpen} onClose={() => setDeleteDialog({ isOpen: false, item: null })} onConfirm={handleDelete} title="Delete User" message={`Permanently delete "${deleteDialog.item?.email}"? This cannot be undone.`} loading={saving} />
 
-      <AdminModal isOpen={batchRole.open} onClose={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} title="Change User Roles" footer={<div className="flex gap-3 justify-end"><button onClick={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium">Cancel</button><button onClick={confirmBatchRole} disabled={saving} className="px-4 py-2.5 rounded-xl bg-[#7AD62A] hover:bg-[#0F203A] text-white text-sm font-medium disabled:opacity-50">{saving ? "Saving..." : "Apply Role"}</button></div>}>
-        <p className="text-sm text-slate-600 mb-4">Set the role for <span className="font-semibold text-white">{batchRole.items.length}</span> selected user{batchRole.items.length !== 1 ? "s" : ""}. Your own role cannot be changed.</p>
+      <AdminModal isOpen={batchRole.open} onClose={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} title="Change User Roles" footer={<div className="flex gap-3 justify-end"><button onClick={() => setBatchRole({ open: false, items: [], role: "STUDENT" })} className="rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-200 hover:bg-white/5">Cancel</button><button onClick={confirmBatchRole} disabled={saving} className="rounded-xl bg-[#7AD62A] px-4 py-2.5 text-sm font-medium text-[#0F203A] hover:bg-[#6bc422] disabled:opacity-50">{saving ? "Saving..." : "Apply Role"}</button></div>}>
+        <p className="mb-4 text-sm text-slate-300">Set the role for <span className="font-semibold text-white">{batchRole.items.length}</span> selected user{batchRole.items.length !== 1 ? "s" : ""}. Your own role cannot be changed.</p>
         <AdminSelect label="Role" value={batchRole.role} onChange={(e) => setBatchRole({ ...batchRole, role: e.target.value })} options={[{ value: "STUDENT", label: "Student" }, { value: "ADMIN", label: "Admin" }, { value: "RECRUITER", label: "Recruiter" }]} />
       </AdminModal>
 

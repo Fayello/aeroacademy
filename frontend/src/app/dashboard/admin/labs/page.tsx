@@ -3,13 +3,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
-import { Microscope, Shield, Plus, Pencil, Trash2, ChevronRight, ArrowLeft } from "lucide-react";
+import { Microscope, Shield, Plus, Pencil, Trash2, ChevronRight, ArrowLeft, ClipboardCheck, AlertTriangle } from "lucide-react";
 import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminNumber } from "@/components/admin/AdminForm";
 import type { AdminLab, AdminLabFlag } from "@/types/api";
 import { getDifficultyStyle } from "@/lib/labs";
+import PageHeader from "@/components/ui/PageHeader";
 
 function getDifficultyLabel(d: number) {
   const s = getDifficultyStyle(d);
@@ -144,9 +145,14 @@ export default function AdminLabsPage() {
   if (!selectedLab) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
+        <PageHeader
+          title="Lab Management"
+          description="Control lab definitions, difficulty, and flag evidence without compromising platform safety"
+        />
+
         <div className="relative overflow-hidden angular-card bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center"><Microscope size={28} /></div>
               <div>
@@ -160,17 +166,47 @@ export default function AdminLabsPage() {
           </div>
         </div>
 
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+            <div className="flex items-center gap-2">
+              <ClipboardCheck size={16} className="text-[#7AD62A]" />
+              <h3 className="text-sm font-semibold text-white">What to review</h3>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Confirm the lab objective, linked Docker image, and difficulty signal before publishing or changing a lab definition.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+            <div className="flex items-center gap-2">
+              <Shield size={16} className="text-[#7AD62A]" />
+              <h3 className="text-sm font-semibold text-white">Flag integrity</h3>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Flags should validate meaningful proof of work. Keep scoring proportional and answers tightly controlled.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-amber-500/20 bg-[#0f172a] p-5">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={16} className="text-amber-400" />
+              <h3 className="text-sm font-semibold text-white">Platform safety</h3>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Editing a lab definition is allowed here, but core lab Docker images remain protected operational assets and should not be treated like disposable content.
+            </p>
+          </div>
+        </div>
+
         <AdminTable
           columns={[
             { key: "title", label: "Lab", sortable: true, render: (lab: AdminLab) => (
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0"><Microscope size={18} className="text-violet-600" /></div>
-                <div><p className="font-medium text-white">{lab.title}</p><p className="text-xs text-slate-500 font-mono truncate max-w-[200px]">{lab.dockerImage}</p></div>
+                <div><p className="font-medium text-white">{lab.title}</p><p className="text-xs text-slate-400 font-mono truncate max-w-[200px]">{lab.dockerImage}</p></div>
               </div>
             )},
             { key: "difficulty", label: "Difficulty", sortable: true, render: (lab: AdminLab) => { const d = getDifficultyLabel(lab.difficulty || 1200); return <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${d.color}`}>{d.label}</span>; }},
-            { key: "flags", label: "Flags", render: (lab: AdminLab) => <span className="flex items-center gap-1.5 text-slate-600"><Shield size={14} className="text-slate-400" />{lab.flags?.length || 0}</span> },
-            { key: "basePath", label: "Base Path", render: (lab: AdminLab) => <span className="text-xs font-mono text-slate-500">{lab.basePath || "/"}</span> },
+            { key: "flags", label: "Flags", render: (lab: AdminLab) => <span className="flex items-center gap-1.5 text-slate-300"><Shield size={14} className="text-slate-400" />{lab.flags?.length || 0}</span> },
+            { key: "basePath", label: "Base Path", render: (lab: AdminLab) => <span className="text-xs font-mono text-slate-400">{lab.basePath || "/"}</span> },
           ]}
           data={labs}
           loading={loading}
@@ -210,7 +246,7 @@ export default function AdminLabsPage() {
   // === Lab Detail / Flags View ===
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
+      <div className="flex items-center gap-2 text-sm text-slate-400 mb-2">
         <button onClick={() => setSelectedLab(null)} className="hover:text-[#7AD62A] transition-colors">Labs</button>
         <ChevronRight size={14} />
         <span className="text-white font-medium">{selectedLab?.title}</span>
@@ -232,6 +268,27 @@ export default function AdminLabsPage() {
         </div>
       </div>
 
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Definition quality</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Keep the lab title, briefing, and flag set aligned so learners know what the exercise proves and reviewers know what success means.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Assessment evidence</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Use multiple flags only when they reflect staged proof, not artificial difficulty. Each flag should map to a meaningful milestone.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Operator caution</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Before removing a lab, review whether downstream courses, lessons, or existing learner records still depend on it.
+          </p>
+        </div>
+      </div>
+
       <div className="grid gap-4">
         {selectedLab!.flags?.map((flag) => (
           <div key={flag.id} className="angular-card bg-[#0f172a] p-5 hover:shadow-lg transition-all">
@@ -240,7 +297,7 @@ export default function AdminLabsPage() {
                 <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><Shield size={18} className="text-amber-600" /></div>
                 <div>
                   <h3 className="font-semibold text-white">{flag.title}</h3>
-                  {flag.description && <p className="text-sm text-slate-500 line-clamp-1 max-w-md">{flag.description}</p>}
+                  {flag.description && <p className="text-sm text-slate-400 line-clamp-1 max-w-md">{flag.description}</p>}
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -254,7 +311,7 @@ export default function AdminLabsPage() {
         {(!selectedLab!.flags || selectedLab!.flags.length === 0) && (
           <div className="text-center py-12 angular-card bg-[#0f172a]">
             <Shield size={40} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-slate-500">No flags yet. Add CTF flags for this lab.</p>
+            <p className="text-slate-400">No flags yet. Add CTF flags for this lab.</p>
           </div>
         )}
       </div>

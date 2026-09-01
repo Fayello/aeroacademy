@@ -5,6 +5,7 @@ import { ScrollText, Users, ShieldCheck, AlertTriangle, Loader2, ChevronLeft, Ch
 import { fetchApi } from "@/lib/api";
 import type { AuditLog, AuditLogResponse } from "@/types/api";
 import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface Summary {
   byAction: { action: string; count: number }[];
@@ -93,8 +94,12 @@ export default function AdminAuditPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-50 via-white to-slate-50 p-8 text-white border border-white/10">
+      <PageHeader
+        title="Audit Logs"
+        description="Review the administrative and security trail with clearer signals for scale, errors, and follow-up"
+      />
+
+      <div className="relative overflow-hidden angular-card border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-3">
@@ -103,7 +108,7 @@ export default function AdminAuditPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Audit Logs</h1>
-              <p className="text-sm text-slate-500">Immutable trail of administrative and security-relevant actions</p>
+              <p className="text-sm text-slate-300">Immutable trail of administrative and security-relevant actions</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
@@ -123,6 +128,29 @@ export default function AdminAuditPage() {
         </div>
       </div>
 
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Review order</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Start with summary volume, filter on unusual actions or error states, then open details only where context or follow-up is needed.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Operational use</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            This page should support accountability, incident review, and governance evidence rather than act like a raw developer log dump.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Current signal</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            {(summary?.last24h || 0) > 0
+              ? `${summary?.last24h || 0} events were recorded in the last 24 hours. Use this with status filters to isolate exceptions quickly.`
+              : "No recent events are visible yet. Once activity is present, use action and status filters to narrow review."}
+          </p>
+        </div>
+      </div>
+
       {/* Top actions */}
       <div className="angular-card bg-[#0f172a] p-6">
         <h3 className="font-semibold text-white mb-4">Most Frequent Actions</h3>
@@ -134,7 +162,7 @@ export default function AdminAuditPage() {
               className={`p-4 rounded-xl border text-left transition-all ${action === a.action ? "border-[#7AD62A] bg-[#7AD62A]/10" : "border-white/10 hover:border-[#7AD62A]/30 hover:shadow-sm"}`}
             >
               <div className="text-xl font-bold text-white">{a.count}</div>
-              <div className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide truncate">{a.action}</div>
+              <div className="mt-1 truncate text-[11px] uppercase tracking-wide text-slate-400">{a.action}</div>
             </button>
           ))}
         </div>
@@ -143,7 +171,7 @@ export default function AdminAuditPage() {
       {/* Filters */}
       <div className="angular-card bg-[#0f172a] p-4 flex flex-wrap items-end gap-3">
         <div className="flex-1 min-w-[180px]">
-          <label className="block text-xs font-medium text-slate-500 mb-1">Action</label>
+          <label className="mb-1 block text-xs font-medium text-slate-400">Action</label>
           <select value={action} onChange={(e) => handleFilterChange(e.target.value, status)} className="input-field">
             <option value="">All actions</option>
             {uniqueActions.map((a) => (
@@ -152,7 +180,7 @@ export default function AdminAuditPage() {
           </select>
         </div>
         <div className="min-w-[160px]">
-          <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
+          <label className="mb-1 block text-xs font-medium text-slate-400">Status</label>
           <select value={status} onChange={(e) => handleFilterChange(action, e.target.value)} className="input-field">
             <option value="">All</option>
             <option value="success">Success</option>
@@ -182,7 +210,7 @@ export default function AdminAuditPage() {
                 <th className="px-6 py-4 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider w-16">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/10">
               {loading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-16 text-center">
@@ -222,7 +250,7 @@ export default function AdminAuditPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4"><StatusBadge code={log.statusCode} /></td>
-                    <td className="px-6 py-4 text-xs font-mono text-slate-500">{log.ip || "—"}</td>
+                    <td className="px-6 py-4 text-xs font-mono text-slate-400">{log.ip || "—"}</td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => setSelected(log)}
@@ -242,7 +270,7 @@ export default function AdminAuditPage() {
         {/* Pagination */}
         {!loading && logs.length > 0 && (
           <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-400">
               Showing {((page - 1) * PAGE_SIZE) + 1} to {Math.min(page * PAGE_SIZE, total)} of {total} events
             </p>
             <div className="flex items-center gap-2">
@@ -270,7 +298,7 @@ export default function AdminAuditPage() {
       {selected && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setSelected(null)} aria-hidden="true" />
-          <div className="relative angular-card bg-[#0f172a] shadow-xl w-full max-w-lg overflow-hidden">
+          <div className="relative angular-card max-h-[85vh] w-full max-w-lg overflow-hidden bg-[#0f172a] shadow-xl">
             <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ActionBadge action={selected.action} />
@@ -280,18 +308,18 @@ export default function AdminAuditPage() {
                 <X size={18} />
               </button>
             </div>
-            <div className="p-6 space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4 overflow-y-auto p-6 text-sm">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide">Actor</p>
                   <p className="font-medium text-white mt-0.5">{selected.actor?.name || "System"}</p>
-                  <p className="text-xs text-slate-500">{selected.actorEmail || selected.actor?.email || "unauthenticated"}</p>
+                  <p className="text-xs text-slate-400">{selected.actorEmail || selected.actor?.email || "unauthenticated"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide">Timestamp</p>
                   <p className="font-medium text-white mt-0.5">{new Date(selected.createdAt).toLocaleString()}</p>
                   {selected.metadata?.durationMs != null && (
-                    <p className="text-xs text-slate-500">{selected.metadata.durationMs}ms</p>
+                    <p className="text-xs text-slate-400">{selected.metadata.durationMs}ms</p>
                   )}
                 </div>
                 <div>

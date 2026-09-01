@@ -144,8 +144,8 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, categor
         )}
 
         {/* Top badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <div className="flex items-center gap-1.5">
+        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-1.5 pr-2">
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded border ${categoryStyle.bg} ${categoryStyle.color}`}>
               {categoryStyle.label}
             </span>
@@ -156,19 +156,21 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, categor
               </span>
             )}
           </div>
-          <button
-            onClick={(e) => onToggleFavorite(course.id, e)}
-            className="p-1.5 rounded-lg bg-[#0f172a]/90 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
-            aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
-          </button>
-          {isLocked && (
-            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-[#0f172a]/90 text-slate-400 border border-white/10 backdrop-blur-sm">
-              <Lock size={10} />
-              Lv.{gate.requiredLevel}
-            </span>
-          )}
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <button
+              onClick={(e) => onToggleFavorite(course.id, e)}
+              className="p-1.5 rounded-lg bg-[#0f172a]/90 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
+              aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart size={14} className={isFavorited ? "text-red-500 fill-red-500" : "text-slate-400"} />
+            </button>
+            {isLocked && (
+              <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded bg-[#0f172a]/90 text-slate-400 border border-white/10 backdrop-blur-sm">
+                <Lock size={10} />
+                Lv.{gate.requiredLevel}
+              </span>
+            )}
+          </div>
         </div>
         <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[#0f172a] to-transparent" />
       </div>
@@ -197,14 +199,14 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, categor
         </div>
 
         {/* Stats row */}
-        <div className="flex items-center gap-3 text-xs text-slate-400">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
           <StarRating rating={course.averageRating || 0} />
-          <span>·</span>
+          <span className="hidden sm:inline">·</span>
           <span className="flex items-center gap-1">
             <Users size={11} className="text-slate-400" />
             {course._count?.enrollments || 0}
           </span>
-          <span>·</span>
+          <span className="hidden sm:inline">·</span>
           <span className="flex items-center gap-1">
             <Layers size={11} className="text-slate-400" />
             {sectionCount} modules
@@ -258,7 +260,7 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, category
   onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
   const inner = (
-    <div className={`group flex items-center gap-4 px-4 py-3 bg-[#0f172a] border-b border-white/6 hover:bg-white/5 transition-colors ${isLocked ? "opacity-50" : ""}`}>
+    <div className={`group flex items-center gap-3 px-4 py-3 bg-[#0f172a] border-b border-white/6 hover:bg-white/5 transition-colors ${isLocked ? "opacity-50" : ""}`}>
       {/* Rank */}
       <span className="text-xs text-slate-400 w-6 text-center shrink-0">{index + 1}</span>
 
@@ -304,7 +306,7 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, category
       </div>
 
       {/* Action */}
-      <div className="w-24 shrink-0 text-right flex items-center justify-end gap-2">
+      <div className="w-20 shrink-0 text-right flex items-center justify-end gap-2">
         <button
           onClick={(e) => onToggleFavorite(course.id, e)}
           className="p-1 rounded-md hover:bg-white/5 transition-colors"
@@ -422,6 +424,7 @@ export default function CoursesPage() {
     "in-progress": courses.filter((c) => !!enrollments[c.id]).length,
     completed: courses.filter((c) => c.progress === 100).length,
   };
+  const hasFilters = Boolean(searchQuery || selectedCategory || selectedDifficulty || activeTab !== "all");
 
   if (loading) {
     return (
@@ -449,13 +452,13 @@ export default function CoursesPage() {
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-4">
-        <div className="angular-card bg-[#0f172a] border border-white/10 p-6">
+        <div className="angular-card bg-[#0f172a] border border-white/10 p-5 sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Training Architecture</p>
           <h2 className="text-xl font-bold text-white mt-2">Choose a pathway you can finish with confidence</h2>
           <p className="text-sm text-slate-400 mt-3 max-w-2xl leading-relaxed">
             Each course is part of a larger progression system: build foundations, complete practical work, prepare for assessments, and move toward verifiable outcomes.
           </p>
-          <div className="grid sm:grid-cols-3 gap-3 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
             {[
               { title: "Learn", text: "Structured modules and guided lessons", icon: BookOpen },
               { title: "Prove", text: "Lab-linked skill application and progress evidence", icon: ShieldCheck },
@@ -470,7 +473,7 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-6">
+        <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-5 sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">At A Glance</p>
           <div className="grid grid-cols-2 gap-3 mt-4">
             {[
@@ -490,47 +493,54 @@ export default function CoursesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-white/10">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-              activeTab === tab.id
-                ? "border-[#7AD62A] text-[#7AD62A]"
-                : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
-            }`}
-          >
-            {tab.label}
-            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
-            }`}>
-              {tabCounts[tab.id]}
-            </span>
-          </button>
-        ))}
+      <div className="flex flex-col gap-3 border-b border-white/10 pb-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="overflow-x-auto -mx-1 px-1">
+          <div className="flex min-w-max items-center gap-1">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "border-[#7AD62A] text-[#7AD62A]"
+                    : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
+                }`}
+              >
+                {tab.label}
+                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+                  activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
+                }`}>
+                  {tabCounts[tab.id]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <div className="ml-auto flex items-center gap-1">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
-            aria-label="Grid view"
-          >
-            <LayoutGrid size={16} />
-          </button>
-          <button
-            onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
-            aria-label="Table view"
-          >
-            <List size={16} />
-          </button>
+        <div className="flex items-center justify-between gap-3 sm:justify-end">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 sm:hidden">View mode</p>
+          <div className="hidden items-center gap-1 sm:flex">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
+              aria-label="Grid view"
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
+              aria-label="Table view"
+            >
+              <List size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Search & Filters */}
       <div className="space-y-3">
-        <div className="relative max-w-md">
+        <div className="relative max-w-none sm:max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -541,65 +551,75 @@ export default function CoursesPage() {
           />
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-              !selectedCategory
-                ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
-                : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
-            }`}
-          >
-            All
-          </button>
-          {activeCategories.map((cat) => {
-            const style = getCategoryStyle(cat);
-            return (
+        <div className="space-y-2">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Categories</p>
+          <div className="-mx-1 overflow-x-auto px-1">
+            <div className="flex min-w-max items-center gap-2">
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                  selectedCategory === cat
-                    ? `${style.bg} ${style.color}`
+                onClick={() => setSelectedCategory(null)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-all ${
+                  !selectedCategory
+                    ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
                     : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
                 }`}
               >
-                {style.label}
+                All
               </button>
-            );
-          })}
+              {activeCategories.map((cat) => {
+                const style = getCategoryStyle(cat);
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-all ${
+                      selectedCategory === cat
+                        ? `${style.bg} ${style.color}`
+                        : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
+                    }`}
+                  >
+                    {style.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {courses.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedDifficulty(null)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                  !selectedDifficulty
-                    ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
-                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
-              }`}
-            >
-              All levels
-            </button>
-            {Object.entries(DIFFICULTY_MAP).map(([key, d]) => (
-              <button
-                key={key}
-                onClick={() => setSelectedDifficulty(selectedDifficulty === d.dots ? null : d.dots)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-                    selectedDifficulty === d.dots
-                    ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
-                    : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
-                }`}
-              >
-                {d.label}
-              </button>
-            ))}
+          <div className="space-y-2">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Difficulty</p>
+            <div className="-mx-1 overflow-x-auto px-1">
+              <div className="flex min-w-max items-center gap-2">
+                <button
+                  onClick={() => setSelectedDifficulty(null)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-all ${
+                    !selectedDifficulty
+                      ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
+                      : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
+                  }`}
+                >
+                  All levels
+                </button>
+                {Object.entries(DIFFICULTY_MAP).map(([key, d]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedDifficulty(selectedDifficulty === d.dots ? null : d.dots)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border whitespace-nowrap transition-all ${
+                      selectedDifficulty === d.dots
+                        ? "bg-[#7AD62A] text-[#0F203A] border-[#7AD62A]"
+                        : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
 
-      {(searchQuery || selectedCategory || selectedDifficulty || activeTab !== "all") && (
+      {hasFilters && (
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
           <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
             {filteredCourses.length} result{filteredCourses.length !== 1 ? "s" : ""}
@@ -658,7 +678,7 @@ export default function CoursesPage() {
           )}
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredCourses.map((course, index) => {
             const firstSectionTitle = course.sections?.[0]?.title || "";
             const gate = getCourseLock(firstSectionTitle, level);
@@ -686,42 +706,70 @@ export default function CoursesPage() {
           })}
         </div>
       ) : (
-        <div className="angular-card overflow-hidden">
-          {/* Table header */}
-          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-            <span className="w-6 text-center shrink-0">#</span>
-            <span className="flex-1">Course</span>
-            <span className="hidden sm:block w-28 shrink-0">Difficulty</span>
-            <span className="hidden md:block w-16 shrink-0">Rating</span>
-            <span className="hidden md:block w-16 shrink-0">Enrolled</span>
-            <span className="hidden lg:block w-20 shrink-0">Modules</span>
-            <span className="w-24 shrink-0 text-right">Action</span>
-          </div>
-          {filteredCourses.map((course, index) => {
-            const firstSectionTitle = course.sections?.[0]?.title || "";
-            const gate = getCourseLock(firstSectionTitle, level);
-            const isLocked = gate.locked;
-            const isEnrolled = !!enrollments[course.id];
-            const sectionCount = course._count?.sections || course.sections?.length || 0;
-            const categoryStyle = getCategoryStyle(course.category);
-            const difficulty = getDifficulty(course.difficulty || 1);
+        <>
+          <div className="angular-card overflow-hidden hidden md:block">
+            <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="w-6 text-center shrink-0">#</span>
+              <span className="flex-1">Course</span>
+              <span className="hidden sm:block w-28 shrink-0">Difficulty</span>
+              <span className="hidden md:block w-16 shrink-0">Rating</span>
+              <span className="hidden md:block w-16 shrink-0">Enrolled</span>
+              <span className="hidden lg:block w-20 shrink-0">Modules</span>
+              <span className="w-20 shrink-0 text-right">Action</span>
+            </div>
+            {filteredCourses.map((course, index) => {
+              const firstSectionTitle = course.sections?.[0]?.title || "";
+              const gate = getCourseLock(firstSectionTitle, level);
+              const isLocked = gate.locked;
+              const isEnrolled = !!enrollments[course.id];
+              const sectionCount = course._count?.sections || course.sections?.length || 0;
+              const categoryStyle = getCategoryStyle(course.category);
+              const difficulty = getDifficulty(course.difficulty || 1);
 
-            return (
-              <CourseRow
-                key={course.id}
-                course={course}
-                index={index}
-                isLocked={isLocked}
-                isEnrolled={isEnrolled}
-                sectionCount={sectionCount}
-                categoryStyle={categoryStyle}
-                difficulty={difficulty}
-                isFavorited={favorites.has(course.id)}
-                onToggleFavorite={toggleFavorite}
-              />
-            );
-          })}
-        </div>
+              return (
+                <CourseRow
+                  key={course.id}
+                  course={course}
+                  index={index}
+                  isLocked={isLocked}
+                  isEnrolled={isEnrolled}
+                  sectionCount={sectionCount}
+                  categoryStyle={categoryStyle}
+                  difficulty={difficulty}
+                  isFavorited={favorites.has(course.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              );
+            })}
+          </div>
+
+          <div className="space-y-3 md:hidden">
+            {filteredCourses.map((course, index) => {
+              const firstSectionTitle = course.sections?.[0]?.title || "";
+              const gate = getCourseLock(firstSectionTitle, level);
+              const isLocked = gate.locked;
+              const isEnrolled = !!enrollments[course.id];
+              const sectionCount = course._count?.sections || course.sections?.length || 0;
+              const categoryStyle = getCategoryStyle(course.category);
+              const difficulty = getDifficulty(course.difficulty || 1);
+
+              return (
+                <CourseRow
+                  key={course.id}
+                  course={course}
+                  index={index}
+                  isLocked={isLocked}
+                  isEnrolled={isEnrolled}
+                  sectionCount={sectionCount}
+                  categoryStyle={categoryStyle}
+                  difficulty={difficulty}
+                  isFavorited={favorites.has(course.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

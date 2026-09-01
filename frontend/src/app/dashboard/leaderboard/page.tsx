@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboard } from "@/hooks/useDashboard";
-import { Trophy, Loader2, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network, Users, MapPin } from "lucide-react";
+import { Trophy, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network, Users, Medal, Award } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { fetchApi, fetchApiV2 } from "@/lib/api";
 import toast from "@/lib/toast";
@@ -27,6 +27,19 @@ interface GlobalRankProfile {
   domainRanks: { domain: string; domainId: string; rating: number; division: string; divisionTier: number }[];
 }
 
+interface TeamLeaderboardEntry {
+  id: string;
+  name: string;
+  visibility: "PUBLIC" | "PRIVATE";
+  memberCount: number;
+  avgXp: number | null;
+  totalXp: number | null;
+  owner?: {
+    username?: string | null;
+    name?: string | null;
+  } | null;
+}
+
 const DOMAIN_ICONS: Record<string, typeof Shield> = {
   SECURITY: Bug, NETWORKING: Network, SYSTEMS: Server, DATABASES: Database, DEVOPS: Code, QA: Target,
 };
@@ -35,23 +48,23 @@ function romanTier(tier: number): string {
   return ["IV", "III", "II", "I"][tier - 1] || "IV";
 }
 
-const CITY_FLAGS: Record<string, string> = {
-  "yaoundé": "🇨🇲", "yaounde": "🇨🇲", "douala": "🇨🇲", "bafoussam": "🇨🇲", "bamenda": "🇨🇲",
-  "garoua": "🇨🇲", "maroua": "🇨🇲", "bertoua": "🇨🇲", "ebolowa": "🇨🇲", "kribi": "🇨🇲",
-  "limbe": "🇨🇲", "buea": "🇨🇲", "kumba": "🇨🇲", "ndjamena": "🇹🇩", "kinshasa": "🇨🇩",
-  "lagos": "🇳🇬", "abuja": "🇳🇬", "accra": "🇬🇭", "nairobi": "🇰🇪", "addis ababa": "🇪🇹",
-  "dakar": "🇸🇳", "casablanca": "🇲🇦", "tunis": "🇹🇳", "cairo": "🇪🇬", "johannesburg": "🇿🇦",
-  "cape town": "🇿🇦", "dubai": "🇦🇪", "london": "🇬🇧", "paris": "🇫🇷", "berlin": "🇩🇪",
-  "new york": "🇺🇸", "san francisco": "🇺🇸", "toronto": "🇨🇦", "montreal": "🇨🇦",
-  "tokyo": "🇯🇵", "seoul": "🇰🇷", "beijing": "🇨🇳", "shanghai": "🇨🇳", "mumbai": "🇮🇳",
-  "delhi": "🇮🇳", "bangalore": "🇮🇳", "sydney": "🇦🇺", "melbourne": "🇦🇺", "são paulo": "🇧🇷",
-  "sao paulo": "🇧🇷", "buenos aires": "🇦🇷", "mexico city": "🇲🇽", "singapore": "🇸🇬",
-  "hong kong": "🇭🇰", "istanbul": "🇹🇷", "moscow": "🇷🇺", "washington": "🇺🇸",
+const CITY_CODES: Record<string, string> = {
+  "yaoundé": "CM", "yaounde": "CM", "douala": "CM", "bafoussam": "CM", "bamenda": "CM",
+  "garoua": "CM", "maroua": "CM", "bertoua": "CM", "ebolowa": "CM", "kribi": "CM",
+  "limbe": "CM", "buea": "CM", "kumba": "CM", "ndjamena": "TD", "kinshasa": "CD",
+  "lagos": "NG", "abuja": "NG", "accra": "GH", "nairobi": "KE", "addis ababa": "ET",
+  "dakar": "SN", "casablanca": "MA", "tunis": "TN", "cairo": "EG", "johannesburg": "ZA",
+  "cape town": "ZA", "dubai": "AE", "london": "GB", "paris": "FR", "berlin": "DE",
+  "new york": "US", "san francisco": "US", "toronto": "CA", "montreal": "CA",
+  "tokyo": "JP", "seoul": "KR", "beijing": "CN", "shanghai": "CN", "mumbai": "IN",
+  "delhi": "IN", "bangalore": "IN", "sydney": "AU", "melbourne": "AU", "são paulo": "BR",
+  "sao paulo": "BR", "buenos aires": "AR", "mexico city": "MX", "singapore": "SG",
+  "hong kong": "HK", "istanbul": "TR", "moscow": "RU", "washington": "US",
 };
 
 function getFlag(city: string | null): string {
-  if (!city) return "🌍";
-  return CITY_FLAGS[city.toLowerCase()] || "🌍";
+  if (!city) return "Global";
+  return CITY_CODES[city.toLowerCase()] || "Global";
 }
 
 function getCityLabel(city: string | null): string {
@@ -64,8 +77,26 @@ export default function LeaderboardPage() {
   const { socket, leaderboard: contextLeaderboard, userMetrics, isConnected } = useDashboard();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<{ name?: string; username?: string; points?: number } | null>(null);
+  const [currentUserId] = useState<string | null>(() => {
+    try {
+      const user = localStorage.getItem("user");
+      if (!user) return null;
+      const parsed = JSON.parse(user);
+      return parsed.id ?? null;
+    } catch {
+      return null;
+    }
+  });
+  const [currentUser] = useState<{ name?: string; username?: string; points?: number } | null>(() => {
+    try {
+      const user = localStorage.getItem("user");
+      if (!user) return null;
+      const parsed = JSON.parse(user);
+      return { name: parsed.name, username: parsed.username, points: parsed.points };
+    } catch {
+      return null;
+    }
+  });
   const [activeLeague, setActiveLeague] = useState<"GLOBAL" | "REGIONAL" | "UNIVERSITY" | "TEAMS">("GLOBAL");
   const [filter, setFilter] = useState("");
   const [leagueStats, setLeagueStats] = useState<LeagueStats>({ regional: [], university: [], season: null });
@@ -73,25 +104,8 @@ export default function LeaderboardPage() {
   const [timeFilter, setTimeFilter] = useState<"all" | "month" | "week">("all");
   const [domainFilter, setDomainFilter] = useState<"all" | "SECURITY" | "NETWORKING" | "DEVOPS" | "DATABASES" | "SYSTEMS" | "QA">("all");
   const [globalProfile, setGlobalProfile] = useState<GlobalRankProfile | null>(null);
-  const [teamLeaderboard, setTeamLeaderboard] = useState<any[]>([]);
+  const [teamLeaderboard, setTeamLeaderboard] = useState<TeamLeaderboardEntry[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(false);
-
-  useEffect(() => {
-    try {
-      const user = localStorage.getItem("user");
-      if (user) {
-        const parsed = JSON.parse(user);
-        setCurrentUserId(parsed.id ?? null);
-        setCurrentUser({ name: parsed.name, username: parsed.username, points: parsed.points });
-      } else {
-        setCurrentUserId(null);
-        setCurrentUser(null);
-      }
-    } catch {
-      setCurrentUserId(null);
-      setCurrentUser(null);
-    }
-  }, []);
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -126,15 +140,6 @@ export default function LeaderboardPage() {
   }, []);
 
   useEffect(() => {
-    if (contextLeaderboard.length > 0) {
-      setLeaderboard(contextLeaderboard);
-      setLoading(false);
-    } else if (isConnected) {
-      setLoading(false);
-    }
-  }, [contextLeaderboard, isConnected]);
-
-  useEffect(() => {
     if (!socket) return;
     const handleLeaderboard = (data: LeaderboardEntry[]) => { setLeaderboard(data); setLoading(false); };
     socket.on("leaderboard_update", handleLeaderboard);
@@ -147,7 +152,7 @@ export default function LeaderboardPage() {
     const fetchTeams = async () => {
       setTeamsLoading(true);
       try {
-        const data = await fetchApi<any[]>("/dashboard/team-leaderboard");
+        const data = await fetchApi<TeamLeaderboardEntry[]>("/dashboard/team-leaderboard");
         if (!cancelled) setTeamLeaderboard(data);
       } catch {
         // silent
@@ -183,7 +188,8 @@ export default function LeaderboardPage() {
   }, [timeFilter, domainFilter]);
 
   const filteredOperators = useMemo(() => {
-    return leaderboard
+    const source = contextLeaderboard.length > 0 ? contextLeaderboard : leaderboard;
+    return source
       .filter((op) => (op.name || op.username || op.email || "").toLowerCase().includes(filter.toLowerCase()))
       .filter((op) => {
         if (activeLeague === "GLOBAL") return true;
@@ -191,7 +197,7 @@ export default function LeaderboardPage() {
         if (activeLeague === "UNIVERSITY") return op.organization?.type === "UNIVERSITY";
         return true;
       });
-  }, [leaderboard, filter, activeLeague, selectedCity]);
+  }, [contextLeaderboard, leaderboard, filter, activeLeague, selectedCity]);
 
   const userEntry = useMemo(() => {
     if (!currentUserId) return null;
@@ -203,7 +209,14 @@ export default function LeaderboardPage() {
     return filteredOperators.indexOf(userEntry) + 1;
   }, [filteredOperators, userEntry]);
 
-  if (loading) {
+  function getPlacementBadge(position: number) {
+    if (position === 1) return <Trophy size={16} className="text-amber-400" />;
+    if (position === 2) return <Medal size={16} className="text-slate-300" />;
+    if (position === 3) return <Award size={16} className="text-orange-400" />;
+    return <span>{position}</span>;
+  }
+
+  if (loading && contextLeaderboard.length === 0 && !isConnected) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-40 bg-white/10 rounded animate-pulse" />
@@ -511,7 +524,7 @@ export default function LeaderboardPage() {
               idx === 2 ? "bg-orange-500/10 text-orange-400" :
               "bg-white/5 text-slate-400"
             }`}>
-              {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
+              {getPlacementBadge(idx + 1)}
             </div>
 
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-base sm:text-lg font-bold shrink-0 ${
@@ -563,7 +576,7 @@ export default function LeaderboardPage() {
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-bold bg-[#7AD62A] text-white shrink-0">
               #{userRank}
             </div>
-            <span className="text-lg sm:hidden">{getFlag(userEntry.city)}</span>
+            <span className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-slate-300 sm:hidden">{getFlag(userEntry.city)}</span>
             <div className="flex-1 min-w-0">
               <p className="text-xs text-[#7AD62A] font-medium mb-0.5">Your Rank</p>
               <p className="text-sm sm:text-base font-semibold text-white truncate">{userEntry.username || currentUser?.username || currentUser?.name || "You"}</p>
@@ -606,11 +619,11 @@ export default function LeaderboardPage() {
               idx === 2 ? "bg-orange-500/10 text-orange-400" :
               "bg-white/5 text-slate-400"
             }`}>
-              {idx === 0 ? <span className="text-lg">🥇</span> : idx === 1 ? <span className="text-lg">🥈</span> : idx === 2 ? <span className="text-lg">🥉</span> : idx + 1}
+              {getPlacementBadge(idx + 1)}
             </div>
 
             {/* Flag */}
-            <span className="text-base shrink-0 hidden sm:inline">{getFlag(op.city)}</span>
+            <span className="hidden shrink-0 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-slate-300 sm:inline-flex">{getFlag(op.city)}</span>
 
             {/* Avatar + Info */}
             <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
@@ -636,7 +649,7 @@ export default function LeaderboardPage() {
                 )}
               </div>
               <p className="text-xs text-slate-500 mt-0.5 truncate flex items-center gap-1">
-                <span className="sm:hidden">{getFlag(op.city)}</span>
+                <span className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-slate-300 sm:hidden">{getFlag(op.city)}</span>
                 {op.organization?.name || "Independent"} <span className="text-slate-300">·</span> {getCityLabel(op.city)}
               </p>
             </div>

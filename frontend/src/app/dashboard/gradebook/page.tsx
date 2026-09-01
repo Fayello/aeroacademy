@@ -9,8 +9,11 @@ import {
   Loader2,
   Users,
   GraduationCap,
+  School2,
+  FileCheck,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface TeachingCohort {
   id: string;
@@ -19,6 +22,12 @@ interface TeachingCohort {
   year: number;
   curriculum: { name: string; degree: string } | null;
   _count: { members: number };
+}
+
+function getCurriculumHealthLabel(count: number) {
+  if (count >= 4) return "Multi-cohort active";
+  if (count >= 1) return "Teaching in progress";
+  return "Awaiting assignments";
 }
 
 export default function GradebookIndexPage() {
@@ -51,14 +60,35 @@ export default function GradebookIndexPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <ClipboardCheck size={28} className="text-[#7AD62A]" />
-          Gradebook
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Select a cohort to view or enter grades
-        </p>
+      <PageHeader title="Gradebook" description="Select a cohort to view or enter grades" />
+
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Instructor Workflow</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Move from cohort delivery to defensible grading</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Use the gradebook to manage assessment categories, record results, and maintain a transparent academic trail for each cohort.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-2">
+                <School2 size={15} className="text-[#7AD62A]" />
+                <p className="text-sm font-semibold text-white">Cohorts available</p>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-white">{cohorts.length}</p>
+              <p className="mt-1 text-xs text-slate-400">{getCurriculumHealthLabel(cohorts.length)}</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-2">
+                <FileCheck size={15} className="text-[#7AD62A]" />
+                <p className="text-sm font-semibold text-white">Why it matters</p>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-300">Clear grading structure strengthens student trust and institutional credibility.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {cohorts.length === 0 ? (

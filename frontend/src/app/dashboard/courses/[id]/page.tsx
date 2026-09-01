@@ -362,11 +362,11 @@ export default function CourseBriefingPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20">
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row">
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-6">
           {/* Hero Header */}
-          <div className="relative overflow-hidden angular-card p-6 sm:p-8 text-white border border-white/[0.06] shadow-lg shadow-black/20" style={{ background: "linear-gradient(135deg, #0F203A, #1a3a5c, #7AD62A)" }}>
+          <div className="relative overflow-hidden angular-card p-5 sm:p-8 text-white border border-white/[0.06] shadow-lg shadow-black/20" style={{ background: "linear-gradient(135deg, #0F203A, #1a3a5c, #7AD62A)" }}>
             <div className="absolute inset-0 angular-grid-bg opacity-[0.04] pointer-events-none" />
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#7AD62A]/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4" />
             <div className="relative z-10">
@@ -442,26 +442,28 @@ export default function CourseBriefingPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 -mb-1">
-            {TABS.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === tab.key
-                    ? "border-[#7AD62A] text-[#7AD62A]"
-                    : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
-                }`}
-              >
-                <tab.icon size={14} />
-                {tab.label}
-                {tab.key === "reviews" && totalReviews > 0 && (
-                  <span className="text-[10px] bg-white/5 text-slate-400 px-1.5 py-0.5 rounded-full">
-                    {totalReviews}
-                  </span>
-                )}
-              </button>
-            ))}
+          <div className="overflow-x-auto -mx-1 px-1 pb-1">
+            <div className="flex min-w-max items-center gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-1">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap ${
+                    activeTab === tab.key
+                      ? "bg-[#7AD62A]/10 text-[#7AD62A]"
+                      : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  }`}
+                >
+                  <tab.icon size={14} />
+                  {tab.label}
+                  {tab.key === "reviews" && totalReviews > 0 && (
+                    <span className="text-[10px] bg-white/5 text-slate-400 px-1.5 py-0.5 rounded-full">
+                      {totalReviews}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Overview Tab */}
@@ -472,11 +474,11 @@ export default function CourseBriefingPage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Primary Next Step</p>
                   <h2 className="text-xl font-bold text-white mt-2">{nextAction.title}</h2>
                   <p className="text-sm text-slate-300 mt-3 leading-relaxed">{nextAction.description}</p>
-                  <div className="flex flex-wrap items-center gap-3 mt-5">
+                  <div className="mt-5 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                     {"href" in nextAction ? (
                       <Link
                         href={nextAction.href}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[#7AD62A] px-4 py-2 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422]"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#7AD62A] px-4 py-2 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422] sm:w-auto"
                       >
                         {nextAction.cta}
                         <ChevronRight size={14} />
@@ -485,13 +487,13 @@ export default function CourseBriefingPage() {
                       <button
                         onClick={nextAction.onClick}
                         disabled={enrolling}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[#7AD62A] px-4 py-2 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422] disabled:opacity-50"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#7AD62A] px-4 py-2 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422] disabled:opacity-50 sm:w-auto"
                       >
                         {enrolling ? <Loader2 size={14} className="animate-spin" /> : <Rocket size={14} />}
                         {enrolling ? "Starting..." : nextAction.cta}
                       </button>
                     )}
-                    <span className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-slate-300">
+                    <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-slate-300 sm:w-auto">
                       <Clock size={13} className="text-[#7AD62A]" />
                       {isEnrolled ? `${remainingLessons} lesson${remainingLessons !== 1 ? "s" : ""} remaining` : "First milestone pending"}
                     </span>
@@ -560,13 +562,13 @@ export default function CourseBriefingPage() {
               {isEnrolled && (
                 <Link
                   href={`/dashboard/courses/${course.id}/discussions`}
-                  className="angular-card border-white/10 p-4 flex items-center justify-between hover-lift transition-all group"
+                  className="angular-card border-white/10 p-4 flex items-center justify-between gap-3 hover-lift transition-all group"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
                       <MessageSquare size={20} className="text-blue-400" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <h3 className="text-sm font-semibold text-white">Course Discussions</h3>
                       <p className="text-xs text-slate-400">Ask questions, share tips, and help other students</p>
                     </div>
@@ -576,7 +578,7 @@ export default function CourseBriefingPage() {
               )}
 
               <div className="angular-card border-white/10 p-6">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                       <FileText size={18} className="text-[#7AD62A]" />
@@ -589,7 +591,7 @@ export default function CourseBriefingPage() {
                   {progress?.percentage === 100 && (
                     <Link
                       href={`/dashboard/courses/${course.id}/certificate`}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] text-[#0F203A] text-sm font-semibold hover:bg-[#6bc422] transition-colors"
+                      className="inline-flex w-full items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] text-[#0F203A] text-sm font-semibold hover:bg-[#6bc422] transition-colors sm:w-auto"
                     >
                       View Certificate
                       <ExternalLink size={14} />
@@ -633,13 +635,13 @@ export default function CourseBriefingPage() {
                   <div key={section.id} className={`angular-card border-white/10 overflow-hidden ${isLocked ? "opacity-60" : "hover-lift"} transition-all duration-300`}>
                     <button
                       onClick={() => toggleSection(section.id)}
-                      className="w-full px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between text-left"
+                      className="w-full px-4 sm:px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between gap-3 text-left"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
                         <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isLocked ? "text-slate-400 bg-white/5" : "text-[#7AD62A] bg-[#7AD62A]/10"}`}>
                           Module {section.order}
                         </span>
-                        <h3 className="text-sm font-semibold text-white">{section.title}</h3>
+                        <h3 className="min-w-0 truncate text-sm font-semibold text-white">{section.title}</h3>
                         {isLocked && (
                           <span className="flex items-center gap-1 text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full">
                             <Lock size={10} />
@@ -647,7 +649,7 @@ export default function CourseBriefingPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex shrink-0 items-center gap-3">
                         <span className="text-xs text-slate-400">{section.lessons.length} lessons</span>
                         <ChevronRight size={16} className={`text-slate-400 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                       </div>
@@ -657,12 +659,12 @@ export default function CourseBriefingPage() {
                       <div className="divide-y divide-white/10">
                         {section.lessons.map((lesson: Lesson) => (
                           isLocked ? (
-                            <div key={lesson.id} className="flex items-center justify-between px-6 py-3 opacity-60">
-                              <div className="flex items-center gap-3">
+                            <div key={lesson.id} className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 opacity-60">
+                              <div className="flex min-w-0 items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
                                   <Lock size={12} className="text-slate-400" />
                                 </div>
-                                <span className="text-sm text-slate-400">{lesson.title}</span>
+                                <span className="min-w-0 truncate text-sm text-slate-400">{lesson.title}</span>
                               </div>
                               <span className="text-xs text-slate-400">~12 min</span>
                             </div>
@@ -670,13 +672,13 @@ export default function CourseBriefingPage() {
                             <Link
                               key={lesson.id}
                               href={`/dashboard/courses/lessons/${lesson.id}`}
-                              className="flex items-center justify-between px-6 py-3 hover:bg-white/5 transition-colors"
+                              className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 hover:bg-white/5 transition-colors"
                             >
-                              <div className="flex items-center gap-3">
+                              <div className="flex min-w-0 items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
                                   <Play size={12} className="text-[#7AD62A]" fill="currentColor" />
                                 </div>
-                                <span className="text-sm text-slate-300">{lesson.title}</span>
+                                <span className="min-w-0 truncate text-sm text-slate-300">{lesson.title}</span>
                               </div>
                               <span className="text-xs text-slate-400">~12 min</span>
                             </Link>
@@ -723,7 +725,7 @@ export default function CourseBriefingPage() {
                         })}
                       </div>
                       {isEnrolled && (
-                          <div className="border-l border-white/10 pl-6">
+                          <div className="border-t border-white/10 pt-6 md:border-t-0 md:border-l md:pl-6 md:pt-0">
                            <p className="text-sm font-medium text-slate-300 mb-3">Write a review</p>
                           <div className="flex items-center gap-1 mb-3">
                             {[1, 2, 3, 4, 5].map((s) => (
@@ -787,7 +789,7 @@ export default function CourseBriefingPage() {
 
           {/* Progress Tab */}
           {activeTab === "progress" && (
-            <div className="max-w-md">
+            <div className="max-w-2xl">
               <div className="angular-card border-white/10 p-6">
                 {isEnrolled ? (
                   <>

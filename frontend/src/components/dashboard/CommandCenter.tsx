@@ -306,6 +306,23 @@ export default function CommandCenter() {
     },
   ];
   const completedPathwaySteps = pathwaySteps.filter((step) => step.complete).length;
+  const journeyGuide = isNewUser
+    ? {
+        eyebrow: "Your first route",
+        title: "Complete one guided path before branching out",
+        description: "Start with the recommended course or lab, build practical evidence, then progress into assessments when your readiness record is stronger.",
+      }
+    : certificationReadiness >= 70
+      ? {
+          eyebrow: "Your strongest next move",
+          title: "Turn momentum into a measurable result",
+          description: "You have enough training proof to focus on practical exams, certificate progress, and controlled evaluation instead of collecting more random activity.",
+        }
+      : {
+          eyebrow: "Stay on one path",
+          title: "Consistency matters more than trying everything",
+          description: "Keep your current course or lab moving until your record shows stronger readiness for assessments and credential progress.",
+        };
 
   const primaryPurpose = purpose[0] || "other";
   const purposeTitle: Record<string, string> = {
@@ -459,6 +476,25 @@ export default function CommandCenter() {
             <Link href="/dashboard/exams" className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 sm:w-auto">
               Practical Exams
             </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="angular-card bg-[#0f172a] border border-white/10 p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">{journeyGuide.eyebrow}</p>
+            <h2 className="mt-2 text-xl font-bold text-white">{journeyGuide.title}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">{journeyGuide.description}</p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:min-w-[24rem]">
+            {pathwaySteps.map((step, index) => (
+              <div key={step.label} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Step {index + 1}</p>
+                <p className="mt-2 text-sm font-semibold text-white">{step.label}</p>
+                <p className="mt-1 text-xs text-slate-400">{step.value}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

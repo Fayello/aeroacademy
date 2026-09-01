@@ -9,6 +9,7 @@ import AdminTable from "@/components/admin/AdminTable";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect, AdminStatusBadge } from "@/components/admin/AdminForm";
 import type { MasterClass } from "@/types/api";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default function AdminMasterClassesPage() {
   const [classes, setClasses] = useState<MasterClass[]>([]);
@@ -45,18 +46,21 @@ export default function AdminMasterClassesPage() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const data = await fetchApi("/master-classes");
-        if (!cancelled) setClasses(Array.isArray(data) ? data : data.data || []);
-      } catch {
-        toast.error("Failed to load master classes");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    const timeoutId = window.setTimeout(() => {
+      (async () => {
+        try {
+          const data = await fetchApi("/master-classes");
+          if (!cancelled) setClasses(Array.isArray(data) ? data : data.data || []);
+        } catch {
+          toast.error("Failed to load master classes");
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+      })();
+    }, 0);
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
     };
   }, []);
 
@@ -246,7 +250,11 @@ export default function AdminMasterClassesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
+      <PageHeader
+        title="Master Class Management"
+        description="Schedule live delivery, instructor context, and session status from one controlled workflow"
+      />
+
       <div className="relative overflow-hidden angular-card bg-gradient-to-br from-violet-600 via-violet-700 to-purple-800 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 flex items-center gap-4">
@@ -257,6 +265,27 @@ export default function AdminMasterClassesPage() {
             <h1 className="text-2xl font-bold">Manage Master Classes</h1>
             <p className="text-violet-100 text-sm">Schedule and manage live sessions</p>
           </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Scheduling quality</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Confirm timing, capacity, and instructor readiness before moving a session from planning into live delivery.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Status discipline</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Use batch status changes carefully so public and learner-facing expectations stay consistent with real delivery state.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Program signal</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            {classes.length > 0 ? `${classes.length} master classes are currently in the system for scheduling or review.` : "No master classes exist yet. Create the first session when delivery planning is ready."}
+          </p>
         </div>
       </div>
 

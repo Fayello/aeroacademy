@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -195,7 +196,7 @@ export default function OnboardingPage() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 lg:px-10 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+            <Image src="/logo-icon.svg" alt="XpertClass" width={32} height={32} className="w-8 h-8" />
             <span className="text-lg font-bold tracking-tight">
               <span className="text-white">Xpert</span><span className="text-[#7AD62A]">Class</span>
             </span>
@@ -204,13 +205,26 @@ export default function OnboardingPage() {
             onClick={handleSkip}
             className="text-sm text-white/50 hover:text-white/80 transition-colors"
           >
-            Skip onboarding
+            Skip for now
           </button>
         </div>
 
         {/* Step content */}
         <div className="flex-1 flex items-center justify-center px-6 lg:px-10 pb-8">
           <div className="w-full max-w-2xl animate-fade-in-up">
+            {step >= 0 && step < 6 && (
+              <div className="mb-6 rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">Personalization progress</p>
+                    <p className="mt-1 text-sm text-white/80">Step {step + 1} of 6. This shapes your first dashboard recommendations and starting pathway.</p>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-slate-300">
+                    About 1 minute total
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* ─── WELCOME SCREEN (step -1) ─── */}
             {step === -1 && (
@@ -224,6 +238,17 @@ export default function OnboardingPage() {
                 <p className="text-base text-white/50 mb-8 max-w-md mx-auto">
                   Let&apos;s personalize your learning experience. It only takes a minute.
                 </p>
+                <div className="mx-auto mb-8 grid max-w-2xl gap-3 sm:grid-cols-3">
+                  {[
+                    "Recommend the right first course or lab",
+                    "Reduce dashboard clutter for new learners",
+                    "Connect your progress to certification readiness",
+                  ].map((item) => (
+                    <div key={item} className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-white/70">
+                      {item}
+                    </div>
+                  ))}
+                </div>
                 <button
                   onClick={() => setStep(0)}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors"
@@ -426,7 +451,7 @@ export default function OnboardingPage() {
           </div>
           <h3 className="text-base font-bold text-white mb-2">Personalize your experience</h3>
           <p className="text-xs text-white/50 leading-relaxed mb-4">
-            Your selections help us recommend the right courses, labs, and learning paths for you.
+            Your selections help us recommend the right courses, labs, and assessment path without dropping you into a crowded dashboard.
           </p>
           <div className="flex items-center gap-2 justify-center bg-white/[0.04] rounded-lg px-3 py-2">
             <BookOpen size={14} className="text-[#7AD62A]" />

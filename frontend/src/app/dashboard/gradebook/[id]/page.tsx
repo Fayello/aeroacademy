@@ -15,8 +15,11 @@ import {
   Users,
   Edit3,
   Trash2,
+  FileCheck,
+  School2,
 } from "lucide-react";
 import toast from "@/lib/toast";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface GradeEntry {
   id: string;
@@ -41,6 +44,10 @@ interface Student {
   name: string;
   email: string;
   role: string;
+}
+
+interface CohortMemberResponse {
+  user: Student;
 }
 
 interface GradeBookData {
@@ -86,14 +93,16 @@ export default function GradebookPage() {
       const [gb, cats, mems] = await Promise.all([
         fetchApi<GradeBookData>(`/gradebook/cohorts/${cohortId}/grades`),
         fetchApi<GradeCategory[]>(`/gradebook/cohorts/${cohortId}/categories`),
-        fetchApi<Student[]>(`/cohorts/${cohortId}/members`),
+        fetchApi<CohortMemberResponse[]>(`/cohorts/${cohortId}/members`),
       ]);
       setGradebook(gb);
       setCategories(cats);
-      setMembers(mems.filter((m: Student) => (m as any).role === "STUDENT"));
-      if (cats.length > 0 && !selectedCategory) {
-        setSelectedCategory(cats[0].id);
-      }
+      setMembers(
+        mems
+          .map((member) => member.user)
+          .filter((member) => member.role === "STUDENT"),
+      );
+      setSelectedCategory((current) => current || cats[0]?.id || "");
     } catch {
       toast.error("Failed to load gradebook");
     } finally {
@@ -102,7 +111,10 @@ export default function GradebookPage() {
   }, [cohortId]);
 
   useEffect(() => {
-    load();
+    const timeoutId = window.setTimeout(() => {
+      void load();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, [load]);
 
   async function createCategory() {
@@ -190,20 +202,55 @@ export default function GradebookPage() {
         <ArrowLeft size={14} /> Back to Cohorts
       </Link>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
-            <ClipboardCheck size={24} className="text-[#7AD62A]" />
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+              <ClipboardCheck size={24} className="text-[#7AD62A]" />
+            </div>
+            <div>
+              <PageHeader title="Gradebook" description={gradebook?.cohort.name} />
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Gradebook</h1>
-            <p className="text-sm text-slate-500">{gradebook?.cohort.name}</p>
+          <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[30rem]">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Students</p>
+              <p className="mt-2 text-2xl font-bold text-white">{gradebook?.students.length || 0}</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Categories</p>
+              <p className="mt-2 text-2xl font-bold text-white">{categories.length}</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Purpose</p>
+              <p className="mt-2 text-sm font-semibold text-white">Consistent, auditable grading</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Tab Bar */}
-      <div className="flex gap-1 bg-slate-100 p-1 rounded-lg w-fit">
+      <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <School2 size={16} className="text-[#7AD62A]" />
+            <h2 className="text-sm font-semibold text-white">Workflow guidance</h2>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Define categories first, then record grades consistently so students can understand both category weight and final outcomes.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <div className="flex items-center gap-2">
+            <FileCheck size={16} className="text-[#7AD62A]" />
+            <h2 className="text-sm font-semibold text-white">Institutional standard</h2>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            A strong gradebook makes category weight, student averages, and individual entries visible enough to defend academically.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-1 bg-white/5 p-1 rounded-lg w-fit overflow-x-auto">
         <button
           onClick={() => setActiveTab("overview")}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -224,10 +271,8 @@ export default function GradebookPage() {
         </button>
       </div>
 
-      {/* OVERVIEW TAB */}
       {activeTab === "overview" && (
         <div className="space-y-4">
-          {/* Categories */}
           <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold text-white">Grade Categories</h2>
@@ -240,7 +285,7 @@ export default function GradebookPage() {
             </div>
 
             {showNewCategory && (
-              <div className="flex items-center gap-3 mb-4 p-3 bg-white/5 rounded-lg">
+              <div className="flex flex-col items-stretch gap-3 mb-4 p-3 bg-white/5 rounded-lg sm:flex-row sm:items-center">
                 <input
                   type="text"
                   placeholder="Category name"
@@ -299,13 +344,12 @@ export default function GradebookPage() {
             )}
           </div>
 
-          {/* Student Grades Table */}
           {gradebook && gradebook.students.length > 0 && (
             <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
               <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-4">
                 <Users size={16} /> Student Grades
               </h2>
-              <div className="overflow-x-auto">
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/10">
@@ -346,12 +390,34 @@ export default function GradebookPage() {
                   </tbody>
                 </table>
               </div>
+              <div className="grid gap-3 md:hidden">
+                {gradebook.students.map((row) => (
+                  <div key={row.student.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-white">{row.student.name}</p>
+                        <p className="mt-1 text-xs text-slate-500">{row.student.email}</p>
+                      </div>
+                      <span className={`text-lg font-bold ${getGradeColor(row.finalGrade)}`}>{row.finalGrade}%</span>
+                    </div>
+                    <div className="mt-3 grid gap-2">
+                      {row.categories.map((cat) => (
+                        <div key={cat.categoryId} className="flex items-center justify-between text-xs">
+                          <span className="text-slate-400">{cat.name}</span>
+                          <span className={cat.average !== null ? getGradeColor(cat.average) : "text-slate-400"}>
+                            {cat.average !== null ? `${cat.average}%` : "—"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* ENTER GRADES TAB */}
       {activeTab === "grade" && (
         <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
           <h2 className="text-sm font-semibold text-white mb-4">Enter Grade</h2>
@@ -440,7 +506,6 @@ export default function GradebookPage() {
             Submit Grade
           </button>
 
-          {/* Existing entries for selected category */}
           {selectedCategory && (
             <div className="mt-6 border-t border-white/10 pt-4">
               <h3 className="text-xs font-medium text-slate-500 mb-3">Existing entries</h3>

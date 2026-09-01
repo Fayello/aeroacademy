@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import {
@@ -20,31 +21,31 @@ import type { MasterClass, Trainer } from "@/types/api";
 
 const AUDIENCES = [
   {
-    tag: "For Students",
-    title: "Launch your tech career with real skills",
-    description: "Go beyond theory. Deploy real labs, crack real systems, and build a portfolio that gets you hired.",
-    features: ["Hands-on labs with real tools", "Certified skill paths", "Leaderboard & gamification", "Career-ready portfolio"],
+    tag: "For Learners",
+    title: "Build practical skill and trusted proof",
+    description: "Start with guided learning, build real hands-on evidence, and work toward verifiable outcomes that matter beyond the platform.",
+    features: ["Hands-on labs with real tools", "Certification-first learning paths", "Clear first-step onboarding", "Evidence you can show"],
     cta: "Start Free for 1 Year",
     href: "/register",
     icon: BookOpen,
     color: "emerald" as const,
   },
   {
-    tag: "For Teams",
-    title: "Scale security & DevOps skills across your org",
-    description: "Custom learning paths, progress analytics, and sandbox environments built for enterprise readiness.",
-    features: ["Custom learning paths", "Progress analytics dashboard", "Team leaderboards", "Isolated lab environments"],
-    cta: "Contact Sales",
+    tag: "For Universities",
+    title: "Run cohorts with academic structure and lab rigor",
+    description: "Bring coursework, practical environments, grading visibility, and learner readiness into one academic delivery system.",
+    features: ["Curricula and cohort structure", "Classroom lab control", "Academic records and gradebook", "Practical readiness tracking"],
+    cta: "Explore University Route",
     href: "/get-started",
     icon: Users,
     color: "blue" as const,
   },
   {
-    tag: "For Educators",
-    title: "Teach with live, interactive environments",
-    description: "Manage classrooms, track student progress, and deploy pre-built lab scenarios in one click.",
-    features: ["Classroom management", "Assignment & grading tools", "30+ pre-built lab scenarios", "Student analytics"],
-    cta: "Explore Educator Tools",
+    tag: "For Enterprises",
+    title: "Identify and develop workforce-ready capability",
+    description: "Use practical evidence, managed learning, and talent visibility to make more confident institutional decisions.",
+    features: ["Managed learning paths", "Talent evidence and shortlisting", "Practical capability signals", "Institutional reporting workflows"],
+    cta: "Explore Enterprise Route",
     href: "/get-started",
     icon: Award,
     color: "violet" as const,
@@ -144,6 +145,7 @@ const NAV_ITEMS = [
   { label: "Platform", href: "#platform" },
   { label: "Courses", href: "#courses" },
   { label: "Labs", href: "#labs" },
+  { label: "University", href: "#enterprise" },
   { label: "Master Classes", href: "#master-classes" },
   { label: "Training", href: "#training" },
   { label: "Enterprise", href: "#enterprise" },
@@ -182,6 +184,21 @@ const CERTIFICATION_STEPS = [
     step: "03",
     title: "Verify your credential",
     description: "Share a credential ID that employers and partners can verify through the public registry.",
+  },
+];
+
+const JOURNEY_CHECKPOINTS = [
+  {
+    title: "Start with the right path",
+    description: "Choose learner or institutional access based on your goals, not on feature overload.",
+  },
+  {
+    title: "Build measurable proof",
+    description: "Complete structured courses and hands-on labs before moving into assessment and issuance.",
+  },
+  {
+    title: "Earn a verifiable outcome",
+    description: "Finish with a credential record that can be checked publicly through the registry flow.",
   },
 ];
 
@@ -251,14 +268,14 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Link href="/" className="flex items-center gap-2.5">
-              <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+              <Image src="/logo-icon.svg" alt="XpertClass" width={32} height={32} className="w-8 h-8" priority />
               <span className="text-lg font-bold tracking-tight">
                 <span className={scrolled ? "text-[#0F203A]" : "text-white"}>Xpert</span><span className="text-[#7AD62A]">Class</span>
               </span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {NAV_ITEMS.map((item) => (
-                <a key={item.label} href={item.href} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-500 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
+                <a key={item.label} href={item.href} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-600 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/75 hover:text-white hover:bg-white/10"}`}>
                   {item.label}
                 </a>
               ))}
@@ -344,18 +361,37 @@ export default function LandingPage() {
               <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-white tracking-tight leading-[1.02] glitch-hover">
                 XpertClass <span className="text-gradient-brand">Academy</span>
               </h1>
-              <p className="text-lg text-white/60 mt-6 leading-relaxed max-w-xl">
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
                 An African-rooted, globally benchmarked training and certification system for security, Linux, DevOps, and cloud capability. Start free for 12 months, then prove what you can do.
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
                 <Link href="/register" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/20 hover:shadow-[#7AD62A]/40 magnetic-btn">
                   <span>Start Free for 1 Year</span> <ArrowRight size={18} />
                 </Link>
-                <a href="#certification-system" className="btn-ghost text-sm px-6 py-3.5 text-white/60 hover:text-white">
-                  <Play size={14} /> See Certification System
-                </a>
+                <Link href="/get-started" className="btn-ghost px-6 py-3.5 text-sm text-slate-200 hover:text-white">
+                  <Play size={14} /> Choose Your Path
+                </Link>
               </div>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-white/40">
+              <div className="grid gap-3 mt-8 sm:grid-cols-3">
+                {JOURNEY_CHECKPOINTS.map((checkpoint) => (
+                  <div key={checkpoint.title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Journey</p>
+                    <h2 className="mt-2 text-sm font-semibold text-white">{checkpoint.title}</h2>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-200/90">{checkpoint.description}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 inline-flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs text-slate-100">
+                <span className="font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">Recommended flow</span>
+                <span>Create account</span>
+                <ChevronRight size={12} className="text-white/50" />
+                <span>Personalize onboarding</span>
+                <ChevronRight size={12} className="text-white/50" />
+                <span>Start first pathway</span>
+                <ChevronRight size={12} className="text-white/50" />
+                <span>Build toward certification</span>
+              </div>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
                 {["No credit card required", `${stats.totalLabs || 35}+ hands-on labs`, "12 months of free access"].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
                     <CheckCircle2 size={14} className="text-[#7AD62A]" /> {item}
@@ -404,7 +440,7 @@ export default function LandingPage() {
               <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />
                 <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">{s.value}</div>
-                <div className="text-xs text-white/40 mt-2 label-tracking">{s.label}</div>
+                <div className="mt-2 text-xs text-slate-300 label-tracking">{s.label}</div>
               </div>
             ))}
           </div>
@@ -414,17 +450,17 @@ export default function LandingPage() {
       {/* ═══════════ TRUSTED BY ═══════════ */}
       <section className="py-8 px-6 bg-[#0a1628] border-b border-white/5 relative">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-[10px] text-white/30 font-semibold tracking-[0.25em] uppercase mb-5">Built for Cameroon&apos;s next generation of engineers</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-white/40">
-            <span className="hover:text-white/70 transition-colors">University of Yaoundé</span>
-            <span className="text-white/10">|</span>
-            <span className="hover:text-white/70 transition-colors">ENS Yaoundé</span>
-            <span className="text-white/10">|</span>
-            <span className="hover:text-white/70 transition-colors">Digital Cameroon</span>
-            <span className="text-white/10">|</span>
-            <span className="hover:text-white/70 transition-colors">Cameroon Tech Hub</span>
-            <span className="text-white/10">|</span>
-            <span className="hover:text-white/70 transition-colors">Garoua Innovation Hub</span>
+          <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-300">Built for Cameroon&apos;s next generation of engineers</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-slate-200">
+            <span className="transition-colors hover:text-white">University of Yaoundé</span>
+            <span className="text-white/20">|</span>
+            <span className="transition-colors hover:text-white">ENS Yaoundé</span>
+            <span className="text-white/20">|</span>
+            <span className="transition-colors hover:text-white">Digital Cameroon</span>
+            <span className="text-white/20">|</span>
+            <span className="transition-colors hover:text-white">Cameroon Tech Hub</span>
+            <span className="text-white/20">|</span>
+            <span className="transition-colors hover:text-white">Garoua Innovation Hub</span>
           </div>
         </div>
       </section>
@@ -589,7 +625,7 @@ export default function LandingPage() {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="label-tracking text-[#7AD62A] mb-4 block">Process</span>
             <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight text-stroke-white">How it works</h2>
-            <p className="text-lg text-white/60 mt-4">From sign-up to skill mastery in three simple steps.</p>
+            <p className="mt-4 text-lg text-slate-200">From sign-up to skill mastery in three simple steps.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map((step) => (
@@ -600,7 +636,7 @@ export default function LandingPage() {
                     <step.icon size={28} className="text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mt-2 mb-3 relative z-10">{step.title}</h3>
-                  <p className="text-white/50 text-sm leading-relaxed relative z-10">{step.description}</p>
+                  <p className="relative z-10 text-sm leading-relaxed text-slate-200/90">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -887,8 +923,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <SectionLabel>Simple Pricing</SectionLabel>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Choose your plan</h2>
-            <p className="text-lg text-slate-500 mt-4">Start with 12 months of free access. Upgrade paths can come later, after you have built real proof of skill.</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Choose the right access path</h2>
+            <p className="text-lg text-slate-500 mt-4">Keep the decision simple: individual learners start free, while institutions and teams move into managed access and reporting.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Tier */}
@@ -921,15 +957,15 @@ export default function LandingPage() {
                 </span>
               </div>
               <div className="mb-6">
-                <span className="label-tracking text-[#7AD62A] mb-2 block">Institutions & Teams</span>
+                <span className="label-tracking text-[#7AD62A] mb-2 block">Universities and Enterprises</span>
                 <div className="flex items-end gap-1">
                   <span className="text-5xl font-extrabold text-white">Custom</span>
                   <span className="text-slate-500 mb-2">plans</span>
                 </div>
-                <p className="text-slate-500 text-sm mt-3">For schools, cohorts, and organizations that need reporting and managed learning</p>
+                <p className="text-slate-500 text-sm mt-3">For universities, cohorts, and organizations that need governed delivery, reporting, and practical evidence</p>
               </div>
               <ul className="space-y-3 mb-8">
-                {["Everything in Free", "Priority lab access", "1-on-1 training sessions", "Advanced certifications", "Team analytics"].map((feature) => (
+                {["Everything in Free", "Priority lab access", "Academic and enterprise workflows", "Advanced certifications", "Team analytics"].map((feature) => (
                   <li key={feature} className="flex items-center gap-2.5 text-sm text-slate-600">
                     <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0" /> {feature}
                   </li>
@@ -960,7 +996,7 @@ export default function LandingPage() {
               <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover-rotate" />
                 <div className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">{s.value}</div>
-                <div className="text-white/60 text-sm mt-2 label-tracking">{s.label}</div>
+                <div className="mt-2 text-sm text-slate-200 label-tracking">{s.label}</div>
               </div>
             ))}
           </div>
@@ -977,18 +1013,18 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#7AD62A]/[0.12] clip-path-trapezoid blur-3xl" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight text-stroke-white">Ready to master the tech stack?</h2>
-          <p className="text-lg text-white/60 mt-5 leading-relaxed max-w-xl mx-auto">
+          <p className="mt-5 max-w-xl mx-auto text-lg leading-relaxed text-slate-200">
             Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <Link href="/register" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/25 hover:shadow-[#7AD62A]/40 magnetic-btn">
               <span>Start Free for 1 Year</span> <ArrowRight size={18} />
             </Link>
-            <a href="#courses" className="text-white/60 hover:text-white text-sm font-medium px-6 py-4 transition-colors">
+            <a href="#courses" className="px-6 py-4 text-sm font-medium text-slate-200 transition-colors hover:text-white">
               Browse Courses
             </a>
           </div>
-          <p className="text-sm text-white/40 mt-5">No credit card required. 12 months free for early learners.</p>
+          <p className="mt-5 text-sm text-slate-300">No credit card required. 12 months free for early learners.</p>
         </div>
       </section>
 
@@ -998,16 +1034,16 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
-                <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+                <Image src="/logo-icon.svg" alt="XpertClass" width={32} height={32} className="w-8 h-8" />
                 <span className="text-lg font-bold text-white tracking-tight">XpertClass</span>
               </Link>
-              <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
+              <p className="max-w-xs text-sm leading-relaxed text-slate-300">
                 The platform for hands-on training in security, Linux, DevOps, and cloud infrastructure. Built for engineers, by engineers.
               </p>
               <div className="flex items-center gap-3 mt-4">
-                <span className="text-xs text-slate-400">Built with</span>
+                <span className="text-xs text-slate-300">Built with</span>
                 {["NestJS", "PostgreSQL", "Docker", "Next.js"].map((tech) => (
-                  <span key={tech} className="text-xs bg-white/10/80 text-slate-600 px-2 py-0.5 rounded">{tech}</span>
+                  <span key={tech} className="rounded bg-white/10/80 px-2 py-0.5 text-xs text-slate-200">{tech}</span>
                 ))}
               </div>
             </div>
@@ -1037,11 +1073,11 @@ export default function LandingPage() {
                   {links.map((link) => (
                     <li key={link.label}>
                       {link.href.startsWith("#") ? (
-                        <a href={link.href} className="text-sm text-slate-500 hover:text-[#7AD62A] transition-colors">
+                        <a href={link.href} className="text-sm text-slate-300 transition-colors hover:text-[#7AD62A]">
                           {link.label}
                         </a>
                       ) : (
-                        <Link href={link.href} className="text-sm text-slate-500 hover:text-[#7AD62A] transition-colors">
+                        <Link href={link.href} className="text-sm text-slate-300 transition-colors hover:text-[#7AD62A]">
                           {link.label}
                         </Link>
                       )}

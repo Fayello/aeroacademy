@@ -12,7 +12,9 @@ import {
   HelpCircle,
   Lightbulb,
   Brain,
-  MessageCircle,
+  Target,
+  Wrench,
+  CircleHelp,
 } from "lucide-react";
 
 interface Message {
@@ -24,10 +26,10 @@ interface Message {
 }
 
 const SUGGESTIONS = [
-  { label: "What should I study next?", icon: "🎯" },
-  { label: "Explain a concept", icon: "💡" },
-  { label: "Help me with a lab", icon: "🔧" },
-  { label: "Why is this important?", icon: "❓" },
+  { label: "What should I study next?", icon: Target },
+  { label: "Explain a concept", icon: Lightbulb },
+  { label: "Help me with a lab", icon: Wrench },
+  { label: "Why is this important?", icon: CircleHelp },
 ];
 
 export default function TutorChat({
@@ -180,7 +182,7 @@ export default function TutorChat({
                     className={`max-w-[75%] px-3 py-2 rounded-lg text-sm ${
                       msg.role === "user"
                         ? "bg-[#7AD62A] text-white rounded-br-sm"
-                        : "bg-slate-100 text-slate-200 rounded-bl-sm"
+                        : "bg-slate-800 text-slate-100 rounded-bl-sm"
                     }`}
                   >
                     {msg.content || (
@@ -217,7 +219,7 @@ export default function TutorChat({
                         <button
                           key={qi}
                           onClick={() => sendMessage(q)}
-                          className="block text-xs text-left px-3 py-1.5 rounded-lg border border-white/10 text-slate-600 hover:border-[#7AD62A] hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
+                          className="block text-xs text-left px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:border-[#7AD62A] hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                         >
                           {q}
                         </button>
@@ -253,9 +255,9 @@ export default function TutorChat({
                   <button
                     key={i}
                     onClick={() => sendMessage(s.label)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-full border border-white/10 text-slate-600 hover:border-[#7AD62A] hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-full border border-white/10 text-slate-300 hover:border-[#7AD62A] hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                   >
-                    <span>{s.icon}</span>
+                    <s.icon size={12} />
                     {s.label}
                   </button>
                 ))}

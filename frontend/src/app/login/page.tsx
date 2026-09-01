@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import { useForm } from "react-hook-form";
@@ -73,19 +74,23 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 mb-10">
-            <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
+            <Image src="/logo-icon.svg" alt="XpertClass" width={36} height={36} className="w-9 h-9" />
             <span className="text-xl font-bold tracking-tight">
               <span className="text-white">Xpert</span><span className="text-[#7AD62A]">Class</span>
             </span>
           </Link>
 
           <div className="mb-8">
+            <Link href="/get-started" className="inline-flex items-center gap-1 text-xs font-medium text-[#7AD62A] hover:text-[#6bc422] transition-colors">
+              <Terminal size={12} />
+              Need help choosing the right path?
+            </Link>
             <h1 className="text-3xl font-bold text-white tracking-tight">Welcome back</h1>
-            <p className="text-slate-500 mt-2">Sign in to continue your learning journey</p>
+            <p className="text-slate-500 mt-2">Sign in to continue your learning journey, practical work, and certification progress.</p>
           </div>
 
           {/* Social Buttons */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="grid grid-cols-1 gap-3 mb-6">
             <button
               onClick={handleGoogleLogin}
               type="button"
@@ -187,6 +192,11 @@ export default function LoginPage() {
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
+
+          <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">After sign in</p>
+            <p className="mt-2 text-sm text-slate-300">You&apos;ll return to your dashboard, resume your current pathway, and pick up from the next measurable milestone.</p>
+          </div>
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Don&apos;t have an account?{" "}

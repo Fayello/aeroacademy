@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, Microscope, Video, Calendar, Users, Loader2, ArrowRight, BarChart3, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords, Sparkles, ShieldAlert, RefreshCw } from "lucide-react";
+import { GraduationCap, Microscope, Video, Calendar, Users, ArrowRight, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords, Sparkles, ShieldAlert, RefreshCw } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -65,6 +65,30 @@ export default function AdminDashboardPage() {
     { label: "Total Users", value: stats?.users || 0, icon: Users, color: "slate", bg: "bg-white/50", trend: "+18%" },
   ];
 
+  const operatingPriorities = [
+    {
+      title: "Protect platform integrity",
+      description: "Review live monitoring and audit activity before changing delivery or access settings.",
+      href: "/dashboard/admin/monitoring",
+      icon: Activity,
+      meta: "Monitoring and audit first",
+    },
+    {
+      title: "Keep academic delivery governed",
+      description: "Check curricula, assessments, and learning content so learner and institutional records stay defensible.",
+      href: "/dashboard/admin/courses",
+      icon: GraduationCap,
+      meta: "Content and assessment control",
+    },
+    {
+      title: "Manage user and role risk",
+      description: "Confirm access roles, recruiter/admin assignments, and unusual account growth before expanding operations.",
+      href: "/dashboard/admin/users",
+      icon: Users,
+      meta: "Access and permission hygiene",
+    },
+  ];
+
   const actionGroups = [
     {
       title: "Content Management",
@@ -117,40 +141,103 @@ export default function AdminDashboardPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
         title="Admin Dashboard"
-        description="Manage your platform"
+        description="Run content, operations, risk, and institutional delivery from one control surface"
       />
 
-      {/* Stats Grid */}
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#18344f] p-6 sm:p-7">
+        <div className="absolute inset-0 dot-grid-bg opacity-[0.04] pointer-events-none" />
+        <div className="relative grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Operations Console</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Keep delivery quality, access control, and platform evidence aligned</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
+              The admin journey should start with platform health, then move into curriculum and assessment control, and only then into expansion work.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Today&apos;s focus</p>
+                <p className="mt-2 text-sm font-semibold text-white">Risk, delivery, governance</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Primary route</p>
+                <p className="mt-2 text-sm font-semibold text-white">Monitor, review, then update</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Why it matters</p>
+                <p className="mt-2 text-sm font-semibold text-white">Institutional trust depends on controlled operations</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[#7AD62A]/20 bg-[#0b1627]/80 p-5">
+            <div className="flex items-center gap-2">
+              <ShieldAlert size={16} className="text-[#7AD62A]" />
+              <p className="text-sm font-semibold text-white">Suggested admin order</p>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[
+                "Open monitoring before making operational changes.",
+                "Check users and audit logs when role or access activity spikes.",
+                "Review assessments and content quality before promoting new pathways.",
+              ].map((item) => (
+                <div key={item} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-300">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {cards.map((card) => (
-          <div key={card.label} className="relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md transition-all duration-300">
-            <div className={`absolute top-0 right-0 w-20 h-20 bg-slate-100 opacity-60 rounded-bl-full`}></div>
-            <card.icon size={20} className="text-slate-600 mb-3" />
+          <div key={card.label} className="relative overflow-hidden rounded-xl border border-white/10 bg-[#0f172a] p-5 transition-all duration-300 hover:shadow-md">
+            <div className="absolute top-0 right-0 h-20 w-20 rounded-bl-full bg-white/10" />
+            <card.icon size={20} className="mb-3 text-[#7AD62A]" />
             <div className="text-2xl font-bold text-white">{card.value}</div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-slate-500">{card.label}</span>
-              <span className="text-[10px] font-medium text-[#7AD62A] bg-[#7AD62A]/10 px-1.5 py-0.5 rounded-full">{card.trend}</span>
+              <span className="text-sm text-slate-300">{card.label}</span>
+              <span className="rounded-full bg-[#7AD62A]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#7AD62A]">{card.trend}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Quick Actions - Grouped */}
+      <div className="grid gap-4 xl:grid-cols-3">
+        {operatingPriorities.map((item) => (
+          <Link
+            key={item.title}
+            href={item.href}
+            className="group rounded-2xl border border-white/10 bg-[#0f172a] p-5 transition-all hover:border-[#7AD62A]/20 hover:bg-white/[0.03]"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="w-11 h-11 shrink-0 rounded-xl bg-[#7AD62A]/10 flex items-center justify-center">
+                <item.icon size={18} className="text-[#7AD62A]" />
+              </div>
+              <ArrowRight size={16} className="text-slate-500 transition-all group-hover:translate-x-1 group-hover:text-[#7AD62A]" />
+            </div>
+            <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-slate-500">{item.meta}</p>
+            <h3 className="mt-2 text-base font-semibold text-white">{item.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">{item.description}</p>
+          </Link>
+        ))}
+      </div>
+
       <div className="space-y-6">
         {actionGroups.map((group) => (
           <div key={group.title}>
-            <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">{group.title}</h3>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">{group.title}</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {group.items.map((link) => (
-                <Link key={link.href} href={link.href} className="group relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-5 hover:shadow-md hover:border-white/10 transition-all duration-300">
+                <Link key={link.href} href={link.href} className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#0f172a] p-5 transition-all duration-300 hover:border-[#7AD62A]/20 hover:bg-white/[0.03] hover:shadow-md">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-slate-800 transition-colors duration-300">
-                      <link.icon size={18} className="text-slate-600 group-hover:text-white transition-colors duration-300" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7AD62A]/10 transition-colors duration-300 group-hover:bg-[#7AD62A]/15">
+                      <link.icon size={18} className="text-[#7AD62A] transition-colors duration-300" />
                     </div>
-                    <ArrowRight size={16} className="text-slate-400 group-hover:text-slate-300 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight size={16} className="text-slate-500 transition-all group-hover:translate-x-1 group-hover:text-[#7AD62A]" />
                   </div>
-                  <h4 className="font-semibold text-white group-hover:text-slate-200 transition-colors mb-0.5">{link.label}</h4>
-                  <p className="text-xs text-slate-500">{link.description}</p>
+                  <h4 className="mb-0.5 font-semibold text-white transition-colors group-hover:text-[#7AD62A]">{link.label}</h4>
+                  <p className="text-xs text-slate-300">{link.description}</p>
                 </Link>
               ))}
             </div>

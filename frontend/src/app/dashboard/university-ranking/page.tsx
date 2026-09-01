@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { fetchApi } from "@/lib/api";
-import { Trophy, Users, TrendingUp, Crown, Medal, School } from "lucide-react";
+import { Trophy, Users, TrendingUp, Crown, Medal, School, Search, ClipboardCheck } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 
 interface UniversityStat {
@@ -72,11 +72,33 @@ export default function UniversityRankingPage() {
     <div className="p-6 space-y-6">
       <PageHeader
         title="University Rankings"
-        description="Universities ranked by total XP earned by their students"
+        description="Compare university participation and practical output with clearer institutional signals"
         action={
           <span className="text-xs text-slate-400">{universities.length} universities</span>
         }
       />
+
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Institutional Benchmarking</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">See which universities are building measurable learner momentum</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Rankings should support institutional comparison, not just competition. Use them to understand cohort participation, practical engagement, and growth signals across universities.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[#7AD62A]/20 bg-[#0b1627]/80 p-5">
+            <div className="flex items-center gap-2">
+              <ClipboardCheck size={16} className="text-[#7AD62A]" />
+              <p className="text-sm font-semibold text-white">How to read this board</p>
+            </div>
+            <div className="mt-4 space-y-3 text-sm text-slate-300">
+              <p className="rounded-xl border border-white/10 bg-white/[0.03] p-4">Start with total XP, then compare how many students are contributing to that outcome.</p>
+              <p className="rounded-xl border border-white/10 bg-white/[0.03] p-4">Use average XP to distinguish broad cohort strength from a few standout learners.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Season banner */}
       {season && (
@@ -122,13 +144,16 @@ export default function UniversityRankingPage() {
       </div>
 
       {/* Search */}
-      <input
-        type="text"
-        placeholder="Search universities..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full max-w-sm px-4 py-2.5 rounded-lg border border-white/10 bg-[#0f172a] text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
-      />
+      <div className="relative w-full max-w-sm">
+        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          type="text"
+          placeholder="Search universities..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full rounded-lg border border-white/10 bg-[#0f172a] py-2.5 pl-10 pr-4 text-sm text-slate-200 transition-all focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
+        />
+      </div>
 
       {/* Rankings table */}
       {filtered.length === 0 ? (
@@ -159,8 +184,7 @@ export default function UniversityRankingPage() {
                 }`}
               >
                 <div className={`h-0.5 w-full ${isFirst ? "bg-[#7AD62A]" : isTop3 ? "bg-[#7AD62A]" : "bg-white/10"} opacity-40`} />
-                <div className="p-4 flex items-center gap-4">
-                  {/* Rank */}
+                <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
                   <div
                     className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm ${
                       isFirst
@@ -173,10 +197,9 @@ export default function UniversityRankingPage() {
                     {isFirst ? <Crown size={20} /> : isTop3 ? <Medal size={18} /> : rank}
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-white truncate">{uni.name}</h3>
-                    <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-3 text-xs text-slate-400">
                       <span className="flex items-center gap-1">
                         <Users size={10} />
                         {uni.studentCount} student{uni.studentCount !== 1 ? "s" : ""}
@@ -186,10 +209,15 @@ export default function UniversityRankingPage() {
                     </div>
                   </div>
 
-                  {/* XP */}
-                  <div className="text-right shrink-0">
-                    <p className="text-sm font-bold text-white">{uni.totalXp.toLocaleString()}</p>
-                    <p className="text-xs text-slate-400">XP</p>
+                  <div className="grid shrink-0 grid-cols-2 gap-3 text-center sm:min-w-[13rem] sm:grid-cols-2">
+                    <div className="rounded-lg bg-white/[0.04] p-3">
+                      <p className="text-[10px] uppercase tracking-wide text-slate-500">Total XP</p>
+                      <p className="mt-1 text-sm font-bold text-white">{uni.totalXp.toLocaleString()}</p>
+                    </div>
+                    <div className="rounded-lg bg-white/[0.04] p-3">
+                      <p className="text-[10px] uppercase tracking-wide text-slate-500">Average XP</p>
+                      <p className="mt-1 text-sm font-bold text-white">{avgXp.toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
               </div>

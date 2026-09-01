@@ -6,6 +6,7 @@ import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import AdminTable from "@/components/admin/AdminTable";
 import { AdminStatusBadge } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface LabInstance {
   id: string;
@@ -140,6 +141,11 @@ export default function AdminMonitoringPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      <PageHeader
+        title="Lab Monitoring"
+        description="Watch active lab sessions, capacity pressure, and intervention points in real time"
+      />
+
       <div className="relative overflow-hidden angular-card bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
@@ -149,7 +155,7 @@ export default function AdminMonitoringPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Lab Monitoring</h1>
-              <p className="text-slate-300 text-sm">Real-time active lab sessions</p>
+              <p className="text-slate-300 text-sm">Real-time active lab sessions and operational control</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-4 mt-6">
@@ -165,6 +171,29 @@ export default function AdminMonitoringPage() {
         </div>
       </div>
 
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Recommended monitoring order</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Check capacity first, review who is consuming sessions, then intervene only when a lab is stuck, abandoned, or clearly unhealthy.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Force-stop discipline</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            Use force stop as an operational control, not a routine workflow. It should protect platform stability without disrupting valid learner work.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <h3 className="text-sm font-semibold text-white">Current pressure signal</h3>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
+            {capacityPercent >= 80
+              ? "Capacity is elevated. Review active sessions before opening additional load."
+              : "Capacity is within a manageable range. Continue watching for unusual spikes or idle sessions."}
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Active Containers", value: stats?.activeContainers || 0, icon: Container, bg: "bg-[#7AD62A]", color: "text-[#7AD62A]" },
@@ -176,7 +205,7 @@ export default function AdminMonitoringPage() {
             <div className={`absolute top-0 right-0 w-20 h-20 ${card.bg} opacity-10 rounded-bl-full`}></div>
             <card.icon size={20} className={`${card.color} mb-3`} />
             <div className="text-2xl font-bold text-white">{card.value}</div>
-            <div className="text-sm text-slate-500 mt-1">{card.label}</div>
+            <div className="mt-1 text-sm text-slate-300">{card.label}</div>
           </div>
         ))}
       </div>
@@ -201,7 +230,7 @@ export default function AdminMonitoringPage() {
               label: "Lab",
               sortable: true,
               render: (item: LabInstance) => (
-                <span className="text-sm text-slate-700">{item.lab?.title || "Unknown"}</span>
+                <span className="text-sm text-slate-200">{item.lab?.title || "Unknown"}</span>
               ),
             },
             {
@@ -209,7 +238,7 @@ export default function AdminMonitoringPage() {
               label: "Started",
               sortable: true,
               render: (item: LabInstance) => (
-                <div className="flex items-center gap-1.5 text-sm text-slate-600">
+                <div className="flex items-center gap-1.5 text-sm text-slate-300">
                   <Clock size={14} className="text-slate-400" />
                   {new Date(item.createdAt).toLocaleTimeString()}
                 </div>
@@ -219,7 +248,7 @@ export default function AdminMonitoringPage() {
               key: "elapsed",
               label: "Time Elapsed",
               render: (item: LabInstance) => (
-                <span className="text-sm font-mono text-slate-600">{formatElapsed(item.createdAt)}</span>
+                <span className="text-sm font-mono text-slate-200">{formatElapsed(item.createdAt)}</span>
               ),
             },
             {
@@ -239,7 +268,7 @@ export default function AdminMonitoringPage() {
             { label: "Force Stop", icon: <Square size={16} />, variant: "danger", onClick: handleBatchStop },
           ]}
           headerExtra={
-            <button onClick={() => loadData()} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-slate-700 hover:bg-white/5 text-sm font-medium transition-all">
+            <button onClick={() => loadData()} className="flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-200 transition-all hover:bg-white/5">
               <RefreshCw size={16} /> Refresh
             </button>
           }
@@ -249,18 +278,18 @@ export default function AdminMonitoringPage() {
       {instances.length > 0 && (
         <div className="angular-card bg-[#0f172a] overflow-hidden">
           <div className="px-6 py-4 border-b border-white/10 bg-white/5">
-            <h4 className="text-sm font-semibold text-slate-700">Quick Actions</h4>
+            <h4 className="text-sm font-semibold text-white">Quick Actions</h4>
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-white/10">
             {instances.map((instance) => (
-              <div key={`${instance.labId}-${instance.userId}`} className="px-6 py-3 flex items-center justify-between hover:bg-white/5/50 transition-colors">
+              <div key={`${instance.labId}-${instance.userId}`} className="flex flex-col gap-3 px-6 py-3 transition-colors hover:bg-white/5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
                     <Users size={14} className="text-[#7AD62A]" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{instance.user?.name} &middot; {instance.lab?.title}</p>
-                    <p className="text-xs text-slate-500">Running for {formatElapsed(instance.createdAt)}</p>
+                    <p className="text-xs text-slate-400">Running for {formatElapsed(instance.createdAt)}</p>
                   </div>
                 </div>
                 <button

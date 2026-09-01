@@ -7,6 +7,7 @@ import { GraduationCap, Layers, BookOpen, HelpCircle, ChevronRight, Plus, Pencil
 import toast from "@/lib/toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminNumber, AdminSelect } from "@/components/admin/AdminForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface QuizAnswer {
   id?: string;
@@ -90,19 +91,22 @@ export default function AdminCoursesPage() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const data = await fetchApi("/courses");
-        if (!cancelled) setCourses(Array.isArray(data) ? data : data.data || []);
-      } catch {
-        toast.error("Failed to load courses");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    fetchApi("/labs").then((data) => { if (!cancelled) setLabs(Array.isArray(data) ? data : []); }).catch(() => {});
+    const timeoutId = window.setTimeout(() => {
+      (async () => {
+        try {
+          const data = await fetchApi("/courses");
+          if (!cancelled) setCourses(Array.isArray(data) ? data : data.data || []);
+        } catch {
+          toast.error("Failed to load courses");
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+      })();
+      fetchApi("/labs").then((data) => { if (!cancelled) setLabs(Array.isArray(data) ? data : []); }).catch(() => {});
+    }, 0);
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
     };
   }, []);
 
@@ -296,9 +300,14 @@ export default function AdminCoursesPage() {
   if (!selectedCourse) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
+        <PageHeader
+          title="Course Management"
+          description="Control pathway structure, lesson sequence, and quiz integrity from one governed workflow"
+        />
+
         <div className="relative overflow-hidden angular-card bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 text-white">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center"><GraduationCap size={28} /></div>
               <div>
@@ -306,12 +315,35 @@ export default function AdminCoursesPage() {
                 <p className="text-blue-100 text-sm">{courses.length} courses total</p>
               </div>
             </div>
-            <button onClick={toggleSelectAllCourses} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-4 rounded-xl transition-all text-sm backdrop-blur-sm">
-              {selectedCourses.size === courses.length && courses.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />} {selectedCourses.size === courses.length && courses.length > 0 ? "Deselect All" : "Select All"}
-            </button>
-            <button onClick={() => { setCourseForm({ title: "", description: "" }); setCourseModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
-              <Plus size={16} /> New Course
-            </button>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button onClick={toggleSelectAllCourses} className="flex items-center justify-center gap-2 rounded-xl bg-white/20 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/30">
+                {selectedCourses.size === courses.length && courses.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />} {selectedCourses.size === courses.length && courses.length > 0 ? "Deselect All" : "Select All"}
+              </button>
+              <button onClick={() => { setCourseForm({ title: "", description: "" }); setCourseModal({ open: true, editing: null }); }} className="flex items-center justify-center gap-2 rounded-xl bg-white/20 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/30">
+                <Plus size={16} /> New Course
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+            <h3 className="text-sm font-semibold text-white">What to review</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Confirm each course has a coherent description, section architecture, and measurable lesson path before learners enter it.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+            <h3 className="text-sm font-semibold text-white">Bulk action discipline</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Use selection and batch deletion carefully. Course removal affects downstream sections, lessons, and quiz evidence.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+            <h3 className="text-sm font-semibold text-white">Current catalog signal</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              {courses.length > 0 ? `${courses.length} courses are currently visible in the catalog and ready for deeper structure review.` : "No courses are visible yet. Create the first governed pathway to begin delivery."}
+            </p>
           </div>
         </div>
 
@@ -336,7 +368,7 @@ export default function AdminCoursesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search courses..."
-            className="w-full pl-10 pr-4 py-2.5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full rounded-xl border border-white/10 bg-[#0f172a] py-2.5 pl-10 pr-4 text-sm text-slate-200 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300">
@@ -364,17 +396,17 @@ export default function AdminCoursesPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-white group-hover:text-blue-400 transition-colors">{course.title}</h3>
-                    <p className="text-sm text-slate-500 line-clamp-1 max-w-lg">{course.description}</p>
+                    <p className="max-w-lg line-clamp-1 text-sm text-slate-400">{course.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-sm font-medium text-white">{course.sections?.length || 0}</p>
-                    <p className="text-xs text-slate-500">Sections</p>
+                    <p className="text-xs text-slate-400">Sections</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-white">{course.sections?.reduce((acc: number, s: Section) => acc + (s.lessons?.length || s._count?.lessons || 0), 0) || 0}</p>
-                    <p className="text-xs text-slate-500">Lessons</p>
+                    <p className="text-xs text-slate-400">Lessons</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={(e) => { e.stopPropagation(); setCourseForm({ title: course.title, description: course.description }); setCourseModal({ open: true, editing: course }); }} className="p-2 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"><Pencil size={16} /></button>

@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchApiV2, fetchApi } from "@/lib/api";
-import { useI18n } from "@/lib/i18n";
+import { fetchApiV2 } from "@/lib/api";
 import {
-  Loader2, Shield, Trophy, Target, Star, BarChart3, Clock, Zap,
-  Award, TrendingUp,
+  Loader2, Shield, Trophy, Target, Clock, Zap, Award, Medal,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDisplayMode } from "@/lib/displayMode";
@@ -55,7 +53,6 @@ const TIER_COLORS: Record<string, { text: string; bg: string; border: string }> 
 };
 
 export default function CapabilityRankingPage() {
-  const { t } = useI18n();
   const { config } = useDisplayMode();
   const [leaderboard, setLeaderboard] = useState<CapabilityEntry[]>([]);
   const [myCap, setMyCap] = useState<MyCapability | null>(null);
@@ -103,6 +100,13 @@ export default function CapabilityRankingPage() {
         <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
+  }
+
+  function getPlacementBadge(position: number) {
+    if (position === 1) return <Trophy size={16} className="text-amber-400" />;
+    if (position === 2) return <Medal size={16} className="text-slate-300" />;
+    if (position === 3) return <Award size={16} className="text-orange-400" />;
+    return <span className="text-sm font-medium text-slate-500">#{position}</span>;
   }
 
   return (
@@ -191,11 +195,11 @@ export default function CapabilityRankingPage() {
                 <div key={entry.userId} className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-colors">
                   <div className="w-8 text-center">
                     {entry.position <= 3 ? (
-                      <span className="text-lg">
-                        {entry.position === 1 ? "🥇" : entry.position === 2 ? "🥈" : "🥉"}
+                      <span className="inline-flex items-center justify-center">
+                        {getPlacementBadge(entry.position)}
                       </span>
                     ) : (
-                      <span className="text-sm font-medium text-slate-500">#{entry.position}</span>
+                      getPlacementBadge(entry.position)
                     )}
                   </div>
 

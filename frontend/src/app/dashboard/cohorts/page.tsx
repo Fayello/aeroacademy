@@ -10,8 +10,11 @@ import {
   GraduationCap,
   Calendar,
   AlertTriangle,
+  ClipboardCheck,
+  School2,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface Cohort {
   id: string;
@@ -44,8 +47,13 @@ export default function CohortsPage() {
 
   useEffect(() => {
     cancelledRef.current = false;
-    load();
-    return () => { cancelledRef.current = true; };
+    const timeoutId = window.setTimeout(() => {
+      void load();
+    }, 0);
+    return () => {
+      cancelledRef.current = true;
+      window.clearTimeout(timeoutId);
+    };
   }, [load]);
 
   if (loading) {
@@ -70,21 +78,45 @@ export default function CohortsPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Users size={28} className="text-[#7AD62A]" />
-          Cohorts
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Student groups and professor dashboards
-        </p>
+      <PageHeader
+        title="Cohorts"
+        description="View the grouped learning environments that connect students, curricula, and governed evaluation"
+      />
+
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1b3657] p-6">
+        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">University Delivery</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Track cohorts as teaching, grading, and readiness units</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              Cohorts should feel like governed academic delivery groups, not just student lists. Use them to review enrollment load, curriculum fit, and practical readiness.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-2">
+                <School2 size={15} className="text-[#7AD62A]" />
+                <p className="text-sm font-semibold text-white">Cohorts listed</p>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-white">{cohorts.length}</p>
+              <p className="mt-1 text-xs text-slate-400">Active teaching groups currently visible</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-2">
+                <ClipboardCheck size={15} className="text-[#7AD62A]" />
+                <p className="text-sm font-semibold text-white">What to review</p>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-300">Check membership load, curriculum alignment, and whether each cohort is ready for deeper record review.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {cohorts.length === 0 ? (
         <EmptyState
           icon={Users}
           title="No cohorts yet"
-          description="Cohorts group students for structured learning paths. Ask your instructor to enroll you in one."
+          description="Cohorts appear when an instructor or administrator creates a governed academic group for teaching and record tracking."
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -106,7 +138,7 @@ export default function CohortsPage() {
 
               <h3 className="text-lg font-semibold text-white mb-1">{cohort.name}</h3>
 
-              <div className="flex items-center gap-3 text-xs text-slate-500 mb-3">
+              <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-slate-400">
                 <span className="flex items-center gap-1">
                   <GraduationCap size={12} />
                   {cohort.curriculum.name}
@@ -117,16 +149,15 @@ export default function CohortsPage() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-4 text-xs">
-                <span className="text-slate-600">
+              <div className="flex flex-wrap items-center gap-4 text-xs">
+                <span className="text-slate-300">
                   <span className="font-semibold text-[#7AD62A]">{cohort._count.members}</span>
                   /{cohort.maxStudents} students
                 </span>
-                <span className="text-slate-500">{cohort.curriculum.degree}</span>
+                <span className="text-slate-400">{cohort.curriculum.degree}</span>
               </div>
 
-              {/* Progress Bar */}
-              <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
                 <div
                   className="h-full bg-[#7AD62A] rounded-full transition-all"
                   style={{
