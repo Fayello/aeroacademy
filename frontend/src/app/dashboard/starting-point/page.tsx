@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { getDifficultyStyle } from "@/lib/labs";
+import { getDifficultyStyle, getProgressStatus } from "@/lib/labs";
 import { Rocket, Star, CheckCircle, Clock, Lock, ArrowRight, Shield, FileCheck } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
+import type { Lab } from "@/types/api";
 
 interface StartingLab {
   id: string;
@@ -16,6 +17,12 @@ interface StartingLab {
   order: number;
   completed: boolean;
   inProgress: boolean;
+  available: boolean;
+}
+
+interface ActiveLabInstance {
+  labId?: string | null;
+  lab?: { id: string } | null;
 }
 
 const CURATED_BEGINNER_LABS = [
@@ -38,49 +45,56 @@ export default function StartingPointPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     async function load() {
       try {
-        const allLabs = await fetchApi("/labs");
+        const [allLabs, activeLabs] = await Promise.all([
+          fetchApi<Lab[]>("/labs?take=200"),
+          fetchApi<ActiveLabInstance[]>("/dashboard/active-labs").catch(() => []),
+        ]);
+        const activeLabIds = new Set(
+          (activeLabs || [])
+            .map((item) => item.labId || item.lab?.id)
+            .filter((value): value is string => !!value),
+        );
+        const curatedMatches = CURATED_BEGINNER_LABS
+          .map((title) =>
+            allLabs.find((lab) => lab.title.toLowerCase().includes(title.toLowerCase())),
+          )
+          .filter((lab, index, array): lab is Lab => !!lab && array.findIndex((item) => item?.id === lab.id) === index);
+        const extraLabs = allLabs
+          .filter((lab) => {
+            const title = lab.title.toLowerCase();
+            return (
+              lab.difficulty < 600 &&
+              !curatedMatches.some((match) => match.id === lab.id) &&
+              !CURATED_BEGINNER_LABS.some((curated) => title.includes(curated.toLowerCase()))
+            );
+          })
+          .sort((a, b) => a.difficulty - b.difficulty)
+          .slice(0, Math.max(0, 6 - curatedMatches.length));
+        const chosenLabs = [...curatedMatches, ...extraLabs];
         const beginnerLabs: StartingLab[] = [];
-
-        CURATED_BEGINNER_LABS.forEach((title, idx) => {
-          const found = allLabs.find(
-            (l: { title: string }) => l.title.toLowerCase().includes(title.toLowerCase())
-          );
+        chosenLabs.forEach((lab, idx) => {
+          const progressStatus = getProgressStatus(lab.flags);
           beginnerLabs.push({
-            id: found?.id || `placeholder-${idx}`,
-            title: found?.title || title,
-            description: found?.description || "A beginner-friendly lab to get you started.",
-            difficulty: found?.difficulty || 200 + idx * 100,
-            estimatedMinutes: found?.estimatedMinutes || null,
+            id: lab.id,
+            title: lab.title,
+            description: lab.description,
+            difficulty: lab.difficulty,
+            estimatedMinutes: null,
             order: idx + 1,
-            completed: false,
-            inProgress: false,
+            completed: progressStatus === "COMPLETED",
+            inProgress: progressStatus === "IN_PROGRESS" || activeLabIds.has(lab.id),
+            available: true,
           });
         });
 
-        // Also add any low-difficulty labs not in the curated list
-        const extraLabs = allLabs
-          .filter((l: { difficulty: number; title: string }) =>
-            l.difficulty < 600 &&
-            !CURATED_BEGINNER_LABS.some((c) => l.title.toLowerCase().includes(c.toLowerCase()))
-          )
-          .slice(0, 5)
-          .map((l: { id: string; title: string; description: string; difficulty: number; estimatedMinutes?: number | null }, idx: number) => ({
-            id: l.id,
-            title: l.title,
-            description: l.description,
-            difficulty: l.difficulty,
-            estimatedMinutes: l.estimatedMinutes,
-            order: CURATED_BEGINNER_LABS.length + idx + 1,
-            completed: false,
-            inProgress: false,
-          }));
-
-        const all = [...beginnerLabs, ...extraLabs];
-        setLabs(all);
+        if (!cancelled) {
+          setLabs(beginnerLabs);
+        }
       } catch {
-        // Use fallback curated list
+        // Use fallback curated list only for messaging; do not create broken routes.
         const fallback = CURATED_BEGINNER_LABS.map((title, idx) => ({
           id: `fallback-${idx}`,
           title,
@@ -90,13 +104,21 @@ export default function StartingPointPage() {
           order: idx + 1,
           completed: false,
           inProgress: false,
+          available: false,
         }));
-        setLabs(fallback);
+        if (!cancelled) {
+          setLabs(fallback);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
     load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const completedCount = labs.filter((l) => l.completed).length;
@@ -208,23 +230,19 @@ export default function StartingPointPage() {
           const diff = getDifficultyInfo(lab.difficulty);
           const isCompleted = lab.completed;
           const isCurrent = lab.inProgress || (!isCompleted && (idx === 0 || labs[idx - 1]?.completed));
-          const isLocked = !isCompleted && !isCurrent;
+          const isLocked = !lab.available || (!isCompleted && !isCurrent);
+          const cardClassName = `block angular-card border transition-all duration-300 hover-lift ${
+            isLocked
+              ? "border-white/10 bg-white/[0.03] opacity-80"
+              : isCompleted
+              ? "border-[#7AD62A]/20 bg-[#7AD62A]/10/30"
+              : "border-white/10 bg-[#0f172a] hover:border-white/10"
+          }`;
 
-          return (
-            <Link
-              key={lab.id}
-              href={`/dashboard/labs/${lab.id}`}
-              className={`block angular-card border transition-all duration-300 hover-lift ${
-                isLocked
-                  ? "border-slate-100 bg-white/50 opacity-60"
-                  : isCompleted
-                  ? "border-[#7AD62A]/20 bg-[#7AD62A]/10/30"
-                  : "border-white/10 bg-[#0f172a] hover:border-white/10"
-              }`}
-            >
+          const cardContent = (
+            <>
               <div className={`h-0.5 w-full ${diff.bar} opacity-40`} />
               <div className="p-5 flex items-center gap-4">
-                {/* Step number / status */}
                 <div
                   className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm ${
                     isCompleted
@@ -243,7 +261,6 @@ export default function StartingPointPage() {
                   )}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>
@@ -262,17 +279,33 @@ export default function StartingPointPage() {
                   <h3 className={`text-sm font-medium ${isLocked ? "text-slate-400" : "text-white"}`}>
                     {lab.title}
                   </h3>
-                  <p className={`text-xs line-clamp-1 ${isLocked ? "text-slate-300" : "text-slate-500"}`}>
+                  <p className={`text-xs line-clamp-2 ${isLocked ? "text-slate-400" : "text-slate-500"}`}>
                     {lab.description}
                   </p>
+                  {!lab.available && (
+                    <p className="mt-1 text-[11px] text-amber-300">
+                      This starter recommendation is waiting for a live lab match. Browse the catalog to choose the closest available exercise.
+                    </p>
+                  )}
                 </div>
 
-                {/* Arrow */}
-                {!isLocked && (
+                {lab.available && !isLocked && (
                   <ArrowRight size={16} className="text-slate-300 shrink-0" />
                 )}
               </div>
-            </Link>
+            </>
+          );
+
+          return (
+            lab.available ? (
+              <Link key={lab.id} href={`/dashboard/labs/${lab.id}`} className={cardClassName}>
+                {cardContent}
+              </Link>
+            ) : (
+              <div key={lab.id} className={cardClassName}>
+                {cardContent}
+              </div>
+            )
           );
         })}
       </div>

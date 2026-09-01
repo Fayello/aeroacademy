@@ -2,17 +2,14 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
-  Route,
   BookOpen,
   Clock,
   Users,
-  ChevronRight,
   ChevronLeft,
   Loader2,
   CheckCircle2,
-  Circle,
   Rocket,
   Award,
 } from "lucide-react";
@@ -64,7 +61,6 @@ const difficultyColors: Record<string, string> = {
 
 export default function LearningPathDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
   const [path, setPath] = useState<LearningPathDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);

@@ -13,7 +13,6 @@ import {
   Loader2,
   Search,
   X,
-  Mail,
   Shield,
 } from "lucide-react";
 import toast from "@/lib/toast";
@@ -72,13 +71,6 @@ export default function AdminTeamsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  const loadCourses = useCallback(async () => {
-    try {
-      const data = await fetchApi("/courses");
-      setCourses(Array.isArray(data) ? data : data.data || []);
-    } catch {}
   }, []);
 
   useEffect(() => {

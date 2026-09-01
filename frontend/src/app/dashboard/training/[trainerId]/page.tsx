@@ -46,9 +46,11 @@ export default function TrainerProfilePage() {
     if (!trainer) return;
     let cancelled = false;
     const dateStr = selectedDate.toISOString().split("T")[0];
-    setSelectedSlot(null);
     (async () => {
-      setSlotsLoading(true);
+      if (!cancelled) {
+        setSlotsLoading(true);
+        setSelectedSlot(null);
+      }
       try {
         const data = await fetchApi(`/training/trainers/${trainer.id}/slots?date=${dateStr}`);
         if (!cancelled) setSlots(data as TrainingSlot[]);
@@ -112,19 +114,30 @@ export default function TrainerProfilePage() {
       </Link>
 
       <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
-        <div className="flex items-center gap-5">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <div className="w-20 h-20 rounded-full bg-[#7AD62A]/10 flex items-center justify-center text-[#0F203A] font-bold text-2xl">
             {(trainer.user?.name || "T").charAt(0)}
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">{trainer.user?.name}</h1>
-            <div className="text-sm text-slate-500 mt-1">{trainer.specialties?.join(", ") || "General"}</div>
+            <div className="text-sm text-slate-300 mt-1">{trainer.specialties?.join(", ") || "General coaching"}</div>
             {trainer.hourlyRate && (
               <div className="text-sm font-medium text-[#7AD62A] mt-1">{trainer.hourlyRate.toLocaleString()} XAF/hr</div>
             )}
           </div>
         </div>
-        {trainer.bio && <p className="text-slate-500 mt-4">{trainer.bio}</p>}
+        {trainer.bio && <p className="text-slate-300 mt-4">{trainer.bio}</p>}
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {[
+            "Choose a date and slot that matches the week you want to make progress.",
+            "Use the topic field to name the exact lab, module, or concept you want help with.",
+            "Booked sessions appear in your training bookings so you can track upcoming support.",
+          ].map((item) => (
+            <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+              {item}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -142,8 +155,8 @@ export default function TrainerProfilePage() {
                     isSelected
                       ? "bg-[#7AD62A] text-white"
                       : isToday
-                        ? "bg-[#7AD62A]/10 text-[#0F203A] border border-[#7AD62A]/20"
-                        : "hover:bg-white/5 text-slate-600"
+                        ? "bg-[#7AD62A]/10 text-[#7AD62A] border border-[#7AD62A]/20"
+                        : "hover:bg-white/5 text-slate-300"
                   }`}
                 >
                   <span className="font-medium">{DAYS[d.getDay()]}</span>
@@ -159,7 +172,7 @@ export default function TrainerProfilePage() {
           {slotsLoading ? (
             <div className="flex items-center justify-center py-8"><Loader2 className="animate-spin text-slate-400" size={20} /></div>
           ) : slots.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">No slots available for this date.</p>
+            <p className="text-sm text-slate-400 text-center py-8">No slots available for this date.</p>
           ) : (
             <div className="space-y-2">
               {slots.map((slot) => (
@@ -191,17 +204,17 @@ export default function TrainerProfilePage() {
       {selectedSlot && (
         <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
           <h3 className="font-bold text-white mb-4">Book Session</h3>
-          <div className="text-sm text-slate-500 mb-4">
+          <div className="text-sm text-slate-300 mb-4">
             {selectedDate.toLocaleDateString()} | {selectedSlot.startTime} - {selectedSlot.endTime}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Topic</label>
+            <label className="block text-sm font-medium text-slate-200 mb-1.5">Topic</label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="What do you want to learn?"
-              className="input-field"
+              placeholder="Name the lab, course area, or assessment skill you want to improve"
+              className="w-full rounded-xl border border-white/10 bg-[#0b1220] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
             />
           </div>
           <button onClick={handleBook} disabled={booking || !topic.trim()} className="btn-primary text-sm">

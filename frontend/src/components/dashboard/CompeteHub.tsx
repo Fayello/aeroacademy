@@ -4,10 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
-import { useNavigation } from "@/lib/navigation";
 import { getLevel } from "@/lib/levelGating";
 import {
-  Loader2,
   Swords,
   Trophy,
   Target,
@@ -17,7 +15,6 @@ import {
   BarChart3,
   Flame,
   ChevronRight,
-  Clock,
   Lock,
   Play,
 } from "lucide-react";
@@ -33,8 +30,9 @@ interface ActiveSeason {
 interface ActiveBossMission {
   id: string;
   title: string;
-  difficulty: number;
-  domain: string;
+  difficulty: string;
+  domainId: string | null;
+  expiresAt?: string | null;
 }
 
 interface BattlePassProgress {
@@ -73,12 +71,11 @@ function getGreetingTime(): string {
 
 export default function CompeteHub() {
   const [activeSeason, setActiveSeason] = useState<ActiveSeason | null>(null);
-  const [activeBoss, setActiveBoss] = useState<ActiveBossMission | null>(null);
+  const [activeBosses, setActiveBosses] = useState<ActiveBossMission[]>([]);
   const [battlePass, setBattlePass] = useState<BattlePassProgress | null>(null);
   const [challengeStats, setChallengeStats] = useState<ChallengeStats | null>(null);
   const [loading, setLoading] = useState(true);
   const { userMetrics } = useDashboard();
-  const { nav } = useNavigation();
 
   const xp = userMetrics?.xp || 0;
   const level = getLevel(xp);
@@ -91,20 +88,20 @@ export default function CompeteHub() {
       try {
         const [season, boss, bp, challenges] = await Promise.allSettled([
           fetchApi<ActiveSeason>("/seasons/active"),
-          fetchApi<ActiveBossMission>("/boss-missions/active"),
+          fetchApi<ActiveBossMission[]>("/boss-missions/active"),
           fetchApi<BattlePassProgress>("/battle-pass"),
-          fetchApi<any[]>("/challenges"),
+          fetchApi<Record<string, unknown>[]>("/challenges"),
         ]);
 
         if (!cancelled) {
           if (season.status === "fulfilled" && season.value) setActiveSeason(season.value);
-          if (boss.status === "fulfilled" && boss.value) setActiveBoss(boss.value);
+          if (boss.status === "fulfilled" && Array.isArray(boss.value)) setActiveBosses(boss.value);
           if (bp.status === "fulfilled" && bp.value) setBattlePass(bp.value);
           if (challenges.status === "fulfilled" && Array.isArray(challenges.value)) {
             const all = challenges.value;
             setChallengeStats({
-              active: all.filter((c: any) => c.status === "ACTIVE" || c.status === "AVAILABLE").length,
-              completed: all.filter((c: any) => c.status === "COMPLETED").length,
+              active: all.filter((c) => (c.status === "ACTIVE" || c.status === "AVAILABLE")).length,
+              completed: all.filter((c) => (c.status === "COMPLETED")).length,
               total: all.length,
             });
           }
@@ -176,8 +173,8 @@ export default function CompeteHub() {
       bgColor: "bg-red-500/10",
       href: "/dashboard/boss-missions",
       requiredLevel: 10,
-      status: level >= 10 ? (activeBoss ? "active" : "available") : "locked",
-      detail: activeBoss ? activeBoss.title : undefined,
+      status: level >= 10 ? (activeBosses.length > 0 ? "active" : "available") : "locked",
+      detail: activeBosses.length > 0 ? `${activeBosses.length} active challenge${activeBosses.length > 1 ? "s" : ""}` : undefined,
     },
     {
       id: "battlepass",
@@ -257,7 +254,7 @@ export default function CompeteHub() {
       </div>
 
       {/* Active Competitions Banner */}
-      {(activeSeason || activeBoss || battlePass) && (
+      {(activeSeason || activeBosses.length > 0 || battlePass) && (
         <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-2 h-2 rounded-full bg-[#7AD62A] animate-pulse" />
@@ -276,29 +273,31 @@ export default function CompeteHub() {
                 </div>
               </Link>
             )}
-            {activeBoss && (
+            {activeBosses[0] && (
               <Link
                 href="/dashboard/boss-missions"
-                className="flex items-center gap-3 p-3 rounded-lg bg-red-500/10 hover:bg-red-100 transition-colors group"
+                className="flex items-center gap-3 rounded-lg bg-red-500/10 p-3 transition-colors group hover:bg-red-500/15"
               >
                 <Swords size={20} className="text-red-600" />
                 <div>
-                  <p className="text-sm font-medium text-white group-hover:text-red-700">{activeBoss.title}</p>
-                  <p className="text-xs text-slate-500">Boss active</p>
+                  <p className="text-sm font-medium text-white group-hover:text-red-300">{activeBosses[0].title}</p>
+                  <p className="text-xs text-slate-400">
+                    {activeBosses.length > 1 ? `${activeBosses.length} boss missions active` : "Boss mission active"}
+                  </p>
                 </div>
               </Link>
             )}
             {battlePass && (
               <Link
                 href="/dashboard/battle-pass"
-                className="flex items-center gap-3 p-3 rounded-lg bg-[#7AD62A]/10 hover:bg-[#d4f2e2] transition-colors group"
+                className="flex items-center gap-3 rounded-lg bg-[#7AD62A]/10 p-3 transition-colors group hover:bg-[#7AD62A]/15"
               >
                 <Award size={20} className="text-[#7AD62A]" />
                 <div>
-                  <p className="text-sm font-medium text-white group-hover:text-[#1a7a4d]">
+                  <p className="text-sm font-medium text-white group-hover:text-[#9ae457]">
                     Tier {battlePass.currentTier}/{battlePass.totalTiers}
                   </p>
-                  <p className="text-xs text-slate-500">Battle Pass</p>
+                  <p className="text-xs text-slate-400">Battle Pass</p>
                 </div>
               </Link>
             )}
@@ -343,7 +342,7 @@ export default function CompeteHub() {
                 </div>
 
                 <h3 className="text-sm font-semibold text-white mb-1">{mode.title}</h3>
-                <p className="text-xs text-slate-500 mb-3 leading-relaxed">{mode.description}</p>
+                <p className="mb-3 text-xs leading-relaxed text-slate-300">{mode.description}</p>
 
                 {isLocked ? (
                   <p className="text-xs text-slate-400 font-medium">
@@ -352,7 +351,7 @@ export default function CompeteHub() {
                 ) : (
                   <div className="flex items-center justify-between">
                     {mode.detail ? (
-                      <span className="text-xs text-slate-600">{mode.detail}</span>
+                      <span className="text-xs text-slate-300">{mode.detail}</span>
                     ) : (
                       <span className="text-xs text-slate-400">Ready</span>
                     )}
@@ -382,7 +381,7 @@ export default function CompeteHub() {
               <h3 className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
                 Global Leaderboards
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 See how you rank against all players worldwide
               </p>
             </div>
@@ -408,7 +407,7 @@ export default function CompeteHub() {
               <h3 className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">
                 My Missions
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Track your personal mission progress
               </p>
             </div>

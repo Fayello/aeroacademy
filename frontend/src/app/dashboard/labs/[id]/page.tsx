@@ -660,9 +660,9 @@ export default function LabWorkspace() {
         <div className="angular-card bg-[#0f172a] overflow-hidden">
           <div className={`h-1.5 w-full ${diff?.bar || "bg-slate-300"}`} />
           <div className="p-6">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                   {diff && (
                     <span className={`text-[11px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
                   )}
@@ -677,9 +677,9 @@ export default function LabWorkspace() {
                 </h1>
                 <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">{lab.description}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className="flex items-center gap-1.5 justify-end">
+              <div className="flex flex-row sm:flex-row items-center gap-3 sm:justify-end">
+                <div className="text-left sm:text-right">
+                  <div className="flex items-center gap-1.5 justify-start sm:justify-end">
                     <Users size={12} className="text-slate-400" />
                     <span className="text-xs text-slate-400">{solvedFlags}/{flags} solved</span>
                   </div>
@@ -698,7 +698,7 @@ export default function LabWorkspace() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 border-b border-white/10">
+        <div className="flex items-center gap-1 border-b border-white/10 overflow-x-auto">
           {[
             { key: "play" as const, label: "Play Lab" },
             { key: "info" as const, label: "Lab Info" },
@@ -767,7 +767,7 @@ export default function LabWorkspace() {
                 <h3 className="text-sm font-semibold text-white mb-3">Flags</h3>
                 <div className="space-y-3">
                   {lab.flags.map((flag: LabFlag) => (
-                    <div key={flag.id} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                    <div key={flag.id} className="p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-white">{flag.title}</span>
                         <span className="text-sm font-bold text-[#7AD62A]">+{flag.points} pts</span>
@@ -783,13 +783,13 @@ export default function LabWorkspace() {
                 <h3 className="text-sm font-semibold text-white mb-3">Credentials</h3>
                 <div className="grid gap-2">
                   {lab.credentials.map((cred: LabCredential, i: number) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 p-3 rounded-lg bg-white/5 border border-white/10 text-xs">
                       <span className="font-medium text-slate-300">{cred.service}</span>
-                      <span className="text-slate-400">·</span>
+                      <span className="text-slate-400 hidden sm:inline">·</span>
                       <span className="font-mono text-[#7AD62A]">{cred.username}</span>
                       {cred.password && (
                         <>
-                          <span className="text-slate-400">·</span>
+                          <span className="text-slate-400 hidden sm:inline">·</span>
                           <span className="font-mono text-[#7AD62A]">{cred.password}</span>
                         </>
                       )}
@@ -805,7 +805,7 @@ export default function LabWorkspace() {
           <div className="space-y-6">
             {/* Rating summary */}
             <div className="angular-card bg-[#0f172a] p-6">
-              <div className="flex items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                 <div className="text-center">
                   <p className="text-4xl font-bold text-white">{reviewsData?.stats.average ? reviewsData.stats.average.toFixed(1) : "—"}</p>
                   <div className="flex items-center gap-0.5 my-1">
@@ -835,7 +835,7 @@ export default function LabWorkspace() {
             </div>
 
             {/* Write a review */}
-            <div className="angular-card bg-[#0f172a] p-6">
+            <div className="angular-card bg-[#0f172a] p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-3">Write a Review</h3>
               <div className="flex items-center gap-1 mb-3">
                 {[1, 2, 3, 4, 5].map((s) => (
@@ -929,7 +929,7 @@ export default function LabWorkspace() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-nowrap sm:flex-wrap items-center gap-2 overflow-x-auto">
           <Link
             href={`/dashboard/labs/${id}/discussions`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 text-xs font-medium transition-colors border border-white/10"
@@ -1153,11 +1153,13 @@ export default function LabWorkspace() {
         {/* Terminal */}
         <div className="flex-1 flex flex-col min-w-0 angular-card bg-[#0f172a] shadow-sm overflow-hidden">
           <div className="border-b border-white/10 px-3 sm:px-4 py-2 flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center">
-            <TerminalIcon size={14} className="text-slate-400" />
-            <span className="text-xs font-medium text-slate-400">Terminal</span>
+            <div className="flex items-center gap-2">
+              <TerminalIcon size={14} className="text-slate-400" />
+              <span className="text-xs font-medium text-slate-400">Terminal</span>
+            </div>
 
             {isRunning && connected && (
-              <div className="sm:ml-auto flex flex-wrap items-center gap-1">
+              <div className="sm:ml-auto flex items-center gap-1 overflow-x-auto">
                 <span className="text-[10px] text-slate-400 mr-1 hidden sm:block">Quick:</span>
                 {QUICK_COMMANDS.map((cmd) => (
                   <button
@@ -1169,45 +1171,47 @@ export default function LabWorkspace() {
                     {cmd}
                   </button>
                 ))}
-                <div className="hidden sm:block w-px h-4 bg-white/10 mx-1" />
-                <button
-                  onClick={handleCopy}
-                  disabled={!selection}
-                  title="Copy selection"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                >
-                  <Copy size={13} />
-                </button>
-                <button
-                  onClick={handlePaste}
-                  title="Paste from clipboard"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
-                >
-                  <ClipboardPaste size={13} />
-                </button>
-                <button
-                  onClick={() => updateFontSize(fontSize - 1)}
-                  disabled={fontSize <= MIN_FONT_SIZE}
-                  title="Decrease font size"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                >
-                  <ZoomOut size={13} />
-                </button>
-                <button
-                  onClick={() => updateFontSize(fontSize + 1)}
-                  disabled={fontSize >= MAX_FONT_SIZE}
-                  title="Increase font size"
-                  className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                >
-                  <ZoomIn size={13} />
-                </button>
-                <button
-                  onClick={handleClear}
-                  title="Clear terminal"
-                  className="ml-1 p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
-                >
-                  <Eraser size={13} />
-                </button>
+                <div className="hidden sm:block w-px h-4 bg-white/10 mx-1 shrink-0" />
+                <div className="flex items-center gap-0.5 sm:gap-1">
+                  <button
+                    onClick={handleCopy}
+                    disabled={!selection}
+                    title="Copy selection"
+                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  >
+                    <Copy size={13} />
+                  </button>
+                  <button
+                    onClick={handlePaste}
+                    title="Paste from clipboard"
+                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+                  >
+                    <ClipboardPaste size={13} />
+                  </button>
+                  <button
+                    onClick={() => updateFontSize(fontSize - 1)}
+                    disabled={fontSize <= MIN_FONT_SIZE}
+                    title="Decrease font size"
+                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  >
+                    <ZoomOut size={13} />
+                  </button>
+                  <button
+                    onClick={() => updateFontSize(fontSize + 1)}
+                    disabled={fontSize >= MAX_FONT_SIZE}
+                    title="Increase font size"
+                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  >
+                    <ZoomIn size={13} />
+                  </button>
+                  <button
+                    onClick={handleClear}
+                    title="Clear terminal"
+                    className="ml-0.5 sm:ml-1 p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+                  >
+                    <Eraser size={13} />
+                  </button>
+                </div>
               </div>
             )}
 

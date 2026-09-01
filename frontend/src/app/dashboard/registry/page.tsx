@@ -2,7 +2,7 @@
 
 import { useDashboard } from "@/hooks/useDashboard";
 import { useState, useEffect } from "react";
-import { Shield, Award, CheckCircle, Trophy, Loader2, ExternalLink } from "lucide-react";
+import { Shield, Award, CheckCircle, Trophy, ExternalLink } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
 import type { Achievement } from "@/types/api";

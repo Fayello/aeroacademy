@@ -92,7 +92,7 @@ export default function NextSteps() {
         </div>
         <Link
           href="/dashboard/competency"
-          className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+          className="text-xs text-[#7AD62A] hover:text-[#9ae457] font-medium flex items-center gap-1"
         >
           Full profile <ArrowRight size={12} />
         </Link>
@@ -111,7 +111,7 @@ export default function NextSteps() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white line-clamp-1">{rec.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{rec.description}</p>
+                  <p className="text-xs text-slate-300 mt-0.5 line-clamp-2">{rec.description}</p>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function NextSteps() {
       </div>
 
       {/* Quick Stats */}
-      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-4 text-[11px] text-slate-500">
+      <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-4 text-[11px] text-slate-400">
         <span>{data.summary.completedOutcomes}/{data.summary.totalOutcomes} outcomes</span>
         <span className="text-slate-300">|</span>
         <span>{data.summary.totalLabsCompleted} labs done</span>

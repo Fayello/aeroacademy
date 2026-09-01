@@ -179,10 +179,10 @@ export default function DailyMissions() {
 
   async function fetchMissions() {
     try {
-      const data = await fetchApi<any[]>('/challenges/missions');
+      const data = await fetchApi<Mission[]>('/challenges/missions');
       setMissions(data);
-    } catch (e: any) {
-      if (e.message?.includes('unlock') || e.message?.includes('Level')) setError(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error && (e.message?.includes('unlock') || e.message?.includes('Level'))) setError(e.message);
     } finally {
       setLoading(false);
     }

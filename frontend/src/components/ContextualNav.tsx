@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
 
 interface ContextualNavProps {
   backHref: string;
@@ -23,7 +22,6 @@ export default function ContextualNav({
   tabs,
 }: ContextualNavProps) {
   const pathname = usePathname();
-  const { t } = useI18n();
 
   return (
     <div className="mb-6">

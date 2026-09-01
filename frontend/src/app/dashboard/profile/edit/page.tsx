@@ -7,15 +7,14 @@ import * as z from "zod";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import type { Organization } from "@/types/api";
-import { CAMEROON_CITIES } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import {
   User, Save, ArrowLeft, Loader2, AtSign, MapPin, Building2,
-  Clock, Mail, Bell, Eye, EyeOff, Globe, Info, Monitor, Trophy, Briefcase,
+  Mail, Bell, Globe, Info, Monitor, Trophy, Briefcase,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "@/lib/toast";
-import { useDisplayMode, type DisplayMode } from "@/lib/displayMode";
+import { useDisplayMode } from "@/lib/displayMode";
 
 const TIMEZONES = [
   "UTC",
@@ -74,6 +73,18 @@ const profileSchema = z.object({
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
+interface UserProfile {
+  id?: string;
+  name?: string;
+  username?: string;
+  bio?: string;
+  city?: string;
+  timezone?: string;
+  organizationId?: string;
+  avatarUrl?: string;
+  emailPreferences?: Record<string, boolean>;
+}
+
 export default function ProfileEditPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -94,7 +105,7 @@ export default function ProfileEditPage() {
   const loadData = useCallback(async () => {
     try {
       const [profile, orgs] = await Promise.allSettled([
-        fetchApi<any>("/auth/me"),
+        fetchApi<UserProfile>("/auth/me"),
         fetchApi<Organization[]>("/auth/organizations"),
       ]);
 

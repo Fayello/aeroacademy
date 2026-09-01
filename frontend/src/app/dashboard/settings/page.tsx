@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import { logout } from "@/lib/auth";
 import PageHeader from "@/components/ui/PageHeader";
@@ -13,14 +12,57 @@ import {
   Palette,
   Key,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import toast from "@/lib/toast";
+import type { UserPreference } from "@/types/api";
 
 interface SettingsSection {
   id: string;
   label: string;
   icon: React.ElementType;
   description: string;
+}
+
+function PreferenceRow({
+  label,
+  description,
+  enabled,
+  busy,
+  onToggle,
+}: {
+  label: string;
+  description: string;
+  enabled: boolean;
+  busy: boolean;
+  onToggle: (value: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-3 border-b border-white/10 last:border-0">
+      <div>
+        <p className="text-sm font-medium text-white">{label}</p>
+        <p className="text-sm text-slate-500">{description}</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => !busy && onToggle(!enabled)}
+        disabled={busy}
+        aria-pressed={enabled}
+        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+          enabled ? "bg-[#229C62]" : "bg-white/10"
+        } ${busy ? "cursor-wait opacity-70" : ""}`}
+      >
+        <span
+          className={`inline-flex h-5 w-5 items-center justify-center rounded-full bg-white transition-transform ${
+            enabled ? "translate-x-6" : "translate-x-1"
+          }`}
+        >
+          {busy ? <Loader2 size={10} className="animate-spin text-slate-500" /> : null}
+        </span>
+      </button>
+    </div>
+  );
 }
 
 const sections: SettingsSection[] = [
@@ -31,11 +73,72 @@ const sections: SettingsSection[] = [
 ];
 
 export default function SettingsPage() {
-  const router = useRouter();
   const [activeSection, setActiveSection] = useState("account");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(() => {
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [preferences, setPreferences] = useState<UserPreference | null>(null);
+  const [savingPreference, setSavingPreference] = useState<"notificationsEnabled" | "weeklyDigestEnabled" | null>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
+
+  const updatePreference = useCallback(
+    async (key: "notificationsEnabled" | "weeklyDigestEnabled", value: boolean) => {
+      const nextPreferences = {
+        interests: preferences?.interests || [],
+        weakSkills: preferences?.weakSkills || [],
+        preferredDifficulty: preferences?.preferredDifficulty || "MEDIUM",
+        notificationsEnabled: key === "notificationsEnabled" ? value : preferences?.notificationsEnabled ?? true,
+        weeklyDigestEnabled: key === "weeklyDigestEnabled" ? value : preferences?.weeklyDigestEnabled ?? true,
+      };
+
+      const previous = preferences;
+      setPreferences((current) =>
+        current
+          ? { ...current, [key]: value }
+          : {
+              interests: [],
+              weakSkills: [],
+              preferredDifficulty: "MEDIUM",
+              notificationsEnabled: key === "notificationsEnabled" ? value : true,
+              weeklyDigestEnabled: key === "weeklyDigestEnabled" ? value : true,
+              displayMode: "SYSTEM",
+              onboardingCompleted: false,
+              onboardingSelections: {},
+            },
+      );
+      setSavingPreference(key);
+
+      try {
+        const saved = await fetchApi<UserPreference>("/dashboard/preferences", {
+          method: "POST",
+          body: JSON.stringify(nextPreferences),
+        });
+        setPreferences((current) => ({
+          interests: saved?.interests || current?.interests || [],
+          weakSkills: saved?.weakSkills || current?.weakSkills || [],
+          preferredDifficulty: saved?.preferredDifficulty || current?.preferredDifficulty || "MEDIUM",
+          notificationsEnabled: saved?.notificationsEnabled ?? nextPreferences.notificationsEnabled,
+          weeklyDigestEnabled: saved?.weeklyDigestEnabled ?? nextPreferences.weeklyDigestEnabled,
+          displayMode: current?.displayMode || "SYSTEM",
+          onboardingCompleted: current?.onboardingCompleted || false,
+          onboardingSelections: current?.onboardingSelections || {},
+        }));
+        toast.success("Preference updated");
+      } catch {
+        setPreferences(previous);
+        toast.error("Failed to update preference");
+      } finally {
+        setSavingPreference(null);
+      }
+    },
+    [preferences],
+  );
 
   // Close modal on Escape
   useEffect(() => {
@@ -49,14 +152,48 @@ export default function SettingsPage() {
   }, [showDeleteConfirm]);
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
-    fetchApi<any>("/auth/me").then((u) => {
+    fetchApi<{ name?: string; email?: string; role?: string }>("/auth/me").then((u) => {
       setUser(u);
       localStorage.setItem("user", JSON.stringify(u));
     }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchApi<UserPreference | null>("/dashboard/preferences")
+      .then((data) => {
+        if (!cancelled) {
+          setPreferences(
+            data || {
+              interests: [],
+              weakSkills: [],
+              preferredDifficulty: "MEDIUM",
+              notificationsEnabled: true,
+              weeklyDigestEnabled: true,
+              displayMode: "SYSTEM",
+              onboardingCompleted: false,
+              onboardingSelections: {},
+            },
+          );
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPreferences({
+            interests: [],
+            weakSkills: [],
+            preferredDifficulty: "MEDIUM",
+            notificationsEnabled: true,
+            weeklyDigestEnabled: true,
+            displayMode: "SYSTEM",
+            onboardingCompleted: false,
+            onboardingSelections: {},
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -136,23 +273,46 @@ export default function SettingsPage() {
           )}
 
           {activeSection === "notifications" && (
-            <div className="angular-card bg-[#0f172a] p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Email Notifications</h2>
-              <div className="space-y-4">
-                {[
-                  { label: "Lab completions", description: "Get notified when you complete a lab" },
-                  { label: "Achievement unlocks", description: "Get notified when you earn badges" },
-                  { label: "Leaderboard changes", description: "Weekly leaderboard rank updates" },
-                  { label: "New courses", description: "When new courses are added" },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between py-3 border-b border-white/10 last:border-0">
-                    <div>
-                      <p className="text-sm font-medium text-white">{item.label}</p>
-                      <p className="text-sm text-slate-500">{item.description}</p>
+            <div className="space-y-6">
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-2">Notification Preferences</h2>
+                <p className="text-sm text-slate-400 mb-6">
+                  Control whether AeroAcademy sends progress and summary updates beyond the in-app notification center.
+                </p>
+                <div className="space-y-4">
+                  <PreferenceRow
+                    label="Progress alerts"
+                    description="Receive email and product alerts for labs, achievements, and important account activity."
+                    enabled={preferences?.notificationsEnabled ?? true}
+                    busy={savingPreference === "notificationsEnabled" || !preferences}
+                    onToggle={(value) => updatePreference("notificationsEnabled", value)}
+                  />
+                  <PreferenceRow
+                    label="Weekly digest"
+                    description="Get a weekly summary of your progress, ranking movement, and newly released learning opportunities."
+                    enabled={preferences?.weeklyDigestEnabled ?? true}
+                    busy={savingPreference === "weeklyDigestEnabled" || !preferences}
+                    onToggle={(value) => updatePreference("weeklyDigestEnabled", value)}
+                  />
+                </div>
+              </div>
+
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Always Available In-App</h2>
+                <div className="space-y-4">
+                  {[
+                    { label: "Platform notifications", description: "Unread alerts, exam updates, and platform events remain available in your notification center." },
+                    { label: "Security events", description: "Critical account and verification notices remain visible even if email digests are disabled." },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center justify-between gap-4 py-3 border-b border-white/10 last:border-0">
+                      <div>
+                        <p className="text-sm font-medium text-white">{item.label}</p>
+                        <p className="text-sm text-slate-500">{item.description}</p>
+                      </div>
+                      <span className="text-xs text-[#7AD62A] bg-[#7AD62A]/10 px-3 py-1 rounded-full">Active</span>
                     </div>
-                    <span className="text-xs text-slate-400 bg-white/5 px-3 py-1 rounded-full">Coming soon</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { fetchApiV2 } from "@/lib/api";
+import Image from "next/image";
 import PageHeader from "@/components/ui/PageHeader";
-import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import {
   Loader2,
@@ -12,7 +12,6 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  Trophy,
   Zap,
   AlertTriangle,
   Target,
@@ -54,7 +53,7 @@ interface BossAttempt {
   score: number;
   maxScore: number;
   isCompleted: boolean;
-  feedback: any;
+  feedback: string | Record<string, unknown>;
   createdAt: string;
 }
 
@@ -104,27 +103,27 @@ function formatCountdown(expiresAt: string): string {
 }
 
 export default function BossMissionsPage() {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId] = useState<string | null>(() => {
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      if (!stored) return null;
+      const parsed = JSON.parse(stored) as { id?: string };
+      return parsed.id || null;
+    } catch {
+      return null;
+    }
+  });
   const [bosses, setBosses] = useState<BossMission[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBoss, setSelectedBoss] = useState<BossDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(0);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setUserId(parsed.id);
-      }
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 60000);
+    setNow(new Date().getTime());
+    const interval = setInterval(() => setNow(new Date().getTime()), 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -169,7 +168,7 @@ export default function BossMissionsPage() {
 
   const isExpired = (expiresAt: string | null) => {
     if (!expiresAt) return false;
-    return new Date(expiresAt).getTime() < Date.now();
+    return new Date(expiresAt).getTime() < now;
   };
 
   if (loading) {
@@ -192,7 +191,7 @@ export default function BossMissionsPage() {
             <Swords size={28} className="text-red-500" />
           </div>
           <h3 className="text-sm font-semibold text-white mb-1">No boss missions active</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
             Boss challenges are being designed. These are high-difficulty labs that test your full skill set — stay ready.
           </p>
         </div>
@@ -203,6 +202,18 @@ export default function BossMissionsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
+
+      <div className="angular-card grid gap-4 border border-white/10 bg-[#0F203A] p-5 text-white lg:grid-cols-3">
+        {[
+          "Boss missions are high-stakes practical tests intended for learners who already have domain depth.",
+          "Eligibility is based on your domain rating requirements, not just curiosity or progression speed.",
+          "Review attempts and leaderboard results as evidence of readiness for advanced certification work.",
+        ].map((item) => (
+          <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+            {item}
+          </div>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {bosses.map((boss) => {
@@ -228,29 +239,29 @@ export default function BossMissionsPage() {
                       {diff.label}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{boss.description}</p>
+                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">{boss.description}</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className="flex items-center gap-1.5">
                   <Zap size={14} className="text-[#7AD62A]" />
-                  <span className="text-xs font-semibold text-slate-700">{boss.xpReward} XP</span>
+                  <span className="text-xs font-semibold text-slate-200">{boss.xpReward} XP</span>
                 </div>
                 {boss.ratingReward > 0 && (
                   <div className="flex items-center gap-1.5">
                     <TrendingUp size={14} className="text-blue-500" />
-                    <span className="text-xs text-slate-600">+{boss.ratingReward} Rating</span>
+                    <span className="text-xs text-slate-300">+{boss.ratingReward} Rating</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1.5">
                   <Shield size={14} className="text-slate-400" />
-                  <span className="text-xs text-slate-600">{boss.maxAttempts} attempts</span>
+                  <span className="text-xs text-slate-300">{boss.maxAttempts} attempts</span>
                 </div>
                 {boss.expiresAt && (
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className={expired ? "text-red-400" : "text-amber-500"} />
-                    <span className={`text-xs ${expired ? "text-red-500 font-medium" : "text-slate-600"}`}>
+                    <span className={`text-xs ${expired ? "text-red-400 font-medium" : "text-slate-300"}`}>
                       {expired ? "Expired" : formatCountdown(boss.expiresAt)}
                     </span>
                   </div>
@@ -262,7 +273,7 @@ export default function BossMissionsPage() {
                   {boss.requiredDomains.map((req) => {
                     const DomainIcon = DOMAIN_ICONS[req.domainId] || Target;
                     return (
-                      <span key={req.domainId} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-white/10">
+                      <span key={req.domainId} className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-300">
                         <DomainIcon size={10} />
                         Min {req.minRating} rating
                       </span>
@@ -313,7 +324,7 @@ export default function BossMissionsPage() {
                         {selectedBoss.boss.theme}
                       </span>
                     )}
-                    <p className="text-sm text-slate-500 leading-relaxed">{selectedBoss.boss.description}</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">{selectedBoss.boss.description}</p>
                   </div>
                   <button
                     onClick={() => setSelectedBoss(null)}
@@ -327,29 +338,29 @@ export default function BossMissionsPage() {
                   <div className="bg-[#7AD62A]/10 rounded-lg p-3 text-center">
                     <Zap size={16} className="text-[#7AD62A] mx-auto mb-1" />
                     <p className="text-sm font-bold text-white">{selectedBoss.boss.xpReward}</p>
-                    <p className="text-[10px] text-slate-500">XP Reward</p>
+                    <p className="text-[10px] text-slate-400">XP Reward</p>
                   </div>
                   {selectedBoss.boss.ratingReward > 0 && (
                     <div className="bg-blue-500/10 rounded-lg p-3 text-center">
                       <TrendingUp size={16} className="text-blue-500 mx-auto mb-1" />
                       <p className="text-sm font-bold text-white">+{selectedBoss.boss.ratingReward}</p>
-                      <p className="text-[10px] text-slate-500">Rating</p>
+                      <p className="text-[10px] text-slate-400">Rating</p>
                     </div>
                   )}
                   <div className="bg-white/5 rounded-lg p-3 text-center">
                     <Shield size={16} className="text-amber-500 mx-auto mb-1" />
                     <p className="text-sm font-bold text-white">{selectedBoss.attemptsRemaining}</p>
-                    <p className="text-[10px] text-slate-500">Attempts Left</p>
+                    <p className="text-[10px] text-slate-400">Attempts Left</p>
                   </div>
                 </div>
 
                 {selectedBoss.domainRequirements.requirements.length > 0 && (
                   <div className="bg-white/5 rounded-lg p-3">
-                    <h4 className="text-xs font-semibold text-slate-700 mb-2">Domain Requirements</h4>
+                    <h4 className="text-xs font-semibold text-white mb-2">Domain Requirements</h4>
                     <div className="space-y-2">
                       {selectedBoss.domainRequirements.requirements.map((req) => (
                         <div key={req.domainId} className="flex items-center justify-between">
-                          <span className="text-xs text-slate-600">{req.domainName}</span>
+                          <span className="text-xs text-slate-300">{req.domainName}</span>
                           <div className="flex items-center gap-2">
                             <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
                               <div
@@ -370,7 +381,7 @@ export default function BossMissionsPage() {
                       ))}
                     </div>
                     {!selectedBoss.domainRequirements.eligible && (
-                      <p className="text-[10px] text-amber-600 mt-2 font-medium">
+                      <p className="text-[10px] text-amber-300 mt-2 font-medium">
                         You must meet all domain requirements before attempting this boss.
                       </p>
                     )}
@@ -380,14 +391,14 @@ export default function BossMissionsPage() {
                 {selectedBoss.completed && (
                   <div className="flex items-center gap-2 bg-[#7AD62A]/10 border border-[#7AD62A]/20 rounded-lg px-4 py-3">
                     <CheckCircle2 size={18} className="text-[#7AD62A] shrink-0" />
-                    <span className="text-sm font-medium text-[#0F203A]">Mission completed! Well done.</span>
+                    <span className="text-sm font-medium text-[#7AD62A]">Mission completed! Well done.</span>
                   </div>
                 )}
 
                 {selectedBoss.attemptsRemaining <= 0 && !selectedBoss.completed && (
-                  <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-200 rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3">
                     <AlertTriangle size={18} className="text-amber-500 shrink-0" />
-                    <span className="text-sm font-medium text-amber-700">No attempts remaining</span>
+                    <span className="text-sm font-medium text-amber-300">No attempts remaining</span>
                   </div>
                 )}
 
@@ -405,7 +416,7 @@ export default function BossMissionsPage() {
                             ) : (
                               <XCircle size={14} className="text-red-400" />
                             )}
-                            <span className="text-xs text-slate-600">
+                            <span className="text-xs text-slate-300">
                               {attempt.score}/{attempt.maxScore}
                             </span>
                           </div>
@@ -440,7 +451,7 @@ export default function BossMissionsPage() {
                           </span>
                           <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 overflow-hidden">
                             {entry.avatarUrl ? (
-                              <img src={entry.avatarUrl} alt="" className="w-full h-full object-cover" />
+                              <Image src={entry.avatarUrl} alt="" width={24} height={24} className="w-full h-full object-cover" unoptimized />
                             ) : (
                               <span className="text-[9px] font-bold text-slate-500">
                                 {entry.name?.charAt(0)?.toUpperCase() || "?"}
@@ -448,9 +459,9 @@ export default function BossMissionsPage() {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-slate-700 truncate">{entry.name}</p>
+                            <p className="text-xs font-medium text-white truncate">{entry.name}</p>
                           </div>
-                          <span className="text-xs font-semibold text-slate-600">
+                          <span className="text-xs font-semibold text-slate-300">
                             {entry.score}/{entry.maxScore}
                           </span>
                         </div>

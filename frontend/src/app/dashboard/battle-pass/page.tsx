@@ -14,7 +14,7 @@ interface BattlePassTier {
   tierNumber: number;
   title: string;
   xpRequired: number;
-  rewards: any;
+  rewards: unknown;
   isPremium: boolean;
 }
 
@@ -31,7 +31,7 @@ interface ProgressTier {
   tierNumber: number;
   title: string;
   xpRequired: number;
-  rewards: any;
+  rewards: unknown;
   isPremium: boolean;
   unlocked: boolean;
   currentXp: number;
@@ -60,7 +60,7 @@ const REWARD_ICONS: Record<string, typeof Trophy> = {
   xp: Zap, badge: Shield, avatar: Star, title: Crown, skin: Sparkles, default: Gift,
 };
 
-function getRewardIcon(reward: any): typeof Trophy {
+function getRewardIcon(reward: unknown): typeof Trophy {
   if (typeof reward === "string") {
     const lower = reward.toLowerCase();
     if (lower.includes("xp")) return Zap;
@@ -68,8 +68,9 @@ function getRewardIcon(reward: any): typeof Trophy {
     if (lower.includes("avatar")) return Star;
     if (lower.includes("title") || lower.includes("name")) return Crown;
   }
-  if (reward?.type) {
-    return REWARD_ICONS[reward.type.toLowerCase()] || Gift;
+  if (reward && typeof reward === "object" && "type" in reward) {
+    const r = reward as { type: string };
+    return REWARD_ICONS[r.type.toLowerCase()] || Gift;
   }
   return Gift;
 }
@@ -332,7 +333,7 @@ export default function BattlePassPage() {
                       </div>
                     )}
 
-                    {tier.rewards && (
+                    {tier.rewards != null && (
                       <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-white/5" : "bg-[#7AD62A]/10/50"}`}>
                         <RewardIcon size={14} className={isLocked ? "text-slate-400" : "text-[#7AD62A]"} />
                         <span className={`text-[11px] font-medium ${isLocked ? "text-slate-400" : "text-slate-400"}`}>

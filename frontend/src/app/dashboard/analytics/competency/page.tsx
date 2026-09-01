@@ -16,10 +16,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  ScatterChart,
-  Scatter,
-  ZAxis,
-  Cell,
 } from "recharts";
 import {
   BarChart3,
@@ -49,7 +45,7 @@ interface RadarPoint {
 }
 
 interface TrajectoryData {
-  chartData: Array<Record<string, any>>;
+  chartData: Array<Record<string, string | number>>;
   domainNames: string[];
 }
 

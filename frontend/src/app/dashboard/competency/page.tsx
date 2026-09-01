@@ -8,8 +8,6 @@ import {
   BookOpen,
   FlaskConical,
   Target,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   ChevronRight,
   Loader2,
@@ -95,17 +93,8 @@ const DOMAIN_COLORS: Record<string, string> = {
   QA: "from-emerald-500 to-emerald-600",
 };
 
-const DOMAIN_BG: Record<string, string> = {
-  SYSTEMS: "bg-blue-500/10 border-blue-200",
-  NETWORKING: "bg-cyan-50 border-cyan-200",
-  DEVOPS: "bg-violet-50 border-violet-200",
-  DATABASES: "bg-amber-500/10 border-amber-200",
-  SECURITY: "bg-red-500/10 border-red-200",
-  QA: "bg-emerald-50 border-emerald-200",
-};
-
 export default function CompetencyPage() {
-  const { t } = useI18n();
+  useI18n();
   const [profile, setProfile] = useState<CompetencyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,7 +113,7 @@ export default function CompetencyPage() {
           `/learning-outcomes/competency-profile/${user.id}/enhanced`
         );
         if (!cancelled) setProfile(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load competency profile");
       } finally {
         if (!cancelled) setLoading(false);
@@ -263,7 +252,6 @@ export default function CompetencyPage() {
         {domains.map((domain) => {
           const isExpanded = expandedDomain === domain.domainId;
           const gradientClass = DOMAIN_COLORS[domain.domainId] || "from-slate-500 to-slate-600";
-          const bgClass = DOMAIN_BG[domain.domainId] || "bg-white/5 border-white/10";
 
           return (
             <div

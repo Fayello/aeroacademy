@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Users, BarChart3, Loader2, TrendingUp, TrendingDown, AlertTriangle,
-  CheckCircle, Search, ChevronDown, ChevronUp, Target,
+  Users, BarChart3, Loader2, TrendingUp, AlertTriangle,
+  ChevronDown, ChevronUp, Target,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 
-type Any = any;
 
 interface CohortData {
   cohort: { id: string; name: string };

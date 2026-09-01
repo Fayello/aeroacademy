@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Lock, CheckCircle, ChevronLeft, Loader2 } from "lucide-react";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
@@ -23,7 +24,6 @@ export default function ResetPasswordPage() {
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const token = searchParams.get("token");
   const email = searchParams.get("email") || "";
   const code = searchParams.get("code") || "";
@@ -103,7 +103,7 @@ function ResetPasswordForm() {
 
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#7AD62A] mb-4">
-            <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+            <Image src="/logo-icon.svg" alt="XpertClass" width={32} height={32} className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-semibold text-white">Set new password</h1>
           <p className="text-sm text-slate-500 mt-1">Choose a strong password for your account</p>

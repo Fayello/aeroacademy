@@ -42,14 +42,6 @@ interface DiscussionPost {
   userVote?: number;
 }
 
-interface DiscussionsResponse {
-  posts: DiscussionPost[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 const ALL_TAGS = [
   "General",
   "Question",
@@ -117,30 +109,30 @@ export default function LabDiscussionsList() {
         if (debouncedSearch) params.set("search", debouncedSearch);
         if (selectedTag) params.set("tag", selectedTag);
 
-        const raw = (await fetchApi(
+        const raw = (await fetchApi<Record<string, unknown>>(
           `/discussions/lab/${labId}?${params.toString()}`
-        )) as any;
+        ));
 
-        const mapped: DiscussionPost[] = (raw.posts || []).map((p: any) => ({
-          id: p.id,
-          labId: p.labId,
-          userId: p.userId,
-          title: p.title,
-          body: p.body,
-          tags: p.tags || [],
-          pinned: p.isPinned ?? p.pinned ?? false,
-          resolved: p.isResolved ?? p.resolved ?? false,
-          upvotes: p.upvotes ?? 0,
-          commentCount: p.commentCount ?? p._count?.comments ?? 0,
-          createdAt: p.createdAt,
-          updatedAt: p.updatedAt,
-          author: p.author ?? { id: p.user?.id || p.userId, name: p.user?.name || null, email: "", division: "" },
-          userVote: p.userVote ?? p.myVote ?? 0,
+        const mapped: DiscussionPost[] = ((raw.posts as Record<string, unknown>[] | undefined) || []).map((p) => ({
+          id: p.id as string,
+          labId: p.labId as string,
+          userId: p.userId as string,
+          title: p.title as string,
+          body: p.body as string,
+          tags: (p.tags as string[]) || [],
+          pinned: (p.isPinned as boolean) ?? (p.pinned as boolean) ?? false,
+          resolved: (p.isResolved as boolean) ?? (p.resolved as boolean) ?? false,
+          upvotes: (p.upvotes as number) ?? 0,
+          commentCount: (p.commentCount as number) ?? ((p._count as Record<string, number> | undefined)?.comments ?? 0),
+          createdAt: p.createdAt as string,
+          updatedAt: p.updatedAt as string,
+          author: (p.author as DiscussionAuthor) ?? { id: ((p.user as Record<string, unknown>)?.id as string) || (p.userId as string), name: ((p.user as Record<string, unknown>)?.name as string) || null, email: "", division: "" },
+          userVote: (p.userVote as number) ?? (p.myVote as number) ?? 0,
         }));
 
         setPosts((prev) => (append ? [...prev, ...mapped] : mapped));
-        setTotalPages(raw.totalPages ?? raw.pages ?? 1);
-        setTotal(raw.total ?? 0);
+        setTotalPages((raw.totalPages as number) ?? (raw.pages as number) ?? 1);
+        setTotal((raw.total as number) ?? 0);
       } catch (err) {
         toast.error(
           err instanceof Error ? err.message : "Failed to load discussions"

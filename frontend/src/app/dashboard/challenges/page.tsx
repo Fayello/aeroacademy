@@ -66,19 +66,6 @@ const typeConfig: Record<string, { label: string; icon: typeof Trophy; color: st
   TEAM_WEEKLY: { label: "Team", icon: Users, color: "text-[#6bc422]", bg: "bg-emerald-50", border: "border-emerald-200" },
 };
 
-function timeRemaining(endAt: string): string {
-  const now = new Date();
-  const end = new Date(endAt);
-  const diff = end.getTime() - now.getTime();
-  if (diff <= 0) return "Expired";
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  if (days > 7) return `${days}d left`;
-  if (days > 0) return `${days}d ${hours}h left`;
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  return `${minutes}m left`;
-}
-
 export default function ChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);

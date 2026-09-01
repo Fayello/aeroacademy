@@ -5,11 +5,10 @@ import Link from "next/link";
 import { fetchApiV2 } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import {
-  Loader2, Shield, Trophy, TrendingUp, Crown, Target, Star, Swords,
-  Server, Database, Bug, Code, Network, ChevronRight, History, BarChart3,
+  Loader2, Shield, Trophy, TrendingUp, Crown, Target,
+  Server, Database, Bug, Code, Network, History, BarChart3,
 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
-import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import {
@@ -34,12 +33,50 @@ interface DomainRank {
 interface SeasonHistoryEntry {
   seasonNumber: number;
   seasonName: string;
+  theme?: string;
   finalRating: number;
   finalDivision: string;
   finalTier: number;
   gamesPlayed: number;
   wins: number;
   losses: number;
+  global?: {
+    division: string;
+    tier: number;
+    rating: number;
+    domainCount: number;
+    winRate: number;
+  };
+  domains: {
+    domainId: string;
+    domain: string;
+    division: string;
+    tier: number;
+    rating: number;
+    wins: number;
+    losses: number;
+  }[];
+}
+
+interface LeaderboardEntry {
+  position: number;
+  userId: string;
+  name: string;
+  avatarUrl?: string;
+  division: string;
+  divisionTier: number;
+  rating: number;
+  wins: number;
+  losses: number;
+  gamesPlayed: number;
+  user?: { name?: string };
+}
+
+interface RatingHistoryEntry {
+  domain: string;
+  date: string;
+  ratingAfter: number;
+  ratingBefore?: number;
 }
 
 interface RankedProfile {
@@ -139,12 +176,12 @@ export default function RankingPage() {
   const [profile, setProfile] = useState<RankedProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [lbLoading, setLbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("overview");
-  const [ratingHistory, setRatingHistory] = useState<any[]>([]);
+  const [ratingHistory, setRatingHistory] = useState<RatingHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [careerHistory, setCareerHistory] = useState<any[]>([]);
+  const [careerHistory, setCareerHistory] = useState<SeasonHistoryEntry[]>([]);
   const [careerLoading, setCareerLoading] = useState(false);
 
   const userId = useMemo(() => {
@@ -161,8 +198,8 @@ export default function RankingPage() {
       try {
         const data = await fetchApiV2<RankedProfile>(`/domain-ranking/profile/${userId}`);
         if (!cancelled) setProfile(data);
-      } catch (err: any) {
-        if (!cancelled) toast.error(err?.message || "Failed to load ranking profile");
+      } catch (err: unknown) {
+        if (!cancelled) toast.error(err instanceof Error ? err.message : "Failed to load ranking profile");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -177,7 +214,7 @@ export default function RankingPage() {
     async function load() {
       setHistoryLoading(true);
       try {
-        const data = await fetchApiV2<any[]>(`/domain-ranking/history/${userId}/all`);
+        const data = await fetchApiV2<RatingHistoryEntry[]>(`/domain-ranking/history/${userId}/all`);
         if (!cancelled) setRatingHistory(data);
       } catch {
         if (!cancelled) toast.error("Failed to load rating history");
@@ -195,7 +232,7 @@ export default function RankingPage() {
     async function load() {
       setCareerLoading(true);
       try {
-        const data = await fetchApiV2<any[]>(`/domain-ranking/career/${userId}`);
+        const data = await fetchApiV2<SeasonHistoryEntry[]>(`/domain-ranking/career/${userId}`);
         if (!cancelled) setCareerHistory(data);
       } catch {
         if (!cancelled) toast.error("Failed to load career history");
@@ -213,7 +250,7 @@ export default function RankingPage() {
     async function load() {
       setLbLoading(true);
       try {
-        const data = await fetchApiV2<any[]>(`/domain-ranking/domain/${selectedDomain}/leaderboard`);
+        const data = await fetchApiV2<LeaderboardEntry[]>(`/domain-ranking/domain/${selectedDomain}/leaderboard`);
         if (!cancelled) setLeaderboard(data.slice(0, 20));
       } catch {
         if (!cancelled) toast.error("Failed to load domain leaderboard");
@@ -234,7 +271,7 @@ export default function RankingPage() {
     }
     const allDates = [...new Set(ratingHistory.map((e) => new Date(e.date).toLocaleDateString()))];
     const result = allDates.map((date) => {
-      const row: Record<string, any> = { date };
+      const row: Record<string, string | number> = { date };
       for (const [domain, points] of byDomain) {
         const match = points.find((p) => p.date === date);
         if (match) row[domain] = match.rating;
@@ -274,8 +311,6 @@ export default function RankingPage() {
       </div>
     );
   }
-
-  const domainColorKeys = Object.keys(DOMAIN_COLORS);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -601,7 +636,7 @@ export default function RankingPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {season.domains.map((d: any) => (
+                          {season.domains.map((d) => (
                             <tr key={d.domainId} className="border-b border-white/10 last:border-0">
                               <td className="py-2 px-2 font-medium text-white">{d.domain}</td>
                               <td className="py-2 px-2"><DivisionBadge division={d.division} tier={d.tier} size="sm" /></td>

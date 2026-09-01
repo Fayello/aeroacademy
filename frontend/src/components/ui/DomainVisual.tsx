@@ -7,12 +7,7 @@ import {
   Database,
   Shield,
   CheckCircle,
-  Cloud,
-  Terminal,
   Cpu,
-  HardDrive,
-  Workflow,
-  TestTube,
 } from "lucide-react";
 
 export interface DomainConfig {

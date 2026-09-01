@@ -14,8 +14,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
-import Badge from "@/components/ui/Badge";
-import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 
 interface GlobalEvent {

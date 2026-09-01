@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { Flame, Loader2, Calendar, TrendingUp, Snowflake, AlertCircle } from "lucide-react";
+import { Flame, Loader2, TrendingUp, Snowflake, AlertCircle } from "lucide-react";
 
 interface StreakData {
   currentStreak: number;

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { fetchApi } from "@/lib/api";
 import {
   Lightbulb,
-  Send,
   Loader2,
   ChevronDown,
   ChevronUp,
@@ -46,7 +45,6 @@ export default function LabAssistPanel({
   const [context, setContext] = useState("");
 
   const hintLabels = ["Vague", "Moderate", "Explicit"];
-  const hintColors = ["text-slate-500", "text-amber-600", "text-red-600"];
 
   async function requestHint() {
     setLoading(true);

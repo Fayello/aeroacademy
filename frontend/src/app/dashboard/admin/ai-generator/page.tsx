@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Sparkles, Microscope, BookOpen, GraduationCap, BarChart3, Loader2,
-  ArrowRight, Copy, Check, RefreshCw, Zap, Target, AlertTriangle, CheckCircle,
+  Sparkles, Microscope, BookOpen, BarChart3, Loader2,
+  Copy, Check, Target, AlertTriangle, CheckCircle,
   ChevronDown, ChevronUp,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 
-type Any = any;
 
 interface Lab { id: string; title: string; difficulty: number; description: string }
 interface Assessment { id: string; title: string; description: string; category: string }
@@ -183,78 +182,6 @@ function OutlineOutput({ data }: { data: OutlineResult }) {
   );
 }
 
-function CalibrationOutput({ data }: { data: CalibrationResult }) {
-  if (data.suggestion === "insufficient_data") {
-    return (
-      <div className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-200 rounded-lg">
-        <AlertTriangle size={16} className="text-amber-600 shrink-0" />
-        <div>
-          <p className="text-sm font-medium text-amber-800">Insufficient Data</p>
-          <p className="text-xs text-amber-600">{data.message}</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="text-center">
-          <div className="text-xs text-slate-500 mb-1">Current</div>
-          <div className="text-2xl font-bold text-white">{data.currentDifficulty}</div>
-        </div>
-        <ArrowRight size={20} className={data.changed ? "text-[#7AD62A]" : "text-slate-300"} />
-        <div className="text-center">
-          <div className="text-xs text-slate-500 mb-1">New</div>
-          <div className={`text-2xl font-bold ${data.changed ? "text-[#7AD62A]" : "text-white"}`}>{data.newDifficulty}</div>
-        </div>
-        <div className="text-center">
-          <div className="text-xs text-slate-500 mb-1">Change</div>
-          <div className={`text-lg font-bold ${data.adjustment > 0 ? "text-red-600" : data.adjustment < 0 ? "text-[#7AD62A]" : "text-slate-400"}`}>
-            {data.adjustment > 0 ? "+" : ""}{data.adjustment}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-xs text-slate-500">Completion</div>
-          <div className="text-lg font-bold text-white">{data.metrics.completionRate}%</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-xs text-slate-500">Failure</div>
-          <div className="text-lg font-bold text-white">{data.metrics.failureRate}%</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-xs text-slate-500">Avg Time</div>
-          <div className="text-lg font-bold text-white">{data.metrics.avgTimeMinutes.toFixed(0)}m</div>
-        </div>
-      </div>
-
-      {data.reasons.length > 0 && (
-        <div>
-          <h5 className="text-xs font-medium text-slate-500 mb-2">REASONS</h5>
-          <ul className="space-y-1">
-            {data.reasons.map((r, i) => (
-              <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                <Zap size={12} className="text-amber-500 mt-1 shrink-0" />
-                {r}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {data.changed && (
-        <div className="flex items-center gap-2 p-3 bg-[#7AD62A]/10 rounded-lg">
-          <CheckCircle size={14} className="text-[#7AD62A]" />
-          <span className="text-sm text-[#7AD62A] font-medium">Difficulty auto-adjusted to {data.newDifficulty}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function AIGeneratorPage() {
   const [activeTab, setActiveTab] = useState<"briefing" | "questions" | "outline" | "calibrate">("briefing");
 
@@ -273,7 +200,6 @@ export default function AIGeneratorPage() {
   const [briefingResult, setBriefingResult] = useState<BriefingResult | null>(null);
   const [questionsResult, setQuestionsResult] = useState<QuestionsResult | null>(null);
   const [outlineResult, setOutlineResult] = useState<OutlineResult | null>(null);
-  const [calibrationResult, setCalibrationResult] = useState<CalibrationResult | null>(null);
   const [calibrationAll, setCalibrationAll] = useState<CalibrationResult[]>([]);
 
   // Loading

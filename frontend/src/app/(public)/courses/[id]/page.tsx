@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 // ISR: revalidate every hour — SEO pages benefit from freshness without hammering API
 export const revalidate = 3600;

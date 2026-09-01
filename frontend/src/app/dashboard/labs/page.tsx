@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Clock, Shield, Lock, Search, X, LayoutGrid, List } from "lucide-react";
+import { Microscope, Play, Clock, Shield, Lock, Search, X, LayoutGrid, List, Rocket } from "lucide-react";
 import LabAvatar from "@/components/ui/LabAvatar";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
@@ -168,13 +168,13 @@ export default function LabsCatalog() {
 
       {/* Beginner Path CTA */}
       <Link
-        href="/dashboard/starting-point"
-        className="angular-card group flex flex-col gap-3 p-4 text-white transition-colors hover:bg-[#1a3a5c] sm:flex-row sm:items-center sm:justify-between"
-        style={{ backgroundColor: "#0F203A" }}
-      >
+          href="/dashboard/starting-point"
+          className="angular-card group flex flex-col gap-3 p-4 text-white transition-colors hover:bg-[#1a3a5c] sm:flex-row sm:items-center sm:justify-between"
+          style={{ backgroundColor: "#0F203A" }}
+        >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#7AD62A]/20 flex items-center justify-center">
-            <span className="text-lg">🚀</span>
+            <Rocket size={18} className="text-[#7AD62A]" />
           </div>
           <div>
             <h3 className="text-sm font-semibold group-hover:text-[#7AD62A] transition-colors">Just getting started?</h3>

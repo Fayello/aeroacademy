@@ -19,7 +19,6 @@ import {
   Footprints,
   GraduationCap,
   Crosshair,
-  ChevronRight,
   AlertTriangle,
 } from "lucide-react";
 

@@ -42,7 +42,7 @@ export default function NotificationBell() {
         aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
         className="relative w-10 h-10 rounded-full bg-[#0f172a] border border-white/10 shadow-sm flex items-center justify-center hover:bg-white/5 transition-colors"
       >
-        <Bell size={18} className="text-slate-600" />
+        <Bell size={18} className="text-slate-300" />
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7AD62A] text-white text-[10px] font-bold flex items-center justify-center">
             {unread > 99 ? "99+" : unread}
@@ -52,18 +52,18 @@ export default function NotificationBell() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f172a] border border-white/10 rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-150">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-white">Notifications</h3>
               {unread > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#0F203A] text-[10px] font-semibold">
+                <span className="px-1.5 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A] text-[10px] font-semibold">
                   {unread} new
                 </span>
               )}
             </div>
             <button
               onClick={() => void markAllRead()}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#7AD62A] font-medium"
+              className="flex items-center gap-1 text-xs text-slate-300 hover:text-[#7AD62A] font-medium"
             >
               <CheckCheck size={14} />
               Mark all read
@@ -78,14 +78,14 @@ export default function NotificationBell() {
             ) : notifications.length === 0 ? (
               <div className="py-10 text-center">
                 <Bell size={24} className="mx-auto mb-2 text-slate-300" />
-                <p className="text-sm text-slate-500">No notifications yet</p>
+                <p className="text-sm text-slate-400">No notifications yet</p>
               </div>
             ) : (
               notifications.slice(0, 8).map((n) => (
                 <button
                   key={n.id}
                   onClick={() => handleItemClick(n)}
-                  className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-white/5 transition-colors border-b border-slate-50 last:border-0 ${
+                  className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-white/5 transition-colors border-b border-white/10 last:border-0 ${
                     !n.read ? "bg-[#7AD62A]/10/40" : ""
                   }`}
                 >
@@ -101,7 +101,7 @@ export default function NotificationBell() {
                         <span className="w-1.5 h-1.5 rounded-full bg-[#7AD62A] shrink-0" />
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">
+                    <p className="text-xs text-slate-300 line-clamp-2 mt-0.5">
                       {n.message}
                     </p>
                     <span className="text-[10px] text-slate-400 mt-1 block">
@@ -117,7 +117,7 @@ export default function NotificationBell() {
           <Link
             href="/dashboard/notifications"
             onClick={() => setOpen(false)}
-            className="block text-center px-4 py-3 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 border-t border-slate-100"
+            className="block text-center px-4 py-3 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 border-t border-white/10"
           >
             View all notifications
           </Link>

@@ -9,7 +9,6 @@ import {
   Target,
   Flag,
   BookOpen,
-  Flame,
   Users,
   Loader2,
   Clock,

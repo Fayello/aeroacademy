@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApiV2 } from "@/lib/api";
-import { Layers, Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, ChevronDown, ChevronUp, Swords } from "lucide-react";
+import { Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, ChevronDown, ChevronUp, Swords } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
@@ -15,7 +15,7 @@ interface BattlePassTier {
   title: string;
   xpRequired: number;
   isPremium: boolean;
-  rewards: any;
+  rewards: unknown;
 }
 
 interface BattlePass {
@@ -37,7 +37,7 @@ interface Season {
 }
 
 function defaultTier(idx: number): BattlePassTier {
-  return { tierNumber: idx + 1, title: "", xpRequired: (idx + 1) * 500, isPremium: false, rewards: [] };
+  return { tierNumber: idx + 1, title: "", xpRequired: (idx + 1) * 500, isPremium: false, rewards: null };
 }
 
 function defaultForm() {
@@ -103,9 +103,9 @@ export default function AdminBattlePassPage() {
     setForm({ ...form, tiers: form.tiers.filter((_, i) => i !== idx) });
   };
 
-  const updateTier = (idx: number, field: string, value: any) => {
+  const updateTier = <K extends keyof BattlePassTier>(idx: number, field: K, value: BattlePassTier[K]) => {
     const tiers = [...form.tiers];
-    (tiers[idx] as any)[field] = value;
+    tiers[idx] = { ...tiers[idx], [field]: value };
     setForm({ ...form, tiers });
   };
 

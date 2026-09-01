@@ -1,15 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
-  Target, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Loader2,
-  BookOpen, Microscope, ClipboardCheck, ArrowRight, Sparkles, BarChart3, Zap,
+  Target, Loader2,
+  BookOpen, Microscope, ClipboardCheck, Sparkles, Zap,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
-
-type Any = any;
 
 interface SkillGapReport {
   userId: string;

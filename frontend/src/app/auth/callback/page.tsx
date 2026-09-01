@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Loader2 } from "lucide-react";
 
 export default function AuthCallbackPage() {
@@ -28,7 +29,7 @@ export default function AuthCallbackPage() {
     <div className="min-h-screen flex items-center justify-center bg-white/5">
       <div className="text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#7AD62A] mb-6">
-          <img src="/logo-icon.svg" alt="XpertClass" className="w-10 h-10" />
+          <Image src="/logo-icon.svg" alt="XpertClass" width={40} height={40} className="w-10 h-10" />
         </div>
         <div className="flex items-center gap-3 text-slate-600">
           <Loader2 className="animate-spin text-[#7AD62A]" size={20} />

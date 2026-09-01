@@ -24,7 +24,7 @@ interface Challenge {
   isActive: boolean;
   domainId: string | null;
   skillId: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   domain: { id: string; name: string; displayName: string } | null;
   skill: { id: string; name: string; displayName: string } | null;
   _count: { userChallenges: number };

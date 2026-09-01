@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 import { CheckCircle2, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
@@ -25,11 +26,12 @@ function VerifyTokenForm() {
     let cancelled = false;
     auth
       .verifyEmailByToken(token)
-      .then((res: any) => {
+      .then((res: unknown) => {
         if (cancelled) return;
-        localStorage.setItem("token", res.access_token);
-        localStorage.setItem("refresh_token", res.refresh_token);
-        localStorage.setItem("user", JSON.stringify(res.user));
+        const r = res as Record<string, unknown>;
+        localStorage.setItem("token", r.access_token as string);
+        localStorage.setItem("refresh_token", r.refresh_token as string);
+        localStorage.setItem("user", JSON.stringify(r.user));
         setStatus("success");
         toast.success("Email verified! Welcome to XpertClass.");
         setTimeout(() => router.push("/dashboard"), 1500);
@@ -83,7 +85,7 @@ function VerifyTokenForm() {
         <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8 text-center">
           <div className="flex items-center gap-2.5 mb-6 justify-center">
             <div className="bg-[#7AD62A] p-2 rounded-xl">
-              <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+              <Image src="/logo-icon.svg" alt="XpertClass" width={32} height={32} className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
           </div>

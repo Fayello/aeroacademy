@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchApiV2 } from "@/lib/api";
-import { Swords, Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, Skull } from "lucide-react";
+import { Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, Skull } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 import Link from "next/link";
@@ -226,10 +226,6 @@ export default function AdminBossMissionsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((m) => {
-                const now = new Date();
-                const starts = new Date(m.startsAt);
-                const expires = new Date(m.expiresAt);
-                const status = !m.isActive ? "Inactive" : now < starts ? "Upcoming" : now > expires ? "Expired" : "Active";
                 return (
                   <tr key={m.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3">

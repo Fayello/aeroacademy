@@ -1,21 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { fetchApi } from "@/lib/api";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  RefreshCw,
-  Loader2,
-  ArrowLeft,
   AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
   CheckCircle,
   Clock,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
+  Loader2,
+  RefreshCw,
   Sparkles,
-  ArrowRight,
+  TrendingUp,
 } from "lucide-react";
+import { fetchApi } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 
 interface ContentRelevanceScore {
@@ -62,35 +60,48 @@ interface ContentFreshnessReport {
 }
 
 function ScoreBadge({ score }: { score: number }) {
-  if (score >= 80)
-    return (
-      <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-[#6bc422] border border-emerald-200">
-        {score} Good
-      </span>
-    );
-  if (score >= 60)
-    return (
-      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-500/10 text-amber-700 border border-amber-200">
-        {score} Fair
-      </span>
-    );
-  return (
-    <span className="px-2 py-0.5 text-xs rounded-full bg-red-500/10 text-red-700 border border-red-200">
-      {score} Needs Work
-    </span>
-  );
+  if (score >= 80) {
+    return <span className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-300">{score} Good</span>;
+  }
+  if (score >= 60) {
+    return <span className="rounded-full border border-amber-400/20 bg-amber-500/10 px-2 py-0.5 text-xs text-amber-300">{score} Fair</span>;
+  }
+  return <span className="rounded-full border border-red-400/20 bg-red-500/10 px-2 py-0.5 text-xs text-red-300">{score} Needs work</span>;
 }
 
 function ScoreBar({ score, max = 100 }: { score: number; max?: number }) {
   const pct = Math.min((score / max) * 100, 100);
-  const color =
-    score >= 80 ? "#229C62" : score >= 60 ? "#F59E0B" : "#EF4444";
+  const color = score >= 80 ? "#229C62" : score >= 60 ? "#F59E0B" : "#EF4444";
   return (
-    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-      <div
-        className="h-full rounded-full transition-all"
-        style={{ width: `${pct}%`, background: color }}
-      />
+    <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+    </div>
+  );
+}
+
+function ScoreCard({
+  label,
+  value,
+  sub,
+  color,
+  icon: Icon,
+}: {
+  label: string;
+  value: string | number;
+  sub: string;
+  color: string;
+  icon: typeof AlertTriangle;
+}) {
+  return (
+    <div className="angular-card border border-white/10 bg-[#0f172a] p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <Icon size={16} style={{ color }} />
+        <span className="text-xs uppercase tracking-[0.18em] text-slate-400">{label}</span>
+      </div>
+      <p className="text-3xl font-bold" style={{ color }}>
+        {value}
+      </p>
+      <p className="mt-2 text-sm text-slate-300">{sub}</p>
     </div>
   );
 }
@@ -103,24 +114,26 @@ export default function ContentRefreshDashboard() {
     labs: ContentRelevanceScore[];
     courses: ContentRelevanceScore[];
   } | null>(null);
-  const [tab, setTab] = useState<"overview" | "labs" | "courses" | "domains">(
-    "overview"
-  );
+  const [tab, setTab] = useState<"overview" | "labs" | "courses" | "domains">("overview");
 
   useEffect(() => {
-    fetchReport();
-  }, []);
+    let cancelled = false;
 
-  async function fetchReport() {
-    try {
-      const data = await fetchApi("/ai/content-refresh/report");
-      setReport(data);
-    } catch (err) {
-      console.error("Failed to load report:", err);
-    } finally {
-      setLoading(false);
-    }
-  }
+    fetchApi("/ai/content-refresh/report")
+      .then((data) => {
+        if (!cancelled) setReport(data);
+      })
+      .catch((err) => {
+        console.error("Failed to load report:", err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function scoreAll() {
     setScoring(true);
@@ -136,292 +149,108 @@ export default function ContentRefreshDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
         <Loader2 className="animate-spin text-[#7AD62A]" size={32} />
       </div>
     );
   }
 
   if (!report) {
-    return (
-      <EmptyState icon={RefreshCw} title="No content data available" description="" />
-    );
+    return <EmptyState icon={RefreshCw} title="No content data available" description="" />;
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#f8fafc" }}>
-      {/* Hero */}
-      <div className="py-16 px-4" style={{ background: "#0F203A" }}>
-        <div className="max-w-6xl mx-auto">
-          <Link
-            href="/dashboard/admin"
-            className="inline-flex items-center gap-1.5 text-sm mb-4 transition-colors"
-            style={{ color: "#7AD62A" }}
-          >
+    <div className="min-h-screen bg-slate-950 text-white">
+      <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 lg:px-6">
+        <div className="angular-card overflow-hidden border border-white/10 bg-gradient-to-br from-[#0F203A] via-slate-900 to-[#16315c] p-6 sm:p-8">
+          <Link href="/dashboard/admin" className="mb-4 inline-flex items-center gap-1.5 text-sm text-[#7AD62A] transition-colors">
             <ArrowLeft size={14} />
-            Admin Dashboard
+            Return to admin operations
           </Link>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ background: "rgba(122,214,42,0.15)" }}
-              >
-                <RefreshCw size={24} style={{ color: "#7AD62A" }} />
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7AD62A]/10">
+                  <RefreshCw size={24} className="text-[#7AD62A]" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold">Content Refresh Command</h1>
+                  <p className="text-slate-300">
+                    Monitor curriculum freshness, prioritize review queues, and keep certification pathways aligned with current practice.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">
-                  Content Refresh
-                </h1>
-                <p className="text-slate-400">
-                  AI-powered content relevance & freshness monitoring
-                </p>
+              <div className="grid gap-3 text-sm text-slate-200 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Review Standard</p>
+                  <p className="mt-2 font-medium text-white">Refresh learning assets before they exceed 90 days without a verified update.</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Operator Goal</p>
+                  <p className="mt-2 font-medium text-white">Protect relevance, exam alignment, and practical accuracy across labs and courses.</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Next Action</p>
+                  <p className="mt-2 font-medium text-white">Run AI scoring after major curriculum edits and resolve the lowest overall scores first.</p>
+                </div>
               </div>
             </div>
             <button
               onClick={scoreAll}
               disabled={scoring}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-              style={{ background: "#229C62", color: "white" }}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#229C62] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1c7c4e] disabled:opacity-50"
             >
-              {scoring ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                <Sparkles size={14} />
-              )}
-              {scoring ? "Scoring..." : "AI Score All"}
+              {scoring ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              {scoring ? "Scoring content..." : "Run AI scoring"}
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Tabs */}
-        <div className="flex gap-1 bg-[#0f172a] rounded-lg p-1 border border-white/10 w-fit">
+        <div className="flex flex-wrap gap-1 rounded-2xl border border-white/10 bg-[#0f172a] p-1.5">
           {[
             { key: "overview", label: "Overview" },
             { key: "labs", label: "Labs" },
             { key: "courses", label: "Courses" },
             { key: "domains", label: "Domains" },
-          ].map((t) => (
+          ].map((item) => (
             <button
-              key={t.key}
-              onClick={() => setTab(t.key as Any)}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                tab === t.key
-                  ? "bg-[#7AD62A] text-white"
-                  : "text-slate-600 hover:bg-white/5"
+              key={item.key}
+              onClick={() => setTab(item.key as typeof tab)}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
+                tab === item.key ? "bg-[#7AD62A] text-[#0F203A]" : "text-slate-300 hover:bg-white/5 hover:text-white"
               }`}
             >
-              {t.label}
+              {item.label}
             </button>
           ))}
         </div>
 
-        {/* Overview */}
         {tab === "overview" && (
           <div className="space-y-6">
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                {
-                  label: "Total Labs",
-                  value: report.totalLabs,
-                  sub: `${report.staleLabs} stale`,
-                  icon: AlertTriangle,
-                  color:
-                    report.staleLabs > 0 ? "#F59E0B" : "#229C62",
-                },
-                {
-                  label: "Total Courses",
-                  value: report.totalCourses,
-                  sub: `${report.staleCourses} stale`,
-                  icon: AlertTriangle,
-                  color:
-                    report.staleCourses > 0 ? "#F59E0B" : "#229C62",
-                },
-                {
-                  label: "Avg Lab Relevance",
-                  value: `${report.avgLabRelevance}%`,
-                  sub: `${report.outdatedLabs} outdated`,
-                  icon: TrendingUp,
-                  color:
-                    report.avgLabRelevance >= 70 ? "#229C62" : "#EF4444",
-                },
-                {
-                  label: "Avg Course Relevance",
-                  value: `${report.avgCourseRelevance}%`,
-                  sub: `${report.outdatedCourses} outdated`,
-                  icon: TrendingUp,
-                  color:
-                    report.avgCourseRelevance >= 70
-                      ? "#229C62"
-                      : "#EF4444",
-                },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className="angular-card bg-[#0f172a] p-4"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <stat.icon size={16} style={{ color: stat.color }} />
-                    <span className="text-xs text-slate-500">
-                      {stat.label}
-                    </span>
-                  </div>
-                  <p
-                    className="text-2xl font-bold"
-                    style={{ color: stat.color }}
-                  >
-                    {stat.value}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">{stat.sub}</p>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <ScoreCard label="Total Labs" value={report.totalLabs} sub={`${report.staleLabs} stale`} icon={AlertTriangle} color={report.staleLabs > 0 ? "#F59E0B" : "#229C62"} />
+              <ScoreCard label="Total Courses" value={report.totalCourses} sub={`${report.staleCourses} stale`} icon={AlertTriangle} color={report.staleCourses > 0 ? "#F59E0B" : "#229C62"} />
+              <ScoreCard label="Avg Lab Relevance" value={`${report.avgLabRelevance}%`} sub={`${report.outdatedLabs} outdated`} icon={TrendingUp} color={report.avgLabRelevance >= 70 ? "#229C62" : "#EF4444"} />
+              <ScoreCard label="Avg Course Relevance" value={`${report.avgCourseRelevance}%`} sub={`${report.outdatedCourses} outdated`} icon={TrendingUp} color={report.avgCourseRelevance >= 70 ? "#229C62" : "#EF4444"} />
             </div>
 
-            {/* Freshness gauges */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="angular-card bg-[#0f172a] p-6">
-                <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-                  <Clock size={16} className="text-blue-500" />
-                  Lab Freshness
-                </h3>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-20 h-20">
-                    <svg className="w-20 h-20 -rotate-90" viewBox="0 0 36 36">
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="15"
-                        fill="none"
-                        stroke="#e2e8f0"
-                        strokeWidth="3"
-                      />
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="15"
-                        fill="none"
-                        stroke={
-                          report.avgLabFreshness >= 70
-                            ? "#229C62"
-                            : "#F59E0B"
-                        }
-                        strokeWidth="3"
-                        strokeDasharray={`${report.avgLabFreshness} 100`}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-lg font-bold">
-                      {report.avgLabFreshness}%
-                    </span>
-                  </div>
-                  <div className="text-sm text-slate-600">
-                    <p>
-                      {report.staleLabs} of {report.totalLabs} labs are stale
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      (&gt;90 days since last update)
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="angular-card bg-[#0f172a] p-6">
-                <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-                  <Clock size={16} className="text-blue-500" />
-                  Course Freshness
-                </h3>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-20 h-20">
-                    <svg className="w-20 h-20 -rotate-90" viewBox="0 0 36 36">
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="15"
-                        fill="none"
-                        stroke="#e2e8f0"
-                        strokeWidth="3"
-                      />
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="15"
-                        fill="none"
-                        stroke={
-                          report.avgCourseFreshness >= 70
-                            ? "#229C62"
-                            : "#F59E0B"
-                        }
-                        strokeWidth="3"
-                        strokeDasharray={`${report.avgCourseFreshness} 100`}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-lg font-bold">
-                      {report.avgCourseFreshness}%
-                    </span>
-                  </div>
-                  <div className="text-sm text-slate-600">
-                    <p>
-                      {report.staleCourses} of {report.totalCourses} courses
-                      are stale
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      (&gt;90 days since last update)
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FreshnessPanel title="Lab Freshness" score={report.avgLabFreshness} stale={report.staleLabs} total={report.totalLabs} />
+              <FreshnessPanel title="Course Freshness" score={report.avgCourseFreshness} stale={report.staleCourses} total={report.totalCourses} />
             </div>
 
-            {/* Needs refresh */}
-            {(report.labsNeedingRefresh.length > 0 ||
-              report.coursesNeedingRefresh.length > 0) && (
-              <div className="angular-card bg-[#0f172a] p-6">
-                <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+            {(report.labsNeedingRefresh.length > 0 || report.coursesNeedingRefresh.length > 0) && (
+              <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
                   <AlertTriangle size={16} className="text-amber-500" />
                   Content Needing Refresh
                 </h3>
                 <div className="space-y-2">
                   {report.labsNeedingRefresh.map((lab) => (
-                    <div
-                      key={lab.id}
-                      className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-700">
-                          Lab
-                        </span>
-                        <span className="text-sm">{lab.title}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <ScoreBadge score={lab.score} />
-                        <span className="text-xs text-slate-400">
-                          {lab.daysSinceUpdate}d ago
-                        </span>
-                      </div>
-                    </div>
+                    <QueueRow key={lab.id} type="Lab" title={lab.title} score={lab.score} daysSinceUpdate={lab.daysSinceUpdate} />
                   ))}
                   {report.coursesNeedingRefresh.map((course) => (
-                    <div
-                      key={course.id}
-                      className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">
-                          Course
-                        </span>
-                        <span className="text-sm">{course.title}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <ScoreBadge score={course.score} />
-                        <span className="text-xs text-slate-400">
-                          {course.daysSinceUpdate}d ago
-                        </span>
-                      </div>
-                    </div>
+                    <QueueRow key={course.id} type="Course" title={course.title} score={course.score} daysSinceUpdate={course.daysSinceUpdate} />
                   ))}
                 </div>
               </div>
@@ -429,57 +258,39 @@ export default function ContentRefreshDashboard() {
           </div>
         )}
 
-        {/* Labs tab */}
         {tab === "labs" && allScores && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-sm">
-              Lab Relevance Scores ({allScores.labs.length})
-            </h3>
-            {allScores.labs
-              .sort((a, b) => a.overallScore - b.overallScore)
-              .map((lab) => (
-                <LabScoreCard key={lab.id} score={lab} />
-              ))}
+            <h3 className="text-sm font-semibold text-white">Lab Relevance Scores ({allScores.labs.length})</h3>
+            {allScores.labs.sort((a, b) => a.overallScore - b.overallScore).map((lab) => (
+              <ContentScoreCard key={lab.id} score={lab} label="Lab" accent="text-blue-300 bg-blue-500/10" />
+            ))}
           </div>
         )}
 
-        {/* Courses tab */}
         {tab === "courses" && allScores && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-sm">
-              Course Relevance Scores ({allScores.courses.length})
-            </h3>
-            {allScores.courses
-              .sort((a, b) => a.overallScore - b.overallScore)
-              .map((course) => (
-                <CourseScoreCard key={course.id} score={course} />
-              ))}
+            <h3 className="text-sm font-semibold text-white">Course Relevance Scores ({allScores.courses.length})</h3>
+            {allScores.courses.sort((a, b) => a.overallScore - b.overallScore).map((course) => (
+              <ContentScoreCard key={course.id} score={course} label="Course" accent="text-violet-300 bg-violet-500/10" />
+            ))}
           </div>
         )}
 
-        {/* Domains tab */}
         {tab === "domains" && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-sm">Domain Relevance Breakdown</h3>
+            <h3 className="text-sm font-semibold text-white">Domain Relevance Breakdown</h3>
             {report.domainBreakdown.length === 0 ? (
-              <p className="text-sm text-slate-400">
-                No domain data available
-              </p>
+              <p className="text-sm text-slate-400">No domain data available</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {report.domainBreakdown.map((d) => (
-                  <div
-                    key={d.domain}
-                    className="angular-card bg-[#0f172a] p-4"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm">{d.domain}</span>
-                      <ScoreBadge score={d.avgRelevance} />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {report.domainBreakdown.map((domain) => (
+                  <div key={domain.domain} className="angular-card border border-white/10 bg-[#0f172a] p-4">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-sm font-medium text-white">{domain.domain}</span>
+                      <ScoreBadge score={domain.avgRelevance} />
                     </div>
-                    <ScoreBar score={d.avgRelevance} />
-                    <p className="text-xs text-slate-400 mt-1">
-                      {d.count} lab(s)
-                    </p>
+                    <ScoreBar score={domain.avgRelevance} />
+                    <p className="mt-2 text-xs text-slate-400">{domain.count} lab(s)</p>
                   </div>
                 ))}
               </div>
@@ -488,16 +299,13 @@ export default function ContentRefreshDashboard() {
         )}
 
         {!allScores && (tab === "labs" || tab === "courses") && (
-          <div className="text-center py-12">
-            <Sparkles size={32} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-sm text-slate-500 mb-3">
-              Click &quot;AI Score All&quot; to analyze content relevance
-            </p>
+          <div className="py-12 text-center">
+            <Sparkles size={32} className="mx-auto mb-3 text-slate-300" />
+            <p className="mb-3 text-sm text-slate-400">Run AI scoring to analyze content relevance and populate the review queue.</p>
             <button
               onClick={scoreAll}
               disabled={scoring}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50"
-              style={{ background: "#229C62" }}
+              className="rounded-lg bg-[#229C62] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               {scoring ? "Scoring..." : "Score All Content"}
             </button>
@@ -508,59 +316,117 @@ export default function ContentRefreshDashboard() {
   );
 }
 
-function LabScoreCard({ score }: { score: ContentRelevanceScore }) {
+function FreshnessPanel({
+  title,
+  score,
+  stale,
+  total,
+}: {
+  title: string;
+  score: number;
+  stale: number;
+  total: number;
+}) {
+  return (
+    <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
+      <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+        <Clock size={16} className="text-blue-400" />
+        {title}
+      </h3>
+      <div className="flex items-center gap-4">
+        <div className="relative h-20 w-20">
+          <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="#334155" strokeWidth="3" />
+            <circle
+              cx="18"
+              cy="18"
+              r="15"
+              fill="none"
+              stroke={score >= 70 ? "#229C62" : "#F59E0B"}
+              strokeWidth="3"
+              strokeDasharray={`${score} 100`}
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-white">{score}%</span>
+        </div>
+        <div className="text-sm text-slate-200">
+          <p>
+            {stale} of {total} items are stale
+          </p>
+          <p className="mt-1 text-xs text-slate-400">Assets older than 90 days should enter formal review.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QueueRow({
+  type,
+  title,
+  score,
+  daysSinceUpdate,
+}: {
+  type: "Lab" | "Course";
+  title: string;
+  score: number;
+  daysSinceUpdate: number;
+}) {
+  return (
+    <div className="flex flex-col gap-2 border-b border-white/10 py-2 last:border-0 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-2">
+        <span className={`rounded px-1.5 py-0.5 text-xs ${type === "Lab" ? "bg-blue-500/10 text-blue-300" : "bg-violet-500/10 text-violet-300"}`}>
+          {type}
+        </span>
+        <span className="text-sm text-white">{title}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <ScoreBadge score={score} />
+        <span className="text-xs text-slate-400">{daysSinceUpdate}d ago</span>
+      </div>
+    </div>
+  );
+}
+
+function ContentScoreCard({
+  score,
+  label,
+  accent,
+}: {
+  score: ContentRelevanceScore;
+  label: string;
+  accent: string;
+}) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="angular-card bg-[#0f172a] overflow-hidden">
+    <div className="angular-card overflow-hidden border border-white/10 bg-[#0f172a]">
       <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+        onClick={() => setExpanded((value) => !value)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5"
       >
         <div className="flex items-center gap-3">
-          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-700">
-            Lab
-          </span>
-          <span className="font-medium text-sm text-left">{score.title}</span>
+          <span className={`rounded px-1.5 py-0.5 text-xs ${accent}`}>{label}</span>
+          <span className="text-sm font-medium text-white">{score.title}</span>
         </div>
         <div className="flex items-center gap-3">
           <ScoreBadge score={score.overallScore} />
-          <ArrowRight
-            size={14}
-            className={`text-slate-400 transition-transform ${expanded ? "rotate-90" : ""}`}
-          />
+          <ArrowRight size={14} className={`text-slate-400 transition-transform ${expanded ? "rotate-90" : ""}`} />
         </div>
       </button>
       {expanded && (
-        <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <span className="text-xs text-slate-500">Relevance</span>
-              <ScoreBar score={score.relevanceScore} />
-              <span className="text-xs font-medium">{score.relevanceScore}%</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Freshness</span>
-              <ScoreBar score={score.freshnessScore} />
-              <span className="text-xs font-medium">{score.freshnessScore}%</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Overall</span>
-              <ScoreBar score={score.overallScore} />
-              <span className="text-xs font-medium">{score.overallScore}%</span>
-            </div>
+        <div className="space-y-3 border-t border-white/10 px-4 pb-4 pt-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <ScoreDetail label="Relevance" score={score.relevanceScore} />
+            <ScoreDetail label="Freshness" score={score.freshnessScore} />
+            <ScoreDetail label="Overall" score={score.overallScore} />
           </div>
           {score.issues.length > 0 && (
             <div>
-              <span className="text-xs font-medium text-slate-600 block mb-1">
-                Issues
-              </span>
+              <span className="mb-1 block text-xs font-medium text-slate-300">Issues</span>
               <ul className="space-y-1">
-                {score.issues.map((issue, i) => (
-                  <li
-                    key={i}
-                    className="text-xs text-red-600 flex items-start gap-1"
-                  >
+                {score.issues.map((issue, index) => (
+                  <li key={index} className="flex items-start gap-1 text-xs text-red-300">
                     <AlertTriangle size={10} className="mt-0.5 flex-shrink-0" />
                     {issue}
                   </li>
@@ -570,17 +436,12 @@ function LabScoreCard({ score }: { score: ContentRelevanceScore }) {
           )}
           {score.suggestions.length > 0 && (
             <div>
-              <span className="text-xs font-medium text-slate-600 block mb-1">
-                Suggestions
-              </span>
+              <span className="mb-1 block text-xs font-medium text-slate-300">Suggestions</span>
               <ul className="space-y-1">
-                {score.suggestions.map((s, i) => (
-                  <li
-                    key={i}
-                    className="text-xs text-[#7AD62A] flex items-start gap-1"
-                  >
+                {score.suggestions.map((suggestion, index) => (
+                  <li key={index} className="flex items-start gap-1 text-xs text-[#7AD62A]">
                     <CheckCircle size={10} className="mt-0.5 flex-shrink-0" />
-                    {s}
+                    {suggestion}
                   </li>
                 ))}
               </ul>
@@ -592,88 +453,12 @@ function LabScoreCard({ score }: { score: ContentRelevanceScore }) {
   );
 }
 
-function CourseScoreCard({ score }: { score: ContentRelevanceScore }) {
-  const [expanded, setExpanded] = useState(false);
-
+function ScoreDetail({ label, score }: { label: string; score: number }) {
   return (
-    <div className="angular-card bg-[#0f172a] overflow-hidden">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-xs px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">
-            Course
-          </span>
-          <span className="font-medium text-sm text-left">{score.title}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <ScoreBadge score={score.overallScore} />
-          <ArrowRight
-            size={14}
-            className={`text-slate-400 transition-transform ${expanded ? "rotate-90" : ""}`}
-          />
-        </div>
-      </button>
-      {expanded && (
-        <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <span className="text-xs text-slate-500">Relevance</span>
-              <ScoreBar score={score.relevanceScore} />
-              <span className="text-xs font-medium">{score.relevanceScore}%</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Freshness</span>
-              <ScoreBar score={score.freshnessScore} />
-              <span className="text-xs font-medium">{score.freshnessScore}%</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Overall</span>
-              <ScoreBar score={score.overallScore} />
-              <span className="text-xs font-medium">{score.overallScore}%</span>
-            </div>
-          </div>
-          {score.issues.length > 0 && (
-            <div>
-              <span className="text-xs font-medium text-slate-600 block mb-1">
-                Issues
-              </span>
-              <ul className="space-y-1">
-                {score.issues.map((issue, i) => (
-                  <li
-                    key={i}
-                    className="text-xs text-red-600 flex items-start gap-1"
-                  >
-                    <AlertTriangle size={10} className="mt-0.5 flex-shrink-0" />
-                    {issue}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {score.suggestions.length > 0 && (
-            <div>
-              <span className="text-xs font-medium text-slate-600 block mb-1">
-                Suggestions
-              </span>
-              <ul className="space-y-1">
-                {score.suggestions.map((s, i) => (
-                  <li
-                    key={i}
-                    className="text-xs text-[#7AD62A] flex items-start gap-1"
-                  >
-                    <CheckCircle size={10} className="mt-0.5 flex-shrink-0" />
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+    <div>
+      <span className="text-xs text-slate-400">{label}</span>
+      <ScoreBar score={score} />
+      <span className="text-xs font-medium text-white">{score}%</span>
     </div>
   );
 }
-
-type Any = any;

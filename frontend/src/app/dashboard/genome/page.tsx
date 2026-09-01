@@ -49,7 +49,7 @@ interface TechnologyGenome {
   decayingSkills: number;
 }
 
-const DOMAIN_ICONS: Record<string, any> = {
+const DOMAIN_ICONS: Record<string, typeof Server> = {
   SYSTEMS: Server,
   NETWORKING: Network,
   DEVOPS: Code,
@@ -65,15 +65,6 @@ const DOMAIN_COLORS: Record<string, string> = {
   DATABASES: "from-amber-500 to-amber-600",
   SECURITY: "from-red-500 to-red-600",
   QA: "from-emerald-500 to-emerald-600",
-};
-
-const MASTERY_COLORS: Record<number, string> = {
-  0: "bg-white/10",
-  1: "bg-red-400",
-  2: "bg-orange-400",
-  3: "bg-yellow-400",
-  4: "bg-lime-400",
-  5: "bg-green-400",
 };
 
 function getMasteryColor(mastery: number): string {
@@ -100,7 +91,7 @@ function getMasteryBgColor(mastery: number): string {
   return "bg-red-500/10 border-red-200";
 }
 
-function formatLastPracticed(date: string | null, t: any): string {
+function formatLastPracticed(date: string | null, t: (key: string) => string): string {
   if (!date) return t("genome.neverPracticed");
   const d = new Date(date);
   const now = new Date();
@@ -125,7 +116,7 @@ export default function GenomePage() {
     try {
       const data = await fetchApiV2<TechnologyGenome>("/genome/profile");
       setGenome(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);

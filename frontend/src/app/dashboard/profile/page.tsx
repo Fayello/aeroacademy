@@ -5,7 +5,7 @@ import {
   Shield, Trophy, TrendingUp, BookOpen, Microscope, Clock, Lock, Star,
   Award, Flame, Zap, Flag, Target, Crosshair, Crown, Compass, Library,
   Footprints, GraduationCap, MapPin, Building2, Calendar, Users, Brain,
-  Flame as FireIcon, Activity, ChevronRight, BarChart3, Medal, Ticket,
+  Activity, ChevronRight, BarChart3, Medal, Ticket,
   ExternalLink, CheckCircle, Pin, Settings, Bell, UserPlus, Route, Video, ClipboardCheck,
 } from "lucide-react";
 import Link from "next/link";
@@ -282,7 +282,6 @@ export default function ProfilePage() {
   const daysActive = userStats?.daysActive || 0;
   const flagsSolved = userStats?.flagsSolved || user._count?.labSubmissions || 0;
   const coursesEnrolled = analytics?.stats?.totalCoursesEnrolled || 0;
-  const lessonsCompleted = analytics?.stats?.totalLessonsCompleted || user._count?.progress || 0;
 
   const enrolledCourses = (analytics?.courseProgress || []).filter((cp) => cp.total > 0);
   const completedPaths = learningPaths.filter((lp) => lp.completedAt);

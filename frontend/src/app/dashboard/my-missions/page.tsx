@@ -35,7 +35,7 @@ interface Mission {
   domain: { id: string; name: string; displayName: string } | null;
 }
 
-const MISSION_TYPE_ICONS: Record<string, any> = {
+const MISSION_TYPE_ICONS: Record<string, typeof RefreshCw> = {
   SKILL_MAINTENANCE: RefreshCw,
   WEAKNESS_IMPROVEMENT: Target,
   CROSS_DOMAIN: ArrowRight,
@@ -69,7 +69,7 @@ export default function MyMissionsPage() {
       ]);
       setMissions(available);
       setHistory(historyData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);
@@ -84,7 +84,7 @@ export default function MyMissionsPage() {
     try {
       await fetchApiV2(`/missions/${missionId}/accept`, { method: "POST" });
       fetchData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to accept mission");
     }
   };
@@ -93,7 +93,7 @@ export default function MyMissionsPage() {
     try {
       await fetchApiV2(`/missions/${missionId}/complete`, { method: "POST" });
       fetchData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to complete mission");
     }
   };
@@ -173,7 +173,7 @@ export default function MyMissionsPage() {
         ].map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setActiveTab(tab.key as any)}
+            onClick={() => setActiveTab(tab.key as "available" | "active" | "completed" | "history")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.key
                 ? "bg-[#0F203A] text-white"

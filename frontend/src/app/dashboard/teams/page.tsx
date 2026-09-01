@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { fetchApi } from "@/lib/api";
+import Image from "next/image";
 import PageHeader from "@/components/ui/PageHeader";
 import {
   Users, Trophy, BookOpen, Star, ChevronRight, Loader2, Crown,
@@ -61,7 +62,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [, setDetailLoading] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -80,7 +81,7 @@ export default function TeamsPage() {
   const [joining, setJoining] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
-  const [uploading, setUploading] = useState<string | null>(null);
+  const [, setUploading] = useState<string | null>(null);
   const avatarRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
 
@@ -130,7 +131,7 @@ export default function TeamsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (ev) => {
+    reader.onload = async () => {
       const url = await uploadImage(file, "avatar");
       if (url) {
         if (mode === "create") setCreateAvatar(url);
@@ -144,7 +145,7 @@ export default function TeamsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (ev) => {
+    reader.onload = async () => {
       const url = await uploadImage(file, "banner");
       if (url) {
         if (mode === "create") setCreateBanner(url);
@@ -181,8 +182,8 @@ export default function TeamsPage() {
       setCreateTagline("");
       setCreateAvatar("");
       setCreateBanner("");
-    } catch (err: any) {
-      setError(err?.message || "Failed to create team");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create team");
     } finally {
       setCreating(false);
     }
@@ -200,8 +201,8 @@ export default function TeamsPage() {
       setMyTeam(team);
       setShowJoin(false);
       setJoinCode("");
-    } catch (err: any) {
-      setError(err?.message || "Failed to join team");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to join team");
     } finally {
       setJoining(false);
     }
@@ -214,8 +215,8 @@ export default function TeamsPage() {
       setMyTeam(null);
       const data = await fetchApi<Team[]>("/teams");
       setTeams(data);
-    } catch (err: any) {
-      setError(err?.message || "Failed to leave team");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to leave team");
     }
   }
 
@@ -254,8 +255,8 @@ export default function TeamsPage() {
       setShowEdit(false);
       setEditFields({});
       toast.success("Team updated");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to update team");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to update team");
     }
   }
 
@@ -276,14 +277,17 @@ export default function TeamsPage() {
     return (
       <div className="relative overflow-hidden rounded-xl" style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}>
         {team.bannerUrl && (
-          <img src={team.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+          <Image src={team.bannerUrl} alt="" fill className="object-cover opacity-30" unoptimized />
         )}
         <div className={`relative z-10 flex items-center gap-3 ${isLg ? "p-5" : "p-3"}`}>
           {team.avatarUrl ? (
-            <img
+            <Image
               src={team.avatarUrl}
               alt={team.name}
+              width={56}
+              height={56}
               className={`${isLg ? "w-14 h-14" : "w-10 h-10"} rounded-xl object-cover border-2 border-white/30 shrink-0`}
+              unoptimized
             />
           ) : (
             <div className={`${isLg ? "w-14 h-14" : "w-10 h-10"} rounded-xl bg-white/20 flex items-center justify-center border-2 border-white/30 shrink-0`}>
@@ -510,7 +514,7 @@ export default function TeamsPage() {
               <div className="flex items-center gap-4">
                 <div className="relative group">
                   {(editFields.avatarUrl || myTeam.avatarUrl) ? (
-                    <img src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" className="w-16 h-16 rounded-xl object-cover border border-white/10" />
+                    <Image src={(editFields.avatarUrl || myTeam.avatarUrl)!} alt="" width={64} height={64} className="w-16 h-16 rounded-xl object-cover border border-white/10" unoptimized />
                   ) : (
                     <div className="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
                       <Camera size={20} className="text-slate-400" />
@@ -535,7 +539,7 @@ export default function TeamsPage() {
                 <label className="text-sm font-medium text-slate-300 mb-1.5 block">Banner Image</label>
                 <div className="relative group rounded-xl overflow-hidden border border-white/10">
                   {(editFields.bannerUrl || myTeam.bannerUrl) ? (
-                    <img src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" className="w-full h-24 object-cover" />
+                    <Image src={(editFields.bannerUrl || myTeam.bannerUrl)!} alt="" width={400} height={96} className="w-full h-24 object-cover" unoptimized />
                   ) : (
                     <div className="w-full h-24 bg-gradient-to-r from-[#0F203A] to-[#7AD62A] flex items-center justify-center">
                       <ImageIcon size={20} className="text-white/40" />
@@ -728,14 +732,14 @@ export default function TeamsPage() {
           {/* Avatar + Banner Preview */}
           <div className="relative rounded-xl overflow-hidden" style={{ background: `linear-gradient(135deg, ${createPrimary}, ${createAccent})` }}>
             {createBanner ? (
-              <img src={createBanner} alt="" className="w-full h-24 object-cover opacity-60" />
+              <Image src={createBanner} alt="" width={400} height={96} className="w-full h-24 object-cover opacity-60" unoptimized />
             ) : (
               <div className="w-full h-24" />
             )}
             <div className="absolute bottom-3 left-3">
               <div className="relative group">
                 {createAvatar ? (
-                  <img src={createAvatar} alt="" className="w-12 h-12 rounded-xl object-cover border-2 border-white/30" />
+                  <Image src={createAvatar} alt="" width={48} height={48} className="w-12 h-12 rounded-xl object-cover border-2 border-white/30" unoptimized />
                 ) : (
                   <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center border-2 border-white/30">
                     <Camera size={16} className="text-white/60" />
@@ -883,10 +887,10 @@ export default function TeamsPage() {
                 style={{ background: `linear-gradient(135deg, ${team.primaryColor || "#229C62"}, ${team.accentColor || "#7AD62A"})` }}
               >
                 {team.bannerUrl && (
-                  <img src={team.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+                  <Image src={team.bannerUrl} alt="" fill className="object-cover opacity-30" unoptimized />
                 )}
                 {team.avatarUrl ? (
-                  <img src={team.avatarUrl} alt="" className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm" />
+                  <Image src={team.avatarUrl} alt="" width={40} height={40} className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm" unoptimized />
                 ) : (
                   <div className="absolute -bottom-4 left-4 w-10 h-10 rounded-xl bg-[#0f172a] flex items-center justify-center border-2 border-white shadow-sm">
                     <Users size={16} className="text-[#7AD62A]" />

@@ -7,7 +7,6 @@ import { useI18n } from "@/lib/i18n";
 import { Loader2, Calendar, Zap, Trophy, Clock, Star, Crown } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
-import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
 
 interface BattlePass {
@@ -84,7 +83,7 @@ export default function SeasonsPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
-  const [now, setNow] = useState(Date.now());
+  const [, setNow] = useState(Date.now());
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 60000);

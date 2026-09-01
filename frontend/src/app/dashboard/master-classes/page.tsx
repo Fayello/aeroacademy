@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Video, Calendar, Loader2, Users, Search, X, Clock, CalendarPlus } from "lucide-react";
+import { Video, Calendar, Users, Search, Clock, CalendarPlus } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 import type { MasterClass } from "@/types/api";

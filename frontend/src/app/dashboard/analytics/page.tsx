@@ -52,10 +52,18 @@ export default function StudentAnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     fetchApi<LearningData>("/analytics/learning")
-      .then(setData)
+      .then((result) => {
+        if (!cancelled) setData(result);
+      })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (loading) {
@@ -94,6 +102,18 @@ export default function StudentAnalyticsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader title="Learning Analytics" description="Your progress and activity overview" />
 
+      <div className="angular-card grid gap-4 border border-white/10 bg-[#0F203A] p-5 text-white lg:grid-cols-3">
+        {[
+          "Use this page to review your weekly consistency, not just your raw totals.",
+          "Completed courses show proven outcomes while in-progress courses show your active momentum.",
+          "If activity is low, return to your dashboard and take the next recommended lab or lesson first.",
+        ].map((item) => (
+          <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+            {item}
+          </div>
+        ))}
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="angular-card bg-[#0f172a] p-5">
           <div className="flex items-center gap-3 mb-3">
@@ -102,7 +122,7 @@ export default function StudentAnalyticsPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{data.stats.totalLessonsCompleted}</p>
-              <p className="text-[11px] text-slate-500">Lessons Done</p>
+              <p className="text-[11px] text-slate-400">Lessons Done</p>
             </div>
           </div>
         </div>
@@ -113,7 +133,7 @@ export default function StudentAnalyticsPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{data.stats.totalFlagsCaptured}</p>
-              <p className="text-[11px] text-slate-500">Flags Captured</p>
+              <p className="text-[11px] text-slate-400">Flags Captured</p>
             </div>
           </div>
         </div>
@@ -124,7 +144,7 @@ export default function StudentAnalyticsPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{data.stats.currentStreak}</p>
-              <p className="text-[11px] text-slate-500">Day Streak</p>
+              <p className="text-[11px] text-slate-400">Day Streak</p>
             </div>
           </div>
         </div>
@@ -135,7 +155,7 @@ export default function StudentAnalyticsPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{data.stats.totalCoursesEnrolled}</p>
-              <p className="text-[11px] text-slate-500">Courses Enrolled</p>
+              <p className="text-[11px] text-slate-400">Courses Enrolled</p>
             </div>
           </div>
         </div>
@@ -156,7 +176,7 @@ export default function StudentAnalyticsPage() {
                   />
                 </div>
                 <span className="text-[10px] text-slate-400">{d.label}</span>
-                {d.count > 0 && <span className="text-[9px] font-medium text-slate-600">{d.count}</span>}
+                {d.count > 0 && <span className="text-[9px] font-medium text-slate-300">{d.count}</span>}
               </div>
             ))}
           </div>
@@ -168,26 +188,26 @@ export default function StudentAnalyticsPage() {
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">Current Streak</span>
+              <span className="text-sm text-slate-300">Current Streak</span>
               <span className="text-lg font-bold text-amber-600">{data.stats.currentStreak} days</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">Longest Streak</span>
+              <span className="text-sm text-slate-300">Longest Streak</span>
               <span className="text-lg font-bold text-[#7AD62A]">{data.stats.longestStreak} days</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">Total XP</span>
+              <span className="text-sm text-slate-300">Total XP</span>
               <span className="text-lg font-bold text-blue-600">{data.user.xp.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">Member Since</span>
-              <span className="text-sm font-medium text-slate-700">
+              <span className="text-sm text-slate-300">Member Since</span>
+              <span className="text-sm font-medium text-white">
                 {new Date(data.user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">Days Active</span>
-              <span className="text-sm font-medium text-slate-700">{data.stats.daysActive || 1} days</span>
+              <span className="text-sm text-slate-300">Days Active</span>
+              <span className="text-sm font-medium text-white">{data.stats.daysActive || 1} days</span>
             </div>
           </div>
         </div>
@@ -201,14 +221,14 @@ export default function StudentAnalyticsPage() {
               <Link
                 key={c.courseId}
                 href={"/dashboard/courses/" + c.courseId}
-                className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-200 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 rounded-lg border border-[#7AD62A]/20 bg-[#7AD62A]/10 p-3 transition-all hover:shadow-sm"
               >
                 <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center">
                   <Award size={14} className="text-[#7AD62A]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{c.title}</p>
-                  <p className="text-[11px] text-[#7AD62A]">{c.completed}/{c.total} lessons</p>
+                  <p className="text-[11px] text-[#9ae457]">{c.completed}/{c.total} lessons</p>
                 </div>
                 <ArrowRight size={14} className="text-[#7AD62A] flex-shrink-0" />
               </Link>
@@ -229,7 +249,7 @@ export default function StudentAnalyticsPage() {
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white">{c.title}</p>
-                  <p className="text-[11px] text-slate-500">{c.completed}/{c.total} lessons completed</p>
+                  <p className="text-[11px] text-slate-400">{c.completed}/{c.total} lessons completed</p>
                 </div>
                 <div className="w-24">
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -250,7 +270,7 @@ export default function StudentAnalyticsPage() {
             <BookOpen size={28} className="text-blue-600" />
           </div>
           <h2 className="text-sm font-semibold text-white mb-1">Your journey starts here</h2>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">Enroll in a course to start tracking your progress across domains.</p>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">Enroll in a course to start tracking your progress across domains.</p>
           <Link href="/dashboard/courses" className="btn-primary text-xs inline-flex items-center gap-1.5">
             <BookOpen size={14} /> Browse Courses
           </Link>

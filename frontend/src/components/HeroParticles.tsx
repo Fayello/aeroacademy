@@ -58,7 +58,6 @@ export default function HeroParticles() {
     const drawGrid = () => {
       const gridSize = 60;
       const offsetX = (time * 0.2) % gridSize;
-      const offsetY = (time * 0.2) % gridSize;
 
       ctx.strokeStyle = "rgba(34, 156, 98, 0.04)";
       ctx.lineWidth = 0.5;

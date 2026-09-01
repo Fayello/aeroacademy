@@ -2,17 +2,16 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import {
-  BarChart3, Microscope, TrendingUp, TrendingDown, AlertTriangle, CheckCircle,
-  Loader2, ArrowLeft, Search, ChevronDown, ChevronUp, Clock, Target, Zap, Info,
+  Microscope, TrendingUp, TrendingDown, AlertTriangle, CheckCircle,
+  Loader2, ArrowLeft, Search, ChevronDown, ChevronUp, Target, Zap, Info,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell,
+  BarChart, Bar,
 } from "recharts";
 
-type Any = any;
 
 interface StepAnalytic {
   step: string;

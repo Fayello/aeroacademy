@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
-import { Route, Plus, Pencil, Trash2, Loader2, GripVertical, X, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
+import { Route, Plus, Pencil, Trash2, Loader2, X, ChevronDown, ChevronUp } from "lucide-react";
 import toast from "@/lib/toast";
 import AdminModal, { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import { AdminInput, AdminTextarea, AdminSelect } from "@/components/admin/AdminForm";

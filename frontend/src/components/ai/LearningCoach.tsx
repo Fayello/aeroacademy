@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { API_URL, API_VERSION } from "@/lib/api";
 import {
-  MessageCircle,
   Send,
   X,
   Bot,
@@ -107,14 +106,15 @@ export default function LearningCoach() {
           } catch {}
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
         if (last.role === "assistant" && last.content === "") {
+          const errorObj = err instanceof Error ? err : null;
           updated[updated.length - 1] = {
             role: "assistant",
-            content: err?.name === "AbortError" || err?.message?.includes("timeout")
+            content: errorObj?.name === "AbortError" || errorObj?.message?.includes("timeout")
               ? "Response is taking longer than expected. The AI model is running on CPU."
               : "Sorry, I couldn't process that right now. Please try again.",
           };

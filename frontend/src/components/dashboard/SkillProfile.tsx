@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/api';
-import { Layers, Star, Loader2, Lock } from 'lucide-react';
+import { Layers, Loader2, Lock } from 'lucide-react';
 
 interface SkillItem {
   name: string;
@@ -35,7 +35,7 @@ const domainColors: Record<string, string> = {
   QA: 'from-green-500/20 to-green-600/10 border-green-500/30',
 };
 
-export default function SkillProfile({ userId }: { userId?: string }) {
+export default function SkillProfile() {
   const [skills, setSkills] = useState<SkillDomain[]>([]);
   const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(true);
@@ -46,7 +46,7 @@ export default function SkillProfile({ userId }: { userId?: string }) {
 
   async function fetchSkills() {
     try {
-      const data = await fetchApi<any>('/challenges/skills');
+      const data = await fetchApi<{ unlocked: boolean; skills: SkillDomain[] }>('/challenges/skills');
       setUnlocked(data.unlocked !== false);
       setSkills(data.skills || []);
     } catch {

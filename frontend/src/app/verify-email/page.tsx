@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
-import { Loader2, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
+import { Loader2, ArrowLeft, Mail } from "lucide-react";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -45,7 +46,7 @@ function VerifyEmailContent() {
         <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="bg-[#7AD62A] p-2 rounded-xl">
-              <img src="/logo-icon.svg" alt="XpertClass" className="w-8 h-8" />
+              <Image src="/logo-icon.svg" alt="XpertClass" width={32} height={32} className="w-8 h-8" />
             </div>
             <span className="text-xl font-bold text-white tracking-tight">XpertClass</span>
           </div>

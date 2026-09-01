@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, CheckCheck, Trash2, Loader2, RefreshCw, ChevronRight } from "lucide-react";
+import { Bell, CheckCheck, Trash2, RefreshCw, ChevronRight } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import type { NotificationItem } from "@/types/api";
 import { timeAgo } from "@/lib/format";
@@ -64,7 +64,7 @@ export default function NotificationsPage() {
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               filter === "all"
                 ? "bg-slate-800 text-white"
-                : "text-slate-600 hover:bg-white/5"
+                : "text-slate-300 hover:bg-white/5"
             }`}
           >
             All
@@ -77,7 +77,7 @@ export default function NotificationsPage() {
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               filter === "unread"
                 ? "bg-slate-800 text-white"
-                : "text-slate-600 hover:bg-white/5"
+                : "text-slate-300 hover:bg-white/5"
             }`}
           >
             Unread {unread > 0 && `(${unread})`}
@@ -89,7 +89,7 @@ export default function NotificationsPage() {
             onClick={() =>
               void refresh({ limit: Math.max(visible.length, PAGE_SIZE), unreadOnly: filter === "unread" })
             }
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-white/5 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors"
           >
             <RefreshCw size={14} />
             Refresh
@@ -97,7 +97,7 @@ export default function NotificationsPage() {
           <button
             onClick={() => void markAllRead()}
             disabled={unread === 0}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCheck size={14} />
             Mark all read
@@ -121,13 +121,13 @@ export default function NotificationsPage() {
         </div>
       ) : visible.length === 0 ? (
         <div className="angular-card bg-[#0f172a] py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
             <Bell size={28} className="text-slate-400" />
           </div>
           <h3 className="text-sm font-semibold text-white mb-1">
             {filter === "unread" ? "All caught up" : "No notifications yet"}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
             {filter === "unread"
               ? "You've read all your notifications. New activity will appear here."
               : "Achievements, flag captures, bookings and more will show up here as you progress."}
@@ -158,11 +158,11 @@ export default function NotificationsPage() {
                     <span className="w-2 h-2 rounded-full bg-slate-800 shrink-0" />
                   )}
                 </div>
-                <p className="text-sm text-slate-600 mt-0.5">{n.message}</p>
+                <p className="text-sm text-slate-300 mt-0.5">{n.message}</p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className="text-xs text-slate-400">{timeAgo(n.createdAt)}</span>
                   {n.link && (
-                    <span className="flex items-center gap-0.5 text-xs text-slate-600">
+                    <span className="flex items-center gap-0.5 text-xs text-slate-300">
                       View <ChevronRight size={12} />
                     </span>
                   )}
@@ -196,7 +196,7 @@ export default function NotificationsPage() {
             <div className="pt-4 text-center">
               <button
                 onClick={loadMore}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-white/5 transition-colors"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors"
               >
                 Load more
               </button>

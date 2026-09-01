@@ -8,9 +8,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { fetchApi } from "@/lib/api";
-import toast from "@/lib/toast";
 import { getLevel, getLevelProgress } from "@/lib/levelGating";
 import type { User } from "@/types/api";
 
@@ -165,10 +165,13 @@ export default function PublicProfilePage() {
   const getAvatarContent = () => {
     if (user.avatarUrl) {
       return (
-        <img
+        <Image
           src={user.avatarUrl}
           alt={user.name || "User"}
+          width={80}
+          height={80}
           className="w-20 h-20 rounded-full object-cover ring-4 ring-white shadow-lg"
+          unoptimized
         />
       );
     }

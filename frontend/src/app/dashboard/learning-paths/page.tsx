@@ -5,14 +5,11 @@ import { fetchApi } from "@/lib/api";
 import Link from "next/link";
 import {
   Route,
-  BookOpen,
   Clock,
   Users,
   ChevronRight,
   Loader2,
   GraduationCap,
-  Lock,
-  CheckCircle2,
   Search,
   X,
   AlertTriangle,

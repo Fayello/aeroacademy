@@ -19,7 +19,7 @@ export default function IntelligenceCard({ latestProgress, courseProgress }: Int
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white">Continue Learning</h3>
-            <p className="text-xs text-slate-500">Pick up where you left off</p>
+            <p className="text-xs text-slate-400">Pick up where you left off</p>
           </div>
         </div>
 
@@ -31,21 +31,21 @@ export default function IntelligenceCard({ latestProgress, courseProgress }: Int
             </div>
             <div>
               <p className="text-xs text-slate-500 mb-1">Current Lesson</p>
-              <p className="text-sm text-slate-700 line-clamp-1">{latestProgress.lesson.title}</p>
+              <p className="text-sm text-slate-200 line-clamp-1">{latestProgress.lesson.title}</p>
             </div>
             <div>
               <div className="flex justify-between text-xs text-slate-500 mb-1">
                 <span>Progress</span>
                 <span className="font-medium text-[#7AD62A]">{courseProgress || 0}%</span>
               </div>
-              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                 <div className="h-full bg-[#7AD62A] rounded-full" style={{ width: `${courseProgress || 0}%` }} />
               </div>
             </div>
           </div>
         ) : (
           <div className="py-8 text-center">
-            <p className="text-sm text-slate-500">No active courses yet</p>
+            <p className="text-sm text-slate-400">No active courses yet</p>
           </div>
         )}
       </div>
