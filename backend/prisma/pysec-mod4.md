@@ -1,12 +1,12 @@
-# Module 4 — Web Scraping for Security
+# Module 4: Web Scraping for Security
 
-Web applications are the most common attack surface. Every penetration test starts with mapping the target — discovering pages, endpoints, parameters, and technologies. Web scraping is how you automate that discovery. This module teaches you to build security tools that interact with web servers programmatically.
+Web applications are the most common attack surface. Every penetration test starts with mapping the target: discovering pages, endpoints, parameters, and technologies. Web scraping is how you automate that discovery. This module teaches you to build security tools that interact with web servers programmatically.
 
 ## Why Web Scraping for Security
 
 Web applications are complex. A typical application has hundreds of pages, dozens of API endpoints, multiple authentication mechanisms, and intricate session handling. Manually testing each page for vulnerabilities is impractical. You need automation.
 
-Web scraping for security serves two purposes: discovery and testing. Discovery means finding everything the application exposes — pages, forms, API endpoints, hidden parameters, error messages. Testing means sending crafted inputs to those discovered elements and analyzing the responses for vulnerabilities. Both require programmatic interaction with web servers.
+Web scraping for security serves two purposes: discovery and testing. Discovery means finding everything the application exposes: pages, forms, API endpoints, hidden parameters, error messages. Testing means sending crafted inputs to those discovered elements and analyzing the responses for vulnerabilities. Both require programmatic interaction with web servers.
 
 The difference between legitimate web scraping and security scraping is intent and technique. Legitimate scrapers extract data for aggregation or analysis. Security scrapers probe for weaknesses. The HTTP requests look similar, but security scraping involves injecting payloads, testing error conditions, and manipulating parameters in ways that legitimate users don't.
 
@@ -52,7 +52,7 @@ print(dashboard.status_code)  # 200 if logged in
 
 ### Handling JavaScript-Heavy Applications
 
-Modern web applications use JavaScript extensively. Single-page applications render content client-side, meaning the HTML you fetch with `requests` contains no actual content — just JavaScript that renders it later. This complicates web scraping significantly.
+Modern web applications use JavaScript extensively. Single-page applications render content client-side, meaning the HTML you fetch with `requests` contains no actual content: just JavaScript that renders it later. This complicates web scraping significantly.
 
 For JavaScript-rendered content, you need a browser automation tool like Selenium or Playwright. These tools drive a real browser that executes JavaScript, rendering the page fully before you extract content.
 
@@ -78,7 +78,7 @@ html = driver.page_source
 driver.quit()
 ```
 
-For most security testing, `requests` is sufficient because you're testing the server-side — inputs, parameters, headers. JavaScript rendering matters when you need to discover dynamically loaded content or test client-side vulnerabilities.
+For most security testing, `requests` is sufficient because you're testing the server-side: inputs, parameters, headers. JavaScript rendering matters when you need to discover dynamically loaded content or test client-side vulnerabilities.
 
 ### Handling Authentication
 
@@ -115,7 +115,7 @@ response = requests.get(
 Control timeouts, redirects, SSL verification, and proxying:
 
 ```python
-# Timeouts — always set them
+# Timeouts: always set them
 response = requests.get("https://target.com", timeout=(5, 30))
 # (connect_timeout, read_timeout)
 
@@ -151,7 +151,7 @@ response = requests.get("https://target.com", headers=headers)
 
 ## BeautifulSoup for HTML Parsing
 
-HTML is messy. You need to extract specific elements — links, forms, inputs, scripts. BeautifulSoup makes this tolerable.
+HTML is messy. You need to extract specific elements: links, forms, inputs, scripts. BeautifulSoup makes this tolerable.
 
 ```python
 from bs4 import BeautifulSoup
@@ -262,7 +262,7 @@ def extract_security_info(html):
 
 ## Session Handling for Security Testing
 
-Security testing requires maintaining state across requests — logged-in sessions, CSRF tokens, multi-step authentication flows.
+Security testing requires maintaining state across requests: logged-in sessions, CSRF tokens, multi-step authentication flows.
 
 ### CSRF Token Handling
 
@@ -349,7 +349,7 @@ dashboard = web.authenticated_get("/dashboard")
 
 ### Handling Multi-Step Authentication
 
-Some applications use multi-step authentication — username first, then password, then maybe a second factor:
+Some applications use multi-step authentication: username first, then password, then maybe a second factor:
 
 ```python
 class MultiStepAuth:
@@ -507,7 +507,7 @@ for user in users:
 
 ## Real Scenario: Building a Vulnerability Scanner
 
-Combine everything — session handling, HTML parsing, API interaction, and pattern matching — to build a vulnerability scanner.
+Combine everything: session handling, HTML parsing, API interaction, and pattern matching: to build a vulnerability scanner.
 
 ```python
 import requests
@@ -896,11 +896,11 @@ Rate limiting is an ethical obligation. Even with authorization, an aggressive s
 
 The testing scope matters. SQL injection testing involves sending malicious payloads to database queries. This can cause data corruption or deletion if the application doesn't sanitize inputs properly. Cross-site scripting testing involves injecting JavaScript that executes in browsers. If you test against a production system with real users, your payloads execute in their browsers. Always test against development or staging environments when possible. When testing production, coordinate with the application team and test during maintenance windows.
 
-Data handling is another concern. Your scanner might capture sensitive data — passwords, API keys, personal information. This data must be handled securely, stored encrypted, and deleted after the engagement. Never log sensitive data in plaintext. Never share it with unauthorized parties. The same data protection principles that apply to the target's data apply to data you collect during testing.
+Data handling is another concern. Your scanner might capture sensitive data: passwords, API keys, personal information. This data must be handled securely, stored encrypted, and deleted after the engagement. Never log sensitive data in plaintext. Never share it with unauthorized parties. The same data protection principles that apply to the target's data apply to data you collect during testing.
 
 ## Evidence
 
-Web vulnerability scanning is the bread and butter of application security. The tool you built here is a simplified version of what commercial scanners do. The difference is scale and sophistication — they handle more edge cases, more vulnerability types, and more complex web applications. But the core approach is the same: crawl, discover, test, report.
+Web vulnerability scanning is the bread and butter of application security. The tool you built here is a simplified version of what commercial scanners do. The difference is scale and sophistication: they handle more edge cases, more vulnerability types, and more complex web applications. But the core approach is the same: crawl, discover, test, report.
 
 The key lesson is that web security testing is about understanding how web applications work, not about memorizing vulnerability signatures. If you understand sessions, you can test for session fixation. If you understand databases, you can test for SQL injection. The Python is just the automation layer.
 

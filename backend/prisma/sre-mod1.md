@@ -1,4 +1,4 @@
-# Module 1 — SRE Fundamentals
+# Module 1: SRE Fundamentals
 
 ## What Site Reliability Engineering Actually Is
 

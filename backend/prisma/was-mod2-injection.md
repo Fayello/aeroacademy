@@ -1,6 +1,6 @@
-# Module 2 — Injection Attacks
+# Module 2: Injection Attacks
 
-Injection vulnerabilities occur when an application takes user-controlled input and incorporates it into a command, query, or interpretation without proper sanitization. The application does not distinguish between data and instructions, and the attacker exploits this by crafting input that alters the intended command structure. Injection is not a single vulnerability class — it spans SQL, NoSQL, OS command, LDAP, XML, SMTP, and any other context where user input is interpreted as code. The underlying principle is always the same: the application trusts user input where it should not.
+Injection vulnerabilities occur when an application takes user-controlled input and incorporates it into a command, query, or interpretation without proper sanitization. The application does not distinguish between data and instructions, and the attacker exploits this by crafting input that alters the intended command structure. Injection is not a single vulnerability class: it spans SQL, NoSQL, OS command, LDAP, XML, SMTP, and any other context where user input is interpreted as code. The underlying principle is always the same: the application trusts user input where it should not.
 
 ## SQL Injection: The Mechanics
 
@@ -44,19 +44,19 @@ In a real application, the injection might be in a search parameter:
 https://app.example.com/products?search=phone' UNION SELECT 1,table_name FROM information_schema.tables--
 ```
 
-The attacker uses the information_schema database (present in MySQL, PostgreSQL, and SQL Server with slight syntax differences) to enumerate the database structure — first the tables, then the columns in each table, then the data.
+The attacker uses the information_schema database (present in MySQL, PostgreSQL, and SQL Server with slight syntax differences) to enumerate the database structure: first the tables, then the columns in each table, then the data.
 
 The information_schema attack sequence is systematic:
 
 1. Determine column count: `' ORDER BY 1--`, `' ORDER BY 2--`, etc.
-2. Find which columns are displayed: `' UNION SELECT 1,2--` — if "2" appears in the page, column 2 is output.
+2. Find which columns are displayed: `' UNION SELECT 1,2--`: if "2" appears in the page, column 2 is output.
 3. Extract table names: `' UNION SELECT 1,table_name FROM information_schema.tables WHERE table_schema=database()--`
 4. Extract column names: `' UNION SELECT 1,column_name FROM information_schema.columns WHERE table_name='users'--`
 5. Extract data: `' UNION SELECT 1,username FROM users--` and `' UNION SELECT 1,password FROM users--`
 
 ### Blind SQL Injection
 
-When the application does not display query results directly, union-based injection does not work. Blind SQL injection infers information from the application's behavior — typically whether the page loads successfully or returns an error.
+When the application does not display query results directly, union-based injection does not work. Blind SQL injection infers information from the application's behavior: typically whether the page loads successfully or returns an error.
 
 Boolean-based blind injection uses conditions that evaluate to true or false:
 
@@ -366,7 +366,7 @@ os.system(f"ping {host}")
 subprocess.run(["ping", "-c", "4", host], capture_output=True)
 ```
 
-Input validation is a secondary defense. Whitelist valid input patterns — if the host parameter should be an IP address, validate that it matches an IP address regex before using it. This prevents injection payloads from ever reaching the command construction.
+Input validation is a secondary defense. Whitelist valid input patterns: if the host parameter should be an IP address, validate that it matches an IP address regex before using it. This prevents injection payloads from ever reaching the command construction.
 
 For XXE, disable external entity processing in XML parsers:
 

@@ -1,8 +1,8 @@
-# Module 2 — Git and Version Control
+# Module 2: Git and Version Control
 
 ## Why Git Changed Everything
 
-Version control existed before Git. CVS, SVN, Mercurial, Perforce — they all solved the same fundamental problem: how do multiple people work on the same codebase without stepping on each other's toes. Git solved this differently, and the difference matters.
+Version control existed before Git. CVS, SVN, Mercurial, Perforce: they all solved the same fundamental problem: how do multiple people work on the same codebase without stepping on each other's toes. Git solved this differently, and the difference matters.
 
 Git is distributed. Every developer has a complete copy of the repository, including its full history. This means you can commit, branch, and merge offline. It means the server can die and any clone is a full backup. It means you can create cheap experimental branches without affecting anyone else.
 
@@ -12,17 +12,17 @@ The internal model matters: Git stores data as a directed acyclic graph of commi
 
 ## Branching Strategies
 
-The branching strategy you choose determines how your team collaborates, how releases are managed, and how bugs get fixed. There is no single "right" strategy — the choice depends on your release cadence, team size, and regulatory requirements.
+The branching strategy you choose determines how your team collaborates, how releases are managed, and how bugs get fixed. There is no single "right" strategy: the choice depends on your release cadence, team size, and regulatory requirements.
 
 ### Git Flow
 
 Git Flow is the classic strategy created by Vincent Driessen in 2010. It uses five branch types:
 
-- `main` (or `master`) — production-ready code
-- `develop` — integration branch for features
-- `feature/*` — individual feature branches
-- `release/*` — preparation for a release
-- `hotfix/*` — emergency production fixes
+- `main` (or `master`): production-ready code
+- `develop`: integration branch for features
+- `feature/*`: individual feature branches
+- `release/*`: preparation for a release
+- `hotfix/*`: emergency production fixes
 
 The flow works like this: developers branch off `develop` for new features, merge back to `develop` when done. When `develop` is ready for release, create a `release/*` branch, do final testing and version bumps, then merge to both `main` and `develop`. For hotfixes, branch off `main`, fix the bug, merge to both `main` and `develop`.
 
@@ -47,7 +47,7 @@ This is the strategy used by Google, Facebook, and most high-performing teams. I
 - Feature flags allow incomplete work to exist in production without being visible
 - Code review happens before merge, not after
 
-The risk is that broken code reaches `main`. This is mitigated by comprehensive automated tests, code review policies, and feature flags. The key practice is keeping branches short-lived — hours, not days.
+The risk is that broken code reaches `main`. This is mitigated by comprehensive automated tests, code review policies, and feature flags. The key practice is keeping branches short-lived: hours, not days.
 
 ```
 main:    A---B---C---D---E---F
@@ -127,7 +127,7 @@ You can also cherry-pick a range of commits:
 git cherry-pick abc1234..def5678
 ```
 
-Cherry-pick creates a new commit with the same changes but a different hash. It is not a copy — it is a replay. The changes are identical, but the commit history is different.
+Cherry-pick creates a new commit with the same changes but a different hash. It is not a copy: it is a replay. The changes are identical, but the commit history is different.
 
 ### Bisect
 
@@ -209,11 +209,11 @@ Git hooks are scripts that run automatically at specific points in the Git workf
 
 The most useful hooks:
 
-**pre-commit** — Runs before a commit is created. Use it to lint code, run tests, or check for secrets.
+**pre-commit**: Runs before a commit is created. Use it to lint code, run tests, or check for secrets.
 
-**commit-msg** — Runs after the commit message is entered. Use it to validate commit message format.
+**commit-msg**: Runs after the commit message is entered. Use it to validate commit message format.
 
-**pre-push** — Runs before pushing to a remote. Use it to run full test suites or check branch naming.
+**pre-push**: Runs before pushing to a remote. Use it to run full test suites or check branch naming.
 
 A `.pre-commit-config.yaml` file configures the pre-commit framework:
 
@@ -296,7 +296,7 @@ The force push succeeded because the repository did not have branch protection r
 
 Here is how they recovered:
 
-The first thing to understand is that `git push --force` does not delete commits — it makes them unreachable. The commits still exist in Git's object store. They just are not referenced by any branch. Git's garbage collector will eventually remove them, but "eventually" means days or weeks, depending on configuration.
+The first thing to understand is that `git push --force` does not delete commits: it makes them unreachable. The commits still exist in Git's object store. They just are not referenced by any branch. Git's garbage collector will eventually remove them, but "eventually" means days or weeks, depending on configuration.
 
 The recovery process:
 
@@ -356,7 +356,7 @@ while read local_ref local_sha remote_ref remote_sha; do
 done
 ```
 
-This story illustrates a fundamental principle: Git makes it hard to truly lose data, but the recovery process is stressful and time-consuming. Prevention is always better than recovery. Branch protection, code review, and CI checks are not bureaucracy — they are safety nets.
+This story illustrates a fundamental principle: Git makes it hard to truly lose data, but the recovery process is stressful and time-consuming. Prevention is always better than recovery. Branch protection, code review, and CI checks are not bureaucracy: they are safety nets.
 
 ## Advanced: Git Worktrees, Submodules, and Subtrees
 
@@ -432,13 +432,13 @@ Git aliases are shortcuts for frequently used commands. Define them in your `.gi
 ```
 
 The most useful aliases:
-- `git lg` — A visual branch graph that shows all branches and their relationships
-- `git last` — Show the last commit
-- `git amend` — Add staged changes to the last commit without changing the message
-- `git undo` — Undo the last commit without losing changes
-- `git wip` — Quick "work in progress" commit
+- `git lg`: A visual branch graph that shows all branches and their relationships
+- `git last`: Show the last commit
+- `git amend`: Add staged changes to the last commit without changing the message
+- `git undo`: Undo the last commit without losing changes
+- `git wip`: Quick "work in progress" commit
 
-Aliases save time and reduce typing errors. They are not just convenience — they enforce consistent workflows across the team.
+Aliases save time and reduce typing errors. They are not just convenience: they enforce consistent workflows across the team.
 
 ## Assessment
 

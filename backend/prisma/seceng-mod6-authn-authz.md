@@ -1,6 +1,6 @@
-# Module 6 — Authentication and Authorization
+# Module 6: Authentication and Authorization
 
-Authentication and authorization are the two most security-critical components of any application. Authentication answers "who are you?" and authorization answers "what are you allowed to do?" A flaw in either component can compromise the entire application, regardless of how secure every other component is. The history of security breaches is littered with incidents that began with authentication or authorization failures — credential stuffing attacks that gained access through weak passwords, session hijacking that stole legitimate users' sessions, and privilege escalation that turned regular users into administrators.
+Authentication and authorization are the two most security-critical components of any application. Authentication answers "who are you?" and authorization answers "what are you allowed to do?" A flaw in either component can compromise the entire application, regardless of how secure every other component is. The history of security breaches is littered with incidents that began with authentication or authorization failures: credential stuffing attacks that gained access through weak passwords, session hijacking that stole legitimate users' sessions, and privilege escalation that turned regular users into administrators.
 
 The technical implementation of authentication and authorization is well-understood. The challenges are in the details: generating secure tokens, managing session lifetimes, handling credential recovery, implementing multi-factor authentication correctly, and designing authorization models that are both expressive enough to handle real-world requirements and simple enough to verify and audit.
 
@@ -42,7 +42,7 @@ JSON Web Tokens (JWTs) are the most common token format used in modern applicati
 
 A JWT looks like this: `eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZXMiOlsidXNlciJdfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 
-The three parts are base64url-encoded. The header and payload are not encrypted — they are readable by anyone with the token. The signature ensures integrity but not confidentiality. If you need to protect the token contents, use JWE (JSON Web Encryption) instead of JWS (JSON Web Signature).
+The three parts are base64url-encoded. The header and payload are not encrypted: they are readable by anyone with the token. The signature ensures integrity but not confidentiality. If you need to protect the token contents, use JWE (JSON Web Encryption) instead of JWS (JSON Web Signature).
 
 ### Common Pitfalls
 
@@ -72,7 +72,7 @@ The limitation is scalability. Server-side sessions require shared state between
 
 Token-based sessions store all session data in the token itself. The server signs the token and sends it to the client. The client sends the token with each request, and the server validates the signature and extracts the session data without a database lookup.
 
-Token-based sessions are stateless and scalable — no shared state is required between application instances. They work well for microservices architectures where requests may be routed to any instance. They support cross-domain use cases because tokens are not domain-scoped.
+Token-based sessions are stateless and scalable: no shared state is required between application instances. They work well for microservices architectures where requests may be routed to any instance. They support cross-domain use cases because tokens are not domain-scoped.
 
 The limitation is revocation. Once a token is issued, it remains valid until it expires. If a user's permissions change or a token is compromised, the server cannot immediately invalidate it. Mitigation strategies include short token lifetimes, token blacklists (which reintroduce state), and refresh token rotation.
 
@@ -106,7 +106,7 @@ Authorization models define how permissions are structured and evaluated. The ch
 
 ### Role-Based Access Control (RBAC)
 
-RBAC assigns permissions to roles, and users are assigned to roles. A user's permissions are the union of all permissions assigned to their roles. RBAC is simple to implement and audit — you can list all roles, list all permissions per role, and verify that the authorization logic correctly evaluates roles.
+RBAC assigns permissions to roles, and users are assigned to roles. A user's permissions are the union of all permissions assigned to their roles. RBAC is simple to implement and audit: you can list all roles, list all permissions per role, and verify that the authorization logic correctly evaluates roles.
 
 The limitation of RBAC is that it cannot express context-dependent permissions. "User can access their own data" requires a role for every user, which is impractical. "User can access data only during business hours" is not expressible in standard RBAC. "Manager can approve requests for their direct reports" requires a role for every manager-report relationship.
 
@@ -187,7 +187,7 @@ The `hashlib.pbkdf2_hmac` function in Python uses PBKDF2, which is an acceptable
 
 ## Assessment
 
-**Lab 6.1 — OAuth 2.0 Implementation (60 minutes)**
+**Lab 6.1: OAuth 2.0 Implementation (60 minutes)**
 Implement an OAuth 2.0 authorization server that supports the authorization code flow with PKCE and the client credentials flow. The server must validate tokens, enforce expiration, and support token revocation. Test the implementation using a provided client application and verify that each flow works correctly and that common attacks (algorithm confusion, token replay, code interception) are prevented.
 
 **Grading criteria:**
@@ -197,7 +197,7 @@ Implement an OAuth 2.0 authorization server that supports the authorization code
 - Token revocation functionality (5 points)
 - Prevention of common attacks: algorithm confusion, token replay, code interception (10 points)
 
-**Lab 6.2 — JWT Security Analysis (45 minutes)**
+**Lab 6.2: JWT Security Analysis (45 minutes)**
 Analyze a set of 10 JWTs for security issues. For each token, identify whether the signature is valid, whether the algorithm is secure, whether the claims are appropriate, and whether the token has expired. For each vulnerability found, provide a specific attack scenario and a fix.
 
 **Grading criteria:**
@@ -206,7 +206,7 @@ Analyze a set of 10 JWTs for security issues. For each token, identify whether t
 - Specific attack scenarios for each issue (10 points)
 - Correct fixes for each issue (10 points)
 
-**Lab 6.3 — Authorization Model Design (45 minutes)**
+**Lab 6.3: Authorization Model Design (45 minutes)**
 Design an authorization model for a hospital information system using RBAC, ABAC, and ReBAC. The system must support: doctors accessing patient records in their department, nurses accessing patient records for patients under their care, administrators accessing system configuration, patients accessing their own records, and researchers accessing anonymized data. Compare the three models for this use case and recommend the best fit.
 
 **Grading criteria:**
@@ -218,11 +218,11 @@ Design an authorization model for a hospital information system using RBAC, ABAC
 
 ## Evidence
 
-Authentication and authorization are the gatekeepers of every application. A flaw in authentication means an attacker can become any user. A flaw in authorization means any user can do anything. These are the most impactful vulnerability classes because they bypass all other security controls — if the attacker can authenticate as an administrator, encryption, input validation, and network security are irrelevant.
+Authentication and authorization are the gatekeepers of every application. A flaw in authentication means an attacker can become any user. A flaw in authorization means any user can do anything. These are the most impactful vulnerability classes because they bypass all other security controls: if the attacker can authenticate as an administrator, encryption, input validation, and network security are irrelevant.
 
-The OAuth 2.0 flows in this module demonstrate why choosing the correct flow matters. The implicit flow, once standard for SPAs, is now deprecated because tokens were exposed to the browser. The authorization code flow with PKCE provides the same functionality without the security risks. The difference is not in the functionality but in the security properties — and understanding those properties is the core competency of security engineering.
+The OAuth 2.0 flows in this module demonstrate why choosing the correct flow matters. The implicit flow, once standard for SPAs, is now deprecated because tokens were exposed to the browser. The authorization code flow with PKCE provides the same functionality without the security risks. The difference is not in the functionality but in the security properties: and understanding those properties is the core competency of security engineering.
 
-JWTs are powerful but dangerous when misused. The common pitfalls in this module — algorithm confusion, key confusion, missing expiration, insecure storage — are not theoretical. They are regularly exploited in production systems. The fix is not to avoid JWTs but to implement them correctly using well-tested libraries and following the validation practices outlined here.
+JWTs are powerful but dangerous when misused. The common pitfalls in this module: algorithm confusion, key confusion, missing expiration, insecure storage: are not theoretical. They are regularly exploited in production systems. The fix is not to avoid JWTs but to implement them correctly using well-tested libraries and following the validation practices outlined here.
 
 MFA is the single most effective control against credential-based attacks. TOTP provides a significant security improvement with minimal user friction. WebAuthn provides the strongest available protection against phishing and credential theft. The investment in MFA is trivial compared to the cost of a credential-based breach.
 

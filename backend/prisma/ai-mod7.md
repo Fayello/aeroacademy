@@ -1,8 +1,8 @@
-# Module 7 — ML Ethics
+# Module 7: ML Ethics
 
 ## Models Make Decisions About People. That Requires Responsibility.
 
-A machine learning model does not just predict—it decides. A fraud model decides whether a transaction is legitimate. A hiring model decides whether a candidate gets an interview. A lending model decides whether someone gets a loan. These decisions have real consequences for real people, and when those decisions are biased, the consequences fall disproportionately on already marginalized groups.
+A machine learning model does not just predictit decides. A fraud model decides whether a transaction is legitimate. A hiring model decides whether a candidate gets an interview. A lending model decides whether someone gets a loan. These decisions have real consequences for real people, and when those decisions are biased, the consequences fall disproportionately on already marginalized groups.
 
 This module is not about abstract philosophical principles. It is about the concrete, measurable ways that bias enters ML systems, the statistical tools you use to detect it, and the practical techniques you apply to mitigate it. You will compute fairness metrics, identify sources of bias in data and features, and implement debiasing strategies that do not destroy model performance.
 
@@ -214,7 +214,7 @@ The impossibility theorem states that you cannot satisfy demographic parity, equ
 
 ## Sources of Bias in Features
 
-Even if you exclude sensitive features (gender, race) from the model, other features can serve as proxies. Zip code correlates with race. Job title correlates with gender. University attended correlates with socioeconomic status. Removing sensitive features does not remove bias—it just hides it.
+Even if you exclude sensitive features (gender, race) from the model, other features can serve as proxies. Zip code correlates with race. Job title correlates with gender. University attended correlates with socioeconomic status. Removing sensitive features does not remove biasit just hides it.
 
 ```python
 def compute_proxy_correlation(df, sensitive_col, feature_cols):
@@ -568,7 +568,7 @@ print(f"  DP disparity: {adjusted_fairness.demographic_parity()['disparity']:.4f
 print(f"  EO TPR disparity: {adjusted_fairness.equalized_odds()['tpr_disparity']:.4f}")
 ```
 
-Post-processing is model-agnostic—you can apply it to any model without retraining. The downside is that group-specific thresholds require knowing the sensitive attribute at inference time, which may not always be available or legal to collect.
+Post-processing is model-agnosticyou can apply it to any model without retraining. The downside is that group-specific thresholds require knowing the sensitive attribute at inference time, which may not always be available or legal to collect.
 
 ## Fairness-Accuracy Tradeoff
 
@@ -846,10 +846,10 @@ Write a fairness audit report for a deployed model.
 
 ## Evidence
 
-- `fairness_metrics.py` — Complete fairness metrics implementation with demographic parity, equalized odds, and predictive parity
-- `debiasing_methods.py` — Implementation of reweighting, adversarial debiasing, and threshold optimization
-- `fairness_audit.py` — Script that generates a complete fairness audit for any model-dataset pair
-- `proxy_detection.py` — Feature analysis for identifying proxy variables
-- `fairness_accuracy_tradeoff.csv` — Results of fairness-accuracy experiments across lambda values
-- `fairness_report_template.md` — Template for fairness audit reports
-- `fairness_audit_report.pdf` — Completed audit report for the hiring model
+- `fairness_metrics.py`: Complete fairness metrics implementation with demographic parity, equalized odds, and predictive parity
+- `debiasing_methods.py`: Implementation of reweighting, adversarial debiasing, and threshold optimization
+- `fairness_audit.py`: Script that generates a complete fairness audit for any model-dataset pair
+- `proxy_detection.py`: Feature analysis for identifying proxy variables
+- `fairness_accuracy_tradeoff.csv`: Results of fairness-accuracy experiments across lambda values
+- `fairness_report_template.md`: Template for fairness audit reports
+- `fairness_audit_report.pdf`: Completed audit report for the hiring model

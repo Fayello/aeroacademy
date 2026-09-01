@@ -1,4 +1,4 @@
-# Module 10 — Modern Attack Surfaces
+# Module 10: Modern Attack Surfaces
 
 Modern web applications have expanded beyond traditional HTTP request/response patterns. WebSockets provide real-time bidirectional communication. Supply chain attacks target the dependencies that applications import. Template engines execute server-side logic that can be exploited. JavaScript prototypal inheritance creates prototype pollution vulnerabilities. Deserialization of untrusted data enables remote code execution. These attack surfaces are newer, less understood, and often overlooked in traditional security assessments.
 
@@ -55,7 +55,7 @@ ws.onmessage = function(event) {
 
 The victim must visit the attacker's page while authenticated to the target. The WebSocket connection inherits the victim's cookies, and the server treats it as an authenticated session.
 
-**Defense**: Validate the Origin header during the WebSocket handshake. Use CSRF tokens in the initial HTTP upgrade request. Do not rely solely on cookies for WebSocket authentication — use tokens in the first message or as a query parameter that is validated before the handshake completes.
+**Defense**: Validate the Origin header during the WebSocket handshake. Use CSRF tokens in the initial HTTP upgrade request. Do not rely solely on cookies for WebSocket authentication: use tokens in the first message or as a query parameter that is validated before the handshake completes.
 
 ### WebSocket Injection
 
@@ -91,7 +91,7 @@ wscat -c wss://app.example.com/ws -x "AAAA...AAAA" --connect-rate 1000
 
 ## Supply Chain Attacks
 
-Supply chain attacks target the software supply chain — the dependencies, packages, and tools that applications use. Instead of attacking the application directly, the attacker compromises a component that the application trusts.
+Supply chain attacks target the software supply chain: the dependencies, packages, and tools that applications use. Instead of attacking the application directly, the attacker compromises a component that the application trusts.
 
 ### Dependency Confusion
 
@@ -198,7 +198,7 @@ def greet():
     return render_template_string(f'Hello, {name}!')
 ```
 
-If the name parameter is `{{ 7*7 }}`, the response is "Hello, 49!" — the template engine evaluated the expression.
+If the name parameter is `{{ 7*7 }}`, the response is "Hello, 49!": the template engine evaluated the expression.
 
 To achieve code execution:
 
@@ -326,7 +326,7 @@ const obj = new (obj.constructor)(); // TypeError
 
 ### Prototype Pollution Gadgets
 
-Prototype pollution becomes exploitable through "gadget" functions — existing code that processes polluted properties in dangerous ways:
+Prototype pollution becomes exploitable through "gadget" functions: existing code that processes polluted properties in dangerous ways:
 
 **jQuery (CVE-2019-11358)**: jQuery's `$.extend()` function merges objects recursively, including `__proto__`. If the application uses jQuery and another vulnerability allows setting properties, the polluted prototype can trigger XSS or code execution.
 
@@ -355,7 +355,7 @@ ObjectInputStream ois = new ObjectInputStream(request.getInputStream());
 Object obj = ois.readObject(); // Deserializes untrusted data
 ```
 
-The attacker crafts a serialized object that, when deserialized, executes arbitrary code. The payload uses "gadget chains" — sequences of existing classes that, when deserialized, execute unintended operations:
+The attacker crafts a serialized object that, when deserialized, executes arbitrary code. The payload uses "gadget chains": sequences of existing classes that, when deserialized, execute unintended operations:
 
 **Common gadget chains**:
 

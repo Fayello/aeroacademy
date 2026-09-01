@@ -1,10 +1,10 @@
-# Module 8 — Disk Forensics
+# Module 8: Disk Forensics
 
-Disk forensics is the analysis of storage media to recover evidence of attacker activity. While memory forensics captures the live state of a system, disk forensics captures the persistent state — files, registry entries, logs, and metadata that survive reboots. Disk forensics is where you find deleted files, recover evidence of lateral movement, analyze persistence mechanisms, and build timelines of attacker activity. This module covers disk imaging tools, file recovery techniques, Windows registry analysis, and timeline construction.
+Disk forensics is the analysis of storage media to recover evidence of attacker activity. While memory forensics captures the live state of a system, disk forensics captures the persistent state: files, registry entries, logs, and metadata that survive reboots. Disk forensics is where you find deleted files, recover evidence of lateral movement, analyze persistence mechanisms, and build timelines of attacker activity. This module covers disk imaging tools, file recovery techniques, Windows registry analysis, and timeline construction.
 
 ## Disk Imaging Tools
 
-Forensic disk imaging creates a bit-for-bit copy of storage media. The image preserves everything — including deleted files, file system metadata, and unallocated space. Several tools are available for creating forensic images.
+Forensic disk imaging creates a bit-for-bit copy of storage media. The image preserves everything: including deleted files, file system metadata, and unallocated space. Several tools are available for creating forensic images.
 
 ### FTK Imager
 
@@ -105,7 +105,7 @@ foremost -i /path/to/image.raw -o /path/to/output/
 
 **PhotoRec** is a file carving tool designed for recovering lost files from digital cameras, hard disks, and other storage media. It works at the block level and can recover files even when the file system is severely damaged.
 
-File carving has limitations. It cannot recover file metadata — names, paths, and timestamps are lost. Fragmented files may not be recovered completely because the carver cannot guarantee that the fragments are contiguous on disk. Despite these limitations, file carving is an essential technique for recovering evidence that file system analysis alone cannot find.
+File carving has limitations. It cannot recover file metadata: names, paths, and timestamps are lost. Fragmented files may not be recovered completely because the carver cannot guarantee that the fragments are contiguous on disk. Despite these limitations, file carving is an essential technique for recovering evidence that file system analysis alone cannot find.
 
 ### Slack Space Analysis
 
@@ -121,7 +121,7 @@ Forensic tools can scan unallocated space for file signatures, text strings, and
 
 Unallocated space analysis is particularly valuable because it captures evidence across the entire history of the disk. A file that was created, modified, and deleted months ago may still have remnants in unallocated space if the clusters have not been reused. This makes unallocated space analysis essential for recovering evidence of historical attacker activity.
 
-The challenge with unallocated space analysis is volume. Unallocated space on a modern hard drive can be hundreds of gigabytes. Scanning this volume requires significant processing time and produces large amounts of output. Effective analysis requires filtering and prioritization — focusing on known file types, specific time periods, or particular patterns of interest.
+The challenge with unallocated space analysis is volume. Unallocated space on a modern hard drive can be hundreds of gigabytes. Scanning this volume requires significant processing time and produces large amounts of output. Effective analysis requires filtering and prioritization: focusing on known file types, specific time periods, or particular patterns of interest.
 
 ## Registry Analysis (Windows)
 
@@ -142,30 +142,30 @@ The registry is organized into hives, each stored as a separate file:
 
 **Persistence locations:**
 
-- `HKLM\Software\Microsoft\Windows\CurrentVersion\Run` — Programs that run at logon
-- `HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce` — Programs that run once at logon
-- `HKLM\Software\Microsoft\Windows\CurrentVersion\RunServices` — Services that run at startup
-- `HKLM\SYSTEM\CurrentControlSet\Services` — Installed services
-- `HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon` — Logon settings, including `Shell` and `Userinit`
+- `HKLM\Software\Microsoft\Windows\CurrentVersion\Run`: Programs that run at logon
+- `HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce`: Programs that run once at logon
+- `HKLM\Software\Microsoft\Windows\CurrentVersion\RunServices`: Services that run at startup
+- `HKLM\SYSTEM\CurrentControlSet\Services`: Installed services
+- `HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon`: Logon settings, including `Shell` and `Userinit`
 
 **User activity locations:**
 
-- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs` — Recently opened documents
-- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths` — URLs typed in Explorer
-- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU` — Run dialog history
-- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedCommands` — Command history
+- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs`: Recently opened documents
+- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths`: URLs typed in Explorer
+- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU`: Run dialog history
+- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedCommands`: Command history
 
 **Network configuration locations:**
 
-- `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces` — Network interface configuration
-- `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters` — DNS configuration
-- `HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures` — Known networks
+- `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces`: Network interface configuration
+- `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters`: DNS configuration
+- `HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\Signatures`: Known networks
 
 **USB device history:**
 
-- `HKLM\SYSTEM\CurrentControlSet\Enum\USB` — USB device enumeration
-- `HKLM\SYSTEM\CurrentControlSet\Enum\USBSTOR` — USB storage device enumeration
-- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2` — Mounted USB devices
+- `HKLM\SYSTEM\CurrentControlSet\Enum\USB`: USB device enumeration
+- `HKLM\SYSTEM\CurrentControlSet\Enum\USBSTOR`: USB storage device enumeration
+- `NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2`: Mounted USB devices
 
 ### Registry Analysis Tools
 
@@ -216,7 +216,7 @@ Every file system, registry, and log file contains timestamps. Collecting and co
 
 The timeline building process:
 
-1. **Collect timestamps.** Extract timestamps from all relevant sources — file system, registry, logs, and other artifacts.
+1. **Collect timestamps.** Extract timestamps from all relevant sources: file system, registry, logs, and other artifacts.
 
 2. **Normalize timestamps.** Convert all timestamps to a common format and timezone. UTC is the standard for forensic timelines.
 
@@ -240,13 +240,13 @@ The timeline building process:
 
 On a Monday morning, the security operations center received an alert from the EDR agent on a workstation in the marketing department. The alert indicated that a suspicious PowerShell script had been executed. The analyst triaged the alert and classified it as High severity because the script had downloaded additional files from an external URL.
 
-The IR team decided to conduct a forensic investigation of the workstation. The forensic analyst collected volatile data first — RAM dump, running processes, and network connections. Then the analyst created a forensic image of the workstation's hard drive.
+The IR team decided to conduct a forensic investigation of the workstation. The forensic analyst collected volatile data first: RAM dump, running processes, and network connections. Then the analyst created a forensic image of the workstation's hard drive.
 
 The disk forensic analysis revealed:
 
 **Deleted files:** The analyst used foremost to carve deleted files from unallocated space. Several deleted files were recovered, including a PowerShell script that contained Base64-encoded commands, a batch file that established persistence through a scheduled task, and a text file containing what appeared to be a list of network hosts.
 
-**Registry analysis:** The analyst used Registry Explorer to examine the workstation's registry hives. The `Run` key contained an entry pointing to a batch file in the `AppData\Temp` directory — a persistence mechanism. The `RecentDocs` key showed that the attacker had accessed files related to the company's financial data. The USB device history showed that a USB drive had been connected to the workstation two days before the alert — this was likely the initial infection vector.
+**Registry analysis:** The analyst used Registry Explorer to examine the workstation's registry hives. The `Run` key contained an entry pointing to a batch file in the `AppData\Temp` directory: a persistence mechanism. The `RecentDocs` key showed that the attacker had accessed files related to the company's financial data. The USB device history showed that a USB drive had been connected to the workstation two days before the alert: this was likely the initial infection vector.
 
 **Timeline analysis:** The analyst used Log2Timeline/Plaso to build a timeline of the attacker's activity. The timeline showed:
 
@@ -266,7 +266,7 @@ The investigation identified:
 
 - **Initial infection vector:** USB drive containing malicious PowerShell script
 - **Persistence mechanism:** Scheduled task pointing to batch file in AppData\Temp
-- **Lateral movement:** None — attacker stayed on the single workstation
+- **Lateral movement:** None: attacker stayed on the single workstation
 - **Data access:** Financial data files accessed over four days
 - **Data exfiltration:** Approximately 50 MB of data transferred to external server
 - **Attacker tools:** Python-based reverse shell, custom PowerShell scripts
@@ -352,9 +352,9 @@ You are given a forensic image of a Windows system. Your task is to analyze the 
 
 ### Key Concepts
 
-- **Disk Forensics:** Analysis of storage media to recover evidence — deleted files, file system metadata, and unallocated space
+- **Disk Forensics:** Analysis of storage media to recover evidence: deleted files, file system metadata, and unallocated space
 - **File Recovery:** Recovering deleted files through file system analysis (MFT, inode analysis) or file carving (header/footer scanning)
-- **Slack Space:** Unused space between file end and cluster end — may contain remnants of deleted files
+- **Slack Space:** Unused space between file end and cluster end: may contain remnants of deleted files
 - **Registry Analysis:** Examining Windows registry for persistence mechanisms, user activity, network configuration, and device history
 - **Timeline Analysis:** Correlating timestamps from multiple sources to reconstruct the sequence of events
 

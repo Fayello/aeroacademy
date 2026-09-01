@@ -1,20 +1,20 @@
-# Module 10 — API Gateway
+# Module 10: API Gateway
 
 An API gateway is a single entry point for all client requests. It sits between the client and your backend services, handling cross-cutting concerns like rate limiting, authentication, caching, logging, and request routing. Without a gateway, every backend service must implement these concerns independently, leading to duplication, inconsistency, and security gaps.
 
 Think of the API gateway as the front desk of a hotel. Guests (clients) do not go directly to individual rooms (services). They go to the front desk, which handles check-in (authentication), key cards (authorization), billing (rate limiting), and directing guests to the right room (routing). The front desk also keeps a log of who entered which room and when (monitoring).
 
-This module covers the core capabilities of an API gateway — rate limiting, caching, monitoring, request routing, and security enforcement — and walks through implementing a gateway for a real system.
+This module covers the core capabilities of an API gateway: rate limiting, caching, monitoring, request routing, and security enforcement: and walks through implementing a gateway for a real system.
 
 ## Why You Need a Gateway
 
 Consider a flight training platform with these backend services:
-- **Pilot service** — manages pilot profiles and certifications
-- **Aircraft service** — manages the aircraft fleet
-- **Training service** — manages training sessions and scheduling
-- **Flight log service** — records completed flights
-- **Billing service** — handles subscriptions and payments
-- **Notification service** — sends emails and push notifications
+- **Pilot service**: manages pilot profiles and certifications
+- **Aircraft service**: manages the aircraft fleet
+- **Training service**: manages training sessions and scheduling
+- **Flight log service**: records completed flights
+- **Billing service**: handles subscriptions and payments
+- **Notification service**: sends emails and push notifications
 
 Without a gateway, each client (web app, mobile app, third-party integration) must know the URL of each service and call them directly:
 
@@ -517,11 +517,11 @@ Each service records its processing time and passes the trace ID to the next ser
 
 Set up alerts for gateway metrics:
 
-- **Error rate spike** — Alert if the 5xx error rate exceeds 5% for 5 minutes
-- **Latency degradation** — Alert if p95 latency exceeds 1 second for 5 minutes
-- **Rate limit abuse** — Alert if a single client exceeds rate limits more than 10 times per minute
-- **Backend failure** — Alert if a backend service returns more than 50% errors
-- **Certificate expiry** — Alert if TLS certificates expire within 30 days
+- **Error rate spike**: Alert if the 5xx error rate exceeds 5% for 5 minutes
+- **Latency degradation**: Alert if p95 latency exceeds 1 second for 5 minutes
+- **Rate limit abuse**: Alert if a single client exceeds rate limits more than 10 times per minute
+- **Backend failure**: Alert if a backend service returns more than 50% errors
+- **Certificate expiry**: Alert if TLS certificates expire within 30 days
 
 ## Security Features
 
@@ -592,11 +592,11 @@ cors:
 
 The gateway provides basic DDoS protection through:
 
-- **Rate limiting** — Limits the number of requests per client
-- **Connection limiting** — Limits the number of concurrent connections per IP
-- **Request size limits** — Rejects oversized requests
-- **IP blocklisting** — Blocks known malicious IPs
-- **Geographic filtering** — Blocks requests from unexpected regions
+- **Rate limiting**: Limits the number of requests per client
+- **Connection limiting**: Limits the number of concurrent connections per IP
+- **Request size limits**: Rejects oversized requests
+- **IP blocklisting**: Blocks known malicious IPs
+- **Geographic filtering**: Blocks requests from unexpected regions
 
 ### Security Headers
 
@@ -662,21 +662,21 @@ plugins:
 
 ### Managed Gateways
 
-**AWS API Gateway** — Fully managed service with built-in rate limiting, caching, authentication, and monitoring. Integrates with Lambda, EC2, and other AWS services.
+**AWS API Gateway**: Fully managed service with built-in rate limiting, caching, authentication, and monitoring. Integrates with Lambda, EC2, and other AWS services.
 
-**Kong Gateway** — Open-source gateway with a plugin architecture. Runs on NGINX and provides rate limiting, authentication, logging, and transformation plugins.
+**Kong Gateway**: Open-source gateway with a plugin architecture. Runs on NGINX and provides rate limiting, authentication, logging, and transformation plugins.
 
-**Tyk** — Open-source gateway with a dashboard for configuration. Supports rate limiting, authentication, analytics, and developer portal.
+**Tyk**: Open-source gateway with a dashboard for configuration. Supports rate limiting, authentication, analytics, and developer portal.
 
-**Apigee** — Google's API management platform. Provides rate limiting, caching, security, and analytics.
+**Apigee**: Google's API management platform. Provides rate limiting, caching, security, and analytics.
 
 ### Self-Hosted Gateways
 
-**NGINX** — High-performance reverse proxy with rate limiting, caching, and load balancing. Requires Lua scripting for advanced features.
+**NGINX**: High-performance reverse proxy with rate limiting, caching, and load balancing. Requires Lua scripting for advanced features.
 
-**Traefik** — Cloud-native reverse proxy with automatic service discovery. Integrates with Docker, Kubernetes, and Consul.
+**Traefik**: Cloud-native reverse proxy with automatic service discovery. Integrates with Docker, Kubernetes, and Consul.
 
-**Envoy** — High-performance L4/L7 proxy designed for cloud-native applications. Provides observability, rate limiting, and load balancing.
+**Envoy**: High-performance L4/L7 proxy designed for cloud-native applications. Provides observability, rate limiting, and load balancing.
 
 ### Gateway Comparison
 

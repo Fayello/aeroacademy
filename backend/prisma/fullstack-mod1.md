@@ -1,16 +1,16 @@
-# Module 1 — JavaScript Fundamentals
+# Module 1: JavaScript Fundamentals
 
-JavaScript is the language that powers the modern web, but most developers only scratch the surface of what it can do. This module takes you from "I know how to write functions" to "I understand exactly why my async code is behaving unexpectedly." We will dig into the mechanisms that make JavaScript unique — its scoping rules, its event loop, its asynchronous model — and by the end, you will be able to read any JavaScript codebase and predict exactly how it will execute.
+JavaScript is the language that powers the modern web, but most developers only scratch the surface of what it can do. This module takes you from "I know how to write functions" to "I understand exactly why my async code is behaving unexpectedly." We will dig into the mechanisms that make JavaScript unique: its scoping rules, its event loop, its asynchronous model: and by the end, you will be able to read any JavaScript codebase and predict exactly how it will execute.
 
 ## Why JavaScript Fundamentals Matter
 
-Every bug you will ever debug in a full-stack application traces back to a misunderstanding of how JavaScript works at its core. A variable that is `undefined` when you expected a value, a function that runs before the line that declares it, a promise that resolves after you have already moved on — these are not quirks. They are predictable behaviors governed by rules you can learn.
+Every bug you will ever debug in a full-stack application traces back to a misunderstanding of how JavaScript works at its core. A variable that is `undefined` when you expected a value, a function that runs before the line that declares it, a promise that resolves after you have already moved on: these are not quirks. They are predictable behaviors governed by rules you can learn.
 
-The difference between a junior and a senior JavaScript developer is not the number of frameworks they know. It is the depth of their understanding of the language itself. When a React component re-renders unexpectedly, when an Express middleware does not catch an error, when a database callback fires at the wrong time — the answer is always in the fundamentals.
+The difference between a junior and a senior JavaScript developer is not the number of frameworks they know. It is the depth of their understanding of the language itself. When a React component re-renders unexpectedly, when an Express middleware does not catch an error, when a database callback fires at the wrong time: the answer is always in the fundamentals.
 
 JavaScript is the most widely used programming language in the world. It runs in browsers, on servers, in mobile apps, in desktop applications, and even in embedded devices. This ubiquity means that the fundamentals apply everywhere. Understanding closures helps you write React hooks. Understanding the event loop helps you debug Express middleware. Understanding promises helps you write reliable database queries. The time you invest in learning the fundamentals pays dividends across every technology you will ever use.
 
-The language has evolved significantly since its creation in 1995. Modern JavaScript (ES6+) introduced classes, arrow functions, template literals, destructuring, spread operators, modules, promises, async/await, and many other features that make the language more expressive and less error-prone. These features are not optional — they are the standard way JavaScript is written today. If you are still writing `var` and callback functions, you are making your code harder to read and more likely to contain bugs.
+The language has evolved significantly since its creation in 1995. Modern JavaScript (ES6+) introduced classes, arrow functions, template literals, destructuring, spread operators, modules, promises, async/await, and many other features that make the language more expressive and less error-prone. These features are not optional: they are the standard way JavaScript is written today. If you are still writing `var` and callback functions, you are making your code harder to read and more likely to contain bugs.
 
 ## Variables, Scope, and Hoisting
 
@@ -31,8 +31,8 @@ function countOccurrences(items) {
       counts[item] = 1;
     }
   }
-  console.log(i); // undefined? No — i is accessible here and equals items.length
-  console.log(item); // also accessible — the last item value
+  console.log(i); // undefined? No: i is accessible here and equals items.length
+  console.log(item); // also accessible: the last item value
   return counts;
 }
 ```
@@ -51,7 +51,7 @@ function processQueue(tasks) {
       console.log(`Processing task ${i}: ${task.name}`);
     }, 100 * i);
   }
-  // i is not accessible here — ReferenceError
+  // i is not accessible here: ReferenceError
 }
 ```
 
@@ -61,8 +61,8 @@ This is exactly why `let` was introduced. The `setTimeout` callback captures the
 
 ```javascript
 const config = { timeout: 5000 };
-config.timeout = 10000; // This works — the object is mutable
-config = {}; // TypeError — cannot reassign the binding
+config.timeout = 10000; // This works: the object is mutable
+config = {}; // TypeError: cannot reassign the binding
 ```
 
 Use `const` by default. Switch to `let` only when you need to reassign. Never use `var` in new code.
@@ -73,7 +73,7 @@ JavaScript moves declarations to the top of their scope during compilation, but 
 
 ```javascript
 function example() {
-  console.log(name); // undefined — not ReferenceError
+  console.log(name); // undefined: not ReferenceError
   var name = "Alice";
   console.log(name); // "Alice"
 }
@@ -94,7 +94,7 @@ The period between the start of the scope and the declaration is called the "tem
 
 ## Closures
 
-A closure is a function that remembers the variables from the scope where it was created, even after that scope has finished executing. This is not an advanced concept — it is a core mechanism that you use every time you write a callback.
+A closure is a function that remembers the variables from the scope where it was created, even after that scope has finished executing. This is not an advanced concept: it is a core mechanism that you use every time you write a callback.
 
 ### How Closures Work
 
@@ -114,7 +114,7 @@ console.log(counter.increment()); // 2
 console.log(counter.getValue()); // 2
 ```
 
-When `createCounter` returns, its execution context is destroyed. But the returned methods still have access to `count` because they form closures over that variable. The `count` variable does not exist in the global scope — it exists in the closure's scope chain.
+When `createCounter` returns, its execution context is destroyed. But the returned methods still have access to `count` because they form closures over that variable. The `count` variable does not exist in the global scope: it exists in the closure's scope chain.
 
 ### Closures in Loops
 
@@ -191,7 +191,7 @@ const account = createBankAccount("Alice", 1000);
 account.deposit(500);
 account.withdraw(200);
 console.log(account.getBalance()); // 1300
-// account.balance is undefined — it is private
+// account.balance is undefined: it is private
 ```
 
 This pattern is the foundation for many JavaScript libraries and frameworks. React hooks use closures to maintain state. Express middleware uses closures to share configuration. Database drivers use closures to manage connection state.
@@ -219,7 +219,7 @@ function fetchUserPosts(userId, callback) {
 }
 ```
 
-This is the "callback hell" — nested callbacks that make code hard to read, hard to debug, and hard to error-handle. Each level adds indentation and another error check.
+This is the "callback hell": nested callbacks that make code hard to read, hard to debug, and hard to error-handle. Each level adds indentation and another error check.
 
 ### Promises
 
@@ -265,12 +265,12 @@ When you need to run multiple asynchronous operations in parallel:
 ```javascript
 const userIds = [1, 2, 3, 4, 5];
 
-// Wait for all — fails fast
+// Wait for all: fails fast
 Promise.all(userIds.map(id => fetchUser(id)))
   .then(users => console.log("All users:", users))
   .catch(error => console.error("One failed:", error));
 
-// Wait for all — reports individual results
+// Wait for all: reports individual results
 Promise.allSettled(userIds.map(id => fetchUser(id)))
   .then(results => {
     results.forEach((result, index) => {
@@ -315,7 +315,7 @@ The `async` keyword before the function means it always returns a promise. The `
 A common mistake is writing sequential awaits when you could run things in parallel:
 
 ```javascript
-// Slow — sequential
+// Slow: sequential
 async function getDashboardSlow(userId) {
   const user = await fetchUser(userId);      // 200ms
   const posts = await fetchPosts(userId);    // 300ms
@@ -323,7 +323,7 @@ async function getDashboardSlow(userId) {
   return { user, posts, notifications };     // Total: 650ms
 }
 
-// Fast — parallel
+// Fast: parallel
 async function getDashboardFast(userId) {
   const [user, posts, notifications] = await Promise.all([
     fetchUser(userId),
@@ -334,7 +334,7 @@ async function getDashboardFast(userId) {
 }
 ```
 
-The sequential version waits for each request to complete before starting the next. The parallel version starts all three at once and waits for the slowest one. This is not a micro-optimization — it is a fundamental performance pattern.
+The sequential version waits for each request to complete before starting the next. The parallel version starts all three at once and waits for the slowest one. This is not a micro-optimization: it is a fundamental performance pattern.
 
 ### Error Handling Patterns
 
@@ -368,7 +368,7 @@ This Go-style error handling pattern makes it easy to handle errors at each step
 
 ## The Event Loop
 
-JavaScript is single-threaded, but it can handle thousands of concurrent operations. This is possible because of the event loop — the mechanism that manages the execution of asynchronous code.
+JavaScript is single-threaded, but it can handle thousands of concurrent operations. This is possible because of the event loop: the mechanism that manages the execution of asynchronous code.
 
 ### How the Event Loop Works
 
@@ -391,12 +391,12 @@ console.log("4");
 Output: `1, 4, 3, 2`
 
 Here is why:
-1. `console.log("1")` runs synchronously — prints `1`
-2. `setTimeout` schedules a callback in the macro-task queue — not executed yet
-3. `Promise.resolve().then()` schedules a callback in the micro-task queue — not executed yet
-4. `console.log("4")` runs synchronously — prints `4`
-5. The call stack is now empty. The event loop processes micro-tasks first — prints `3`
-6. Then it processes macro-tasks — prints `2`
+1. `console.log("1")` runs synchronously: prints `1`
+2. `setTimeout` schedules a callback in the macro-task queue: not executed yet
+3. `Promise.resolve().then()` schedules a callback in the micro-task queue: not executed yet
+4. `console.log("4")` runs synchronously: prints `4`
+5. The call stack is now empty. The event loop processes micro-tasks first: prints `3`
+6. Then it processes macro-tasks: prints `2`
 
 ### Micro-tasks vs Macro-tasks
 
@@ -427,7 +427,7 @@ The event loop model means that a long-running synchronous operation blocks ever
 function expensiveComputation() {
   const start = Date.now();
   while (Date.now() - start < 5000) {
-    // Busy wait — blocks the call stack
+    // Busy wait: blocks the call stack
   }
   return "Done";
 }
@@ -470,11 +470,11 @@ const { profile: { firstName, lastName } } = user;
 ### Spread and Rest
 
 ```javascript
-// Spread — expand arrays/objects
+// Spread: expand arrays/objects
 const newUser = { ...existingUser, name: "Alice", role: "admin" };
 const mergedArrays = [...array1, ...array2];
 
-// Rest — collect remaining elements
+// Rest: collect remaining elements
 function logFirst(first, ...others) {
   console.log("First:", first);
   console.log("Rest:", others);
@@ -490,7 +490,7 @@ const [head, ...tail] = [1, 2, 3, 4];
 ```javascript
 const message = `Hello, ${user.name}! You have ${unreadCount} unread messages.`;
 
-// Tagged templates — useful for SQL query builders
+// Tagged templates: useful for SQL query builders
 function sql(strings, ...values) {
   return strings.reduce((result, str, i) => {
     const value = values[i] !== undefined ? values[i] : "";
@@ -504,12 +504,12 @@ const query = sql`SELECT * FROM users WHERE id = ${userId} AND status = ${status
 ### Optional Chaining and Nullish Coalescing
 
 ```javascript
-// Optional chaining — safely access nested properties
+// Optional chaining: safely access nested properties
 const street = user?.address?.street;
 const firstItem = array?.[0]?.name;
 const result = callback?.();
 
-// Nullish coalescing — default values for null/undefined
+// Nullish coalescing: default values for null/undefined
 const port = config.port ?? 3000;
 // ?? only triggers for null/undefined, not for 0 or ""
 const name = user.name ?? "Anonymous";
@@ -518,23 +518,23 @@ const name = user.name ?? "Anonymous";
 ### Array Methods
 
 ```javascript
-// map — transform each element
+// map: transform each element
 const names = users.map(user => user.name);
 
-// filter — keep elements that pass a test
+// filter: keep elements that pass a test
 const activeUsers = users.filter(user => user.isActive);
 
-// reduce — accumulate into a single value
+// reduce: accumulate into a single value
 const total = orders.reduce((sum, order) => sum + order.amount, 0);
 
-// find — get first matching element
+// find: get first matching element
 const admin = users.find(user => user.role === "admin");
 
-// some/every — test conditions
+// some/every: test conditions
 const hasAdmin = users.some(user => user.role === "admin");
 const allActive = users.every(user => user.isActive);
 
-// flatMap — map then flatten one level
+// flatMap: map then flatten one level
 const allTags = posts.flatMap(post => post.tags);
 ```
 
@@ -600,11 +600,11 @@ app.get("/api/users/:id/orders", async (req, res) => {
 });
 ```
 
-The fix is straightforward: use `await` on the database query. Mongoose queries are thenables, so they work with `await`. This makes the code sequential — the function waits for the query to complete before sending the response.
+The fix is straightforward: use `await` on the database query. Mongoose queries are thenables, so they work with `await`. This makes the code sequential: the function waits for the query to complete before sending the response.
 
 ### The Takeaway
 
-The event loop is always running. When you forget to `await` an asynchronous operation, the code continues executing before the operation completes. This is not a bug in JavaScript — it is the intended behavior. Your job is to make sure you are waiting for the right things at the right time.
+The event loop is always running. When you forget to `await` an asynchronous operation, the code continues executing before the operation completes. This is not a bug in JavaScript: it is the intended behavior. Your job is to make sure you are waiting for the right things at the right time.
 
 ## Assessment
 

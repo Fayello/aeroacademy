@@ -1,6 +1,6 @@
-# Module 9 — Governance Attacks
+# Module 9: Governance Attacks
 
-Decentralized governance is the mechanism by which communities make collective decisions about protocol upgrades, parameter changes, and treasury spending. Governance tokens give holders voting power proportional to their holdings. When governance is secure, it enables decentralized coordination. When governance is vulnerable, it becomes an attack vector — allowing a single actor to seize control of a protocol worth hundreds of millions of dollars. This module covers voting mechanisms, governance attack vectors, real exploits, and the defenses that protect decentralized governance.
+Decentralized governance is the mechanism by which communities make collective decisions about protocol upgrades, parameter changes, and treasury spending. Governance tokens give holders voting power proportional to their holdings. When governance is secure, it enables decentralized coordination. When governance is vulnerable, it becomes an attack vector: allowing a single actor to seize control of a protocol worth hundreds of millions of dollars. This module covers voting mechanisms, governance attack vectors, real exploits, and the defenses that protect decentralized governance.
 
 ## Governance Mechanisms
 
@@ -61,7 +61,7 @@ contract SimpleGovernance {
 }
 ```
 
-Token-weighted voting is simple and aligns incentives — those with the most tokens have the most at stake. However, it is plutocratic: a single wealthy holder can dominate governance. This is acceptable for some protocols but problematic for others that aim for broader participation.
+Token-weighted voting is simple and aligns incentives: those with the most tokens have the most at stake. However, it is plutocratic: a single wealthy holder can dominate governance. This is acceptable for some protocols but problematic for others that aim for broader participation.
 
 ### Quadratic Voting
 
@@ -319,7 +319,7 @@ contract MyGovernor is Governor, GovernorVotes, GovernorTimelockControl {
 }
 ```
 
-Governor contracts provide battle-tested governance infrastructure, but they still require careful configuration. The parameters — voting delay, voting period, quorum threshold, and timelock duration — must be calibrated for the specific protocol's needs.
+Governor contracts provide battle-tested governance infrastructure, but they still require careful configuration. The parameters: voting delay, voting period, quorum threshold, and timelock duration: must be calibrated for the specific protocol's needs.
 
 ## Real Scenarios
 
@@ -338,7 +338,7 @@ The attacker:
 **Total cost:** Flash loan fee (~0.09% of 5M tokens).
 **Total profit:** 1,000 ETH.
 
-This attack has been demonstrated in practice. In 2022, Beanstalk Finance lost $182 million through a flash loan governance attack. The attacker acquired 79% of governance voting power through flash loans, passed a proposal to transfer treasury funds to their address, and repaid the flash loan — all in a single transaction.
+This attack has been demonstrated in practice. In 2022, Beanstalk Finance lost $182 million through a flash loan governance attack. The attacker acquired 79% of governance voting power through flash loans, passed a proposal to transfer treasury funds to their address, and repaid the flash loan: all in a single transaction.
 
 ### Scenario 2: Gradual Governance Takeover
 
@@ -369,7 +369,7 @@ A protocol allows vote delegation. An attacker:
 
 ### Scenario 4: Governance Griefing
 
-An attacker does not want to steal funds — they want to disrupt governance. They:
+An attacker does not want to steal funds: they want to disrupt governance. They:
 
 1. Submit dozens of spam proposals with confusing titles.
 2. Legitimate proposals get buried in the noise.
@@ -377,7 +377,7 @@ An attacker does not want to steal funds — they want to disrupt governance. Th
 4. Quorum requirements cannot be met.
 5. No legitimate proposals can pass.
 
-This attack is cheap to execute because proposal submission typically costs only gas. The attacker does not need to acquire governance tokens — they just need to create confusion and frustration.
+This attack is cheap to execute because proposal submission typically costs only gas. The attacker does not need to acquire governance tokens: they just need to create confusion and frustration.
 
 **Mitigation:** Require a minimum token stake to submit proposals. Implement proposal deposit that is returned only if the proposal reaches quorum. Use a proposal sponsor system where existing delegates must endorse new proposals. Rate-limit proposal submissions per address.
 
@@ -430,7 +430,7 @@ contract Timelock {
 }
 ```
 
-The timelock duration should be proportional to the risk of the action. Routine parameter changes might have a 24-hour timelock, while treasury transfers or admin key changes should have a 7-day or 14-day timelock. The timelock should be enforceable — meaning the contract itself checks the timelock before executing, not just the frontend.
+The timelock duration should be proportional to the risk of the action. Routine parameter changes might have a 24-hour timelock, while treasury transfers or admin key changes should have a 7-day or 14-day timelock. The timelock should be enforceable: meaning the contract itself checks the timelock before executing, not just the frontend.
 
 ### Quorum Requirements
 
@@ -465,7 +465,7 @@ function getVotingPower(address voter) public view returns (uint256) {
 }
 ```
 
-This makes flash loan attacks impossible (the lock period exceeds the flash loan duration) and makes gradual takeover more expensive (the attacker must lock tokens for years to accumulate maximum voting power). The tradeoff is reduced token liquidity — locked tokens cannot be sold, which reduces the token's market efficiency.
+This makes flash loan attacks impossible (the lock period exceeds the flash loan duration) and makes gradual takeover more expensive (the attacker must lock tokens for years to accumulate maximum voting power). The tradeoff is reduced token liquidity: locked tokens cannot be sold, which reduces the token's market efficiency.
 
 ### Multi-Layer Defense
 
@@ -477,7 +477,7 @@ The strongest governance systems combine multiple defenses:
 4. **Guardian veto:** Provides an emergency safety valve.
 5. **Proposal threshold:** Prevents proposal spam.
 
-Each layer addresses a different attack vector. Removing any single layer creates a vulnerability. The key is to balance security with usability — too many layers make governance cumbersome and discourage participation.
+Each layer addresses a different attack vector. Removing any single layer creates a vulnerability. The key is to balance security with usability: too many layers make governance cumbersome and discourage participation.
 
 ### Delegation Security
 

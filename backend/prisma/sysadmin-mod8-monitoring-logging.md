@@ -1,4 +1,4 @@
-# Module 8 — Monitoring and Logging
+# Module 8: Monitoring and Logging
 
 You cannot fix what you cannot see. When a server's disk fills up at 3 AM, when network throughput drops, when a service starts returning 500 errors, you need to know about it before your users do. This module covers the complete monitoring and logging stack: system logs, centralized log aggregation, metrics collection with Prometheus, visualization with Grafana, and alerting. You will build a monitoring system from scratch that watches your servers and tells you when something goes wrong.
 
@@ -69,7 +69,7 @@ Create panels for CPU usage as time series, memory usage as a gauge, disk usage 
 
 ### Alerting in Grafana
 
-Configure contact points for email, Slack, or webhook notifications. Create alert rules on dashboard panels with thresholds. Grafana alerting provides a visual interface separate from Prometheus alerting. Use notification channels that your team actually monitors — Slack or PagerDuty are more effective than email for urgent alerts.
+Configure contact points for email, Slack, or webhook notifications. Create alert rules on dashboard panels with thresholds. Grafana alerting provides a visual interface separate from Prometheus alerting. Use notification channels that your team actually monitors: Slack or PagerDuty are more effective than email for urgent alerts.
 
 ## Centralized Logging
 

@@ -1,14 +1,14 @@
-# Module 1 — How Packets Actually Move
+# Module 1: How Packets Actually Move
 
-When you type a URL into a browser and hit Enter, something remarkable happens in milliseconds. Your keystrokes traverse copper, fiber, and radio waves, get chopped into tiny fragments, wrapped in multiple layers of addressing and control information, routed through dozens of intermediate devices, reassembled at the destination, and the response makes the entire journey back. Understanding exactly how this works — at the byte level — is the foundation of every networking skill you will ever need.
+When you type a URL into a browser and hit Enter, something remarkable happens in milliseconds. Your keystrokes traverse copper, fiber, and radio waves, get chopped into tiny fragments, wrapped in multiple layers of addressing and control information, routed through dozens of intermediate devices, reassembled at the destination, and the response makes the entire journey back. Understanding exactly how this works: at the byte level: is the foundation of every networking skill you will ever need.
 
 This module strips away the abstraction. We are going to look at what a packet actually looks like on the wire, byte by byte, field by field. We will follow a single HTTP request from your browser to a remote server and back, examining every transformation it undergoes at each layer of the networking stack. By the end, you will be able to read a hex dump of a packet capture and identify the protocol, source, destination, and payload without any tooling assistance.
 
 ## The OSI Model Through Real Traffic
 
-The OSI model gets taught as seven neat layers with memorable mnemonics, but the real world does not care about perfect theoretical boundaries. In practice, we use the TCP/IP model's four layers — Link, Internet, Transport, and Application — mapped loosely onto OSI layers 1-2, 3, 4, and 5-7 respectively. The distinction matters less than understanding what each layer actually does to data.
+The OSI model gets taught as seven neat layers with memorable mnemonics, but the real world does not care about perfect theoretical boundaries. In practice, we use the TCP/IP model's four layers: Link, Internet, Transport, and Application: mapped loosely onto OSI layers 1-2, 3, 4, and 5-7 respectively. The distinction matters less than understanding what each layer actually does to data.
 
-At the bottom, Layer 1 (Physical) is the electrical signals on a wire, the light pulses in a fiber, or the radio waves in Wi-Fi. You cannot packet-capture Layer 1 in any meaningful way with software tools — you need an oscilloscope or spectrum analyzer. Layer 2 (Data Link) is where Ethernet lives. This is the frame level, where your network interface card (NIC) puts data onto the local network segment. Layer 3 (Internet) is IP — the protocol responsible for getting packets from source to destination across multiple networks. Layer 4 (Transport) is TCP or UDP, handling end-to-end communication between applications. Everything above Layer 4 is the Application layer in the TCP/IP model, though the OSI model splits it into Session, Presentation, and Application.
+At the bottom, Layer 1 (Physical) is the electrical signals on a wire, the light pulses in a fiber, or the radio waves in Wi-Fi. You cannot packet-capture Layer 1 in any meaningful way with software tools: you need an oscilloscope or spectrum analyzer. Layer 2 (Data Link) is where Ethernet lives. This is the frame level, where your network interface card (NIC) puts data onto the local network segment. Layer 3 (Internet) is IP: the protocol responsible for getting packets from source to destination across multiple networks. Layer 4 (Transport) is TCP or UDP, handling end-to-end communication between applications. Everything above Layer 4 is the Application layer in the TCP/IP model, though the OSI model splits it into Session, Presentation, and Application.
 
 The critical insight is that each layer adds its own header (and sometimes trailer) to the data from the layer above. This is called encapsulation. When your browser sends an HTTP request, the HTTP message gets wrapped in a TCP segment, which gets wrapped in an IP packet, which gets wrapped in an Ethernet frame, which gets converted to electrical signals. At the destination, the process reverses: each layer strips its header and passes the payload up.
 
@@ -51,7 +51,7 @@ Ethernet II, Src: IntelCor_3c:4d:5e (00:1a:2b:3c:4d:5e), Dst: Cisco_7f:8e:9a (00
     Type: IPv4 (0x0800)
 ```
 
-The destination MAC `00:1c:0e:7f:8e:9a` belongs to a Cisco device — this is the default gateway. Your NIC determined this through ARP (Address Resolution Protocol), which we will cover shortly. The source MAC is your NIC's address. The EtherType `0x0800` tells the receiving NIC that the payload is an IPv4 packet.
+The destination MAC `00:1c:0e:7f:8e:9a` belongs to a Cisco device: this is the default gateway. Your NIC determined this through ARP (Address Resolution Protocol), which we will cover shortly. The source MAC is your NIC's address. The EtherType `0x0800` tells the receiving NIC that the payload is an IPv4 packet.
 
 If the frame carried an IPv6 packet instead, the EtherType would be `0x86DD`. If it carried an ARP request, it would be `0x0806`. This two-byte field is how the receiving device knows how to interpret the payload.
 
@@ -91,17 +91,17 @@ Let us walk through a real IP header. Here is a hex dump of the first 20 bytes (
 
 Parsing byte by byte:
 
-- `45` — Version (4) and IHL (5). Version 4 = IPv4. IHL = 5 means 5 × 4 = 20 bytes header (no options).
-- `00` — DSCP (Differentiated Services Code Point) and ECN. `00` = best effort, no congestion notification.
-- `00 3c` — Total Length = 60 bytes. This includes the 20-byte header and 40 bytes of payload.
-- `1c 46` — Identification = 0x1C46 = 7238. Used for reassembly of fragmented packets.
-- `40` — Flags and Fragment Offset. `0x40` = Don't Fragment bit set.
-- `00` — Fragment Offset (high bits combined with previous byte). No fragmentation.
-- `40` — TTL = 64. This packet has traversed zero routers (assuming it started at 64). Each router decrements this by 1; when it hits 0, the packet is discarded and an ICMP Time Exceeded message is sent back.
-- `06` — Protocol = 6 = TCP. This tells the receiving host to pass the payload to the TCP processing module.
-- `a5 2e` — Header Checksum = 0xA52E. Calculated over the header only; recalculated at every hop because TTL changes.
-- `c0 a8 01 64` — Source IP = 192.168.1.100.
-- `5d b8 d8 22` — Destination IP = 93.184.216.34 (example.com).
+- `45`: Version (4) and IHL (5). Version 4 = IPv4. IHL = 5 means 5 × 4 = 20 bytes header (no options).
+- `00`: DSCP (Differentiated Services Code Point) and ECN. `00` = best effort, no congestion notification.
+- `00 3c`: Total Length = 60 bytes. This includes the 20-byte header and 40 bytes of payload.
+- `1c 46`: Identification = 0x1C46 = 7238. Used for reassembly of fragmented packets.
+- `40`: Flags and Fragment Offset. `0x40` = Don't Fragment bit set.
+- `00`: Fragment Offset (high bits combined with previous byte). No fragmentation.
+- `40`: TTL = 64. This packet has traversed zero routers (assuming it started at 64). Each router decrements this by 1; when it hits 0, the packet is discarded and an ICMP Time Exceeded message is sent back.
+- `06`: Protocol = 6 = TCP. This tells the receiving host to pass the payload to the TCP processing module.
+- `a5 2e`: Header Checksum = 0xA52E. Calculated over the header only; recalculated at every hop because TTL changes.
+- `c0 a8 01 64`: Source IP = 192.168.1.100.
+- `5d b8 d8 22`: Destination IP = 93.184.216.34 (example.com).
 
 The Protocol field is crucial. It tells the receiving host what protocol the payload uses. Common values: 1 = ICMP, 6 = TCP, 17 = UDP, 47 = GRE, 50 = ESP (IPSec).
 
@@ -143,7 +143,7 @@ Here is the TCP header structure:
 
 Let us trace a real TCP three-way handshake. This is from a packet capture of a client connecting to a web server:
 
-**Packet 1 — SYN (Client → Server)**
+**Packet 1: SYN (Client → Server)**
 ```
 Source Port: 49152
 Destination Port: 80
@@ -158,7 +158,7 @@ Options:
 
 The client picks an ephemeral port (49152) and sends a SYN to port 80 on the server. The sequence number is the client's initial sequence number (ISN). Wireshark shows this as 0 for readability, but the real value is a random 32-bit number like 0x7F3A2B1C. The SYN flag tells the server "I want to establish a connection." The MSS option of 1460 bytes tells the server the largest segment the client can receive without fragmentation (1500 MTU - 20 IP header - 20 TCP header = 1460). Window Scale of 7 means the 16-bit window field should be left-shifted by 7 bits, allowing a receive window of up to 65535 × 128 = 8,388,480 bytes. SACK Permitted means the client supports Selective Acknowledgment, which improves recovery from packet loss.
 
-**Packet 2 — SYN-ACK (Server → Client)**
+**Packet 2: SYN-ACK (Server → Client)**
 ```
 Source Port: 80
 Destination Port: 49152
@@ -172,9 +172,9 @@ Options:
     SACK Permitted
 ```
 
-The server responds with its own SYN and acknowledges the client's SYN. The acknowledgment number is 1 — one more than the client's sequence number — meaning "I received your sequence number 0 and am expecting byte 1 next." The server also advertises its own MSS and window scale parameters.
+The server responds with its own SYN and acknowledges the client's SYN. The acknowledgment number is 1: one more than the client's sequence number: meaning "I received your sequence number 0 and am expecting byte 1 next." The server also advertises its own MSS and window scale parameters.
 
-**Packet 3 — ACK (Client → Server)**
+**Packet 3: ACK (Client → Server)**
 ```
 Source Port: 49152
 Destination Port: 80
@@ -184,7 +184,7 @@ Flags: 0x010 (ACK)
 Window: 512 (after scaling: 512 × 128 = 65536)
 ```
 
-The client acknowledges the server's SYN. The connection is now established. Both sides have agreed on initial sequence numbers, MSS, and window sizes. This third packet can carry the first application data (like the HTTP GET request), but in this capture it is a pure ACK — the HTTP request follows immediately after.
+The client acknowledges the server's SYN. The connection is now established. Both sides have agreed on initial sequence numbers, MSS, and window sizes. This third packet can carry the first application data (like the HTTP GET request), but in this capture it is a pure ACK: the HTTP request follows immediately after.
 
 ### TCP Sequence and Acknowledgment Numbers
 
@@ -213,13 +213,13 @@ The UDP header is just 8 bytes:
 - Length (2 bytes): Total length of UDP header + data in bytes. Minimum is 8 (header only).
 - Checksum (2 bytes): Optional in IPv4 (required in IPv6). Covers a pseudo-header (source IP, destination IP, protocol, UDP length) plus the UDP header and data.
 
-UDP is used for DNS queries, DHCP, SNMP, VoIP, video streaming, and gaming — anything where low latency matters more than guaranteed delivery. A lost DNS packet is simply retried; waiting for TCP retransmission would add unacceptable delay.
+UDP is used for DNS queries, DHCP, SNMP, VoIP, video streaming, and gaming: anything where low latency matters more than guaranteed delivery. A lost DNS packet is simply retried; waiting for TCP retransmission would add unacceptable delay.
 
 The lack of a handshake means UDP has no concept of connection state. A server can respond to a UDP datagram from any client without prior communication. This makes UDP servers simpler but also more susceptible to amplification attacks, where an attacker spoofs the source IP and the server sends large responses to the victim.
 
 ## ICMP: The Control Plane
 
-ICMP (Internet Control Protocol) is not a transport protocol — it is a network-layer control protocol used for diagnostics and error reporting. The most familiar ICMP-based tools are ping and traceroute.
+ICMP (Internet Control Protocol) is not a transport protocol: it is a network-layer control protocol used for diagnostics and error reporting. The most familiar ICMP-based tools are ping and traceroute.
 
 ICMP messages have a simple structure: Type (1 byte), Code (1 byte), Checksum (2 bytes), and then type-specific data.
 
@@ -249,7 +249,7 @@ This is an Ethernet broadcast (destination MAC ff:ff:ff:ff:ff:ff) so every devic
 192.168.1.1 is at 00:1c:0e:7f:8e:9a
 ```
 
-This is a unicast response — only the original requester receives it. The ARP entry is then cached for a timeout period (typically 15-20 minutes on Linux, 2 minutes on Windows, though this varies).
+This is a unicast response: only the original requester receives it. The ARP entry is then cached for a timeout period (typically 15-20 minutes on Linux, 2 minutes on Windows, though this varies).
 
 ARP cache poisoning (ARP spoofing) is an attack where the attacker sends fake ARP replies, associating their MAC address with another host's IP. This allows the attacker to intercept traffic (man-in-the-middle). Tools like arpswatch or Dynamic ARP Inspection (DAI) on switches can detect and prevent this.
 
@@ -271,7 +271,7 @@ Address Resolution Protocol (request)
     Target IP address: 192.168.1.1
 ```
 
-Notice the Target MAC address is `00:00:00:00:00:00` — this is a placeholder because the sender does not know the target's MAC. The broadcast destination ensures every host on the segment processes the request, but only the host with the matching IP responds.
+Notice the Target MAC address is `00:00:00:00:00:00`: this is a placeholder because the sender does not know the target's MAC. The broadcast destination ensures every host on the segment processes the request, but only the host with the matching IP responds.
 
 ## Following a Packet: Browser to Server
 
@@ -338,38 +338,38 @@ Here is a complete hex dump of an Ethernet frame carrying an IPv4/TCP packet:
 Let us parse this field by field:
 
 **Ethernet Header (14 bytes):**
-- `00 1c 0e 7f 8e 9a` — Destination MAC: Cisco gateway
-- `00 1a 2b 3c 4d 5e` — Source MAC: Your NIC
-- `08 00` — EtherType: IPv4
+- `00 1c 0e 7f 8e 9a`: Destination MAC: Cisco gateway
+- `00 1a 2b 3c 4d 5e`: Source MAC: Your NIC
+- `08 00`: EtherType: IPv4
 
 **IP Header (20 bytes, starting at offset 14):**
-- `45` — Version 4, IHL 5 (20 bytes)
-- `00` — DSCP/ECN: 0
-- `00 3c` — Total Length: 60 bytes
-- `1c 46` — Identification: 0x1C46
-- `40 00` — Flags: Don't Fragment, Offset: 0
-- `40` — TTL: 64
-- `06` — Protocol: TCP
-- `a5 2e` — Header Checksum
-- `c0 a8 01 64` — Source IP: 192.168.1.100
-- `5d b8 d8 22` — Destination IP: 93.184.216.34
+- `45`: Version 4, IHL 5 (20 bytes)
+- `00`: DSCP/ECN: 0
+- `00 3c`: Total Length: 60 bytes
+- `1c 46`: Identification: 0x1C46
+- `40 00`: Flags: Don't Fragment, Offset: 0
+- `40`: TTL: 64
+- `06`: Protocol: TCP
+- `a5 2e`: Header Checksum
+- `c0 a8 01 64`: Source IP: 192.168.1.100
+- `5d b8 d8 22`: Destination IP: 93.184.216.34
 
 **TCP Header (20 bytes, starting at offset 34):**
-- `c3 50` — Source Port: 49998
-- `00 50` — Destination Port: 80
-- `7f 3a 2b 1c` — Sequence Number: 0x7F3A2B1C
-- `00 00 00 00` — Acknowledgment Number: 0 (SYN packet, no data yet)
-- `a0 2` — Data Offset: 10 (40 bytes — includes options), Flags: SYN
-- `fa f0` — Window: 64240
-- `3e 12` — Checksum
-- `00 00` — Urgent Pointer: 0
+- `c3 50`: Source Port: 49998
+- `00 50`: Destination Port: 80
+- `7f 3a 2b 1c`: Sequence Number: 0x7F3A2B1C
+- `00 00 00 00`: Acknowledgment Number: 0 (SYN packet, no data yet)
+- `a0 2`: Data Offset: 10 (40 bytes: includes options), Flags: SYN
+- `fa f0`: Window: 64240
+- `3e 12`: Checksum
+- `00 00`: Urgent Pointer: 0
 
 **TCP Options (20 bytes, starting at offset 54):**
-- `02 04 05 b4` — MSS: 1460
-- `04 02` — SACK Permitted
-- `08 0a 00 00 00 00 00 00 00 00` — Timestamps: 0, 0
-- `01` — NOP
-- `03 03 07` — Window Scale: 7
+- `02 04 05 b4`: MSS: 1460
+- `04 02`: SACK Permitted
+- `08 0a 00 00 00 00 00 00 00 00`: Timestamps: 0, 0
+- `01`: NOP
+- `03 03 07`: Window Scale: 7
 
 Practice reading hex dumps like this regularly. Over time, you will recognize common patterns instantly: `45 00` at the start of an IP header, `c0 a8` for 192.168.x.x private addresses, `00 50` for port 80, `01 01` for NOP padding in TCP options.
 

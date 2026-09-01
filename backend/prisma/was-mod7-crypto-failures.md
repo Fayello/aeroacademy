@@ -1,6 +1,6 @@
-# Module 7 — Cryptographic Failures
+# Module 7: Cryptographic Failures
 
-Cryptographic failures are vulnerabilities that arise from improper use of encryption, hashing, key management, or TLS. The impact ranges from leaked passwords to complete data exposure. The OWASP Top 10 category was previously called "Sensitive Data Exposure" — it was renamed to "Cryptographic Failures" to emphasize that the root cause is almost always broken cryptography rather than a missing encryption toggle. This module covers every major cryptographic failure class, with real breach data showing what happens when organizations get cryptography wrong.
+Cryptographic failures are vulnerabilities that arise from improper use of encryption, hashing, key management, or TLS. The impact ranges from leaked passwords to complete data exposure. The OWASP Top 10 category was previously called "Sensitive Data Exposure": it was renamed to "Cryptographic Failures" to emphasize that the root cause is almost always broken cryptography rather than a missing encryption toggle. This module covers every major cryptographic failure class, with real breach data showing what happens when organizations get cryptography wrong.
 
 ## Weak Hashing Algorithms
 
@@ -8,7 +8,7 @@ Password hashing is the most critical cryptographic function in a web applicatio
 
 ### MD5
 
-MD5 produces a 128-bit hash. It was broken for collision resistance in 2004 and is cryptographically broken for all purposes. More importantly for password hashing, MD5 is extremely fast — a modern GPU can compute billions of MD5 hashes per second. This makes brute force and dictionary attacks trivial.
+MD5 produces a 128-bit hash. It was broken for collision resistance in 2004 and is cryptographically broken for all purposes. More importantly for password hashing, MD5 is extremely fast: a modern GPU can compute billions of MD5 hashes per second. This makes brute force and dictionary attacks trivial.
 
 ```bash
 # Cracking MD5 hashes with hashcat
@@ -25,7 +25,7 @@ LinkedIn's 2012 breach exposed 117 million passwords hashed with unsalted SHA1. 
 
 ### SHA256 and SHA512
 
-SHA256 and SHA512 are cryptographic hash functions that remain secure for their designed purpose (integrity verification). However, they are not designed for password hashing. They are fast — too fast for password storage. A single GPU can compute billions of SHA256 hashes per second.
+SHA256 and SHA512 are cryptographic hash functions that remain secure for their designed purpose (integrity verification). However, they are not designed for password hashing. They are fast: too fast for password storage. A single GPU can compute billions of SHA256 hashes per second.
 
 Using SHA256 for password hashing without additional protections (salting, key stretching) is equivalent to using MD5 for practical purposes.
 
@@ -79,7 +79,7 @@ $2b$12$LJ3m4ris8DK.IFhKf.VqjO7f.W4Hb3Wm5BpLqP1OiZ5xK3sR8eHaS
 
 Breaking down the bcrypt hash: `$2b$` is the algorithm identifier, `$12$` is the cost factor, the next 22 characters are the salt, and the remaining 31 characters are the hash.
 
-With salt, rainbow tables are useless. Each password must be cracked individually. The salt does not need to be secret — its purpose is to ensure that identical passwords produce different hashes.
+With salt, rainbow tables are useless. Each password must be cracked individually. The salt does not need to be secret: its purpose is to ensure that identical passwords produce different hashes.
 
 ## Weak Encryption Algorithms
 
@@ -101,7 +101,7 @@ Blowfish uses a 64-bit block size, making it vulnerable to birthday attacks afte
 
 ### AES
 
-AES (Advanced Encryption Standard) with 128, 192, or 256-bit keys remains secure. The key size determines security against brute force — 2^128 operations for AES-128, which is computationally infeasible.
+AES (Advanced Encryption Standard) with 128, 192, or 256-bit keys remains secure. The key size determines security against brute force: 2^128 operations for AES-128, which is computationally infeasible.
 
 However, AES has a critical requirement: the mode of operation. ECB (Electronic Codebook) mode encrypts each block independently, producing identical ciphertext for identical plaintext blocks. This leaks patterns:
 
@@ -232,7 +232,7 @@ API keys are sometimes stored in plaintext in databases, configuration files, or
 
 An IV (Initialization Vector) is used with block cipher modes (CBC, CTR) to ensure that identical plaintexts produce different ciphertexts. If the IV is predictable or repeated, the encryption is weakened.
 
-**ECB mode**: No IV needed — each block is encrypted independently. This is why identical plaintext blocks produce identical ciphertext blocks, leaking patterns.
+**ECB mode**: No IV needed: each block is encrypted independently. This is why identical plaintext blocks produce identical ciphertext blocks, leaking patterns.
 
 **CBC mode**: The IV should be random and unique for each encryption operation. If the IV is predictable (e.g., a counter), the first block of plaintext can be recovered. If the IV is reused, XOR of two ciphertexts reveals XOR of the two plaintexts.
 
@@ -240,7 +240,7 @@ An IV (Initialization Vector) is used with block cipher modes (CBC, CTR) to ensu
 
 ### Session Token Entropy
 
-Session tokens must be generated with sufficient entropy to be unguessable. A token with 128 bits of entropy has 2^128 possible values — infeasible to guess. A token with 32 bits of entropy (4 bytes) has only 2^32 ≈ 4 billion possible values, which can be brute-forced in seconds.
+Session tokens must be generated with sufficient entropy to be unguessable. A token with 128 bits of entropy has 2^128 possible values: infeasible to guess. A token with 32 bits of entropy (4 bytes) has only 2^32 ≈ 4 billion possible values, which can be brute-forced in seconds.
 
 ```python
 # INSECURE - predictable session token
@@ -254,11 +254,11 @@ token = secrets.token_hex(32)  # 256 bits of entropy
 
 ## Real Breach: How Weak Hashing Exposed 100 Million Passwords
 
-In 2019, a major social media platform suffered a breach that exposed 100 million user records, including email addresses, usernames, and passwords. The passwords were hashed — but with a weak algorithm and no salt.
+In 2019, a major social media platform suffered a breach that exposed 100 million user records, including email addresses, usernames, and passwords. The passwords were hashed: but with a weak algorithm and no salt.
 
 **The hashing scheme**: The application used MD5 with no salt. The developer had chosen MD5 because it was fast (they did not understand that speed is a disadvantage for password hashing) and because adding salt "seemed unnecessary" since the database was already protected by network-level controls.
 
-**The breach**: An attacker discovered a SQL injection vulnerability in a legacy API endpoint that had not been updated with the same protections as the main application. Through the injection, they extracted the entire users table — 100 million rows containing email, username, and MD5 hash.
+**The breach**: An attacker discovered a SQL injection vulnerability in a legacy API endpoint that had not been updated with the same protections as the main application. Through the injection, they extracted the entire users table: 100 million rows containing email, username, and MD5 hash.
 
 **The cracking**: The attacker used a cluster of 8 GPUs (NVIDIA RTX 2080 Ti) to crack the MD5 hashes. The combined hash rate was approximately 480 billion MD5 hashes per second. The attacker used a dictionary attack with rules for common password patterns (capitalization, number substitution, special character appending).
 
@@ -273,10 +273,10 @@ Results:
 **The post-mortem findings**:
 
 - No salt was used, making the hashes vulnerable to rainbow tables and batch cracking.
-- MD5 was chosen for performance — the developers prioritized login speed over security.
+- MD5 was chosen for performance: the developers prioritized login speed over security.
 - The legacy API endpoint that contained the SQL injection had been flagged in a code review 18 months earlier but the fix was deprioritized.
 - No monitoring was in place for unusual database query patterns.
-- The password policy only required 6 characters with no complexity requirements — 23% of cracked passwords were 6 characters or shorter.
+- The password policy only required 6 characters with no complexity requirements: 23% of cracked passwords were 6 characters or shorter.
 
 **The fix**:
 

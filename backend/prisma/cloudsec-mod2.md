@@ -1,4 +1,4 @@
-# Module 2 — IAM and Least Privilege
+# Module 2: IAM and Least Privilege
 
 ## The Security Layer That Controls Everything Else
 

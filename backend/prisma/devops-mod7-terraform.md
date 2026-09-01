@@ -1,4 +1,4 @@
-# Module 7 — Infrastructure as Code with Terraform
+# Module 7: Infrastructure as Code with Terraform
 
 ## What Terraform Does
 
@@ -91,11 +91,11 @@ resource "aws_security_group" "web" {
 }
 ```
 
-The resource `aws_instance.web` creates an EC2 instance. The resource `aws_security_group.web` creates a security group. Notice that `aws_instance.web` references `aws_security_group.web.id` — Terraform automatically determines the creation order based on dependencies.
+The resource `aws_instance.web` creates an EC2 instance. The resource `aws_security_group.web` creates a security group. Notice that `aws_instance.web` references `aws_security_group.web.id`: Terraform automatically determines the creation order based on dependencies.
 
 ### Data Sources
 
-Data sources query existing resources. They do not create or modify infrastructure — they read information about resources that already exist.
+Data sources query existing resources. They do not create or modify infrastructure: they read information about resources that already exist.
 
 ```hcl
 data "aws_ami" "ubuntu" {
@@ -216,7 +216,7 @@ terraform {
 }
 ```
 
-This stores the state in an S3 bucket with encryption enabled. The DynamoDB table provides state locking — only one person can modify the state at a time. Without locking, two people running `terraform apply` simultaneously can corrupt the state.
+This stores the state in an S3 bucket with encryption enabled. The DynamoDB table provides state locking: only one person can modify the state at a time. Without locking, two people running `terraform apply` simultaneously can corrupt the state.
 
 Other remote backends: Azure Blob Storage, Google Cloud Storage, Consul, Terraform Cloud, and PostgreSQL.
 
@@ -318,7 +318,7 @@ terraform apply -target=aws_instance.web
 terraform apply -parallelism=5
 ```
 
-The `-target` flag is useful for applying changes to specific resources without affecting others. Use it sparingly — targeted applies can cause state drift.
+The `-target` flag is useful for applying changes to specific resources without affecting others. Use it sparingly: targeted applies can cause state drift.
 
 ### Destroy
 
@@ -570,7 +570,7 @@ The workflow for changes:
 
 A company had been running infrastructure for three years without IaC. Servers were created manually, configured with shell scripts, and documented in a wiki (when anyone bothered to update it). The wiki was two years out of date.
 
-The team decided to adopt Terraform. The challenge was that all the infrastructure already existed. They could not just write Terraform configurations and `terraform apply` — that would create duplicate resources.
+The team decided to adopt Terraform. The challenge was that all the infrastructure already existed. They could not just write Terraform configurations and `terraform apply`: that would create duplicate resources.
 
 The import process started with the most critical resources: the VPC, subnets, and security groups.
 
@@ -608,9 +608,9 @@ The import command added the existing VPC to Terraform state. Now Terraform knew
 
 The hardest part was security groups. They had 47 security groups with complex rules. The team wrote Terraform configurations for each, imported them, and ran `terraform plan` to check for discrepancies. The plan revealed 12 security group rules that had been added manually without updating the wiki. Terraform now serves as the documentation.
 
-The most painful discovery was that 3 of their EC2 instances were not in any security group — they were open to the internet. This was a security vulnerability that had existed for months. Terraform caught it because the plan showed that the instances would need security groups attached.
+The most painful discovery was that 3 of their EC2 instances were not in any security group: they were open to the internet. This was a security vulnerability that had existed for months. Terraform caught it because the plan showed that the instances would need security groups attached.
 
-The import process took two weeks for 200+ resources. The team used a spreadsheet to track which resources were imported and which were pending. The final step was enabling `terraform plan` in CI to detect drift — any manual changes to the infrastructure would be caught by the next pull request.
+The import process took two weeks for 200+ resources. The team used a spreadsheet to track which resources were imported and which were pending. The final step was enabling `terraform plan` in CI to detect drift: any manual changes to the infrastructure would be caught by the next pull request.
 
 The biggest lesson from the import project was that Terraform forced the team to document their infrastructure. Before Terraform, the wiki said "there are some servers in AWS." After Terraform, the code said exactly which servers existed, what configuration they had, and how they related to each other. The code was the documentation, and it was always up to date because it was the source of truth.
 
@@ -618,7 +618,7 @@ Another unexpected benefit was cost visibility. The Terraform configuration list
 
 ## Drift Detection
 
-Drift occurs when the real infrastructure diverges from the Terraform configuration. Someone manually changes a security group, adds a tag, or modifies a setting. Terraform does not detect this automatically — it only knows about changes made through `terraform apply`.
+Drift occurs when the real infrastructure diverges from the Terraform configuration. Someone manually changes a security group, adds a tag, or modifies a setting. Terraform does not detect this automatically: it only knows about changes made through `terraform apply`.
 
 Drift detection compares the real infrastructure with the state file:
 
@@ -710,9 +710,9 @@ Validation prevents typos and invalid values from reaching production. An invali
 
 To fix drift, you have two options:
 
-1. **Apply the Terraform configuration** — `terraform apply` brings the infrastructure in line with the configuration. This is the correct approach when the configuration is the source of truth.
+1. **Apply the Terraform configuration**: `terraform apply` brings the infrastructure in line with the configuration. This is the correct approach when the configuration is the source of truth.
 
-2. **Update the state** — `terraform refresh` updates the state to match the real infrastructure. This is useful when someone made a legitimate manual change that should be reflected in Terraform.
+2. **Update the state**: `terraform refresh` updates the state to match the real infrastructure. This is useful when someone made a legitimate manual change that should be reflected in Terraform.
 
 The best practice is to prevent drift by making all changes through Terraform. Use IAM policies to restrict manual changes, and use `terraform plan` in CI to catch any drift that occurs.
 

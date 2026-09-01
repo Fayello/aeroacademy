@@ -1,8 +1,8 @@
-# Module 4 — Filesystems
+# Module 4: Filesystems
 
 ## The Linux Filesystem Stack
 
-Filesystems are how Linux persists data to disk and organizes it into a usable hierarchy. From the kernel's perspective, every filesystem is an implementation of the Virtual File System (VFS) interface — a abstraction layer that lets different filesystems present a unified API to user space.
+Filesystems are how Linux persists data to disk and organizes it into a usable hierarchy. From the kernel's perspective, every filesystem is an implementation of the Virtual File System (VFS) interface: a abstraction layer that lets different filesystems present a unified API to user space.
 
 Understanding filesystem internals matters for three reasons: performance tuning (choosing the right filesystem and mount options), data recovery (knowing what happens on corruption), and debugging (tracing I/O issues to the filesystem layer).
 
@@ -14,7 +14,7 @@ The VFS layer is the kernel's abstraction that allows multiple filesystem types 
 
 VFS defines four primary objects:
 
-**Superblock** — Represents a mounted filesystem. Contains:
+**Superblock**: Represents a mounted filesystem. Contains:
 - Filesystem type
 - Block size
 - Root inode
@@ -27,7 +27,7 @@ dumpe2fs /dev/sda1 | head -30
 tune2fs -l /dev/sda1
 ```
 
-**Inode** — Represents a file or directory. Contains:
+**Inode**: Represents a file or directory. Contains:
 - File type (regular file, directory, symlink, device, etc.)
 - Permissions (mode, uid, gid)
 - Size
@@ -53,7 +53,7 @@ stat myfile.txt
 # Change: 2026-08-29 14:30:00.000000000 -0500
 ```
 
-**Dentry** — Represents a directory entry. Maps a filename to an inode. Dentries are cached in memory (the dentry cache) for fast lookups:
+**Dentry**: Represents a directory entry. Maps a filename to an inode. Dentries are cached in memory (the dentry cache) for fast lookups:
 
 ```bash
 # View dentry cache stats
@@ -64,7 +64,7 @@ cat /proc/fs/dentry-state
 echo 2 > /proc/sys/vm/drop_caches
 ```
 
-**File** — Represents an open file. Created by `open()` and contains:
+**File**: Represents an open file. Created by `open()` and contains:
 - Current position (offset)
 - Access mode (read, write, read-write)
 - Pointer to the inode
@@ -74,10 +74,10 @@ echo 2 > /proc/sys/vm/drop_caches
 
 When a process calls `open("/var/log/syslog", O_RDONLY)`, the kernel performs a **path walk**:
 
-1. Start at the root directory (`/`) — get its dentry and inode
-2. Look up "var" in the root directory's inode — get var's dentry and inode
-3. Look up "log" in var's inode — get log's dentry and inode
-4. Look up "syslog" in log's inode — get syslog's dentry and inode
+1. Start at the root directory (`/`): get its dentry and inode
+2. Look up "var" in the root directory's inode: get var's dentry and inode
+3. Look up "log" in var's inode: get log's dentry and inode
+4. Look up "syslog" in log's inode: get syslog's dentry and inode
 5. Check permissions against the process's credentials
 6. Create a `file` object with the inode and return a file descriptor
 
@@ -107,7 +107,7 @@ tune2fs -l /dev/sda1 | grep "Filesystem features"
 mount -o remount,data=writeback /dev/sda1
 ```
 
-The default `data=ordered` mode ensures that data blocks are written to disk before the metadata that references them. This means that after a crash, you will never see a file with zeroed-out blocks where data should be — but you might see a zero-length file where data was being appended.
+The default `data=ordered` mode ensures that data blocks are written to disk before the metadata that references them. This means that after a crash, you will never see a file with zeroed-out blocks where data should be: but you might see a zero-length file where data was being appended.
 
 ### Extents and Allocation
 
@@ -235,7 +235,7 @@ tmpfs uses the page cache for storage and the swap subsystem for overflow. If tm
 
 ### procfs
 
-procfs (`/proc`) provides a filesystem interface to kernel data structures. It is not a real filesystem — it exists entirely in memory:
+procfs (`/proc`) provides a filesystem interface to kernel data structures. It is not a real filesystem: it exists entirely in memory:
 
 ```bash
 # Process information
@@ -659,7 +659,7 @@ dumpe2fs /dev/sda2 | grep -E "Last checked|Mount count|Maximum mount"
 
 # Use UPS to prevent power failures
 # Use barrier=1 mount option (default) for data safety
-# Use write-back cache mode with caution — risk of data loss
+# Use write-back cache mode with caution: risk of data loss
 ```
 
 ## Assessment

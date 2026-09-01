@@ -1,6 +1,6 @@
-# Module 6 — Security Misconfiguration
+# Module 6: Security Misconfiguration
 
-Security misconfiguration is the most common vulnerability class in web applications. It includes everything from default credentials on a database to missing security headers on an HTTP response. The breadth of this category means it touches every layer of the application stack — the operating system, web server, application server, database, framework, and application code. Most misconfigurations are not complex to exploit — they are complex to prevent because they require consistent attention across every component.
+Security misconfiguration is the most common vulnerability class in web applications. It includes everything from default credentials on a database to missing security headers on an HTTP response. The breadth of this category means it touches every layer of the application stack: the operating system, web server, application server, database, framework, and application code. Most misconfigurations are not complex to exploit: they are complex to prevent because they require consistent attention across every component.
 
 ## Default Credentials
 
@@ -293,7 +293,7 @@ http.authorizeRequests()
     .antMatchers("/admin/login").permitAll(); // Allows login page but not the path
 ```
 
-The regex `/admin/*` matches `/admin/dashboard` but not `/admin/login` — and the login endpoint itself was left open. More critically, the login POST endpoint was not protected, allowing brute force and default credential testing.
+The regex `/admin/*` matches `/admin/dashboard` but not `/admin/login`: and the login endpoint itself was left open. More critically, the login POST endpoint was not protected, allowing brute force and default credential testing.
 
 2. **`/actuator`**: The Spring Boot Actuator was exposed without authentication. The `/actuator/env` endpoint revealed all environment variables, including:
 

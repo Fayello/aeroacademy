@@ -1,6 +1,6 @@
-# Module 5 — Exploit Development Fundamentals
+# Module 5: Exploit Development Fundamentals
 
-Exploit development is the art of making software do what its developers never intended. This module covers the fundamentals — buffer overflows, shellcode, and return address calculation. You'll use Python to craft exploits, not to write them from scratch. Understanding how exploits work makes you better at both attacking and defending systems.
+Exploit development is the art of making software do what its developers never intended. This module covers the fundamentals: buffer overflows, shellcode, and return address calculation. You'll use Python to craft exploits, not to write them from scratch. Understanding how exploits work makes you better at both attacking and defending systems.
 
 This is the most technical module in the course. Take your time with it. Buffer overflows aren't intuitive until they suddenly are.
 
@@ -422,7 +422,7 @@ p.sendline(payload)
 p.interactive()
 ```
 
-### Step 7: Alternative — Return to libc
+### Step 7: Alternative: Return to libc
 
 When the stack isn't executable (NX enabled), you can't run shellcode on the stack. Instead, return to existing functions in libc:
 
@@ -553,7 +553,7 @@ def leak_canary():
 
 ## Setting Up Your Exploit Development Environment
 
-You need specific tools and configurations for exploit development. Don't use your production system — use a dedicated virtual machine.
+You need specific tools and configurations for exploit development. Don't use your production system: use a dedicated virtual machine.
 
 ### Required Tools
 
@@ -707,7 +707,7 @@ You are given a compiled vulnerable binary. Exploit it to get a shell. Time limi
 
 Exploit development requires a controlled environment. Never develop exploits on a production system or a system connected to untrusted networks. A misconfigured exploit can crash systems, corrupt data, or unintentionally compromise other machines on the network.
 
-Use a dedicated virtual machine for exploit development. Disable network access or use host-only networking. Take snapshots before each experiment so you can revert if something goes wrong. The VM should have minimal software installed — just the tools you need for development. This reduces the blast radius if an exploit goes wrong.
+Use a dedicated virtual machine for exploit development. Disable network access or use host-only networking. Take snapshots before each experiment so you can revert if something goes wrong. The VM should have minimal software installed: just the tools you need for development. This reduces the blast radius if an exploit goes wrong.
 
 Never test exploits against systems you don't own or have explicit written permission to test. Exploiting a system without authorization is a criminal offense in most jurisdictions, regardless of your intentions. Even testing "harmless" exploits against unauthorized targets can result in criminal charges.
 
@@ -719,7 +719,7 @@ The knowledge you gain from exploit development is powerful. Use it responsibly.
 
 Exploit development teaches you how software actually works at the machine level. You learn about memory layout, calling conventions, and how high-level code translates to assembly. This knowledge is essential for vulnerability research, malware analysis, and secure coding.
 
-The buffer overflow is the oldest exploit technique, but it still appears in the wild. Understanding it gives you intuition for memory corruption bugs in general — use-after-free, heap overflows, type confusion. They're all variations on the same theme: memory safety violations.
+The buffer overflow is the oldest exploit technique, but it still appears in the wild. Understanding it gives you intuition for memory corruption bugs in general: use-after-free, heap overflows, type confusion. They're all variations on the same theme: memory safety violations.
 
 **Libraries covered:** pwn (pwntools), struct, subprocess
 

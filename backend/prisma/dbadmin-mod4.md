@@ -1,4 +1,4 @@
-# Module 4 — MongoDB
+# Module 4: MongoDB
 
 MongoDB is a document-oriented database that stores data as JSON-like documents in a format called BSON (Binary JSON). Unlike relational databases where you fit data into rigid table schemas, MongoDB lets you store documents with varying structures in the same collection. This flexibility makes it popular for content management systems, real-time analytics, IoT data, and applications where the data model evolves frequently. This module covers the core concepts you need to operate MongoDB in production: the document model, CRUD operations, aggregation pipelines, indexing strategies, and security hardening.
 
@@ -27,7 +27,7 @@ Consider a product catalog:
   created_at: ISODate("2026-01-15T10:30:00Z")
 }
 
-// An electronics product — different structure, same collection
+// An electronics product: different structure, same collection
 {
   _id: ObjectId("507f1f77bcf86cd799439012"),
   name: "Wireless Mouse",
@@ -52,7 +52,7 @@ The `_id` field is mandatory in every document. If you do not provide one, Mongo
 
 BSON is the binary encoding of JSON-like documents. It supports types that JSON does not: Date, ObjectId, Binary Data, Regular Expressions, 32-bit and 64-bit integers, and Decimal128. BSON also includes type information and lengths, which allows MongoDB to skip over fields it does not need without parsing the entire document.
 
-The practical impact: BSON's binary format is more compact than JSON text for large documents, and the type information allows MongoDB to compare values correctly. JSON stores everything as strings — `"42"` and `42` are both strings. BSON distinguishes between Int32, Int64, Double, and Decimal128, which matters for correct sorting and arithmetic.
+The practical impact: BSON's binary format is more compact than JSON text for large documents, and the type information allows MongoDB to compare values correctly. JSON stores everything as strings: `"42"` and `42` are both strings. BSON distinguishes between Int32, Int64, Double, and Decimal128, which matters for correct sorting and arithmetic.
 
 **When to Embed vs Reference:**
 
@@ -76,7 +76,7 @@ Example of embedding (order with items):
 {
   _id: ObjectId("..."),
   user_id: ObjectId("..."),  // Reference to user
-  items: [  // Embedded — items are always accessed with the order
+  items: [  // Embedded: items are always accessed with the order
     { product_id: ObjectId("..."), name: "T-Shirt", qty: 2, price: 29.99 },
     { product_id: ObjectId("..."), name: "Mouse", qty: 1, price: 49.99 }
   ],
@@ -95,7 +95,7 @@ Example of referencing (user with reviews):
   email: "alice@example.com"
 }
 
-// Review document — references user, not embedded in user
+// Review document: references user, not embedded in user
 {
   _id: ObjectId("..."),
   user_id: ObjectId("..."),  // Reference to user
@@ -216,14 +216,14 @@ The aggregation pipeline is MongoDB's most powerful analytical tool. It processe
 
 **Pipeline stages:**
 
-- `$match` — Filter documents (like WHERE in SQL)
-- `$group` — Group documents by a key and apply accumulators (like GROUP BY)
-- `$project` — Reshape documents, include/exclude fields, compute new fields
-- `$sort` — Sort documents
-- `$limit` / `$skip` — Pagination
-- `$lookup` — Join with another collection (like JOIN in SQL)
-- `$unwind` — Deconstruct array fields into individual documents
-- `$addFields` — Add new computed fields
+- `$match`: Filter documents (like WHERE in SQL)
+- `$group`: Group documents by a key and apply accumulators (like GROUP BY)
+- `$project`: Reshape documents, include/exclude fields, compute new fields
+- `$sort`: Sort documents
+- `$limit` / `$skip`: Pagination
+- `$lookup`: Join with another collection (like JOIN in SQL)
+- `$unwind`: Deconstruct array fields into individual documents
+- `$addFields`: Add new computed fields
 
 **Example: Sales analytics pipeline:**
 
@@ -368,7 +368,7 @@ db.currentOp({
 
 ## Indexes: Types and Strategy
 
-Indexes are the single most important factor in MongoDB query performance. Without indexes, every query performs a collection scan — reading every document in the collection. With the right indexes, MongoDB can locate the documents it needs by reading a small portion of the index.
+Indexes are the single most important factor in MongoDB query performance. Without indexes, every query performs a collection scan: reading every document in the collection. With the right indexes, MongoDB can locate the documents it needs by reading a small portion of the index.
 
 **B-Tree Index (Default):**
 
@@ -416,7 +416,7 @@ Without the ESR rule, you might create the index in a suboptimal order. A common
 **Multikey Index (Array Fields):**
 
 ```javascript
-// Index on an array field — one index entry per array element
+// Index on an array field: one index entry per array element
 db.products.createIndex({ tags: 1 })
 
 // This index efficiently serves queries like:
@@ -560,29 +560,29 @@ db.createUser({
 
 **Built-in Roles:**
 
-- `read` — Read-only access to a database
-- `readWrite` — Read and write access to a database
-- `dbAdmin` — Administrative operations (compact, index, validate)
-- `userAdmin` — Create and modify users and roles
-- `clusterAdmin` — Full cluster administration
-- `backup` — Run backup operations
-- `restore` — Restore from backup
+- `read`: Read-only access to a database
+- `readWrite`: Read and write access to a database
+- `dbAdmin`: Administrative operations (compact, index, validate)
+- `userAdmin`: Create and modify users and roles
+- `clusterAdmin`: Full cluster administration
+- `backup`: Run backup operations
+- `restore`: Restore from backup
 
-Never use `root` for application connections. Follow the principle of least privilege — grant only the roles the user needs.
+Never use `root` for application connections. Follow the principle of least privilege: grant only the roles the user needs.
 
 **MongoDB Built-in Roles:**
 
-- `read` — Read-only access to a database
-- `readWrite` — Read and write access to a database
-- `dbAdmin` — Administrative operations (compact, index, validate)
-- `userAdmin` — Create and modify users and roles
-- `clusterAdmin` — Full cluster administration
-- `backup` — Run backup operations
-- `restore` — Restore from backup
-- `readAnyDatabase` — Read access to all databases
-- `readWriteAnyDatabase` — Read and write access to all databases
-- `userAdminAnyDatabase` — User administration across all databases
-- `dbAdminAnyDatabase` — Administrative operations across all databases
+- `read`: Read-only access to a database
+- `readWrite`: Read and write access to a database
+- `dbAdmin`: Administrative operations (compact, index, validate)
+- `userAdmin`: Create and modify users and roles
+- `clusterAdmin`: Full cluster administration
+- `backup`: Run backup operations
+- `restore`: Restore from backup
+- `readAnyDatabase`: Read access to all databases
+- `readWriteAnyDatabase`: Read and write access to all databases
+- `userAdminAnyDatabase`: User administration across all databases
+- `dbAdminAnyDatabase`: Administrative operations across all databases
 
 Custom roles provide finer-grained control:
 
@@ -681,7 +681,7 @@ db.posts.find({ author_id: ObjectId("...") })
   .explain("executionStats")
 ```
 
-The output shows `totalDocsExamined: 500000000` — MongoDB scanned every document in the collection. There is no index on `author_id`, and no index supports the sort on `created_at`.
+The output shows `totalDocsExamined: 500000000`: MongoDB scanned every document in the collection. There is no index on `author_id`, and no index supports the sort on `created_at`.
 
 **Step 2: Create targeted indexes.**
 
@@ -703,7 +703,7 @@ db.posts.find({ author_id: ObjectId("...") })
   .explain("executionStats")
 ```
 
-The output now shows `totalDocsExamined: 20` — MongoDB reads only the 20 documents it needs. Execution time drops to under 1ms.
+The output now shows `totalDocsExamined: 20`: MongoDB reads only the 20 documents it needs. Execution time drops to under 1ms.
 
 **Step 3: Optimize the feed query with pre-computation.**
 

@@ -1,4 +1,4 @@
-# Module 2 — Terraform Basics
+# Module 2: Terraform Basics
 
 Terraform is the tool most infrastructure engineers reach for when they need to provision and manage cloud resources. It is not the only option, but it is the one you will encounter most often in job descriptions, open-source projects, and production environments. Understanding how Terraform works, not just the syntax but the execution model, state management, and resource lifecycle, is essential for doing real infrastructure work.
 
@@ -429,7 +429,7 @@ vpc/
 └── terraform.tfvars
 ```
 
-**variables.tf** — Define all inputs with validation:
+**variables.tf**: Define all inputs with validation:
 
 ```hcl
 variable "project_name" {
@@ -498,7 +498,7 @@ variable "single_nat_gateway" {
 }
 ```
 
-**vpc.tf** — The VPC and subnets:
+**vpc.tf**: The VPC and subnets:
 
 ```hcl
 resource "aws_vpc" "main" {
@@ -541,7 +541,7 @@ resource "aws_subnet" "private" {
 }
 ```
 
-**routing.tf** — Internet access and NAT:
+**routing.tf**: Internet access and NAT:
 
 ```hcl
 resource "aws_internet_gateway" "main" {
@@ -613,7 +613,7 @@ resource "aws_route_table_association" "private" {
 }
 ```
 
-**outputs.tf** — Export useful information:
+**outputs.tf**: Export useful information:
 
 ```hcl
 output "vpc_id" {

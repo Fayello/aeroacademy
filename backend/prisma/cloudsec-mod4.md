@@ -1,4 +1,4 @@
-# Module 4 — Data Protection in the Cloud
+# Module 4: Data Protection in the Cloud
 
 ## Why Data Protection Is Different in the Cloud
 

@@ -1,16 +1,16 @@
-# Module 3 — Quantum Algorithms
+# Module 3: Quantum Algorithms
 
 ## The Landscape of Quantum Algorithms
 
-Quantum algorithms are not "classical algorithms run on quantum hardware." They are fundamentally different computational procedures that exploit superposition, entanglement, and interference to solve certain problems with fewer operations than any classical algorithm. The speedup is not universal — quantum computers are not faster at everything. For some problems, like integer factoring and unstructured search, quantum algorithms provide provable speedups. For others, like sorting, there is no quantum advantage.
+Quantum algorithms are not "classical algorithms run on quantum hardware." They are fundamentally different computational procedures that exploit superposition, entanglement, and interference to solve certain problems with fewer operations than any classical algorithm. The speedup is not universal: quantum computers are not faster at everything. For some problems, like integer factoring and unstructured search, quantum algorithms provide provable speedups. For others, like sorting, there is no quantum advantage.
 
-Understanding quantum algorithms requires understanding two things: the mathematical structure of the problem, and how quantum interference can be used to extract the solution efficiently. This module covers the two most important quantum algorithms — Grover's search and Shor's factoring — and the concept of quantum advantage.
+Understanding quantum algorithms requires understanding two things: the mathematical structure of the problem, and how quantum interference can be used to extract the solution efficiently. This module covers the two most important quantum algorithms: Grover's search and Shor's factoring: and the concept of quantum advantage.
 
 ## Grover's Algorithm
 
 ### The Problem
 
-Given an unsorted database of N items, find a specific marked item. Classically, this requires O(N) queries — you must check each item one by one. Grover's algorithm solves this with O(√N) queries, a quadratic speedup.
+Given an unsorted database of N items, find a specific marked item. Classically, this requires O(N) queries: you must check each item one by one. Grover's algorithm solves this with O(√N) queries, a quadratic speedup.
 
 This speedup applies to any problem that can be reformulated as searching for a marked item in an unstructured space. Since many problems can be reduced to search (satisfiability, optimization, constraint satisfaction), Grover's algorithm has broad applicability.
 
@@ -253,7 +253,7 @@ However, the threat is real: a sufficiently powerful quantum computer running Sh
 
 ### What Quantum Advantage Means
 
-Quantum advantage (or quantum supremacy) is the demonstration that a quantum computer can solve a specific problem faster than any classical computer. This does not mean quantum computers are better at everything — it means there exists at least one problem where quantum is provably faster.
+Quantum advantage (or quantum supremacy) is the demonstration that a quantum computer can solve a specific problem faster than any classical computer. This does not mean quantum computers are better at everything: it means there exists at least one problem where quantum is provably faster.
 
 The first claimed quantum advantage was Google's 2019 experiment with the Sycamore processor, which performed a specific sampling task (random circuit sampling) in 200 seconds that was estimated to take 10,000 years classically. IBM contested this estimate, arguing that classical simulation was feasible with enough memory.
 
@@ -358,7 +358,7 @@ For N = 8, the optimal number of iterations is 2. The success probability after 
 
 The standard model for analyzing quantum algorithms is the query complexity model. In this model, the algorithm accesses a black-box function (oracle) that provides information about the input. The query complexity counts the number of times the algorithm calls this oracle.
 
-For classical algorithms, the query complexity of unstructured search is N (you must check each item). For quantum algorithms, Grover's reduces this to √N. This quadratic speedup is optimal — no quantum algorithm can search an unstructured database faster than O(√N).
+For classical algorithms, the query complexity of unstructured search is N (you must check each item). For quantum algorithms, Grover's reduces this to √N. This quadratic speedup is optimal: no quantum algorithm can search an unstructured database faster than O(√N).
 
 The proof of this optimality uses the adversary method: for any quantum algorithm that searches an unstructured database, the probability of finding the marked item after k queries is at most k²/N. To achieve probability ≥ 1/2, you need k ≥ √N/2 queries.
 

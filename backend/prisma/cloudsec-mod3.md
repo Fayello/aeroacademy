@@ -1,4 +1,4 @@
-# Module 3 — Network Security in the Cloud
+# Module 3: Network Security in the Cloud
 
 ## Why Traditional Network Security Thinking Fails in the Cloud
 
@@ -166,11 +166,11 @@ However, the company's network architecture prevented lateral movement:
 - Production security groups: completely separate, no references to dev security groups
 
 **What the attacker tried:**
-1. Accessed the dev application via the developer's credentials — succeeded
-2. Attempted to scan production VPC from the dev instance — failed (no route from dev VPC to production VPC)
-3. Attempted to assume a role in the production account — failed (IAM trust policy only allows assume-role from specific roles, not from arbitrary principals)
-4. Attempted to access S3 buckets in production — failed (cross-account bucket policies deny access from dev account)
-5. Attempted to access RDS in production — failed (production security group allows inbound only from production app security group)
+1. Accessed the dev application via the developer's credentials: succeeded
+2. Attempted to scan production VPC from the dev instance: failed (no route from dev VPC to production VPC)
+3. Attempted to assume a role in the production account: failed (IAM trust policy only allows assume-role from specific roles, not from arbitrary principals)
+4. Attempted to access S3 buckets in production: failed (cross-account bucket policies deny access from dev account)
+5. Attempted to access RDS in production: failed (production security group allows inbound only from production app security group)
 
 **What saved the company:**
 - Separate VPCs with no peering or Transit Gateway route between them

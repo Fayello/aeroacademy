@@ -1,6 +1,6 @@
-# Module 2 — Network Scanning
+# Module 2: Network Scanning
 
-Module 1 got you a basic port scanner. It works, but it's naive. It tells you which ports are open and grabs banners. A real network scanner does more — it fingerprints services, detects OS types, identifies network topology, and handles the complexities of scanning networks that don't want to be scanned.
+Module 1 got you a basic port scanner. It works, but it's naive. It tells you which ports are open and grabs banners. A real network scanner does more: it fingerprints services, detects OS types, identifies network topology, and handles the complexities of scanning networks that don't want to be scanned.
 
 This module takes you from port scanning to network scanning. You'll learn different scanning techniques, understand why they exist, and build a tool that actually discovers what's on a network.
 
@@ -8,15 +8,15 @@ This module takes you from port scanning to network scanning. You'll learn diffe
 
 Effective network scanning requires understanding how protocols work at the packet level. TCP provides reliable, ordered delivery through a three-way handshake. UDP provides fast, connectionless delivery without guarantees. ICMP handles error reporting and diagnostics. Each protocol behaves differently when scanned, and understanding these differences is what separates a script kiddie from a security professional.
 
-TCP scanning is straightforward because TCP is connection-oriented. You either complete the handshake (connect scan) or partially complete it (SYN scan). The server responds predictably because the protocol mandates it. UDP scanning is harder because UDP is connectionless. You send a packet and either get a response or you don't. Firewalls silently drop UDP packets, ICMP rate limiting hides responses, and services might not respond to empty UDP packets. This makes UDP scanning slow and unreliable, but many critical services run on UDP — DNS, SNMP, DHCP, TFTP, NTP.
+TCP scanning is straightforward because TCP is connection-oriented. You either complete the handshake (connect scan) or partially complete it (SYN scan). The server responds predictably because the protocol mandates it. UDP scanning is harder because UDP is connectionless. You send a packet and either get a response or you don't. Firewalls silently drop UDP packets, ICMP rate limiting hides responses, and services might not respond to empty UDP packets. This makes UDP scanning slow and unreliable, but many critical services run on UDP: DNS, SNMP, DHCP, TFTP, NTP.
 
-Understanding why certain scan types exist requires thinking about what defenders see. A connect scan completes the full TCP handshake. The server allocates resources, logs the connection, and might trigger intrusion detection systems. A SYN scan never completes the handshake, so the server doesn't allocate resources and many logging systems ignore half-open connections. A FIN scan exploits how some operating systems handle unexpected FIN packets — they respond with RST on closed ports but silently drop FIN packets on open ports. These scan types evolved because defenders adapted to simpler scanning techniques.
+Understanding why certain scan types exist requires thinking about what defenders see. A connect scan completes the full TCP handshake. The server allocates resources, logs the connection, and might trigger intrusion detection systems. A SYN scan never completes the handshake, so the server doesn't allocate resources and many logging systems ignore half-open connections. A FIN scan exploits how some operating systems handle unexpected FIN packets: they respond with RST on closed ports but silently drop FIN packets on open ports. These scan types evolved because defenders adapted to simpler scanning techniques.
 
 The practical implication is that no single scan type works everywhere. Firewalls block SYN packets but allow established connections. Intrusion detection systems flag multiple connection attempts but ignore single packets. Some services respond only to specific probes. Effective scanning combines multiple techniques and interprets the results holistically. A port that appears closed in a SYN scan might appear open in a connect scan because a firewall is dropping SYN packets but allowing TCP connections.
 
 ## Socket Programming Deep Dive
 
-You used `socket.connect_ex` in Module 1. That's a TCP connect scan — the most basic scan type. There are others, and understanding them requires understanding what happens at the socket level.
+You used `socket.connect_ex` in Module 1. That's a TCP connect scan: the most basic scan type. There are others, and understanding them requires understanding what happens at the socket level.
 
 ### TCP Socket States
 
@@ -26,7 +26,7 @@ When you create a TCP connection, both sides go through a state machine. The thr
 2. Server responds with SYN-ACK
 3. Client sends ACK
 
-A TCP connect scan completes all three steps. The server logs the connection because it was fully established. A SYN scan (half-open scan) stops after step 2 — the client never completes the handshake. This is stealthier because many servers don't log half-open connections.
+A TCP connect scan completes all three steps. The server logs the connection because it was fully established. A SYN scan (half-open scan) stops after step 2: the client never completes the handshake. This is stealthier because many servers don't log half-open connections.
 
 ```python
 import socket
@@ -35,7 +35,7 @@ import socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.settimeout(2)
 sock.connect((target, port))
-# Connection fully established — server logs this
+# Connection fully established: server logs this
 sock.close()
 ```
 
@@ -75,7 +75,7 @@ else:
 
 ### UDP Scanning
 
-UDP is connectionless. There's no handshake. You send a packet and either get a response or you don't. This makes UDP scanning slow and unreliable — you need timeouts to determine if a port is closed or just didn't respond.
+UDP is connectionless. There's no handshake. You send a packet and either get a response or you don't. This makes UDP scanning slow and unreliable: you need timeouts to determine if a port is closed or just didn't respond.
 
 ```python
 import socket
@@ -89,16 +89,16 @@ def udp_scan(target, port, timeout=2):
         data, addr = sock.recvfrom(1024)
         return port, True, data.decode(errors="ignore")
     except socket.timeout:
-        # No response — port might be open or filtered
+        # No response: port might be open or filtered
         return port, False, "No response (open|filtered)"
     except ConnectionRefusedError:
-        # ICMP port unreachable — port is closed
+        # ICMP port unreachable: port is closed
         return port, False, "Closed"
     finally:
         sock.close()
 ```
 
-UDP scanning is inherently unreliable. ICMP rate limiting means you might miss responses. Firewall rules might drop ICMP. A "no response" result doesn't conclusively mean the port is open — it means we don't know.
+UDP scanning is inherently unreliable. ICMP rate limiting means you might miss responses. Firewall rules might drop ICMP. A "no response" result doesn't conclusively mean the port is open: it means we don't know.
 
 ### Socket Options That Matter
 
@@ -107,18 +107,18 @@ Several socket options affect scanning behavior:
 ```python
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Timeout — critical for scanning
+# Timeout: critical for scanning
 sock.settimeout(3)
 
-# SO_REUSEADDR — lets you reuse sockets in TIME_WAIT state
+# SO_REUSEADDR: lets you reuse sockets in TIME_WAIT state
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-# SO_LINGER — control behavior on close
+# SO_LINGER: control behavior on close
 # Linger on close, sending remaining data for up to 10 seconds
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER,
                 struct.pack('ii', 1, 10))
 
-# TCP_NODELAY — disable Nagle's algorithm for low latency
+# TCP_NODELAY: disable Nagle's algorithm for low latency
 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 ```
 
@@ -131,7 +131,7 @@ There are six common scan types. Each has tradeoffs between stealth, speed, and 
 The basic scan from Module 1. Completes the full three-way handshake.
 
 **Pros:** Reliable, works without root privileges, gets full banners.
-**Cons:** Noisy — servers log completed connections.
+**Cons:** Noisy: servers log completed connections.
 
 ### SYN Scan (Half-Open)
 
@@ -265,7 +265,7 @@ print(f"\nFound {len(open_ports)} open ports")
 
 ## Service Detection and Fingerprinting
 
-Knowing a port is open is step one. Knowing what's running on it is step two. Service detection goes beyond banner grabbing — it sends specific probes and analyzes responses to identify services.
+Knowing a port is open is step one. Knowing what's running on it is step two. Service detection goes beyond banner grabbing: it sends specific probes and analyzes responses to identify services.
 
 ### Banner Grabbing Techniques
 
@@ -391,7 +391,7 @@ def fingerprint_service(target, port, timeout=3):
 
 ## Building a Network Discovery Tool
 
-Let's build something that discovers what's on a network — not just which ports are open, but what devices exist, what services they run, and how they're configured.
+Let's build something that discovers what's on a network: not just which ports are open, but what devices exist, what services they run, and how they're configured.
 
 ### Host Discovery
 
@@ -738,13 +738,13 @@ The most common mistake is scanning through a VPN or proxy. When you scan throug
 
 The second mistake is ignoring firewalls and intrusion detection systems. A SYN scan that works on your local network might produce completely different results through a corporate firewall. The firewall might drop SYN packets but allow established connections. It might rate-limit connections, causing your fast scan to miss open ports. It might inject RST packets, making closed ports appear open. Understanding the network path between you and the target is essential for interpreting results correctly.
 
-The third mistake is assuming all ports behave the same way. Port 80 (HTTP) responds differently than port 22 (SSH). Port 53 (DNS) uses UDP, not TCP. Port 443 (HTTPS) might require specific TLS ClientHello messages. Some services only respond to specific probes — MySQL responds to a login attempt, not a blank connection. Effective scanning requires protocol-specific logic for different port ranges.
+The third mistake is assuming all ports behave the same way. Port 80 (HTTP) responds differently than port 22 (SSH). Port 53 (DNS) uses UDP, not TCP. Port 443 (HTTPS) might require specific TLS ClientHello messages. Some services only respond to specific probes: MySQL responds to a login attempt, not a blank connection. Effective scanning requires protocol-specific logic for different port ranges.
 
 The fourth mistake is scanning too fast. Aggressive scanning triggers intrusion detection systems, overwhelms target services, and produces unreliable results. Network devices have有限 bandwidth and processing capacity. Scanning a /24 network at maximum speed sends thousands of packets per second. This triggers rate limiting, packet loss, and false negatives. The solution is rate limiting your scanner and adjusting speed based on target response.
 
 ## Evidence
 
-Network scanning is the foundation of penetration testing and network defense. You can't secure what you don't know exists. The tools you built here — host discovery, port scanning, service fingerprinting — are the same tools commercial scanners use, just less polished.
+Network scanning is the foundation of penetration testing and network defense. You can't secure what you don't know exists. The tools you built here: host discovery, port scanning, service fingerprinting: are the same tools commercial scanners use, just less polished.
 
 The key insight is that scanning is a series of tradeoffs: speed vs. stealth, thoroughness vs. reliability, accuracy vs. noise. Understanding these tradeoffs matters more than memorizing commands.
 

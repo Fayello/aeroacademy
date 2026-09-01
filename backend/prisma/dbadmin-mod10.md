@@ -1,6 +1,6 @@
-# Module 10 — Database Security Hardening
+# Module 10: Database Security Hardening
 
-Database security is not a single setting — it is a layered defense strategy. This module covers the practical steps to harden a database for production: audit configurations, compliance requirements, vulnerability scanning, database firewalls, and a complete scenario for hardening PostgreSQL to meet PCI DSS requirements. Every recommendation in this module is something you can implement today. No theory without practice.
+Database security is not a single setting: it is a layered defense strategy. This module covers the practical steps to harden a database for production: audit configurations, compliance requirements, vulnerability scanning, database firewalls, and a complete scenario for hardening PostgreSQL to meet PCI DSS requirements. Every recommendation in this module is something you can implement today. No theory without practice.
 
 ## Audit Configurations
 
@@ -11,7 +11,7 @@ Auditing answers three questions: who accessed the data, what did they do, and w
 pgAudit provides detailed session-level and object-level auditing. It logs who ran which query, when, and what objects were affected.
 
 ```ini
-# postgresql.conf — install and configure pgAudit
+# postgresql.conf: install and configure pgAudit
 shared_preload_libraries = 'pgaudit'
 pgaudit.log = 'all'                    # Log all operations
 pgaudit.log_catalog = on               # Log catalog access (information_schema)
@@ -681,7 +681,7 @@ REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 **Week 2: Network Security and TLS**
 
 ```ini
-# postgresql.conf — security hardening
+# postgresql.conf: security hardening
 listen_addresses = '10.0.1.10'  # Bind to specific IP, not all interfaces
 port = 5432
 max_connections = 200
@@ -710,11 +710,11 @@ idle_in_transaction_session_timeout = '10min'
 ```
 
 ```ini
-# pg_hba.conf — restrict access
+# pg_hba.conf: restrict access
 # Local admin access
 local   all   postgres                peer
 
-# Application access — TLS required
+# Application access: TLS required
 hostssl paymentdb  app_orders   10.0.1.0/24  scram-sha-256
 hostssl paymentdb  app_payments 10.0.1.0/24  scram-sha-256
 hostssl paymentdb  app_reports  10.0.2.0/24  scram-sha-256
@@ -722,7 +722,7 @@ hostssl paymentdb  app_reports  10.0.2.0/24  scram-sha-256
 # Monitoring access
 hostssl paymentdb  db_monitor   10.0.3.0/24  scram-sha-256
 
-# Backup access — local only
+# Backup access: local only
 local   paymentdb  db_backup                peer
 
 # Replication

@@ -1,4 +1,4 @@
-# Module 5 — Pulumi
+# Module 5: Pulumi
 
 Terraform's HCL is powerful, but it is a domain-specific language with limitations. When you need complex logic like loops over dynamic data, conditional resource creation based on API calls, or integration with your organization's internal systems, HCL starts to feel constraining. You find yourself writing null_resource blocks with local-exec provisioners to do things that would be a three-line function in any programming language.
 

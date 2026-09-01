@@ -1,4 +1,4 @@
-# Module 8 — Deployment
+# Module 8: Deployment
 
 Writing code is half the job. Getting it running in production is the other half. This module covers Docker containerization, CI/CD with GitHub Actions, cloud deployment, and how to ship code reliably without breaking things at 3 AM.
 
@@ -10,19 +10,19 @@ The goal of deployment is repeatability. You should be able to deploy the same c
 
 Manual deployment is error-prone. Someone forgets to run a migration. Someone deploys the wrong branch. Someone does not set an environment variable. Automated deployment eliminates these mistakes by following the same script every time.
 
-The deployment pipeline typically has four stages. First is the build stage, where your code is compiled, bundled, and packaged. Second is the test stage, where automated tests verify that the code works correctly. Third is the staging stage, where the code is deployed to a production-like environment for final verification. Fourth is the production stage, where the code is deployed to real users. Each stage acts as a gate — if the build fails, you do not run tests. If tests fail, you do not deploy to staging. If staging verification fails, you do not deploy to production.
+The deployment pipeline typically has four stages. First is the build stage, where your code is compiled, bundled, and packaged. Second is the test stage, where automated tests verify that the code works correctly. Third is the staging stage, where the code is deployed to a production-like environment for final verification. Fourth is the production stage, where the code is deployed to real users. Each stage acts as a gate: if the build fails, you do not run tests. If tests fail, you do not deploy to staging. If staging verification fails, you do not deploy to production.
 
-Containerization has changed how we think about deployment. Before Docker, you had to configure the server environment manually — install the right version of Node.js, set up the database client, configure the web server. With Docker, you package the entire environment into a container that runs identically everywhere. The server just needs Docker installed. This eliminates the "works on my machine" problem and makes it possible to deploy to any cloud provider without changes.
+Containerization has changed how we think about deployment. Before Docker, you had to configure the server environment manually: install the right version of Node.js, set up the database client, configure the web server. With Docker, you package the entire environment into a container that runs identically everywhere. The server just needs Docker installed. This eliminates the "works on my machine" problem and makes it possible to deploy to any cloud provider without changes.
 
 The distinction between building an application and deploying an application is important. Building means compiling TypeScript, bundling JavaScript, optimizing images, and creating production-ready artifacts. Deploying means getting those artifacts onto a server, configuring the environment, running migrations, and starting the application. Many developers conflate these two activities, but they are separate concerns that require separate tooling.
 
 ## Docker Containerization
 
-Docker packages your application and its dependencies into a container — a lightweight, portable unit that runs the same way everywhere. The container includes the operating system libraries, the Node.js runtime, your application code, and all npm dependencies. This means "it works on my machine" becomes "it works everywhere."
+Docker packages your application and its dependencies into a container: a lightweight, portable unit that runs the same way everywhere. The container includes the operating system libraries, the Node.js runtime, your application code, and all npm dependencies. This means "it works on my machine" becomes "it works everywhere."
 
 Understanding Docker images and containers is essential. A Docker image is a read-only template that contains everything needed to run an application. A Docker container is a running instance of an image. You can create multiple containers from the same image, each running independently. Images are built from a Dockerfile, which is a text file containing step-by-step instructions for building the image.
 
-The Dockerfile is the most important file in your deployment setup. It defines the base image (usually a minimal Linux distribution with Node.js), the working directory, the files to copy, the commands to run, and the user to run as. Each instruction in the Dockerfile creates a layer in the image. Docker caches these layers, so rebuilding an image after a small change is fast — only the affected layers are rebuilt.
+The Dockerfile is the most important file in your deployment setup. It defines the base image (usually a minimal Linux distribution with Node.js), the working directory, the files to copy, the commands to run, and the user to run as. Each instruction in the Dockerfile creates a layer in the image. Docker caches these layers, so rebuilding an image after a small change is fast: only the affected layers are rebuilt.
 
 Layer ordering is critical for build performance. Docker caches layers from top to bottom. If a layer changes, all subsequent layers are rebuilt. This means you should put instructions that change infrequently (like installing dependencies) before instructions that change frequently (like copying source code). If you copy source code before installing dependencies, every code change triggers a full dependency installation.
 
@@ -30,7 +30,7 @@ The `.dockerignore` file prevents unnecessary files from being included in the i
 
 ### Why Multi-Stage Builds Matter
 
-A Dockerfile with a single stage copies everything — development dependencies, test files, source code — into the production image. This makes the image larger than necessary and potentially exposes sensitive files. Multi-stage builds solve this by separating the build process from the final image.
+A Dockerfile with a single stage copies everything: development dependencies, test files, source code: into the production image. This makes the image larger than necessary and potentially exposes sensitive files. Multi-stage builds solve this by separating the build process from the final image.
 
 ### Dockerfile
 
@@ -64,7 +64,7 @@ USER node
 CMD ["dumb-init", "node", "dist/index.js"]
 ```
 
-Each stage starts fresh from a base image. The `dependencies` stage installs only production dependencies. The `production` stage copies only what it needs. The `USER node` directive runs the application as a non-root user, which is a security best practice — if an attacker escapes the container, they have limited privileges.
+Each stage starts fresh from a base image. The `dependencies` stage installs only production dependencies. The `production` stage copies only what it needs. The `USER node` directive runs the application as a non-root user, which is a security best practice: if an attacker escapes the container, they have limited privileges.
 
 ### Docker Compose for Development
 
@@ -204,7 +204,7 @@ CI/CD (Continuous Integration / Continuous Deployment) automates testing and dep
 
 Continuous Integration means that every code change is automatically tested and merged into the main branch. When you push code, the CI pipeline runs your test suite, checks for linting errors, and verifies that the build succeeds. If any step fails, the change is rejected. This prevents broken code from accumulating in the codebase and makes it easy to identify which change introduced a bug.
 
-Continuous Deployment means that every change that passes the CI pipeline is automatically deployed to production. When tests pass, the application is built, containerized, and deployed. This eliminates the manual deployment step and ensures that production is always up to date. Continuous Deployment requires high confidence in your test suite — if your tests do not catch bugs, you will deploy broken code to production automatically.
+Continuous Deployment means that every change that passes the CI pipeline is automatically deployed to production. When tests pass, the application is built, containerized, and deployed. This eliminates the manual deployment step and ensures that production is always up to date. Continuous Deployment requires high confidence in your test suite: if your tests do not catch bugs, you will deploy broken code to production automatically.
 
 The distinction between Continuous Delivery and Continuous Deployment is subtle but important. Continuous Delivery means that every change is deployed to a staging environment and ready for production, but requires a manual approval step. Continuous Deployment means that every change goes directly to production without manual intervention. Most teams start with Continuous Delivery and move to Continuous Deployment as their test suite matures.
 
@@ -346,7 +346,7 @@ jobs:
             docker system prune -f
 ```
 
-The pipeline has three jobs that run in sequence: test, build-and-push, and deploy. Each job depends on the previous one — if tests fail, the image is not built. If the build fails, the deployment does not happen. The image is tagged with both `latest` and the git commit SHA, so you can always roll back to a specific version.
+The pipeline has three jobs that run in sequence: test, build-and-push, and deploy. Each job depends on the previous one: if tests fail, the image is not built. If the build fails, the deployment does not happen. The image is tagged with both `latest` and the git commit SHA, so you can always roll back to a specific version.
 
 ## Cloud Deployment
 
@@ -355,7 +355,7 @@ The pipeline has three jobs that run in sequence: test, build-and-push, and depl
 Never hardcode secrets. Use environment variables:
 
 ```bash
-# .env (development only — never commit this)
+# .env (development only: never commit this)
 DATABASE_URL=postgresql://localhost:5432/myapp_dev
 JWT_SECRET=dev-secret-key
 REDIS_URL=redis://localhost:6379
@@ -415,7 +415,7 @@ router.get("/health", async (req, res) => {
 module.exports = router;
 ```
 
-A health check endpoint is not just a nice-to-have — it is required for container orchestrators, load balancers, and monitoring tools. The health check should verify that all critical dependencies (database, cache, external services) are reachable. A 503 status code tells the load balancer to stop sending traffic to this instance until it recovers.
+A health check endpoint is not just a nice-to-have: it is required for container orchestrators, load balancers, and monitoring tools. The health check should verify that all critical dependencies (database, cache, external services) are reachable. A 503 status code tells the load balancer to stop sending traffic to this instance until it recovers.
 
 ### Graceful Shutdown
 
@@ -454,7 +454,7 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 Graceful shutdown is often overlooked but critical for production applications. When you deploy a new version, the old container is stopped. Without graceful shutdown, the process is killed immediately, which can leave database transactions incomplete, file writes unfinished, and responses partially sent to clients. With graceful shutdown, the application stops accepting new connections, waits for existing requests to complete, closes database connections, and then exits cleanly.
 
-The timeout is essential. Without it, a stuck request (like a long-running database query or an external API call that hangs) would prevent the process from ever shutting down. The timeout ensures that the process exits within a reasonable time, even if some requests are stuck. A 30-second timeout is a good default — long enough for most requests to complete, short enough that deployments do not hang.
+The timeout is essential. Without it, a stuck request (like a long-running database query or an external API call that hangs) would prevent the process from ever shutting down. The timeout ensures that the process exits within a reasonable time, even if some requests are stuck. A 30-second timeout is a good default: long enough for most requests to complete, short enough that deployments do not hang.
 
 SIGTERM and SIGINT are the two signals you need to handle. SIGTERM is sent by Docker when you stop a container, by Kubernetes when it needs to evict a pod, and by process managers when they need to restart the application. SIGINT is sent when you press Ctrl+C in the terminal. Both signals should trigger the same graceful shutdown logic.
 
@@ -558,7 +558,7 @@ done
 
 ## Nginx Configuration
 
-Nginx sits in front of your application as a reverse proxy. It handles SSL termination (so your Node.js application does not need to), serves static files directly from disk (much faster than through Node.js), compresses responses with gzip, rate-limits API requests, and adds security headers. The `try_files $uri $uri/ /index.html` directive is critical for single-page applications — it serves `index.html` for all routes that do not match a static file, letting the client-side router handle the routing.
+Nginx sits in front of your application as a reverse proxy. It handles SSL termination (so your Node.js application does not need to), serves static files directly from disk (much faster than through Node.js), compresses responses with gzip, rate-limits API requests, and adds security headers. The `try_files $uri $uri/ /index.html` directive is critical for single-page applications: it serves `index.html` for all routes that do not match a static file, letting the client-side router handle the routing.
 
 Understanding the Nginx configuration is important for debugging production issues. If static files are not loading, check the `root` directive. If the API is returning 502 Bad Gateway, check that the upstream server is running. If SSL is not working, check the certificate paths. If rate limiting is too aggressive, adjust the `rate` and `burst` parameters.
 
@@ -635,7 +635,7 @@ http {
 }
 ```
 
-Nginx sits in front of your application as a reverse proxy. It handles SSL termination (so your Node.js application does not need to), serves static files directly from disk (much faster than through Node.js), compresses responses with gzip, rate-limits API requests, and adds security headers. The `try_files $uri $uri/ /index.html` directive is critical for single-page applications — it serves `index.html` for all routes that do not match a static file, letting the client-side router handle the routing.
+Nginx sits in front of your application as a reverse proxy. It handles SSL termination (so your Node.js application does not need to), serves static files directly from disk (much faster than through Node.js), compresses responses with gzip, rate-limits API requests, and adds security headers. The `try_files $uri $uri/ /index.html` directive is critical for single-page applications: it serves `index.html` for all routes that do not match a static file, letting the client-side router handle the routing.
 
 ## Assessment
 

@@ -1,4 +1,4 @@
-# Module 8 — Token Security
+# Module 8: Token Security
 
 Tokens are the fundamental building blocks of the crypto ecosystem. ERC-20 tokens represent assets, governance rights, and access credentials. A single vulnerability in a token contract can drain millions of dollars from every holder, every DEX pool, and every protocol that integrates the token. This module covers ERC-20 vulnerabilities, approval mechanisms, token standards beyond ERC-20, and the real exploits that have leveraged token vulnerabilities to devastating effect.
 
@@ -22,7 +22,7 @@ interface IERC20 {
 }
 ```
 
-These six functions and two events are all you need to implement a basic token. But the devil is in the details — how you implement these functions determines whether your token is secure or vulnerable.
+These six functions and two events are all you need to implement a basic token. But the devil is in the details: how you implement these functions determines whether your token is secure or vulnerable.
 
 ## Approval Attacks
 
@@ -59,7 +59,7 @@ function decreaseAllowance(address spender, uint256 subtractedValue) external re
 }
 ```
 
-With these functions, the approval change is atomic — there is no window for front-running.
+With these functions, the approval change is atomic: there is no window for front-running.
 
 ### OpenZeppelin's ERC20
 
@@ -323,13 +323,13 @@ contract MutableNFT is ERC721 {
 }
 ```
 
-The owner can change the metadata after sale, replacing legitimate artwork with something else. This is a trust issue — buyers must trust the owner not to alter metadata.
+The owner can change the metadata after sale, replacing legitimate artwork with something else. This is a trust issue: buyers must trust the owner not to alter metadata.
 
 **Mitigation:** Use immutable metadata (IPFS hashes stored in the constructor) or decentralized metadata storage (IPFS with content-addressed URIs).
 
 ### Royalty Enforcement
 
-ERC-2981 defines a royalty standard that allows NFTs to specify a royalty percentage for secondary sales. However, royalty enforcement is voluntary — marketplaces can choose not to honor it:
+ERC-2981 defines a royalty standard that allows NFTs to specify a royalty percentage for secondary sales. However, royalty enforcement is voluntary: marketplaces can choose not to honor it:
 
 ```solidity
 // ERC-2981 royalty standard

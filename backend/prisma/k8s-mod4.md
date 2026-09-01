@@ -1,4 +1,4 @@
-# Module 4 — Network Policies
+# Module 4: Network Policies
 
 By default, every pod in a Kubernetes cluster can communicate with every other pod. No restrictions. A pod in the `frontend` namespace can reach a pod in the `database` namespace. A pod on node A can reach a pod on node B. This flat network model is convenient for development but dangerous in production. Network Policies fix this by defining rules that control traffic flow between pods, namespaces, and external endpoints.
 
@@ -22,7 +22,7 @@ When a pod is targeted by at least one NetworkPolicy:
 - **Ingress**: Denied by default. Only traffic matching an ingress rule is allowed.
 - **Egress**: Denied by default. Only traffic matching an egress rule is allowed.
 
-This is a critical point. Network Policies are additive. If you create two policies that target the same pod, the union of their rules applies. Deny rules are not supported — you can only allow specific traffic.
+This is a critical point. Network Policies are additive. If you create two policies that target the same pod, the union of their rules applies. Deny rules are not supported: you can only allow specific traffic.
 
 ### Ingress Rules
 
@@ -873,7 +873,7 @@ kubectl -n kube-system get configmap coredns -o yaml
 
 ## Assessment
 
-### Lab 1 — Network Policy Basics (30 minutes)
+### Lab 1: Network Policy Basics (30 minutes)
 
 1. Create a namespace `lab-netpol` and apply a default deny-all policy.
 2. Deploy two pods: `client` and `server` in the `lab-netpol` namespace.
@@ -883,7 +883,7 @@ kubectl -n kube-system get configmap coredns -o yaml
 
 **Grading**: 10 points. 2 points per task. Full credit for correct policies and accurate connectivity tests.
 
-### Lab 2 — Multi-Namespace Policies (45 minutes)
+### Lab 2: Multi-Namespace Policies (45 minutes)
 
 1. Create three namespaces: `web`, `api`, `db`.
 2. Deploy pods in each namespace.
@@ -894,7 +894,7 @@ kubectl -n kube-system get configmap coredns -o yaml
 
 **Grading**: 15 points. 3 points per task. Full credit for correct policies, working connectivity, and comprehensive testing.
 
-### Lab 3 — Production Microsegmentation (45 minutes)
+### Lab 3: Production Microsegmentation (45 minutes)
 
 1. Design a microsegmentation plan for a 5-service application.
 2. Write all NetworkPolicy manifests.

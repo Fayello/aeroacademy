@@ -1,12 +1,12 @@
-# Module 10 — Post-Incident Review
+# Module 10: Post-Incident Review
 
-The incident is over. The attacker has been removed, systems are restored, and business is back to normal. But the work is not done. The post-incident review — also called a post-mortem or after-action review — is where you turn a bad experience into organizational improvement. Without a structured review, you will make the same mistakes again. Without accountability, action items will sit in a backlog forever. Without metrics, you cannot demonstrate improvement. This module covers the blameless post-mortem process, root cause analysis, action item tracking, metrics and reporting, and how to conduct reviews that actually change behavior.
+The incident is over. The attacker has been removed, systems are restored, and business is back to normal. But the work is not done. The post-incident review: also called a post-mortem or after-action review: is where you turn a bad experience into organizational improvement. Without a structured review, you will make the same mistakes again. Without accountability, action items will sit in a backlog forever. Without metrics, you cannot demonstrate improvement. This module covers the blameless post-mortem process, root cause analysis, action item tracking, metrics and reporting, and how to conduct reviews that actually change behavior.
 
 ## Why Post-Incident Reviews Matter
 
 The post-incident review is the most undervalued phase of incident response, and it is the phase that makes you better. Without it, every incident is a standalone event that teaches you nothing. With it, every incident becomes a lesson that strengthens your defenses.
 
-The purpose of the post-incident review is not to assign blame. Blame is counterproductive — it makes people defensive and discourages transparency. The purpose is to understand what happened, why it happened, and what needs to change to prevent it from happening again.
+The purpose of the post-incident review is not to assign blame. Blame is counterproductive: it makes people defensive and discourages transparency. The purpose is to understand what happened, why it happened, and what needs to change to prevent it from happening again.
 
 The post-incident review also serves as a memorial. It documents the incident for future reference. When someone asks "what happened during the breach last year?" the post-incident review provides the answer. When a new team member joins, the post-incident reviews from previous incidents provide context and lessons.
 
@@ -18,9 +18,9 @@ A blameless post-mortem focuses on the process and the systems, not on the indiv
 
 **Focus on systems, not people.** When something goes wrong, ask "why did the process allow this to happen?" not "why did this person make this mistake?" Every human error is a symptom of a system weakness.
 
-**Assume positive intent.** Assume that everyone involved in the incident was trying to do the right thing. The analyst who missed the alert was not lazy — they were overloaded with alerts. The engineer who did not patch the server was not negligent — they were not aware of the vulnerability.
+**Assume positive intent.** Assume that everyone involved in the incident was trying to do the right thing. The analyst who missed the alert was not lazy: they were overloaded with alerts. The engineer who did not patch the server was not negligent: they were not aware of the vulnerability.
 
-**Identify contributing factors.** Incidents rarely have a single root cause. They result from a combination of factors — technical, process, and human. The post-mortem should identify all contributing factors.
+**Identify contributing factors.** Incidents rarely have a single root cause. They result from a combination of factors: technical, process, and human. The post-mortem should identify all contributing factors.
 
 **Focus on improvement, not punishment.** The output of the post-mortem should be action items that improve the process. If the output is "person X should have done Y," you have not identified a systemic improvement.
 
@@ -36,11 +36,11 @@ The facilitator should also collect data about the incident: how long each phase
 
 **Meeting structure:**
 
-1. **Timeline walkthrough (15-20 minutes):** Walk through the incident timeline. Stick to facts — what happened, when, and who was involved. Avoid opinions or judgments during the timeline walkthrough.
+1. **Timeline walkthrough (15-20 minutes):** Walk through the incident timeline. Stick to facts: what happened, when, and who was involved. Avoid opinions or judgments during the timeline walkthrough.
 
 2. **What went well (10-15 minutes):** Identify what worked. Did the detection happen quickly? Was the containment effective? Was the communication clear? Acknowledging what went well reinforces good behavior and provides a positive foundation for discussing improvements.
 
-3. **What did not go well (15-20 minutes):** Identify what did not work. Was the detection too slow? Was the containment ineffective? Were there communication gaps? Be specific — "we need better logging" is not actionable; "we could not reconstruct the attacker's commands because PowerShell module logging was not enabled" is actionable.
+3. **What did not go well (15-20 minutes):** Identify what did not work. Was the detection too slow? Was the containment ineffective? Were there communication gaps? Be specific: "we need better logging" is not actionable; "we could not reconstruct the attacker's commands because PowerShell module logging was not enabled" is actionable.
 
 4. **What would we do differently (15-20 minutes):** Based on what went well and what did not, identify what would be done differently next time. This is where action items are generated.
 
@@ -62,7 +62,7 @@ The facilitator should distribute a summary of the meeting within 24 hours. The 
 
 ## Root Cause Analysis
 
-Root cause analysis is the process of identifying the fundamental reason why an incident occurred. Surface-level causes are easy to identify — the attacker exploited a vulnerability, the phishing email bypassed the filter, the analyst missed the alert. Root cause analysis digs deeper to understand why these things happened.
+Root cause analysis is the process of identifying the fundamental reason why an incident occurred. Surface-level causes are easy to identify: the attacker exploited a vulnerability, the phishing email bypassed the filter, the analyst missed the alert. Root cause analysis digs deeper to understand why these things happened.
 
 ### The 5 Whys
 
@@ -78,7 +78,7 @@ Example:
 4. **Why?** The gateway was not configured to detect lookalike domains.
 5. **Why?** The email gateway configuration had not been updated since it was deployed two years ago.
 
-The root cause is not the phishing email — it is the outdated email gateway configuration. Fixing the root cause (updating the email gateway configuration) prevents future phishing emails from bypassing detection. Fixing only the surface cause (blocking this specific phishing email) does not prevent the next one.
+The root cause is not the phishing email: it is the outdated email gateway configuration. Fixing the root cause (updating the email gateway configuration) prevents future phishing emails from bypassing detection. Fixing only the surface cause (blocking this specific phishing email) does not prevent the next one.
 
 ### Fishbone Diagrams
 
@@ -162,7 +162,7 @@ The tracking system should include:
 - **Priority:** High, medium, low
 - **Source:** Which incident generated this action item
 
-The tracking system should be reviewed regularly — at least monthly. Action items that are past due should be escalated. Action items that are blocked should have the blockers addressed. Action items that are completed should be verified.
+The tracking system should be reviewed regularly: at least monthly. Action items that are past due should be escalated. Action items that are blocked should have the blockers addressed. Action items that are completed should be verified.
 
 ### Follow-Up Accountability
 
@@ -170,7 +170,7 @@ Accountability is what makes action items happen. Without accountability, action
 
 The most effective accountability mechanism is executive sponsorship. If the CISO or CTO is tracking action items and asking for updates, things get done. If action items are tracked only by the security team, they compete with other priorities and may not get completed.
 
-Regular status reviews are another accountability mechanism. Monthly reviews of action item status keep the items visible and the owners accountable. Public accountability — reporting status to leadership — creates additional motivation to complete items.
+Regular status reviews are another accountability mechanism. Monthly reviews of action item status keep the items visible and the owners accountable. Public accountability: reporting status to leadership: creates additional motivation to complete items.
 
 ### Closing Action Items
 
@@ -200,7 +200,7 @@ Metrics measure the effectiveness of your incident response program. Without met
 
 Metrics need to be reported to stakeholders. The reporting frequency and detail depend on the audience.
 
-**Executive reporting** should be concise and focused on business impact. Monthly or quarterly reports should include: number of incidents, business impact (financial, operational, reputational), key improvements made, and risks that need attention. Avoid technical jargon — executives need to understand the business implications, not the technical details.
+**Executive reporting** should be concise and focused on business impact. Monthly or quarterly reports should include: number of incidents, business impact (financial, operational, reputational), key improvements made, and risks that need attention. Avoid technical jargon: executives need to understand the business implications, not the technical details.
 
 **Operational reporting** should be detailed and focused on process effectiveness. Weekly reports should include: alerts triaged, incidents detected, containment times, recovery times, and action item status. Operational reporting helps the team identify trends and adjust their approach.
 
@@ -208,7 +208,7 @@ Metrics need to be reported to stakeholders. The reporting frequency and detail 
 
 ### Metrics for Improvement
 
-Metrics are not just for reporting — they are for improvement. Use metrics to:
+Metrics are not just for reporting: they are for improvement. Use metrics to:
 
 **Identify trends.** Is MTTD increasing or decreasing? Is the false positive rate increasing or decreasing? Trends reveal whether your program is improving or deteriorating.
 
@@ -216,7 +216,7 @@ Metrics are not just for reporting — they are for improvement. Use metrics to:
 
 **Justify investment.** If your MTTD is 30 days and you want to reduce it to 7 days, you need investment in additional detection capabilities. Metrics provide the data to justify that investment.
 
-**Track the impact of improvements.** After implementing an improvement — like deploying a new EDR agent or tuning detection rules — measure the impact on relevant metrics. If the improvement did not have the expected impact, investigate why.
+**Track the impact of improvements.** After implementing an improvement: like deploying a new EDR agent or tuning detection rules: measure the impact on relevant metrics. If the improvement did not have the expected impact, investigate why.
 
 ## Real Scenario: Lessons Learned from a Major Breach
 
@@ -312,7 +312,7 @@ Three months after the post-incident review:
 - The vulnerability risk scoring model was updated to include exploitability context (completed in 55 days)
 - IR playbooks were updated and a tabletop exercise was conducted (completed in 45 days)
 
-The post-incident review transformed a major breach into organizational improvement. The action items addressed the root causes that allowed the breach to occur, and the metrics tracked the impact of those improvements. Without the structured post-incident review, the organization would have fixed the immediate symptoms — disabled the compromised account, patched the vulnerability — but not the systemic issues that allowed the breach to happen.
+The post-incident review transformed a major breach into organizational improvement. The action items addressed the root causes that allowed the breach to occur, and the metrics tracked the impact of those improvements. Without the structured post-incident review, the organization would have fixed the immediate symptoms: disabled the compromised account, patched the vulnerability: but not the systemic issues that allowed the breach to happen.
 
 ## Building a Post-Incident Review Culture
 
@@ -320,9 +320,9 @@ A post-incident review process only works if the organization supports it. Build
 
 **Leadership commitment.** Executive leadership must support the post-incident review process. This means allocating time for reviews, attending reviews, and following up on action items. If leadership does not value post-incident reviews, the rest of the organization will not either.
 
-**Psychological safety.** People must feel safe to speak honestly during post-incident reviews. If people fear punishment for mistakes, they will not share what really happened. A blameless culture requires genuine psychological safety — not just lip service.
+**Psychological safety.** People must feel safe to speak honestly during post-incident reviews. If people fear punishment for mistakes, they will not share what really happened. A blameless culture requires genuine psychological safety: not just lip service.
 
-**Consistent execution.** Every significant incident should have a post-incident review. Not just the big incidents — the small ones too. The small incidents often reveal process gaps that lead to big incidents. Consistency builds the habit and ensures that improvement is continuous.
+**Consistent execution.** Every significant incident should have a post-incident review. Not just the big incidents: the small ones too. The small incidents often reveal process gaps that lead to big incidents. Consistency builds the habit and ensures that improvement is continuous.
 
 **Knowledge sharing.** Post-incident reviews produce institutional knowledge. Share this knowledge across the organization. A summary of each post-incident review should be available to the entire security team. Lessons learned from one team's incident can prevent similar incidents in other teams.
 
@@ -390,7 +390,7 @@ You are given incident data and must create a post-incident report with metrics.
 ### Key Concepts
 
 - **Blameless Post-Mortem:** Focus on systems and processes, not individuals; assume positive intent; identify contributing factors; focus on improvement
-- **Root Cause Analysis:** 5 Whys, fishbone diagrams, fault tree analysis — techniques for identifying fundamental causes
+- **Root Cause Analysis:** 5 Whys, fishbone diagrams, fault tree analysis: techniques for identifying fundamental causes
 - **Action Items:** Specific, measurable, assigned, time-bound commitments to improvement
 - **Metrics:** MTTD, MTTC, MTTR, incident volume, severity distribution, false positive rate
 - **Reporting:** Executive (business impact), operational (process effectiveness), regulatory (compliance)

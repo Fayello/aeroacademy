@@ -1,6 +1,6 @@
-# Module 10 — Network Security Monitoring
+# Module 10: Network Security Monitoring
 
-Network security monitoring (NSM) is the practice of collecting, analyzing, and acting on network data to detect and respond to threats. It is the eyes and ears of your security operations. Without NSM, you are flying blind — you will not know about an breach until someone tells you (usually the attacker or a third party). With NSM, you can detect anomalies, investigate incidents, and respond before damage spreads.
+Network security monitoring (NSM) is the practice of collecting, analyzing, and acting on network data to detect and respond to threats. It is the eyes and ears of your security operations. Without NSM, you are flying blind: you will not know about an breach until someone tells you (usually the attacker or a third party). With NSM, you can detect anomalies, investigate incidents, and respond before damage spreads.
 
 This module covers IDS/IPS systems (Snort, Suricata), network flow analysis (NetFlow, sFlow), anomaly detection, SIEM integration, threat hunting, and a real-world scenario of detecting data exfiltration via DNS.
 
@@ -216,7 +216,7 @@ threshold gen_id 1, sig_id 1000001, type limit, track by_src, count 1, seconds 6
 
 ## Network Flow Analysis
 
-Flow data is metadata about network conversations — who talked to whom, how much data was transferred, and for how long. Unlike packet captures, flow data is lightweight and can be retained for long periods.
+Flow data is metadata about network conversations: who talked to whom, how much data was transferred, and for how long. Unlike packet captures, flow data is lightweight and can be retained for long periods.
 
 ### NetFlow
 
@@ -443,7 +443,7 @@ Create dashboards that visualize:
 
 ## Threat Hunting on the Network
 
-Threat hunting is proactive — you assume a breach has occurred and search for evidence. It differs from reactive incident response (responding to an alert) because there may be no initial indicator of compromise.
+Threat hunting is proactive: you assume a breach has occurred and search for evidence. It differs from reactive incident response (responding to an alert) because there may be no initial indicator of compromise.
 
 ### Hunting Hypotheses
 
@@ -591,7 +591,7 @@ Output:
 11000 10.0.2.50
 ```
 
-Source: 10.0.2.50 — a database server that should not be making outbound DNS queries.
+Source: 10.0.2.50: a database server that should not be making outbound DNS queries.
 
 ### Step 3: Decode the Exfiltrated Data
 
@@ -688,15 +688,15 @@ Not all alerts require immediate attention. Triage alerts based on:
 
 ### Investigation Workflow
 
-1. **Alert triggers investigation** — analyst receives alert from SIEM/IDS
-2. **Initial triage** — determine if alert is true positive or false positive
-3. **Scope assessment** — identify all affected systems and users
-4. **Evidence collection** — capture packet captures, flow data, logs
-5. **Root cause analysis** — determine how the attacker gained access
-6. **Containment** — isolate affected systems, block attack vectors
-7. **Eradication** — remove malware, close vulnerabilities
-8. **Recovery** — restore systems from clean backups
-9. **Post-incident review** — document lessons learned, update monitoring
+1. **Alert triggers investigation**: analyst receives alert from SIEM/IDS
+2. **Initial triage**: determine if alert is true positive or false positive
+3. **Scope assessment**: identify all affected systems and users
+4. **Evidence collection**: capture packet captures, flow data, logs
+5. **Root cause analysis**: determine how the attacker gained access
+6. **Containment**: isolate affected systems, block attack vectors
+7. **Eradication**: remove malware, close vulnerabilities
+8. **Recovery**: restore systems from clean backups
+9. **Post-incident review**: document lessons learned, update monitoring
 
 ### Playbook Examples
 
@@ -752,4 +752,4 @@ Save the following to your portfolio:
 3. Threat hunting hypothesis and methodology for Task 3
 4. A written incident report (300-500 words) summarizing the DNS exfiltration scenario, including timeline, impact, containment actions, and lessons learned
 
-Network security monitoring is not a product you buy — it is a process you build. The tools (Snort, Suricata, NetFlow, SIEM) are commodities. The value comes from your ability to configure them correctly, interpret the data they produce, and respond to what they reveal. This requires continuous learning, as the threat landscape evolves constantly. Start with the basics (DNS monitoring, flow analysis, IDS rules) and build complexity over time.
+Network security monitoring is not a product you buy: it is a process you build. The tools (Snort, Suricata, NetFlow, SIEM) are commodities. The value comes from your ability to configure them correctly, interpret the data they produce, and respond to what they reveal. This requires continuous learning, as the threat landscape evolves constantly. Start with the basics (DNS monitoring, flow analysis, IDS rules) and build complexity over time.

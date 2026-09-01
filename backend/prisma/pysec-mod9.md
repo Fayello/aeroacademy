@@ -1,16 +1,16 @@
-# Module 9 — Malware Analysis Scripts
+# Module 9: Malware Analysis Scripts
 
-Malware analysis is the process of understanding what a malicious program does. Static analysis examines the code without running it. Dynamic analysis runs it in a sandbox. This module focuses on static analysis with Python — extracting strings, parsing PE files, matching YARA rules, and calculating entropy. These techniques let you triage suspicious files quickly without risking infection.
+Malware analysis is the process of understanding what a malicious program does. Static analysis examines the code without running it. Dynamic analysis runs it in a sandbox. This module focuses on static analysis with Python: extracting strings, parsing PE files, matching YARA rules, and calculating entropy. These techniques let you triage suspicious files quickly without risking infection.
 
 ## Why Malware Analysis Matters
 
 Every organization faces malware. Phishing emails deliver malicious attachments. Drive-by downloads compromise browsers. Supply chain attacks inject malicious code into legitimate software. When a suspicious file appears on a system, someone needs to determine: what does it do, is it actually malicious, and what damage did it cause?
 
-Malware analysis answers these questions. Static analysis examines the file without executing it, extracting indicators of compromise — IP addresses, domain names, file paths, registry keys. These indicators help you identify the malware family, attribute it to a threat actor, and find related samples. Dynamic analysis runs the malware in a controlled environment, observing its behavior — files created, network connections made, registry keys modified.
+Malware analysis answers these questions. Static analysis examines the file without executing it, extracting indicators of compromise: IP addresses, domain names, file paths, registry keys. These indicators help you identify the malware family, attribute it to a threat actor, and find related samples. Dynamic analysis runs the malware in a controlled environment, observing its behavior: files created, network connections made, registry keys modified.
 
-The practical challenge is volume. Security operations centers receive thousands of suspicious files daily. Most are benign — false positives from antivirus heuristics, encrypted archives flagged as suspicious, or legitimate tools misidentified as malware. You cannot run dynamic analysis on every file. It's too slow and too risky. Static analysis provides rapid triage. A file with high entropy, suspicious API calls, and known malicious strings gets priority for deeper analysis. A file with normal entropy, standard library imports, and no suspicious strings can be dismissed quickly.
+The practical challenge is volume. Security operations centers receive thousands of suspicious files daily. Most are benign: false positives from antivirus heuristics, encrypted archives flagged as suspicious, or legitimate tools misidentified as malware. You cannot run dynamic analysis on every file. It's too slow and too risky. Static analysis provides rapid triage. A file with high entropy, suspicious API calls, and known malicious strings gets priority for deeper analysis. A file with normal entropy, standard library imports, and no suspicious strings can be dismissed quickly.
 
-Python is ideal for malware analysis because it handles binary data naturally, has libraries for parsing file formats, and lets you write custom analysis logic quickly. The techniques in this module — string extraction, PE parsing, entropy calculation, YARA matching — form the foundation of automated malware triage systems used by security operations centers worldwide.
+Python is ideal for malware analysis because it handles binary data naturally, has libraries for parsing file formats, and lets you write custom analysis logic quickly. The techniques in this module: string extraction, PE parsing, entropy calculation, YARA matching: form the foundation of automated malware triage systems used by security operations centers worldwide.
 
 ## Static Analysis: String Extraction
 
@@ -854,23 +854,23 @@ Analyze a suspicious executable and produce a complete report. Time limit: 120 m
 
 ## Malware Analysis Safety
 
-Malware analysis involves handling malicious software. Even static analysis carries risk — a accidental double-click, a misconfigured tool that executes the sample, or a decompression routine that triggers malicious code. Safety protocols are not optional.
+Malware analysis involves handling malicious software. Even static analysis carries risk: a accidental double-click, a misconfigured tool that executes the sample, or a decompression routine that triggers malicious code. Safety protocols are not optional.
 
-Work in an isolated environment. Use a virtual machine with no network access. Disable shared folders between the host and the VM. Take a snapshot before analysis so you can revert to a clean state. The VM should be disposable — if it gets infected, delete it and create a new one.
+Work in an isolated environment. Use a virtual machine with no network access. Disable shared folders between the host and the VM. Take a snapshot before analysis so you can revert to a clean state. The VM should be disposable: if it gets infected, delete it and create a new one.
 
 Never analyze malware on a production system or a system connected to your network. A single mistake can infect your entire organization. The few minutes saved by analyzing on your workstation are not worth the risk of a company-wide outbreak.
 
-Store malware samples securely. Encrypt the storage directory. Use access controls to limit who can access the samples. Never email malware samples — use secure file transfer. Never upload samples to public services — they might distribute the malware to other users.
+Store malware samples securely. Encrypt the storage directory. Use access controls to limit who can access the samples. Never email malware samples: use secure file transfer. Never upload samples to public services: they might distribute the malware to other users.
 
 Document everything. When you find a malicious sample, document where you found it, what system it was on, and what it was doing. This documentation is essential for incident response and legal proceedings. Hash the sample and record the hashes. These hashes help other analysts identify the same malware in their environments.
 
-Static analysis is safe because you never execute the code. You examine the inert binary, extract strings, calculate entropy, and parse headers. The malware sits on disk doing nothing while you analyze it. This safety is why static analysis is the first step in any malware investigation — it provides intelligence without risk.
+Static analysis is safe because you never execute the code. You examine the inert binary, extract strings, calculate entropy, and parse headers. The malware sits on disk doing nothing while you analyze it. This safety is why static analysis is the first step in any malware investigation: it provides intelligence without risk.
 
 ## Evidence
 
-Malware analysis is how you understand threats. You can't defend against what you don't understand. The techniques you learned here — string extraction, PE parsing, entropy analysis, YARA matching — are the first steps in any malware investigation.
+Malware analysis is how you understand threats. You can't defend against what you don't understand. The techniques you learned here: string extraction, PE parsing, entropy analysis, YARA matching: are the first steps in any malware investigation.
 
-The key insight is that static analysis is fast and safe. You never run the malware. You examine its inert form and extract intelligence. This is triage — determining which samples need deeper analysis and which can be dismissed.
+The key insight is that static analysis is fast and safe. You never run the malware. You examine its inert form and extract intelligence. This is triage: determining which samples need deeper analysis and which can be dismissed.
 
 **Libraries covered:** re, math, json, hashlib, struct, pathlib, collections
 

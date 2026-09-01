@@ -1,4 +1,4 @@
-# Module 7 — Testing
+# Module 7: Testing
 
 Testing is the practice of verifying that your code works as expected. Without tests, every change is a gamble. With tests, every change is a verified improvement. This module covers unit tests with Jest, component tests with React Testing Library, integration tests, and how to build a test suite that actually catches bugs.
 
@@ -6,9 +6,9 @@ Testing is the practice of verifying that your code works as expected. Without t
 
 Tests are not a waste of time. They are an investment that pays off every time you make a change. Without tests, you refactor by hand-testing every page and endpoint. With tests, you refactor by running a command and fixing whatever breaks.
 
-The goal of testing is not 100% code coverage. The goal is confidence. If you have tests that cover the critical paths in your application — authentication, payment processing, data validation — you can make changes knowing that if something breaks, the tests will tell you.
+The goal of testing is not 100% code coverage. The goal is confidence. If you have tests that cover the critical paths in your application: authentication, payment processing, data validation: you can make changes knowing that if something breaks, the tests will tell you.
 
-There are three levels of testing that every full-stack application needs. Unit tests verify that individual functions and components work correctly in isolation. They are fast, cheap to write, and catch most logic errors. Integration tests verify that multiple components work together correctly — that your Express middleware chain handles authentication, that your React component renders data from an API, that your database queries return the expected results. End-to-end tests verify that complete user flows work from start to finish — that a user can register, log in, add items to a cart, and complete a purchase.
+There are three levels of testing that every full-stack application needs. Unit tests verify that individual functions and components work correctly in isolation. They are fast, cheap to write, and catch most logic errors. Integration tests verify that multiple components work together correctly: that your Express middleware chain handles authentication, that your React component renders data from an API, that your database queries return the expected results. End-to-end tests verify that complete user flows work from start to finish: that a user can register, log in, add items to a cart, and complete a purchase.
 
 The testing pyramid describes the ideal distribution: many unit tests at the base, fewer integration tests in the middle, and a few end-to-end tests at the top. Unit tests are cheap and fast, so write many of them. Integration tests are more expensive but catch more bugs, so write a moderate number. End-to-end tests are expensive and fragile, so write only for the most critical user flows.
 
@@ -192,7 +192,7 @@ Mocking is necessary when your code depends on external services, databases, or 
 
 There are three types of mocks in Jest. A mock function (`jest.fn()`) replaces a function with a test implementation that records calls and returns configured values. A mock module (`jest.mock()`) replaces an entire module with a test implementation. A spy (`jest.spyOn()`) wraps an existing function to record calls while preserving the original behavior.
 
-Use mocks sparingly. Mocks make your tests less realistic — they test the interaction between your code and the mock, not the interaction between your code and the real dependency. If you mock everything, your tests pass but your application might still be broken. Mock only what you need to mock (external services, slow operations, non-deterministic behavior) and let everything else run for real.
+Use mocks sparingly. Mocks make your tests less realistic: they test the interaction between your code and the mock, not the interaction between your code and the real dependency. If you mock everything, your tests pass but your application might still be broken. Mock only what you need to mock (external services, slow operations, non-deterministic behavior) and let everything else run for real.
 
 ### Test Setup and Teardown
 
@@ -225,13 +225,13 @@ describe("database operations", () => {
 
 ## React Testing Library
 
-React Testing Library tests your components the way users interact with them — by finding elements, clicking buttons, and reading text. It does not test implementation details like state or hooks. This philosophy makes your tests more robust: they continue to work even when you refactor the component's internal structure.
+React Testing Library tests your components the way users interact with them: by finding elements, clicking buttons, and reading text. It does not test implementation details like state or hooks. This philosophy makes your tests more robust: they continue to work even when you refactor the component's internal structure.
 
 The library provides queries that mimic how users and assistive technology find elements on the screen. Use `getByRole` for buttons, links, and headings. Use `getByLabelText` for form fields. Use `getByText` for text content. Use `getByTestId` only as a last resort when no other query works. The priority order matters because queries that match how users find elements are more resilient to change.
 
-When a query cannot find the element you are looking for, React Testing Library throws an error that includes the entire accessible name of every element on the screen. This makes debugging much easier — you can see exactly what the component rendered and figure out why your query did not match.
+When a query cannot find the element you are looking for, React Testing Library throws an error that includes the entire accessible name of every element on the screen. This makes debugging much easier: you can see exactly what the component rendered and figure out why your query did not match.
 
-Avoid these common mistakes when writing component tests. Do not test that a component renders specific HTML tags — test that it displays the expected content. Do not test internal state — test the visible output. Do not use `waitFor` to wait for state updates — use `findBy` queries that automatically wait. Do not use `act` directly — React Testing Library handles it internally.
+Avoid these common mistakes when writing component tests. Do not test that a component renders specific HTML tags: test that it displays the expected content. Do not test internal state: test the visible output. Do not use `waitFor` to wait for state updates: use `findBy` queries that automatically wait. Do not use `act` directly: React Testing Library handles it internally.
 
 ### Basic Component Test
 
@@ -850,7 +850,7 @@ The `testEnvironment` setting determines how tests are executed. `jsdom` simulat
 
 The `setupFilesAfterEnv` option runs a file before each test suite. Use it for global setup like extending Jest matchers, setting up test database connections, or configuring mock services. The setup file runs after the test framework is installed, so you have access to `describe`, `it`, `expect`, and other Jest globals.
 
-The `coverageThreshold` option fails the test suite if code coverage falls below the specified thresholds. This prevents coverage from degrading over time. Set realistic thresholds based on your current coverage — if you currently have 50% coverage, setting the threshold to 90% will cause every test run to fail. Increase the threshold gradually as you add more tests.
+The `coverageThreshold` option fails the test suite if code coverage falls below the specified thresholds. This prevents coverage from degrading over time. Set realistic thresholds based on your current coverage: if you currently have 50% coverage, setting the threshold to 90% will cause every test run to fail. Increase the threshold gradually as you add more tests.
 
 The `moduleNameMapper` option maps module imports to alternative implementations. The CSS mapping prevents Jest from trying to parse CSS files. The path alias mapping allows you to use `@/components/Button` instead of relative paths like `../../components/Button`, which improves readability and makes refactoring easier.
 

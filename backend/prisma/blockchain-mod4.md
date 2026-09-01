@@ -1,4 +1,4 @@
-# Module 4 — Contract Testing
+# Module 4: Contract Testing
 
 Testing smart contracts is fundamentally different from testing traditional software. You cannot patch a deployed contract, and every testnet deployment costs real ETH. A comprehensive test suite is your only safety net before committing code to mainnet. This module covers unit testing, fuzz testing, property-based testing, formal verification, and the practical patterns that catch real vulnerabilities before they cost real money.
 
@@ -6,7 +6,7 @@ Testing smart contracts is fundamentally different from testing traditional soft
 
 In traditional software, a bug in production can be fixed with a hotfix deploy. In smart contracts, a bug in production is permanent. The DAO hack could have been caught with a simple reentrancy test. The Parity wallet freeze could have been prevented with an access control test. The Wormhole bridge exploit could have been caught with a signature verification test.
 
-Testing smart contracts is also different because of the deterministic nature of the EVM. Every transaction produces exactly the same result given the same initial state. This means tests are reproducible — but it also means that bugs are deterministic. If your test does not cover a specific state transition, the bug will exist in production with 100% certainty.
+Testing smart contracts is also different because of the deterministic nature of the EVM. Every transaction produces exactly the same result given the same initial state. This means tests are reproducible: but it also means that bugs are deterministic. If your test does not cover a specific state transition, the bug will exist in production with 100% certainty.
 
 ## Unit Testing
 
@@ -152,11 +152,11 @@ Focus coverage on:
 6. **Reentrancy paths:** If the contract makes external calls, test that reentrancy is handled correctly.
 7. **Gas consumption:** Measure gas for each function to ensure operations do not exceed block gas limits.
 
-Coverage tools like `forge coverage` produce reports showing which lines and branches are covered by tests. Lines that are not covered represent untested code paths — potential locations for undiscovered vulnerabilities. Focus your testing effort on uncovered lines, especially those involving financial calculations or access control.
+Coverage tools like `forge coverage` produce reports showing which lines and branches are covered by tests. Lines that are not covered represent untested code paths: potential locations for undiscovered vulnerabilities. Focus your testing effort on uncovered lines, especially those involving financial calculations or access control.
 
 ## Fuzz Testing
 
-Fuzz testing generates random inputs and feeds them to your functions. The goal is to find inputs that cause unexpected behavior — crashes, incorrect state, or violated invariants.
+Fuzz testing generates random inputs and feeds them to your functions. The goal is to find inputs that cause unexpected behavior: crashes, incorrect state, or violated invariants.
 
 ### Property-Based Testing
 
@@ -473,7 +473,7 @@ contract GasTest is Test {
 
 ## Integration Testing
 
-Integration tests verify that multiple contracts work together correctly. In DeFi, contracts rarely operate in isolation — they interact with tokens, oracles, DEXes, and other protocols.
+Integration tests verify that multiple contracts work together correctly. In DeFi, contracts rarely operate in isolation: they interact with tokens, oracles, DEXes, and other protocols.
 
 ```solidity
 contract IntegrationTest is Test {
@@ -539,7 +539,7 @@ contract IntegrationTest is Test {
 
 ## Real Scenario: Testing a Contract
 
-Let us walk through the complete testing process for a real contract — a simple escrow.
+Let us walk through the complete testing process for a real contract: a simple escrow.
 
 **Step 1: Define requirements**
 

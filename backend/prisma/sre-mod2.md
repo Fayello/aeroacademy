@@ -1,4 +1,4 @@
-# Module 2 — SLIs, SLOs, SLAs
+# Module 2: SLIs, SLOs, SLAs
 
 ## Service Level Indicators: What You Actually Measure
 

@@ -1,4 +1,4 @@
-# Module 6 — Security Hardening
+# Module 6: Security Hardening
 
 A Linux server connected to the internet is under constant attack. Automated bots scan for open ports, default credentials, and unpatched vulnerabilities every minute of every day. Security hardening is not about achieving perfect security. It is about reducing attack surface, making exploitation harder, and detecting when something goes wrong. This module covers practical hardening based on real-world requirements, including SSH hardening, firewall configuration, kernel hardening, file permission controls, and the specific steps needed for PCI compliance. You will learn to harden a server from a default installation to a security-audited configuration.
 
@@ -16,13 +16,13 @@ SSH is the most targeted service on any Linux server. Every hardening guide star
 
 ### Key-Based Authentication
 
-Disable password authentication entirely in `/etc/ssh/sshd_config` by setting `PubkeyAuthentication yes`, `PasswordAuthentication no`, and `ChallengeResponseAuthentication no`. Generate ED25519 keys which are preferred over RSA because they are shorter, faster, and more secure. If you must use RSA, the minimum key size is 4096 bits. Never use DSA keys — they are deprecated and insecure.
+Disable password authentication entirely in `/etc/ssh/sshd_config` by setting `PubkeyAuthentication yes`, `PasswordAuthentication no`, and `ChallengeResponseAuthentication no`. Generate ED25519 keys which are preferred over RSA because they are shorter, faster, and more secure. If you must use RSA, the minimum key size is 4096 bits. Never use DSA keys: they are deprecated and insecure.
 
 Distribute public keys with `ssh-copy-id` which handles permissions and formatting correctly. Verify the key works before disabling password authentication. Test with `ssh -i ~/.ssh/id_ed25519 user@server` and confirm it connects without a password prompt.
 
 ### Restrict SSH Access
 
-Change the default port from 22 to something else to reduce automated scanning noise. This is not security through obscurity — it significantly reduces log noise from bots. Disable root login with `PermitRootLogin no`. Limit authentication attempts with `MaxAuthTries 3`. Set login grace period with `LoginGraceTime 30`. Configure idle timeout with `ClientAliveInterval 300` and `ClientAliveCountMax 2` which disconnects after 10 minutes of inactivity.
+Change the default port from 22 to something else to reduce automated scanning noise. This is not security through obscurity: it significantly reduces log noise from bots. Disable root login with `PermitRootLogin no`. Limit authentication attempts with `MaxAuthTries 3`. Set login grace period with `LoginGraceTime 30`. Configure idle timeout with `ClientAliveInterval 300` and `ClientAliveCountMax 2` which disconnects after 10 minutes of inactivity.
 
 Disable X11 forwarding, TCP forwarding, and agent forwarding unless specifically needed. Each forwarding type creates potential attack vectors. Restrict to specific address families with `AddressFamily inet` for IPv4 only or `AddressFamily inet6` for IPv6 only. Set log level to `VERBOSE` for detailed logging that helps with incident investigation.
 
@@ -64,7 +64,7 @@ Firewalld is a dynamic firewall manager that uses zones. Add services and ports 
 
 Create a security-focused sysctl configuration in `/etc/sysctl.d/99-security.conf` with settings to disable IP forwarding and source routing (unless the server is a router), disable ICMP redirects, enable SYN flood protection with `tcp_syncookies`, log suspicious packets with `log_martians`, ignore ICMP broadcast requests, enable reverse path filtering for anti-spoofing with `rp_filter`, restrict dmesg access, restrict kernel pointer exposure, restrict ptrace scope, enable full ASLR randomization with `randomize_va_space=2`, disable SysRq key, restrict core dumps with `suid_dumpable=0`, disable unprivileged BPF, and disable unprivileged user namespaces unless using containers.
 
-Apply the configuration with `sysctl -p /etc/sysctl.d/99-security.conf` and verify with `sysctl -a | grep` for specific parameters. Test that the system still works after hardening — some applications may require specific kernel settings.
+Apply the configuration with `sysctl -p /etc/sysctl.d/99-security.conf` and verify with `sysctl -a | grep` for specific parameters. Test that the system still works after hardening: some applications may require specific kernel settings.
 
 ## File Permissions
 

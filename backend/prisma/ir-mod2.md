@@ -1,4 +1,4 @@
-# Module 2 — Detection and Triage
+# Module 2: Detection and Triage
 
 Detection and triage is where incidents either get caught early or spiral out of control. A well-tuned detection pipeline with skilled triage analysts can catch a breach within hours. A poorly tuned pipeline with overloaded analysts will let an attacker dwell for months. This module covers how to build effective detection, how to prioritize alerts when you are drowning in them, and how to perform initial triage that separates real incidents from noise.
 
@@ -8,7 +8,7 @@ Your detection infrastructure generates alerts from multiple sources. Each sourc
 
 ### SIEM
 
-Your Security Information and Event Management system aggregates logs from across your environment — firewalls, proxies, Active Directory, endpoints, applications, and cloud services. The SIEM correlates these logs against detection rules to identify suspicious activity.
+Your Security Information and Event Management system aggregates logs from across your environment: firewalls, proxies, Active Directory, endpoints, applications, and cloud services. The SIEM correlates these logs against detection rules to identify suspicious activity.
 
 The strength of SIEM-based detection is visibility. A properly configured SIEM sees everything happening across your network. The weakness is volume. A SIEM running thousands of detection rules against millions of log events generates enormous numbers of alerts. The majority of SIEM alerts are false positives or low-severity findings that do not require immediate action.
 
@@ -28,7 +28,7 @@ IDS/IPS alerts need context. An alert that says "ET MALWARE Possible Trickbot C2
 
 Endpoint Detection and Response agents run on individual systems and monitor process execution, file system changes, registry modifications, network connections, and other endpoint-level activity. EDR is the most detailed detection source because it sees everything happening at the endpoint level.
 
-The strength of EDR is behavioral detection. Unlike IDS signatures that match specific attack patterns, EDR can detect suspicious behavior — like a Word document spawning a PowerShell process, or a service account executing commands interactively. These behavioral detections catch attacks that do not match known signatures.
+The strength of EDR is behavioral detection. Unlike IDS signatures that match specific attack patterns, EDR can detect suspicious behavior: like a Word document spawning a PowerShell process, or a service account executing commands interactively. These behavioral detections catch attacks that do not match known signatures.
 
 The weakness of EDR is coverage. Every endpoint needs an agent installed, and the agent needs to be properly configured. If an endpoint does not have an EDR agent, you have no visibility into what is happening on that system. In many organizations, coverage gaps are the biggest weakness in EDR-based detection.
 
@@ -38,7 +38,7 @@ EDR alerts often include rich context: the process tree showing what executed wh
 
 Do not underestimate the value of user reports. Your employees are sensors. A user who receives a suspicious email and reports it, or who notices unusual behavior on their computer, is providing you with a detection that your automated tools may have missed.
 
-The challenge with user reports is consistency. Some users report everything; others report nothing. Training users on what to report and how to report it is essential. Make reporting easy — a dedicated email address, a button in the email client, a chatbot in your messaging platform. The easier you make it, the more reports you will receive.
+The challenge with user reports is consistency. Some users report everything; others report nothing. Training users on what to report and how to report it is essential. Make reporting easy: a dedicated email address, a button in the email client, a chatbot in your messaging platform. The easier you make it, the more reports you will receive.
 
 User reports need to be triaged with the same rigor as automated alerts. A user reporting a "suspicious email" might be reporting a phishing attempt, or they might be reporting a legitimate marketing email that they do not recognize. Triage requires investigation, not assumption.
 
@@ -92,7 +92,7 @@ Check related logs. If the alert is about a login, check what the user did after
 
 ### Step 5: Determine Severity
 
-Based on your investigation, classify the alert severity. This classification drives the next steps — whether you escalate to the IR team, whether you isolate a system, or whether you close the alert as a false positive.
+Based on your investigation, classify the alert severity. This classification drives the next steps: whether you escalate to the IR team, whether you isolate a system, or whether you close the alert as a false positive.
 
 ### Step 6: Document Your Findings
 
@@ -102,21 +102,21 @@ Every triage action needs to be documented. What you checked, what you found, an
 
 A clear severity classification system ensures that everyone on the team understands the urgency of an alert and the expected response time.
 
-**Critical (Response: 15 minutes)** — Active compromise of a high-value system, confirmed data exfiltration, ransomware execution, or active attacker in the network with domain-level access. These incidents require immediate escalation to the IR team and immediate containment action.
+**Critical (Response: 15 minutes)**: Active compromise of a high-value system, confirmed data exfiltration, ransomware execution, or active attacker in the network with domain-level access. These incidents require immediate escalation to the IR team and immediate containment action.
 
-**High (Response: 1 hour)** — Confirmed malicious activity on a critical system, successful phishing with credential compromise, lateral movement indicators, or unauthorized access to sensitive data. These incidents require IR team involvement and likely containment within the hour.
+**High (Response: 1 hour)**: Confirmed malicious activity on a critical system, successful phishing with credential compromise, lateral movement indicators, or unauthorized access to sensitive data. These incidents require IR team involvement and likely containment within the hour.
 
-**Medium (Response: 4 hours)** — Suspicious activity that may indicate compromise, unusual access patterns to sensitive systems, malware detection on a single endpoint, or policy violations that may indicate malicious intent. These incidents require investigation and may require containment depending on findings.
+**Medium (Response: 4 hours)**: Suspicious activity that may indicate compromise, unusual access patterns to sensitive systems, malware detection on a single endpoint, or policy violations that may indicate malicious intent. These incidents require investigation and may require containment depending on findings.
 
-**Low (Response: 24 hours)** — Low-confidence indicators of compromise, minor policy violations, suspicious but potentially legitimate activity, or informational alerts that may be useful context for future investigations. These incidents are investigated when resources permit.
+**Low (Response: 24 hours)**: Low-confidence indicators of compromise, minor policy violations, suspicious but potentially legitimate activity, or informational alerts that may be useful context for future investigations. These incidents are investigated when resources permit.
 
-**Informational (Response: next business day)** — Alerts that do not indicate malicious activity but provide useful context. Reconnaissance activity from external IPs, vulnerability scan detections, or policy violations that are clearly benign. These are documented and closed.
+**Informational (Response: next business day)**: Alerts that do not indicate malicious activity but provide useful context. Reconnaissance activity from external IPs, vulnerability scan detections, or policy violations that are clearly benign. These are documented and closed.
 
 ## Real Scenario: Triaging a Phishing Campaign
 
-On a Tuesday morning at 9:15 AM, the security operations center received three separate user reports of suspicious emails. The emails appeared to come from the company's HR department and contained a link to "update your benefits information." The emails were convincing — they used the company's branding, addressed recipients by name, and came from an email address that closely resembled the HR department's actual address (hr-department@company-hr.com instead of hr@company.com).
+On a Tuesday morning at 9:15 AM, the security operations center received three separate user reports of suspicious emails. The emails appeared to come from the company's HR department and contained a link to "update your benefits information." The emails were convincing: they used the company's branding, addressed recipients by name, and came from an email address that closely resembled the HR department's actual address (hr-department@company-hr.com instead of hr@company.com).
 
-The triage analyst started by examining the emails. The sender address was a lookalike domain — not the company's actual domain. The link in the email pointed to a URL that was not the company's actual benefits portal. The URL used a domain that was registered two days ago, which was a strong indicator of a phishing campaign.
+The triage analyst started by examining the emails. The sender address was a lookalike domain: not the company's actual domain. The link in the email pointed to a URL that was not the company's actual benefits portal. The URL used a domain that was registered two days ago, which was a strong indicator of a phishing campaign.
 
 The analyst classified this as a High-severity incident because it was a targeted phishing campaign with a lookalike domain, and the emails were sent to multiple employees. The analyst immediately escalated to the IR team and began collecting evidence.
 
@@ -124,17 +124,17 @@ The analyst pulled the full email headers from the reported emails and identifie
 
 The analyst escalated the incident to the IR team with a clear scope: 31 users had been exposed to the phishing page, 14 had potentially entered credentials, and the attacker-controlled domain was still live. The IR team initiated containment by blocking the phishing domain at the email gateway and web proxy, forcing password resets for all 14 users who had entered credentials, and searching for any signs that the compromised credentials had been used to access company systems.
 
-The investigation revealed that the attacker had used the harvested credentials to access the company's VPN from an IP address in Eastern Europe. The VPN access was brief — approximately 12 minutes — but the attacker had enough time to download a file from a shared drive containing employee PII. The scope of the incident expanded from a phishing campaign to a data breach.
+The investigation revealed that the attacker had used the harvested credentials to access the company's VPN from an IP address in Eastern Europe. The VPN access was brief: approximately 12 minutes: but the attacker had enough time to download a file from a shared drive containing employee PII. The scope of the incident expanded from a phishing campaign to a data breach.
 
-The triage analyst's initial classification was correct. What started as a phishing campaign escalated to a data breach because the analyst moved quickly and the IR team was able to identify the scope of the compromise. If the triage had been slower — if the analyst had classified this as Medium severity and waited four hours — the attacker would have had more time to access additional systems.
+The triage analyst's initial classification was correct. What started as a phishing campaign escalated to a data breach because the analyst moved quickly and the IR team was able to identify the scope of the compromise. If the triage had been slower: if the analyst had classified this as Medium severity and waited four hours: the attacker would have had more time to access additional systems.
 
 Key takeaways from this scenario:
 
 **Speed matters.** The analyst triaged the initial reports within 15 minutes of receiving them. That speed enabled the IR team to contain the compromise before the attacker could do more damage.
 
-**Context matters.** The analyst did not just look at the email — they looked at who received it, who clicked the link, and who entered credentials. That context determined the severity classification.
+**Context matters.** The analyst did not just look at the email: they looked at who received it, who clicked the link, and who entered credentials. That context determined the severity classification.
 
-**Scope matters.** The analyst quickly determined the scope of the campaign — 247 recipients, 31 clickers, 14 credential entries. That scope information was critical for the IR team's response.
+**Scope matters.** The analyst quickly determined the scope of the campaign: 247 recipients, 31 clickers, 14 credential entries. That scope information was critical for the IR team's response.
 
 **Escalation matters.** The analyst escalated to the IR team immediately rather than trying to handle everything alone. Phishing campaigns that result in credential compromise are not one-person incidents.
 
@@ -142,23 +142,23 @@ Key takeaways from this scenario:
 
 A triage workflow is the process your team follows from alert generation to resolution. The workflow needs to be documented, followed, and continuously improved.
 
-The workflow starts with alert ingestion. Alerts from all sources — SIEM, IDS, EDR, user reports, external notifications — flow into a central queue. The queue should be prioritized so analysts work on the highest-severity alerts first.
+The workflow starts with alert ingestion. Alerts from all sources: SIEM, IDS, EDR, user reports, external notifications: flow into a central queue. The queue should be prioritized so analysts work on the highest-severity alerts first.
 
 Triage assignments should be based on analyst skill level and alert complexity. Newer analysts handle lower-severity alerts and learn the triage process. Experienced analysts handle higher-severity alerts and complex investigations. This progression builds team capability while ensuring that critical incidents get the attention they need.
 
 Handoff procedures are critical. When an analyst's shift ends, they need to hand off any open investigations to the next analyst. This handoff should include a summary of what has been investigated, what the current status is, and what the next steps are. A poorly executed handoff can cause an investigation to stall or duplicate work.
 
-Quality assurance is the feedback loop that improves your triage process. A supervisor or senior analyst should review closed alerts periodically to verify that triage decisions were correct. False negatives — real incidents that were closed as false positives — are the most dangerous quality gap. If your team is missing real incidents, you need to understand why and fix the root cause.
+Quality assurance is the feedback loop that improves your triage process. A supervisor or senior analyst should review closed alerts periodically to verify that triage decisions were correct. False negatives: real incidents that were closed as false positives: are the most dangerous quality gap. If your team is missing real incidents, you need to understand why and fix the root cause.
 
 ## False Positive Management
 
-False positives are not just noise — they are a signal that your detection rules need tuning. Every false positive should be analyzed to determine why it occurred and how to prevent it.
+False positives are not just noise: they are a signal that your detection rules need tuning. Every false positive should be analyzed to determine why it occurred and how to prevent it.
 
 Common causes of false positives include overly broad detection rules, insufficient context in alert data, changes in legitimate user behavior, new applications or services that match detection patterns, and misconfigured log sources.
 
 When a false positive is identified, document the root cause and the tuning action taken. If the rule is too broad, narrow the scope. If the rule is missing context, add additional log sources. If the rule is based on a threshold that is too low, raise the threshold. The goal is to reduce false positives without creating false negatives.
 
-Some false positives are acceptable. A detection rule that catches a real incident once a year but generates a false positive once a week may still be worth keeping. The decision to keep or tune a rule should be based on the risk tradeoff — what is the cost of the false positives versus the value of the detection?
+Some false positives are acceptable. A detection rule that catches a real incident once a year but generates a false positive once a week may still be worth keeping. The decision to keep or tune a rule should be based on the risk tradeoff: what is the cost of the false positives versus the value of the detection?
 
 ## Advanced Triage Techniques
 
@@ -181,7 +181,7 @@ You are given a set of 20 SIEM alerts. Your task is to triage each alert using t
 **Lab Tasks:**
 
 1. Review all 20 alerts and understand what each is reporting (15 minutes)
-2. Triage each alert using the checklist — validate data, check for false positives, investigate activity (20 minutes)
+2. Triage each alert using the checklist: validate data, check for false positives, investigate activity (20 minutes)
 3. Classify each alert by severity and document your reasoning (10 minutes)
 
 **Grading Criteria:**
@@ -198,7 +198,7 @@ You receive a batch of 15 emails reported by users as suspicious. Your task is t
 
 1. Analyze email headers for all 15 emails (15 minutes)
 2. Identify phishing emails and categorize them by type (spear phishing, bulk phishing, etc.) (15 minutes)
-3. Determine the scope — how many recipients, how many clickers, how many credential entries (15 minutes)
+3. Determine the scope: how many recipients, how many clickers, how many credential entries (15 minutes)
 4. Write an escalation report for the IR team (15 minutes)
 
 **Grading Criteria:**
@@ -228,10 +228,10 @@ You are given a detection rule that generates 500 alerts per day, most of which 
 
 ### Key Concepts
 
-- **Alert Sources:** SIEM, IDS/IPS, EDR, user reports, external notifications — each with strengths and weaknesses
+- **Alert Sources:** SIEM, IDS/IPS, EDR, user reports, external notifications: each with strengths and weaknesses
 - **Alert Fatigue:** The condition where analysts become desensitized to alerts due to volume; addressed through tuning and prioritization
-- **Triage Checklist:** Six-step process — understand the alert, validate data, check false positives, investigate activity, determine severity, document findings
-- **Severity Classification:** Critical, High, Medium, Low, Informational — each with defined response times and escalation paths
+- **Triage Checklist:** Six-step process: understand the alert, validate data, check false positives, investigate activity, determine severity, document findings
+- **Severity Classification:** Critical, High, Medium, Low, Informational: each with defined response times and escalation paths
 - **False Positive Management:** Root cause analysis, rule tuning, threshold adjustment, ongoing maintenance
 
 ### Detection Maturity Model
@@ -244,11 +244,11 @@ You are given a detection rule that generates 500 alerts per day, most of which 
 
 ### Metrics
 
-- **Mean Time to Detect (MTTD):** Average time from incident occurrence to detection — target under 24 hours
-- **Mean Time to Triage (MTTT):** Average time from alert generation to triage decision — target under 1 hour for High/Critical alerts
-- **False Positive Rate:** Percentage of alerts that are false positives — target under 20%
-- **True Positive Rate:** Percentage of real incidents detected — target over 90%
-- **Alert Volume per Analyst:** Average number of alerts each analyst triages per day — monitor for burnout indicators
+- **Mean Time to Detect (MTTD):** Average time from incident occurrence to detection: target under 24 hours
+- **Mean Time to Triage (MTTT):** Average time from alert generation to triage decision: target under 1 hour for High/Critical alerts
+- **False Positive Rate:** Percentage of alerts that are false positives: target under 20%
+- **True Positive Rate:** Percentage of real incidents detected: target over 90%
+- **Alert Volume per Analyst:** Average number of alerts each analyst triages per day: monitor for burnout indicators
 
 ### Common Phishing Indicators
 

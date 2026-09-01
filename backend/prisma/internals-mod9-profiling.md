@@ -1,8 +1,8 @@
-# Module 9 — Performance Profiling and Tracing
+# Module 9: Performance Profiling and Tracing
 
 ## Finding Why a Server Is Slow
 
-Performance problems are the most frustrating issues to debug. The server is slow, but CPU, memory, and disk all look fine in basic monitoring. You need deeper tools — ones that can see inside the CPU, inside the kernel, and inside individual functions. This module covers the profiling and tracing tools that let you find the needle in the haystack.
+Performance problems are the most frustrating issues to debug. The server is slow, but CPU, memory, and disk all look fine in basic monitoring. You need deeper tools: ones that can see inside the CPU, inside the kernel, and inside individual functions. This module covers the profiling and tracing tools that let you find the needle in the haystack.
 
 ## perf: CPU Profiling and Flame Graphs
 
@@ -52,14 +52,14 @@ perf script | stackcollapse-perf.pl | flamegraph.pl > flamegraph.svg
 perf record -g -p <PID> -- sleep 30
 perf script | stackcollapse-perf.pl | flamegraph.pl --title "CPU Profile" --width 1200 > cpu.svg
 
-# Open the SVG in a browser — the x-axis is stack depth, y-axis is sample count
+# Open the SVG in a browser: the x-axis is stack depth, y-axis is sample count
 # Hover over any bar to see the function name and sample count
 ```
 
 Reading flame graphs:
 - **Widest bars** = functions consuming the most CPU time
 - **Tall stacks** = deep call chains (many nested function calls)
-- **Color** is random (red/yellow/blue) — it does not mean hot/cold
+- **Color** is random (red/yellow/blue): it does not mean hot/cold
 - **Flat tops** = leaf functions (the actual work)
 - **Widening in the middle** = the function or its children are expensive
 
@@ -137,7 +137,7 @@ perf script -F +comm,pid,tid,time,event,ip,sym,dso > perf.data.txt
 
 ### perf probe
 
-Dynamic tracing — add probes to any function at runtime:
+Dynamic tracing: add probes to any function at runtime:
 
 ```bash
 # Add a probe to a function
@@ -251,7 +251,7 @@ perf lock contention -a -b 'mutex' -- sleep 10
 
 ## ftrace: Function and Event Tracing
 
-ftrace is the kernel's built-in tracing framework. It is more powerful than perf for kernel-level tracing but requires understanding the tracefs filesystem. ftrace is always available — it requires no special kernel configuration and has minimal overhead.
+ftrace is the kernel's built-in tracing framework. It is more powerful than perf for kernel-level tracing but requires understanding the tracefs filesystem. ftrace is always available: it requires no special kernel configuration and has minimal overhead.
 
 ### Enabling and Disabling ftrace
 

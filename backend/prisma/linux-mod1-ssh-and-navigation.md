@@ -1,4 +1,4 @@
-# Module 1 — SSH and Terminal Navigation
+# Module 1: SSH and Terminal Navigation
 
 ## Why This Matters
 
@@ -143,7 +143,7 @@ The `ServerAliveInterval 60` line sends a keepalive packet every 60 seconds, pre
 
 ## Terminal Navigation: The Core Commands
 
-### pwd — Where Am I?
+### pwd: Where Am I?
 
 `pwd` prints the current working directory:
 
@@ -156,7 +156,7 @@ pwd
 
 This sounds trivial until you are three levels deep in a symlink maze and need to confirm your actual location.
 
-### ls — What Is Here?
+### ls: What Is Here?
 
 `ls` lists directory contents. The flags you will use most often:
 
@@ -180,11 +180,11 @@ The `-l` flag gives you the long format (permissions, owner, size, date). The `-
 
 Other useful variants:
 
-- `ls -ltr` — sort by modification time, newest last. Useful for finding recently changed files.
-- `ls -lhS` — sort by size, human-readable. Good for finding what is eating disk space.
-- `ls -1` — one entry per line. Useful when piping to other commands.
+- `ls -ltr`: sort by modification time, newest last. Useful for finding recently changed files.
+- `ls -lhS`: sort by size, human-readable. Good for finding what is eating disk space.
+- `ls -1`: one entry per line. Useful when piping to other commands.
 
-### cd — Changing Directory
+### cd: Changing Directory
 
 ```bash
 cd /var/log              # Absolute path
@@ -196,7 +196,7 @@ cd -                     # Previous directory (toggle between two locations)
 
 The `cd -` trick is underrated. If you are in `/var/log` and then `cd /opt/app`, typing `cd -` takes you back to `/var/log`, and typing it again takes you back to `/opt/app`.
 
-### find — Locating Files
+### find: Locating Files
 
 `find` is the Swiss Army knife of file searching. It traverses directory trees and applies conditions:
 
@@ -227,13 +227,13 @@ The `-exec` flag lets you run a command on each result:
 find /var/log -name "*.log" -exec grep -l "ERROR" {} \;
 ```
 
-Use `+` instead of `\;` when possible — it batches filenames into fewer command invocations, which is faster:
+Use `+` instead of `\;` when possible: it batches filenames into fewer command invocations, which is faster:
 
 ```bash
 find /var/log -name "*.log" -exec grep -l "ERROR" {} +
 ```
 
-### locate — Fast File Lookup
+### locate: Fast File Lookup
 
 `locate` uses a pre-built database instead of traversing the filesystem in real time. It is fast but the database may be stale:
 
@@ -256,7 +256,7 @@ sudo updatedb
 
 ## File Operations
 
-### cp — Copying
+### cp: Copying
 
 ```bash
 cp file.txt backup.txt                    # Copy a file
@@ -268,7 +268,7 @@ cp --backup=numbered file.txt dest/       # Create numbered backups
 
 The `-a` flag is critical when copying configuration directories or anything where permissions matter. Without it, the copied files inherit your umask, which may be more permissive than the originals.
 
-### mv — Moving and Renaming
+### mv: Moving and Renaming
 
 `mv` moves or renames files:
 
@@ -280,7 +280,7 @@ mv -i *.log /var/archive/                 # Move with overwrite protection
 
 `mv` does not ask for confirmation by default. An accidental `mv` that overwrites a file is gone. Use `-i` (interactive) or `-n` (no-clobber) when you are uncertain.
 
-### rm — Removing
+### rm: Removing
 
 ```bash
 rm file.txt                               # Delete a file
@@ -298,7 +298,7 @@ A safer habit is to use `rm -i` as your default and override it with `-f` only w
 alias rm='rm -i'
 ```
 
-### touch — Creating Empty Files and Updating Timestamps
+### touch: Creating Empty Files and Updating Timestamps
 
 ```bash
 touch newfile.txt                         # Create an empty file (or update timestamp)
@@ -307,7 +307,7 @@ touch -t 202401151030 file.txt            # Set specific timestamp
 
 `touch` is also commonly used in build systems and scripts to create sentinel files that track whether a step has been executed.
 
-### mkdir — Creating Directories
+### mkdir: Creating Directories
 
 ```bash
 mkdir newdir                              # Create a single directory
@@ -363,7 +363,7 @@ history | grep "docker"                  # Search history
 !$                                       # Last argument of previous command
 ```
 
-The history search shortcut `Ctrl+R` is invaluable. Press it and start typing — bash shows the most recent command matching your input. Press Enter to execute it, or the right arrow key to edit it first.
+The history search shortcut `Ctrl+R` is invaluable. Press it and start typing: bash shows the most recent command matching your input. Press Enter to execute it, or the right arrow key to edit it first.
 
 ```bash
 (reverse-i-search)`deploy': ssh bastion 'cd /opt && ./deploy.sh'
@@ -381,7 +381,7 @@ The `ignoredups:erasedups` setting prevents duplicate entries and removes earlie
 
 ## Putting It Together: Setting Up SSH for 20 Servers
 
-Imagine you are onboarding onto a new infrastructure with 20 Ubuntu servers — web servers, database servers, monitoring hosts, and a bastion. Here is the realistic workflow.
+Imagine you are onboarding onto a new infrastructure with 20 Ubuntu servers: web servers, database servers, monitoring hosts, and a bastion. Here is the realistic workflow.
 
 **Step 1: Generate your key pair.**
 
@@ -500,9 +500,9 @@ Disable password authentication, disable root login, and consider changing the S
 
 ## SCP and SFTP: Transferring Files
 
-SSH is not just for remote commands — it also transfers files securely.
+SSH is not just for remote commands: it also transfers files securely.
 
-### scp — Secure Copy
+### scp: Secure Copy
 
 ```bash
 # Copy a file to a remote server
@@ -532,9 +532,9 @@ rsync -avz -e "ssh -p 2222" /opt/myapp/ admin@server:/opt/myapp/
 ```
 
 The flags:
-- `-a` — archive mode (preserves permissions, timestamps, symlinks)
-- `-v` — verbose
-- `-z` — compress during transfer
+- `-a`: archive mode (preserves permissions, timestamps, symlinks)
+- `-v`: verbose
+- `-z`: compress during transfer
 
 ```bash
 # Dry run (show what would be transferred)
@@ -544,7 +544,7 @@ rsync -avzn --delete /opt/myapp/ admin@server:/opt/myapp/
 rsync -avz --exclude='node_modules' --exclude='.git' /opt/myapp/ admin@server:/opt/myapp/
 ```
 
-### sftp — Interactive File Transfer
+### sftp: Interactive File Transfer
 
 ```bash
 sftp admin@server
@@ -568,14 +568,14 @@ sftp> exit
 
 ## Shortcuts and Habits Worth Building
 
-- `Ctrl+C` — kill the current foreground process. This is your escape hatch.
-- `Ctrl+Z` — suspend the current process (resume with `fg` or push to background with `bg`).
-- `Ctrl+L` — clear the terminal (same as `clear`).
-- `Ctrl+A` — jump to the beginning of the line.
-- `Ctrl+E` — jump to the end of the line.
-- `Ctrl+W` — delete the word before the cursor.
-- `Ctrl+U` — delete everything from the cursor to the beginning of the line.
-- `Ctrl+R` — reverse history search.
+- `Ctrl+C`: kill the current foreground process. This is your escape hatch.
+- `Ctrl+Z`: suspend the current process (resume with `fg` or push to background with `bg`).
+- `Ctrl+L`: clear the terminal (same as `clear`).
+- `Ctrl+A`: jump to the beginning of the line.
+- `Ctrl+E`: jump to the end of the line.
+- `Ctrl+W`: delete the word before the cursor.
+- `Ctrl+U`: delete everything from the cursor to the beginning of the line.
+- `Ctrl+R`: reverse history search.
 
 These are not optional knowledge. They are the difference between fighting your terminal and using it.
 
@@ -584,7 +584,7 @@ These are not optional knowledge. They are the difference between fighting your 
 **Forgetting quotes around paths with spaces:**
 
 ```bash
-# Wrong — bash sees two arguments
+# Wrong: bash sees two arguments
 mv /home/admin/My Documents /tmp/
 
 # Correct
@@ -603,7 +603,7 @@ ls /nginx       # Looks for /nginx at the root
 
 ```bash
 # Accidentally in / instead of /home/admin
-rm -rf old_project/     # Deletes /old_project/ — if it exists
+rm -rf old_project/     # Deletes /old_project/: if it exists
 ```
 
 Always check `pwd` before destructive commands.

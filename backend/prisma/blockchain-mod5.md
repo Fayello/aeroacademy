@@ -1,6 +1,6 @@
-# Module 5 — DeFi Security
+# Module 5: DeFi Security
 
-Decentralized finance protocols manage billions of dollars in assets. They compose complex financial primitives — lending, borrowing, trading, derivatives — without intermediaries. This composability is DeFi's strength and its greatest vulnerability. A single vulnerability in one protocol can cascade across every protocol that integrates with it. This module covers the attack vectors specific to DeFi: flash loan exploits, price oracle manipulation, lending protocol attacks, DEX vulnerabilities, and the real exploits that have drained hundreds of millions from supposedly secure protocols.
+Decentralized finance protocols manage billions of dollars in assets. They compose complex financial primitives: lending, borrowing, trading, derivatives: without intermediaries. This composability is DeFi's strength and its greatest vulnerability. A single vulnerability in one protocol can cascade across every protocol that integrates with it. This module covers the attack vectors specific to DeFi: flash loan exploits, price oracle manipulation, lending protocol attacks, DEX vulnerabilities, and the real exploits that have drained hundreds of millions from supposedly secure protocols.
 
 ## Flash Loans
 
@@ -49,7 +49,7 @@ contract FlashLoanReceiver is IFlashBorrower {
 
 ### Flash Loan Attack Patterns
 
-Flash loans enable attacks that require massive capital but no collateral. The attacker borrows a large amount, uses it to manipulate a protocol, extracts value, repays the flash loan, and keeps the profit — all in one transaction.
+Flash loans enable attacks that require massive capital but no collateral. The attacker borrows a large amount, uses it to manipulate a protocol, extracts value, repays the flash loan, and keeps the profit: all in one transaction.
 
 **Pattern 1: Price Oracle Manipulation**
 
@@ -57,7 +57,7 @@ The attacker borrows a large amount of tokens via flash loan, swaps them on a DE
 
 **Pattern 2: Governance Attack**
 
-The attacker borrows a massive amount of governance tokens via flash loan, uses them to vote on a proposal (or create and pass one), and repays the tokens — all in one transaction. If the governance system has no staking requirement or timelock, this attack is trivially executable.
+The attacker borrows a massive amount of governance tokens via flash loan, uses them to vote on a proposal (or create and pass one), and repays the tokens: all in one transaction. If the governance system has no staking requirement or timelock, this attack is trivially executable.
 
 **Pattern 3: Liquidation Exploitation**
 
@@ -79,7 +79,7 @@ The fee structure affects the economics of flash loan attacks. A 0.05% fee on a 
 
 ## Price Oracle Manipulation
 
-Price oracles provide off-chain data to on-chain contracts. The most common oracle attack is spot price manipulation — using a large trade to temporarily move a DEX pool's price.
+Price oracles provide off-chain data to on-chain contracts. The most common oracle attack is spot price manipulation: using a large trade to temporarily move a DEX pool's price.
 
 ### Spot Price Attack Mechanics
 
@@ -103,7 +103,7 @@ The attack:
 5. Swap back to recover the original token amounts.
 6. Repay the flash loan.
 
-The attacker has effectively borrowed more than their collateral is worth, and the lending protocol absorbs the loss. The key insight is that the protocol trusts a single, manipulable data source for its most critical calculation — collateral valuation.
+The attacker has effectively borrowed more than their collateral is worth, and the lending protocol absorbs the loss. The key insight is that the protocol trusts a single, manipulable data source for its most critical calculation: collateral valuation.
 
 The economic analysis of this attack:
 - Flash loan fee: 0.05% of 10,000 ETH = 5 ETH.
@@ -116,7 +116,7 @@ This extreme risk-reward ratio is why oracle security is the single most critica
 
 ### TWAP Oracle
 
-Time-Weighted Average Price (TWAP) oracles calculate the average price over a time window. This makes spot manipulation much more expensive — the attacker would need to maintain the manipulated price for the entire TWAP window (often 30 minutes to 24 hours).
+Time-Weighted Average Price (TWAP) oracles calculate the average price over a time window. This makes spot manipulation much more expensive: the attacker would need to maintain the manipulated price for the entire TWAP window (often 30 minutes to 24 hours).
 
 ```solidity
 // TWAP oracle
@@ -220,7 +220,7 @@ As discussed in Module 3, sandwich attacks exploit the transparency of the mempo
 
 ### Impermanent Loss Exploitation
 
-Liquidity providers in AMMs (Automated Market Makers) face impermanent loss — the loss in value compared to simply holding the tokens. Sophisticated traders can extract value from LPs by executing trades that move the price, causing impermanent loss, and then reversing the trade at the new price.
+Liquidity providers in AMMs (Automated Market Makers) face impermanent loss: the loss in value compared to simply holding the tokens. Sophisticated traders can extract value from LPs by executing trades that move the price, causing impermanent loss, and then reversing the trade at the new price.
 
 ### Flash Swap Attacks
 
@@ -270,7 +270,7 @@ The root cause: Pancake Bunny used PancakeSwap's spot price as its oracle.
 
 ### Mango Markets (2022)
 
-An attacker deposited a large amount of MNGO tokens as collateral. They then manipulated the MNGO price on Mango's own order book, inflating the value of their collateral. With the inflated collateral, they borrowed the entire protocol's liquidity — approximately 114 million USD across multiple assets.
+An attacker deposited a large amount of MNGO tokens as collateral. They then manipulated the MNGO price on Mango's own order book, inflating the value of their collateral. With the inflated collateral, they borrowed the entire protocol's liquidity: approximately 114 million USD across multiple assets.
 
 The root cause: Mango Markets used its own order book for price discovery, which could be manipulated by a single large actor.
 
@@ -324,7 +324,7 @@ Multi-oracle validation is even stronger. Require agreement from at least 2 of 3
 
 ### Use TWAP Oracles with Sufficient Window
 
-The TWAP window should be long enough to make manipulation prohibitively expensive. A 30-minute TWAP requires maintaining the manipulated price for 30 minutes, which costs continuous trading fees and gas. A 24-hour TWAP makes manipulation practically impossible for all but the deepest liquidity pools. The tradeoff is latency — longer windows mean slower price updates, which can be dangerous during genuine market volatility. Most protocols use 30 minutes to 2 hours as a reasonable balance.
+The TWAP window should be long enough to make manipulation prohibitively expensive. A 30-minute TWAP requires maintaining the manipulated price for 30 minutes, which costs continuous trading fees and gas. A 24-hour TWAP makes manipulation practically impossible for all but the deepest liquidity pools. The tradeoff is latency: longer windows mean slower price updates, which can be dangerous during genuine market volatility. Most protocols use 30 minutes to 2 hours as a reasonable balance.
 
 ### Circuit Breakers
 
@@ -370,7 +370,7 @@ Before deploying a DeFi protocol, calculate the cost of attacking it. If the cos
 3. **Market impact:** The cost of moving the price enough to exploit the vulnerability (depends on pool depth and liquidity).
 4. **Opportunity cost:** The capital locked during the attack and any opportunity costs.
 
-If the total attack cost is less than the potential profit, the protocol needs additional defenses. The goal is to make the cost of attack exceed the potential profit by a significant margin — ideally 10x or more.
+If the total attack cost is less than the potential profit, the protocol needs additional defenses. The goal is to make the cost of attack exceed the potential profit by a significant margin: ideally 10x or more.
 
 ## Assessment
 

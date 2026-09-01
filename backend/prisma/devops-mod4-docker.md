@@ -1,4 +1,4 @@
-# Module 4 — Containerization with Docker
+# Module 4: Containerization with Docker
 
 ## Why Containers Exist
 
@@ -300,7 +300,7 @@ Bridge networking is the default and works for most use cases. Containers get th
 
 ### Host Network
 
-Host networking removes the network isolation. The container shares the host's network stack. There is no port mapping — the container listens directly on the host's interfaces.
+Host networking removes the network isolation. The container shares the host's network stack. There is no port mapping: the container listens directly on the host's interfaces.
 
 ```bash
 docker run --network host my-app
@@ -593,7 +593,7 @@ Docker is useful for both development and production, but the configurations dif
 
 **Development** prioritizes developer experience: fast rebuilds, live code reloading, and easy debugging. Bind mounts let developers edit code on their host machine and see changes immediately in the container. Exposed ports allow direct access to databases and services for debugging.
 
-**Production** prioritizes security, reliability, and performance: no bind mounts, no exposed internal ports, resource limits, restart policies, and health checks. The application is baked into the image during build time — no code changes at runtime.
+**Production** prioritizes security, reliability, and performance: no bind mounts, no exposed internal ports, resource limits, restart policies, and health checks. The application is baked into the image during build time: no code changes at runtime.
 
 The `target` argument in multi-stage builds supports this separation:
 

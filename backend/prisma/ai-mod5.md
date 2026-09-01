@@ -1,8 +1,8 @@
-# Module 5 — Model Monitoring
+# Module 5: Model Monitoring
 
 ## If You Are Not Monitoring, You Are Flying Blind
 
-A model in production degrades silently. The data it encounters drifts from the training distribution. The world changes—new fraud patterns emerge, user behavior shifts, upstream data pipelines break—and the model's predictions become less accurate over time. Without monitoring, you discover this months later when someone checks the dashboard and notices the fraud rate spiked. By then, you have lost real money and real trust.
+A model in production degrades silently. The data it encounters drifts from the training distribution. The world changesnew fraud patterns emerge, user behavior shifts, upstream data pipelines breakand the model's predictions become less accurate over time. Without monitoring, you discover this months later when someone checks the dashboard and notices the fraud rate spiked. By then, you have lost real money and real trust.
 
 This module covers the three pillars of production ML monitoring: data drift detection, performance monitoring, and operational monitoring. You will build monitoring systems that alert you before performance degrades, not after. You will implement statistical tests that detect when incoming data differs from training data. You will set up dashboards that show you, at a glance, whether your model is healthy or dying.
 
@@ -187,7 +187,7 @@ The isolation forest works by building random trees. Data points that are easy t
 
 ## Performance Monitoring with Ground Truth Delay
 
-The hardest part of monitoring model performance is that ground truth labels arrive late. A fraud prediction is confirmed as correct or incorrect days or weeks later when the investigation completes. This means you cannot compute accuracy in real-time—you need to track predictions and labels separately and join them later.
+The hardest part of monitoring model performance is that ground truth labels arrive late. A fraud prediction is confirmed as correct or incorrect days or weeks later when the investigation completes. This means you cannot compute accuracy in real-timeyou need to track predictions and labels separately and join them later.
 
 ```python
 from datetime import datetime, timedelta
@@ -405,7 +405,7 @@ alert_manager.add_rule(AlertRule(
 ))
 ```
 
-The `min_samples` parameter prevents false alerts from small samples. If you have only 10 predictions in an hour and 2 are correct, your accuracy is 20%—but that is not statistically meaningful. Requiring 200 samples before alerting avoids this noise.
+The `min_samples` parameter prevents false alerts from small samples. If you have only 10 predictions in an hour and 2 are correct, your accuracy is 20%but that is not statistically meaningful. Requiring 200 samples before alerting avoids this noise.
 
 ## Operational Monitoring: Latency, Errors, and Throughput
 
@@ -754,7 +754,7 @@ Sixth, establish on-call rotations. Someone must be responsible for monitoring a
 
 The monitoring system should integrate with your incident management platform (PagerDuty, OpsGenie, etc.) so that alerts automatically create incidents and notify the on-call engineer. Without this integration, alerts go to email or Slack and are ignored until someone notices them hours later.
 
-The on-call engineer needs three things: access to dashboards showing current model health, access to runbooks describing common issues and their fixes, and access to the deployment system to execute rollbacks. Without all three, the on-call engineer cannot respond effectively to incidents. Invest in on-call tooling before you need it—setting up dashboards during an incident is too late.
+The on-call engineer needs three things: access to dashboards showing current model health, access to runbooks describing common issues and their fixes, and access to the deployment system to execute rollbacks. Without all three, the on-call engineer cannot respond effectively to incidents. Invest in on-call tooling before you need itsetting up dashboards during an incident is too late.
 
 ## Assessment
 
@@ -822,10 +822,10 @@ Build an alert system and monitoring dashboard.
 
 ## Evidence
 
-- `drift_detector.py` — Drift detection module with PSI, KS, and Wasserstein tests
-- `multivariate_drift.py` — Multivariate drift detection using Isolation Forest
-- `performance_tracker.py` — Performance tracking with delayed label handling
-- `alert_manager.py` — Alert system with configurable rules and severity levels
-- `monitoring_dashboard.py` — Dashboard generating JSON snapshots and HTML reports
-- `monitoring_config.json` — Alert thresholds and SLA configuration
-- `drift_report_sample.json` — Sample drift detection report from synthetic test
+- `drift_detector.py`: Drift detection module with PSI, KS, and Wasserstein tests
+- `multivariate_drift.py`: Multivariate drift detection using Isolation Forest
+- `performance_tracker.py`: Performance tracking with delayed label handling
+- `alert_manager.py`: Alert system with configurable rules and severity levels
+- `monitoring_dashboard.py`: Dashboard generating JSON snapshots and HTML reports
+- `monitoring_config.json`: Alert thresholds and SLA configuration
+- `drift_report_sample.json`: Sample drift detection report from synthetic test

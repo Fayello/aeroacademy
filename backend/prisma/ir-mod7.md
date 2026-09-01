@@ -1,4 +1,4 @@
-# Module 7 — Memory Forensics
+# Module 7: Memory Forensics
 
 Memory forensics is the analysis of a computer's random access memory to extract evidence that exists only while the system is running. Many modern malware samples operate entirely in memory and leave no trace on disk. Encryption keys, passwords, and session tokens exist only in RAM. Network connections, running processes, and loaded modules are all visible in memory. When you need to understand what a system was doing at a specific moment, memory forensics gives you the answer. This module covers RAM acquisition, the Volatility framework, process analysis, network connection analysis, and how to use memory forensics to analyze malware.
 
@@ -6,7 +6,7 @@ Memory forensics is the analysis of a computer's random access memory to extract
 
 Traditional disk forensics captures a static snapshot of a system. It shows you what was written to disk, but it does not show you what was happening at the moment of acquisition. Memory forensics fills this gap by capturing the system's live state.
 
-Consider a scenario where a user opens a document that exploits a vulnerability and executes a payload. The payload runs in memory, connects to a C2 server, downloads additional tools, and performs reconnaissance. If you power off the system and examine the disk, you might find the malicious document but not the payload — because the payload operates entirely in memory.
+Consider a scenario where a user opens a document that exploits a vulnerability and executes a payload. The payload runs in memory, connects to a C2 server, downloads additional tools, and performs reconnaissance. If you power off the system and examine the disk, you might find the malicious document but not the payload: because the payload operates entirely in memory.
 
 Memory forensics also captures artifacts that disk forensics cannot. Decrypted data, encryption keys, and passwords exist in memory because the system needs them to function. Malware that encrypts its communications on disk may transmit them in plaintext through memory. The attacker's tools, running processes, and network connections are all visible in memory.
 
@@ -22,7 +22,7 @@ Before acquiring RAM, prepare your tools and plan your approach.
 
 **Identify the acquisition tool.** Common memory acquisition tools include WinPmem, LiME, DumpIt, and Magnet RAM Capture. Each tool has different features, different system requirements, and different output formats. Choose the tool that fits your situation.
 
-**Prepare the storage medium.** You need a destination for the memory image. A USB drive is the most common option. Ensure the USB drive has sufficient capacity — a system with 16 GB of RAM requires a USB drive with at least 16 GB of free space. The USB drive should be formatted and clean before use.
+**Prepare the storage medium.** You need a destination for the memory image. A USB drive is the most common option. Ensure the USB drive has sufficient capacity: a system with 16 GB of RAM requires a USB drive with at least 16 GB of free space. The USB drive should be formatted and clean before use.
 
 **Consider the system state.** Some acquisition tools require specific system configurations. WinPmem requires a signed driver. LiME requires building a kernel module for the target system's kernel version. Plan for these requirements before you need them.
 
@@ -39,7 +39,7 @@ The acquisition process:
 3. Open a command prompt as Administrator
 4. Navigate to the USB drive
 5. Run `winpmem_mini_x64.exe memdump.raw` (or specify a different output path)
-6. Wait for the acquisition to complete — this can take several minutes depending on the amount of RAM
+6. Wait for the acquisition to complete: this can take several minutes depending on the amount of RAM
 7. Verify the image file exists and has the expected size (approximately equal to the amount of installed RAM)
 8. Compute a hash of the image file
 9. Document the acquisition
@@ -216,7 +216,7 @@ Examining the memory contents of individual processes can reveal hidden malware,
 
 **Process memory dumping** extracts the memory of a specific process for analysis. Use Volatility's `memmap` or `procdump` plugins to dump process memory.
 
-**String extraction** searches process memory for readable text. Attackers often leave strings in their malware — URLs, IP addresses, file paths, and command structures. Use `strings` or `floss` to extract strings from process memory.
+**String extraction** searches process memory for readable text. Attackers often leave strings in their malware: URLs, IP addresses, file paths, and command structures. Use `strings` or `floss` to extract strings from process memory.
 
 **PE file analysis** examines Portable Executable files loaded in process memory. Malware often loads itself into a legitimate process and modifies its memory to execute malicious code. Identifying modified PE files helps identify injected malware.
 
@@ -232,7 +232,7 @@ Indicators of process injection:
 
 - **Thread start addresses:** If a process has threads starting at addresses outside of loaded modules, those threads may be executing injected code.
 
-- **VAD (Virtual Address Descriptor) anomalies:** VADs describe the memory layout of a process. Unusual VAD entries — like entries with executable permissions that do not correspond to loaded modules — indicate injection.
+- **VAD (Virtual Address Descriptor) anomalies:** VADs describe the memory layout of a process. Unusual VAD entries: like entries with executable permissions that do not correspond to loaded modules: indicate injection.
 
 Volatility plugins for detecting injection:
 
@@ -301,7 +301,7 @@ The IR team decided to acquire memory from the workstation before shutting it do
 
 The memory image was analyzed using Volatility. The analyst started with process analysis:
 
-**Process listing:** The `pslist` plugin showed 87 running processes. The analyst examined the process tree and found that `WINWORD.EXE` had spawned `powershell.exe`, which had spawned `cmd.exe`. This process chain was suspicious — Word should not be spawning command-line processes.
+**Process listing:** The `pslist` plugin showed 87 running processes. The analyst examined the process tree and found that `WINWORD.EXE` had spawned `powershell.exe`, which had spawned `cmd.exe`. This process chain was suspicious: Word should not be spawning command-line processes.
 
 **PowerShell analysis:** The `cmdline` plugin showed that the PowerShell process had executed a command that decoded a Base64-encoded string and attempted to download a file from an external URL. The download was blocked by the EDR agent, but the PowerShell process was still running.
 
@@ -313,7 +313,7 @@ The memory image was analyzed using Volatility. The analyst started with process
 
 **Additional findings:** The `netscan` plugin also showed that `WINWORD.EXE` had a listening socket on port 4444. This indicated that the Word document had also attempted to open a reverse shell. The EDR agent had blocked the outbound download but had not blocked the listening socket.
 
-The analyst used `malfind` to examine the PowerShell process for signs of injection. The plugin found a region of executable memory with suspicious content — a sequence of bytes that resembled shellcode.
+The analyst used `malfind` to examine the PowerShell process for signs of injection. The plugin found a region of executable memory with suspicious content: a sequence of bytes that resembled shellcode.
 
 The memory analysis revealed that the Word document contained a macro that:
 
@@ -332,7 +332,7 @@ Key lessons from this analysis:
 
 **Network analysis reveals attacker infrastructure.** The active connection to the external URL identified the attacker's infrastructure.
 
-**Memory forensics complements disk forensics.** The Word document on disk contained the macro, but the memory analysis revealed the macro's full behavior — including the reverse shell and injection that were not visible on disk.
+**Memory forensics complements disk forensics.** The Word document on disk contained the macro, but the memory analysis revealed the macro's full behavior: including the reverse shell and injection that were not visible on disk.
 
 ## Assessment
 
@@ -403,7 +403,7 @@ You are given a memory image and must analyze network connections to identify ma
 - **Volatility Framework:** Python-based memory forensics framework with plugins for process, network, registry, and module analysis
 - **Process Analysis:** Examining running processes, process trees, process memory, and process injection indicators
 - **Network Connections:** Identifying active and historical network connections through socket structures in memory
-- **Process Injection:** Technique where malware injects code into legitimate processes — detected through memory protection anomalies and VAD analysis
+- **Process Injection:** Technique where malware injects code into legitimate processes: detected through memory protection anomalies and VAD analysis
 
 ### Volatility Plugin Quick Reference
 

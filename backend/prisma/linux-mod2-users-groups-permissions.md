@@ -1,14 +1,14 @@
-# Module 2 — Users, Groups, and Permissions
+# Module 2: Users, Groups, and Permissions
 
 ## Why This Matters
 
-Linux is a multi-user operating system. Every process, every file, every network socket belongs to a user and potentially a group. Understanding how users and groups work, and how permissions control access, is not optional knowledge — it is the difference between a server that is reasonably secure and one that is wide open.
+Linux is a multi-user operating system. Every process, every file, every network socket belongs to a user and potentially a group. Understanding how users and groups work, and how permissions control access, is not optional knowledge: it is the difference between a server that is reasonably secure and one that is wide open.
 
 You will encounter permission problems constantly. A cron job runs as root but needs to write to a directory owned by a web user. A developer needs read access to logs but should not be able to delete them. A shared directory needs to let anyone create files but prevent anyone from deleting someone else's work. These are everyday problems, and this module gives you the tools to solve them.
 
 ## The User Database: /etc/passwd
 
-Every user on a Linux system has an entry in `/etc/passwd`. This file is world-readable (it has to be — many programs need to look up usernames and UIDs). Here is what a typical entry looks like:
+Every user on a Linux system has an entry in `/etc/passwd`. This file is world-readable (it has to be: many programs need to look up usernames and UIDs). Here is what a typical entry looks like:
 
 ```bash
 cat /etc/passwd | grep admin
@@ -19,13 +19,13 @@ admin:x:1000:1000:Admin User:/home/admin:/bin/bash
 
 The fields, separated by colons, are:
 
-1. **Username** — `admin`
-2. **Password** — `x` means the password hash is stored in `/etc/shadow`
-3. **UID** — `1000` (the numeric user ID)
-4. **GID** — `1000` (the primary group ID)
-5. **GECOS** — `Admin User` (full name and optional comment fields)
-6. **Home directory** — `/home/admin`
-7. **Shell** — `/bin/bash`
+1. **Username**: `admin`
+2. **Password**: `x` means the password hash is stored in `/etc/shadow`
+3. **UID**: `1000` (the numeric user ID)
+4. **GID**: `1000` (the primary group ID)
+5. **GECOS**: `Admin User` (full name and optional comment fields)
+6. **Home directory**: `/home/admin`
+7. **Shell**: `/bin/bash`
 
 System users (created for services like `www-data`, `mysql`, `nobody`) typically have UIDs below 1000. Human users start at 1000. The root user is always UID 0.
 
@@ -54,13 +54,13 @@ admin:$6$rounds=656000$kX2a...hash...$kX2a...hash...:19405:0:99999:7:::
 The fields are:
 
 1. **Username**
-2. **Password hash** — the algorithm identifier, salt, and hash combined
-3. **Last password change** — days since epoch (Jan 1, 1970)
-4. **Minimum password age** — days before the user can change the password again
-5. **Maximum password age** — days before the password expires
-6. **Warning period** — days before expiry to warn the user
-7. **Inactivity period** — days after expiry before the account is locked
-8. **Expiration date** — absolute date the account is disabled
+2. **Password hash**: the algorithm identifier, salt, and hash combined
+3. **Last password change**: days since epoch (Jan 1, 1970)
+4. **Minimum password age**: days before the user can change the password again
+5. **Maximum password age**: days before the password expires
+6. **Warning period**: days before expiry to warn the user
+7. **Inactivity period**: days after expiry before the account is locked
+8. **Expiration date**: absolute date the account is disabled
 9. **Reserved**
 
 The `!` or `*` at the beginning of the hash means the account is locked (no password login possible). The `$6$` prefix indicates a SHA-512 hash, which is the current standard.
@@ -93,10 +93,10 @@ developers:x:5000:alice,bob,charlie
 
 Fields:
 
-1. **Group name** — `developers`
-2. **Password** — `x` (rarely used; groups can have passwords for `newgrp` but this is uncommon)
-3. **GID** — `5000`
-4. **Members** — comma-separated list of supplementary members
+1. **Group name**: `developers`
+2. **Password**: `x` (rarely used; groups can have passwords for `newgrp` but this is uncommon)
+3. **GID**: `5000`
+4. **Members**: comma-separated list of supplementary members
 
 Every user has a primary group (the GID in `/etc/passwd`) and can belong to multiple supplementary groups. When a user creates a file, the file's group is set to the user's primary group by default.
 
@@ -111,9 +111,9 @@ sudo useradd -m -s /bin/bash -G sudo,docker deploy
 ```
 
 This creates a user named `deploy` with:
-- `-m` — create a home directory at `/home/deploy`
-- `-s /bin/bash` — set the login shell to bash
-- `-G sudo,docker` — add to the `sudo` and `docker` groups as supplementary groups
+- `-m`: create a home directory at `/home/deploy`
+- `-s /bin/bash`: set the login shell to bash
+- `-G sudo,docker`: add to the `sudo` and `docker` groups as supplementary groups
 
 Without `-m`, no home directory is created. Without `-s`, the default shell is `/bin/sh`, which is less interactive. Without `-G`, the user only belongs to their primary group (a new group with the same name as the user, by default on Debian/Ubuntu).
 
@@ -217,7 +217,7 @@ The most common permissions you will use:
 - `644` for regular files that everyone can read but only the owner can modify
 - `700` for private directories (SSH keys, personal data)
 - `600` for private files (SSH keys, credentials)
-- `777` — almost never correct. If you find yourself setting this, something is wrong with your permission model.
+- `777`: almost never correct. If you find yourself setting this, something is wrong with your permission model.
 
 ### Recursive chmod
 
@@ -273,7 +273,7 @@ ls -la /usr/bin/passwd
 -rwsr-xr-x 1 root root 68208 Jan  5 10:30 /usr/bin/passwd
 ```
 
-The `s` in the owner execute position (`rws`) means `passwd` runs as root. This is why a regular user can change their own password — the program runs with root privileges to write to `/etc/shadow`.
+The `s` in the owner execute position (`rws`) means `passwd` runs as root. This is why a regular user can change their own password: the program runs with root privileges to write to `/etc/shadow`.
 
 To set SUID:
 
@@ -330,7 +330,7 @@ chmod 1777 /opt/shared/
 
 Standard Unix permissions (owner/group/other) are sometimes too coarse. Access Control Lists (ACLs) let you grant permissions to specific users or groups without changing ownership.
 
-### getfacl — Reading ACLs
+### getfacl: Reading ACLs
 
 ```bash
 getfacl /opt/shared/report.pdf
@@ -348,7 +348,7 @@ other::r--
 
 This shows that bob has read access to alice's file, even though bob is not the owner and the standard group permissions do not explicitly mention bob.
 
-### setfacl — Setting ACLs
+### setfacl: Setting ACLs
 
 ```bash
 # Give bob read access
@@ -667,10 +667,10 @@ If a permission problem requires `777`, you do not understand the permission mod
 **Forgetting the -a flag with usermod -G:**
 
 ```bash
-# WRONG — removes alice from all other groups
+# WRONG: removes alice from all other groups
 sudo usermod -G docker alice
 
-# CORRECT — appends to existing groups
+# CORRECT: appends to existing groups
 sudo usermod -aG docker alice
 ```
 

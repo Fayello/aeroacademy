@@ -1,14 +1,14 @@
-# Module 6 — ML Security
+# Module 6: ML Security
 
 ## Your Model Is an Attack Surface
 
-Machine learning models are software, and software has vulnerabilities. But ML vulnerabilities are different from traditional software vulnerabilities. An SQL injection changes what your application does. An adversarial attack on a model changes what your model perceives, causing it to make confident, incorrect predictions. The attack does not trigger an error—the model outputs a result with high confidence, and you have no way to know it is wrong until the damage is done.
+Machine learning models are software, and software has vulnerabilities. But ML vulnerabilities are different from traditional software vulnerabilities. An SQL injection changes what your application does. An adversarial attack on a model changes what your model perceives, causing it to make confident, incorrect predictions. The attack does not trigger an errorthe model outputs a result with high confidence, and you have no way to know it is wrong until the damage is done.
 
 This module covers the three major categories of ML security threats: adversarial attacks that manipulate inputs to cause misclassification, data poisoning that corrupts the training process, and model extraction that steals your intellectual property. You will implement attack methods, understand why they work, and build defenses that reduce (but never eliminate) the risk.
 
 ## Adversarial Attacks: Manipulating Model Inputs
 
-An adversarial example is an input that has been modified slightly—so slightly that a human cannot tell the difference—but causes the model to make a wrong prediction. The perturbation is computed by finding the direction in input space that most strongly affects the model's output.
+An adversarial example is an input that has been modified slightlyso slightly that a human cannot tell the differencebut causes the model to make a wrong prediction. The perturbation is computed by finding the direction in input space that most strongly affects the model's output.
 
 The Fast Gradient Sign Method (FGSM) is the simplest adversarial attack. It computes the gradient of the loss with respect to the input, then adds a perturbation in the direction that increases the loss. The perturbation is bounded by an epsilon parameter that controls how much the input can change.
 
@@ -58,7 +58,7 @@ def evaluate_attack(model, test_loader, epsilon=0.03):
 evaluate_attack(model, test_loader, epsilon=0.03)
 ```
 
-The PGD attack (Projected Gradient Descent) is an iterative version of FGSM. It applies multiple small perturbations instead of one large one, making it more effective but slower. PGD is considered the strongest first-order attack—if your model is robust to PGD, it is robust to most gradient-based attacks.
+The PGD attack (Projected Gradient Descent) is an iterative version of FGSM. It applies multiple small perturbations instead of one large one, making it more effective but slower. PGD is considered the strongest first-order attackif your model is robust to PGD, it is robust to most gradient-based attacks.
 
 ```python
 def pgd_attack(
@@ -730,7 +730,7 @@ The STRIDE framework adapted for ML identifies six threat categories. Spoofing: 
 
 Each threat category requires specific defenses. Spoofing requires authentication. Tampering requires input validation and adversarial robustness. Repudiation requires comprehensive logging. Information disclosure requires model extraction detection. Denial of service requires rate limiting. Elevation of privilege requires access controls on the training infrastructure.
 
-The threat model should be documented and reviewed regularly. As your ML system evolves—new features, new data sources, new users—the threat landscape changes. A model that was safe last year might be vulnerable this year because an attacker discovered a new technique or because your system now handles sensitive data it did not handle before.
+The threat model should be documented and reviewed regularly. As your ML system evolvesnew features, new data sources, new usersthe threat landscape changes. A model that was safe last year might be vulnerable this year because an attacker discovered a new technique or because your system now handles sensitive data it did not handle before.
 
 ## Security Best Practices for ML Teams
 
@@ -810,10 +810,10 @@ Implement detection of poisoned training data.
 
 ## Evidence
 
-- `adversarial_attacks.py` — FGSM and PGD attack implementations with evaluation metrics
-- `adversarial_training.py` — Adversarial training loop with robustness-accuracy tracking
-- `randomized_smoothing.py` — Randomized smoothing classifier with certification radius computation
-- `data_poisoning.py` — Backdoor injection and spectral signature detection
-- `extraction_detector.py` — Rate limiting and query pattern analysis for extraction defense
-- `robustness_tradeoff.csv` — Results of robustness-accuracy experiments across epsilon values
-- `attack_visualizations.png` — Side-by-side comparison of clean and adversarial examples
+- `adversarial_attacks.py`: FGSM and PGD attack implementations with evaluation metrics
+- `adversarial_training.py`: Adversarial training loop with robustness-accuracy tracking
+- `randomized_smoothing.py`: Randomized smoothing classifier with certification radius computation
+- `data_poisoning.py`: Backdoor injection and spectral signature detection
+- `extraction_detector.py`: Rate limiting and query pattern analysis for extraction defense
+- `robustness_tradeoff.csv`: Results of robustness-accuracy experiments across epsilon values
+- `attack_visualizations.png`: Side-by-side comparison of clean and adversarial examples

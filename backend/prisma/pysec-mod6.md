@@ -1,12 +1,12 @@
-# Module 6 — Automation Scripts
+# Module 6: Automation Scripts
 
 Security work is repetitive. You check the same logs every day. You scan the same networks on a schedule. You generate the same reports for the same stakeholders. Python excels at automating this repetition. This module teaches you to build automation scripts that run security checks without manual intervention.
 
 ## Why Automation Matters in Security
 
-Security teams are understaffed. The average organization faces thousands of security alerts per day. A human analyst cannot review each one manually. Automation is not a luxury — it is a necessity for any security program that operates at scale.
+Security teams are understaffed. The average organization faces thousands of security alerts per day. A human analyst cannot review each one manually. Automation is not a luxury: it is a necessity for any security program that operates at scale.
 
-Consider what happens without automation. Every morning, an analyst logs in and checks the firewall logs for suspicious connections. They scan the network for new devices. They review authentication logs for failed login attempts. They check that critical services are running. Each task takes fifteen minutes. Four tasks per day, five days per week, equals five hours of repetitive work. Automation reduces this to zero — the scripts run on a schedule, generate reports, and only alert the analyst when something needs attention.
+Consider what happens without automation. Every morning, an analyst logs in and checks the firewall logs for suspicious connections. They scan the network for new devices. They review authentication logs for failed login attempts. They check that critical services are running. Each task takes fifteen minutes. Four tasks per day, five days per week, equals five hours of repetitive work. Automation reduces this to zero: the scripts run on a schedule, generate reports, and only alert the analyst when something needs attention.
 
 The real value of automation is consistency. A human analyst might forget to check a log file during a busy week. An automated script runs every time, on schedule, without fail. It doesn't get tired, distracted, or overwhelmed. It applies the same criteria consistently, which means it catches anomalies that a human might miss simply because they were looking at the wrong thing at the wrong time.
 
@@ -233,7 +233,7 @@ findings.extend(run_check(check_services, "Service Check", logger))
 findings.extend(run_check(check_logs, "Log Analysis", logger))
 ```
 
-Alert fatigue is a real problem. If your script sends an email for every minor finding, analysts start ignoring the alerts. Configure alert thresholds — only send alerts for critical and high severity findings. Medium and low findings go into the report but don't trigger immediate notifications.
+Alert fatigue is a real problem. If your script sends an email for every minor finding, analysts start ignoring the alerts. Configure alert thresholds: only send alerts for critical and high severity findings. Medium and low findings go into the report but don't trigger immediate notifications.
 
 Timeout handling is essential for network checks. A port scan that hangs forever blocks all subsequent checks. Set timeouts on every network operation and on the overall check. If a check takes longer than expected, log a warning and move on.
 
@@ -422,7 +422,7 @@ event_logger.log_scan_complete("192.168.1.0/24", findings_count=5, duration=30)
 
 ## Configuration Management
 
-Security scripts need configuration — target lists, thresholds, notification settings. Store configuration in files, not in code.
+Security scripts need configuration: target lists, thresholds, notification settings. Store configuration in files, not in code.
 
 ### YAML Configuration
 
@@ -519,7 +519,7 @@ SLACK_TOKEN=your-slack-token
     env_path = Path(".env")
     if not env_path.exists():
         env_path.write_text(env_template)
-        print("Created .env file — fill in your values")
+        print("Created .env file: fill in your values")
 
 # Usage
 config = load_env_config()
@@ -904,7 +904,7 @@ Build an automated security check system with scheduling, logging, and reporting
 3. Generate a formatted report
 4. Support configuration via YAML file
 5. Run all checks and produce a final report
-6. Handle errors gracefully — one failed check shouldn't crash everything
+6. Handle errors gracefully: one failed check shouldn't crash everything
 
 **Deliverables:**
 - Source code (`security_auto.py`)
@@ -929,17 +929,17 @@ Build an automated security check system with scheduling, logging, and reporting
 
 Automation scripts run unattended. If they have bugs, the bugs run unattended too. Testing automation is essential because you won't be watching when the script runs at 2 AM.
 
-Unit testing verifies individual functions work correctly. Test your port scanning function against a known target. Test your log parsing function against a sample log file. Test your report generation function with known inputs. Each test should have a clear assertion — "this function should return exactly these results for this input."
+Unit testing verifies individual functions work correctly. Test your port scanning function against a known target. Test your log parsing function against a sample log file. Test your report generation function with known inputs. Each test should have a clear assertion: "this function should return exactly these results for this input."
 
 Integration testing verifies that components work together. Run the complete automation script against a test environment. Verify that it reads configuration correctly, runs checks without errors, generates a valid report, and sends alerts if configured. The test environment should mimic production closely enough to catch environment-specific issues.
 
 Error injection testing verifies that your script handles failures gracefully. What happens when the network is unreachable? When a log file doesn't exist? When the SMTP server is down? When the disk is full? Your script should log the error, continue with remaining checks, and exit with a clear error message. It should never crash silently.
 
-Regression testing verifies that changes don't break existing functionality. When you add a new check to your automation script, run the complete test suite to ensure existing checks still work. Version control helps here — you can compare current behavior with previous versions.
+Regression testing verifies that changes don't break existing functionality. When you add a new check to your automation script, run the complete test suite to ensure existing checks still work. Version control helps here: you can compare current behavior with previous versions.
 
 ## Evidence
 
-Automation is force multiplication. One security analyst running manual checks can cover a small network. The same analyst with automated checks can monitor an entire enterprise. The scripts you built here — port monitors, service checkers, log analyzers — are the building blocks of a security operations center.
+Automation is force multiplication. One security analyst running manual checks can cover a small network. The same analyst with automated checks can monitor an entire enterprise. The scripts you built here: port monitors, service checkers, log analyzers: are the building blocks of a security operations center.
 
 The key lesson is that automation isn't just about saving time. It's about consistency. A manual check happens when someone remembers to do it. An automated check happens every time, on schedule, without fail. That consistency is what catches the 3 AM breach.
 

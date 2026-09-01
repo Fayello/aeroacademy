@@ -1,8 +1,8 @@
-# Module 5 — Post-Quantum Algorithms
+# Module 5: Post-Quantum Algorithms
 
 ## The Post-Quantum Cryptography Landscape
 
-Post-quantum cryptography (PQC) refers to cryptographic algorithms that are secure against both classical and quantum adversaries. These algorithms are designed to run on classical computers — they do not require quantum hardware. The security of PQC algorithms relies on mathematical problems that are believed to be hard for both classical and quantum computers.
+Post-quantum cryptography (PQC) refers to cryptographic algorithms that are secure against both classical and quantum adversaries. These algorithms are designed to run on classical computers: they do not require quantum hardware. The security of PQC algorithms relies on mathematical problems that are believed to be hard for both classical and quantum computers.
 
 NIST initiated a standardization process for PQC in 2016, culminating in the selection of several algorithms for standardization in 2022-2024. The selected algorithms are based on four mathematical foundations: lattices, hashes, codes, and isogenies.
 
@@ -155,7 +155,7 @@ XMSS is a stateful hash-based signature scheme standardized by NIST (SP 800-208)
 3. The verifier can recompute the root using the message, signature, and authentication path, and check it matches the public key
 
 **State Management:**
-XMSS is stateful: the signer must keep track of which one-time key pairs have been used. Reusing a one-time key pair completely compromises the secret key. This is a significant practical concern — a system crash or bug could cause key reuse.
+XMSS is stateful: the signer must keep track of which one-time key pairs have been used. Reusing a one-time key pair completely compromises the secret key. This is a significant practical concern: a system crash or bug could cause key reuse.
 
 XMSS-WOTS+ (with Winternitz One-Time Signatures) is the specific variant standardized by NIST. It uses a Winternitz parameter w that trades signature size for computation time.
 
@@ -183,7 +183,7 @@ SPHINCS+ uses several layers of Merkle trees (a "hyper-tree") to achieve efficie
 2. Sign with WOTS+ (a one-time signature scheme)
 3. Provide authentication paths through the hyper-tree
 
-The "s" variants are smaller but slower. The "f" variants are faster but larger. SPHINCS+ provides conservative security because it relies only on the security of the underlying hash function — no algebraic assumptions.
+The "s" variants are smaller but slower. The "f" variants are faster but larger. SPHINCS+ provides conservative security because it relies only on the security of the underlying hash function: no algebraic assumptions.
 
 ## Code-Based Cryptography
 

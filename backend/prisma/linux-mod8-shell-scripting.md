@@ -1,4 +1,4 @@
-# Module 8 — Shell Scripting
+# Module 8: Shell Scripting
 
 ## Why This Matters
 
@@ -57,7 +57,7 @@ Rules:
 - Always double-quote variables to prevent word splitting and globbing
 
 ```bash
-# Wrong — word splitting and globbing problems
+# Wrong: word splitting and globbing problems
 rm $FILES
 
 # If FILES="file1.txt file2.txt", this runs: rm file1.txt file2.txt (intended)
@@ -481,7 +481,7 @@ done < /var/log/tasks/queue.log
 
 ```bash
 #!/bin/bash
-# until is the inverse of while — runs until the condition is true
+# until is the inverse of while: runs until the condition is true
 until curl -s http://localhost:8080/health > /dev/null 2>&1; do
     echo "Service not ready, waiting..."
     sleep 2
@@ -625,13 +625,13 @@ exit 0
 ```
 
 Convention:
-- `0` — success
-- `1` — general error
-- `2` — misuse of shell command
-- `126` — command not executable
-- `127` — command not found
-- `128+n` — fatal signal `n`
-- `255` — exit code out of range
+- `0`: success
+- `1`: general error
+- `2`: misuse of shell command
+- `126`: command not executable
+- `127`: command not found
+- `128+n`: fatal signal `n`
+- `255`: exit code out of range
 
 ## Error Handling: set -euo pipefail
 
@@ -642,9 +642,9 @@ This is the single most important line you can put in a production script:
 set -euo pipefail
 ```
 
-- `-e` — exit immediately if any command fails (returns non-zero)
-- `-u` — treat unset variables as errors (instead of silently expanding to empty strings)
-- `-o pipefail` — if any command in a pipeline fails, the entire pipeline fails
+- `-e`: exit immediately if any command fails (returns non-zero)
+- `-u`: treat unset variables as errors (instead of silently expanding to empty strings)
+- `-o pipefail`: if any command in a pipeline fails, the entire pipeline fails
 
 Without `set -euo pipefail`:
 

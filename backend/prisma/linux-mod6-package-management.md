@@ -1,8 +1,8 @@
-# Module 6 — Package Management
+# Module 6: Package Management
 
 ## Why This Matters
 
-Software does not install itself. Every tool, library, and service you use on a Linux server was installed by a package manager. Understanding how package managers work — how to install, remove, update, and troubleshoot software — is fundamental to maintaining a system.
+Software does not install itself. Every tool, library, and service you use on a Linux server was installed by a package manager. Understanding how package managers work: how to install, remove, update, and troubleshoot software: is fundamental to maintaining a system.
 
 Different distributions use different package managers. Debian and Ubuntu use APT. RHEL, CentOS, Fedora, and Rocky Linux use YUM or DNF. Both ecosystems have their own tools, conventions, and quirks. This module covers both, because you will encounter both in production. You will also learn how to manage repositories, pin versions, set up local mirrors, and troubleshoot package issues.
 
@@ -58,7 +58,7 @@ sudo apt autoremove --purge             # Autoremove with config file cleanup
 
 `apt remove` leaves configuration files in place so you can reinstall without losing your settings. This is useful if you plan to reinstall later or want to keep a backup of the configuration.
 
-`apt purge` deletes everything — the binary, the configuration files, and any associated files that were not part of the package. Use this when you want a clean removal.
+`apt purge` deletes everything: the binary, the configuration files, and any associated files that were not part of the package. Use this when you want a clean removal.
 
 `autoremove` is essential for keeping a system clean. When you install package A which depends on package B, and then remove package A, package B is often left behind as an "orphaned dependency." `autoremove` identifies and removes these.
 
@@ -120,7 +120,7 @@ nginx:
         500 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages
 ```
 
-This output is valuable: it shows that nginx is not installed, version 1.18.0 is the candidate (the version that would be installed), and it comes from the `jammy-updates` repository. The `500` is the priority — higher numbers are preferred.
+This output is valuable: it shows that nginx is not installed, version 1.18.0 is the candidate (the version that would be installed), and it comes from the `jammy-updates` repository. The `500` is the priority: higher numbers are preferred.
 
 ```bash
 apt show nginx
@@ -168,7 +168,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys KEY_ID  # Import a
 
 ## YUM/DNF: The RHEL/CentOS Package Manager
 
-DNF is the successor to YUM on RHEL 8+, CentOS Stream, Fedora, and Rocky Linux. YUM is still available on RHEL 7 and older CentOS. The commands are nearly identical — DNF is largely a drop-in replacement with better performance and dependency resolution.
+DNF is the successor to YUM on RHEL 8+, CentOS Stream, Fedora, and Rocky Linux. YUM is still available on RHEL 7 and older CentOS. The commands are nearly identical: DNF is largely a drop-in replacement with better performance and dependency resolution.
 
 ### Installing Software
 
@@ -379,10 +379,10 @@ Each line defines a repository with:
 - Components (main, restricted, universe, multiverse)
 
 Components:
-- `main` — officially supported, open-source software
-- `restricted` — officially supported, closed-source software (drivers, firmware)
-- `community-maintained` — free software, community-supported
-- `non-free` — closed-source software, not officially supported
+- `main`: officially supported, open-source software
+- `restricted`: officially supported, closed-source software (drivers, firmware)
+- `community-maintained`: free software, community-supported
+- `non-free`: closed-source software, not officially supported
 
 Adding a third-party repository:
 
@@ -418,11 +418,11 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
 
 Each repo file contains sections in INI format. Key directives:
 
-- `name` — human-readable name
-- `baseurl` — URL to the repository
-- `gpgcheck` — verify package signatures (always 1 in production)
-- `enabled` — whether the repository is active
-- `gpgkey` — path to the GPG key for verification
+- `name`: human-readable name
+- `baseurl`: URL to the repository
+- `gpgcheck`: verify package signatures (always 1 in production)
+- `enabled`: whether the repository is active
+- `gpgkey`: path to the GPG key for verification
 
 Adding a repository:
 

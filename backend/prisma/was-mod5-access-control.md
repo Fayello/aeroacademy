@@ -1,16 +1,16 @@
-# Module 5 — Access Control (IDOR)
+# Module 5: Access Control (IDOR)
 
-Access control vulnerabilities are among the most common and most impactful web application flaws. They occur when an application fails to properly enforce who can access what. A user can view another user's data, modify resources they do not own, or perform actions beyond their role. These vulnerabilities are called Insecure Direct Object References (IDOR) when they involve predictable resource identifiers, but the broader class includes any authorization bypass — horizontal, vertical, or context-dependent.
+Access control vulnerabilities are among the most common and most impactful web application flaws. They occur when an application fails to properly enforce who can access what. A user can view another user's data, modify resources they do not own, or perform actions beyond their role. These vulnerabilities are called Insecure Direct Object References (IDOR) when they involve predictable resource identifiers, but the broader class includes any authorization bypass: horizontal, vertical, or context-dependent.
 
 ## Horizontal vs Vertical Privilege Escalation
 
-**Horizontal privilege escalation** occurs when a user accesses resources belonging to another user at the same privilege level. User A accesses User B's profile, orders, messages, or files. The attacker does not gain additional privileges — they access the same types of resources they are authorized to access, just belonging to someone else.
+**Horizontal privilege escalation** occurs when a user accesses resources belonging to another user at the same privilege level. User A accesses User B's profile, orders, messages, or files. The attacker does not gain additional privileges: they access the same types of resources they are authorized to access, just belonging to someone else.
 
 **Vertical privilege escalation** occurs when a user accesses resources or performs actions reserved for higher-privileged users. A regular user accesses the admin panel, deletes other users' accounts, or modifies system configuration. The attacker gains privileges they should not have.
 
 Both types can exist simultaneously. A single application might have horizontal IDOR in the user profile endpoint and vertical IDOR in the admin settings endpoint. Testing for both is essential because they have different impacts and require different fixes.
 
-The impact difference is significant. Horizontal IDOR typically exposes individual user data — one customer's orders, one patient's records, one employee's salary. Vertical IDOR can expose the entire system — all users' data, system configuration, administrative functions, and the ability to modify the application itself.
+The impact difference is significant. Horizontal IDOR typically exposes individual user data: one customer's orders, one patient's records, one employee's salary. Vertical IDOR can expose the entire system: all users' data, system configuration, administrative functions, and the ability to modify the application itself.
 
 ## IDOR in REST APIs
 
@@ -63,11 +63,11 @@ IDOR is not limited to GET requests. Every HTTP method that accepts an identifie
 
 **PATCH /api/users/12346/role**: Change another user's role to admin.
 
-Each of these must be tested independently because the authorization check might exist for some methods but not others. A common pattern is that GET requests have proper authorization checks but PUT, PATCH, and DELETE do not — because the developer focused on the read path and forgot the write path.
+Each of these must be tested independently because the authorization check might exist for some methods but not others. A common pattern is that GET requests have proper authorization checks but PUT, PATCH, and DELETE do not: because the developer focused on the read path and forgot the write path.
 
 ### IDOR with UUIDs
 
-Applications that use UUIDs (Universally Unique Identifiers) instead of sequential integers are sometimes considered immune to IDOR. This is false. UUIDs are predictable — many UUID generation algorithms use timestamps, MAC addresses, or sequential counters that can be predicted or extracted from other sources.
+Applications that use UUIDs (Universally Unique Identifiers) instead of sequential integers are sometimes considered immune to IDOR. This is false. UUIDs are predictable: many UUID generation algorithms use timestamps, MAC addresses, or sequential counters that can be predicted or extracted from other sources.
 
 Even if UUIDs are truly random, they are often exposed in other locations: API responses, URL parameters, error messages, or JavaScript source code. An attacker who can observe any one instance of a UUID can use it to access that resource and potentially others.
 
@@ -137,7 +137,7 @@ This allows an attacker to enumerate user data quickly, potentially bypassing ra
 }
 ```
 
-This reveals all available types, queries, mutations, and fields — including those the developer did not intend to expose. Sensitive fields like `salary`, `ssn`, `internalNotes`, or `adminNotes` might be visible in the schema even if they are not returned in normal queries.
+This reveals all available types, queries, mutations, and fields: including those the developer did not intend to expose. Sensitive fields like `salary`, `ssn`, `internalNotes`, or `adminNotes` might be visible in the schema even if they are not returned in normal queries.
 
 ## IDOR in File Downloads
 
@@ -346,7 +346,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 
 The employee_id was the current user's ID, embedded in the JWT payload. The API returned the pay stub data. But when the employee_id was changed to any other value, the API returned the other employee's pay stub data.
 
-**The exploitation**: The attacker (a junior developer with portal access) used Burp Suite to intercept the pay stub request. They replaced employee_id with sequential numbers (1, 2, 3, ...) and discovered that the API returned pay stub data for every employee — including the CEO, CTO, CFO, and other executives.
+**The exploitation**: The attacker (a junior developer with portal access) used Burp Suite to intercept the pay stub request. They replaced employee_id with sequential numbers (1, 2, 3, ...) and discovered that the API returned pay stub data for every employee: including the CEO, CTO, CFO, and other executives.
 
 **What was exposed**:
 
@@ -359,7 +359,7 @@ The employee_id was the current user's ID, embedded in the JWT payload. The API 
 
 **The root cause**: The API endpoint used the employee_id parameter to look up pay stubs without verifying that the authenticated user was authorized to access that specific employee's data. The authorization check only verified that the JWT was valid (authentication), not that the user had permission to access the requested resource (authorization).
 
-**The fix**: The API must verify that the employee_id in the request matches the employee_id from the JWT token. If a user requests another employee's data, the API returns 403 Forbidden. Additionally, the frontend should not expose the employee_id parameter — it should use the token's user identity to determine which pay stub to return.
+**The fix**: The API must verify that the employee_id in the request matches the employee_id from the JWT token. If a user requests another employee's data, the API returns 403 Forbidden. Additionally, the frontend should not expose the employee_id parameter: it should use the token's user identity to determine which pay stub to return.
 
 ```javascript
 // FIXED endpoint

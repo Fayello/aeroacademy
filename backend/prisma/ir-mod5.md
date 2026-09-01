@@ -1,6 +1,6 @@
-# Module 5 — Recovery
+# Module 5: Recovery
 
-Recovery is the phase where you bring systems back online and return to normal operations. It sounds simple — just restore from backups and move on. In practice, recovery is one of the most dangerous phases of incident response because it is when you are most vulnerable to reinfection. The attacker may still have footholds you have not discovered. Backups may contain malicious content. The rush to restore services can lead to shortcuts that create new vulnerabilities. This module covers how to recover safely, validate that your systems are clean, monitor for reinfection, and communicate throughout the process.
+Recovery is the phase where you bring systems back online and return to normal operations. It sounds simple: just restore from backups and move on. In practice, recovery is one of the most dangerous phases of incident response because it is when you are most vulnerable to reinfection. The attacker may still have footholds you have not discovered. Backups may contain malicious content. The rush to restore services can lead to shortcuts that create new vulnerabilities. This module covers how to recover safely, validate that your systems are clean, monitor for reinfection, and communicate throughout the process.
 
 ## The Recovery Paradox
 
@@ -26,11 +26,11 @@ Database backups require special consideration. If the attacker modified data in
 
 ### Backup Integrity Verification
 
-Even backups made before the compromise may have integrity issues. Backups can fail silently — a backup that appears to be complete may be missing files or contain corrupted data.
+Even backups made before the compromise may have integrity issues. Backups can fail silently: a backup that appears to be complete may be missing files or contain corrupted data.
 
 Verify backup integrity before you need it. This means regularly testing your backups by performing test restores and verifying that the restored data is complete and correct. If you discover backup integrity issues during a recovery, you have a serious problem.
 
-Checksums and hashes can verify backup integrity. If you have hashes of your backup files computed at the time of backup, you can verify that the backup has not been modified. This does not guarantee the backup is clean — the backup could have been made from a compromised system — but it verifies that the backup file itself has not been tampered with.
+Checksums and hashes can verify backup integrity. If you have hashes of your backup files computed at the time of backup, you can verify that the backup has not been modified. This does not guarantee the backup is clean: the backup could have been made from a compromised system: but it verifies that the backup file itself has not been tampered with.
 
 ### Backup Location
 
@@ -54,7 +54,7 @@ The restoration approach depends on the type of system and the nature of the com
 
 ### Restoration Sequence
 
-The order in which you restore systems matters. Restore systems in dependency order — restore the systems that other systems depend on first.
+The order in which you restore systems matters. Restore systems in dependency order: restore the systems that other systems depend on first.
 
 For most environments, the restoration sequence is:
 
@@ -76,7 +76,7 @@ Restoring data from backups requires care. Data integrity is critical, and you n
 
 For file servers, verify restored files by checking file hashes against known-good values. For databases, run integrity checks and verify data consistency. For application systems, verify that application data is in the expected state.
 
-Consider data loss when restoring. If your last clean backup is a week old, you lose a week of data. Communicate the expected data loss to stakeholders and determine whether additional recovery measures are needed — like replaying transaction logs or recovering data from other sources.
+Consider data loss when restoring. If your last clean backup is a week old, you lose a week of data. Communicate the expected data loss to stakeholders and determine whether additional recovery measures are needed: like replaying transaction logs or recovering data from other sources.
 
 ## Validation and Verification
 
@@ -110,7 +110,7 @@ Before connecting a restored system to the network, verify that security control
 
 ## Monitoring for Reinfection
 
-Recovery is the phase when you are most vulnerable to reinfection. The attacker knows they have been detected and may be actively watching for you to restore systems. If they still have a foothold — even a small one — they will attempt to use it.
+Recovery is the phase when you are most vulnerable to reinfection. The attacker knows they have been detected and may be actively watching for you to restore systems. If they still have a foothold: even a small one: they will attempt to use it.
 
 ### Enhanced Monitoring
 
@@ -118,21 +118,21 @@ During recovery, implement monitoring that is more aggressive than your normal m
 
 Create detection rules specifically for the attacker's known tactics, techniques, and procedures. If the attacker used a specific malware sample, create a detection rule for that sample's network signatures. If the attacker used a specific persistence mechanism, create a detection rule for that mechanism. If the attacker accessed specific systems, monitor those systems more closely.
 
-Review all logs from restored systems within the first 24 hours. Look for any suspicious activity — unexpected logins, unusual process executions, unauthorized network connections. The first 24 hours after restoration are the highest-risk period.
+Review all logs from restored systems within the first 24 hours. Look for any suspicious activity: unexpected logins, unusual process executions, unauthorized network connections. The first 24 hours after restoration are the highest-risk period.
 
 ### Monitoring Duration
 
-Enhanced monitoring should continue for at least 30 days after recovery. This is not arbitrary — it is based on the observation that attackers who have been detected often attempt to regain access within the first few weeks.
+Enhanced monitoring should continue for at least 30 days after recovery. This is not arbitrary: it is based on the observation that attackers who have been detected often attempt to regain access within the first few weeks.
 
 During this 30-day period, gradually reduce the monitoring intensity as your confidence in the recovery increases. If no signs of reinfection are detected after two weeks, you can relax monitoring slightly. If no signs are detected after 30 days, you can return to normal monitoring levels.
 
-If signs of reinfection are detected at any point during the monitoring period, immediately re-enter the incident response process. This means containment, investigation, and eradication — the full cycle. Do not assume that enhanced monitoring will catch everything.
+If signs of reinfection are detected at any point during the monitoring period, immediately re-enter the incident response process. This means containment, investigation, and eradication: the full cycle. Do not assume that enhanced monitoring will catch everything.
 
 ### Deception Technology
 
 Consider deploying deception technology during recovery. Honeypots, honey tokens, and honey accounts can detect attacker activity that your monitoring might miss. A honey account that nobody should be using will immediately reveal an attacker who discovers and uses it.
 
-Deploy honeypots on network segments where you expect the attacker to attempt lateral movement. A honeypot that mimics a production server can detect an attacker scanning your network. Honey tokens — unique files or credentials that have no legitimate use — can detect data exfiltration or credential theft.
+Deploy honeypots on network segments where you expect the attacker to attempt lateral movement. A honeypot that mimics a production server can detect an attacker scanning your network. Honey tokens: unique files or credentials that have no legitimate use: can detect data exfiltration or credential theft.
 
 ## Communication During Recovery
 
@@ -140,13 +140,13 @@ Communication during recovery is as important as communication during the incide
 
 ### Internal Communication
 
-Keep leadership informed about recovery progress. Provide regular updates — at least daily during active recovery — on what has been restored, what is still being restored, and what the expected completion timeline is.
+Keep leadership informed about recovery progress. Provide regular updates: at least daily during active recovery: on what has been restored, what is still being restored, and what the expected completion timeline is.
 
 Communicate with technical teams about what has been verified and what still needs verification. Ensure that teams that depend on restored systems know when those systems are back online and what level of functionality to expect.
 
 ### External Communication
 
-If the incident was customer-facing, communicate with customers about the recovery. Tell them what has been restored, what has changed, and what they should do — like resetting passwords or monitoring their accounts.
+If the incident was customer-facing, communicate with customers about the recovery. Tell them what has been restored, what has changed, and what they should do: like resetting passwords or monitoring their accounts.
 
 If the incident affected partners or vendors, communicate with them about the recovery and any changes to your systems that may affect integration.
 
@@ -164,17 +164,17 @@ The IR team was assembled and began containment. They isolated the affected netw
 
 Recovery was a massive undertaking. The company needed to restore 200 workstations and 15 servers from backups. The challenge was that the attacker had modified some backups before deploying the destructive payload. The team needed to identify which backups were clean and which were compromised.
 
-The team started by identifying the timeline of compromise. The forensic analysis showed that the attacker had gained access on June 1st and deployed the destructive payload on June 6th. Any backup made between June 1st and June 6th might be compromised. The team used backups from May 30th — the last full backup before the compromise — as their baseline.
+The team started by identifying the timeline of compromise. The forensic analysis showed that the attacker had gained access on June 1st and deployed the destructive payload on June 6th. Any backup made between June 1st and June 6th might be compromised. The team used backups from May 30th: the last full backup before the compromise: as their baseline.
 
 Restoring 200 workstations required a staged approach. The team prioritized workstations based on business criticality. Finance and operations workstations were restored first, followed by engineering and sales, followed by all other workstations. Each workstation was rebuilt from a clean image, patched, and verified before being returned to the user.
 
 The 15 servers required more careful restoration. Each server had different data and configuration requirements. The team worked with each server's owner to verify data integrity and application functionality after restoration.
 
-The restoration took 12 days. During that time, the company operated with reduced capability. Some processes were handled manually, some were delayed, and some were suspended entirely. The financial impact was significant — approximately $3 million in lost revenue and recovery costs.
+The restoration took 12 days. During that time, the company operated with reduced capability. Some processes were handled manually, some were delayed, and some were suspended entirely. The financial impact was significant: approximately $3 million in lost revenue and recovery costs.
 
 After restoration, the team implemented enhanced monitoring on all restored systems. They deployed additional EDR agents, enabled PowerShell logging, configured file integrity monitoring, and created detection rules specifically for the attacker's known tactics. The enhanced monitoring continued for 60 days.
 
-During the monitoring period, the team detected and blocked two attempts by the attacker to regain access. The attacker tried to use the same VPN account — which had been reset but not fully revoked — to connect to the network. The enhanced monitoring detected the connection attempt and blocked it immediately. This validated the decision to maintain enhanced monitoring.
+During the monitoring period, the team detected and blocked two attempts by the attacker to regain access. The attacker tried to use the same VPN account: which had been reset but not fully revoked: to connect to the network. The enhanced monitoring detected the connection attempt and blocked it immediately. This validated the decision to maintain enhanced monitoring.
 
 Key lessons from this recovery:
 

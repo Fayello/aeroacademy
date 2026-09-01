@@ -1,4 +1,4 @@
-# Module 7 — VPN Technologies
+# Module 7: VPN Technologies
 
 VPNs create encrypted tunnels over untrusted networks, allowing remote users or sites to communicate as if they were on the same local network. The technology behind VPNs ranges from simple password-based solutions to complex public-key infrastructure with hardware acceleration. Understanding the trade-offs between security, performance, and complexity is essential for choosing and deploying the right VPN solution.
 
@@ -8,7 +8,7 @@ This module covers site-to-site vs remote access VPNs, WireGuard, OpenVPN, IPSec
 
 The distinction is straightforward:
 
-**Site-to-site VPN**: Connects two entire networks together. A router or firewall at each site establishes the tunnel. Users at both sites can access resources on the other side without any client software — the VPN is transparent. This is used to connect branch offices to headquarters, or to connect on-premises infrastructure to cloud VPCs.
+**Site-to-site VPN**: Connects two entire networks together. A router or firewall at each site establishes the tunnel. Users at both sites can access resources on the other side without any client software: the VPN is transparent. This is used to connect branch offices to headquarters, or to connect on-premises infrastructure to cloud VPCs.
 
 **Remote access VPN**: Connects individual users to a network. Each user runs a VPN client on their device, establishing a tunnel to a VPN server. This is used for remote workers, mobile devices, and temporary access.
 
@@ -25,7 +25,7 @@ When designing a VPN deployment, you need to consider:
 
 ## WireGuard
 
-WireGuard is a modern VPN protocol that emphasizes simplicity, speed, and strong cryptography. It uses a single cryptographic suite (Noise protocol framework, Curve25519, ChaCha20, Poly1305, BLAKE2s) and has a codebase of approximately 4,000 lines — compared to tens of thousands for OpenVPN and IPSec.
+WireGuard is a modern VPN protocol that emphasizes simplicity, speed, and strong cryptography. It uses a single cryptographic suite (Noise protocol framework, Curve25519, ChaCha20, Poly1305, BLAKE2s) and has a codebase of approximately 4,000 lines: compared to tens of thousands for OpenVPN and IPSec.
 
 ### WireGuard Concepts
 
@@ -34,7 +34,7 @@ WireGuard uses public-key cryptography. Each peer (client or server) has:
 - A **public key**: Derived from the private key, shared with other peers.
 - A **preshared key**: An optional symmetric key for post-quantum resistance.
 
-The tunnel is identified by the public keys of both peers. There are no certificates, no complex handshakes, and no certificate authorities. This simplicity is WireGuard's greatest strength — and also its limitation. There is no built-in certificate management, so key distribution must be handled out-of-band (copying public keys manually, using a configuration management tool, or deploying a custom key management system).
+The tunnel is identified by the public keys of both peers. There are no certificates, no complex handshakes, and no certificate authorities. This simplicity is WireGuard's greatest strength: and also its limitation. There is no built-in certificate management, so key distribution must be handled out-of-band (copying public keys manually, using a configuration management tool, or deploying a custom key management system).
 
 ### WireGuard Server Configuration
 
@@ -179,7 +179,7 @@ OpenVPN is the most widely deployed open-source VPN solution. It uses OpenSSL fo
 
 **SSL/TLS mode (certificate-based)**: Each client has a certificate signed by a CA. The server authenticates clients using their certificates. This is the standard production deployment.
 
-**Static key mode (pre-shared)**: A single pre-shared key is used by both client and server. Simpler but less secure — no perfect forward secrecy, and compromising the key compromises all past and future traffic.
+**Static key mode (pre-shared)**: A single pre-shared key is used by both client and server. Simpler but less secure: no perfect forward secrecy, and compromising the key compromises all past and future traffic.
 
 ### OpenVPN Server Configuration
 
@@ -316,7 +316,7 @@ telnet 127.0.0.1 7505
 
 OpenVPN's performance depends heavily on configuration choices:
 
-**UDP vs TCP transport**: UDP is faster because it avoids TCP's overhead (sequence numbers, acknowledgments, retransmissions). TCP-in-TCP can cause "TCP meltdown" — if the outer TCP connection drops packets, it retransmits, adding latency to the inner TCP connection. Always prefer UDP for VPN transport unless you need to traverse a firewall that only allows TCP.
+**UDP vs TCP transport**: UDP is faster because it avoids TCP's overhead (sequence numbers, acknowledgments, retransmissions). TCP-in-TCP can cause "TCP meltdown": if the outer TCP connection drops packets, it retransmits, adding latency to the inner TCP connection. Always prefer UDP for VPN transport unless you need to traverse a firewall that only allows TCP.
 
 **Cipher selection**: AES-256-GCM is the recommended cipher. It provides authenticated encryption (combined encryption and integrity) and is hardware-accelerated on modern CPUs. Avoid older ciphers like Blowfish or RC4.
 
@@ -328,7 +328,7 @@ IPSec is a suite of protocols for securing IP communications. It provides encryp
 
 ### IPSec Components
 
-**IKE (Internet Key Exchange)**: Negotiates security associations (SAs) — agreed-upon encryption algorithms, keys, and lifetimes.
+**IKE (Internet Key Exchange)**: Negotiates security associations (SAs): agreed-upon encryption algorithms, keys, and lifetimes.
 
 **ESP (Encapsulating Security Payload)**: Encrypts and authenticates the payload. This is the primary protocol for VPN tunnels.
 
@@ -455,7 +455,7 @@ push "route 192.168.1.0 255.255.255.0"
 
 ### Security Implications
 
-Split tunneling creates a security risk: while the VPN is active, the client has two routes to the internet — one through the VPN and one directly. An attacker could potentially route traffic through the direct connection to bypass corporate security controls.
+Split tunneling creates a security risk: while the VPN is active, the client has two routes to the internet: one through the VPN and one directly. An attacker could potentially route traffic through the direct connection to bypass corporate security controls.
 
 Some organizations enforce full tunneling through group policy and use always-on VPN configurations to ensure the tunnel is active before the user can access any resources.
 
@@ -470,7 +470,7 @@ The security of a VPN depends entirely on the key exchange. Weak key exchange pa
 ```bash
 # Check WireGuard key strength
 wg genkey | wg pubkey
-# WireGuard always uses Curve25519 (128-bit security) — no configuration needed
+# WireGuard always uses Curve25519 (128-bit security): no configuration needed
 
 # Check IPSec key parameters (strongSwan)
 # In /etc/ipsec.conf, ensure strong parameters:
@@ -524,7 +524,7 @@ HQ acts as the hub. Branch offices connect to HQ. Traffic between branches goes 
 
 ### Configuration
 
-**HQ (Hub) — /etc/wireguard/wg0.conf:**
+**HQ (Hub): /etc/wireguard/wg0.conf:**
 ```ini
 [Interface]
 Address = 10.0.0.1/24
@@ -551,7 +551,7 @@ AllowedIPs = 10.0.0.3/32, 192.168.3.0/24
 Endpoint = 192.0.2.10:51820
 ```
 
-**Branch A — /etc/wireguard/wg0.conf:**
+**Branch A: /etc/wireguard/wg0.conf:**
 ```ini
 [Interface]
 Address = 10.0.0.2/24
@@ -572,7 +572,7 @@ PersistentKeepalive = 25
 
 Note: Branch A's AllowedIPs includes Branch B's subnet (192.168.3.0/24) because traffic to Branch B goes through HQ.
 
-**Branch B — /etc/wireguard/wg0.conf:**
+**Branch B: /etc/wireguard/wg0.conf:**
 ```ini
 [Interface]
 Address = 10.0.0.3/24

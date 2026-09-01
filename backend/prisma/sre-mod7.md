@@ -1,4 +1,4 @@
-# Module 7 — Incident Management
+# Module 7: Incident Management
 
 ## On-Call Rotations
 

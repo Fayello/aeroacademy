@@ -1,4 +1,4 @@
-# Module 3 — Toil Reduction
+# Module 3: Toil Reduction
 
 ## Identifying Toil in Your Organization
 

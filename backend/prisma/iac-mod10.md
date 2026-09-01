@@ -1,6 +1,6 @@
-# Module 10 — Infrastructure as Code at Scale
+# Module 10: Infrastructure as Code at Scale
 
-A single engineer managing a single Terraform configuration is straightforward. Fifty engineers managing two hundred Terraform configurations across three cloud providers, with compliance requirements, cost controls, and shared modules — that is a different problem entirely. The patterns that work for one person break down when teams grow: naming conflicts, state file collisions, module version drift, and the inability to know who changed what and why.
+A single engineer managing a single Terraform configuration is straightforward. Fifty engineers managing two hundred Terraform configurations across three cloud providers, with compliance requirements, cost controls, and shared modules: that is a different problem entirely. The patterns that work for one person break down when teams grow: naming conflicts, state file collisions, module version drift, and the inability to know who changed what and why.
 
 This module covers the patterns and practices that make IaC work at enterprise scale: multi-cloud strategies, team workflows with shared modules, governance through policy enforcement, and a complete scenario of adopting IaC across an organization.
 

@@ -1,10 +1,10 @@
-# Module 8 — Forensics Scripts
+# Module 8: Forensics Scripts
 
-Digital forensics is the process of collecting, preserving, and analyzing digital evidence. When a security incident happens, you need to reconstruct what happened from the artifacts left behind — log files, memory dumps, disk images, and network captures. Python is the go-to language for forensic analysis because it lets you parse binary formats, extract patterns, and generate timelines at scale.
+Digital forensics is the process of collecting, preserving, and analyzing digital evidence. When a security incident happens, you need to reconstruct what happened from the artifacts left behind: log files, memory dumps, disk images, and network captures. Python is the go-to language for forensic analysis because it lets you parse binary formats, extract patterns, and generate timelines at scale.
 
 ## Log Parsing
 
-Logs are the bread and butter of forensics. Every system generates them — auth logs, web server logs, DNS logs, application logs. The challenge is parsing inconsistent formats and extracting meaningful information.
+Logs are the bread and butter of forensics. Every system generates them: auth logs, web server logs, DNS logs, application logs. The challenge is parsing inconsistent formats and extracting meaningful information.
 
 ### Apache/Nginx Access Logs
 
@@ -103,7 +103,7 @@ The real power of forensic analysis comes from correlating evidence across multi
 
 Consider a typical compromise scenario. The authentication log shows a failed login, then a successful login from the same IP. The web server log shows a request for the admin panel from the same IP thirty seconds later. The process log shows a new process spawned by the web server user. The network log shows an outbound connection to an unknown IP. Each event alone is unremarkable. Together, they tell a story of credential theft, unauthorized access, and data exfiltration.
 
-Correlation requires timestamps. Every log source must have accurate, synchronized timestamps. Use NTP to synchronize clocks across systems. When correlating events, account for clock skew — a few seconds of difference between systems is normal. Events within a few seconds of each other on different systems might be causally related.
+Correlation requires timestamps. Every log source must have accurate, synchronized timestamps. Use NTP to synchronize clocks across systems. When correlating events, account for clock skew: a few seconds of difference between systems is normal. Events within a few seconds of each other on different systems might be causally related.
 
 Correlation also requires context. An IP address alone doesn't tell you much. But an IP address combined with a username, a process name, and a destination domain tells you exactly what happened. Build your correlation logic to match on multiple fields, not just one.
 
@@ -371,7 +371,7 @@ for f in findings:
 
 ## File Carving
 
-File carving extracts files from raw disk images or memory dumps. When a file is deleted, the data often remains on disk — the filesystem just marks the space as available.
+File carving extracts files from raw disk images or memory dumps. When a file is deleted, the data often remains on disk: the filesystem just marks the space as available.
 
 ### Carving Files by Header/Footer
 
@@ -447,7 +447,7 @@ def carve_files(image_path, output_dir, file_type=None):
                     break
                 file_data = data[header_pos:footer_pos + len(footer)]
             else:
-                # No footer — extract a reasonable chunk
+                # No footer: extract a reasonable chunk
                 file_data = data[header_pos:header_pos + 1024 * 1024]  # 1MB max
 
             # Save carved file
@@ -956,7 +956,7 @@ Analyze a set of log files from a security incident. Time limit: 90 minutes.
 
 ## Evidence Preservation
 
-Forensic analysis depends on evidence integrity. If you modify the original evidence during analysis, your findings are worthless in court and unreliable in incident response. Evidence preservation is not optional — it's a professional obligation.
+Forensic analysis depends on evidence integrity. If you modify the original evidence during analysis, your findings are worthless in court and unreliable in incident response. Evidence preservation is not optional: it's a professional obligation.
 
 Chain of custody documents who handled the evidence, when, and what they did with it. Every time you copy a log file, analyze a disk image, or extract a memory dump, document the action. Include the timestamp, the person performing the action, the tool used, and the hash of the original and copy. This documentation proves the evidence hasn't been tampered with.
 
@@ -964,11 +964,11 @@ Work with copies, never originals. When you receive a pcap file, make a copy and
 
 Hash verification proves evidence integrity. Calculate MD5 and SHA-256 hashes of original evidence before analysis. Recalculate hashes after analysis. If the hashes match, the evidence wasn't modified. If they don't match, something changed the evidence, and your findings are unreliable.
 
-The tools you built in this module — log analyzers, timeline generators, IOC extractors — operate on copies. They read log files and produce reports. They don't modify the originals. This design is intentional. Forensic tools should be read-only by default.
+The tools you built in this module: log analyzers, timeline generators, IOC extractors: operate on copies. They read log files and produce reports. They don't modify the originals. This design is intentional. Forensic tools should be read-only by default.
 
 ## Evidence
 
-Forensic analysis is how you prove what happened. In incident response, legal proceedings, or compliance audits, the evidence you extract from logs and system artifacts tells the story. The tools you built here — log parsers, timeline generators, IOC extractors — are the same ones used in professional forensic investigations.
+Forensic analysis is how you prove what happened. In incident response, legal proceedings, or compliance audits, the evidence you extract from logs and system artifacts tells the story. The tools you built here: log parsers, timeline generators, IOC extractors: are the same ones used in professional forensic investigations.
 
 The key skill is not just parsing logs, but correlating them. A failed login means nothing alone. A failed login followed by a successful login followed by a suspicious process execution followed by an outbound connection tells a story of compromise.
 

@@ -1,6 +1,6 @@
-# Module 1 — Security Engineering: What It Actually Is
+# Module 1: Security Engineering: What It Actually Is
 
-Security engineering is the discipline of building systems that remain dependable in the face of malice, error, or mischance. It is not the same as running a vulnerability scanner, responding to alerts at 3 AM, or configuring a firewall. Those are security operations tasks — important, but fundamentally different from what we do as security engineers. Security operations is about keeping the lights on. Security engineering is about designing the building so the lights cannot be easily knocked out.
+Security engineering is the discipline of building systems that remain dependable in the face of malice, error, or mischance. It is not the same as running a vulnerability scanner, responding to alerts at 3 AM, or configuring a firewall. Those are security operations tasks: important, but fundamentally different from what we do as security engineers. Security operations is about keeping the lights on. Security engineering is about designing the building so the lights cannot be easily knocked out.
 
 The distinction matters because organizations that confuse the two end up with expensive monitoring of fundamentally broken architectures. You can instrument a monolithic application with every security tool on the market and still lose customer data because the database had no encryption at rest, no network segmentation, and no access controls beyond a single shared service account. Security engineering prevents that class of problem. Security operations detects it after the fact.
 
@@ -36,7 +36,7 @@ PASTA is heavier than STRIDE and works best for high-risk systems where the thre
 
 ### Attack Trees
 
-Attack trees, popularized by Bruce Schneier, model attacks as tree structures where the root node is the attacker's goal and the leaf nodes are the specific techniques used to achieve that goal. Each node can have AND or OR relationships with its children — an attacker might need to satisfy all child nodes (AND) or just one (OR).
+Attack trees, popularized by Bruce Schneier, model attacks as tree structures where the root node is the attacker's goal and the leaf nodes are the specific techniques used to achieve that goal. Each node can have AND or OR relationships with its children: an attacker might need to satisfy all child nodes (AND) or just one (OR).
 
 Attack trees are excellent for visualizing complex attack scenarios and for communicating risk to non-technical stakeholders. When you show a CEO that an attacker has 14 different paths to exfiltrate customer data, and three of those paths require only public information, the conversation about security investment changes dramatically.
 
@@ -46,7 +46,7 @@ Building an effective attack tree requires thinking systematically about the att
 
 Security requirements are not optional add-ons to functional requirements. They are constraints that define how the system must behave under adversarial conditions. Gathering them requires asking specific questions that most product teams never consider.
 
-Start with asset identification. What data does the system handle? What is the sensitivity of that data? A system handling public marketing content has different security requirements than one processing healthcare records. Regulatory requirements drive many security decisions — HIPAA requires specific encryption standards, PCI DSS mandates network segmentation for cardholder data environments, GDPR requires data minimization and the right to erasure.
+Start with asset identification. What data does the system handle? What is the sensitivity of that data? A system handling public marketing content has different security requirements than one processing healthcare records. Regulatory requirements drive many security decisions: HIPAA requires specific encryption standards, PCI DSS mandates network segmentation for cardholder data environments, GDPR requires data minimization and the right to erasure.
 
 Move to trust boundaries. Where does the system cross from trusted to untrusted zones? Every API endpoint that accepts external input is a trust boundary. Every database connection crosses a trust boundary. Every integration with a third-party service crosses a trust boundary. Each boundary needs explicit security controls.
 
@@ -74,7 +74,7 @@ DREAD is simpler than CVSS and works well for internal threat assessments where 
 
 Factor Analysis of Information Risk (FAIR) takes a quantitative approach, estimating risk in financial terms. It models risk as the product of loss event frequency and loss magnitude. FAIR produces ranges rather than point estimates, which is more honest about the uncertainty inherent in risk assessment.
 
-FAIR is the most rigorous framework but also the most resource-intensive. It requires data about threat rates, vulnerability rates, and loss magnitudes that many organizations do not have. For high-stakes decisions — like how much to invest in a security program — FAIR provides the most defensible analysis. For day-to-day prioritization, simpler frameworks suffice.
+FAIR is the most rigorous framework but also the most resource-intensive. It requires data about threat rates, vulnerability rates, and loss magnitudes that many organizations do not have. For high-stakes decisions: like how much to invest in a security program: FAIR provides the most defensible analysis. For day-to-day prioritization, simpler frameworks suffice.
 
 ## The Bank That Lost $10 Million
 
@@ -86,7 +86,7 @@ The total cost exceeded $10 million when you account for the regulatory fine ($3
 
 The root cause was not a sophisticated attack. It was a design failure. The web application had no input validation framework, no web application firewall, no network segmentation, no data loss prevention, and no monitoring of database access patterns. Every one of these is a security engineering decision that was either never made or made incorrectly.
 
-The bank had a security operations center that monitored for threats 24/7. But the SOC had nothing to monitor — the attack generated no alerts because the exfiltration method (DNS tunneling) was not being detected, and the database access appeared legitimate because the compromised web application used a database account with full read access to the customer table.
+The bank had a security operations center that monitored for threats 24/7. But the SOC had nothing to monitor: the attack generated no alerts because the exfiltration method (DNS tunneling) was not being detected, and the database access appeared legitimate because the compromised web application used a database account with full read access to the customer table.
 
 This is what happens when security operations runs ahead of security engineering. You build an impressive monitoring capability for a system that was never designed to be monitored, segmented, or defended.
 
@@ -110,13 +110,13 @@ Finally, leadership must visibly prioritize security. When engineers see that th
 
 The financial impact of poor security engineering extends far beyond the immediate cost of a breach. Consider the full lifecycle of a security failure: the initial compromise, the detection (often weeks or months later), the investigation, the containment, the remediation, the notification, the regulatory fines, the legal costs, the lost business, and the long-term reputational damage.
 
-A 2023 study by the Ponemon Institute found that the average cost of a data breach reached $4.45 million, a 15% increase over three years. For breaches involving compromised credentials — the most common attack vector — the average cost was $4.81 million. For breaches in healthcare, the average cost reached $10.93 million. These numbers include direct costs (investigation, remediation, notification) and indirect costs (lost business, customer churn, regulatory penalties).
+A 2023 study by the Ponemon Institute found that the average cost of a data breach reached $4.45 million, a 15% increase over three years. For breaches involving compromised credentials: the most common attack vector: the average cost was $4.81 million. For breaches in healthcare, the average cost reached $10.93 million. These numbers include direct costs (investigation, remediation, notification) and indirect costs (lost business, customer churn, regulatory penalties).
 
-But the numbers do not capture the full picture. A breach damages trust — customer trust, partner trust, investor trust — and trust is difficult to quantify and slow to rebuild. Companies that suffer breaches experience higher customer churn, lower customer acquisition rates, and reduced ability to command premium pricing. A study by the Harvard Business Review found that companies that experienced data breaches saw a 3.4% decline in stock price in the days following disclosure, with the decline persisting for months.
+But the numbers do not capture the full picture. A breach damages trust: customer trust, partner trust, investor trust: and trust is difficult to quantify and slow to rebuild. Companies that suffer breaches experience higher customer churn, lower customer acquisition rates, and reduced ability to command premium pricing. A study by the Harvard Business Review found that companies that experienced data breaches saw a 3.4% decline in stock price in the days following disclosure, with the decline persisting for months.
 
-The root cause of most breaches is not sophisticated attacks. It is preventable engineering failures: unpatched software, misconfigured systems, missing input validation, hardcoded credentials, and flat networks with no segmentation. These are not security operations failures. They are security engineering failures — failures to design, build, and deploy systems that are resilient to the threats they face.
+The root cause of most breaches is not sophisticated attacks. It is preventable engineering failures: unpatched software, misconfigured systems, missing input validation, hardcoded credentials, and flat networks with no segmentation. These are not security operations failures. They are security engineering failures: failures to design, build, and deploy systems that are resilient to the threats they face.
 
-The return on investment for security engineering is measured in incidents prevented. A single prevented breach justifies years of security engineering investment. The challenge is that prevented incidents are invisible — you never see the attack that did not succeed because the system was designed correctly. This makes it difficult to build the business case for security engineering investment, but the evidence is clear: organizations that invest in security engineering experience fewer breaches, lower breach costs, and faster recovery when incidents do occur.
+The return on investment for security engineering is measured in incidents prevented. A single prevented breach justifies years of security engineering investment. The challenge is that prevented incidents are invisible: you never see the attack that did not succeed because the system was designed correctly. This makes it difficult to build the business case for security engineering investment, but the evidence is clear: organizations that invest in security engineering experience fewer breaches, lower breach costs, and faster recovery when incidents do occur.
 
 ## Security Engineering in the Software Development Lifecycle
 
@@ -134,11 +134,11 @@ Security engineering must be integrated into every phase of the software develop
 
 **Operations phase:** Vulnerability management operates continuously. Incident response capabilities are maintained. Security monitoring detects threats. Lessons from incidents feed back into the requirements and design phases.
 
-This integration is not optional. Organizations that treat security as a separate activity — a review at the end, a test before deployment, a scan after launch — consistently experience more security incidents than organizations that integrate security into every phase. The reason is simple: security vulnerabilities introduced early in the lifecycle are cheaper to prevent than vulnerabilities detected late in the lifecycle.
+This integration is not optional. Organizations that treat security as a separate activity: a review at the end, a test before deployment, a scan after launch: consistently experience more security incidents than organizations that integrate security into every phase. The reason is simple: security vulnerabilities introduced early in the lifecycle are cheaper to prevent than vulnerabilities detected late in the lifecycle.
 
 ## Assessment
 
-**Lab 1.1 — Threat Model Analysis (45 minutes)**
+**Lab 1.1: Threat Model Analysis (45 minutes)**
 You are given a system description for an e-commerce platform that handles user accounts, product catalogs, shopping carts, payment processing, and order fulfillment. Using STRIDE, identify at least 15 specific threats across all five components. For each threat, specify the STRIDE category, the affected component, the potential impact, and an initial risk rating (High/Medium/Low).
 
 **Grading criteria:**
@@ -148,7 +148,7 @@ You are given a system description for an e-commerce platform that handles user 
 - At least one threat per component (5 points)
 - Identification of at least two threats involving third-party integrations (5 points)
 
-**Lab 1.2 — Risk Assessment Comparison (30 minutes)**
+**Lab 1.2: Risk Assessment Comparison (30 minutes)**
 Given a set of five vulnerabilities with CVSS scores, apply DREAD and FAIR analysis to each. Write a one-page memo explaining why your DREAD and FAIR assessments differ from the CVSS scores and which vulnerabilities you would prioritize for remediation given a limited budget.
 
 **Grading criteria:**
@@ -157,7 +157,7 @@ Given a set of five vulnerabilities with CVSS scores, apply DREAD and FAIR analy
 - Clear justification for prioritization decisions (15 points)
 - Professional memo format appropriate for executive communication (5 points)
 
-**Lab 1.3 — Security Requirements Document (45 minutes)**
+**Lab 1.3: Security Requirements Document (45 minutes)**
 Write a security requirements document for a mobile banking application. Include asset classification, trust boundary analysis, access control requirements, encryption requirements, availability requirements, and regulatory compliance requirements. The document should be specific enough that a development team could implement from it.
 
 **Grading criteria:**
@@ -169,7 +169,7 @@ Write a security requirements document for a mobile banking application. Include
 
 ## Evidence
 
-Security engineering is the foundation upon which all other security disciplines rest. Without sound engineering, operations teams monitor broken systems, incident responders clean up preventable messes, and vulnerability management teams scan for issues that should never have been introduced. The investment in doing security engineering right — in treating security as a design property, in modeling threats before building systems, in gathering security requirements with the same rigor as functional requirements — pays dividends across the entire security program.
+Security engineering is the foundation upon which all other security disciplines rest. Without sound engineering, operations teams monitor broken systems, incident responders clean up preventable messes, and vulnerability management teams scan for issues that should never have been introduced. The investment in doing security engineering right: in treating security as a design property, in modeling threats before building systems, in gathering security requirements with the same rigor as functional requirements: pays dividends across the entire security program.
 
 The bank that lost $10 million did not lack security tools or security people. It lacked security engineering. The monitoring was there, but the system was not designed to be monitored effectively. The vulnerability scan found the SQL injection, but the system was not designed to prevent injection vulnerabilities. The incident response plan existed, but the network was not designed to limit lateral movement. Every failure was an engineering failure, not an operational one.
 

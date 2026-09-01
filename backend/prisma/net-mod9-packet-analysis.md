@@ -1,6 +1,6 @@
-# Module 9 — Packet Analysis
+# Module 9: Packet Analysis
 
-Packet analysis is the practice of capturing and examining network traffic to understand what is happening on the wire. It is the definitive diagnostic tool — when logs contradict each other and symptoms are ambiguous, the packet capture tells you exactly what happened. Learning to analyze packets effectively separates senior engineers from junior ones.
+Packet analysis is the practice of capturing and examining network traffic to understand what is happening on the wire. It is the definitive diagnostic tool: when logs contradict each other and symptoms are ambiguous, the packet capture tells you exactly what happened. Learning to analyze packets effectively separates senior engineers from junior ones.
 
 This module covers Wireshark's filtering and display capabilities, TCP behavior analysis (retransmissions, out-of-order packets), HTTP analysis, attack detection in captures, and tshark for command-line analysis. By the end, you will be able to open a PCAP file and systematically extract the information you need.
 
@@ -49,7 +49,7 @@ tcpdump -i eth0 -w capture.pcap host 10.0.1.50 and port 80
 
 ### Display Filters (Wireshark-specific)
 
-Display filters determine what captured traffic Wireshark shows. They do not affect the capture itself — all traffic is captured, but only matching packets are displayed. Display filters are more powerful and use Wireshark's own syntax.
+Display filters determine what captured traffic Wireshark shows. They do not affect the capture itself: all traffic is captured, but only matching packets are displayed. Display filters are more powerful and use Wireshark's own syntax.
 
 ```
 # Basic protocol filter
@@ -194,7 +194,7 @@ tcp.analysis.out_of_order
 
 ### TCP Window Analysis
 
-The TCP window size controls flow control — the receiver tells the sender how much data it can buffer. Wireshark tracks window changes:
+The TCP window size controls flow control: the receiver tells the sender how much data it can buffer. Wireshark tracks window changes:
 
 - **Window full**: The receiver's window has reached zero. The sender must stop until the receiver acknowledges data and opens the window.
 - **Zero window**: The receiver has advertised a window of 0. The sender is blocked.
@@ -580,7 +580,7 @@ Frame          Frames: 15234  Bytes: 23456789  Duration: 3600.123456
 
 Key observations:
 - Most traffic is TLS (encrypted)
-- DNS is present (1100 UDP DNS queries — unusually high for a 1-hour capture)
+- DNS is present (1100 UDP DNS queries: unusually high for a 1-hour capture)
 - HTTP traffic exists (could be unencrypted exfiltration)
 
 ### Step 2: Investigate DNS
@@ -598,7 +598,7 @@ Output:
 ...
 ```
 
-The DNS queries have base64-encoded subdomain names going to evil.com. This is DNS tunneling — encoding data in DNS queries to exfiltrate it.
+The DNS queries have base64-encoded subdomain names going to evil.com. This is DNS tunneling: encoding data in DNS queries to exfiltrate it.
 
 ### Step 3: Quantify the Exfiltration
 
@@ -625,7 +625,7 @@ Output:
 850 10.0.1.100
 ```
 
-Source: 10.0.1.100 — a workstation in the finance department.
+Source: 10.0.1.100: a workstation in the finance department.
 
 ### Step 5: Check for Other Indicators
 
@@ -657,7 +657,7 @@ Aug 31, 2026 02:15:23.456
 Aug 31, 2026 03:45:12.789
 ```
 
-The exfiltration ran from 2:15 AM to 3:45 AM — outside business hours, when monitoring is less likely to detect it.
+The exfiltration ran from 2:15 AM to 3:45 AM: outside business hours, when monitoring is less likely to detect it.
 
 ### Step 7: Document Findings
 
@@ -745,4 +745,4 @@ Save the following to your portfolio:
 3. Working tshark command and CSV output from Task 3
 4. A written summary (300-400 words) of what you found in the PCAP and how it would inform your response
 
-Packet analysis is the closest thing network engineering has to forensics. A packet capture is an objective record of what happened — it does not lie, it does not forget, and it does not get confused. Learning to read it fluently is one of the most valuable skills you can develop. The investment in mastering Wireshark and tshark pays dividends throughout your career, from debugging the occasional connectivity issue to investigating complex security incidents. Start with the basics — protocol hierarchy, conversation statistics, and simple display filters — and build complexity over time as your skills develop.
+Packet analysis is the closest thing network engineering has to forensics. A packet capture is an objective record of what happened: it does not lie, it does not forget, and it does not get confused. Learning to read it fluently is one of the most valuable skills you can develop. The investment in mastering Wireshark and tshark pays dividends throughout your career, from debugging the occasional connectivity issue to investigating complex security incidents. Start with the basics: protocol hierarchy, conversation statistics, and simple display filters: and build complexity over time as your skills develop.

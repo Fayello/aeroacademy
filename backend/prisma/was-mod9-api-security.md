@@ -1,4 +1,4 @@
-# Module 9 — API Security
+# Module 9: API Security
 
 APIs are the backbone of modern web applications. Every mobile app, single-page application, and microservice architecture communicates through APIs. The OWASP API Security Top 10 (2023) lists the most critical API vulnerabilities, and they differ from traditional web application vulnerabilities in important ways. APIs expose more functionality than traditional web pages, process structured data, and often rely on token-based authentication rather than session cookies. Understanding API-specific attack patterns is essential for testing modern applications.
 
@@ -130,7 +130,7 @@ APIs often return more data than the client needs. A user profile endpoint might
 
 The frontend only displays the name and email, but the API returns password hash, SSN, salary, internal notes, and API key. An attacker intercepting the API response (through XSS, network sniffing, or BOLA) gains access to all exposed fields.
 
-**Testing**: Use a proxy to capture all API responses. Examine the JSON structure for fields not displayed in the UI. Compare the API documentation (if available) with the actual response — undocumented fields are often internal data that should not be exposed.
+**Testing**: Use a proxy to capture all API responses. Examine the JSON structure for fields not displayed in the UI. Compare the API documentation (if available) with the actual response: undocumented fields are often internal data that should not be exposed.
 
 ### Rate Limiting and Throttling
 
@@ -184,7 +184,7 @@ GraphQL introspection queries reveal the entire API schema:
 }
 ```
 
-This reveals every type, field, query, and mutation — including sensitive fields like `salary`, `password_hash`, `internalNotes`, and admin-only mutations.
+This reveals every type, field, query, and mutation: including sensitive fields like `salary`, `password_hash`, `internalNotes`, and admin-only mutations.
 
 **Testing**: Send an introspection query to the GraphQL endpoint:
 
@@ -266,7 +266,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 
 **Token replay**: If an access token has a long expiry, a stolen token grants prolonged access. Access tokens should have short lifetimes (15-30 minutes) with refresh tokens for obtaining new access tokens.
 
-**Token scope abuse**: If a token has broader permissions than needed, a compromised token grants excessive access. Follow the principle of least privilege — request only the scopes needed for the specific operation.
+**Token scope abuse**: If a token has broader permissions than needed, a compromised token grants excessive access. Follow the principle of least privilege: request only the scopes needed for the specific operation.
 
 ### JWT in API Authentication
 
@@ -276,7 +276,7 @@ APIs using JWT for authentication have specific vulnerabilities:
 
 **Weak signing algorithms**: As covered in Module 4, weak HMAC secrets and algorithm confusion attacks apply to API JWTs. Always validate the algorithm and use a strong secret.
 
-**Token revocation**: JWTs are self-contained — once issued, they are valid until expiry. If a user is deactivated or a token is compromised, the only way to invalidate it is to maintain a server-side blocklist. This adds complexity and defeats the stateless nature of JWTs.
+**Token revocation**: JWTs are self-contained: once issued, they are valid until expiry. If a user is deactivated or a token is compromised, the only way to invalidate it is to maintain a server-side blocklist. This adds complexity and defeats the stateless nature of JWTs.
 
 **Refresh token compromise**: Refresh tokens have longer lifetimes and are higher-value targets. They should be stored securely (HttpOnly cookies or secure storage), rotated on each use, and bound to the client (using token binding or device fingerprinting).
 
@@ -404,7 +404,7 @@ asyncio.run(main())
 
 **The fix**:
 
-1. Implement authorization checks on every endpoint — verify that the authenticated user owns the requested resource.
+1. Implement authorization checks on every endpoint: verify that the authenticated user owns the requested resource.
 2. Implement rate limiting per user (e.g., 100 requests per hour for medical records).
 3. Implement anomaly detection for unusual access patterns (sequential ID enumeration, high request volume).
 4. Log all access to medical records with patient ID, user ID, timestamp, and IP address.

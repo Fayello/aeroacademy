@@ -1,8 +1,8 @@
-# Module 8 — Incident Response
+# Module 8: Incident Response
 
-Incident response is the organizational capability to detect, contain, eradicate, and recover from security incidents while minimizing damage, preserving evidence, and meeting regulatory obligations. It is not a tool or a technology — it is a set of processes, people, and playbooks that determine how quickly and effectively an organization responds when things go wrong. The difference between a minor incident and a catastrophic breach is rarely the sophistication of the attack. It is almost always the speed and quality of the response.
+Incident response is the organizational capability to detect, contain, eradicate, and recover from security incidents while minimizing damage, preserving evidence, and meeting regulatory obligations. It is not a tool or a technology: it is a set of processes, people, and playbooks that determine how quickly and effectively an organization responds when things go wrong. The difference between a minor incident and a catastrophic breach is rarely the sophistication of the attack. It is almost always the speed and quality of the response.
 
-The goal of incident response is not to prevent incidents — that is the job of preventive security controls. The goal is to limit the blast radius of incidents that occur. A well-executed response to a ransomware attack might mean encrypted workstations restored from backups within 4 hours with no data loss. A poorly executed response to the same attack might mean 2 weeks of downtime, $50 million in recovery costs, and regulatory fines. The attack is the same. The response makes the difference.
+The goal of incident response is not to prevent incidents: that is the job of preventive security controls. The goal is to limit the blast radius of incidents that occur. A well-executed response to a ransomware attack might mean encrypted workstations restored from backups within 4 hours with no data loss. A poorly executed response to the same attack might mean 2 weeks of downtime, $50 million in recovery costs, and regulatory fines. The attack is the same. The response makes the difference.
 
 ## IR Lifecycle
 
@@ -34,7 +34,7 @@ The classification of an incident determines the response priority. A malware in
 
 Containment limits the damage of an incident by preventing it from spreading. Containment strategies differ depending on the incident type.
 
-For malware infections: isolate the affected system from the network, disable the compromised account, and preserve the system for forensic analysis. Do not power off the system — volatile data (memory, network connections, running processes) is valuable for investigation.
+For malware infections: isolate the affected system from the network, disable the compromised account, and preserve the system for forensic analysis. Do not power off the system: volatile data (memory, network connections, running processes) is valuable for investigation.
 
 For data breaches: identify the data exposure, block the exfiltration path, and assess whether the data was actually accessed or exfiltrated. If the breach is ongoing, take more aggressive containment actions (disabling accounts, blocking IP addresses, shutting down services).
 
@@ -107,13 +107,13 @@ Evidence collection must preserve the integrity and admissibility of digital evi
 
 **Memory capture:** Use tools like WinPmem, LiME, or DumpIt to capture the contents of volatile memory. Memory captures contain running processes, network connections, loaded modules, encryption keys, and other volatile data that is lost when the system is shut down.
 
-**Log preservation:** Collect and preserve all relevant logs — system logs, application logs, authentication logs, network flow data, DNS logs, firewall logs, and SIEM data. Logs are often overwritten or rotated, so preserve them immediately after the incident is detected.
+**Log preservation:** Collect and preserve all relevant logs: system logs, application logs, authentication logs, network flow data, DNS logs, firewall logs, and SIEM data. Logs are often overwritten or rotated, so preserve them immediately after the incident is detected.
 
 **Legal considerations:** Consult with legal counsel before collecting evidence. In some jurisdictions, certain evidence collection activities may require specific legal authority. Cross-border incidents may involve multiple legal jurisdictions with different evidence handling requirements.
 
 ## Legal and Regulatory Considerations
 
-Incident response is not just a technical activity — it has legal and regulatory dimensions that must be addressed during the response.
+Incident response is not just a technical activity: it has legal and regulatory dimensions that must be addressed during the response.
 
 **Breach notification:** Most jurisdictions require notification of affected individuals within a specific timeframe after a data breach. GDPR requires notification within 72 hours. HIPAA requires notification within 60 days. State breach notification laws vary by jurisdiction. The incident response plan should include notification templates and procedures for each applicable regulation.
 
@@ -127,7 +127,7 @@ Incident response is not just a technical activity — it has legal and regulato
 
 Communication during an incident must be timely, accurate, and appropriate for each audience.
 
-**Internal communication:** Keep executive leadership informed of the incident's status, impact, and response activities. Provide regular updates (at least every 4 hours for active incidents) with clear, concise information. Avoid technical jargon — executives need to understand the business impact and make decisions about resource allocation and business continuity.
+**Internal communication:** Keep executive leadership informed of the incident's status, impact, and response activities. Provide regular updates (at least every 4 hours for active incidents) with clear, concise information. Avoid technical jargon: executives need to understand the business impact and make decisions about resource allocation and business continuity.
 
 **External communication to affected parties:** Notify affected individuals about the breach, what data was involved, what the organization is doing about it, and what the individuals can do to protect themselves. The notification must be clear, specific, and actionable. Avoid vague language that obscures the severity of the incident.
 
@@ -179,7 +179,7 @@ The recommended frequency: tabletop exercises quarterly, simulations annually, f
 
 ## Assessment
 
-**Lab 8.1 — Incident Response Runbook Development (60 minutes)**
+**Lab 8.1: Incident Response Runbook Development (60 minutes)**
 Develop a complete incident response runbook for a cloud-based SaaS application experiencing a confirmed data breach. The runbook must cover all six phases of the IR lifecycle, include specific technical procedures for containment and eradication in a cloud environment (AWS or Azure), address cross-account and cross-region considerations, and include communication templates for internal stakeholders, affected customers, and regulatory bodies.
 
 **Grading criteria:**
@@ -188,7 +188,7 @@ Develop a complete incident response runbook for a cloud-based SaaS application 
 - Appropriate escalation criteria and decision points (10 points)
 - Communication templates for all audiences (10 points)
 
-**Lab 8.2 — Forensic Evidence Collection (45 minutes)**
+**Lab 8.2: Forensic Evidence Collection (45 minutes)**
 Given a scenario involving a compromised Linux server, produce a forensic evidence collection plan that covers volatile data collection (memory, network connections, running processes), forensic disk imaging, log preservation, and chain of custody documentation. Include the specific commands and tools for each step and explain the rationale for the collection order.
 
 **Grading criteria:**
@@ -198,7 +198,7 @@ Given a scenario involving a compromised Linux server, produce a forensic eviden
 - Handling of encrypted volumes and containers (5 points)
 - Legal considerations (10 points)
 
-**Lab 8.3 — Post-Incident Report (45 minutes)**
+**Lab 8.3: Post-Incident Report (45 minutes)**
 Write a post-incident report for a provided incident scenario (a ransomware attack on a mid-size manufacturing company). The report should include an executive summary, detailed timeline, root cause analysis, impact assessment, response effectiveness evaluation, and prioritized recommendations for improvement. The report should be written for a non-technical audience (board of directors).
 
 **Grading criteria:**
@@ -210,7 +210,7 @@ Write a post-incident report for a provided incident scenario (a ransomware atta
 
 ## Evidence
 
-Incident response is the safety net that catches what prevention misses. No security architecture is impenetrable. No detection system catches every threat. No employee falls for every phishing attempt. When prevention fails — and it will — the speed and quality of the response determines whether the incident is a minor disruption or a catastrophic breach.
+Incident response is the safety net that catches what prevention misses. No security architecture is impenetrable. No detection system catches every threat. No employee falls for every phishing attempt. When prevention fails: and it will: the speed and quality of the response determines whether the incident is a minor disruption or a catastrophic breach.
 
 The hospital network story illustrates the reality of incident response. The attackers had 10 days of access before deploying ransomware. The EDR detected the initial compromise but classified it as a false positive. The network monitoring detected lateral movement but the alert was not investigated for 48 hours. Each failure was a process failure, not a technology failure. The tools were there. The response process was not adequate.
 

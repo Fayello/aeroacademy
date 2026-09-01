@@ -1,8 +1,8 @@
-# Module 10 — Future
+# Module 10: Future
 
 ## The Quantum Internet
 
-The quantum internet is a network that distributes quantum information (qubits) between nodes, enabling applications that are impossible with classical networks. Unlike the classical internet, which transmits bits, the quantum internet transmits qubits — preserving superposition and enabling entanglement distribution.
+The quantum internet is a network that distributes quantum information (qubits) between nodes, enabling applications that are impossible with classical networks. Unlike the classical internet, which transmits bits, the quantum internet transmits qubits: preserving superposition and enabling entanglement distribution.
 
 This module covers the architecture, protocols, and applications of quantum networks, with a focus on quantum key distribution (QKD) and its practical implementation.
 
@@ -10,7 +10,7 @@ This module covers the architecture, protocols, and applications of quantum netw
 
 ### Quantum Repeaters
 
-Classical signals degrade over distance due to attenuation. In fiber optic cables, light loses approximately 0.2 dB/km. Classical networks overcome this with amplifiers that boost the signal. Quantum networks cannot use amplifiers — the no-cloning theorem forbids copying unknown quantum states.
+Classical signals degrade over distance due to attenuation. In fiber optic cables, light loses approximately 0.2 dB/km. Classical networks overcome this with amplifiers that boost the signal. Quantum networks cannot use amplifiers: the no-cloning theorem forbids copying unknown quantum states.
 
 Quantum repeaters solve this problem using entanglement swapping. Instead of transmitting a qubit directly from Alice to Bob, the network creates entangled pairs between adjacent nodes and performs entanglement swapping to extend the entanglement over multiple hops.
 
@@ -25,7 +25,7 @@ This process extends entanglement over arbitrary distances without ever transmit
 
 ### Quantum Memory
 
-Quantum repeaters require quantum memory — devices that can store qubits for the time needed to perform entanglement swapping. Current quantum memory technologies:
+Quantum repeaters require quantum memory: devices that can store qubits for the time needed to perform entanglement swapping. Current quantum memory technologies:
 
 **Atomic ensembles:** Store qubits in collective excitations of an atomic gas. Coherence times: milliseconds to seconds. Efficiency: 50-80%.
 

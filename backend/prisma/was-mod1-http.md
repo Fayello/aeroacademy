@@ -1,6 +1,6 @@
-# Module 1 — How Web Applications Actually Work
+# Module 1: How Web Applications Actually Work
 
-Every web application attack begins with understanding how HTTP works at a mechanical level. Not the textbook definition — the actual bytes moving between your browser and a server. When you intercept a request in Burp Suite and see raw headers, when you craft a payload that needs to land in a specific header field, when you manipulate cookies to hijack a session — none of that makes sense unless you can visualize the full request/response lifecycle. This module strips away the abstractions and shows you exactly what happens when a browser talks to a server, and where attackers find their opening.
+Every web application attack begins with understanding how HTTP works at a mechanical level. Not the textbook definition: the actual bytes moving between your browser and a server. When you intercept a request in Burp Suite and see raw headers, when you craft a payload that needs to land in a specific header field, when you manipulate cookies to hijack a session: none of that makes sense unless you can visualize the full request/response lifecycle. This module strips away the abstractions and shows you exactly what happens when a browser talks to a server, and where attackers find their opening.
 
 ## The HTTP Request in Detail
 
@@ -23,7 +23,7 @@ Connection: keep-alive
 
 The request line `POST /api/auth/login HTTP/1.1` tells the server three things: the method (POST), the resource path (/api/auth/login), and the protocol version (HTTP/1.1). HTTP/2 changes the wire format to binary frames, but the logical structure remains the same.
 
-The Host header is mandatory in HTTP/1.1. It tells the server which virtual host to route to. A single IP address can serve hundreds of domains — the Host header is how the server knows which one you want. This is a common attack surface: manipulating the Host header can sometimes bypass access controls, trigger password reset poisoning, or cause cache poisoning.
+The Host header is mandatory in HTTP/1.1. It tells the server which virtual host to route to. A single IP address can serve hundreds of domains: the Host header is how the server knows which one you want. This is a common attack surface: manipulating the Host header can sometimes bypass access controls, trigger password reset poisoning, or cause cache poisoning.
 
 Headers like Content-Type tell the server how to interpret the body. Cookie headers carry session tokens. User-Agent identifies the client. Origin and Referer indicate where the request originated. Each of these headers can be manipulated by an attacker, and each has been the root cause of real vulnerabilities.
 
@@ -61,7 +61,7 @@ The Set-Cookie header in the response is how the server establishes a session. T
 - **Max-Age / Expires**: Determines how long the cookie persists.
 - **Priority**: Controls cookie priority when the browser's cookie store is full (Chrome-specific).
 
-A missing HttpOnly flag means any XSS payload can steal the session cookie. A missing Secure flag means the cookie travels in plaintext over HTTP. A missing SameSite attribute leaves the application open to CSRF attacks. These are not theoretical concerns — they are the difference between a secure application and one that gets breached.
+A missing HttpOnly flag means any XSS payload can steal the session cookie. A missing Secure flag means the cookie travels in plaintext over HTTP. A missing SameSite attribute leaves the application open to CSRF attacks. These are not theoretical concerns: they are the difference between a secure application and one that gets breached.
 
 Other response headers carry security implications:
 
@@ -100,7 +100,7 @@ The TLS handshake also reveals information to passive observers. The SNI (Server
 
 The Same-Origin Policy (SOP) is the browser's fundamental security mechanism. It prevents a script on one origin from reading data from another origin. An origin is defined as the combination of protocol, hostname, and port. `https://app.example.com:443` and `https://api.example.com:443` are different origins because the hostnames differ. `http://app.example.com` and `https://app.example.com` differ because the protocols differ.
 
-SOP does not prevent sending requests to other origins — it prevents reading the responses. This is why CSRF attacks work: a form on `evil.com` can submit a POST request to `bank.com/api/transfer`, and the browser will include the bank.com cookies automatically. The SOP only blocks the attacker from reading the response, but the server-side action (transferring money) still executes.
+SOP does not prevent sending requests to other origins: it prevents reading the responses. This is why CSRF attacks work: a form on `evil.com` can submit a POST request to `bank.com/api/transfer`, and the browser will include the bank.com cookies automatically. The SOP only blocks the attacker from reading the response, but the server-side action (transferring money) still executes.
 
 Cross-Origin Resource Sharing (CORS) is the mechanism that relaxes SOP when legitimately needed. The server sends Access-Control-Allow-Origin headers that tell the browser which origins are permitted to read the response. A misconfigured CORS policy is one of the most impactful vulnerabilities you can find.
 
@@ -135,7 +135,7 @@ This says: load scripts only from the same origin, load styles from the same ori
 
 The 'unsafe-inline' directive weakens CSP significantly because it allows arbitrary inline scripts. Many real-world CSP implementations use nonces or hashes instead of unsafe-inline, which allows specific inline scripts while blocking all others.
 
-CSP bypass techniques are common in penetration tests. An attacker might find a JSONP endpoint on the trusted domain that can be used to load scripts. They might find a subdomain with XSS that allows them to set cookies or redirect. They might exploit a path traversal to get their payload served from the trusted domain. CSP is not a silver bullet — it is a defense-in-depth layer that must be implemented carefully.
+CSP bypass techniques are common in penetration tests. An attacker might find a JSONP endpoint on the trusted domain that can be used to load scripts. They might find a subdomain with XSS that allows them to set cookies or redirect. They might exploit a path traversal to get their payload served from the trusted domain. CSP is not a silver bullet: it is a defense-in-depth layer that must be implemented carefully.
 
 CSP Level 3 introduces additional directives like `require-trusted-types-for` which prevents DOM XSS by requiring all DOM manipulation to go through trusted types APIs. This is a powerful mitigation but requires application refactoring to adopt.
 
@@ -167,13 +167,13 @@ The workflow is straightforward: configure your browser to use Burp as a proxy (
 
 The key capabilities for security testing are:
 
-**Repeater**: Take any request from the history, modify it, and resend it. This is how you test for injection vulnerabilities — change a parameter value to a SQL injection payload and observe the response. Test for IDOR by changing an ID parameter. Test for access control by removing authentication headers.
+**Repeater**: Take any request from the history, modify it, and resend it. This is how you test for injection vulnerabilities: change a parameter value to a SQL injection payload and observe the response. Test for IDOR by changing an ID parameter. Test for access control by removing authentication headers.
 
 **Intruder**: Automate parameter fuzzing. Send a request with a parameter replaced by a list of payloads. This is used for brute force attacks, directory enumeration, and fuzzing for injection points. The position markers define where payloads are injected, and the payload list defines what values to try. Intruder supports four attack types: Sniper (single payload set), Battering Ram (same payload in all positions), Pitchfork (parallel payload sets), and Cluster Bomb (all combinations).
 
-**Decoder**: Encode and decode data in various formats — URL encoding, base64, HTML entities, hex. Many vulnerabilities require properly encoded payloads to work.
+**Decoder**: Encode and decode data in various formats: URL encoding, base64, HTML entities, hex. Many vulnerabilities require properly encoded payloads to work.
 
-**Comparer**: Diff two responses side by side. This is useful for identifying how a parameter change affects the response — does a valid user return different content than an invalid user?
+**Comparer**: Diff two responses side by side. This is useful for identifying how a parameter change affects the response: does a valid user return different content than an invalid user?
 
 **Scanner**: Automated vulnerability scanning. While manual testing is always more thorough, the scanner can catch low-hanging fruit like missing headers, known CVEs in detected technologies, and obvious injection points.
 
@@ -213,17 +213,17 @@ Set-Cookie: csrf_defense=xyz789; Path=/api
 
 From a security perspective, here is what you check:
 
-1. **Session cookie flags**: HttpOnly is present (good — prevents JavaScript access). Secure is present (good — HTTPS only). SameSite=Strict (good — prevents CSRF). All three flags are properly set.
+1. **Session cookie flags**: HttpOnly is present (good: prevents JavaScript access). Secure is present (good: HTTPS only). SameSite=Strict (good: prevents CSRF). All three flags are properly set.
 
-2. **Token structure**: The session token is a JWT. You decode the payload and see the user_id and role. The role is "admin" — this means the role is embedded in the client-side token. Can you modify the token to change the role to "admin"? You test this by decoding the JWT, changing the role claim, and re-encoding it. If the server does not verify the signature properly (for example, if it uses the "none" algorithm), you have a privilege escalation vulnerability.
+2. **Token structure**: The session token is a JWT. You decode the payload and see the user_id and role. The role is "admin": this means the role is embedded in the client-side token. Can you modify the token to change the role to "admin"? You test this by decoding the JWT, changing the role claim, and re-encoding it. If the server does not verify the signature properly (for example, if it uses the "none" algorithm), you have a privilege escalation vulnerability.
 
-3. **Error handling**: You try an invalid username. The server responds with `{"error":"Invalid credentials"}`. You try a valid username with an invalid password. The server responds with the same message. Good — it does not reveal whether the username exists. But you try a non-existent email and get `{"error":"User not found"}`. Now you have a username enumeration vulnerability — the error message differs based on whether the user exists.
+3. **Error handling**: You try an invalid username. The server responds with `{"error":"Invalid credentials"}`. You try a valid username with an invalid password. The server responds with the same message. Good: it does not reveal whether the username exists. But you try a non-existent email and get `{"error":"User not found"}`. Now you have a username enumeration vulnerability: the error message differs based on whether the user exists.
 
 4. **Rate limiting**: You send 100 rapid login attempts. If the server does not rate-limit, you have a brute force vulnerability. Check for lockout mechanisms, account lockout notifications, and whether the rate limit applies per-IP or per-account.
 
 5. **Transport security**: The response includes `Strict-Transport-Security: max-age=31536000; includeSubDomains`. This tells the browser to use HTTPS for the next year, including all subdomains. Without this header, an attacker could strip TLS on the first request.
 
-6. **CSRF protection**: The login form includes a csrf_token in a cookie, but the server does not validate a matching CSRF token in the request body or a custom header. This means the login endpoint might be vulnerable to CSRF — an attacker could force a victim to log in as the attacker's account, setting up a session fixation attack.
+6. **CSRF protection**: The login form includes a csrf_token in a cookie, but the server does not validate a matching CSRF token in the request body or a custom header. This means the login endpoint might be vulnerable to CSRF: an attacker could force a victim to log in as the attacker's account, setting up a session fixation attack.
 
 7. **Timing analysis**: Measure the time between request and response for valid vs invalid usernames. If valid usernames take longer (because the server performs password hashing), you can enumerate valid usernames through timing side channels.
 
@@ -235,7 +235,7 @@ This single login request tells you the state of TLS, cookie security, session m
 
 HTTP/2 multiplexes multiple requests over a single TCP connection using binary frames. This changes how some attacks work. Request smuggling, which exploits discrepancies between how front-end and back-end servers parse HTTP requests, becomes more complex in HTTP/2 because the binary framing eliminates some of the ambiguity that HTTP/1.1 smuggling relies on. However, HTTP/2 introduces new attack surfaces like stream manipulation and frame-level vulnerabilities.
 
-HTTP/3 runs over QUIC (UDP) instead of TCP. This eliminates head-of-line blocking at the transport layer and provides built-in encryption for the handshake. From a security testing perspective, HTTP/3 does not change the application-layer attack surface — the HTTP semantics remain the same. But the encryption of the transport header means some network-level inspection tools cannot see the QUIC frames, which can blind security monitoring.
+HTTP/3 runs over QUIC (UDP) instead of TCP. This eliminates head-of-line blocking at the transport layer and provides built-in encryption for the handshake. From a security testing perspective, HTTP/3 does not change the application-layer attack surface: the HTTP semantics remain the same. But the encryption of the transport header means some network-level inspection tools cannot see the QUIC frames, which can blind security monitoring.
 
 HTTP/2 stream manipulation attacks allow an attacker to send crafted frames that cause the server to process requests out of order, potentially bypassing security controls. The HTTP/2 specification requires servers to process frames in order, but implementation bugs can create exploitation opportunities.
 
@@ -253,7 +253,7 @@ Take a web application you have access to (a lab environment, a bug bounty targe
 
 5. Check for the Content-Security-Policy header. If present, analyze the directives and identify potential bypass vectors. If absent, note it as a finding.
 
-6. Examine error responses. Trigger errors by sending invalid input, malformed JSON, missing required fields, and oversized payloads. Document the error messages — do they leak implementation details, stack traces, or database information?
+6. Examine error responses. Trigger errors by sending invalid input, malformed JSON, missing required fields, and oversized payloads. Document the error messages: do they leak implementation details, stack traces, or database information?
 
 7. Check for information disclosure in response headers. Server headers, X-Powered-By, X-AspNet-Version, and similar headers reveal technology stack details.
 
@@ -271,4 +271,4 @@ HTTP is a text-based protocol with a simple request/response structure. Security
 
 The browser enforces security policies (SOP, CSP, cookie flags) that the server cannot control. Understanding these client-side mechanisms is essential because many vulnerabilities exist at the intersection of server-side logic and client-side enforcement. An attacker who understands both sides of this boundary can find and exploit gaps that neither side intended to exist.
 
-Every security assessment starts with mapping the application — understanding what endpoints exist, what parameters they accept, what headers they use, and how they handle errors. This reconnaissance phase determines the success of every subsequent attack. Rushing to exploit without understanding the application's HTTP behavior is the most common mistake new testers make.
+Every security assessment starts with mapping the application: understanding what endpoints exist, what parameters they accept, what headers they use, and how they handle errors. This reconnaissance phase determines the success of every subsequent attack. Rushing to exploit without understanding the application's HTTP behavior is the most common mistake new testers make.

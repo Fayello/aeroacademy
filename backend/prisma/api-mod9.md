@@ -1,8 +1,8 @@
-# Module 9 — API Testing
+# Module 9: API Testing
 
 API testing validates that your endpoints work correctly, handle errors gracefully, perform under load, and resist attacks. A well-tested API catches bugs before they reach production, prevents regressions when code changes, and gives you confidence to deploy frequently.
 
-This module covers API testing strategies — unit tests, integration tests, contract tests, performance tests, and security tests — along with test organization, fixtures, and CI/CD integration.
+This module covers API testing strategies: unit tests, integration tests, contract tests, performance tests, and security tests: along with test organization, fixtures, and CI/CD integration.
 
 ## Testing Pyramid for APIs
 
@@ -19,9 +19,9 @@ The testing pyramid defines the balance between different types of tests:
 
 **Unit tests** verify individual functions and methods in isolation. They are fast, cheap to write, and catch logic errors early. For an API, unit tests cover validation logic, authorization policies, data transformation, and utility functions.
 
-**Integration tests** verify that components work together. They test the API endpoint against a real database, real authentication, and real middleware. They catch issues that unit tests miss — incorrect SQL queries, missing database indexes, broken middleware chains.
+**Integration tests** verify that components work together. They test the API endpoint against a real database, real authentication, and real middleware. They catch issues that unit tests miss: incorrect SQL queries, missing database indexes, broken middleware chains.
 
-**End-to-end tests** verify the entire system from client to database. They simulate real user workflows — registration, login, creating resources, viewing data. They are slow and expensive but catch integration issues that lower-level tests miss.
+**End-to-end tests** verify the entire system from client to database. They simulate real user workflows: registration, login, creating resources, viewing data. They are slow and expensive but catch integration issues that lower-level tests miss.
 
 ## Unit Testing API Logic
 

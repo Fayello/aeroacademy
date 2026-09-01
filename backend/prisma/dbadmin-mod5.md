@@ -1,4 +1,4 @@
-# Module 5 — SQL Injection Deep Dive
+# Module 5: SQL Injection Deep Dive
 
 SQL injection remains one of the most dangerous and prevalent application security vulnerabilities. Despite being well-understood and well-documented for over two decades, it continues to appear in the OWASP Top 10 because developers make fundamental mistakes in how they construct database queries. This module goes beyond the basic "use parameterized queries" advice. We will examine exactly how different injection techniques work, why certain defenses fail, and how real-world attacks exploit real CVEs. Understanding the mechanics is essential for both building secure applications and testing existing ones.
 
@@ -91,7 +91,7 @@ Once the attacker knows the column count, they can extract data from any table i
 
 ## Blind Injection: Boolean-Based and Time-Based
 
-Blind injection occurs when the application does not return the query results or error messages to the attacker. The attacker must infer information from the application's behavior — whether the page loads normally, whether content changes, or how long the response takes.
+Blind injection occurs when the application does not return the query results or error messages to the attacker. The attacker must infer information from the application's behavior: whether the page loads normally, whether content changes, or how long the response takes.
 
 **Boolean-Based Blind Injection:**
 
@@ -217,7 +217,7 @@ db.collection('users').find({
 // this.username == ''; this.password = 'hacked'; var a = ''
 ```
 
-The `$where` operator executes JavaScript. The attacker injects arbitrary JavaScript that modifies the query or executes server-side code. The fix is to never use `$where` with user input — use standard query operators instead.
+The `$where` operator executes JavaScript. The attacker injects arbitrary JavaScript that modifies the query or executes server-side code. The fix is to never use `$where` with user input: use standard query operators instead.
 
 **CouchDB Injection:**
 
@@ -234,7 +234,7 @@ db.find({
 
 // Attacker sends
 // { "username": "alice", "password": { "$ne": "" } }
-// $ne means "not equal" — matches any document where password is not empty
+// $ne means "not equal": matches any document where password is not empty
 ```
 
 **Preventing NoSQL Injection:**
@@ -261,7 +261,7 @@ const user = await db.collection('users').findOne({ username, password });
 
 ## Second-Order Injection
 
-Second-order injection occurs when user input is stored in the database and later used in a SQL query without proper sanitization. Unlike first-order injection, the payload does not execute immediately — it executes when the stored data is retrieved and used in a different context.
+Second-order injection occurs when user input is stored in the database and later used in a SQL query without proper sanitization. Unlike first-order injection, the payload does not execute immediately: it executes when the stored data is retrieved and used in a different context.
 
 **Classic Example:**
 
@@ -371,7 +371,7 @@ $$ LANGUAGE plpgsql;
 Stored procedures provide an additional layer of abstraction, but they are not inherently safe. If the stored procedure constructs dynamic SQL from parameters, it is still vulnerable:
 
 ```sql
--- VULNERABLE stored procedure — do NOT do this
+-- VULNERABLE stored procedure: do NOT do this
 CREATE OR REPLACE FUNCTION search_users(p_name TEXT)
 RETURNS SETOF users AS $$
 BEGIN
@@ -393,13 +393,13 @@ $$ LANGUAGE plpgsql;
 ORMs like SQLAlchemy, Sequelize, and ActiveRecord generate parameterized queries by default. But they can be bypassed:
 
 ```python
-# SQLAlchemy — SAFE (uses parameterization)
+# SQLAlchemy: SAFE (uses parameterization)
 user = session.query(User).filter(User.username == username).first()
 
-# SQLAlchemy — VULNERABLE (raw SQL with string formatting)
+# SQLAlchemy: VULNERABLE (raw SQL with string formatting)
 user = session.execute(f"SELECT * FROM users WHERE username = '{username}'").first()
 
-# SQLAlchemy — SAFE (raw SQL with parameters)
+# SQLAlchemy: SAFE (raw SQL with parameters)
 user = session.execute(
   text("SELECT * FROM users WHERE username = :username"),
   {"username": username}
@@ -407,13 +407,13 @@ user = session.execute(
 ```
 
 ```javascript
-// Sequelize — SAFE
+// Sequelize: SAFE
 const user = await User.findOne({ where: { username: username } });
 
-// Sequelize — VULNERABLE
+// Sequelize: VULNERABLE
 const user = await sequelize.query(`SELECT * FROM users WHERE username = '${username}'`);
 
-// Sequelize — SAFE (parameterized raw query)
+// Sequelize: SAFE (parameterized raw query)
 const user = await sequelize.query(
   'SELECT * FROM users WHERE username = :username',
   { replacements: { username: username } }
@@ -516,7 +516,7 @@ CREATE TRIGGER audit_injection_attempts
 
 ## Real CVE Examples
 
-**CVE-2019-11510 — Pulse Secure VPN (Pre-auth SQL Injection):**
+**CVE-2019-11510: Pulse Secure VPN (Pre-auth SQL Injection):**
 
 This vulnerability in Pulse Secure VPN allowed unauthenticated attackers to read arbitrary files from the server, including the password database. The injection occurred in the login form. Attackers could extract all user credentials, including administrator passwords, by sending crafted requests:
 
@@ -524,7 +524,7 @@ This vulnerability in Pulse Secure VPN allowed unauthenticated attackers to read
 GET /dana-na/../dana/html5acc/guacamole/../../../../../../etc/passwd HTTP/1.1
 ```
 
-While this specific example is path traversal combined with SQL injection, the SQL injection component allowed extracting configuration data and user credentials. The fix required immediate patching — there was no viable workaround.
+While this specific example is path traversal combined with SQL injection, the SQL injection component allowed extracting configuration data and user credentials. The fix required immediate patching: there was no viable workaround.
 
 **CVE-2020-1472 (Zerologon):**
 
@@ -538,13 +538,13 @@ Not a SQL injection CVE, but relevant because attackers used Log4Shell to gain a
 
 This vulnerability enables denial-of-service attacks. Attackers use it to overwhelm application servers, then inject SQL through the flood of requests. Many SQL injection attacks in 2023-2024 combined HTTP/2 rapid reset with injection payloads to bypass rate limiting.
 
-**Real-World Breach Example — TalkTalk (2015):**
+**Real-World Breach Example: TalkTalk (2015):**
 
 TalkTalk, a UK telecommunications company, suffered a data breach affecting 157,000 customers. The attackers used SQL injection to access customer data including names, addresses, dates of birth, and bank account details. The injection was possible because a legacy web page used unsanitized user input in a SQL query. The breach cost TalkTalk £77 million in fines and remediation.
 
-**Real-World Breach Example — British Airways (2018):**
+**Real-World Breach Example: British Airways (2018):**
 
-British Airways suffered a breach affecting 380,000 payment card transactions. The attackers injected malicious JavaScript (Magecart) that skimmed payment card data. While the primary attack was client-side injection, the backend database was protected by parameterized queries. The lesson: SQL injection is not the only database security concern — the entire data flow matters.
+British Airways suffered a breach affecting 380,000 payment card transactions. The attackers injected malicious JavaScript (Magecart) that skimmed payment card data. While the primary attack was client-side injection, the backend database was protected by parameterized queries. The lesson: SQL injection is not the only database security concern: the entire data flow matters.
 
 ## SQL Injection Testing Methodology
 

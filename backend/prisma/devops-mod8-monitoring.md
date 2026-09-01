@@ -1,8 +1,8 @@
-# Module 8 — Monitoring and Observability
+# Module 8: Monitoring and Observability
 
 ## Three Pillars of Observability
 
-Monitoring tells you when something is wrong. Observability tells you why. The distinction matters because modern distributed systems have so many components that knowing "the API is slow" is not enough — you need to know which service, which request, which database query, which network hop is causing the slowness.
+Monitoring tells you when something is wrong. Observability tells you why. The distinction matters because modern distributed systems have so many components that knowing "the API is slow" is not enough: you need to know which service, which request, which database query, which network hop is causing the slowness.
 
 The three pillars of observability are metrics, logs, and traces.
 
@@ -634,7 +634,7 @@ sum(rate(http_requests_total{status_code!~"5.."}[30d])) / sum(rate(http_requests
 
 Error budgets inform decision-making. If you have plenty of budget remaining, you can ship risky changes. If your budget is nearly exhausted, you should focus on reliability. If you exhaust your budget, you stop feature development and fix reliability issues.
 
-This is not a punishment — it is a feedback mechanism. SLOs tell you whether you are meeting user expectations. Error budgets tell you how much risk you can afford to take.
+This is not a punishment: it is a feedback mechanism. SLOs tell you whether you are meeting user expectations. Error budgets tell you how much risk you can afford to take.
 
 ## Real Story: Finding a Memory Leak with Prometheus
 

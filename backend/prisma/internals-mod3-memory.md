@@ -1,4 +1,4 @@
-# Module 3 — Memory Management
+# Module 3: Memory Management
 
 ## How Linux Manages Memory
 
@@ -8,7 +8,7 @@ This module covers the memory management hierarchy: virtual addresses, page tabl
 
 ## Virtual Memory
 
-Every process on a 64-bit Linux system believes it has access to a vast, flat address space — typically 128 TB on x86_64. This virtual address space is mapped to physical RAM through a multi-level page table structure.
+Every process on a 64-bit Linux system believes it has access to a vast, flat address space: typically 128 TB on x86_64. This virtual address space is mapped to physical RAM through a multi-level page table structure.
 
 ### Page Tables
 
@@ -36,7 +36,7 @@ Each PTE (Page Table Entry) contains:
 - Cache control bits
 - NX (No Execute) bit
 
-Page table walks are expensive — each level requires a memory access. To avoid this, the CPU caches recent translations in the **Translation Lookaside Buffer (TLB)**.
+Page table walks are expensive: each level requires a memory access. To avoid this, the CPU caches recent translations in the **Translation Lookaside Buffer (TLB)**.
 
 ### TLB
 
@@ -83,7 +83,7 @@ cat /proc/12345/smaps | grep -E "^[0-9a-f]|Size|Rss|Pss|Swap"
 # Swap:                 0 kB
 ```
 
-**Pss** (Proportional Set Size) is the key metric for understanding actual memory usage. It counts shared pages fractionally — if a page is shared between two processes, each gets 0.5 of it. This is more accurate than RSS for understanding total system memory consumption.
+**Pss** (Proportional Set Size) is the key metric for understanding actual memory usage. It counts shared pages fractionally: if a page is shared between two processes, each gets 0.5 of it. This is more accurate than RSS for understanding total system memory consumption.
 
 ## Physical Memory
 
@@ -112,7 +112,7 @@ The buddy allocator manages physical page frames. It organizes free pages into o
 
 When a request for N pages arrives, the allocator finds the smallest free block of order >= log2(N). If the exact order is not available, a larger block is split in half (buddies). When pages are freed, adjacent buddies are coalesced back into larger blocks.
 
-The buddy allocator's weakness is **external fragmentation** — over time, free pages become scattered and it may fail to find contiguous blocks even when sufficient total free memory exists. This is why the huge pages allocation can fail even when there is plenty of free RAM:
+The buddy allocator's weakness is **external fragmentation**: over time, free pages become scattered and it may fail to find contiguous blocks even when sufficient total free memory exists. This is why the huge pages allocation can fail even when there is plenty of free RAM:
 
 ```bash
 # Check fragmentation
@@ -126,7 +126,7 @@ echo 1 > /proc/sys/vm/compact_memory  # Force compaction
 
 ## Slab Allocator
 
-The buddy allocator works with fixed-size page frames. But the kernel frequently allocates small objects: inodes, dentries, task_structs, network buffers. These objects are 64 bytes to several kilobytes — far smaller than a 4 KB page. The slab allocator sits on top of the buddy allocator to handle small allocations efficiently.
+The buddy allocator works with fixed-size page frames. But the kernel frequently allocates small objects: inodes, dentries, task_structs, network buffers. These objects are 64 bytes to several kilobytes: far smaller than a 4 KB page. The slab allocator sits on top of the buddy allocator to handle small allocations efficiently.
 
 ### How Slab Works
 
@@ -169,11 +169,11 @@ vfree(buf);
 
 **GFP flags** control allocation behavior:
 
-- `GFP_KERNEL` — Can sleep, can trigger reclaim. Normal allocation.
-- `GFP_ATOMIC` — Cannot sleep. Used in interrupt context. May fail if memory is low.
-- `GFP_NOWAIT` — Like GFP_ATOMIC but never waits for reclaim.
-- `__GFP_NOFAIL` — Will not fail. Retries indefinitely. Use sparingly.
-- `__GFP_HIGHMEM` — Can allocate from HIGHMEM (32-bit only).
+- `GFP_KERNEL`: Can sleep, can trigger reclaim. Normal allocation.
+- `GFP_ATOMIC`: Cannot sleep. Used in interrupt context. May fail if memory is low.
+- `GFP_NOWAIT`: Like GFP_ATOMIC but never waits for reclaim.
+- `__GFP_NOFAIL`: Will not fail. Retries indefinitely. Use sparingly.
+- `__GFP_HIGHMEM`: Can allocate from HIGHMEM (32-bit only).
 
 ### Memory Leak Detection in Kernel
 
@@ -232,7 +232,7 @@ cat /proc/sys/vm/vfs_cache_pressure  # default 100
 
 ### When Swap Kills Performance
 
-Swap is not inherently bad — a small amount (1-2 GB) provides a safety buffer. But heavy swapping kills performance because disk I/O is orders of magnitude slower than RAM access.
+Swap is not inherently bad: a small amount (1-2 GB) provides a safety buffer. But heavy swapping kills performance because disk I/O is orders of magnitude slower than RAM access.
 
 A 4 KB page read from SSD takes ~100 microseconds. A 4 KB page read from RAM takes ~100 nanoseconds. That is a 1000x difference. If a database is swapping heavily, every page fault costs 100 microseconds instead of 100 nanoseconds, and throughput collapses.
 
@@ -260,11 +260,11 @@ When the system runs out of memory and cannot reclaim any more, the **Out of Mem
 
 The OOM killer assigns a score to each process based on:
 
-1. **Memory usage** — How much memory the process uses. More memory = higher score.
-2. **OOM score adjustment** — A user-configurable adjustment (-1000 to 1000).
-3. **Process age** — Older processes get a slight bonus.
-4. **Killability** — Processes that have allocated but not yet used memory (overcommit) are easier to kill.
-5. **Root protection** — The init process and kernel threads are immune.
+1. **Memory usage**: How much memory the process uses. More memory = higher score.
+2. **OOM score adjustment**: A user-configurable adjustment (-1000 to 1000).
+3. **Process age**: Older processes get a slight bonus.
+4. **Killability**: Processes that have allocated but not yet used memory (overcommit) are easier to kill.
+5. **Root protection**: The init process and kernel threads are immune.
 
 ```bash
 # View OOM scores
@@ -347,11 +347,11 @@ vmstat 1 10
 #  2  0      0 1024000 512000 4096000    0    0     0     0  500 1000 10  5 85  0  0
 ```
 
-- `si` / `so` — Swap in/out per second. Should be 0. Non-zero means active swapping.
-- `buff` — Buffer cache (block device metadata)
-- `cache` — Page cache (file data)
-- `free` — Unused memory
-- `b` — Processes in uninterruptible sleep (usually waiting for I/O)
+- `si` / `so`: Swap in/out per second. Should be 0. Non-zero means active swapping.
+- `buff`: Buffer cache (block device metadata)
+- `cache`: Page cache (file data)
+- `free`: Unused memory
+- `b`: Processes in uninterruptible sleep (usually waiting for I/O)
 
 ### slabtop
 
@@ -468,7 +468,7 @@ cat /proc/meminfo | grep Huge
 # Application must use mmap with MAP_HUGETLB to use huge pages
 # Or use libhugetlbfs library
 
-# Transparent Huge Pages (THP) — automatic huge page allocation
+# Transparent Huge Pages (THP): automatic huge page allocation
 cat /sys/kernel/mm/transparent_hugepage/enabled
 # [always] madvise never
 
@@ -504,7 +504,7 @@ echo 0 > /sys/kernel/mm/ksm/run
 
 ### The Problem
 
-A Java-based web service running on a production server was experiencing periodic slowdowns. Monitoring showed that the server's available memory was decreasing over time — from 8 GB available at startup to under 500 MB after 72 hours. The swap was being hit frequently, causing 5-10 second response time spikes.
+A Java-based web service running on a production server was experiencing periodic slowdowns. Monitoring showed that the server's available memory was decreasing over time: from 8 GB available at startup to under 500 MB after 72 hours. The swap was being hit frequently, causing 5-10 second response time spikes.
 
 ### Investigation
 
@@ -516,7 +516,7 @@ free -h
 # Swap:         4.0Gi       2.1Gi       1.9Gi
 
 vmstat 1 5
-# si/so columns showing 100+ KB/s swap activity — active swapping confirmed
+# si/so columns showing 100+ KB/s swap activity: active swapping confirmed
 
 # Step 2: Find who is using memory
 ps -eo pid,comm,%mem,rss --sort=-rss | head -10
@@ -561,7 +561,7 @@ The application had a batch processing module that loaded records from a databas
 
 1. **Immediate**: Restart the Java service to reclaim memory
 2. **Short-term**: Increase `-XX:MaxHeapSize` to buy time and reduce swap frequency
-3. **Long-term**: Fix the code — add explicit `clear()` call in the batch completion handler and add a periodic cleanup task
+3. **Long-term**: Fix the code: add explicit `clear()` call in the batch completion handler and add a periodic cleanup task
 
 ```bash
 # Add JVM flags for better monitoring

@@ -1,4 +1,4 @@
-# Module 6 — Wallet Security
+# Module 6: Wallet Security
 
 A wallet is the primary interface between a user and the blockchain. It holds the private keys that control all assets on the account. Lose the private key, lose the funds permanently. Have the private key stolen, and the attacker controls everything. Unlike a bank account, there is no customer service to call, no chargeback to request, no password to reset. This module covers key management, hardware wallets, multi-signature schemes, social recovery, and the practical patterns for securing large treasury holdings.
 
@@ -19,7 +19,7 @@ A private key must be generated with sufficient randomness. The entropy source i
 // GOOD: Using cryptographically secure random number generator
 const privateKey = ethers.utils.randomBytes(32);
 
-// BAD: Using Math.random() — predictable, never use for key generation
+// BAD: Using Math.random(): predictable, never use for key generation
 const privateKey = Buffer.from(
   Math.random().toString(36).substring(2).padEnd(64, '0'),
   'hex'
@@ -30,7 +30,7 @@ If the randomness source is predictable, an attacker can predict the private key
 
 ### Mnemonic Phrases (BIP-39)
 
-Instead of storing the raw private key, most wallets use a mnemonic phrase (BIP-39) — a human-readable sequence of 12 or 24 words that encodes the entropy:
+Instead of storing the raw private key, most wallets use a mnemonic phrase (BIP-39): a human-readable sequence of 12 or 24 words that encodes the entropy:
 
 ```
 witch collapse practice feed reprovision sawthuffle shutter sled unconcern mysterious
@@ -39,9 +39,9 @@ witch collapse practice feed reprovision sawthuffle shutter sled unconcern myste
 These 24 words encode 256 bits of entropy, which is used to derive a hierarchical deterministic (HD) wallet (BIP-32). From this single seed, you can derive an unlimited number of key pairs, organized in a tree structure:
 
 ```
-m/44'/60'/0'/0/0  — First ETH address
-m/44'/60'/0'/0/1  — Second ETH address
-m/44'/60'/0'/0/2  — Third ETH address
+m/44'/60'/0'/0/0 : First ETH address
+m/44'/60'/0'/0/1 : Second ETH address
+m/44'/60'/0'/0/2 : Third ETH address
 ```
 
 This means you only need to back up the 24 words, and you can restore all your accounts on any compatible wallet software.
@@ -97,7 +97,7 @@ The secp256k1 elliptic curve used by Ethereum has specific security properties t
 
 4. **Collision resistance:** The probability of two different private keys generating the same address is approximately 1/2^160, which is negligible.
 
-The practical risk is not mathematical weakness but operational compromise — malware, phishing, social engineering, or physical theft. Your security posture should focus on protecting the key from these threats rather than worrying about cryptographic attacks.
+The practical risk is not mathematical weakness but operational compromise: malware, phishing, social engineering, or physical theft. Your security posture should focus on protecting the key from these threats rather than worrying about cryptographic attacks.
 
 ### Seed Phrase Security Deep Dive
 
@@ -109,7 +109,7 @@ The BIP-39 standard uses a specific process to convert entropy into a mnemonic p
 4. Split the resulting N + N/32 bits into groups of 11 bits.
 5. Map each 11-bit group to a word from the BIP-39 wordlist (2048 words).
 
-The checksum ensures that any error in the mnemonic (a misspelled word, a missing word) is detected with probability 1/16 per word. This is why 24-word mnemonics are more secure than 12-word mnemonics — they have 256 bits of entropy versus 128 bits, making brute-force attacks exponentially harder.
+The checksum ensures that any error in the mnemonic (a misspelled word, a missing word) is detected with probability 1/16 per word. This is why 24-word mnemonics are more secure than 12-word mnemonics: they have 256 bits of entropy versus 128 bits, making brute-force attacks exponentially harder.
 
 Common mistakes that compromise seed phrase security:
 
@@ -120,7 +120,7 @@ Common mistakes that compromise seed phrase security:
 
 ## Hardware Wallets
 
-Hardware wallets store private keys on a dedicated, tamper-resistant device. The private key never leaves the device — all signing operations happen on the hardware. Even if the connected computer is compromised, the private key remains secure.
+Hardware wallets store private keys on a dedicated, tamper-resistant device. The private key never leaves the device: all signing operations happen on the hardware. Even if the connected computer is compromised, the private key remains secure.
 
 ### How Hardware Wallets Work
 
@@ -140,7 +140,7 @@ Hardware wallets have specific security properties:
 
 1. **Tamper resistance:** The device is designed to resist physical attacks. Opening the case or probing the芯片triggers key erasure.
 
-2. **Secure element:** Many hardware wallets use a secure element (SE) chip — the same type used in credit cards and passports. The SE provides hardware-level protection against side-channel attacks.
+2. **Secure element:** Many hardware wallets use a secure element (SE) chip: the same type used in credit cards and passports. The SE provides hardware-level protection against side-channel attacks.
 
 3. **Firmware verification:** The hardware wallet verifies its own firmware on boot. If the firmware is modified, the device refuses to operate.
 
@@ -152,7 +152,7 @@ Hardware wallets have specific security properties:
 
 - **Ledger Nano S/X:** Uses a secure element (SE). Supports 5,500+ coins. Bluetooth on the Nano X. Firmware is open source but the secure element firmware is closed source.
 
-- **Trezor Model One/Model T:** Fully open source (hardware and firmware). No secure element — relies on a general-purpose microcontroller. Supports fewer coins than Ledger but provides full transparency.
+- **Trezor Model One/Model T:** Fully open source (hardware and firmware). No secure element: relies on a general-purpose microcontroller. Supports fewer coins than Ledger but provides full transparency.
 
 - **GridPlus Lattice1:** Designed for institutional use. Supports multiple key storage methods and has a large touchscreen. Integrates with MetaMask.
 
@@ -160,13 +160,13 @@ Hardware wallets have specific security properties:
 
 ### Hardware Wallet Threats
 
-1. **Supply chain attacks:** An attacker intercepts the hardware wallet during shipping, extracts the seed during initial setup, and repackages the device. The user receives a compromised wallet. **Mitigation:** Buy directly from the manufacturer. Verify the device has not been tampered with (tamper-evident packaging). Initialize the wallet yourself — never use a pre-configured device. Some manufacturers (like Ledger) include a "sealed" sticker that shows evidence of tampering.
+1. **Supply chain attacks:** An attacker intercepts the hardware wallet during shipping, extracts the seed during initial setup, and repackages the device. The user receives a compromised wallet. **Mitigation:** Buy directly from the manufacturer. Verify the device has not been tampered with (tamper-evident packaging). Initialize the wallet yourself: never use a pre-configured device. Some manufacturers (like Ledger) include a "sealed" sticker that shows evidence of tampering.
 
-2. **Firmware attacks:** A compromised firmware update could exfiltrate the seed. **Mitigation:** Only install firmware from official sources. Verify firmware signatures. Use open-source hardware wallets where you can verify the code. Keep firmware updated — updates often include security patches.
+2. **Firmware attacks:** A compromised firmware update could exfiltrate the seed. **Mitigation:** Only install firmware from official sources. Verify firmware signatures. Use open-source hardware wallets where you can verify the code. Keep firmware updated: updates often include security patches.
 
 3. **Physical attacks:** An attacker with physical access to the device can attempt side-channel attacks (power analysis, electromagnetic analysis) to extract the key. **Mitigation:** Use a hardware wallet with a secure element. Enable PIN protection. Set a high PIN length. Never leave the device unattended.
 
-4. **Social engineering:** An attacker tricks the user into entering their seed phrase on a malicious website or device. **Mitigation:** Never enter your seed phrase into any software, website, or device other than the original hardware wallet during recovery. No legitimate service will ever ask for your seed phrase. Hardware wallets display the seed phrase on their own screen during initial setup — never trust a seed phrase displayed on a computer or phone screen.
+4. **Social engineering:** An attacker tricks the user into entering their seed phrase on a malicious website or device. **Mitigation:** Never enter your seed phrase into any software, website, or device other than the original hardware wallet during recovery. No legitimate service will ever ask for your seed phrase. Hardware wallets display the seed phrase on their own screen during initial setup: never trust a seed phrase displayed on a computer or phone screen.
 
 5. **Clipboard hijacking:** Malware replaces Ethereum addresses in the clipboard with the attacker's address. When the user pastes the address, they send funds to the attacker. **Mitigation:** Always verify the address on the hardware wallet's screen before confirming the transaction. The hardware wallet shows the full address, not a truncated version.
 

@@ -1,8 +1,8 @@
-# Module 5 — Input Validation
+# Module 5: Input Validation
 
 Every piece of data your API receives is a potential attack vector. SQL injection, cross-site scripting, command injection, path traversal, and business logic exploits all start with malformed or malicious input. Input validation is the first line of defense.
 
-This module covers input validation strategies for REST APIs — data type validation, format validation, business rule validation, sanitization, and how to design a validation system that catches attacks before they reach your database.
+This module covers input validation strategies for REST APIs: data type validation, format validation, business rule validation, sanitization, and how to design a validation system that catches attacks before they reach your database.
 
 ## The Threat Landscape
 
@@ -300,7 +300,7 @@ function validatePilotBusinessRules(pilot, existingPilot = null) {
 
 ### Layer 5: Sanitization
 
-Sanitization removes or encodes dangerous characters from input. It is not a substitute for validation — you should always validate first and sanitize as a defense-in-depth measure.
+Sanitization removes or encodes dangerous characters from input. It is not a substitute for validation: you should always validate first and sanitize as a defense-in-depth measure.
 
 **HTML sanitization:**
 

@@ -1,4 +1,4 @@
-# Module 4 — Database Integration
+# Module 4: Database Integration
 
 Every application that stores data needs a database layer. This module covers how to integrate MongoDB with Mongoose and PostgreSQL with Prisma into a Node.js application. We will look at connection management, schema design, querying patterns, and how to build a data access layer that your application code interacts with cleanly.
 
@@ -8,13 +8,13 @@ The database is where your application's data lives. Get the schema wrong and yo
 
 The database layer is the bridge between your application logic and persistent storage. A good database layer abstracts the storage mechanism, provides a clean API for the rest of your code, handles errors consistently, and makes it possible to test your application without a live database.
 
-Choosing between MongoDB and PostgreSQL is one of the first architectural decisions you will make. MongoDB is a document database that stores data as JSON-like documents. It is flexible, schemaless, and scales horizontally with ease. PostgreSQL is a relational database that stores data in tables with strict schemas. It is powerful, supports complex queries, and guarantees ACID transactions. Neither is universally better — the right choice depends on your data model, query patterns, and scalability requirements.
+Choosing between MongoDB and PostgreSQL is one of the first architectural decisions you will make. MongoDB is a document database that stores data as JSON-like documents. It is flexible, schemaless, and scales horizontally with ease. PostgreSQL is a relational database that stores data in tables with strict schemas. It is powerful, supports complex queries, and guarantees ACID transactions. Neither is universally better: the right choice depends on your data model, query patterns, and scalability requirements.
 
 MongoDB works well when your data is naturally hierarchical (like blog posts with nested comments), when your schema evolves frequently, when you need horizontal scaling across multiple servers, or when you are building a prototype and want to iterate quickly without migration overhead. PostgreSQL works well when your data has complex relationships (like a social network with users, posts, comments, and likes), when you need complex queries (like aggregations, joins, and window functions), when you need strict data consistency (like financial transactions), or when your data model is stable and well-defined.
 
 Most applications do not need to choose exclusively. You can use PostgreSQL for your primary data store (users, orders, transactions) and MongoDB for flexible data (logs, analytics, user-generated content). This hybrid approach gives you the strengths of both databases where they matter most.
 
-The repository pattern is the key to building a maintainable database layer. A repository encapsulates all database operations for a specific entity (like users or posts). The rest of your application never calls the database directly — it calls repository methods. This separation means you can change the database implementation without changing the business logic. If you migrate from MongoDB to PostgreSQL, you rewrite the repositories but keep the services and controllers unchanged.
+The repository pattern is the key to building a maintainable database layer. A repository encapsulates all database operations for a specific entity (like users or posts). The rest of your application never calls the database directly: it calls repository methods. This separation means you can change the database implementation without changing the business logic. If you migrate from MongoDB to PostgreSQL, you rewrite the repositories but keep the services and controllers unchanged.
 
 ## MongoDB with Mongoose
 
@@ -114,24 +114,24 @@ userSchema.index({ email: 1 });
 userSchema.index({ role: 1, isActive: 1 });
 userSchema.index({ "profile.bio": "text", name: "text" });
 
-// Pre-save hook — hash password
+// Pre-save hook: hash password
 userSchema.pre("save", async function(next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-// Instance method — check password
+// Instance method: check password
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Static method — find active users by role
+// Static method: find active users by role
 userSchema.statics.findActiveByRole = function(role) {
   return this.find({ role, isActive: true });
 };
 
-// Virtual — full name
+// Virtual: full name
 userSchema.virtual("fullName").get(function() {
   return `${this.name}`;
 });
@@ -149,7 +149,7 @@ const user = await User.findById(userId);
 const users = await User.find({ role: "admin", isActive: true });
 const user = await User.findOne({ email: "alice@example.com" });
 
-// Projections — select only specific fields
+// Projections: select only specific fields
 const users = await User.find().select("name email role");
 const users = await User.find().select("-password -__v");
 
@@ -165,7 +165,7 @@ const users = await User.find()
   .limit(limit)
   .sort({ createdAt: -1 });
 
-// Chaining queries — they are lazy until awaited
+// Chaining queries: they are lazy until awaited
 const query = User.find({ isActive: true });
 if (role) query.where("role").equals(role);
 if (search) query.where("name").regex(new RegExp(search, "i"));
@@ -182,7 +182,7 @@ const stats = await User.aggregate([
   { $sort: { count: -1 } }
 ]);
 
-// Population — reference documents
+// Population: reference documents
 const posts = await Post.find()
   .populate("author", "name email")
   .populate("comments.author", "name avatar");
@@ -191,7 +191,7 @@ const posts = await Post.find()
 ### Common Mongoose Patterns
 
 ```javascript
-// Soft delete — never actually remove data
+// Soft delete: never actually remove data
 userSchema.pre("find", function() {
   this.where({ deletedAt: null });
 });
@@ -326,7 +326,7 @@ npx prisma generate
 
 Migrations are version-controlled SQL files. Each migration describes the changes to make to the database schema. In production, you use `migrate deploy` to apply pending migrations.
 
-Understanding the difference between `migrate dev` and `migrate deploy` is important. `migrate dev` is for development — it creates a new migration file, applies it to your development database, and regenerates the Prisma Client. It also handles conflicts and allows you to reset the database if needed. `migrate deploy` is for production — it applies pending migrations without creating new ones. It assumes the database is in a known state and only applies migrations that have not been applied yet.
+Understanding the difference between `migrate dev` and `migrate deploy` is important. `migrate dev` is for development: it creates a new migration file, applies it to your development database, and regenerates the Prisma Client. It also handles conflicts and allows you to reset the database if needed. `migrate deploy` is for production: it applies pending migrations without creating new ones. It assumes the database is in a known state and only applies migrations that have not been applied yet.
 
 A common mistake is running `migrate dev` in production. This command can reset the database, drop tables, and create destructive changes. Always use `migrate deploy` in production. Another mistake is making manual changes to the database schema without creating a migration. If you add a column directly in PostgreSQL, Prisma will not know about it and will create a migration that conflicts with your manual changes. Always use Prisma migrations for schema changes.
 
@@ -422,17 +422,17 @@ const lightweightPosts = await prisma.post.findMany({
 
 ## Connection Pooling
 
-Connection pooling is the practice of maintaining a cache of database connections that can be reused. Opening a new connection for every request is expensive — it involves network latency, authentication, and TLS negotiation.
+Connection pooling is the practice of maintaining a cache of database connections that can be reused. Opening a new connection for every request is expensive: it involves network latency, authentication, and TLS negotiation.
 
 The cost of creating a new database connection varies depending on the distance between your application and the database, the authentication mechanism, and whether TLS is used. For a local database, creating a connection might take 1-5ms. For a remote database across a data center, it might take 50-100ms. For a cloud database across regions, it might take 100-200ms. If your application handles 1000 requests per second and each request creates a new connection, you are spending 1-200 seconds per second just on connection creation.
 
-Connection pooling solves this by maintaining a pool of open connections. When your application needs a database connection, it borrows one from the pool. When the operation completes, the connection is returned to the pool. The pool manages the lifecycle of connections — creating new ones when demand increases, closing idle ones when demand decreases, and handling connection failures gracefully.
+Connection pooling solves this by maintaining a pool of open connections. When your application needs a database connection, it borrows one from the pool. When the operation completes, the connection is returned to the pool. The pool manages the lifecycle of connections: creating new ones when demand increases, closing idle ones when demand decreases, and handling connection failures gracefully.
 
 The pool size should match your application's concurrency level. Too few connections and requests queue up waiting for a connection. Too many connections and the database becomes overloaded. A good starting point is `(number of CPU cores) * 2 + (number of disk spindles)`. For most web applications running on a 4-core server, a pool size of 8-12 connections is sufficient.
 
 ### How Connection Pooling Works
 
-When your application starts, the database driver creates a pool of connections. When your code needs to interact with the database, it borrows a connection from the pool, uses it, and returns it. The pool manages the lifecycle of connections — creating new ones when demand increases, closing idle ones when demand decreases.
+When your application starts, the database driver creates a pool of connections. When your code needs to interact with the database, it borrows a connection from the pool, uses it, and returns it. The pool manages the lifecycle of connections: creating new ones when demand increases, closing idle ones when demand decreases.
 
 ### MongoDB Connection Pooling
 

@@ -1,4 +1,4 @@
-# Module 3 — React Fundamentals
+# Module 3: React Fundamentals
 
 React is a library for building user interfaces. It does not prescribe how you structure your application, manage state, or handle routing. This freedom is powerful but means you need to understand the core concepts deeply before making architectural decisions. This module covers components, JSX, hooks, state management, and how to put them together to build a real dashboard application.
 
@@ -8,13 +8,13 @@ React's core idea is simple: build your UI from small, reusable pieces called co
 
 This declarative model means you do not manually manipulate the DOM. You describe what the UI should look like for a given state, and React handles the updates. This eliminates entire categories of bugs related to keeping the DOM in sync with your data.
 
-React's component model encourages a specific way of thinking about UI development. Instead of building a page as one large HTML document with scattered JavaScript, you break the interface into small, self-contained components. Each component owns its own state, defines its own rendering logic, and handles its own events. Components are composed together like building blocks — a button is a component, a form is a component composed of inputs and buttons, a page is a component composed of forms and other components.
+React's component model encourages a specific way of thinking about UI development. Instead of building a page as one large HTML document with scattered JavaScript, you break the interface into small, self-contained components. Each component owns its own state, defines its own rendering logic, and handles its own events. Components are composed together like building blocks: a button is a component, a form is a component composed of inputs and buttons, a page is a component composed of forms and other components.
 
 The virtual DOM is the mechanism that makes React efficient. When state changes, React does not immediately update the real DOM. Instead, it creates a virtual representation of the DOM in memory, computes the minimal set of changes needed, and then applies those changes to the real DOM in a single batch. This avoids expensive DOM manipulations and ensures that the browser only re-renders what actually changed.
 
-React's ecosystem is vast. React Router handles navigation. Redux, Zustand, and Jotai handle state management. React Query and SWR handle server state. Material UI, Chakra UI, and Tailwind CSS handle styling. This ecosystem is both a strength and a challenge — you have many options, and choosing the right ones requires understanding the trade-offs of each library.
+React's ecosystem is vast. React Router handles navigation. Redux, Zustand, and Jotai handle state management. React Query and SWR handle server state. Material UI, Chakra UI, and Tailwind CSS handle styling. This ecosystem is both a strength and a challenge: you have many options, and choosing the right ones requires understanding the trade-offs of each library.
 
-The learning curve for React is steeper than it appears. The basics — components, props, state — can be learned in a few hours. But mastering hooks, understanding the rendering lifecycle, optimizing performance, and managing complex state patterns takes weeks of practice. The investment is worth it: React is the most popular frontend framework, and the skills transfer to React Native for mobile development.
+The learning curve for React is steeper than it appears. The basics: components, props, state: can be learned in a few hours. But mastering hooks, understanding the rendering lifecycle, optimizing performance, and managing complex state patterns takes weeks of practice. The investment is worth it: React is the most popular frontend framework, and the skills transfer to React Native for mobile development.
 
 ## Components and JSX
 
@@ -51,7 +51,7 @@ function UserCard({ user }) {
 }
 ```
 
-Conditional rendering uses JavaScript expressions, not template directives. The `&&` operator works for simple conditions. For multiple branches, use ternary operators or early returns. The key insight is that JSX is just JavaScript — any expression that evaluates to a value can appear inside curly braces, and any expression that evaluates to null, undefined, or false renders nothing.
+Conditional rendering uses JavaScript expressions, not template directives. The `&&` operator works for simple conditions. For multiple branches, use ternary operators or early returns. The key insight is that JSX is just JavaScript: any expression that evaluates to a value can appear inside curly braces, and any expression that evaluates to null, undefined, or false renders nothing.
 
 Understanding JSX compilation helps you debug rendering issues. When you see a blank page, the problem is usually that a JSX expression evaluates to null or undefined. When you see an unexpected element, the problem is usually a conditional expression that evaluates differently than expected. When you see a React key warning, the problem is that you are rendering a list without unique keys.
 
@@ -162,11 +162,11 @@ function Counter() {
 The setter function from `useState` can receive either a new value or a function that receives the previous state. The function form is required when the new state depends on the previous state:
 
 ```jsx
-// Wrong — uses stale count
+// Wrong: uses stale count
 setCount(count + 1);
 setCount(count + 1); // Still only adds 1, not 2
 
-// Correct — uses functional update
+// Correct: uses functional update
 setCount(prev => prev + 1);
 setCount(prev => prev + 1); // Adds 2
 ```
@@ -291,12 +291,12 @@ The cleanup function (the function returned by `useEffect`) runs before the effe
 The dependency array controls when the effect runs. Understanding dependency arrays is one of the hardest parts of React hooks, and getting it wrong is the most common source of bugs.
 
 ```jsx
-// Runs after every render — usually wrong
+// Runs after every render: usually wrong
 useEffect(() => {
   console.log("Component rendered");
 });
 
-// Runs only on mount — empty dependency array
+// Runs only on mount: empty dependency array
 useEffect(() => {
   console.log("Component mounted");
   return () => console.log("Component unmounted");
@@ -317,7 +317,7 @@ A common mistake is forgetting to include dependencies. The React docs call this
 
 Another common mistake is including too many dependencies, which causes the effect to run too often. If you include an object or array dependency, the effect runs on every render because the object reference changes every time. To fix this, memoize the dependency with `useMemo` or `useCallback`, or restructure the effect to avoid depending on the object.
 
-The dependency array is not a performance optimization — it is a correctness mechanism. It tells React when the effect's inputs have changed so it can re-run the effect with the new inputs. Omitting the dependency array does not prevent the effect from running — it just means the effect always uses stale values.
+The dependency array is not a performance optimization: it is a correctness mechanism. It tells React when the effect's inputs have changed so it can re-run the effect with the new inputs. Omitting the dependency array does not prevent the effect from running: it just means the effect always uses stale values.
 
 ### useRef: Persisting Values
 
@@ -325,7 +325,7 @@ The dependency array is not a performance optimization — it is a correctness m
 
 `useRef` has two primary use cases: storing values that need to persist across renders without triggering re-renders, and accessing DOM elements directly. For the first use case, refs are ideal for storing interval IDs, timeout IDs, previous values, and any mutable value that should not cause re-renders when updated. For the second use case, refs give you direct access to DOM elements for operations like focusing inputs, measuring dimensions, or integrating with third-party libraries.
 
-The key difference between `useRef` and `useState` is that updating a ref does not cause a re-render. This makes refs perfect for values that change frequently (like animation frame IDs or scroll positions) where triggering a re-render on every change would be wasteful. It also makes refs unsuitable for values that should cause the UI to update when changed — for those, use `useState`.
+The key difference between `useRef` and `useState` is that updating a ref does not cause a re-render. This makes refs perfect for values that change frequently (like animation frame IDs or scroll positions) where triggering a re-render on every change would be wasteful. It also makes refs unsuitable for values that should cause the UI to update when changed: for those, use `useState`.
 
 ```jsx
 function Stopwatch() {
@@ -423,7 +423,7 @@ function Header() {
 }
 ```
 
-Context is good for global values like theme, locale, or current user. It is not a state management solution for frequently changing data — every context update re-renders all consumers.
+Context is good for global values like theme, locale, or current user. It is not a state management solution for frequently changing data: every context update re-renders all consumers.
 
 ### useReducer: Complex State Logic
 
@@ -500,7 +500,7 @@ Custom hooks extract reusable stateful logic. A custom hook is just a function t
 
 Custom hooks are the primary mechanism for code reuse in React. Instead of duplicating logic across multiple components, you extract it into a custom hook. The hook encapsulates the state management, side effects, and return values. Components that use the hook share the logic but maintain independent state.
 
-A custom hook can be as simple as a single `useState` call or as complex as a multi-step data fetching flow with caching, retry logic, and error handling. The complexity does not matter — what matters is that the logic is reusable and the hook has a clear, single responsibility.
+A custom hook can be as simple as a single `useState` call or as complex as a multi-step data fetching flow with caching, retry logic, and error handling. The complexity does not matter: what matters is that the logic is reusable and the hook has a clear, single responsibility.
 
 Common custom hooks include `useLocalStorage` (persist state to localStorage), `useDebounce` (debounce rapidly changing values), `useFetch` (handle data fetching with loading and error states), `useMediaQuery` (respond to viewport changes), `useClickOutside` (detect clicks outside an element), and `usePrevious` (access the previous value of a state variable).
 

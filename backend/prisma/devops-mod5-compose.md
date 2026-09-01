@@ -1,4 +1,4 @@
-# Module 5 — Docker Compose and Multi-Service Apps
+# Module 5: Docker Compose and Multi-Service Apps
 
 ## What Docker Compose Solves
 
@@ -198,9 +198,9 @@ depends_on:
 The `service_healthy` condition waits until the dependent service's health check passes. This prevents the application from starting before PostgreSQL is ready to accept connections.
 
 The available conditions are:
-- `service_started` — Container has started (default behavior)
-- `service_healthy` — Container's health check passes
-- `service_completed_successfully` — Container exits with code 0 (useful for init containers)
+- `service_started`: Container has started (default behavior)
+- `service_healthy`: Container's health check passes
+- `service_completed_successfully`: Container exits with code 0 (useful for init containers)
 
 For the prisma-migrate service, `restart: "no"` ensures it runs once and exits. The application waits for postgres to be healthy, but does not depend on prisma-migrate (which might finish after the app starts). This is a common pattern for initialization tasks.
 
@@ -226,7 +226,7 @@ environment:
   - DATABASE_URL=postgresql://appuser:${DB_PASSWORD}@postgres:5432/aeroacademy
 ```
 
-Docker Compose automatically reads the `.env` file and substitutes variables. The `.env` file should be in `.gitignore` — never commit secrets to version control.
+Docker Compose automatically reads the `.env` file and substitutes variables. The `.env` file should be in `.gitignore`: never commit secrets to version control.
 
 ### Environment File Directive
 
@@ -287,7 +287,7 @@ docker network ls
 docker network inspect aeroacademy_default
 ```
 
-By default, all services in a `docker-compose.yml` are on the same network. The `app` service can reach `postgres` at `postgres:5432` and `redis` at `redis:6379`. This is why service names matter — they are the DNS names used for communication.
+By default, all services in a `docker-compose.yml` are on the same network. The `app` service can reach `postgres` at `postgres:5432` and `redis` at `redis:6379`. This is why service names matter: they are the DNS names used for communication.
 
 You can create custom networks for isolation:
 
@@ -421,7 +421,7 @@ services:
 
   app:
     build: .
-    # No port mapping — nginx handles external traffic
+    # No port mapping: nginx handles external traffic
 ```
 
 ```nginx
@@ -530,7 +530,7 @@ services:
   app:
     image: ghcr.io/myorg/myapp:${VERSION:-latest}
     build: null  # Override to prevent building
-    ports: []    # No exposed ports — nginx handles traffic
+    ports: []    # No exposed ports: nginx handles traffic
     environment:
       - NODE_ENV=production
     deploy:
@@ -541,7 +541,7 @@ services:
     restart: unless-stopped
 
   postgres:
-    ports: []  # No exposed ports — only accessible from backend network
+    ports: []  # No exposed ports: only accessible from backend network
     restart: unless-stopped
 
   redis:

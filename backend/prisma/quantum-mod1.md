@@ -1,10 +1,10 @@
-# Module 1 — Quantum Fundamentals
+# Module 1: Quantum Fundamentals
 
 ## The Classical Limitation
 
-Every computation you have ever run — every web request, every encryption operation, every database query — operates on bits. A bit is either 0 or 1. There is no in-between. This constraint is not a limitation of our engineering; it is a fundamental property of classical physics. When you flip a coin, it lands on heads or tails. When you write a byte to disk, each cell holds a definite voltage state representing 0 or 1.
+Every computation you have ever run: every web request, every encryption operation, every database query: operates on bits. A bit is either 0 or 1. There is no in-between. This constraint is not a limitation of our engineering; it is a fundamental property of classical physics. When you flip a coin, it lands on heads or tails. When you write a byte to disk, each cell holds a definite voltage state representing 0 or 1.
 
-Quantum computing shatters this constraint. A quantum bit — a qubit — can exist in a state that is simultaneously 0 and 1. This is not a metaphor. It is not a probabilistic mixture where we simply do not know which state it is in. The qubit genuinely occupies both states at once, and this property is the engine that drives quantum computational advantage.
+Quantum computing shatters this constraint. A quantum bit: a qubit: can exist in a state that is simultaneously 0 and 1. This is not a metaphor. It is not a probabilistic mixture where we simply do not know which state it is in. The qubit genuinely occupies both states at once, and this property is the engine that drives quantum computational advantage.
 
 To understand what this means in practice, we need to build a precise mental model of what a qubit actually is, how superposition works, what measurement does, and why the Bloch sphere is the right way to visualize single-qubit states.
 
@@ -26,7 +26,7 @@ Consider a concrete example. Take the state:
 
 |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩
 
-This is called the |+⟩ state. If you measure it, you get 0 or 1 with equal probability. But before measurement, the qubit is not "50% in |0⟩ and 50% in |1⟩" — it is in a definite state that happens to produce 50/50 measurement outcomes. The superposition is a real physical state, not a statement about our ignorance.
+This is called the |+⟩ state. If you measure it, you get 0 or 1 with equal probability. But before measurement, the qubit is not "50% in |0⟩ and 50% in |1⟩": it is in a definite state that happens to produce 50/50 measurement outcomes. The superposition is a real physical state, not a statement about our ignorance.
 
 Now consider:
 
@@ -44,7 +44,7 @@ with |α₀₀|² + |α₀₁|² + |α₁₀|² + |α₁₁|² = 1. For n qubits
 
 ## Density Matrices and Mixed States
 
-A pure state is described by a ket vector |ψ⟩. But real quantum systems are rarely perfectly isolated. A qubit that has interacted with its environment may be in a mixed state — a classical probability distribution over pure states. This is described by a density matrix:
+A pure state is described by a ket vector |ψ⟩. But real quantum systems are rarely perfectly isolated. A qubit that has interacted with its environment may be in a mixed state: a classical probability distribution over pure states. This is described by a density matrix:
 
 ρ = Σ pᵢ |ψᵢ⟩⟨ψᵢ|
 
@@ -52,7 +52,7 @@ For a pure state |ψ⟩ = α|0⟩ + β|1⟩, the density matrix is:
 
 ρ = |ψ⟩⟨ψ| = [[|α|², αβ*], [α*β, |β|²]]
 
-The trace of ρ is always 1 (normalization), and for a pure state, Tr(ρ²) = 1. For a mixed state, Tr(ρ²) < 1. This distinction matters when you are building real quantum circuits on noisy hardware — your qubits are never in perfect pure states.
+The trace of ρ is always 1 (normalization), and for a pure state, Tr(ρ²) = 1. For a mixed state, Tr(ρ²) < 1. This distinction matters when you are building real quantum circuits on noisy hardware: your qubits are never in perfect pure states.
 
 The Bloch sphere representation only applies to single-qubit states. For multi-qubit systems, you need the full density matrix or state vector representation. A single qubit's density matrix can always be written as:
 
@@ -66,7 +66,7 @@ Every valid single-qubit state can be written as:
 
 |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ) sin(θ/2)|1⟩
 
-where θ is the polar angle (0 ≤ θ ≤ π) and φ is the azimuthal angle (0 ≤ φ < 2π). This parameterization maps every qubit state to a point on the unit sphere in three-dimensional real space — the Bloch sphere.
+where θ is the polar angle (0 ≤ θ ≤ π) and φ is the azimuthal angle (0 ≤ φ < 2π). This parameterization maps every qubit state to a point on the unit sphere in three-dimensional real space: the Bloch sphere.
 
 The north pole (θ = 0) corresponds to |0⟩. The south pole (θ = π) corresponds to |1⟩. The equator contains superposition states like |+⟩ (φ = 0), |−⟩ (φ = π), |+i⟩ (φ = π/2), and |−i⟩ (φ = 3π/2).
 
@@ -78,7 +78,7 @@ Similarly for Ry and Rz rotations. Single-qubit gates are rotations on the Bloch
 
 Let us trace through a specific example. Start with |0⟩ at the north pole. Apply an H gate: this rotates the state to the equator at the |+⟩ position. Apply an S gate: this rotates by 90° around the Z-axis, moving to |+i⟩. Apply another H gate: this moves to a different point on the sphere. Each gate corresponds to a well-defined rotation, and the sequence of rotations traces a path on the Bloch sphere.
 
-One subtlety: the Bloch sphere representation obscures the global phase. The states |ψ⟩ and e^(iφ)|ψ⟩ are physically indistinguishable — they produce the same measurement statistics for any measurement. The Bloch sphere correctly identifies these as the same point, which is physically correct but means you lose phase information that matters when considering multi-qubit entanglement. When two qubits are entangled, the relative phase between different components of the joint state cannot be captured by individual Bloch spheres for each qubit.
+One subtlety: the Bloch sphere representation obscures the global phase. The states |ψ⟩ and e^(iφ)|ψ⟩ are physically indistinguishable: they produce the same measurement statistics for any measurement. The Bloch sphere correctly identifies these as the same point, which is physically correct but means you lose phase information that matters when considering multi-qubit entanglement. When two qubits are entangled, the relative phase between different components of the joint state cannot be captured by individual Bloch spheres for each qubit.
 
 The Bloch sphere also helps visualize mixed states. A pure state is a point on the surface of the sphere. A mixed state is a point inside the sphere. The closer to the center, the more mixed the state. The maximally mixed state (complete uncertainty) is at the center. This visualization helps you understand decoherence: as a qubit interacts with its environment, its Bloch vector shrinks toward the center, losing its quantum coherence.
 
@@ -87,22 +87,22 @@ The Bloch sphere also helps visualize mixed states. A pure state is a point on t
 Superposition is the most misunderstood concept in quantum computing. Here is what it is not:
 
 1. Superposition is not "the qubit is in both states at once" in the sense that it is rapidly switching between them.
-2. Superposition is not a statement about our knowledge — it is not that we do not know which state it is in.
-3. Superposition is not classical probability — a 50/50 classical random bit is fundamentally different from a qubit in the |+⟩ state.
+2. Superposition is not a statement about our knowledge: it is not that we do not know which state it is in.
+3. Superposition is not classical probability: a 50/50 classical random bit is fundamentally different from a qubit in the |+⟩ state.
 
 What superposition actually means: the qubit exists in a state that is described by two complex amplitudes, and these amplitudes can interfere. When you apply a quantum gate to a qubit in superposition, both amplitudes are transformed simultaneously. When you measure, the superposition collapses to a definite outcome.
 
-The power of superposition is not that a single qubit in superposition can do anything a classical bit cannot — a single qubit measurement is always just 0 or 1. The power emerges when you have multiple qubits in entangled superpositions. An n-qubit system can be in a superposition of all 2ⁿ possible bit strings simultaneously, and quantum gates can manipulate these 2ⁿ amplitudes in parallel. This is the source of quantum speedup.
+The power of superposition is not that a single qubit in superposition can do anything a classical bit cannot: a single qubit measurement is always just 0 or 1. The power emerges when you have multiple qubits in entangled superpositions. An n-qubit system can be in a superposition of all 2ⁿ possible bit strings simultaneously, and quantum gates can manipulate these 2ⁿ amplitudes in parallel. This is the source of quantum speedup.
 
 To illustrate the difference between classical and quantum superposition, consider a 3-bit system. A classical 3-bit register can be in one of 8 states: 000, 001, ..., 111. A quantum 3-qubit register can be in a superposition of all 8 states simultaneously:
 
 |ψ⟩ = α₀₀₀|000⟩ + α₀₀₁|001⟩ + ... + α₁₁₁|111⟩
 
-A single quantum gate operation on this register transforms all 8 amplitudes simultaneously. But — and this is the crucial constraint — when you measure, you only get one of the 8 possible outcomes. You cannot read out all 8 amplitudes. The art of quantum algorithm design is arranging the computation so that the amplitude of the correct answer is close to 1 when you measure.
+A single quantum gate operation on this register transforms all 8 amplitudes simultaneously. But: and this is the crucial constraint: when you measure, you only get one of the 8 possible outcomes. You cannot read out all 8 amplitudes. The art of quantum algorithm design is arranging the computation so that the amplitude of the correct answer is close to 1 when you measure.
 
 ## Quantum Measurement
 
-Measurement in quantum computing is fundamentally different from classical observation. When you measure a qubit in the computational basis, you get a definite classical outcome (0 or 1), and the qubit state collapses to the corresponding basis state. This process is irreversible — the superposition information is destroyed.
+Measurement in quantum computing is fundamentally different from classical observation. When you measure a qubit in the computational basis, you get a definite classical outcome (0 or 1), and the qubit state collapses to the corresponding basis state. This process is irreversible: the superposition information is destroyed.
 
 The measurement postulate: for a state |ψ⟩ = α|0⟩ + β|1⟩, measurement in the computational basis produces outcome 0 with probability |α|² and outcome 1 with probability |β|². After measurement, the qubit is in the state |0⟩ or |1⟩ respectively.
 
@@ -110,9 +110,9 @@ This has a profound practical implication: you cannot "read out" the amplitudes 
 
 Measurement in other bases is also possible. Measuring in the X-basis means measuring whether the qubit is in |+⟩ or |−⟩. This is equivalent to applying an H gate before computational-basis measurement. The choice of measurement basis is a design decision in quantum algorithms.
 
-A critical point: measurement is not the only way quantum states interact with the environment. Decoherence — the unwanted entanglement of a qubit with its environment — also destroys superposition. This is why quantum computers require extreme isolation: near-vacuum, temperatures below 15 millikelvin, and electromagnetic shielding. A stray photon or thermal fluctuation can decohere a qubit just as effectively as a measurement.
+A critical point: measurement is not the only way quantum states interact with the environment. Decoherence: the unwanted entanglement of a qubit with its environment: also destroys superposition. This is why quantum computers require extreme isolation: near-vacuum, temperatures below 15 millikelvin, and electromagnetic shielding. A stray photon or thermal fluctuation can decohere a qubit just as effectively as a measurement.
 
-The measurement problem in quantum mechanics is one of the deepest foundational questions. In the standard interpretation (Copenhagen), measurement causes an instantaneous, non-unitary collapse of the wave function. In the many-worlds interpretation, measurement causes the universe to branch, with each outcome occurring in a separate branch. In decoherence theory, measurement is the process by which quantum coherence is lost to the environment. For practical quantum computing, the interpretation does not matter — what matters is that measurement produces a definite outcome with specific probabilities, and that the act of measurement destroys the superposition.
+The measurement problem in quantum mechanics is one of the deepest foundational questions. In the standard interpretation (Copenhagen), measurement causes an instantaneous, non-unitary collapse of the wave function. In the many-worlds interpretation, measurement causes the universe to branch, with each outcome occurring in a separate branch. In decoherence theory, measurement is the process by which quantum coherence is lost to the environment. For practical quantum computing, the interpretation does not matter: what matters is that measurement produces a definite outcome with specific probabilities, and that the act of measurement destroys the superposition.
 
 Let us consider a concrete measurement scenario. You have a qubit in the state:
 
@@ -121,7 +121,7 @@ Let us consider a concrete measurement scenario. You have a qubit in the state:
 The probability of measuring 0 is |3/5|² = 9/25 = 36%.
 The probability of measuring 1 is |4/5|² = 16/25 = 64%.
 
-If you measure and get 0, the qubit is now in state |0⟩. If you measure again, you will get 0 with certainty. The original superposition is destroyed. This is why you cannot clone a quantum state — the act of measurement (which is necessary to learn the state) destroys the information you are trying to copy.
+If you measure and get 0, the qubit is now in state |0⟩. If you measure again, you will get 0 with certainty. The original superposition is destroyed. This is why you cannot clone a quantum state: the act of measurement (which is necessary to learn the state) destroys the information you are trying to copy.
 
 ## Entanglement
 
@@ -133,18 +133,18 @@ Consider the Bell state:
 
 This state cannot be written as |ψ⟩₁ ⊗ |φ⟩₂ for any single-qubit states |ψ⟩ and |φ⟩. If you measure the first qubit and get 0, the second qubit is instantly in state |0⟩, regardless of the distance between them. If you measure the first qubit and get 1, the second is in state |1⟩.
 
-This is not communication — you cannot use entanglement to send information faster than light. The measurement outcomes are individually random (50/50 for each qubit). It is only when you compare the results that you see perfect correlation. Einstein called this "spooky action at a distance," but it is better understood as a type of correlation that simply does not exist in classical physics.
+This is not communication: you cannot use entanglement to send information faster than light. The measurement outcomes are individually random (50/50 for each qubit). It is only when you compare the results that you see perfect correlation. Einstein called this "spooky action at a distance," but it is better understood as a type of correlation that simply does not exist in classical physics.
 
 There are four Bell states, each with different correlation patterns:
 
-|Φ+⟩ = (1/√2)(|00⟩ + |11⟩) — correlated in computational basis
-|Φ−⟩ = (1/√2)(|00⟩ − |11⟩) — anti-correlated in computational basis
-|Ψ+⟩ = (1/√2)(|01⟩ + |10⟩) — correlated in X-basis
-|Ψ−⟩ = (1/√2)(|01⟩ − |10⟩) — anti-correlated in X-basis
+|Φ+⟩ = (1/√2)(|00⟩ + |11⟩): correlated in computational basis
+|Φ−⟩ = (1/√2)(|00⟩ − |11⟩): anti-correlated in computational basis
+|Ψ+⟩ = (1/√2)(|01⟩ + |10⟩): correlated in X-basis
+|Ψ−⟩ = (1/√2)(|01⟩ − |10⟩): anti-correlated in X-basis
 
 The Bell states form a complete basis for two-qubit states. Any two-qubit state can be written as a superposition of Bell states.
 
-Entanglement is a computational resource. Many quantum algorithms — including Shor's algorithm for factoring, Grover's algorithm for search, and quantum error correction codes — rely critically on entanglement. Without entanglement, a quantum computer can be efficiently simulated classically. With entanglement, it can solve certain problems exponentially faster than any classical computer.
+Entanglement is a computational resource. Many quantum algorithms: including Shor's algorithm for factoring, Grover's algorithm for search, and quantum error correction codes: rely critically on entanglement. Without entanglement, a quantum computer can be efficiently simulated classically. With entanglement, it can solve certain problems exponentially faster than any classical computer.
 
 To see why entanglement is necessary for quantum speedup, consider a quantum computer with n qubits but no entanglement. Each qubit can be described independently, and the total state is a product state. The number of parameters needed to describe the state is O(n), not O(2ⁿ). Such a system can be efficiently simulated by a classical computer. Entanglement creates correlations that cannot be described by independent qubit states, requiring the full 2ⁿ-parameter description.
 
@@ -198,7 +198,7 @@ The circuit depth (the number of sequential gate layers) determines the executio
 
 The difference between quantum and classical computing is not that quantum is "faster" in the sense of a faster clock speed. The difference is that quantum computers can solve certain problems with fewer operations by exploiting superposition, entanglement, and interference.
 
-Classical computers process one input at a time (or, with parallelism, a fixed number at a time). A quantum computer processes a superposition of exponentially many inputs simultaneously — but you cannot read out all the results at once due to the measurement constraint.
+Classical computers process one input at a time (or, with parallelism, a fixed number at a time). A quantum computer processes a superposition of exponentially many inputs simultaneously: but you cannot read out all the results at once due to the measurement constraint.
 
 The actual speedup comes from interference: arranging the computation so that the correct answer's amplitude is amplified while wrong answers cancel out. This requires clever algorithm design, not just "trying all answers in parallel."
 

@@ -1,4 +1,4 @@
-# Module 2 — PostgreSQL Administration
+# Module 2: PostgreSQL Administration
 
 PostgreSQL is the most capable open-source relational database available. It handles everything from small embedded applications to data warehouses processing petabytes of data. As a DBA, your job is to install it correctly, configure it for the workload, keep it running, and make sure you can recover from any failure. This module covers the operational skills you need: installation, configuration tuning, authentication setup, backup strategies, and replication for high availability. We will work with real configuration files, real commands, and real failure scenarios.
 
@@ -33,9 +33,9 @@ docker run -d \
 
 After installation, the data directory (typically `/var/lib/postgresql/16/main/` or `/var/lib/pgsql/16/data/`) contains the database cluster. The key files you need to know:
 
-- `postgresql.conf` — All runtime configuration parameters
-- `pg_hba.conf` — Client authentication rules (who can connect, how they authenticate)
-- `pg_ident.conf` — Maps OS usernames to database usernames (optional)
+- `postgresql.conf`: All runtime configuration parameters
+- `pg_hba.conf`: Client authentication rules (who can connect, how they authenticate)
+- `pg_ident.conf`: Maps OS usernames to database usernames (optional)
 
 Before changing any configuration, understand the directory structure the installer created. The `base/` directory holds the actual database files. The `pg_wal/` directory holds the write-ahead log. The `global/` directory holds cluster-wide tables. The `pg_stat/` directory holds statistics. Knowing this layout matters when you need to manually recover data or diagnose disk space issues.
 
@@ -70,7 +70,7 @@ maintenance_work_mem = '1GB'
 wal_buffers = '64MB'
 ```
 
-The most common mistake is setting `work_mem` too high. If a query plan involves multiple sort operations, each sort allocates `work_mem` independently. A query with 10 sort steps and `work_mem = 256MB` could consume 2.5GB. Monitor memory usage with `SELECT * FROM pg_stat_activity` and look for queries with large `temp_blks_written` values — these are spilling to disk because `work_mem` is too small for those specific queries.
+The most common mistake is setting `work_mem` too high. If a query plan involves multiple sort operations, each sort allocates `work_mem` independently. A query with 10 sort steps and `work_mem = 256MB` could consume 2.5GB. Monitor memory usage with `SELECT * FROM pg_stat_activity` and look for queries with large `temp_blks_written` values: these are spilling to disk because `work_mem` is too small for those specific queries.
 
 **Write Performance:**
 
@@ -98,7 +98,7 @@ wal_compression = 'lz4'
 full_page_writes = on
 ```
 
-Checkpoint tuning is critical for write-heavy workloads. Without proper tuning, checkpoints create I/O storms that stall all queries. The `checkpoint_completion_target` spreads checkpoint writes over the interval between checkpoints. The `max_wal_size` controls how often checkpoints happen — larger values mean fewer checkpoints but more WAL to replay on recovery.
+Checkpoint tuning is critical for write-heavy workloads. Without proper tuning, checkpoints create I/O storms that stall all queries. The `checkpoint_completion_target` spreads checkpoint writes over the interval between checkpoints. The `max_wal_size` controls how often checkpoints happen: larger values mean fewer checkpoints but more WAL to replay on recovery.
 
 **Connection and Worker Settings:**
 
@@ -156,7 +156,7 @@ TYPE  DATABASE  USER  ADDRESS         METHOD
 A typical production configuration:
 
 ```ini
-# Local connections (Unix socket) — allow root and postgres user for admin
+# Local connections (Unix socket): allow root and postgres user for admin
 local   all   postgres                peer
 local   all   all                     md5
 
@@ -173,12 +173,12 @@ host    all    all    0.0.0.0/0    reject
 
 Authentication methods, in order of security:
 
-- `trust` — No authentication. Accept the password. Never use this in production.
-- `peer` — The client's OS username must match the database username. Only works for local connections. Useful for the postgres admin account.
-- `md5` — Password hash using MD5. Legacy method. Acceptable but not preferred.
-- `scram-sha-256` — Salted challenge-response authentication. Superior to MD5. Use this for all password-based authentication in new deployments.
-- `cert` — Client must present a valid SSL certificate. The most secure option for production. Requires setting up a certificate authority and issuing client certificates.
-- `reject` — Explicitly deny the connection. Always add this as the last rule.
+- `trust`: No authentication. Accept the password. Never use this in production.
+- `peer`: The client's OS username must match the database username. Only works for local connections. Useful for the postgres admin account.
+- `md5`: Password hash using MD5. Legacy method. Acceptable but not preferred.
+- `scram-sha-256`: Salted challenge-response authentication. Superior to MD5. Use this for all password-based authentication in new deployments.
+- `cert`: Client must present a valid SSL certificate. The most secure option for production. Requires setting up a certificate authority and issuing client certificates.
+- `reject`: Explicitly deny the connection. Always add this as the last rule.
 
 A critical mistake to avoid: using `0.0.0.0/0` with `md5` or `scram-sha-256` as the only protection. This allows anyone on any network to attempt password-based attacks against your database. Always restrict the ADDRESS to known application server IPs. If your application runs in Kubernetes, use network policies to restrict pod-to-pod traffic and restrict PostgreSQL access to the application namespace CIDR.
 
@@ -216,10 +216,10 @@ PostgreSQL offers two primary backup tools: `pg_dump` for logical backups and `p
 **pg_dump** exports a database to a SQL file or custom archive format. It reads the database at the time of the backup and writes a consistent snapshot. It does not block writes during the backup (thanks to MVCC), so you can run it on a production database without downtime.
 
 ```bash
-# Plain SQL dump — readable but large
+# Plain SQL dump: readable but large
 pg_dump -h localhost -U postgres -d myapp -f /backups/myapp_$(date +%Y%m%d).sql
 
-# Custom format (compressed, can be restored selectively) — RECOMMENDED
+# Custom format (compressed, can be restored selectively): RECOMMENDED
 pg_dump -h localhost -U postgres -d myapp \
   -Fc -Z 6 \
   -f /backups/myapp_$(date +%Y%m%d).dump
@@ -561,7 +561,7 @@ CREATE SUBSCRIPTION my_sub
   PUBLICATION my_pub;
 ```
 
-Logical replication is useful for: migrating between major versions with minimal downtime, selectively replicating tables to a reporting database, and replicating between different database systems using extensions like `pglogical`. The main limitation is that DDL changes (adding columns, creating tables) are not replicated by default — you must manage schema changes on both sides.
+Logical replication is useful for: migrating between major versions with minimal downtime, selectively replicating tables to a reporting database, and replicating between different database systems using extensions like `pglogical`. The main limitation is that DDL changes (adding columns, creating tables) are not replicated by default: you must manage schema changes on both sides.
 
 ## Real Scenario: Setting Up PostgreSQL High Availability
 
@@ -571,9 +571,9 @@ Your company runs a PostgreSQL 16 database for its payment processing system. Th
 
 You choose a primary-standby architecture with automatic failover using Patroni, a widely-used PostgreSQL HA tool that uses etcd for leader election.
 
-- Primary: `10.0.1.10` (m5.xlarge — 4 vCPU, 16GB RAM)
-- Standby 1: `10.0.1.11` (m5.xlarge — same specs, different availability zone)
-- Standby 2: `10.0.1.12` (m5.large — 2 vCPU, 8GB RAM, same AZ as standby 1 for cost savings)
+- Primary: `10.0.1.10` (m5.xlarge: 4 vCPU, 16GB RAM)
+- Standby 1: `10.0.1.11` (m5.xlarge: same specs, different availability zone)
+- Standby 2: `10.0.1.12` (m5.large: 2 vCPU, 8GB RAM, same AZ as standby 1 for cost savings)
 - etcd cluster: 3 nodes for quorum
 
 **Step 1: Configure etcd cluster for leader election.**

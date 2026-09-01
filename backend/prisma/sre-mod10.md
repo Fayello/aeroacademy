@@ -1,4 +1,4 @@
-# Module 10 — Continuous Improvement
+# Module 10: Continuous Improvement
 
 ## Metrics-Driven Improvement
 

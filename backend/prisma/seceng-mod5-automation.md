@@ -1,6 +1,6 @@
-# Module 5 — Security Automation (SAST/DAST/SCA)
+# Module 5: Security Automation (SAST/DAST/SCA)
 
-Security automation is the practice of using tools to identify vulnerabilities continuously and consistently across the software development lifecycle. The goal is not to replace human judgment but to augment it — to catch the vulnerabilities that are mechanically detectable so that human reviewers can focus on the vulnerabilities that require context, logic analysis, and creative thinking. Effective security automation reduces the time between vulnerability introduction and detection from months (production incidents) to minutes (CI/CD pipeline failures).
+Security automation is the practice of using tools to identify vulnerabilities continuously and consistently across the software development lifecycle. The goal is not to replace human judgment but to augment it: to catch the vulnerabilities that are mechanically detectable so that human reviewers can focus on the vulnerabilities that require context, logic analysis, and creative thinking. Effective security automation reduces the time between vulnerability introduction and detection from months (production incidents) to minutes (CI/CD pipeline failures).
 
 The three primary categories of security automation are Static Application Security Testing (SAST), Dynamic Application Security Testing (DAST), and Software Composition Analysis (SCA). Each category addresses a different class of vulnerability at a different stage of the development lifecycle. Together, they provide comprehensive coverage that no single tool can achieve alone.
 
@@ -10,7 +10,7 @@ SAST tools analyze source code without executing it. They parse the code into an
 
 ### Semgrep
 
-Semgrep is an open-source static analysis tool that supports multiple languages and allows custom rule authoring. Its strength is its extensibility — you can write rules that match specific code patterns in your codebase and enforce custom security standards.
+Semgrep is an open-source static analysis tool that supports multiple languages and allows custom rule authoring. Its strength is its extensibility: you can write rules that match specific code patterns in your codebase and enforce custom security standards.
 
 A basic Semgrep rule for detecting SQL injection in Python:
 
@@ -46,7 +46,7 @@ Semgrep integrates with CI/CD pipelines through GitHub Actions, GitLab CI, and o
 
 ### SonarQube
 
-SonarQube provides comprehensive code quality and security analysis with support for 27 languages. It distinguishes between security vulnerabilities (exploitable issues) and security hotspots (code that requires manual review to determine if it is exploitable). This distinction is important because it reduces false positives — a hardcoded IP address in a test file is a security hotspot, not a vulnerability, while a hardcoded IP address in a production configuration file may be a vulnerability.
+SonarQube provides comprehensive code quality and security analysis with support for 27 languages. It distinguishes between security vulnerabilities (exploitable issues) and security hotspots (code that requires manual review to determine if it is exploitable). This distinction is important because it reduces false positives: a hardcoded IP address in a test file is a security hotspot, not a vulnerability, while a hardcoded IP address in a production configuration file may be a vulnerability.
 
 SonarQube's quality gates enforce security standards at the pipeline level. A quality gate can require that no new security vulnerabilities are introduced by a pull request, that the overall security rating does not degrade, and that all security hotspots are reviewed. This prevents the common problem of security debt accumulation, where individual findings are deprioritized until the codebase is overwhelmed with unresolved issues.
 
@@ -62,13 +62,13 @@ Checkmarx's false positive rate is lower than most SAST tools due to its deep an
 
 ## DAST: Dynamic Application Security Testing
 
-DAST tools test running applications by sending crafted requests and analyzing responses. They do not have access to source code, so they identify vulnerabilities by observing application behavior. DAST tools are valuable because they find vulnerabilities that SAST tools miss — configuration issues, runtime vulnerabilities, authentication and session management flaws, and vulnerabilities that only manifest when the application is running in its production environment.
+DAST tools test running applications by sending crafted requests and analyzing responses. They do not have access to source code, so they identify vulnerabilities by observing application behavior. DAST tools are valuable because they find vulnerabilities that SAST tools miss: configuration issues, runtime vulnerabilities, authentication and session management flaws, and vulnerabilities that only manifest when the application is running in its production environment.
 
 ### OWASP ZAP
 
 OWASP ZAP (Zed Attack Proxy) is an open-source DAST tool that intercepts and modifies HTTP traffic between the browser and the application. ZAP's automated scanner crawls the application, identifies endpoints, sends attack payloads, and analyzes responses for signs of vulnerability.
 
-ZAP's active scanning rules cover the OWASP Top 10: SQL injection, cross-site scripting, path traversal, remote code execution, server-side request forgery, and more. The scanner sends payloads specific to each vulnerability class and analyzes the response for indicators of exploitation — error messages, reflected input, timing differences, and behavioral changes.
+ZAP's active scanning rules cover the OWASP Top 10: SQL injection, cross-site scripting, path traversal, remote code execution, server-side request forgery, and more. The scanner sends payloads specific to each vulnerability class and analyzes the response for indicators of exploitation: error messages, reflected input, timing differences, and behavioral changes.
 
 ZAP's automation framework enables integration with CI/CD pipelines. A ZAP automation plan defines the target application, authentication method, and scan policy. The plan can be executed as part of a deployment pipeline, with results published as test artifacts and build status set based on finding severity.
 
@@ -117,11 +117,11 @@ Burp Suite's headless scanning mode enables CI/CD integration, though the commer
 
 ## SCA: Software Composition Analysis
 
-SCA tools analyze third-party dependencies for known vulnerabilities. Modern applications depend heavily on open-source libraries — the average application contains 70-80% open-source code. A vulnerability in a widely-used library can affect thousands of applications simultaneously. SCA tools identify which dependencies are present in your application and cross-reference them against vulnerability databases.
+SCA tools analyze third-party dependencies for known vulnerabilities. Modern applications depend heavily on open-source libraries: the average application contains 70-80% open-source code. A vulnerability in a widely-used library can affect thousands of applications simultaneously. SCA tools identify which dependencies are present in your application and cross-reference them against vulnerability databases.
 
 ### Snyk
 
-Snyk provides vulnerability database coverage, fix advice, and integration with development workflows. Its strength is its developer-friendly approach — Snyk provides pull requests that automatically update vulnerable dependencies to patched versions, with compatibility testing to ensure the update does not break functionality.
+Snyk provides vulnerability database coverage, fix advice, and integration with development workflows. Its strength is its developer-friendly approach: Snyk provides pull requests that automatically update vulnerable dependencies to patched versions, with compatibility testing to ensure the update does not break functionality.
 
 Snyk's prioritization considers multiple factors: whether the vulnerability is exploitable in your specific context, whether a fix is available, and the severity of the vulnerability. This reduces noise compared to tools that report every known vulnerability regardless of relevance.
 
@@ -129,7 +129,7 @@ Snyk integrates with CI/CD pipelines, IDEs, and source code management platforms
 
 ### Dependabot
 
-Dependabot, built into GitHub, automatically creates pull requests when dependencies have known vulnerabilities. Its strength is its seamless integration with GitHub — no additional tooling is required, and the pull request workflow is familiar to developers.
+Dependabot, built into GitHub, automatically creates pull requests when dependencies have known vulnerabilities. Its strength is its seamless integration with GitHub: no additional tooling is required, and the pull request workflow is familiar to developers.
 
 Dependabot's limitation is that it focuses on updates rather than analysis. It tells you that a vulnerability exists and provides an update, but it does not analyze whether the vulnerability is exploitable in your context. A vulnerability in a function you do not use is reported with the same urgency as a vulnerability in a function you depend on.
 
@@ -137,11 +137,11 @@ Dependabot's limitation is that it focuses on updates rather than analysis. It t
 
 OWASP Dependency-Check is an open-source SCA tool that identifies project dependencies and checks for known vulnerabilities. It supports Java, .NET, Ruby, Python, Node.js, and other ecosystems. The tool generates reports that can be integrated into build systems and CI/CD pipelines.
 
-Dependency-Check's strength is its comprehensive vulnerability database, which aggregates data from NVD, GitHub advisories, and other sources. Its weakness is its high false positive rate — it reports vulnerabilities based on package name matching, which can miss vulnerabilities (if the package name does not match) or report false positives (if the package name matches but the vulnerable code path is not used).
+Dependency-Check's strength is its comprehensive vulnerability database, which aggregates data from NVD, GitHub advisories, and other sources. Its weakness is its high false positive rate: it reports vulnerabilities based on package name matching, which can miss vulnerabilities (if the package name does not match) or report false positives (if the package name matches but the vulnerable code path is not used).
 
 ## Secret Scanning
 
-Secret scanning tools detect hardcoded credentials, API keys, tokens, and other sensitive data in source code. Hardcoded secrets are one of the most common and most preventable vulnerability classes — they are easy to detect, easy to fix, and trivially exploitable.
+Secret scanning tools detect hardcoded credentials, API keys, tokens, and other sensitive data in source code. Hardcoded secrets are one of the most common and most preventable vulnerability classes: they are easy to detect, easy to fix, and trivially exploitable.
 
 ### TruffleHog
 
@@ -220,7 +220,7 @@ A mid-size SaaS company deployed a security automation pipeline in 2022 that com
 
 Within the first three months, the pipeline caught 47 critical and high severity vulnerabilities before they reached staging, let alone production. These included 12 SQL injection vulnerabilities in legacy code that had not been caught by previous code reviews, 8 hardcoded API keys and database credentials in configuration files, 15 vulnerable dependencies with known CVEs, 6 container images with critical OS vulnerabilities, and 6 cross-site scripting vulnerabilities in newly written code.
 
-The total remediation cost for these 47 vulnerabilities was approximately $23,500 in engineering time — an average of $500 per vulnerability. The company estimated that if these vulnerabilities had reached production and been found through incidents or external testing, the remediation cost would have been approximately $2.1 million — an average of $45,000 per vulnerability.
+The total remediation cost for these 47 vulnerabilities was approximately $23,500 in engineering time: an average of $500 per vulnerability. The company estimated that if these vulnerabilities had reached production and been found through incidents or external testing, the remediation cost would have been approximately $2.1 million: an average of $45,000 per vulnerability.
 
 The three additional vulnerabilities were found after production deployment through the company's bug bounty program. Two were low severity information disclosure issues, and one was a medium severity logic flaw in the payment processing workflow. The bug bounty program paid $4,200 in rewards for these findings.
 
@@ -230,21 +230,21 @@ The most significant finding was not any individual vulnerability but the patter
 
 ## Reducing False Positives
 
-False positives are the primary obstacle to effective security automation. A tool that reports 100 findings when only 10 are real vulnerabilities wastes developer time and erodes trust in the tooling. The goal is not zero false positives — that is impossible without zero true positives — but a signal-to-noise ratio that developers trust.
+False positives are the primary obstacle to effective security automation. A tool that reports 100 findings when only 10 are real vulnerabilities wastes developer time and erodes trust in the tooling. The goal is not zero false positives: that is impossible without zero true positives: but a signal-to-noise ratio that developers trust.
 
 The first strategy is tuning. Every security tool can be configured to reduce false positives. In Semgrep, this means writing rules that match specific vulnerable patterns rather than broad patterns that match both vulnerable and safe code. In Snyk, this means using Snyk's prioritization to focus on vulnerabilities that are actually exploitable in your context. In Trivy, this means filtering findings by severity and fix availability.
 
-The second strategy is context. A finding in test code is less urgent than a finding in production code. A vulnerability in a dependency that your application does not use is less urgent than a vulnerability in a dependency that handles user authentication. Tools that provide context — Snyk's exploitability scoring, SonarQube's security hotspots, Trivy's fix availability — help developers prioritize.
+The second strategy is context. A finding in test code is less urgent than a finding in production code. A vulnerability in a dependency that your application does not use is less urgent than a vulnerability in a dependency that handles user authentication. Tools that provide context: Snyk's exploitability scoring, SonarQube's security hotspots, Trivy's fix availability: help developers prioritize.
 
 The third strategy is verification. Before filing a ticket for a security finding, verify that it is exploitable. A SQL injection finding in a parameterized query is a false positive. A SQL injection finding in a string concatenation query is a true positive. A hardcoded password in a test file is a low-priority finding. A hardcoded password in a production configuration file is a critical finding. Verification takes time but prevents wasted effort on false positives.
 
-The fourth strategy is feedback. When developers determine that a finding is a false positive, they should be able to suppress it with a documented reason. This creates a record of suppressed findings that can be reviewed periodically to ensure that suppressed findings remain false positives. It also provides data for tool tuning — if the same rule produces the same false positive repeatedly, the rule should be modified.
+The fourth strategy is feedback. When developers determine that a finding is a false positive, they should be able to suppress it with a documented reason. This creates a record of suppressed findings that can be reviewed periodically to ensure that suppressed findings remain false positives. It also provides data for tool tuning: if the same rule produces the same false positive repeatedly, the rule should be modified.
 
-The fifth strategy is baseline scanning. When deploying security automation for the first time, scan the existing codebase and establish a baseline of known findings. Do not block the pipeline on pre-existing findings — this creates a barrier to adoption that developers will resist. Instead, report pre-existing findings and track remediation over time. Block the pipeline only on new findings introduced by the pull request.
+The fifth strategy is baseline scanning. When deploying security automation for the first time, scan the existing codebase and establish a baseline of known findings. Do not block the pipeline on pre-existing findings: this creates a barrier to adoption that developers will resist. Instead, report pre-existing findings and track remediation over time. Block the pipeline only on new findings introduced by the pull request.
 
 ## Assessment
 
-**Lab 5.1 — SAST Rule Writing (45 minutes)**
+**Lab 5.1: SAST Rule Writing (45 minutes)**
 Write Semgrep rules to detect five specific vulnerability classes in a Python Django application: SQL injection, cross-site scripting, path traversal, insecure deserialization, and hardcoded credentials. Each rule must have a true positive and a false positive test case. Run the rules against a provided test codebase and report the results.
 
 **Grading criteria:**
@@ -253,7 +253,7 @@ Write Semgrep rules to detect five specific vulnerability classes in a Python Dj
 - Accurate results when run against the test codebase (10 points)
 - Custom rules that go beyond Semgrep's built-in rules (10 points)
 
-**Lab 5.2 — CI/CD Pipeline Configuration (60 minutes)**
+**Lab 5.2: CI/CD Pipeline Configuration (60 minutes)**
 Configure a GitHub Actions pipeline that integrates Semgrep (SAST), Snyk (SCA), Trivy (container scanning), and GitLeaks (secret scanning). The pipeline should run each tool at the appropriate stage, block merges on critical findings, and produce a combined security report. Include configuration for each tool with appropriate policies.
 
 **Grading criteria:**
@@ -262,7 +262,7 @@ Configure a GitHub Actions pipeline that integrates Semgrep (SAST), Snyk (SCA), 
 - Correct merge blocking policy (8 points)
 - Combined security report generation (8 points)
 
-**Lab 5.3 — False Positive Analysis (45 minutes)**
+**Lab 5.3: False Positive Analysis (45 minutes)**
 Analyze a provided set of 30 security tool findings (from Semgrep, Snyk, and Trivy) and classify each as true positive, false positive, or requires investigation. For each false positive, explain why it is a false positive. For each finding requiring investigation, describe the additional analysis needed. Calculate the false positive rate for each tool.
 
 **Grading criteria:**
@@ -278,7 +278,7 @@ Security automation is not a replacement for security engineering, security code
 
 The SCA findings in this module illustrate why automation is essential. A modern application with 200+ dependencies cannot be manually checked for known vulnerabilities. New CVEs are published daily, and a dependency that was safe yesterday may be vulnerable today. SCA tools provide continuous monitoring that would be impossible to replicate manually.
 
-The false positive challenge is real but manageable. Every security tool produces false positives, and every development team has limited time for security findings. The strategies outlined in this module — tuning, context, verification, feedback, and baselining — reduce false positives to a level where developers trust the tools and act on the findings.
+The false positive challenge is real but manageable. Every security tool produces false positives, and every development team has limited time for security findings. The strategies outlined in this module: tuning, context, verification, feedback, and baselining: reduce false positives to a level where developers trust the tools and act on the findings.
 
 The investment in security automation pays for itself many times over. The cost of configuring and maintaining a security pipeline is a fraction of the cost of finding and remediating vulnerabilities in production. The key is starting with the tools most relevant to your technology stack, tuning them for your specific context, and iterating based on feedback from your development team.
 

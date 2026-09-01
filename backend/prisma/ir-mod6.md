@@ -1,4 +1,4 @@
-# Module 6 — Digital Forensics Fundamentals
+# Module 6: Digital Forensics Fundamentals
 
 Digital forensics is the intersection of technology and law. Every forensic action you take must produce evidence that is legally admissible, scientifically sound, and forensically sound. A single misstep in evidence handling can invalidate an entire investigation and allow an attacker to walk free. This module covers evidence handling and chain of custody, forensic imaging, write blockers, legal admissibility requirements, and how to conduct a forensic investigation that holds up under scrutiny.
 
@@ -24,7 +24,7 @@ Every evidence collection action should follow a documented procedure. The proce
 
 **Step 1: Identify the evidence.** Determine what evidence is relevant to the investigation. This requires understanding what the attacker did, what systems they accessed, and what data is at risk.
 
-**Step 2: Prioritize the evidence.** Collect volatile evidence first, then persistent evidence. If evidence is at risk of being destroyed — by the attacker, by normal system operations, or by other investigators — prioritize it.
+**Step 2: Prioritize the evidence.** Collect volatile evidence first, then persistent evidence. If evidence is at risk of being destroyed: by the attacker, by normal system operations, or by other investigators: prioritize it.
 
 **Step 3: Use proper tools and techniques.** Use forensically sound tools and techniques that do not modify the evidence. Write blockers prevent write operations to evidence media. Forensic imaging tools create bit-for-bit copies. Hash functions verify evidence integrity.
 
@@ -54,7 +54,7 @@ Evidence integrity means that the evidence has not been modified since it was co
 
 **Hash verification:** Compute a cryptographic hash of the evidence at the time of collection and verify the hash whenever the evidence is accessed. If the hash does not match, the evidence has been modified and is no longer reliable.
 
-**Write protection:** Use write blockers or other mechanisms to prevent any modification to the evidence media. A single write operation — even an accidental one — can invalidate the evidence.
+**Write protection:** Use write blockers or other mechanisms to prevent any modification to the evidence media. A single write operation: even an accidental one: can invalidate the evidence.
 
 **Access control:** Restrict access to the evidence to authorized personnel only. Every access should be logged and justified.
 
@@ -62,21 +62,21 @@ Evidence integrity means that the evidence has not been modified since it was co
 
 ## Forensic Imaging
 
-Forensic imaging is the process of creating a bit-for-bit copy of digital media. Unlike a regular copy, a forensic image captures everything — including deleted files, unallocated space, and file system metadata. This completeness is critical for forensic investigation.
+Forensic imaging is the process of creating a bit-for-bit copy of digital media. Unlike a regular copy, a forensic image captures everything: including deleted files, unallocated space, and file system metadata. This completeness is critical for forensic investigation.
 
 ### Why Forensic Imaging Matters
 
 A regular file copy captures only the files that the operating system presents. It does not capture deleted files that have not been overwritten, unallocated space that may contain remnants of previous files, file system metadata like timestamps and permissions, or slack space within files.
 
-A forensic image captures the entire storage media — every sector, every byte. This means the forensic examiner can recover deleted files, analyze unallocated space, examine file system metadata, and perform timeline analysis across the entire history of the media.
+A forensic image captures the entire storage media: every sector, every byte. This means the forensic examiner can recover deleted files, analyze unallocated space, examine file system metadata, and perform timeline analysis across the entire history of the media.
 
 ### Imaging Tools
 
 Several tools are commonly used for forensic imaging.
 
-**FTK Imager** is a free tool from AccessData that creates forensic images of disks, memory, and other media. It supports multiple image formats — E01, DD, and SMART — and computes hash values automatically during imaging.
+**FTK Imager** is a free tool from AccessData that creates forensic images of disks, memory, and other media. It supports multiple image formats: E01, DD, and SMART: and computes hash values automatically during imaging.
 
-**dd** is a Unix utility that creates bit-for-bit copies of storage devices. It is the traditional tool for forensic imaging on Linux systems. The `dd` command is powerful but unforgiving — a typo in the source or destination device can destroy evidence. Use `dc3dd` or `Guymager` as more user-friendly alternatives.
+**dd** is a Unix utility that creates bit-for-bit copies of storage devices. It is the traditional tool for forensic imaging on Linux systems. The `dd` command is powerful but unforgiving: a typo in the source or destination device can destroy evidence. Use `dc3dd` or `Guymager` as more user-friendly alternatives.
 
 **Guymager** is a free, open-source forensic imaging tool with a graphical interface. It supports multiple image formats, computes hashes, and provides detailed logging. It is a good alternative to `dd` for Linux-based forensic workstations.
 
@@ -171,15 +171,15 @@ The evidence must be relevant to the case. This means it must tend to prove or d
 
 ### Authenticity
 
-The evidence must be authentic — it must be what you claim it is. This is where chain of custody becomes critical. You must be able to prove that the evidence you collected at the scene is the same evidence that is being presented in court. Hash verification, chain of custody documentation, and proper evidence handling all support authenticity.
+The evidence must be authentic: it must be what you claim it is. This is where chain of custody becomes critical. You must be able to prove that the evidence you collected at the scene is the same evidence that is being presented in court. Hash verification, chain of custody documentation, and proper evidence handling all support authenticity.
 
 ### Reliability
 
-The evidence must be reliable — it must have been collected and analyzed using sound scientific methods. This means using validated tools, following documented procedures, and maintaining evidence integrity. If your tools or methods are unreliable, your evidence will be challenged.
+The evidence must be reliable: it must have been collected and analyzed using sound scientific methods. This means using validated tools, following documented procedures, and maintaining evidence integrity. If your tools or methods are unreliable, your evidence will be challenged.
 
 ### Completeness
 
-The evidence must be complete — you must not have selectively collected evidence to support a particular narrative. If you collected evidence from one system but ignored evidence from another system that contradicts your theory, your evidence will be challenged.
+The evidence must be complete: you must not have selectively collected evidence to support a particular narrative. If you collected evidence from one system but ignored evidence from another system that contradicts your theory, your evidence will be challenged.
 
 ### Legal Standards
 
@@ -201,7 +201,7 @@ Forensic evidence is frequently challenged in court. Common challenges include:
 
 **Analyst competence:** If the forensic analyst is not properly trained or certified, their analysis will be challenged.
 
-**Evidence contamination:** If the evidence may have been contaminated — by the analyst, by other evidence, or by the environment — its integrity will be challenged.
+**Evidence contamination:** If the evidence may have been contaminated: by the analyst, by other evidence, or by the environment: its integrity will be challenged.
 
 **Selective collection:** If the prosecution only collected evidence that supports their case and ignored evidence that might exonerate the defendant, the collection will be challenged.
 
@@ -243,15 +243,15 @@ Before examining evidence, prepare your forensic workstation. Ensure you have su
 
 ### Examination
 
-The examination phase involves inspecting the evidence using forensic tools. This includes mounting the forensic image, running automated analysis tools, and manually inspecting items of interest. The examination should be systematic — work through the evidence methodically rather than jumping around based on hunches.
+The examination phase involves inspecting the evidence using forensic tools. This includes mounting the forensic image, running automated analysis tools, and manually inspecting items of interest. The examination should be systematic: work through the evidence methodically rather than jumping around based on hunches.
 
 ### Analysis
 
-The analysis phase interprets the findings from the examination. This is where you connect the dots — correlating timestamps across systems, reconstructing attacker actions, and building a timeline. Analysis requires both technical skill and critical thinking.
+The analysis phase interprets the findings from the examination. This is where you connect the dots: correlating timestamps across systems, reconstructing attacker actions, and building a timeline. Analysis requires both technical skill and critical thinking.
 
 ### Reporting
 
-The reporting phase documents your findings in a clear, concise report. The report should include a summary of findings, a detailed methodology, supporting evidence, and your conclusions. The report should be written for a non-technical audience — lawyers, judges, and jurors need to understand your findings.
+The reporting phase documents your findings in a clear, concise report. The report should include a summary of findings, a detailed methodology, supporting evidence, and your conclusions. The report should be written for a non-technical audience: lawyers, judges, and jurors need to understand your findings.
 
 ## Assessment
 
@@ -259,11 +259,11 @@ The reporting phase documents your findings in a clear, concise report. The repo
 
 You are given a scenario involving a compromised workstation. Your task is to collect evidence and document the chain of custody.
 
-**Scenario:** A user reports that their workstation has been behaving strangely — unusual processes, slow performance, and unexpected network connections. The user suspects malware. The workstation is a Windows 11 system with BitLocker encryption.
+**Scenario:** A user reports that their workstation has been behaving strangely: unusual processes, slow performance, and unexpected network connections. The user suspects malware. The workstation is a Windows 11 system with BitLocker encryption.
 
 **Lab Tasks:**
 
-1. Document the evidence collection plan — what evidence to collect and in what order (10 minutes)
+1. Document the evidence collection plan: what evidence to collect and in what order (10 minutes)
 2. Create chain of custody forms for each piece of evidence (15 minutes)
 3. Perform volatile data collection (RAM, processes, network connections) (15 minutes)
 4. Create a forensic image of the workstation's disk (15 minutes)
@@ -323,7 +323,7 @@ Practice using hardware and software write blockers and verify their effectivene
 - **Forensic Imaging:** Bit-for-bit copy of storage media capturing all data including deleted files and unallocated space
 - **Write Blockers:** Hardware or software devices that prevent write operations to evidence media
 - **Legal Admissibility:** Evidence must be relevant, authentic, reliable, and complete to be admissible in court
-- **Examination Methodology:** Structured process — preparation, examination, analysis, reporting
+- **Examination Methodology:** Structured process: preparation, examination, analysis, reporting
 
 ### Forensic Tools Reference
 
@@ -340,11 +340,11 @@ Practice using hardware and software write blockers and verify their effectivene
 
 ### Evidence Collection Priority
 
-1. **Volatile evidence** (RAM, processes, network connections) — collect first, before containment
-2. **Log evidence** (SIEM, firewall, proxy, application logs) — collect before logs rotate
-3. **Disk evidence** (forensic images) — collect after volatile evidence, before system changes
-4. **Network evidence** (packet captures, NetFlow) — collect as soon as possible, before data ages out
-5. **Cloud evidence** (cloud service logs, data exports) — coordinate with provider, may require legal process
+1. **Volatile evidence** (RAM, processes, network connections): collect first, before containment
+2. **Log evidence** (SIEM, firewall, proxy, application logs): collect before logs rotate
+3. **Disk evidence** (forensic images): collect after volatile evidence, before system changes
+4. **Network evidence** (packet captures, NetFlow): collect as soon as possible, before data ages out
+5. **Cloud evidence** (cloud service logs, data exports): coordinate with provider, may require legal process
 
 ### Legal Standards Summary
 

@@ -1,4 +1,4 @@
-# Module 4 — Eradication
+# Module 4: Eradication
 
 Eradication is the phase where you remove the attacker from your environment entirely. Containment stops the bleeding; eradication removes the threat. This means eliminating every persistence mechanism, removing every piece of malware, revoking every compromised credential, and patching every vulnerability that the attacker exploited. Missing even one persistence mechanism means the attacker can regain access. This module covers how to systematically eradicate an attacker from your network.
 
@@ -6,7 +6,7 @@ Eradication is the phase where you remove the attacker from your environment ent
 
 The biggest challenge in eradication is completeness. You need to find and remove every trace of the attacker's presence. This is harder than it sounds because sophisticated attackers establish multiple persistence mechanisms, some of which are designed to survive reboots and system reimaging.
 
-A common scenario: you rebuild a compromised workstation from a clean image, patch the vulnerability the attacker exploited, and rotate all credentials. Two weeks later, the attacker is back. What happened? The attacker had a secondary persistence mechanism that you missed — perhaps a scheduled task that downloads a payload from an external server, or a DLL search order hijack that loads malicious code into a legitimate process, or a compromised browser extension that re-establishes a connection to the attacker's infrastructure.
+A common scenario: you rebuild a compromised workstation from a clean image, patch the vulnerability the attacker exploited, and rotate all credentials. Two weeks later, the attacker is back. What happened? The attacker had a secondary persistence mechanism that you missed: perhaps a scheduled task that downloads a payload from an external server, or a DLL search order hijack that loads malicious code into a legitimate process, or a compromised browser extension that re-establishes a connection to the attacker's infrastructure.
 
 Eradication requires a systematic approach. You need to inventory every system the attacker touched, identify every persistence mechanism on each system, and remove every mechanism completely. There are no shortcuts.
 
@@ -24,7 +24,7 @@ Windows provides numerous persistence mechanisms, and attackers use all of them.
 
 **Registry Run Keys** execute programs when a user logs in. The most common locations are `HKLM\Software\Microsoft\Windows\CurrentVersion\Run`, `HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce`, and their `Wow6432Node` counterparts. Check these keys for entries pointing to unusual executables. Also check `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` for user-specific persistence.
 
-**WMI Event Subscriptions** can execute code in response to system events. Attackers create WMI event subscriptions that trigger when specific conditions are met — like a system boot or a specific time of day. Check for WMI subscriptions using `Get-WMIObject -Namespace root\Subscription -Class __EventFilter` and related classes.
+**WMI Event Subscriptions** can execute code in response to system events. Attackers create WMI event subscriptions that trigger when specific conditions are met: like a system boot or a specific time of day. Check for WMI subscriptions using `Get-WMIObject -Namespace root\Subscription -Class __EventFilter` and related classes.
 
 **Startup Folders** contain shortcuts to programs that execute when a user logs in. There are startup folders for each user and a common startup folder. Check these folders for suspicious shortcuts. The paths are typically `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup` and `C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup`.
 
@@ -64,7 +64,7 @@ Some persistence mechanisms work across platforms.
 
 ## Malware Removal
 
-Malware removal is straightforward in theory — identify the malicious file and delete it. In practice, malware removal is complex because malware often protects itself, hides from detection, and establishes multiple components.
+Malware removal is straightforward in theory: identify the malicious file and delete it. In practice, malware removal is complex because malware often protects itself, hides from detection, and establishes multiple components.
 
 ### Identifying Malware
 
@@ -80,11 +80,11 @@ Threat intelligence can help identify known malware samples. Submit file hashes 
 
 For known malware samples, removal is typically straightforward. Delete the malicious files, remove any persistence mechanisms, and verify removal with a clean antivirus scan.
 
-For unknown or custom malware, removal is more complex. You need to identify all components of the malware — the initial payload, any secondary payloads, persistence mechanisms, and any modifications the malware made to the system. Missing any component means the malware can regenerate.
+For unknown or custom malware, removal is more complex. You need to identify all components of the malware: the initial payload, any secondary payloads, persistence mechanisms, and any modifications the malware made to the system. Missing any component means the malware can regenerate.
 
 The safest approach during eradication is to rebuild compromised systems from known-good media rather than attempting to clean them. This eliminates the risk of missed malware artifacts and ensures that the system starts from a known-clean state. Rebuilding is slower but more reliable.
 
-If rebuilding is not possible — for example, if the system contains critical data that cannot be restored from backups — thorough malware removal requires:
+If rebuilding is not possible: for example, if the system contains critical data that cannot be restored from backups: thorough malware removal requires:
 
 1. Identify all malicious files and processes
 2. Terminate all malicious processes
@@ -98,7 +98,7 @@ If rebuilding is not possible — for example, if the system contains critical d
 
 Sophisticated malware uses anti-forensics techniques to make removal difficult.
 
-**Fileless malware** operates entirely in memory and does not write files to disk. It cannot be removed by deleting files — you need to terminate the process and remove the persistence mechanism that loads it into memory.
+**Fileless malware** operates entirely in memory and does not write files to disk. It cannot be removed by deleting files: you need to terminate the process and remove the persistence mechanism that loads it into memory.
 
 **Polymorphic malware** changes its file signature each time it executes. Signature-based detection may not detect all variants. Use behavioral detection instead of signature-based detection.
 
@@ -112,9 +112,9 @@ Eradication is not complete without patching the vulnerabilities that allowed th
 
 ### Patch Identification
 
-The forensic investigation should identify the vulnerability that the attacker exploited. This information comes from analyzing the initial access vector — the phishing email, the exploited service, the compromised credential. Once you know the vulnerability, identify the patch that addresses it.
+The forensic investigation should identify the vulnerability that the attacker exploited. This information comes from analyzing the initial access vector: the phishing email, the exploited service, the compromised credential. Once you know the vulnerability, identify the patch that addresses it.
 
-Check whether the patch is available for all affected systems. Some vulnerabilities affect specific versions of software, and the patch may not be available for all versions. In these cases, you may need to implement compensating controls — like additional monitoring or access restrictions — until a patch is available.
+Check whether the patch is available for all affected systems. Some vulnerabilities affect specific versions of software, and the patch may not be available for all versions. In these cases, you may need to implement compensating controls: like additional monitoring or access restrictions: until a patch is available.
 
 ### Patch Deployment
 
@@ -152,7 +152,7 @@ The rebuild process:
 
 6. **Verify the rebuild.** Before connecting the rebuilt system to the network, verify that it is clean. Run antivirus scans, check for unauthorized accounts, verify configurations, and review recent changes.
 
-7. **Monitor closely.** After reconnecting the rebuilt system, monitor it closely for signs of reinfection. The attacker may have persistence mechanisms that survive system reimaging — like compromised firmware, external persistence mechanisms, or compromised credentials.
+7. **Monitor closely.** After reconnecting the rebuilt system, monitor it closely for signs of reinfection. The attacker may have persistence mechanisms that survive system reimaging: like compromised firmware, external persistence mechanisms, or compromised credentials.
 
 ### Data Restoration
 
@@ -160,11 +160,11 @@ Restoring data from backups requires careful consideration. If the backup was ma
 
 Verify the integrity of restored data. Check file hashes against known-good values if available. Scan restored files with antivirus tools. Review restored files for embedded malware or malicious macros.
 
-Consider the data restoration timeline. Restoring from a backup that is a week old means you lose a week of data. Communicate the data loss to stakeholders and determine whether additional recovery measures are needed — like transaction logs or database point-in-time recovery.
+Consider the data restoration timeline. Restoring from a backup that is a week old means you lose a week of data. Communicate the data loss to stakeholders and determine whether additional recovery measures are needed: like transaction logs or database point-in-time recovery.
 
 ## Real Scenario: Removing a Backdoor
 
-On a Monday morning, the security operations center detected a suspicious outbound connection from a production server. The connection was to an IP address that matched a known threat actor's infrastructure. The EDR agent on the server had been disabled three days earlier — a critical detection gap.
+On a Monday morning, the security operations center detected a suspicious outbound connection from a production server. The connection was to an IP address that matched a known threat actor's infrastructure. The EDR agent on the server had been disabled three days earlier: a critical detection gap.
 
 The IR team was assembled and began investigating. The server was a Linux system running a customer-facing web application. The forensic analysis of the server revealed that the attacker had gained access through a compromised SSH key. The attacker had added their public key to the authorized_keys file for the root account, giving them persistent SSH access.
 
@@ -196,11 +196,11 @@ Key lessons from this eradication:
 
 **Detection gaps enable persistence.** The attacker disabled the EDR agent three days before detection. Without EDR, the attacker had free rein to install persistence mechanisms. Ensuring continuous EDR coverage is a critical preventive control.
 
-**Multiple persistence mechanisms are common.** The attacker did not rely on a single persistence mechanism — they used three. This redundancy makes eradication more difficult and increases the risk of missing something.
+**Multiple persistence mechanisms are common.** The attacker did not rely on a single persistence mechanism: they used three. This redundancy makes eradication more difficult and increases the risk of missing something.
 
 **Forensic analysis before eradication is critical.** The team imaged the server before making changes, which preserved evidence and allowed thorough analysis of the attacker's activities.
 
-**Verification after eradication is essential.** The team did not just remove the known persistence mechanisms — they verified the entire system against a known-good baseline. This verification caught any additional modifications the attacker had made.
+**Verification after eradication is essential.** The team did not just remove the known persistence mechanisms: they verified the entire system against a known-good baseline. This verification caught any additional modifications the attacker had made.
 
 ## Eradication Verification
 
@@ -226,7 +226,7 @@ Compare the compromised system against a known-good baseline. This comparison sh
 
 After eradication, implement enhanced monitoring to detect any signs of reinfection. This monitoring should be more aggressive than your normal monitoring because you are specifically looking for the attacker attempting to regain access.
 
-Create detection rules for the attacker's known indicators — IP addresses, domains, file hashes, and behavioral patterns. Monitor these indicators closely for any matches. If you see any of these indicators, you may not have completely eradicated the attacker.
+Create detection rules for the attacker's known indicators: IP addresses, domains, file hashes, and behavioral patterns. Monitor these indicators closely for any matches. If you see any of these indicators, you may not have completely eradicated the attacker.
 
 Monitor for new persistence mechanisms. The attacker may attempt to re-establish persistence using different techniques than those you removed. Watch for new scheduled tasks, new services, new authorized keys, and other changes to the system.
 
@@ -291,11 +291,11 @@ You are given a scenario where the attacker exploited a known vulnerability. You
 
 ### Key Concepts
 
-- **Persistence Mechanisms:** Techniques attackers use to maintain access across reboots — scheduled tasks, services, registry keys, crontabs, authorized keys, WMI subscriptions
+- **Persistence Mechanisms:** Techniques attackers use to maintain access across reboots: scheduled tasks, services, registry keys, crontabs, authorized keys, WMI subscriptions
 - **Malware Removal:** Identify all components, terminate processes, remove persistence, delete files, verify removal
-- **Anti-Forensics:** Techniques that make malware detection and removal harder — fileless operation, polymorphism, encryption, rootkits
+- **Anti-Forensics:** Techniques that make malware detection and removal harder: fileless operation, polymorphism, encryption, rootkits
 - **Vulnerability Patching:** Address the root cause of the compromise across all affected systems
-- **System Rebuilding:** Preferred approach — rebuild from clean media rather than cleaning in place
+- **System Rebuilding:** Preferred approach: rebuild from clean media rather than cleaning in place
 - **Eradication Verification:** Confirm completeness through system integrity checks and enhanced monitoring
 
 ### Windows Persistence Checklist

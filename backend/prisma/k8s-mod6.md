@@ -1,4 +1,4 @@
-# Module 6 — Container Image Security
+# Module 6: Container Image Security
 
 A container image is the starting point of every running container. If the image contains vulnerabilities, malware, or misconfigurations, every pod running that image inherits those problems. Container image security means ensuring that only verified, scanned, and signed images run in your cluster. This module covers image scanning with Trivy and Clair, image signing with Cosign, registry security, admission controllers, and the practical implementation of image policy enforcement.
 
@@ -12,7 +12,7 @@ A container image is a tarball of layers. Each layer is a filesystem snapshot. A
 - System libraries
 - OpenSSL, glibc, and other shared libraries
 
-Every library in that image could have known vulnerabilities (CVEs). The base image might have hundreds of packages, each with its own version and vulnerability history. Running an unscanned image in production is like deploying unpatched software — except you don't even know what's in it.
+Every library in that image could have known vulnerabilities (CVEs). The base image might have hundreds of packages, each with its own version and vulnerability history. Running an unscanned image in production is like deploying unpatched software: except you don't even know what's in it.
 
 Common issues:
 - **Known CVEs**: The base image uses an old version of OpenSSL with known vulnerabilities.
@@ -790,7 +790,7 @@ kubectl get pods --all-namespaces -o jsonpath='{.items[*].spec.containers[*].ima
 
 ## Assessment
 
-### Lab 1 — Image Scanning (30 minutes)
+### Lab 1: Image Scanning (30 minutes)
 
 1. Install Trivy and scan 5 different images. Record the vulnerability counts for each.
 2. Identify the image with the most CRITICAL vulnerabilities and find a fix (updated base image).
@@ -800,7 +800,7 @@ kubectl get pods --all-namespaces -o jsonpath='{.items[*].spec.containers[*].ima
 
 **Grading**: 10 points. 2 points per task. Full credit for correct scanning, accurate results, and working pipeline.
 
-### Lab 2 — Image Signing (45 minutes)
+### Lab 2: Image Signing (45 minutes)
 
 1. Generate a Cosign key pair.
 2. Build, push, and sign an image.
@@ -810,7 +810,7 @@ kubectl get pods --all-namespaces -o jsonpath='{.items[*].spec.containers[*].ima
 
 **Grading**: 15 points. 3 points per task. Full credit for correct signing, verification, and keyless setup.
 
-### Lab 3 — Image Policy Enforcement (45 minutes)
+### Lab 3: Image Policy Enforcement (45 minutes)
 
 1. Install Gatekeeper and deploy the allowed registries constraint.
 2. Deploy the no-latest-tag constraint.

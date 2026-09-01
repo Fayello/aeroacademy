@@ -1,8 +1,8 @@
-# Module 1 — Python for Security: Getting Started
+# Module 1: Python for Security: Getting Started
 
 You already know Python. You've written scripts, maybe automated some tasks, maybe even built a web app or two. Now you want to use it for security work. This module gets you from "I know Python" to "I can build security tools with Python" without wasting your time on basics you already understand.
 
-The security world runs on Python. Nmap has Python bindings. Scapy is Python. Metasploit modules are Ruby, but half the ecosystem around them is Python. Vulnerability scanners, packet analyzers, exploit frameworks, automation scripts — Python is the lingua franca of offensive and defensive security tooling. Not because it's the fastest language, but because it's the fastest language to prototype in, and in security you almost always need to prototype fast.
+The security world runs on Python. Nmap has Python bindings. Scapy is Python. Metasploit modules are Ruby, but half the ecosystem around them is Python. Vulnerability scanners, packet analyzers, exploit frameworks, automation scripts: Python is the lingua franca of offensive and defensive security tooling. Not because it's the fastest language, but because it's the fastest language to prototype in, and in security you almost always need to prototype fast.
 
 ## Setting Up Your Environment
 
@@ -27,7 +27,7 @@ pip install --upgrade pip
 
 Once activated, your shell prompt changes. Every `pip install` now goes into this isolated environment. Your system Python stays clean. If you mess up the venv, delete it and create a new one. No harm done.
 
-For managing multiple Python versions, pyenv is your friend. Security tools sometimes need specific Python versions — Python 3.8 for legacy tools, Python 3.11+ for modern features. pyenv lets you install multiple versions side by side without touching your system Python.
+For managing multiple Python versions, pyenv is your friend. Security tools sometimes need specific Python versions: Python 3.8 for legacy tools, Python 3.11+ for modern features. pyenv lets you install multiple versions side by side without touching your system Python.
 
 ```bash
 # Install pyenv (Linux)
@@ -86,9 +86,9 @@ poetry add requests scapy
 
 You don't need to memorize every security library. You need maybe fifteen libraries that cover 90% of security work. Here are the ones that matter.
 
-### requests — HTTP Made Bearable
+### requests: HTTP Made Bearable
 
-The `requests` library is how you talk to web servers. Every web vulnerability scanner, every API testing tool, every web automation script uses it. It handles sessions, cookies, headers, authentication, redirects — everything the `urllib` module makes you fight for.
+The `requests` library is how you talk to web servers. Every web vulnerability scanner, every API testing tool, every web automation script uses it. It handles sessions, cookies, headers, authentication, redirects: everything the `urllib` module makes you fight for.
 
 ```python
 import requests
@@ -103,7 +103,7 @@ print(response.text)
 response = requests.post(
     "https://example.com/login",
     data={"username": "admin", "password": "password123"},
-    allow_redirects=False  # Don't follow redirects — useful for testing
+    allow_redirects=False  # Don't follow redirects: useful for testing
 )
 
 # Custom headers
@@ -113,10 +113,10 @@ headers = {
 }
 response = requests.get("https://example.com", headers=headers)
 
-# Handle SSL verification (for testing only — never disable in production)
+# Handle SSL verification (for testing only: never disable in production)
 response = requests.get("https://self-signed.example.com", verify=False)
 
-# Timeouts — always set them
+# Timeouts: always set them
 response = requests.get("https://example.com", timeout=5)
 ```
 
@@ -127,9 +127,9 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 ```
 
-### scapy — Packet Crafting and Analysis
+### scapy: Packet Crafting and Analysis
 
-Scapy is the Swiss Army knife of network security. It can craft packets, send them, capture responses, and dissect what comes back. It operates at every layer of the network stack — Ethernet, IP, TCP, UDP, HTTP, DNS, whatever you need.
+Scapy is the Swiss Army knife of network security. It can craft packets, send them, capture responses, and dissect what comes back. It operates at every layer of the network stack: Ethernet, IP, TCP, UDP, HTTP, DNS, whatever you need.
 
 ```python
 from scapy.all import *
@@ -163,9 +163,9 @@ packet = (
 
 The learning curve is real. Scapy's documentation is dense and examples are scattered. But once it clicks, you'll wonder how you ever worked without it.
 
-### socket — Raw Network Programming
+### socket: Raw Network Programming
 
-The `socket` module is built into Python. No installation needed. It gives you low-level access to network connections — TCP, UDP, raw sockets. When you need to talk to a server at a protocol level that `requests` can't handle, you reach for sockets.
+The `socket` module is built into Python. No installation needed. It gives you low-level access to network connections: TCP, UDP, raw sockets. When you need to talk to a server at a protocol level that `requests` can't handle, you reach for sockets.
 
 ```python
 import socket
@@ -222,7 +222,7 @@ For package management, pin your dependencies. A `requirements.txt` without vers
 
 ## Your First Security Tool: A Port Scanner
 
-Theory is nice. Let's build something. A port scanner is the canonical first security tool because it teaches you sockets, threading, error handling, and output formatting — all in one project.
+Theory is nice. Let's build something. A port scanner is the canonical first security tool because it teaches you sockets, threading, error handling, and output formatting: all in one project.
 
 ### The Naive Approach
 
@@ -285,7 +285,7 @@ print(f"\nOpen ports: {open_ports}")
 
 ### Adding Service Detection
 
-Knowing a port is open is only half the battle. What's running on it? Service detection grabs banners — the text a service sends when you connect:
+Knowing a port is open is only half the battle. What's running on it? Service detection grabs banners: the text a service sends when you connect:
 
 ```python
 import socket
@@ -504,7 +504,7 @@ else:
         do_analyze()
 ```
 
-For cross-version compatibility, avoid f-strings before 3.6, walrus operator before 3.8, and match/case before 3.10. When writing tools for distribution, target 3.8+ — it's the oldest version still receiving security updates.
+For cross-version compatibility, avoid f-strings before 3.6, walrus operator before 3.8, and match/case before 3.10. When writing tools for distribution, target 3.8+: it's the oldest version still receiving security updates.
 
 ## Debugging Security Tools
 
@@ -605,9 +605,9 @@ The pattern repeats: import a library, understand its API, prototype a small scr
 
 Building security tools requires discipline that general software development doesn't demand. Your tools run in hostile environments. They interact with potentially malicious systems. They handle sensitive data like credentials and network topology. These conditions demand specific practices.
 
-First, never hardcode credentials. Security tools often need authentication — API keys, passwords, tokens. Hardcoding them in source code means they end up in version control, where anyone with repository access can see them. Use environment variables or configuration files outside the repository. The `python-dotenv` library loads variables from a `.env` file that you keep out of version control with `.gitignore`.
+First, never hardcode credentials. Security tools often need authentication: API keys, passwords, tokens. Hardcoding them in source code means they end up in version control, where anyone with repository access can see them. Use environment variables or configuration files outside the repository. The `python-dotenv` library loads variables from a `.env` file that you keep out of version control with `.gitignore`.
 
-Second, always set timeouts. A security tool without timeouts is a denial-of-service tool against your own system. Every network operation — socket connection, HTTP request, DNS lookup — needs a timeout. The timeout should be configurable because different environments have different latency characteristics. A tool that works fine on a local network might hang indefinitely when scanning a remote network over a satellite link.
+Second, always set timeouts. A security tool without timeouts is a denial-of-service tool against your own system. Every network operation: socket connection, HTTP request, DNS lookup: needs a timeout. The timeout should be configurable because different environments have different latency characteristics. A tool that works fine on a local network might hang indefinitely when scanning a remote network over a satellite link.
 
 Third, handle interrupts gracefully. Security tools run for minutes or hours. Users will hit Ctrl+C. If your tool doesn't handle the interrupt signal, it leaves orphaned processes, partially written files, and inconsistent state. Catch `KeyboardInterrupt`, clean up resources, and exit cleanly. Print a summary of what was completed before exiting.
 
@@ -654,7 +654,7 @@ Build a port scanner with the following requirements. Time limit: 90 minutes.
 
 ## Evidence
 
-Port scanning is the reconnaissance phase of any security engagement. You map the attack surface before you attack it. The tools you build here will be extended throughout this course — the port scanner becomes a network mapper, the banner grabber becomes a service fingerprinter, and the threading model carries over to every concurrent tool you build.
+Port scanning is the reconnaissance phase of any security engagement. You map the attack surface before you attack it. The tools you build here will be extended throughout this course: the port scanner becomes a network mapper, the banner grabber becomes a service fingerprinter, and the threading model carries over to every concurrent tool you build.
 
 Keep your `scanner.py` file. You'll iterate on it in Module 2 and Module 3.
 

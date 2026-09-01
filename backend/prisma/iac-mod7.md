@@ -1,4 +1,4 @@
-# Module 7 — CloudFormation
+# Module 7: CloudFormation
 
 If you are working entirely within AWS, CloudFormation is the native IaC tool. It is included with your AWS account at no additional cost, integrates with every AWS service, and uses a JSON or YAML template language that AWS maintains. You do not need to install anything. The AWS CLI, SDKs, and console all support CloudFormation directly.
 
@@ -96,37 +96,37 @@ Outputs:
 **Intrinsic functions** are CloudFormation's built-in tools for dynamic templates:
 
 ```hcl
-# Ref — reference a parameter or get a resource's physical ID
+# Ref: reference a parameter or get a resource's physical ID
 !Ref VpcCidr          # Parameter value
 !Ref VPC               # Resource's physical ID (vpc-0123456789abcdef)
 
-# Sub — string substitution with variables
+# Sub: string substitution with variables
 !Sub "${EnvironmentName}-vpc"
 !Sub "arn:aws:s3:::${BucketName}/*"
 
-# GetAtt — get a specific attribute from a resource
+# GetAtt: get a specific attribute from a resource
 !GetAtt VPC.CidrBlock
 !GetAtt LoadBalancer.DNSName
 
-# Select — pick an item from a list by index
+# Select: pick an item from a list by index
 !Select [0, !GetAZs ""]
 
-# Cidr — generate a list of CIDR blocks from a base CIDR
+# Cidr: generate a list of CIDR blocks from a base CIDR
 !Cidr [!Ref VpcCidr, 6, 8]
 
-# If — conditional value selection
+# If: conditional value selection
 !If [IsProduction, "m5.large", "t3.micro"]
 
-# Join — concatenate strings with a delimiter
+# Join: concatenate strings with a delimiter
 !Join ["-", [!Ref EnvironmentName, "web", "sg"]]
 
-# FindInMap — look up a value from the Mappings section
+# FindInMap: look up a value from the Mappings section
 !FindInMap [EnvironmentMap, !Ref EnvironmentName, InstanceType]
 
-# Split — split a string into a list
+# Split: split a string into a list
 !Split [",", "us-east-1a,us-east-1b,us-east-1c"]
 
-# GetAZs — get a list of availability zones for a region
+# GetAZs: get a list of availability zones for a region
 !GetAZs ""
 ```
 

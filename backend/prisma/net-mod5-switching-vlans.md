@@ -1,6 +1,6 @@
-# Module 5 — Switching and VLANs
+# Module 5: Switching and VLANs
 
-Switches operate at Layer 2 of the OSI model, forwarding frames based on MAC addresses rather than IP addresses. In a flat network with a single broadcast domain, every device sees every broadcast frame —ARP requests, DHCP discoveries, NetBIOS announcements. This creates security risks, performance degradation, and management headaches. VLANs solve this by logically segmenting a single physical switch into multiple logical networks, each with its own broadcast domain.
+Switches operate at Layer 2 of the OSI model, forwarding frames based on MAC addresses rather than IP addresses. In a flat network with a single broadcast domain, every device sees every broadcast frame ARP requests, DHCP discoveries, NetBIOS announcements. This creates security risks, performance degradation, and management headaches. VLANs solve this by logically segmenting a single physical switch into multiple logical networks, each with its own broadcast domain.
 
 This module covers Layer 2 switching mechanics, VLAN configuration and trunking, inter-VLAN routing, Spanning Tree Protocol, link aggregation, and port security. By the end, you will be able to segment a flat network into properly isolated VLANs with inter-VLAN routing.
 
@@ -29,7 +29,7 @@ When a frame arrives with destination MAC `00:1a:2b:3c:4d:5e`, the switch finds 
 - **Unknown unicast**: Flooded to all ports in the VLAN (same as broadcast behavior, but only for the specific destination MAC).
 - **Known unicast**: Forwarded to the specific port only.
 
-The difference between a hub and a switch is fundamental. A hub repeats every frame out every port. A switch forwards frames intelligently based on the CAM table. This is why switches are called "multiport bridges" — they perform the same function as a bridge but with many ports.
+The difference between a hub and a switch is fundamental. A hub repeats every frame out every port. A switch forwards frames intelligently based on the CAM table. This is why switches are called "multiport bridges": they perform the same function as a bridge but with many ports.
 
 ### CAM Table Attacks
 
@@ -101,10 +101,10 @@ The 802.1Q standard inserts a 4-byte tag into the Ethernet frame header:
 ```
 
 The 802.1Q tag contains:
-- **TPID (Tag Protocol Identifier)**: 0x8100 — identifies this as an 802.1Q tagged frame.
-- **PCP (Priority Code Point)**: 3 bits — QoS priority (0-7).
-- **DEI (Drop Eligible Indicator)**: 1 bit — marks frames eligible for dropping under congestion.
-- **VID (VLAN Identifier)**: 12 bits — the VLAN ID (0-4095). VLAN 0 and 4095 are reserved.
+- **TPID (Tag Protocol Identifier)**: 0x8100: identifies this as an 802.1Q tagged frame.
+- **PCP (Priority Code Point)**: 3 bits: QoS priority (0-7).
+- **DEI (Drop Eligible Indicator)**: 1 bit: marks frames eligible for dropping under congestion.
+- **VID (VLAN Identifier)**: 12 bits: the VLAN ID (0-4095). VLAN 0 and 4095 are reserved.
 
 The maximum number of usable VLANs is 4094 (1-4094). The standard MTU of 1500 bytes includes the 4-byte 802.1Q tag, so the maximum payload on a trunk is slightly reduced. This is why jumbo frames on trunks need to account for the tag overhead.
 
@@ -178,7 +178,7 @@ interface Vlan20
  no shutdown
 ```
 
-The `ip routing` command enables Layer 3 routing on the switch. Each VLAN interface (SVI — Switch Virtual Interface) acts as the default gateway for that VLAN. Inter-VLAN routing happens at wire speed within the switch fabric — no external router needed.
+The `ip routing` command enables Layer 3 routing on the switch. Each VLAN interface (SVI: Switch Virtual Interface) acts as the default gateway for that VLAN. Inter-VLAN routing happens at wire speed within the switch fabric: no external router needed.
 
 ### Layer 3 Switch with OSPF
 
@@ -195,7 +195,7 @@ This allows the switch to participate in the broader routing architecture and ma
 
 ## Spanning Tree Protocol (STP)
 
-Without STP, a loop in a Layer 2 network causes a broadcast storm — broadcast frames are forwarded endlessly, consuming all bandwidth and crashing switches. STP prevents loops by logically blocking redundant links.
+Without STP, a loop in a Layer 2 network causes a broadcast storm: broadcast frames are forwarded endlessly, consuming all bandwidth and crashing switches. STP prevents loops by logically blocking redundant links.
 
 ### How STP Works
 
@@ -203,7 +203,7 @@ Without STP, a loop in a Layer 2 network causes a broadcast storm — broadcast 
 2. One switch is elected as the Root Bridge (lowest bridge ID = priority + MAC address).
 3. Each non-root switch selects a Root Port (the port with the shortest path to the root).
 4. On each network segment, one switch is elected as the Designated Forwarder (the switch that forwards traffic for that segment).
-5. All other ports are placed in Blocking state — they do not forward traffic but continue listening for BPDUs.
+5. All other ports are placed in Blocking state: they do not forward traffic but continue listening for BPDUs.
 
 If a link fails, STP reconverges by unblocking the appropriate ports. Standard STP (IEEE 802.1D) takes 30-50 seconds to reconverge, which is unacceptable for many applications.
 
@@ -226,7 +226,7 @@ interface GigabitEthernet0/1
  spanning-tree bpduguard enable
 ```
 
-**PortFast** enables edge port behavior — the port goes straight to forwarding without listening/learning. **BPDU Guard** shuts down the port if it receives a BPDU (indicating a switch was connected where a host should be, possibly an attack).
+**PortFast** enables edge port behavior: the port goes straight to forwarding without listening/learning. **BPDU Guard** shuts down the port if it receives a BPDU (indicating a switch was connected where a host should be, possibly an attack).
 
 ### STP Best Practices
 
@@ -335,7 +335,7 @@ Trunk ports carry traffic for multiple VLANs between switches. Proper trunk conf
 
 ### 802.1Q Trunk Negotiation
 
-DTP (Dynamic Trunking Protocol) automatically negotiates trunk formation between Cisco switches. However, DTP is a security risk — an attacker can use it to negotiate a trunk and access all VLANs.
+DTP (Dynamic Trunking Protocol) automatically negotiates trunk formation between Cisco switches. However, DTP is a security risk: an attacker can use it to negotiate a trunk and access all VLANs.
 
 ```bash
 # Disable DTP on access ports (security best practice)
@@ -591,7 +591,7 @@ tcpdump -i eth0 -nn -e 'vlan and vlan'
 
 ## Private VLANs (PVLAN)
 
-Private VLANs provide additional isolation within a single VLAN. Even devices in the same subnet cannot communicate directly — all traffic must pass through a Layer 3 gateway.
+Private VLANs provide additional isolation within a single VLAN. Even devices in the same subnet cannot communicate directly: all traffic must pass through a Layer 3 gateway.
 
 ### PVLAN Types
 

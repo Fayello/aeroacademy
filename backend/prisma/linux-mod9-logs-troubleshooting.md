@@ -1,10 +1,10 @@
-# Module 9 — Log Management and Troubleshooting
+# Module 9: Log Management and Troubleshooting
 
 ## Why This Matters
 
-Logs are the pulse of a Linux server. Every service, every kernel event, every authentication attempt writes to a log file. When something breaks — a service crashes, a server becomes unreachable, an application throws errors — the logs are where you start. But logs are only useful if you can find the right information in them, and if they are being collected and retained properly.
+Logs are the pulse of a Linux server. Every service, every kernel event, every authentication attempt writes to a log file. When something breaks: a service crashes, a server becomes unreachable, an application throws errors: the logs are where you start. But logs are only useful if you can find the right information in them, and if they are being collected and retained properly.
 
-This module covers the logging infrastructure on Linux: journald, rsyslog, logrotate, and the common log files you will encounter. More importantly, it covers the methodology of troubleshooting — how to go from "the server is down" to identifying the root cause using the evidence in the logs.
+This module covers the logging infrastructure on Linux: journald, rsyslog, logrotate, and the common log files you will encounter. More importantly, it covers the methodology of troubleshooting: how to go from "the server is down" to identifying the root cause using the evidence in the logs.
 
 ## journald: The Systemd Journal
 
@@ -96,8 +96,8 @@ This is extremely useful after a crash or reboot. You can see what happened in t
 journalctl --list-boots
 ```
 ```
--1 4a4e5f6b7c8d9e0f Mon 2024-01-15 01:30:00 UTC—Mon 2024-01-15 05:53:00 UTC
- 0 5b6c7d8e9f0a1b2c Mon 2024-01-15 05:53:01 UTC—Mon 2024-01-15 10:30:00 UTC
+-1 4a4e5f6b7c8d9e0f Mon 2024-01-15 01:30:00 UTCMon 2024-01-15 05:53:00 UTC
+ 0 5b6c7d8e9f0a1b2c Mon 2024-01-15 05:53:01 UTCMon 2024-01-15 10:30:00 UTC
 ```
 
 Boot `-1` ran from 1:30 AM to 5:53 AM. Boot `0` is the current session starting at 5:53 AM. If the server crashed at 5:53 AM, look at boot `-1` logs around that time.
@@ -196,13 +196,13 @@ cron.*                          /var/log/cron.log
 The syntax is: `facility.priority action`
 
 Facilities:
-- `auth` — authentication (login, sudo)
-- `cron` — cron daemon
-- `daemon` — generic daemon messages
-- `kern` — kernel messages
-- `mail` — mail server
-- `user` — user-level messages
-- `local0` through `local7` — custom facilities
+- `auth`: authentication (login, sudo)
+- `cron`: cron daemon
+- `daemon`: generic daemon messages
+- `kern`: kernel messages
+- `mail`: mail server
+- `user`: user-level messages
+- `local0` through `local7`: custom facilities
 
 Priorities: `emerg`, `alert`, `crit`, `err`, `warning`, `notice`, `info`, `debug`
 
@@ -345,7 +345,7 @@ Jan 15 10:35:22 web01 app[6789]: [WARN] Memory usage at 85%
 
 ### /var/log/auth.log (Debian) or /var/log/secure (RHEL)
 
-Authentication events — SSH logins, sudo usage, PAM failures. This is the first file to check when investigating unauthorized access.
+Authentication events: SSH logins, sudo usage, PAM failures. This is the first file to check when investigating unauthorized access.
 
 ```bash
 grep "Failed password" /var/log/auth.log | tail -20
@@ -367,7 +367,7 @@ Jan 15 11:00:15 web01 sudo: admin : TTY=pts/0 ; PWD=/home/admin ; USER=root ; CO
 
 ### /var/log/kern.log
 
-Kernel messages — hardware errors, driver issues, OOM killer activity. This is the first file to check for out-of-memory crashes.
+Kernel messages: hardware errors, driver issues, OOM killer activity. This is the first file to check for out-of-memory crashes.
 
 ```bash
 grep -i "oom\|kill\|error" /var/log/kern.log | tail -20
@@ -379,7 +379,7 @@ Jan 15 10:45:22 web01 kernel: [45678.456] Killed process 3456 (python3) total-vm
 
 ### dmesg
 
-The kernel ring buffer — boot messages, hardware detection, and recent kernel events. Useful for diagnosing hardware issues and driver problems.
+The kernel ring buffer: boot messages, hardware detection, and recent kernel events. Useful for diagnosing hardware issues and driver problems.
 
 ```bash
 dmesg | tail -50                           # Recent kernel messages
@@ -411,7 +411,7 @@ postgresql-15-main.csv
 
 ## Troubleshooting Methodology
 
-When a server or service is not working, follow this structured methodology. Do not randomly poke at things — follow the process.
+When a server or service is not working, follow this structured methodology. Do not randomly poke at things: follow the process.
 
 ### Step 1: Define the Problem
 
@@ -431,9 +431,9 @@ Check the basics first. These commands give you a quick snapshot of system healt
 ```bash
 # System-level
 uptime                                    # How long has the server been up? Load average?
-free -h                                   # Memory usage — is it exhausted?
-df -h                                     # Disk usage — is a partition full?
-top -bn1 | head -20                       # CPU and process overview — what is consuming resources?
+free -h                                   # Memory usage: is it exhausted?
+df -h                                     # Disk usage: is a partition full?
+top -bn1 | head -20                       # CPU and process overview: what is consuming resources?
 
 # Service-level
 systemctl status myapp                    # Is the service running?
@@ -489,16 +489,16 @@ free -h                                   # Check available memory
 ### Step 5: Fix the Problem
 
 ```bash
-# Example: Disk full — clean up old logs
+# Example: Disk full: clean up old logs
 sudo journalctl --vacuum-size=200M
 sudo find /var/log -name "*.gz" -mtime +30 -delete
 sudo logrotate -f /etc/logrotate.d/myapp
 
-# Example: Service crashed — restart it
+# Example: Service crashed: restart it
 sudo systemctl restart myapp
 sudo systemctl status myapp
 
-# Example: Firewall blocking — add rule
+# Example: Firewall blocking: add rule
 sudo iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
 sudo iptables-save > /etc/iptables/rules.v4
 ```
@@ -544,8 +544,8 @@ The server rebooted 3 hours and 22 minutes ago. It crashed around 5:53 AM (based
 ssh admin@web-prod-01 "journalctl --list-boots"
 ```
 ```
--1 4a4e5f6b7c8d9e0f Mon 2024-01-15 01:30:00 UTC—Mon 2024-01-15 05:53:00 UTC
- 0 5b6c7d8e9f0a1b2c Mon 2024-01-15 05:53:01 UTC—Mon 2024-01-15 09:15:00 UTC
+-1 4a4e5f6b7c8d9e0f Mon 2024-01-15 01:30:00 UTCMon 2024-01-15 05:53:00 UTC
+ 0 5b6c7d8e9f0a1b2c Mon 2024-01-15 05:53:01 UTCMon 2024-01-15 09:15:00 UTC
 ```
 
 Boot `-1` is the previous session. It ran from 1:30 AM to 5:53 AM.

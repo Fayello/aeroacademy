@@ -1,6 +1,6 @@
-# Module 3 — MySQL Administration
+# Module 3: MySQL Administration
 
-MySQL is the most widely deployed open-source relational database in the world. It powers everything from small WordPress sites to large-scale social networks. As a DBA, you need to master installation, configuration, user management, replication, and backup strategies. This module also covers a practical migration scenario — upgrading from MySQL 5.7 to 8.0 — because migrations are where most production incidents happen. The details matter, and the differences between versions can break your application in subtle ways.
+MySQL is the most widely deployed open-source relational database in the world. It powers everything from small WordPress sites to large-scale social networks. As a DBA, you need to master installation, configuration, user management, replication, and backup strategies. This module also covers a practical migration scenario: upgrading from MySQL 5.7 to 8.0: because migrations are where most production incidents happen. The details matter, and the differences between versions can break your application in subtle ways.
 
 ## Installation and Configuration
 
@@ -36,13 +36,13 @@ docker run -d \
 
 After installation, the critical step is `mysql_secure_installation`. This script removes the test database, deletes anonymous users, and sets a root password. Do not skip this on any system that will be accessible from the network.
 
-The main configuration file is `/etc/mysql/mysql.conf.d/mysqld.cnf` (Debian) or `/etc/my.cnf` (RHEL). Understanding the file hierarchy matters: MySQL reads multiple configuration files in order, and later files override earlier ones. On Debian, the order is `/etc/mysql/my.cnf` → `/etc/mysql/mysql.conf.d/mysqld.cnf` → `/etc/mysql/conf.d/*.cnf`. This means settings in `/etc/mysql/conf.d/` can override the main config without modifying the main file — useful for drop-in configurations.
+The main configuration file is `/etc/mysql/mysql.conf.d/mysqld.cnf` (Debian) or `/etc/my.cnf` (RHEL). Understanding the file hierarchy matters: MySQL reads multiple configuration files in order, and later files override earlier ones. On Debian, the order is `/etc/mysql/my.cnf` → `/etc/mysql/mysql.conf.d/mysqld.cnf` → `/etc/mysql/conf.d/*.cnf`. This means settings in `/etc/mysql/conf.d/` can override the main config without modifying the main file: useful for drop-in configurations.
 
 ## my.cnf Tuning
 
 MySQL 8.0 changed many default values from 5.7. If you are migrating, verify these parameters explicitly.
 
-**Buffer Pool — The Most Important MySQL Setting:**
+**Buffer Pool: The Most Important MySQL Setting:**
 
 ```ini
 # innodb_buffer_pool_size: caches data and indexes
@@ -63,7 +63,7 @@ innodb_buffer_pool_load_at_startup = ON
 innodb_buffer_pool_dump_pct = 40
 ```
 
-The buffer pool is InnoDB's primary memory structure. It caches both data pages and index pages. When you run a query, InnoDB first checks the buffer pool. If the page is there (cache hit), it reads from memory — nanoseconds. If not (cache miss), it reads from disk — milliseconds. The difference is six orders of magnitude. A buffer pool that is too small forces constant disk reads, destroying performance.
+The buffer pool is InnoDB's primary memory structure. It caches both data pages and index pages. When you run a query, InnoDB first checks the buffer pool. If the page is there (cache hit), it reads from memory: nanoseconds. If not (cache miss), it reads from disk: milliseconds. The difference is six orders of magnitude. A buffer pool that is too small forces constant disk reads, destroying performance.
 
 Monitor buffer pool hit rate:
 
@@ -146,7 +146,7 @@ log_queries_not_using_indexes = ON
 min_examined_row_limit = 1000
 ```
 
-The slow query log is your primary diagnostic tool. Setting `long_query_time = 1` captures any query taking more than 1 second. Setting `log_queries_not_using_indexes = ON` also captures fast queries that do a full table scan — these are often the queries that become slow as data grows. Analyze the slow query log with `pt-query-digest` from Percona Toolkit:
+The slow query log is your primary diagnostic tool. Setting `long_query_time = 1` captures any query taking more than 1 second. Setting `log_queries_not_using_indexes = ON` also captures fast queries that do a full table scan: these are often the queries that become slow as data grows. Analyze the slow query log with `pt-query-digest` from Percona Toolkit:
 
 ```bash
 pt-query-digest /var/log/mysql/slow.log > /tmp/slow_report.txt
@@ -313,7 +313,7 @@ The critical fields in `SHOW REPLICA STATUS` are:
 
 **GTID Replication:**
 
-MySQL 8.0 uses GTIDs (Global Transaction Identifiers) by default. Each transaction gets a unique ID across all servers in the replication topology. GTIDs simplify failover — when a replica is promoted to primary, other replicas automatically know where to start replicating from.
+MySQL 8.0 uses GTIDs (Global Transaction Identifiers) by default. Each transaction gets a unique ID across all servers in the replication topology. GTIDs simplify failover: when a replica is promoted to primary, other replicas automatically know where to start replicating from.
 
 ```
 -- GTID format: source_id:transaction_id
@@ -356,7 +356,7 @@ Group Replication is best for small clusters (3-5 nodes) where you need automati
 
 MySQL backup strategies must account for the storage engine (InnoDB vs MyISAM), the backup window, the recovery point objective, and the recovery time objective.
 
-**mysqldump — Logical Backups:**
+**mysqldump: Logical Backups:**
 
 ```bash
 # Full backup with GTID information
@@ -378,9 +378,9 @@ mysqldump -h localhost -u backupuser -p \
   | gzip > /backups/myapp_$(date +%Y%m%d).sql.gz
 ```
 
-The `--single-transaction` flag is critical for InnoDB. It starts a consistent transaction backup without locking tables. However, it does not work correctly for MyISAM tables — if you have MyISAM tables mixed with InnoDB, those tables will not be consistent. The `--master-data=2` flag includes a comment with the binary log position at the time of the backup, which is essential for point-in-time recovery.
+The `--single-transaction` flag is critical for InnoDB. It starts a consistent transaction backup without locking tables. However, it does not work correctly for MyISAM tables: if you have MyISAM tables mixed with InnoDB, those tables will not be consistent. The `--master-data=2` flag includes a comment with the binary log position at the time of the backup, which is essential for point-in-time recovery.
 
-**Percona XtraBackup — Physical Backups:**
+**Percona XtraBackup: Physical Backups:**
 
 ```bash
 # Full backup (non-blocking for InnoDB)
@@ -406,11 +406,11 @@ XtraBackup is significantly faster than mysqldup for large databases because it 
 # Full backup (Monday)
 xtrabackup --backup --target-dir=/backups/full
 
-# Incremental backup (Tuesday — only pages changed since Monday)
+# Incremental backup (Tuesday: only pages changed since Monday)
 xtrabackup --backup --target-dir=/backups/incr1 \
   --incremental-basedir=/backups/full
 
-# Incremental backup (Wednesday — only pages changed since Tuesday)
+# Incremental backup (Wednesday: only pages changed since Tuesday)
 xtrabackup --backup --target-dir=/backups/incr2 \
   --incremental-basedir=/backups/incr1
 ```
@@ -503,9 +503,9 @@ LIMIT 10;
 ```
 
 Common wait events and their fixes:
-- `wait/io/file/innodb/innodb_data_file` — Disk I/O bottleneck. Increase buffer pool or add SSDs.
-- `wait/synch/mutex/innodb/OS_AIO_mutex` — Too many concurrent I/O operations. Reduce innodb_thread_concurrency.
-- `wait/lock/metadata/sql/mutex` — High concurrency contention. Optimize query patterns or increase thread cache.
+- `wait/io/file/innodb/innodb_data_file`: Disk I/O bottleneck. Increase buffer pool or add SSDs.
+- `wait/synch/mutex/innodb/OS_AIO_mutex`: Too many concurrent I/O operations. Reduce innodb_thread_concurrency.
+- `wait/lock/metadata/sql/mutex`: High concurrency contention. Optimize query patterns or increase thread cache.
 
 **SHOW ENGINE INNODB STATUS:**
 

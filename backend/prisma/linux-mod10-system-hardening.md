@@ -1,8 +1,8 @@
-# Module 10 — System Hardening
+# Module 10: System Hardening
 
 ## Why This Matters
 
-A default Linux installation is designed to be functional, not secure. It ships with services you do not need, open ports you should not expose, permissive file permissions, and kernel settings optimized for compatibility rather than security. System hardening is the process of reducing the attack surface — eliminating unnecessary components, tightening permissions, and adding layers of defense.
+A default Linux installation is designed to be functional, not secure. It ships with services you do not need, open ports you should not expose, permissive file permissions, and kernel settings optimized for compatibility rather than security. System hardening is the process of reducing the attack surface: eliminating unnecessary components, tightening permissions, and adding layers of defense.
 
 This module covers the practical steps to harden a Linux server for production use. We will work through services, kernel parameters, file permissions, audit logging, and compliance frameworks. Every change is concrete and reversible.
 
@@ -89,7 +89,7 @@ grep "^listen_addresses" /etc/postgresql/15/main/postgresql.conf
 listen_addresses = 'localhost'
 ```
 
-If it were set to `'*'`, it would be accessible from the internet — a significant security risk.
+If it were set to `'*'`, it would be accessible from the internet: a significant security risk.
 
 ## Kernel Hardening with sysctl
 
@@ -315,13 +315,13 @@ tmpfs /var/tmp tmpfs defaults,noexec,nosuid,nodev 0 0
 These mount options prevent execution of programs from temporary directories, which is a common attack vector. An attacker who uploads a script to `/tmp` cannot execute it.
 
 The options:
-- `noexec` — prevent execution of any binary
-- `nosuid` — ignore SUID/SGID bits
-- `nodev` — ignore device files
+- `noexec`: prevent execution of any binary
+- `nosuid`: ignore SUID/SGID bits
+- `nodev`: ignore device files
 
 ## Audit: auditd
 
-The audit daemon tracks security-relevant events — who accessed what files, who ran what commands, and when. It is essential for security monitoring and compliance.
+The audit daemon tracks security-relevant events: who accessed what files, who ran what commands, and when. It is essential for security monitoring and compliance.
 
 ### Installation
 
@@ -378,12 +378,12 @@ sudo systemctl enable --now auditd
 ```
 
 The flags:
-- `-w` — watch a file for changes
-- `-p` — permissions to watch (r=read, w=write, x=execute, a=attribute change)
-- `-k` — key tag for searching logs
-- `-a` — add a rule to an audit filter
-- `-F` — filter field (arch, euid, exit code)
-- `-S` — system call to monitor
+- `-w`: watch a file for changes
+- `-p`: permissions to watch (r=read, w=write, x=execute, a=attribute change)
+- `-k`: key tag for searching logs
+- `-a`: add a rule to an audit filter
+- `-F`: filter field (arch, euid, exit code)
+- `-S`: system call to monitor
 
 Load the rules:
 
@@ -431,12 +431,12 @@ The Center for Internet Security (CIS) publishes hardening benchmarks for variou
 
 The CIS Ubuntu Linux 22.04 LTS Benchmark covers:
 
-1. **Initial Setup** — Filesystem configuration, software updates, filesystem integrity
-2. **Services** — Disable unnecessary services, configure secure services
-3. **Network Configuration** — Firewall, network parameters, IPv6
-4. **Logging and Auditing** — Configure journald, rsyslog, auditd
-5. **Access, Authentication, and Authorization** — SSH, sudo, PAM, user accounts
-6. **System Maintenance** — File permissions, local initialization files
+1. **Initial Setup**: Filesystem configuration, software updates, filesystem integrity
+2. **Services**: Disable unnecessary services, configure secure services
+3. **Network Configuration**: Firewall, network parameters, IPv6
+4. **Logging and Auditing**: Configure journald, rsyslog, auditd
+5. **Access, Authentication, and Authorization**: SSH, sudo, PAM, user accounts
+6. **System Maintenance**: File permissions, local initialization files
 
 ### Automated Compliance Checks
 

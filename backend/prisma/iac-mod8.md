@@ -1,4 +1,4 @@
-# Module 8 — Security in Infrastructure as Code
+# Module 8: Security in Infrastructure as Code
 
 When infrastructure lives in code, security becomes something you can test, scan, and enforce automatically. Instead of relying on manual reviews and periodic audits, you catch misconfigurations before they reach production. A security group that allows 0.0.0.0/0 on port 22 fails the pipeline before anyone can apply it. A public S3 bucket gets flagged during the plan phase. Secrets that accidentally get committed to Git get detected and blocked.
 

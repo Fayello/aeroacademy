@@ -1,10 +1,10 @@
-# Module 10 — Incident Response
+# Module 10: Incident Response
 
-When a smart contract is exploited, the clock starts ticking immediately. Every second of delay means more funds at risk, more attackers potentially copying the exploit, and more damage to user trust. Incident response in blockchain is fundamentally different from traditional cybersecurity — there is no way to revoke access, reset passwords, or restore from backup. The blockchain is immutable, and every action is permanent. This module covers the unique challenges of blockchain incident response, including upgradeable contracts, emergency mechanisms, the mechanics of responding to an exploit, and real case studies of incidents handled well and poorly.
+When a smart contract is exploited, the clock starts ticking immediately. Every second of delay means more funds at risk, more attackers potentially copying the exploit, and more damage to user trust. Incident response in blockchain is fundamentally different from traditional cybersecurity: there is no way to revoke access, reset passwords, or restore from backup. The blockchain is immutable, and every action is permanent. This module covers the unique challenges of blockchain incident response, including upgradeable contracts, emergency mechanisms, the mechanics of responding to an exploit, and real case studies of incidents handled well and poorly.
 
 ## Why Blockchain Incident Response Is Different
 
-In traditional systems, incident response follows a predictable pattern: detect, contain, eradicate, recover, and improve. The tools are familiar — revoke credentials, take servers offline, restore from backups, patch vulnerabilities.
+In traditional systems, incident response follows a predictable pattern: detect, contain, eradicate, recover, and improve. The tools are familiar: revoke credentials, take servers offline, restore from backups, patch vulnerabilities.
 
 In blockchain, several constraints change the game:
 
@@ -22,7 +22,7 @@ These constraints mean that prevention is far more effective than response. But 
 
 ## Upgradeable Contracts
 
-Upgradeable contracts allow the logic to be changed after deployment. This is a powerful tool for incident response — you can patch a vulnerability without migrating all state.
+Upgradeable contracts allow the logic to be changed after deployment. This is a powerful tool for incident response: you can patch a vulnerability without migrating all state.
 
 ### Proxy Pattern
 
@@ -160,7 +160,7 @@ contract Diamond {
 }
 ```
 
-Diamonds are useful for complex protocols that need many functions but want to keep individual facets small and manageable. They also allow partial upgrades — you can replace a single facet without affecting others.
+Diamonds are useful for complex protocols that need many functions but want to keep individual facets small and manageable. They also allow partial upgrades: you can replace a single facet without affecting others.
 
 ## Emergency Mechanisms
 
@@ -284,52 +284,52 @@ The timelock gives the community time to review and potentially cancel malicious
 
 ### Timeline
 
-**00:00:00 — Exploit detected**
+**00:00:00: Exploit detected**
 
 The monitoring system alerts: unusual outflow from the lending protocol. 500 ETH moved to an unknown address in the last block.
 
-**00:00:30 — Initial assessment**
+**00:00:30: Initial assessment**
 
-The security team confirms the alert. The exploit is ongoing — the attacker is draining funds through a vulnerability in the price oracle.
+The security team confirms the alert. The exploit is ongoing: the attacker is draining funds through a vulnerability in the price oracle.
 
-**00:01:00 — Containment**
+**00:01:00: Containment**
 
 The team calls `pause()` on the vulnerable contract. All deposits and withdrawals are frozen. The attacker cannot extract more funds.
 
-**00:01:30 — Investigation**
+**00:01:30: Investigation**
 
 The team analyzes the exploit:
 - The attacker is manipulating the spot price oracle.
 - They are borrowing against inflated collateral.
 - The exploit is possible because the contract uses Uniswap's spot price.
 
-**00:05:00 — Communication**
+**00:05:00: Communication**
 
 The team posts on Twitter and Discord:
 - "We have detected unusual activity and paused the protocol."
 - "No further funds are at risk."
 - "We are investigating and will provide updates."
 
-**00:15:00 — Root cause identified**
+**00:15:00: Root cause identified**
 
 The team confirms the vulnerability: the price oracle uses spot price, which can be manipulated via flash loans.
 
-**00:30:00 — Fix developed**
+**00:30:00: Fix developed**
 
 The team develops a patch:
 - Replace spot price oracle with Chainlink TWAP oracle.
 - Add a circuit breaker for price deviations >5%.
 - Add rate limiting on borrows.
 
-**01:00:00 — Fix deployed**
+**01:00:00: Fix deployed**
 
 The team upgrades the proxy to a new implementation with the fix.
 
-**01:05:00 — Unpause**
+**01:05:00: Unpause**
 
 The team unpauses the contract. Users can resume operations.
 
-**01:15:00 — Post-mortem published**
+**01:15:00: Post-mortem published**
 
 The team publishes a detailed post-mortem:
 - Timeline of events.
@@ -338,7 +338,7 @@ The team publishes a detailed post-mortem:
 - Actions taken.
 - Lessons learned.
 
-**02:00:00 — Recovery**
+**02:00:00: Recovery**
 
 The team contacts the attacker through an on-chain message:
 - "We have identified you. We are willing to negotiate a bug bounty of 10% if you return the funds."
@@ -347,7 +347,7 @@ The team contacts the attacker through an on-chain message:
 ### Post-Mortem Template
 
 ```markdown
-# Post-Mortem: [Protocol Name] Exploit — [Date]
+# Post-Mortem: [Protocol Name] Exploit: [Date]
 
 ## Summary
 - **Vulnerability:** [Description]
@@ -356,8 +356,8 @@ The team contacts the attacker through an on-chain message:
 - **Status:** [Resolved / Under investigation]
 
 ## Timeline
-- [Time] — [Event]
-- [Time] — [Event]
+- [Time]: [Event]
+- [Time]: [Event]
 
 ## Root Cause
 [Technical description of the vulnerability]
@@ -386,7 +386,7 @@ The team contacts the attacker through an on-chain message:
 
 ## White Hat Recovery
 
-When an exploit is discovered, the protocol team often attempts to negotiate with the attacker. This is called "white hat recovery" — the attacker returns the funds in exchange for a bug bounty.
+When an exploit is discovered, the protocol team often attempts to negotiate with the attacker. This is called "white hat recovery": the attacker returns the funds in exchange for a bug bounty.
 
 ### On-Chain Communication
 
@@ -438,7 +438,7 @@ The success of legal recovery depends on:
 - The jurisdiction of the protocol and the attacker.
 - Whether the attacker's identity can be determined (through blockchain forensics, IP logs, or exchange KYC).
 - Whether the stolen funds can be traced to identifiable accounts.
-- The speed of the response — funds that pass through mixers or cross-chain bridges become much harder to trace.
+- The speed of the response: funds that pass through mixers or cross-chain bridges become much harder to trace.
 
 ### Recovery Success Rates
 
@@ -450,7 +450,7 @@ According to industry data, approximately 40-50% of stolen funds are recovered w
 
 ## Hard Fork Recovery
 
-In extreme cases, the community may choose to hard-fork the blockchain to reverse the exploit. This happened once in Ethereum's history — The DAO hack in 2016.
+In extreme cases, the community may choose to hard-fork the blockchain to reverse the exploit. This happened once in Ethereum's history: The DAO hack in 2016.
 
 ### The DAO Precedent
 
@@ -460,7 +460,7 @@ The Ethereum community faced a choice:
 1. Let the exploit stand (immutability).
 2. Hard-fork to reverse the theft (intervention).
 
-The community chose to hard-fork. The fork created a new chain where the attacker's transactions were reversed. Not all community members agreed — those who opposed the fork continued running the original chain, creating Ethereum Classic.
+The community chose to hard-fork. The fork created a new chain where the attacker's transactions were reversed. Not all community members agreed: those who opposed the fork continued running the original chain, creating Ethereum Classic.
 
 ### When to Consider a Hard Fork
 

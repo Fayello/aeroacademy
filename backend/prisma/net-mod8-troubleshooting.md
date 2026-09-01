@@ -1,6 +1,6 @@
-# Module 8 — Network Troubleshooting
+# Module 8: Network Troubleshooting
 
-Network troubleshooting is the process of systematically identifying and resolving connectivity issues. The difference between a competent network engineer and a novice is not knowledge of protocols — it is the ability to follow a methodical process that eliminates variables efficiently. Guessing wastes time. Systematic elimination finds the answer.
+Network troubleshooting is the process of systematically identifying and resolving connectivity issues. The difference between a competent network engineer and a novice is not knowledge of protocols: it is the ability to follow a methodical process that eliminates variables efficiently. Guessing wastes time. Systematic elimination finds the answer.
 
 This module covers a structured troubleshooting methodology, the diagnostic tools every network engineer needs (ping, traceroute, netstat, tcpdump, dig), and a real-world exercise where you debug a connectivity issue in 15 minutes under pressure.
 
@@ -42,13 +42,13 @@ When something breaks, resist the urge to start changing things. Follow this pro
 
 ### Common Causes (Ordered by Frequency)
 
-1. **DNS issues** — The most common cause of "it's down" reports. DNS failure makes everything look broken.
-2. **Firewall rules** — A new rule blocking traffic, or an existing rule that should not be there.
-3. **IP configuration** — Wrong IP, wrong subnet mask, wrong gateway, duplicate IP.
-4. **Physical layer** — Bad cable, unplugged cable, failed switch port, wrong VLAN.
-5. **Routing issues** — Missing route, asymmetric routing, black hole.
-6. **MTU issues** — Fragmented packets, PMTUD failure.
-7. **Authentication/authorization** — Expired certificates, failed RADIUS, ACL denied.
+1. **DNS issues**: The most common cause of "it's down" reports. DNS failure makes everything look broken.
+2. **Firewall rules**: A new rule blocking traffic, or an existing rule that should not be there.
+3. **IP configuration**: Wrong IP, wrong subnet mask, wrong gateway, duplicate IP.
+4. **Physical layer**: Bad cable, unplugged cable, failed switch port, wrong VLAN.
+5. **Routing issues**: Missing route, asymmetric routing, black hole.
+6. **MTU issues**: Fragmented packets, PMTUD failure.
+7. **Authentication/authorization**: Expired certificates, failed RADIUS, ACL denied.
 
 ## ping: The First Tool
 
@@ -95,7 +95,7 @@ rtt min/avg/max/mdev = 11.8/12.0/12.3/0.2 ms
 
 - **0% packet loss**: Good connectivity.
 - **Non-zero loss**: Packet drops. Could be congestion, firewall, or link issues.
-- **High variance (mdev)**: Jitter — inconsistent latency, possibly congestion or path changes.
+- **High variance (mdev)**: Jitter: inconsistent latency, possibly congestion or path changes.
 - **TTL**: Time To Live. If the TTL is much lower than expected (e.g., 64 for Linux default), the packet traversed many hops.
 - **time**: Round-trip time in milliseconds.
 
@@ -142,7 +142,7 @@ traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
 
 - **Hop 1 (192.168.1.1)**: Your default gateway. 1 ms is expected for a LAN device.
 - **Hop 2 (10.0.0.1)**: ISP router. 5 ms is reasonable.
-- **Hop 3 (*)**: This hop does not respond to ICMP TTL exceeded messages. This is common — many ISPs filter ICMP. It does not mean the hop is broken.
+- **Hop 3 (*)**: This hop does not respond to ICMP TTL exceeded messages. This is common: many ISPs filter ICMP. It does not mean the hop is broken.
 - **Hop 4 (72.14.215.85)**: A Google router (owns 72.14.0.0/16). 12 ms is expected.
 - **Hop 5 (8.8.8.8)**: The destination. 12 ms confirms end-to-end connectivity.
 
@@ -299,12 +299,12 @@ tcpdump -i eth0 less 100
 10:30:15.146012 IP 10.0.1.100.49152 > 93.184.216.34.80: Flags [P.], seq 1:200, ack 1, win 512, length 199
 ```
 
-- **Flags [S]**: SYN — new connection request.
-- **Flags [S.]**: SYN-ACK — server acknowledges.
-- **Flags [.]**: ACK — connection established.
-- **Flags [P.]**: PSH-ACK — push data to application.
-- **Flags [F.]**: FIN-ACK — closing connection.
-- **Flags [R.]**: RST-ACK — connection reset.
+- **Flags [S]**: SYN: new connection request.
+- **Flags [S.]**: SYN-ACK: server acknowledges.
+- **Flags [.]**: ACK: connection established.
+- **Flags [P.]**: PSH-ACK: push data to application.
+- **Flags [F.]**: FIN-ACK: closing connection.
+- **Flags [R.]**: RST-ACK: connection reset.
 
 ### Practical tcpdump Examples
 
@@ -377,7 +377,7 @@ dig @9.9.9.9 google.com
 dig google.com +dnssec +multi
 
 # Step 5: Check for DNS cache poisoning
-# Compare results from multiple resolvers — they should all return the same answer
+# Compare results from multiple resolvers: they should all return the same answer
 ```
 
 ## MTU Troubleshooting
@@ -503,7 +503,7 @@ From a Sales VLAN workstation (10.0.10.50):
 ping -c 3 10.0.50.100
 ```
 
-Result: 100% packet loss. The issue is Layer 3 — no IP connectivity.
+Result: 100% packet loss. The issue is Layer 3: no IP connectivity.
 
 ### Minute 2-4: Check Local Network
 
@@ -603,12 +603,12 @@ Update the ticket:
 
 1. The first two minutes of information gathering saved 13 minutes of targeted investigation.
 2. Following the OSI model bottom-up (physical → data link → network → transport → application) prevented wasted time on application-layer debugging when the issue was network-layer.
-3. The ACL was not visible from the workstation — you had to check the network infrastructure.
+3. The ACL was not visible from the workstation: you had to check the network infrastructure.
 4. Documenting the root cause prevents the same issue from recurring.
 
 ## Performance Troubleshooting
 
-Network performance issues are harder to diagnose than connectivity issues because the network "works" — it's just slow.
+Network performance issues are harder to diagnose than connectivity issues because the network "works": it's just slow.
 
 ### Latency Analysis
 
@@ -729,4 +729,4 @@ Save the following to your portfolio:
 3. SYN-RECV analysis and fix for Scenario 3
 4. A one-page troubleshooting checklist you can use as a reference for future issues
 
-Network troubleshooting is a perishable skill — it atrophies without practice. Set up a lab environment (even a simple one with two VMs and a virtual switch) and practice breaking and fixing things. The more scenarios you work through, the faster you will diagnose real issues under pressure.
+Network troubleshooting is a perishable skill: it atrophies without practice. Set up a lab environment (even a simple one with two VMs and a virtual switch) and practice breaking and fixing things. The more scenarios you work through, the faster you will diagnose real issues under pressure.

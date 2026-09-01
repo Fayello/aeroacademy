@@ -1,4 +1,4 @@
-# Module 10 — Incident Response and SRE Practices
+# Module 10: Incident Response and SRE Practices
 
 ## The Incident Response Process
 
@@ -16,7 +16,7 @@ Bad detections waste time. A CPU usage alert at 80% with no user impact is noise
 
 ### Triage
 
-Triage determines the severity and the response. Severity levels are not arbitrary — they determine who gets paged, who gets involved, and how fast the response needs to be.
+Triage determines the severity and the response. Severity levels are not arbitrary: they determine who gets paged, who gets involved, and how fast the response needs to be.
 
 **Severity 1 (Critical):** Complete service outage or data loss. All users affected. Revenue impact. Response time: immediate. Examples: database corruption, payment system down, complete API failure.
 
@@ -30,21 +30,21 @@ Severity is determined by user impact, not technical complexity. A database fail
 
 ### Mitigate
 
-Mitigation restores service. It does not fix the root cause — it stops the bleeding. Mitigation is about speed, not elegance.
+Mitigation restores service. It does not fix the root cause: it stops the bleeding. Mitigation is about speed, not elegance.
 
 Common mitigation strategies:
 
-**Rollback** — If the last deployment caused the issue, roll it back. This is the fastest mitigation for deployment-related problems.
+**Rollback**: If the last deployment caused the issue, roll it back. This is the fastest mitigation for deployment-related problems.
 
-**Feature flag** — If a specific feature is causing problems, disable it with a feature flag. The code stays deployed but the feature is hidden from users.
+**Feature flag**: If a specific feature is causing problems, disable it with a feature flag. The code stays deployed but the feature is hidden from users.
 
-**Scale up** — If the issue is resource exhaustion (CPU, memory, connections), add more instances.
+**Scale up**: If the issue is resource exhaustion (CPU, memory, connections), add more instances.
 
-**Failover** — If a component is broken, failover to a backup. Database failover, DNS failover, regional failover.
+**Failover**: If a component is broken, failover to a backup. Database failover, DNS failover, regional failover.
 
-**Circuit breaker** — If a downstream service is failing, stop calling it. The circuit breaker pattern prevents cascading failures.
+**Circuit breaker**: If a downstream service is failing, stop calling it. The circuit breaker pattern prevents cascading failures.
 
-**Restart** — If the issue is a transient bug (memory leak, deadlock), restarting the service might restore it. This is a temporary fix, not a permanent one.
+**Restart**: If the issue is a transient bug (memory leak, deadlock), restarting the service might restore it. This is a temporary fix, not a permanent one.
 
 The key is to have pre-defined mitigation playbooks. When the database is slow, what do you do? When the API is returning 500 errors, what do you do? Having a runbook that describes the steps means the on-call engineer does not have to think under pressure.
 
@@ -54,11 +54,11 @@ Investigation finds the root cause. This happens after mitigation because the us
 
 Investigation follows the evidence:
 
-1. **Timeline** — What changed recently? Deployments, configuration changes, infrastructure changes, traffic spikes.
-2. **Metrics** — What do the dashboards show? When did the metric change? What correlates with the incident?
-3. **Logs** — What do the application logs say? Are there error messages, stack traces, or unusual patterns?
-4. **Traces** — Where is the time being spent? Which service or database query is slow?
-5. **Infrastructure** — Are the servers healthy? CPU, memory, disk, network.
+1. **Timeline**: What changed recently? Deployments, configuration changes, infrastructure changes, traffic spikes.
+2. **Metrics**: What do the dashboards show? When did the metric change? What correlates with the incident?
+3. **Logs**: What do the application logs say? Are there error messages, stack traces, or unusual patterns?
+4. **Traces**: Where is the time being spent? Which service or database query is slow?
+5. **Infrastructure**: Are the servers healthy? CPU, memory, disk, network.
 
 The investigation should be documented in real-time. Every observation, hypothesis, and test should be recorded. This documentation is essential for the post-mortem.
 
@@ -148,7 +148,7 @@ Site Reliability Engineering (SRE) is Google's approach to operations. It treats
 
 ### Error Budgets
 
-An error budget is the acceptable level of unreliability. If your SLO is 99.9% availability, your error budget is 0.1% — about 43 minutes of downtime per month.
+An error budget is the acceptable level of unreliability. If your SLO is 99.9% availability, your error budget is 0.1%: about 43 minutes of downtime per month.
 
 Error budgets create a feedback mechanism:
 - If the error budget is full (no errors yet), you can ship risky changes
@@ -188,7 +188,7 @@ Toil reduction follows a cycle:
 4. Verify automation (does the automation work correctly?)
 5. Monitor toil (is the automation reducing manual work?)
 
-The goal is not to eliminate all toil but to keep it below 50%. Some toil is inevitable — you need to respond to novel incidents, investigate new problems, and make decisions that require human judgment.
+The goal is not to eliminate all toil but to keep it below 50%. Some toil is inevitable: you need to respond to novel incidents, investigate new problems, and make decisions that require human judgment.
 
 ### Blameless Culture
 
@@ -289,9 +289,9 @@ A runbook is a step-by-step guide for responding to a specific type of incident.
 
 ## Diagnosis
 1. Check Grafana dashboard: "Payment API Overview"
-2. Look at the error rate panel — is it a spike or sustained?
-3. Check the latency panel — is latency elevated?
-4. Check the database panel — is the database slow?
+2. Look at the error rate panel: is it a spike or sustained?
+3. Check the latency panel: is latency elevated?
+4. Check the database panel: is the database slow?
 
 ## Mitigation Steps
 
@@ -325,11 +325,11 @@ A runbook is a step-by-step guide for responding to a specific type of incident.
 - Schedule post-mortem within 24 hours
 ```
 
-Runbooks should be stored in a version-controlled repository and linked to alert definitions. They should be tested regularly — run through the runbook during a drill to verify the steps work.
+Runbooks should be stored in a version-controlled repository and linked to alert definitions. They should be tested regularly: run through the runbook during a drill to verify the steps work.
 
 ## Real Story: 4 AM Production Outage and What We Learned
 
-At 4:17 AM, the PagerDuty alert fired: "API Error Rate Critical — 15% error rate for 5 minutes." The on-call engineer was woken up, grabbed their laptop, and started diagnosing.
+At 4:17 AM, the PagerDuty alert fired: "API Error Rate Critical: 15% error rate for 5 minutes." The on-call engineer was woken up, grabbed their laptop, and started diagnosing.
 
 The Grafana dashboard showed that the error rate had spiked from 0.1% to 15% over 5 minutes. The latency dashboard showed response times jumping from 200ms to 8 seconds. The CPU dashboard was normal. The memory dashboard was normal. The database dashboard was normal.
 
@@ -339,7 +339,7 @@ The second hypothesis: traffic spike. The traffic dashboard showed normal reques
 
 The third hypothesis: downstream dependency. The Jaeger traces showed that API requests were spending 7 seconds in a call to the notification service. The notification service was not responding.
 
-The engineer checked the notification service dashboard. It was healthy — CPU normal, memory normal, no errors. But the traces showed that the API was calling the notification service synchronously, and the notification service was slow.
+The engineer checked the notification service dashboard. It was healthy: CPU normal, memory normal, no errors. But the traces showed that the API was calling the notification service synchronously, and the notification service was slow.
 
 The investigation revealed the root cause: the new feature added a synchronous call to the notification service to send a welcome email when a user signed up. The notification service had been migrated to a new email provider the previous week, and the new provider had a 3-second latency for email sending. Before the migration, email sending took 200ms. The new code did not account for this latency change.
 
@@ -360,11 +360,11 @@ The post-mortem produced three action items:
 
 All three action items were completed within two weeks. The team also created a runbook for "high latency from downstream services" with specific steps for diagnosing and mitigating similar issues.
 
-The most important lesson: the incident was not caused by a bug. It was caused by a missing test (latency testing) and an architectural decision (synchronous external calls). The fix was not a code change — it was a process change. This is the essence of SRE: fixing the system, not just the symptom.
+The most important lesson: the incident was not caused by a bug. It was caused by a missing test (latency testing) and an architectural decision (synchronous external calls). The fix was not a code change: it was a process change. This is the essence of SRE: fixing the system, not just the symptom.
 
 ## Chaos Engineering Basics
 
-Chaos engineering is the practice of deliberately injecting failures into production systems to test resilience. The goal is not to break things for fun — it is to find weaknesses before they cause incidents.
+Chaos engineering is the practice of deliberately injecting failures into production systems to test resilience. The goal is not to break things for fun: it is to find weaknesses before they cause incidents.
 
 ### Chaos Engineering Principles
 
@@ -376,7 +376,7 @@ Chaos engineering is the practice of deliberately injecting failures into produc
 
 4. **Monitor the results.** Watch the metrics, logs, and traces during the experiment. Does the system behave as expected?
 
-5. **Automate and repeat.** Run the experiment regularly. A one-time test is not enough — systems change, and new weaknesses can appear.
+5. **Automate and repeat.** Run the experiment regularly. A one-time test is not enough: systems change, and new weaknesses can appear.
 
 ### Common Chaos Experiments
 
@@ -410,13 +410,13 @@ kubectl exec -it my-app-pod -n production -- dd if=/dev/zero of=/tmp/fill bs=1M 
 
 ### Chaos Engineering Tools
 
-**Chaos Monkey** (Netflix) — Randomly terminates production instances to test resilience.
+**Chaos Monkey** (Netflix): Randomly terminates production instances to test resilience.
 
-**Litmus** (CNCF) — Kubernetes-native chaos engineering framework with predefined experiments.
+**Litmus** (CNCF): Kubernetes-native chaos engineering framework with predefined experiments.
 
-**Gremlin** — Commercial chaos engineering platform with a web interface and pre-built experiments.
+**Gremlin**: Commercial chaos engineering platform with a web interface and pre-built experiments.
 
-**ToxiProxy** — Network proxy for simulating network conditions (latency, packet loss, connection failures).
+**ToxiProxy**: Network proxy for simulating network conditions (latency, packet loss, connection failures).
 
 ### Chaos Engineering Best Practices
 
@@ -426,7 +426,7 @@ kubectl exec -it my-app-pod -n production -- dd if=/dev/zero of=/tmp/fill bs=1M 
 
 3. **Run during business hours.** Chaos experiments in production should run when the team is available to respond. Do not run experiments at 3 AM.
 
-4. **Notify the team.** Everyone should know that a chaos experiment is happening. Surprising people with production failures is not chaos engineering — it is chaos.
+4. **Notify the team.** Everyone should know that a chaos experiment is happening. Surprising people with production failures is not chaos engineering: it is chaos.
 
 5. **Document results.** Record what happened, what broke, and what you learned. The value of chaos engineering is in the findings, not the failures.
 

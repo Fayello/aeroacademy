@@ -1,4 +1,4 @@
-# Module 3 — User Administration at Scale
+# Module 3: User Administration at Scale
 
 Managing ten users is easy. Managing 500 users across dozens of servers, with different access levels, group memberships, and authentication backends, that is where things get interesting. This module covers local user management, PAM authentication, LDAP and Active Directory integration, centralized sudo configuration, and the practical patterns for handling user administration in environments with more than a handful of machines. You will learn to set up centralized authentication so that a single user account works on every server in your fleet.
 
@@ -8,7 +8,7 @@ Linux stores user information in flat files. Understanding these files is fundam
 
 ### /etc/passwd
 
-Each line represents one user with seven colon-separated fields. The first field is the login name, which is the string users type at the login prompt. The second field is the password field — it shows `x` when the password hash is stored in `/etc/shadow`, or it may be empty for accounts with no password (which should never exist on a production system). The third field is the user ID number where 0 is root, 1-999 are reserved for system accounts, and 1000+ are regular user accounts. The fourth field is the primary group ID which should match a GID in `/etc/group`. The fifth field is the GECOS field containing the full name, office number, extension, and home phone — most systems only use the full name. The sixth field is the home directory path. The seventh field is the login shell.
+Each line represents one user with seven colon-separated fields. The first field is the login name, which is the string users type at the login prompt. The second field is the password field: it shows `x` when the password hash is stored in `/etc/shadow`, or it may be empty for accounts with no password (which should never exist on a production system). The third field is the user ID number where 0 is root, 1-999 are reserved for system accounts, and 1000+ are regular user accounts. The fourth field is the primary group ID which should match a GID in `/etc/group`. The fifth field is the GECOS field containing the full name, office number, extension, and home phone: most systems only use the full name. The sixth field is the home directory path. The seventh field is the login shell.
 
 The shell field is important for service accounts. Set it to `/sbin/nologin` or `/bin/false` to prevent interactive login for accounts like `nginx` or `postgresql` that should never be used for SSH. When a user's shell is set to nologin, they can still own files and run services but cannot get an interactive shell.
 
@@ -24,7 +24,7 @@ Group definitions with four fields: group name, password field (usually `x`), GI
 
 ### /etc/gshadow
 
-Secure group information including the encrypted group password, group administrators who can add/remove members, and the member list. Group passwords are rarely used on modern systems — use sudo instead for privilege escalation.
+Secure group information including the encrypted group password, group administrators who can add/remove members, and the member list. Group passwords are rarely used on modern systems: use sudo instead for privilege escalation.
 
 ## User Management Commands
 
@@ -92,7 +92,7 @@ Use `realm discover` to find the domain, `realm join` with domain admin credenti
 
 ### Manual LDAP Configuration
 
-For non-AD LDAP servers like OpenLDAP or 389-DS, configure `/etc/sssd/sssd.conf` with `id_provider`, `auth_provider`, `sudo_provider`, the LDAP URI, search base, TLS settings, and caching options. Set permissions to 600 on the config file and enable SSSD. Configure `/etc/nsswitch.conf` to include `sss` for passwd, group, shadow, and sudoers lookups. The order in nsswitch.conf matters — `files sss` means check local files first, then SSSD.
+For non-AD LDAP servers like OpenLDAP or 389-DS, configure `/etc/sssd/sssd.conf` with `id_provider`, `auth_provider`, `sudo_provider`, the LDAP URI, search base, TLS settings, and caching options. Set permissions to 600 on the config file and enable SSSD. Configure `/etc/nsswitch.conf` to include `sss` for passwd, group, shadow, and sudoers lookups. The order in nsswitch.conf matters: `files sss` means check local files first, then SSSD.
 
 ### LDAP Sudo Rules
 
@@ -108,7 +108,7 @@ Rules follow the pattern of user or group, host specification, command specifica
 
 ### Sudoers Defaults
 
-Configure defaults in `/etc/sudoers` for `timestamp_timeout` to require password re-entry, `logfile` to capture sudo commands, `requiretty` to force a terminal, `secure_path` to limit the PATH during sudo, and `lecture` settings. For groups that should never need a password, set the `NOPASSWD` option. The `secure_path` is important for security — it prevents users from running arbitrary commands through sudo by controlling which directories are searched.
+Configure defaults in `/etc/sudoers` for `timestamp_timeout` to require password re-entry, `logfile` to capture sudo commands, `requiretty` to force a terminal, `secure_path` to limit the PATH during sudo, and `lecture` settings. For groups that should never need a password, set the `NOPASSWD` option. The `secure_path` is important for security: it prevents users from running arbitrary commands through sudo by controlling which directories are searched.
 
 ### Sudo Logging
 
@@ -175,7 +175,7 @@ When a new employee joins, create their account with a standardized script that:
 
 ### Offboarding Process
 
-When an employee leaves, immediately: lock the account with `usermod -L`, disable SSH access, remove SSH keys, check for running processes and cron jobs, archive their home directory, and remove the account after the retention period. The critical step is immediate account lockout — not removal — to preserve forensic evidence.
+When an employee leaves, immediately: lock the account with `usermod -L`, disable SSH access, remove SSH keys, check for running processes and cron jobs, archive their home directory, and remove the account after the retention period. The critical step is immediate account lockout: not removal: to preserve forensic evidence.
 
 ### Group-Based Access Control
 

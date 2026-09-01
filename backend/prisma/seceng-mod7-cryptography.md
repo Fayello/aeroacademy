@@ -1,18 +1,18 @@
-# Module 7 — Cryptography: What You Actually Need
+# Module 7: Cryptography: What You Actually Need
 
 Cryptography is one of the most misunderstood areas of security engineering. Developers either avoid it entirely (reinventing insecure schemes) or over-apply it (encrypting everything without understanding what encryption actually protects). The reality is that most applications need a small set of well-understood cryptographic operations used correctly. You do not need to understand the mathematics of elliptic curves or the proofs of IND-CPA security. You need to know which algorithm to use, how to use it correctly, and how to manage the keys.
 
-The most dangerous cryptographic code is the code you write yourself. Every year, researchers find vulnerabilities in custom cryptographic implementations — timing side channels, padding oracle attacks, nonce reuse, key derivation flaws. The solution is to use established libraries and well-understood algorithms. The goal of this module is to give you the knowledge to make informed choices about which algorithms and libraries to use and how to use them correctly.
+The most dangerous cryptographic code is the code you write yourself. Every year, researchers find vulnerabilities in custom cryptographic implementations: timing side channels, padding oracle attacks, nonce reuse, key derivation flaws. The solution is to use established libraries and well-understood algorithms. The goal of this module is to give you the knowledge to make informed choices about which algorithms and libraries to use and how to use them correctly.
 
 ## Symmetric vs Asymmetric Encryption
 
-Symmetric encryption uses the same key for encryption and decryption. Both parties must share the secret key, which creates a key distribution problem — how do you securely share the key with the recipient? Symmetric encryption is fast and efficient, making it suitable for encrypting large amounts of data.
+Symmetric encryption uses the same key for encryption and decryption. Both parties must share the secret key, which creates a key distribution problem: how do you securely share the key with the recipient? Symmetric encryption is fast and efficient, making it suitable for encrypting large amounts of data.
 
 Asymmetric encryption (public-key cryptography) uses a key pair: a public key for encryption and a private key for decryption. The public key can be shared openly. Anyone can encrypt a message with the public key, but only the holder of the private key can decrypt it. Asymmetric encryption is slow (roughly 1000x slower than symmetric encryption), making it unsuitable for encrypting large amounts of data directly.
 
 In practice, you use both. Asymmetric encryption solves the key distribution problem: you use the recipient's public key to encrypt a symmetric key, then use the symmetric key to encrypt the actual data. This hybrid approach combines the security of asymmetric encryption with the performance of symmetric encryption. TLS uses this approach: the handshake uses asymmetric encryption to exchange a symmetric key, and the data transfer uses symmetric encryption with that key.
 
-Digital signatures use asymmetric cryptography for authentication and integrity. The signer uses their private key to sign a message, and anyone with the public key can verify the signature. This proves the message came from the claimed sender (authentication) and has not been modified (integrity). Signatures do not provide confidentiality — the message is readable by anyone.
+Digital signatures use asymmetric cryptography for authentication and integrity. The signer uses their private key to sign a message, and anyone with the public key can verify the signature. This proves the message came from the claimed sender (authentication) and has not been modified (integrity). Signatures do not provide confidentiality: the message is readable by anyone.
 
 ## AES-GCM vs ChaCha20-Poly1305
 
@@ -22,7 +22,7 @@ AES-GCM and ChaCha20-Poly1305 are the two recommended authenticated encryption a
 
 AES-GCM (Galois/Counter Mode) is the most widely used authenticated encryption algorithm. It is hardware-accelerated on modern processors (Intel AES-NI), making it extremely fast on server hardware. AES-GCM uses a 128-bit block cipher (AES) in counter mode for encryption and a GHASH function for authentication.
 
-AES-GCM requires a unique nonce (number used once) for each encryption operation with the same key. If a nonce is reused with the same key, the authentication is completely broken — an attacker can recover the authentication key and forge arbitrary ciphertexts. Nonce reuse is the most common and most catastrophic AES-GCM implementation error.
+AES-GCM requires a unique nonce (number used once) for each encryption operation with the same key. If a nonce is reused with the same key, the authentication is completely broken: an attacker can recover the authentication key and forge arbitrary ciphertexts. Nonce reuse is the most common and most catastrophic AES-GCM implementation error.
 
 Recommended configuration:
 - Key size: 256 bits (AES-256-GCM)
@@ -104,7 +104,7 @@ Keys must be stored securely, with access controls that limit who and what can a
 
 **Secrets management systems:** HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, and GCP Secret Manager provide centralized key storage with access controls, audit logging, and automatic rotation. These are the recommended approach for production applications.
 
-**Hardware security modules (HSMs):** FIPS 140-2 Level 3 certified devices that store keys in tamper-resistant hardware. Keys never leave the HSM — all cryptographic operations happen inside the device. HSMs are required for some regulatory frameworks (PCI DSS for payment processing) and are the most secure key storage option.
+**Hardware security modules (HSMs):** FIPS 140-2 Level 3 certified devices that store keys in tamper-resistant hardware. Keys never leave the HSM: all cryptographic operations happen inside the device. HSMs are required for some regulatory frameworks (PCI DSS for payment processing) and are the most secure key storage option.
 
 **Encrypted file storage:** Keys encrypted with a master key and stored on the file system. The master key must be protected separately (HSM, environment variable, or secrets management system). Suitable for applications that cannot use external secrets management services.
 
@@ -118,11 +118,11 @@ Keys must be rotated periodically to limit the impact of key compromise. The rot
 - Signing keys: every 365 days
 - Password hashing salts: generated per-password, no rotation needed
 
-Key rotation must be seamless — the application must continue to function during rotation. For symmetric encryption, this means supporting multiple active keys during the rotation period: decrypt with both the old and new key, encrypt with the new key only. After all data has been re-encrypted with the new key, the old key can be destroyed.
+Key rotation must be seamless: the application must continue to function during rotation. For symmetric encryption, this means supporting multiple active keys during the rotation period: decrypt with both the old and new key, encrypt with the new key only. After all data has been re-encrypted with the new key, the old key can be destroyed.
 
 ### Key Destruction
 
-When a key is no longer needed, it must be destroyed securely. Simply deleting the key is not sufficient — the data may still exist in backups, logs, or swap space. Secure destruction means ensuring the key cannot be recovered from any storage medium.
+When a key is no longer needed, it must be destroyed securely. Simply deleting the key is not sufficient: the data may still exist in backups, logs, or swap space. Secure destruction means ensuring the key cannot be recovered from any storage medium.
 
 For software-stored keys, overwrite the memory holding the key before freeing it. Most cryptographic libraries provide functions for this (e.g., `sodium_memzero()` in libsodium). For HSM-stored keys, use the HSM's key destruction function, which typically involves a multi-step process with authorization requirements.
 
@@ -150,7 +150,7 @@ TLS 1.3 defines five cipher suites, all of which use authenticated encryption:
 - `TLS_AES_128_CCM_SHA256`
 - `TLS_AES_128_CCM_8_SHA256`
 
-The first three are the most commonly used. The choice between AES-GCM and ChaCha20-Poly1305 depends on hardware support — AES-GCM is faster on hardware with AES-NI, while ChaCha20-Poly1305 is faster without it.
+The first three are the most commonly used. The choice between AES-GCM and ChaCha20-Poly1305 depends on hardware support: AES-GCM is faster on hardware with AES-NI, while ChaCha20-Poly1305 is faster without it.
 
 ### TLS 1.3 Configuration
 
@@ -176,7 +176,7 @@ Certificate chains link end-entity certificates to root certificates. An end-ent
 
 Let's Encrypt provides free, automated TLS certificates. Its ACME protocol enables automated certificate issuance and renewal, eliminating the manual process of generating CSRs, submitting them to a CA, and installing the resulting certificates.
 
-Let's Encrypt certificates are trusted by all major browsers and have a 90-day validity period. The short validity period encourages automation — manual renewal every 90 days is impractical, so organizations must automate the renewal process.
+Let's Encrypt certificates are trusted by all major browsers and have a 90-day validity period. The short validity period encourages automation: manual renewal every 90 days is impractical, so organizations must automate the renewal process.
 
 Certbot is the most common client for Let's Encrypt. A typical automated renewal:
 
@@ -195,7 +195,7 @@ certbot renew --dry-run
 
 Certificate pinning restricts which certificates a client will accept for a particular server. Instead of trusting any certificate signed by a trusted CA, the client only accepts a specific certificate or a certificate signed by a specific intermediate CA.
 
-Certificate pinning was popularized as a defense against CA compromises and man-in-the-middle attacks using fraudulent certificates. However, it has largely been abandoned because it creates operational challenges — when the pinned certificate expires or the CA changes, all pinned clients break.
+Certificate pinning was popularized as a defense against CA compromises and man-in-the-middle attacks using fraudulent certificates. However, it has largely been abandoned because it creates operational challenges: when the pinned certificate expires or the CA changes, all pinned clients break.
 
 The modern alternative is Certificate Transparency (CT), which logs all issued certificates in public, append-only logs. CT does not prevent fraudulent certificates but makes them detectable. Combined with HTTP Public Key Pinning (HPKP) alternatives like CTA (Certificate Transparency Awareness), CT provides similar security benefits without the operational risks of pinning.
 
@@ -209,7 +209,7 @@ The protocol uses the Signal Protocol, which combines X25519 key agreement, AES-
 
 **Session Establishment:** When Alice wants to message Bob, she fetches Bob's identity key, signed pre-key, and a one-time pre-key from the server. She performs an X25519 key agreement between her ephemeral key and Bob's keys, deriving a shared secret. She encrypts the first message using this shared secret.
 
-**Ratchet:** After the initial key agreement, each party advances a symmetric ratchet with each message. Each message uses a new encryption key derived from the ratchet state. This provides forward secrecy — if a key is compromised, only the messages encrypted with that key are exposed, not future or past messages.
+**Ratchet:** After the initial key agreement, each party advances a symmetric ratchet with each message. Each message uses a new encryption key derived from the ratchet state. This provides forward secrecy: if a key is compromised, only the messages encrypted with that key are exposed, not future or past messages.
 
 **Key Verification:** Users can verify each other's identity keys out-of-band (comparing key fingerprints in person or via a trusted channel). This prevents man-in-the-middle attacks during session establishment.
 
@@ -229,11 +229,11 @@ The implementation challenges: managing the one-time pre-key inventory on the se
 
 **Encrypting then authenticating (or vice versa) incorrectly.** The safe approach is authenticated encryption: use AES-GCM or ChaCha20-Poly1305, which handle both encryption and authentication correctly. If you must use separate encryption and authentication, encrypt-then-MAC is the correct order.
 
-**Timing side channels.** Comparing secrets using `==` in most languages is not constant-time — it returns false as soon as it finds a difference, leaking information about the secret through timing. Use constant-time comparison functions (`hmac.compare_digest()` in Python, `crypto.timingSafeEqual()` in Node.js).
+**Timing side channels.** Comparing secrets using `==` in most languages is not constant-time: it returns false as soon as it finds a difference, leaking information about the secret through timing. Use constant-time comparison functions (`hmac.compare_digest()` in Python, `crypto.timingSafeEqual()` in Node.js).
 
 ## Assessment
 
-**Lab 7.1 — Encryption Implementation (60 minutes)**
+**Lab 7.1: Encryption Implementation (60 minutes)**
 Implement a file encryption system that uses AES-256-GCM for encryption and Argon2id for key derivation from a password. The system must encrypt a file, generate a secure random nonce, derive the encryption key from a password using Argon2id, and produce an encrypted file that includes the nonce and salt. It must also decrypt the file, verifying the authentication tag. Test with known test vectors and verify that tampered ciphertext is rejected.
 
 **Grading criteria:**
@@ -243,7 +243,7 @@ Implement a file encryption system that uses AES-256-GCM for encryption and Argo
 - Proper handling of authentication tag verification (10 points)
 - Rejection of tampered ciphertext (5 points)
 
-**Lab 7.2 — TLS Configuration Analysis (45 minutes)**
+**Lab 7.2: TLS Configuration Analysis (45 minutes)**
 Analyze the TLS configuration of three provided web servers (configurations provided as text files). For each server, identify the TLS versions supported, cipher suites enabled, certificate details, and any security issues. Recommend specific configuration changes to harden each server.
 
 **Grading criteria:**
@@ -251,7 +251,7 @@ Analyze the TLS configuration of three provided web servers (configurations prov
 - Identification of security issues (5 points per server, 15 total)
 - Specific, implementable hardening recommendations (5 points per server, 15 total)
 
-**Lab 7.3 — Key Management Design (45 minutes)**
+**Lab 7.3: Key Management Design (45 minutes)**
 Design a key management system for a multi-region payment processing application. The system must support key generation, storage, rotation, and destruction for encryption keys, signing keys, and API keys. The design must address key storage in three regions, key rotation without downtime, key destruction verification, and audit logging of all key operations. Produce a design document with architecture diagrams and implementation guidelines.
 
 **Grading criteria:**
@@ -264,11 +264,11 @@ Design a key management system for a multi-region payment processing application
 
 ## Evidence
 
-Cryptography is the foundation of data security. Without it, all other security controls protect data only while it resides within the controlled environment. The moment data leaves the perimeter — transmitted over a network, stored on a mobile device, shared with a third party — cryptography is the only protection.
+Cryptography is the foundation of data security. Without it, all other security controls protect data only while it resides within the controlled environment. The moment data leaves the perimeter: transmitted over a network, stored on a mobile device, shared with a third party: cryptography is the only protection.
 
 The common mistakes in this module are not hypothetical. In 2023, a major retailer suffered a breach because their payment processing system used ECB mode for card number encryption, allowing attackers to identify duplicate card numbers from the ciphertext. A healthcare provider lost 50,000 patient records because API keys were hardcoded in source code that was inadvertently pushed to a public repository. A financial institution's TLS configuration allowed downgrade attacks because TLS 1.0 and 1.1 were still enabled alongside TLS 1.3.
 
-The lesson is that cryptography is not a magic shield. It is a set of tools that must be used correctly. The algorithms are well-understood and secure. The implementations are well-tested and reliable. The failures occur in the application of these tools — using the wrong algorithm, managing keys incorrectly, or configuring TLS with legacy protocols and weak ciphers. Understanding what you actually need from cryptography, and using it correctly, is the core competency of security engineering.
+The lesson is that cryptography is not a magic shield. It is a set of tools that must be used correctly. The algorithms are well-understood and secure. The implementations are well-tested and reliable. The failures occur in the application of these tools: using the wrong algorithm, managing keys incorrectly, or configuring TLS with legacy protocols and weak ciphers. Understanding what you actually need from cryptography, and using it correctly, is the core competency of security engineering.
 
 ## Summary
 
@@ -276,6 +276,6 @@ Cryptography is the set of tools that protects data beyond the perimeter. Symmet
 
 Key management is the most critical aspect of cryptography. Keys must be generated using cryptographically secure random number generators, stored securely in secrets management systems or HSMs, rotated regularly, and destroyed securely when no longer needed. The security of every encryption operation depends on the security of the key management.
 
-TLS 1.3 provides the foundation for secure network communication. Proper configuration — modern cipher suites, disabled legacy protocols, valid certificates — is essential for protecting data in transit. Common cryptographic mistakes (MD5, ECB mode, hardcoded keys, timing side channels) are preventable with knowledge and discipline.
+TLS 1.3 provides the foundation for secure network communication. Proper configuration: modern cipher suites, disabled legacy protocols, valid certificates: is essential for protecting data in transit. Common cryptographic mistakes (MD5, ECB mode, hardcoded keys, timing side channels) are preventable with knowledge and discipline.
 
-The practical advice is simple: use established libraries, use established algorithms, manage keys correctly, and never implement cryptography from scratch. The failures in this module are all failures of application, not theory. Understanding the theory is necessary but not sufficient — you must apply it correctly in practice.
+The practical advice is simple: use established libraries, use established algorithms, manage keys correctly, and never implement cryptography from scratch. The failures in this module are all failures of application, not theory. Understanding the theory is necessary but not sufficient: you must apply it correctly in practice.

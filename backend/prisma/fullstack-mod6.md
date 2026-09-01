@@ -1,4 +1,4 @@
-# Module 6 — API Design
+# Module 6: API Design
 
 An API is a contract between your backend and the clients that consume it. A well-designed API is predictable, consistent, and easy to use. A poorly designed API creates confusion, forces workarounds, and breaks when clients evolve. This module covers REST, GraphQL, API versioning, and how to design an API that serves both web and mobile clients.
 
@@ -23,21 +23,21 @@ REST (Representational State Transfer) is an architectural style, not a protocol
 Resources are nouns, not verbs. The URL identifies the resource, and the HTTP method identifies the action. This is the most fundamental rule of REST design, and violating it is the most common mistake.
 
 ```
-GET    /api/users          — List users
-POST   /api/users          — Create a user
-GET    /api/users/:id      — Get a specific user
-PUT    /api/users/:id      — Update a user (full replacement)
-PATCH  /api/users/:id      — Update a user (partial)
-DELETE /api/users/:id      — Delete a user
+GET    /api/users         : List users
+POST   /api/users         : Create a user
+GET    /api/users/:id     : Get a specific user
+PUT    /api/users/:id     : Update a user (full replacement)
+PATCH  /api/users/:id     : Update a user (partial)
+DELETE /api/users/:id     : Delete a user
 ```
 
 Use plural nouns for collections. Use singular for individual resources. Use nested resources for relationships:
 
 ```
-GET    /api/users/:id/posts           — Posts by a specific user
-POST   /api/users/:id/posts           — Create a post for a user
-GET    /api/posts/:id/comments        — Comments on a specific post
-POST   /api/posts/:id/comments        — Add a comment to a post
+GET    /api/users/:id/posts          : Posts by a specific user
+POST   /api/users/:id/posts          : Create a post for a user
+GET    /api/posts/:id/comments       : Comments on a specific post
+POST   /api/posts/:id/comments       : Add a comment to a post
 ```
 
 Keep nesting shallow. Two levels deep is usually enough. If you need deeper relationships, use query parameters:
@@ -70,22 +70,22 @@ Status codes are not optional. They tell the client what happened without parsin
 
 Here is the complete set of status codes you will use regularly:
 
-- **200 OK** — Request succeeded, response body contains data
-- **201 Created** — Resource created, response body contains the new resource
-- **204 No Content** — Request succeeded, no response body (common for DELETE)
-- **304 Not Modified** — Cached response is still valid
-- **400 Bad Request** — Invalid input, validation failed
-- **401 Unauthorized** — Authentication required or credentials invalid
-- **403 Forbidden** — Authenticated but not authorized
-- **404 Not Found** — Resource does not exist
-- **409 Conflict** — Resource already exists or state conflict
-- **422 Unprocessable Entity** — Valid JSON but semantically incorrect
-- **429 Too Many Requests** — Rate limit exceeded
-- **500 Internal Server Error** — Something broke on the server
+- **200 OK**: Request succeeded, response body contains data
+- **201 Created**: Resource created, response body contains the new resource
+- **204 No Content**: Request succeeded, no response body (common for DELETE)
+- **304 Not Modified**: Cached response is still valid
+- **400 Bad Request**: Invalid input, validation failed
+- **401 Unauthorized**: Authentication required or credentials invalid
+- **403 Forbidden**: Authenticated but not authorized
+- **404 Not Found**: Resource does not exist
+- **409 Conflict**: Resource already exists or state conflict
+- **422 Unprocessable Entity**: Valid JSON but semantically incorrect
+- **429 Too Many Requests**: Rate limit exceeded
+- **500 Internal Server Error**: Something broke on the server
 
 ### Request and Response Format
 
-Use JSON for both request and response bodies. Be consistent with field names (camelCase or snake_case — pick one and stick with it). Inconsistency in naming conventions is one of the fastest ways to erode developer trust in your API.
+Use JSON for both request and response bodies. Be consistent with field names (camelCase or snake_case: pick one and stick with it). Inconsistency in naming conventions is one of the fastest ways to erode developer trust in your API.
 
 ```json
 // Successful response
@@ -129,7 +129,7 @@ Wrap successful responses in a `data` field. This makes it easy to add metadata 
 
 ### Filtering, Sorting, and Pagination
 
-Use query parameters for these. They are idempotent — the same request always returns the same result.
+Use query parameters for these. They are idempotent: the same request always returns the same result.
 
 ```
 GET /api/posts?status=published&sort=-createdAt&page=2&limit=20
@@ -187,7 +187,7 @@ Include links to related resources in your responses:
 }
 ```
 
-This makes your API discoverable. Clients do not need to hardcode URLs — they follow links. In practice, HATEOAS is rarely implemented fully, but even partial implementation (including a `self` link and related resource links) makes your API easier to navigate.
+This makes your API discoverable. Clients do not need to hardcode URLs: they follow links. In practice, HATEOAS is rarely implemented fully, but even partial implementation (including a `self` link and related resource links) makes your API easier to navigate.
 
 The links in a response should follow a consistent pattern. The `self` link always points to the current resource. Related resource links use the plural noun of the related resource. Action links (like `confirm`, `cancel`, or `approve`) are named after the action. This consistency means developers can predict link names without reading documentation for every endpoint.
 
@@ -371,7 +371,7 @@ APIs evolve. Endpoints change, fields are added or removed, response formats shi
 
 The fundamental tension in API design is between stability and evolution. Clients want a stable API that does not break when they upgrade. You want the freedom to improve your API without being constrained by backward compatibility. Versioning resolves this tension by allowing both: the old version continues to work while the new version introduces changes.
 
-Not every change requires a new version. Adding a new field to a response is non-breaking — existing clients simply ignore the new field. Adding a new endpoint is non-breaking — existing clients do not know about it and continue using existing endpoints. Adding a new optional parameter is non-breaking — existing clients do not send the parameter and get the default behavior.
+Not every change requires a new version. Adding a new field to a response is non-breaking: existing clients simply ignore the new field. Adding a new endpoint is non-breaking: existing clients do not know about it and continue using existing endpoints. Adding a new optional parameter is non-breaking: existing clients do not send the parameter and get the default behavior.
 
 Breaking changes require a new version. Removing or renaming a field breaks clients that depend on it. Changing a field's type (from number to string) breaks clients that parse the field. Changing the response structure (from flat to nested) breaks clients that access the old structure. Adding a required parameter breaks clients that do not send it.
 
@@ -397,7 +397,7 @@ Not every change requires a new version. Here is the distinction:
 
 ### URL Versioning
 
-The simplest approach — include the version in the URL:
+The simplest approach: include the version in the URL:
 
 ```
 /api/v1/users
@@ -416,7 +416,7 @@ app.use("/api/v1", v1Routes);
 app.use("/api/v2", v2Routes);
 ```
 
-URL versioning is explicit, easy to understand, works with browser caching, and is supported by all tools. The downside is URL proliferation — you end up with duplicate routes. But this is a small price for clarity.
+URL versioning is explicit, easy to understand, works with browser caching, and is supported by all tools. The downside is URL proliferation: you end up with duplicate routes. But this is a small price for clarity.
 
 ### Header Versioning
 
@@ -453,7 +453,7 @@ URL versioning is the most common and easiest to understand. It is explicit and 
 
 Whatever you choose, be consistent. Do not mix strategies. And document your versioning policy so clients know when to upgrade. A common policy is to support the current version and one previous version, giving clients time to migrate.
 
-When planning your versioning strategy, consider the following practical aspects. Versioning adds overhead to every API change — you need to decide whether the change is breaking, potentially maintain multiple versions, and coordinate deprecation timelines. For small teams with few clients, the overhead of versioning may not be justified. For large teams with many clients, versioning is essential.
+When planning your versioning strategy, consider the following practical aspects. Versioning adds overhead to every API change: you need to decide whether the change is breaking, potentially maintain multiple versions, and coordinate deprecation timelines. For small teams with few clients, the overhead of versioning may not be justified. For large teams with many clients, versioning is essential.
 
 If you decide not to version your API, you can still make breaking changes by following the expand and contract pattern. First, add the new field or endpoint alongside the old one (expand). Then, update all clients to use the new field or endpoint. Finally, remove the old field or endpoint (contract). This approach avoids explicit versioning but requires coordination with clients and a deprecation period.
 
@@ -488,8 +488,8 @@ POST   /api/v1/users/:id/follow
 DELETE /api/v1/users/:id/follow
 
 # Posts
-GET    /api/v1/feed                     — Paginated feed
-POST   /api/v1/posts                    — Create post
+GET    /api/v1/feed                    : Paginated feed
+POST   /api/v1/posts                   : Create post
 GET    /api/v1/posts/:id
 DELETE /api/v1/posts/:id
 POST   /api/v1/posts/:id/like
@@ -502,8 +502,8 @@ GET    /api/v1/search/users?q=alice
 GET    /api/v1/search/posts?q=javascript&tag=tutorial
 
 # Notifications
-POST   /api/v1/notifications/register   — Register push token
-GET    /api/v1/notifications             — List notifications
+POST   /api/v1/notifications/register  : Register push token
+GET    /api/v1/notifications            : List notifications
 PATCH  /api/v1/notifications/:id/read
 ```
 
@@ -556,14 +556,14 @@ Notice the pattern: each resource has consistent endpoints for CRUD operations, 
 }
 ```
 
-Notice the feed uses cursor-based pagination instead of offset-based. Cursor pagination is more efficient for mobile infinite scroll — it does not skip records, so it handles new posts being added between requests. The `nextCursor` is a base64-encoded value that the client passes as a query parameter in the next request.
+Notice the feed uses cursor-based pagination instead of offset-based. Cursor pagination is more efficient for mobile infinite scroll: it does not skip records, so it handles new posts being added between requests. The `nextCursor` is a base64-encoded value that the client passes as a query parameter in the next request.
 
 The response includes `imageWidth` and `imageHeight` so the client can reserve space for the image before it loads, preventing layout shift. This is a small detail that makes a big difference in user experience.
 
 ### Mobile-Specific Considerations
 
 ```javascript
-// Field selection — mobile clients may need fewer fields
+// Field selection: mobile clients may need fewer fields
 router.get("/posts", async (req, res) => {
   const { fields } = req.query;
   const select = fields ? fields.split(",") : undefined;
@@ -578,7 +578,7 @@ router.get("/posts", async (req, res) => {
   res.json({ data: posts });
 });
 
-// Conditional requests — save bandwidth
+// Conditional requests: save bandwidth
 router.get("/posts/:id", async (req, res) => {
   const post = await prisma.post.findUnique({ where: { id: req.params.id } });
 
@@ -592,7 +592,7 @@ router.get("/posts/:id", async (req, res) => {
   res.json({ data: post });
 });
 
-// Batch endpoints — reduce round trips
+// Batch endpoints: reduce round trips
 router.post("/batch", async (req, res) => {
   const { requests } = req.body;
 

@@ -1,4 +1,4 @@
-# Module 8 — Post-Mortems
+# Module 8: Post-Mortems
 
 ## Blameless Culture
 

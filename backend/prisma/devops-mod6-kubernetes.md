@@ -1,4 +1,4 @@
-# Module 6 — Kubernetes Fundamentals
+# Module 6: Kubernetes Fundamentals
 
 ## Why Kubernetes Exists
 
@@ -16,23 +16,23 @@ Kubernetes has two types of nodes: the control plane (master) and worker nodes.
 
 The control plane is the brain of the cluster. It makes decisions about scheduling, scaling, and self-healing. The control plane has four components:
 
-**etcd** — A distributed key-value store that stores all cluster state. Every pod, service, configuration, and secret is stored in etcd. If etcd loses data, the cluster loses its state. etcd uses the Raft consensus algorithm for consistency. You need an odd number of etcd nodes (3, 5, or 7) for quorum.
+**etcd**: A distributed key-value store that stores all cluster state. Every pod, service, configuration, and secret is stored in etcd. If etcd loses data, the cluster loses its state. etcd uses the Raft consensus algorithm for consistency. You need an odd number of etcd nodes (3, 5, or 7) for quorum.
 
-**kube-apiserver** — The front door to the cluster. All communication with the cluster goes through the API server: kubectl commands, dashboard requests, controller updates, and kubelet heartbeats. The API server validates and processes requests, then writes the desired state to etcd.
+**kube-apiserver**: The front door to the cluster. All communication with the cluster goes through the API server: kubectl commands, dashboard requests, controller updates, and kubelet heartbeats. The API server validates and processes requests, then writes the desired state to etcd.
 
-**kube-scheduler** — Decides which node runs each pod. It considers resource requirements, node capacity, affinity/anti-affinity rules, taints and tolerations, and data locality. The scheduler does not run pods — it assigns them to nodes. The kubelet on each node then runs the pod.
+**kube-scheduler**: Decides which node runs each pod. It considers resource requirements, node capacity, affinity/anti-affinity rules, taints and tolerations, and data locality. The scheduler does not run pods: it assigns them to nodes. The kubelet on each node then runs the pod.
 
-**kube-controller-manager** — Runs control loops that reconcile desired state with actual state. If you request 3 replicas and only 2 are running, the controller creates a new one. If a pod fails, the controller replaces it. There are many controllers: deployment, replicaset, node, service, and more.
+**kube-controller-manager**: Runs control loops that reconcile desired state with actual state. If you request 3 replicas and only 2 are running, the controller creates a new one. If a pod fails, the controller replaces it. There are many controllers: deployment, replicaset, node, service, and more.
 
 ### Worker Nodes
 
 Worker nodes run the actual workloads. Each worker node has three components:
 
-**kubelet** — An agent that runs on each node. It communicates with the control plane, receives pod specifications, and manages the container runtime. The kubelet reports node status, pod status, and resource usage back to the control plane.
+**kubelet**: An agent that runs on each node. It communicates with the control plane, receives pod specifications, and manages the container runtime. The kubelet reports node status, pod status, and resource usage back to the control plane.
 
-**kube-proxy** — Maintains network rules on each node. It handles service discovery, load balancing, and network address translation. When a pod connects to a Service, kube-proxy routes the traffic to one of the Service's backing pods.
+**kube-proxy**: Maintains network rules on each node. It handles service discovery, load balancing, and network address translation. When a pod connects to a Service, kube-proxy routes the traffic to one of the Service's backing pods.
 
-**Container runtime** — The software that runs containers. Docker was the original runtime, but Kubernetes now supports containerd, CRI-O, and other runtimes that implement the Container Runtime Interface (CRI). Most Kubernetes distributions use containerd.
+**Container runtime**: The software that runs containers. Docker was the original runtime, but Kubernetes now supports containerd, CRI-O, and other runtimes that implement the Container Runtime Interface (CRI). Most Kubernetes distributions use containerd.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -165,10 +165,10 @@ spec:
 The Service with `type: ClusterIP` is accessible only within the cluster. Pods connect to `my-app-service:80`, and the Service load-balances across all pods with label `app: my-app`.
 
 Service types:
-- **ClusterIP** — Internal only (default)
-- **NodePort** — Exposes the Service on each node's IP at a static port
-- **LoadBalancer** — Provisions an external load balancer (cloud providers)
-- **ExternalName** — Maps the Service to a DNS name
+- **ClusterIP**: Internal only (default)
+- **NodePort**: Exposes the Service on each node's IP at a static port
+- **LoadBalancer**: Provisions an external load balancer (cloud providers)
+- **ExternalName**: Maps the Service to a DNS name
 
 ## Ingress
 
@@ -332,9 +332,9 @@ resources:
 - `memory: "128Mi"` means 128 mebibytes (134 MB). The container is guaranteed at least 128 MiB of memory.
 
 The QoS (Quality of Service) class is determined by the relationship between requests and limits:
-- **Guaranteed** — requests equal limits for all containers. These pods are never killed unless they exceed their limits.
-- **Burstable** — requests less than limits. These pods get their requests guaranteed and can burst up to limits. They are killed before Guaranteed pods when resources are scarce.
-- **BestEffort** — no requests or limits. These pods get whatever resources are left. They are killed first when resources are scarce.
+- **Guaranteed**: requests equal limits for all containers. These pods are never killed unless they exceed their limits.
+- **Burstable**: requests less than limits. These pods get their requests guaranteed and can burst up to limits. They are killed before Guaranteed pods when resources are scarce.
+- **BestEffort**: no requests or limits. These pods get whatever resources are left. They are killed first when resources are scarce.
 
 Always set requests and limits. Without them, a single pod can consume all node resources, starving other pods.
 
@@ -342,9 +342,9 @@ Always set requests and limits. Without them, a single pod can consume all node 
 
 Probes tell Kubernetes whether a container is healthy and ready to receive traffic.
 
-**Liveness probe** — Is the container alive? If the liveness probe fails, Kubernetes restarts the container. Use liveness probes to detect deadlocks, infinite loops, and other conditions where the process is running but not functioning.
+**Liveness probe**: Is the container alive? If the liveness probe fails, Kubernetes restarts the container. Use liveness probes to detect deadlocks, infinite loops, and other conditions where the process is running but not functioning.
 
-**Readiness probe** — Is the container ready to serve traffic? If the readiness probe fails, Kubernetes removes the pod from the Service's endpoints. The pod continues running but does not receive traffic. Use readiness probes to detect when a container is starting up, loading configuration, or warming caches.
+**Readiness probe**: Is the container ready to serve traffic? If the readiness probe fails, Kubernetes removes the pod from the Service's endpoints. The pod continues running but does not receive traffic. Use readiness probes to detect when a container is starting up, loading configuration, or warming caches.
 
 ```yaml
 containers:
@@ -648,10 +648,10 @@ kubectl port-forward svc/my-service 3000:80 # Forward to service
 
 The most useful debugging pattern is:
 
-1. `kubectl get pods` — see what is running
-2. `kubectl describe pod <name>` — see events and conditions
-3. `kubectl logs <name>` — see application output
-4. `kubectl exec -it <name> -- /bin/sh` — inspect the container
+1. `kubectl get pods`: see what is running
+2. `kubectl describe pod <name>`: see events and conditions
+3. `kubectl logs <name>`: see application output
+4. `kubectl exec -it <name> -- /bin/sh`: inspect the container
 
 These four commands solve 90% of Kubernetes debugging.
 

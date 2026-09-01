@@ -1,4 +1,4 @@
-# Module 1 — Infrastructure as Code Fundamentals
+# Module 1: Infrastructure as Code Fundamentals
 
 When you provision infrastructure by hand through a cloud console, you are essentially performing a series of clicks across screens, filling in form fields, selecting dropdown options, and hoping you remember every setting correctly. The first time you do it for a new service, it feels productive. You are building something. The second time you do it for a slightly different environment, it feels redundant. By the fifth time you realize you need to create yet another nearly identical stack of resources, you start wondering why you are doing the same thing over and over when you could just write it down once and let a tool execute it for you.
 
@@ -216,7 +216,7 @@ The S3 backend stores your Terraform state remotely so the whole team can access
 This is the critical step that many teams skip, leading to broken infrastructure. Terraform does not know about resources that were created manually through the console. You need to tell it about them using terraform import.
 
 ```hcl
-# vpc.tf — define the resource block first, matching the current configuration
+# vpc.tf: define the resource block first, matching the current configuration
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true

@@ -1,4 +1,4 @@
-# Module 3 — CI/CD Pipelines
+# Module 3: CI/CD Pipelines
 
 ## What CI/CD Actually Does
 
@@ -317,7 +317,7 @@ The build stage creates deployable artifacts. For Docker-based applications, thi
 
 Build optimization is critical because slow builds waste developer time. Key techniques:
 
-**Layer caching** — Docker caches each layer. Put frequently changing layers (application code) after infrequently changing layers (base image, dependencies). This means dependency installation is cached and only application code is rebuilt.
+**Layer caching**: Docker caches each layer. Put frequently changing layers (application code) after infrequently changing layers (base image, dependencies). This means dependency installation is cached and only application code is rebuilt.
 
 ```dockerfile
 # Bad: dependencies rebuilt on every code change
@@ -330,9 +330,9 @@ RUN npm ci --only=production
 COPY . /app
 ```
 
-**Parallel builds** — If your build has independent components, build them in parallel. GitHub Actions allows parallel jobs. Use `needs: [job1, job2]` to run a job after multiple jobs complete.
+**Parallel builds**: If your build has independent components, build them in parallel. GitHub Actions allows parallel jobs. Use `needs: [job1, job2]` to run a job after multiple jobs complete.
 
-**Build caches** — Use GitHub Actions cache, Docker BuildKit cache, or language-specific caches to avoid rebuilding from scratch. The `cache-from` and `cache-to` options in the Docker build action enable BuildKit caching.
+**Build caches**: Use GitHub Actions cache, Docker BuildKit cache, or language-specific caches to avoid rebuilding from scratch. The `cache-from` and `cache-to` options in the Docker build action enable BuildKit caching.
 
 ### Deploy Stage
 
@@ -340,13 +340,13 @@ Deployment should be boring. If deploying is exciting, something is wrong. The d
 
 Common deployment strategies:
 
-**Rolling deployment** — Gradually replace old instances with new ones. The application runs both old and new versions simultaneously during deployment. This is the default strategy for most platforms.
+**Rolling deployment**: Gradually replace old instances with new ones. The application runs both old and new versions simultaneously during deployment. This is the default strategy for most platforms.
 
-**Blue-green deployment** — Deploy the new version to a separate environment, switch traffic, then tear down the old version. This allows instant rollback by switching traffic back.
+**Blue-green deployment**: Deploy the new version to a separate environment, switch traffic, then tear down the old version. This allows instant rollback by switching traffic back.
 
-**Canary deployment** — Deploy to a small subset of users first, monitor for errors, then gradually expand. This limits the blast radius of bad deployments.
+**Canary deployment**: Deploy to a small subset of users first, monitor for errors, then gradually expand. This limits the blast radius of bad deployments.
 
-**Recreate deployment** — Stop all old instances, deploy new ones. This causes downtime and should only be used when the application cannot run multiple versions simultaneously (usually due to database schema changes).
+**Recreate deployment**: Stop all old instances, deploy new ones. This causes downtime and should only be used when the application cannot run multiple versions simultaneously (usually due to database schema changes).
 
 The choice depends on your application's requirements. Most web applications support rolling or blue-green deployments. Canary deployments are valuable for high-traffic applications where even a small percentage of errors affects many users.
 
@@ -387,7 +387,7 @@ jobs:
 
 In the parallel example, test and security run simultaneously. The total time is the same because build waits for both, but the developer gets feedback faster because security results appear while tests are still running.
 
-The optimal strategy depends on your pipeline. If security scanning is slow, parallelize it with testing. If building is slow, parallelize independent build steps. The goal is to reduce the critical path — the longest sequence of dependent jobs.
+The optimal strategy depends on your pipeline. If security scanning is slow, parallelize it with testing. If building is slow, parallelize independent build steps. The goal is to reduce the critical path: the longest sequence of dependent jobs.
 
 ## Environment-Specific Deployments
 
@@ -500,7 +500,7 @@ Manual approval steps before production deployment are sometimes necessary for c
 
 Deploying without a rollback plan is like skydiving without a parachute. You might be fine, but when you are not, you are really not.
 
-**Fix:** Every deployment should have a documented and tested rollback procedure. The rollback should be a single command or a one-click operation. Test your rollback process regularly — it is not enough to have one if it does not work.
+**Fix:** Every deployment should have a documented and tested rollback procedure. The rollback should be a single command or a one-click operation. Test your rollback process regularly: it is not enough to have one if it does not work.
 
 ### Treating CI as a Testing Platform
 
@@ -531,9 +531,9 @@ The fix:
 
 The result: pipeline execution time dropped from 45 minutes to 7 minutes. Developer productivity doubled because they could make more commits per day without context-switching. The team later optimized further to get deployment under 5 minutes by pre-building Docker images on feature branches and only running smoke tests on the main branch.
 
-The key insight was that pipeline optimization is not about one big change — it is about many small improvements that compound. Caching saves minutes. Parallelization saves minutes. Each optimization is modest, but together they transform the developer experience.
+The key insight was that pipeline optimization is not about one big change: it is about many small improvements that compound. Caching saves minutes. Parallelization saves minutes. Each optimization is modest, but together they transform the developer experience.
 
-The team also learned that pipeline optimization is an ongoing process, not a one-time project. As the codebase grew, new bottlenecks appeared. They added pipeline metrics to track execution time per stage, and when a stage exceeded its budget, they investigated and optimized. The pipeline became a first-class artifact — version controlled, tested, and continuously improved just like application code.
+The team also learned that pipeline optimization is an ongoing process, not a one-time project. As the codebase grew, new bottlenecks appeared. They added pipeline metrics to track execution time per stage, and when a stage exceeded its budget, they investigated and optimized. The pipeline became a first-class artifact: version controlled, tested, and continuously improved just like application code.
 
 ## Assessment
 

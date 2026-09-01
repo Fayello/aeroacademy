@@ -1,6 +1,6 @@
-# Module 1 — Kubernetes Architecture
+# Module 1: Kubernetes Architecture
 
-When you SSH into a Kubernetes node for the first time, it looks like any other Linux machine. Packages installed, services running, network interfaces up. But beneath that familiar surface sits a distributed system that coordinates thousands of containers across dozens of machines without breaking a sweat. Understanding how Kubernetes works under the hood isn't academic — it's the difference between troubleshooting a production outage in minutes versus hours.
+When you SSH into a Kubernetes node for the first time, it looks like any other Linux machine. Packages installed, services running, network interfaces up. But beneath that familiar surface sits a distributed system that coordinates thousands of containers across dozens of machines without breaking a sweat. Understanding how Kubernetes works under the hood isn't academic: it's the difference between troubleshooting a production outage in minutes versus hours.
 
 This module breaks down every component you'll encounter in a Kubernetes cluster, what each one does, how they talk to each other, and what happens when things go wrong.
 
@@ -10,7 +10,7 @@ The control plane is the brain of your cluster. It's where all the decisions are
 
 ### API Server (kube-apiserver)
 
-The API server is the front door to your cluster. Every interaction — from a human running `kubectl get pods` to a kubelet reporting node status — goes through the API server. There is no backdoor. No component talks to etcd directly. Everything flows through this single chokepoint.
+The API server is the front door to your cluster. Every interaction: from a human running `kubectl get pods` to a kubelet reporting node status: goes through the API server. There is no backdoor. No component talks to etcd directly. Everything flows through this single chokepoint.
 
 The API server is an HTTP/HTTPS server that exposes a RESTful API. When you run `kubectl apply -f deployment.yaml`, here's what actually happens:
 
@@ -24,7 +24,7 @@ The API server is an HTTP/HTTPS server that exposes a RESTful API. When you run 
 
 That's a lot of steps for one `kubectl apply`. Each step can fail, and each failure produces a different error message. When you see `Error from server (Forbidden)`, that's an authorization failure. When you see `Error from server (BadRequest)`, that's a schema validation failure. Knowing which step failed saves you hours of debugging.
 
-The API server also maintains watch connections. Controllers and schedulers don't poll the API server — they open long-lived HTTP connections and receive events whenever a resource changes. This is how Kubernetes reacts to changes in near-real-time without wasting resources on polling.
+The API server also maintains watch connections. Controllers and schedulers don't poll the API server: they open long-lived HTTP connections and receive events whenever a resource changes. This is how Kubernetes reacts to changes in near-real-time without wasting resources on polling.
 
 In a production cluster, you typically run the API server behind a load balancer. The standard setup is three API server instances behind an HAProxy or nginx load balancer, with keepalived managing the virtual IP. Here's what a minimal API server configuration looks like on a control plane node:
 
@@ -79,13 +79,13 @@ spec:
     name: ca-certs
 ```
 
-Notice the `--authorization-mode=Node,RBAC` flag. This means the API server uses two authorizers: the Node authorizer lets kubelets read pods and services assigned to their node, and RBAC handles everything else. The order matters — the first authorizer that grants access wins.
+Notice the `--authorization-mode=Node,RBAC` flag. This means the API server uses two authorizers: the Node authorizer lets kubelets read pods and services assigned to their node, and RBAC handles everything else. The order matters: the first authorizer that grants access wins.
 
 The `--enable-admission-plugins=NodeRestriction,PodSecurity` flag enables two critical plugins. NodeRestriction prevents kubelets from modifying nodes or pods they don't own. PodSecurity enforces pod security standards (which we cover in Module 2).
 
 ### etcd
 
-etcd is the only state store in your cluster. Every object — pods, services, secrets, configmaps, RBAC roles — lives in etcd. If etcd dies and you have no backup, your cluster is gone. Not paused. Not degraded. Gone.
+etcd is the only state store in your cluster. Every object: pods, services, secrets, configmaps, RBAC roles: lives in etcd. If etcd dies and you have no backup, your cluster is gone. Not paused. Not degraded. Gone.
 
 etcd is a distributed key-value store based on the Raft consensus algorithm. It requires a quorum to operate: with 3 etcd nodes, you can lose 1 and keep running. With 5 nodes, you can lose 2. Even-numbered clusters don't add availability (3 nodes is the same availability as 4 nodes), so always run an odd number.
 
@@ -104,7 +104,7 @@ ETCDCTL_API=3 etcdctl \
 
 The output shows the health of each etcd endpoint. If you see `is healthy`, you're good. If you see `failed to dial`, the etcd process on that node is down or unreachable.
 
-etcd stores data in a BoltDB file on disk. The default location is `/var/lib/etcd/member/wal/`. Backing up etcd means copying this data. We cover backup and restore in Module 9, but the key point here is that etcd is your cluster's single source of truth. Treat it like a database — because that's exactly what it is.
+etcd stores data in a BoltDB file on disk. The default location is `/var/lib/etcd/member/wal/`. Backing up etcd means copying this data. We cover backup and restore in Module 9, but the key point here is that etcd is your cluster's single source of truth. Treat it like a database: because that's exactly what it is.
 
 Performance matters. etcd defaults to a 2GB database size with an 8GB quota backend. For most clusters, that's plenty. If you're running a massive cluster with thousands of nodes, you might need to tune these values. Slow disks are the number one cause of etcd performance problems. Use SSDs. Always.
 
@@ -177,7 +177,7 @@ On self-managed clusters, you don't need the cloud controller manager unless you
 
 ## Node Components
 
-Every node in your cluster — whether it's a control plane node or a worker node — runs these components.
+Every node in your cluster: whether it's a control plane node or a worker node: runs these components.
 
 ### kubelet
 
@@ -222,9 +222,9 @@ rotateCertificates: true
 staticPodPath: /etc/kubernetes/manifests
 ```
 
-Notice `evictionHard`. These thresholds tell kubelet when to evict pods to protect the node. If memory drops below 100Mi free, kubelet starts killing pods — starting with the lowest priority ones. Understanding these thresholds is critical for capacity planning.
+Notice `evictionHard`. These thresholds tell kubelet when to evict pods to protect the node. If memory drops below 100Mi free, kubelet starts killing pods: starting with the lowest priority ones. Understanding these thresholds is critical for capacity planning.
 
-kubelet also manages static pods. Static pods are defined in YAML files in `/etc/kubernetes/manifests/` and are always managed by kubelet, regardless of the API server. This is how the control plane bootstraps itself — the API server, etcd, scheduler, and controller manager all start as static pods.
+kubelet also manages static pods. Static pods are defined in YAML files in `/etc/kubernetes/manifests/` and are always managed by kubelet, regardless of the API server. This is how the control plane bootstraps itself: the API server, etcd, scheduler, and controller manager all start as static pods.
 
 ### kube-proxy
 
@@ -251,7 +251,7 @@ iptables -t nat -KUBERNETICS-PORTAL -L
 ipvsadm -Ln
 ```
 
-When a Service is created, kube-proxy adds rules. When a pod is created or deleted, kube-proxy updates the endpoint list in those rules. This is why Service changes aren't instant — kube-proxy needs time to update the rules on every node.
+When a Service is created, kube-proxy adds rules. When a pod is created or deleted, kube-proxy updates the endpoint list in those rules. This is why Service changes aren't instant: kube-proxy needs time to update the rules on every node.
 
 The kube-proxy DaemonSet runs one pod per node. You can see it:
 
@@ -291,7 +291,7 @@ CRI-O communicates over `/var/run/crio/crio.sock`. The commands are similar to c
 
 ### Choosing a Runtime
 
-For new deployments, containerd is the safe choice. It's well-tested, widely supported, and the default in kubeadm. CRI-O is an excellent choice if you want a minimal runtime. The runtime doesn't affect which containers you can run — both support OCI images.
+For new deployments, containerd is the safe choice. It's well-tested, widely supported, and the default in kubeadm. CRI-O is an excellent choice if you want a minimal runtime. The runtime doesn't affect which containers you can run: both support OCI images.
 
 ## Cluster Networking
 
@@ -592,11 +592,11 @@ Kubernetes architecture is a collection of well-defined components, each with a 
 
 Understanding this architecture means you can troubleshoot any issue by identifying which component is involved. A scheduling problem? Check the scheduler. A networking issue? Check kube-proxy and CNI. A state problem? Check etcd.
 
-When you move to production, the architecture doesn't change — you just add more nodes, more redundancy, and more monitoring. The same components run, the same protocols are used, the same control loops operate. Mastering the architecture means mastering the platform.
+When you move to production, the architecture doesn't change: you just add more nodes, more redundancy, and more monitoring. The same components run, the same protocols are used, the same control loops operate. Mastering the architecture means mastering the platform.
 
 ## Assessment
 
-### Lab 1 — Cluster Inspection (30 minutes)
+### Lab 1: Cluster Inspection (30 minutes)
 
 1. SSH into the provided lab cluster and run `kubectl get nodes -o wide`. Record the Kubernetes version, container runtime, and OS for each node.
 2. List all static pod manifests on a control plane node (`/etc/kubernetes/manifests/`). Identify which component each manifest corresponds to.
@@ -606,7 +606,7 @@ When you move to production, the architecture doesn't change — you just add mo
 
 **Grading**: 10 points. 2 points per task. Full credit for correct commands, accurate observations, and clear explanations.
 
-### Lab 2 — Troubleshooting Scenarios (45 minutes)
+### Lab 2: Troubleshooting Scenarios (45 minutes)
 
 1. The instructor will break a pod (wrong image tag). Diagnose the issue using `kubectl describe`, `kubectl logs`, and `kubectl get events`. Write a fix.
 2. A node will be cordoned and drained. Observe how pods are rescheduled. Record which controller handles the rescheduling.
@@ -616,7 +616,7 @@ When you move to production, the architecture doesn't change — you just add mo
 
 **Grading**: 15 points. 3 points per task. Full credit for accurate diagnosis, correct fixes, and clear explanations.
 
-### Lab 3 — Production Cluster Design (30 minutes)
+### Lab 3: Production Cluster Design (30 minutes)
 
 1. Given a set of requirements (10 applications, 500 pods, 500GB storage, HA requirements), design a cluster layout: how many control plane nodes, how many worker nodes, what node sizes.
 2. Write the kubeadm initialization command with appropriate flags for this cluster.

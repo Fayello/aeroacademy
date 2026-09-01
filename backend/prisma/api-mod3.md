@@ -1,6 +1,6 @@
-# Module 3 — Authentication
+# Module 3: Authentication
 
-Authentication is the process of verifying that a caller is who they claim to be. It is the front door of your API. If the front door is broken — if tokens are guessable, if keys are logged in plaintext, if sessions can be hijacked — nothing else you build matters. This module covers the three authentication mechanisms you will encounter in practice: API keys, OAuth 2.0, and JSON Web Tokens (JWT). We will look at how each one works, where each one fails, and how to implement them correctly.
+Authentication is the process of verifying that a caller is who they claim to be. It is the front door of your API. If the front door is broken: if tokens are guessable, if keys are logged in plaintext, if sessions can be hijacked: nothing else you build matters. This module covers the three authentication mechanisms you will encounter in practice: API keys, OAuth 2.0, and JSON Web Tokens (JWT). We will look at how each one works, where each one fails, and how to implement them correctly.
 
 The first thing to understand about authentication is the distinction between authentication and authorization. Authentication answers the question "Who are you?" Authorization answers "What are you allowed to do?" This module is about the first question. Module 4 covers the second.
 
@@ -54,7 +54,7 @@ API keys are appropriate for:
 
 ### API Key Best Practices
 
-If you use API keys (and you will — they are unavoidable for many use cases), follow these practices:
+If you use API keys (and you will: they are unavoidable for many use cases), follow these practices:
 
 **Generate keys with sufficient entropy.** A 32-character hexadecimal string provides 128 bits of entropy, which is sufficient against brute-force attacks. Do not use sequential IDs, timestamps, or predictable patterns.
 
@@ -119,13 +119,13 @@ OAuth solves this by introducing a delegation model. The pilot never shares thei
 
 ### OAuth 2.0 Roles
 
-**Resource Owner** — The user who owns the data. In our example, the pilot.
+**Resource Owner**: The user who owns the data. In our example, the pilot.
 
-**Client** — The application requesting access. In our example, the flight training app.
+**Client**: The application requesting access. In our example, the flight training app.
 
-**Authorization Server** — The server that authenticates the resource owner and issues tokens. In our example, the aviation database's auth server.
+**Authorization Server**: The server that authenticates the resource owner and issues tokens. In our example, the aviation database's auth server.
 
-**Resource Server** — The server hosting the protected resources. In our example, the aviation database's API server.
+**Resource Server**: The server hosting the protected resources. In our example, the aviation database's API server.
 
 ### OAuth 2.0 Flows
 
@@ -221,7 +221,7 @@ The authorization server validates the refresh token and returns a new access to
 
 ### OAuth 2.0 Security Considerations
 
-**Always use HTTPS.** OAuth tokens are bearer tokens — anyone who possesses one can use it. If tokens are transmitted over HTTP, they can be intercepted. Every OAuth endpoint must require HTTPS.
+**Always use HTTPS.** OAuth tokens are bearer tokens: anyone who possesses one can use it. If tokens are transmitted over HTTP, they can be intercepted. Every OAuth endpoint must require HTTPS.
 
 **Validate the `redirect_uri`.** The authorization server must validate that the `redirect_uri` in the authorization request matches a pre-registered URI for the client. An attacker could craft a malicious authorization request with a `redirect_uri` pointing to their own server, intercepting the authorization code.
 
@@ -280,13 +280,13 @@ The signature is computed over the header and payload using the algorithm specif
 
 ### Standard JWT Claims
 
-- `iss` (issuer) — Who issued the token
-- `sub` (subject) — Who the token is about (the user ID)
-- `aud` (audience) — Who the token is intended for (the API)
-- `exp` (expiration) — When the token expires (Unix timestamp)
-- `iat` (issued at) — When the token was issued (Unix timestamp)
-- `nbf` (not before) — When the token becomes valid (Unix timestamp)
-- `jti` (JWT ID) — Unique identifier for the token (used for token revocation)
+- `iss` (issuer): Who issued the token
+- `sub` (subject): Who the token is about (the user ID)
+- `aud` (audience): Who the token is intended for (the API)
+- `exp` (expiration): When the token expires (Unix timestamp)
+- `iat` (issued at): When the token was issued (Unix timestamp)
+- `nbf` (not before): When the token becomes valid (Unix timestamp)
+- `jti` (JWT ID): Unique identifier for the token (used for token revocation)
 
 ### JWT Validation
 
@@ -519,9 +519,9 @@ function authenticateApiKey(req, res, next) {
 
 Consider a flight training platform that needs to support three types of clients:
 
-1. **The web application** — needs to act on behalf of logged-in users
-2. **Mobile applications** — need to act on behalf of logged-in users, with token refresh
-3. **Third-party simulation software** — needs API access for integration
+1. **The web application**: needs to act on behalf of logged-in users
+2. **Mobile applications**: need to act on behalf of logged-in users, with token refresh
+3. **Third-party simulation software**: needs API access for integration
 
 The authentication architecture:
 

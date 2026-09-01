@@ -1,4 +1,4 @@
-# Module 10 — Performance
+# Module 10: Performance
 
 A slow application is a broken application. Users leave after 3 seconds. Search engines penalize slow pages. Every millisecond of latency costs revenue. This module covers code splitting, caching strategies, database optimization, and how to measure and improve application performance.
 
@@ -12,7 +12,7 @@ Performance falls into three categories: how fast the page loads (network), how 
 
 Network performance is about how much data you send and how quickly it arrives. Reducing bundle size, compressing responses, using a CDN, and enabling HTTP/2 all improve network performance. JavaScript execution performance is about how efficiently the browser runs your code. Minimizing main thread work, breaking up long tasks, and using Web Workers for heavy computation all improve execution performance. Rendering performance is about how quickly the browser paints pixels on the screen. Minimizing DOM mutations, avoiding layout thrashing, and using CSS containment all improve rendering performance.
 
-The relationship between performance and business metrics is well-documented. Amazon found that every 100ms of latency cost them 1% in sales. Google found that a 0.5-second delay in search results reduced traffic by 20%. Pinterest found that reducing wait times by 40% increased signups by 15%. These are not abstract numbers — they represent real revenue and real user growth.
+The relationship between performance and business metrics is well-documented. Amazon found that every 100ms of latency cost them 1% in sales. Google found that a 0.5-second delay in search results reduced traffic by 20%. Pinterest found that reducing wait times by 40% increased signups by 15%. These are not abstract numbers: they represent real revenue and real user growth.
 
 Performance optimization is an ongoing process, not a one-time task. As your application grows, new performance bottlenecks emerge. New features add code to the bundle. New queries add load to the database. New traffic patterns expose scaling limits. You need to monitor performance continuously and address regressions before they affect users.
 
@@ -23,10 +23,10 @@ Performance optimization is an ongoing process, not a one-time task. As your app
 Core Web Vitals are the metrics that Google uses to rank pages in search results. They measure real user experience, not synthetic benchmarks.
 
 ```javascript
-// Core Web Vitals — the metrics that matter
-// LCP (Largest Contentful Paint) — how fast the main content loads
-// FID (First Input Delay) — how fast the page responds to interaction
-// CLS (Cumulative Layout Shift) — how much the page jumps around
+// Core Web Vitals: the metrics that matter
+// LCP (Largest Contentful Paint): how fast the main content loads
+// FID (First Input Delay): how fast the page responds to interaction
+// CLS (Cumulative Layout Shift): how much the page jumps around
 
 // Measure in your application
 function reportWebVitals() {
@@ -118,7 +118,7 @@ function App() {
 }
 ```
 
-React.lazy takes a function that returns a dynamic import. When the component is first rendered, React loads the chunk. Suspense shows the fallback while the chunk loads. This is transparent to the rest of your code — the lazy-loaded component works exactly like a regular component.
+React.lazy takes a function that returns a dynamic import. When the component is first rendered, React loads the chunk. Suspense shows the fallback while the chunk loads. This is transparent to the rest of your code: the lazy-loaded component works exactly like a regular component.
 
 ### Lazy Loading Components
 
@@ -198,7 +198,7 @@ export default defineConfig({
 });
 ```
 
-Manual chunks group frequently used libraries into separate files. The vendor chunk rarely changes, so the browser caches it for a long time. When you update your application code, only the application chunk changes — users do not re-download React.
+Manual chunks group frequently used libraries into separate files. The vendor chunk rarely changes, so the browser caches it for a long time. When you update your application code, only the application chunk changes: users do not re-download React.
 
 ## Caching Strategies
 
@@ -224,7 +224,7 @@ app.get("/api/products", async (req, res) => {
     return res.json(JSON.parse(cached));
   }
 
-  // Cache miss — query database
+  // Cache miss: query database
   const products = await Product.find(req.query);
   
   // Store in cache for 5 minutes
@@ -256,11 +256,11 @@ app.get("/api/posts/:id", async (req, res) => {
 });
 
 // Cache-Control directives
-// public — can be cached by any cache (CDN, browser)
-// private — can only be cached by the user's browser
-// no-cache — must revalidate with server before using cached version
-// no-store — never cache
-// max-age — how long to cache (in seconds)
+// public: can be cached by any cache (CDN, browser)
+// private: can only be cached by the user's browser
+// no-cache: must revalidate with server before using cached version
+// no-store: never cache
+// max-age: how long to cache (in seconds)
 ```
 
 ETag caching works by sending a hash of the response. The client sends the hash back with its next request. If the hash matches, the server returns 304 (not modified) with no body. This saves bandwidth without sacrificing freshness.
@@ -349,15 +349,15 @@ The most impactful optimization is usually adding the right index. An index is a
 
 Query optimization is the second most impactful improvement. Select only the columns you need instead of selecting all columns. Use LIMIT to restrict the number of rows returned. Avoid N+1 queries by using JOINs or batch loading. Use aggregation queries instead of fetching all rows and computing in application code. These changes can reduce query time from seconds to milliseconds.
 
-Connection pooling is the third optimization. Establishing a new database connection takes 50-200ms. Connection pooling keeps a cache of open connections that can be reused. When your application needs to query the database, it borrows a connection from the pool, uses it, and returns it. This eliminates the connection overhead for every request. Most database drivers have built-in connection pooling — you just need to configure the pool size.
+Connection pooling is the third optimization. Establishing a new database connection takes 50-200ms. Connection pooling keeps a cache of open connections that can be reused. When your application needs to query the database, it borrows a connection from the pool, uses it, and returns it. This eliminates the connection overhead for every request. Most database drivers have built-in connection pooling: you just need to configure the pool size.
 
 ### Indexing
 
 ```javascript
-// Without index — full table scan (slow)
+// Without index: full table scan (slow)
 const users = await User.find({ email: "alice@example.com" });
 
-// With index — index lookup (fast)
+// With index: index lookup (fast)
 userSchema.index({ email: 1 });
 
 // Compound indexes for common query patterns
@@ -371,31 +371,31 @@ const explanation = await User.find({ email: "alice@example.com" }).explain("exe
 console.log(explanation.queryPlanner.winningPlan);
 ```
 
-The `explain()` method shows you how MongoDB executes the query. Look for `"stage": "IXSCAN"` (index scan) — this means the index is being used. If you see `"stage": "COLLSCAN"` (collection scan), the query is scanning every document, which means you need an index.
+The `explain()` method shows you how MongoDB executes the query. Look for `"stage": "IXSCAN"` (index scan): this means the index is being used. If you see `"stage": "COLLSCAN"` (collection scan), the query is scanning every document, which means you need an index.
 
 Compound indexes follow the ESR rule: Equality fields first, Sort fields second, Range fields third. For a query that filters by `role`, sorts by `createdAt`, and ranges on `dateJoined`, the index should be `{ role: 1, createdAt: -1, dateJoined: 1 }`.
 
 ### Query Optimization
 
 ```javascript
-// Bad — fetches all fields
+// Bad: fetches all fields
 const users = await User.find({ role: "admin" });
 
-// Good — only fetches needed fields
+// Good: only fetches needed fields
 const users = await User.find({ role: "admin" })
   .select("name email createdAt")
   .lean();
 
-// Bad — N+1 query problem
+// Bad: N+1 query problem
 const posts = await Post.find();
 for (const post of posts) {
   post.author = await User.findById(post.authorId); // N queries
 }
 
-// Good — populate in one query
+// Good: populate in one query
 const posts = await Post.find().populate("author", "name email");
 
-// Good — aggregate pipeline
+// Good: aggregate pipeline
 const stats = await Post.aggregate([
   { $match: { published: true } },
   { $lookup: {
@@ -442,12 +442,12 @@ setInterval(() => {
 ### Pagination Optimization
 
 ```javascript
-// Offset pagination — slow for large datasets
+// Offset pagination: slow for large datasets
 const products = await Product.find()
   .skip(10000) // Skips 10,000 documents (slow)
   .limit(20);
 
-// Cursor pagination — fast regardless of position
+// Cursor pagination: fast regardless of position
 const products = await Product.find({
   _id: { $gt: lastId } // Uses index efficiently
 })
@@ -464,7 +464,7 @@ Let us optimize a dashboard page that currently takes 8 seconds to load.
 ### Before Optimization
 
 ```javascript
-// Slow endpoint — multiple sequential queries, no caching
+// Slow endpoint: multiple sequential queries, no caching
 app.get("/api/dashboard", async (req, res) => {
   const users = await User.find(); // Fetches ALL users
   const posts = await Post.find(); // Fetches ALL posts
@@ -482,12 +482,12 @@ app.get("/api/dashboard", async (req, res) => {
 });
 ```
 
-This endpoint has three problems. First, it fetches all documents from three collections — potentially millions of records — just to count them and find a few. Second, the queries run sequentially — each waits for the previous one to finish. Third, there is no caching — every request hits the database.
+This endpoint has three problems. First, it fetches all documents from three collections: potentially millions of records: just to count them and find a few. Second, the queries run sequentially: each waits for the previous one to finish. Third, there is no caching: every request hits the database.
 
 ### After Optimization
 
 ```javascript
-// Optimized endpoint — targeted queries, caching, lean
+// Optimized endpoint: targeted queries, caching, lean
 app.get("/api/dashboard", async (req, res) => {
   const cached = await cache.get("dashboard:stats");
   if (cached) {
@@ -574,7 +574,7 @@ The `loading="lazy"` attribute on images tells the browser to defer loading unti
 ### Bundle Analysis
 
 ```javascript
-// vite.config.js — analyze bundle size
+// vite.config.js: analyze bundle size
 import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
@@ -591,7 +591,7 @@ Run the bundle analyzer to see what is in your bundle. You might find that a lib
 
 ### Performance Budget
 
-A performance budget sets limits on bundle sizes. If a pull request increases the bundle beyond the budget, CI fails. This prevents gradual performance degradation — the kind that happens when every developer adds "just one more small library" until the bundle is 2MB.
+A performance budget sets limits on bundle sizes. If a pull request increases the bundle beyond the budget, CI fails. This prevents gradual performance degradation: the kind that happens when every developer adds "just one more small library" until the bundle is 2MB.
 
 Performance budgets work at multiple levels. At the bundle level, you set maximum sizes for the initial load, vendor chunk, and per-route chunks. At the metric level, you set maximum values for LCP, FID, and CLS. At the resource level, you set maximum sizes for individual files (no single JavaScript file should exceed 100KB).
 
@@ -615,9 +615,9 @@ Performance budgets work at multiple levels. At the bundle level, you set maximu
 
 When a budget is exceeded, the CI pipeline should fail with a clear error message indicating which file or metric exceeded the budget and by how much. This gives the developer actionable information to fix the issue. Common fixes include removing unused dependencies, replacing heavy libraries with lighter alternatives, splitting large bundles into smaller chunks, and lazy-loading non-critical code.
 
-Performance budgets should be reviewed and adjusted periodically. As your application grows, your budgets may need to be relaxed. As you optimize, you may be able to tighten them. The goal is not to hit a specific number — it is to prevent regressions and maintain awareness of performance.
+Performance budgets should be reviewed and adjusted periodically. As your application grows, your budgets may need to be relaxed. As you optimize, you may be able to tighten them. The goal is not to hit a specific number: it is to prevent regressions and maintain awareness of performance.
 
-A performance budget sets limits on bundle sizes. If a pull request increases the bundle beyond the budget, CI fails. This prevents gradual performance degradation — the kind that happens when every developer adds "just one more small library" until the bundle is 2MB.
+A performance budget sets limits on bundle sizes. If a pull request increases the bundle beyond the budget, CI fails. This prevents gradual performance degradation: the kind that happens when every developer adds "just one more small library" until the bundle is 2MB.
 
 ## Assessment
 
@@ -628,10 +628,10 @@ A performance budget sets limits on bundle sizes. If a pull request increases th
 You are given a slow application with the following issues:
 
 1. A dashboard page that loads all data sequentially (8+ second load time).
-2. No code splitting — entire application is one bundle (500kb+).
-3. No caching — every request hits the database.
-4. Missing indexes — queries are doing full table scans.
-5. Images are not optimized — large images load on every page.
+2. No code splitting: entire application is one bundle (500kb+).
+3. No caching: every request hits the database.
+4. Missing indexes: queries are doing full table scans.
+5. Images are not optimized: large images load on every page.
 
 **Optimize the following:**
 

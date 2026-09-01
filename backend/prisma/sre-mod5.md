@@ -1,4 +1,4 @@
-# Module 5 — Capacity Planning
+# Module 5: Capacity Planning
 
 ## Why Capacity Planning Matters
 

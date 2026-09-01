@@ -1,6 +1,6 @@
-# Module 7 — Backup and Recovery
+# Module 7: Backup and Recovery
 
-There are two types of sysadmins: those who have experienced data loss, and those who will. The difference between a minor inconvenience and a career-ending disaster is whether you have tested backups. This module covers backup strategies, tools, database backups, disaster recovery planning, and the critical step most sysadmins skip — verifying that your backups actually work. You will learn to build a complete backup system with automated verification and disaster recovery procedures.
+There are two types of sysadmins: those who have experienced data loss, and those who will. The difference between a minor inconvenience and a career-ending disaster is whether you have tested backups. This module covers backup strategies, tools, database backups, disaster recovery planning, and the critical step most sysadmins skip: verifying that your backups actually work. You will learn to build a complete backup system with automated verification and disaster recovery procedures.
 
 ## Backup Strategies
 
@@ -97,7 +97,7 @@ A backup you have not tested is not a backup. Build verification into your backu
 
 ### Backup Monitoring
 
-Add checks to your monitoring system: verify backups exist and are recent with `find` and `-mtime`, check for zero-byte backups (which indicate failed backup processes), and monitor backup logs for errors. Set up alerts for missed backups — if a backup fails at 2 AM and nobody checks until the next disaster, the backup is useless.
+Add checks to your monitoring system: verify backups exist and are recent with `find` and `-mtime`, check for zero-byte backups (which indicate failed backup processes), and monitor backup logs for errors. Set up alerts for missed backups: if a backup fails at 2 AM and nobody checks until the next disaster, the backup is useless.
 
 ### Automated Verification Script
 
@@ -156,7 +156,7 @@ restic and borgbackup encrypt by default. When initializing a repository, you se
 
 ### Key Management for Backup Encryption
 
-Store encryption keys in a secure location separate from the backups. Options include: printed copy in a safe, password manager, dedicated key server, or sealed envelope with a trusted third party. Test key recovery periodically — an encrypted backup without the key is as good as lost.
+Store encryption keys in a secure location separate from the backups. Options include: printed copy in a safe, password manager, dedicated key server, or sealed envelope with a trusted third party. Test key recovery periodically: an encrypted backup without the key is as good as lost.
 
 ## Backup Network Considerations
 

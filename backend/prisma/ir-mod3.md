@@ -1,10 +1,10 @@
-# Module 3 — Containment
+# Module 3: Containment
 
 Containment is the phase where you stop the attacker from doing more damage. It involves difficult decisions made under time pressure with incomplete information. Get it right and you limit the blast radius. Get it wrong and you either let the attacker continue operating or you disrupt business operations unnecessarily. This module covers network isolation techniques, account lockdown, evidence preservation during containment, the tradeoffs between short-term and long-term containment, and how to make containment decisions when you do not have all the facts.
 
 ## Why Containment Is Hard
 
-Containment is not a binary decision. You cannot simply "contain the incident" — you need to decide what to contain, how aggressively to contain it, and when to contain it. Every containment action has a cost. Isolating a server stops the attacker but also stops legitimate users. Blocking an IP address prevents the attacker from communicating but might also block a partner or vendor. Forcing a password reset protects an account but disrupts the user.
+Containment is not a binary decision. You cannot simply "contain the incident": you need to decide what to contain, how aggressively to contain it, and when to contain it. Every containment action has a cost. Isolating a server stops the attacker but also stops legitimate users. Blocking an IP address prevents the attacker from communicating but might also block a partner or vendor. Forcing a password reset protects an account but disrupts the user.
 
 The challenge is that you are making these decisions with incomplete information. You do not know exactly what the attacker has done, how many systems they control, or what their objectives are. You are making probabilistic decisions under uncertainty, and the stakes are high.
 
@@ -16,7 +16,7 @@ Network isolation is the most common containment action. The goal is to cut the 
 
 ### Full System Isolation
 
-Full system isolation disconnects a system from all networks. This is the most aggressive form of containment and is appropriate when you have high confidence that a system is compromised and you need to prevent any communication — inbound or outbound.
+Full system isolation disconnects a system from all networks. This is the most aggressive form of containment and is appropriate when you have high confidence that a system is compromised and you need to prevent any communication: inbound or outbound.
 
 On Windows systems, you can disable the network adapter through Device Manager or via PowerShell. This is faster than physically disconnecting the network cable and can be done remotely. The command `Disable-NetAdapter -Name "Ethernet" -Confirm:$false` disables the primary network adapter immediately.
 
@@ -46,7 +46,7 @@ Your network infrastructure provides several containment mechanisms.
 
 **Firewall rules** are the most common containment tool. You can add rules to block traffic between specific IPs, subnets, or ports. Most firewalls allow rule changes to be pushed immediately, making this a fast containment option.
 
-**DNS sinkholing** redirects the attacker's C2 domains to an IP you control. This prevents the malware from reaching its C2 server while allowing you to monitor for infected systems that attempt to connect. Sinkholing is particularly useful for detecting the full scope of an infection — every system that queries the sinkholed domain is likely compromised.
+**DNS sinkholing** redirects the attacker's C2 domains to an IP you control. This prevents the malware from reaching its C2 server while allowing you to monitor for infected systems that attempt to connect. Sinkholing is particularly useful for detecting the full scope of an infection: every system that queries the sinkholed domain is likely compromised.
 
 **BGP blackholing** drops all traffic to a specific IP prefix. This is a network-level containment option that is useful for containing distributed attacks or compromised systems that are generating large volumes of traffic. BGP blackholing affects all traffic to the destination, so it is a blunt instrument.
 
@@ -66,7 +66,7 @@ Service accounts require special attention. Service account passwords are often 
 
 ### Account Disabling
 
-Disabling an account completely prevents anyone — including the attacker — from using it. This is more aggressive than a password reset and is appropriate when you need to ensure the account cannot be used while you investigate.
+Disabling an account completely prevents anyone: including the attacker: from using it. This is more aggressive than a password reset and is appropriate when you need to ensure the account cannot be used while you investigate.
 
 Disable the account at the identity provider or Active Directory level. Check for any session tokens or cookies that might still be valid. Some systems honor session tokens even after the account is disabled, so you may need to explicitly revoke sessions.
 
@@ -86,7 +86,7 @@ Review Group Policy for unauthorized changes. Attackers sometimes modify Group P
 
 ## Evidence Preservation During Containment
 
-Containment and evidence preservation often conflict. The fastest containment action — pulling the plug — destroys volatile evidence. The best evidence preservation — leaving the system running — allows the attacker to continue operating. You need to balance these competing priorities.
+Containment and evidence preservation often conflict. The fastest containment action: pulling the plug: destroys volatile evidence. The best evidence preservation: leaving the system running: allows the attacker to continue operating. You need to balance these competing priorities.
 
 ### Volatile Data Collection
 
@@ -142,7 +142,7 @@ Long-term containment addresses the root cause of the compromise and implements 
 
 Common long-term containment actions:
 
-**Patch vulnerabilities.** If the attacker exploited a vulnerability, patch it across your environment. Do not just patch the exploited system — patch every system that is vulnerable.
+**Patch vulnerabilities.** If the attacker exploited a vulnerability, patch it across your environment. Do not just patch the exploited system: patch every system that is vulnerable.
 
 **Rotate credentials.** Change every password the attacker may have accessed. This includes user accounts, service accounts, and administrative credentials. If you are not sure whether the attacker accessed a credential, rotate it anyway.
 
@@ -156,7 +156,7 @@ Long-term containment may take days or weeks to fully implement. The key is to a
 
 ## Real Scenario: Containing a Compromised Server
 
-On a Wednesday afternoon, the EDR agent on a production web server alerted on a suspicious process. The alert indicated that the Apache web server process had spawned a Bash shell, which then executed a download command. This was a clear indicator of compromise — the web server should never spawn shell processes.
+On a Wednesday afternoon, the EDR agent on a production web server alerted on a suspicious process. The alert indicated that the Apache web server process had spawned a Bash shell, which then executed a download command. This was a clear indicator of compromise: the web server should never spawn shell processes.
 
 The SOC analyst triaged the alert within 10 minutes and classified it as Critical severity. The web server was a customer-facing application that processed payment transactions. The analyst immediately escalated to the IR team.
 
@@ -172,7 +172,7 @@ The team then implemented broader containment. They blocked the attacker's exter
 
 Long-term containment took three days. The team rebuilt the web server from a clean image, patched the vulnerability that allowed the initial compromise (an unpatched Apache Struts vulnerability), rotated all service account credentials, implemented additional network segmentation around the payment processing segment, and deployed additional monitoring on all systems in the segment.
 
-The total containment time was 4 hours from initial detection to full short-term containment. The long-term containment took 3 days. The attacker had access to the web server for approximately 6 hours before detection — they had gained access through the vulnerability the previous night.
+The total containment time was 4 hours from initial detection to full short-term containment. The long-term containment took 3 days. The attacker had access to the web server for approximately 6 hours before detection: they had gained access through the vulnerability the previous night.
 
 Key lessons from this containment:
 
@@ -182,7 +182,7 @@ Key lessons from this containment:
 
 **Scope expansion was handled.** When the forensic analysis revealed that the attacker had moved to the database server, the team expanded containment to include that system. Containment scope should be driven by evidence, not assumptions.
 
-**Business impact was accepted.** Taking the payment processing application offline cost the company revenue. But the alternative — leaving the attacker in the network with access to payment data — was worse.
+**Business impact was accepted.** Taking the payment processing application offline cost the company revenue. But the alternative: leaving the attacker in the network with access to payment data: was worse.
 
 ## Containment Decision Framework
 
@@ -231,7 +231,7 @@ In a lab environment, implement network isolation for a compromised system using
 1. Implement host-based firewall rules to block the attacker's C2 IP (10 minutes)
 2. Disable the network adapter on the compromised system (5 minutes)
 3. Implement DNS sinkholing for the attacker's C2 domain (10 minutes)
-4. Verify that isolation is effective — the system cannot reach the C2 server (5 minutes)
+4. Verify that isolation is effective: the system cannot reach the C2 server (5 minutes)
 
 **Grading Criteria:**
 
@@ -266,14 +266,14 @@ You are given a scenario involving compromised credentials. Your task is to impl
 
 ### Key Concepts
 
-- **Full System Isolation:** Disconnects a system from all networks — most aggressive containment
+- **Full System Isolation:** Disconnects a system from all networks: most aggressive containment
 - **Segmentation Containment:** Isolates entire network segments while preserving intra-segment access
 - **Selective Isolation:** Blocks specific traffic while allowing legitimate traffic
 - **Account Lockdown:** Password resets, account disabling, session revocation, privilege escalation containment
-- **Volatile Data Collection:** RAM, network connections, running processes, logged-on users — collected before containment
+- **Volatile Data Collection:** RAM, network connections, running processes, logged-on users: collected before containment
 - **Chain of Custody:** Documentation of evidence collection, handling, and storage
-- **Short-Term Containment:** Immediate actions to stop the attack — within hours
-- **Long-Term Containment:** Root cause remediation — days to weeks
+- **Short-Term Containment:** Immediate actions to stop the attack: within hours
+- **Long-Term Containment:** Root cause remediation: days to weeks
 
 ### Containment Decision Matrix
 

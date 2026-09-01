@@ -1,6 +1,6 @@
-# Module 9 — Disaster Recovery
+# Module 9: Disaster Recovery
 
-Disasters happen. etcd corruption, node failures, accidental deletions, data center outages. The question isn't whether your cluster will fail — it's whether you can recover. This module covers etcd backup and restore, cluster backup strategies, control plane recovery, and the practical work of recovering from etcd corruption.
+Disasters happen. etcd corruption, node failures, accidental deletions, data center outages. The question isn't whether your cluster will fail: it's whether you can recover. This module covers etcd backup and restore, cluster backup strategies, control plane recovery, and the practical work of recovering from etcd corruption.
 
 ## Why Disaster Recovery Matters
 
@@ -17,7 +17,7 @@ Without backups, these scenarios mean data loss. With proper backup and recovery
 
 ## etcd Backup
 
-etcd is the only state store in your cluster. Backing up etcd means backing up everything — all objects, all namespaces, all configurations.
+etcd is the only state store in your cluster. Backing up etcd means backing up everything: all objects, all namespaces, all configurations.
 
 ### Manual Backup
 
@@ -682,7 +682,7 @@ ETCDCTL_API=3 etcdctl compact $(ETCDCTL_API=3 etcdctl endpoint status --endpoint
 
 ## Assessment
 
-### Lab 1 — etcd Backup (30 minutes)
+### Lab 1: etcd Backup (30 minutes)
 
 1. Create a manual etcd snapshot and verify it.
 2. Write a backup script that automates daily backups.
@@ -692,7 +692,7 @@ ETCDCTL_API=3 etcdctl compact $(ETCDCTL_API=3 etcdctl endpoint status --endpoint
 
 **Grading**: 10 points. 2 points per task. Full credit for correct backup creation, automation, and verification.
 
-### Lab 2 — etcd Restore (45 minutes)
+### Lab 2: etcd Restore (45 minutes)
 
 1. Simulate etcd corruption (stop etcd, corrupt data).
 2. Restore etcd from backup.
@@ -702,7 +702,7 @@ ETCDCTL_API=3 etcdctl compact $(ETCDCTL_API=3 etcdctl endpoint status --endpoint
 
 **Grading**: 15 points. 3 points per task. Full credit for successful restoration, accurate data loss assessment, and comprehensive runbook.
 
-### Lab 3 — Full Cluster Recovery (45 minutes)
+### Lab 3: Full Cluster Recovery (45 minutes)
 
 1. Create a complete cluster backup (etcd + certificates + resources).
 2. Destroy the control plane node.

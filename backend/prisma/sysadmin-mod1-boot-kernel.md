@@ -1,14 +1,14 @@
-# Module 1 — Boot Process and Kernel Management
+# Module 1: Boot Process and Kernel Management
 
 When a Linux server fails to come up after a kernel update at 3 AM, you don't have time to Google "how does Linux boot." You need to understand every stage from power-on to login prompt, and you need to know how to intervene at each one. This module walks through the entire boot process in practical detail, covering firmware handoff, bootloader configuration, initramfs internals, systemd initialization, kernel parameter tuning, and recovery from the most common boot failures. By the end, you will be able to diagnose any boot failure and recover a system that won't start.
 
 ## Firmware: BIOS versus UEFI
 
-The boot process starts before Linux even loads. Your server firmware — either legacy BIOS or UEFI — performs a power-on self test (POST), initializes hardware, and then looks for a bootable device. The distinction between BIOS and UEFI matters because it determines how the bootloader gets invoked and what disk partitioning scheme you can use.
+The boot process starts before Linux even loads. Your server firmware: either legacy BIOS or UEFI: performs a power-on self test (POST), initializes hardware, and then looks for a bootable device. The distinction between BIOS and UEFI matters because it determines how the bootloader gets invoked and what disk partitioning scheme you can use.
 
 **BIOS (Legacy)** reads the first 512 bytes of a disk, called the Master Boot Record (MBR). That MBR contains a tiny bootstrap code, typically about 446 bytes, that locates and loads the next stage of the bootloader. The remaining 64 bytes store the partition table with four entries. The MBR scheme partitions disks with a maximum of four primary partitions and a 2 TB disk size limit. If you need more partitions, you create one extended partition and subdivide it into logical partitions. Most modern servers ship with UEFI, but you will encounter BIOS on older hardware and in some virtual machine templates. Many cloud providers still default to BIOS for maximum compatibility with older images.
 
-**UEFI** stores boot entries in NVRAM and reads EFI System Partitions (ESP) — FAT32 partitions typically mounted at /boot/efi. UEFI supports GPT partition tables, disks larger than 2 TB, and more than four partitions natively. The firmware reads the bootloader binary directly from the ESP rather than from an MBR sector. This means the bootloader is just a file on a filesystem, making it easier to update and manage. UEFI also provides a firmware-level shell and supports secure boot, which verifies the bootloader's digital signature before executing it.
+**UEFI** stores boot entries in NVRAM and reads EFI System Partitions (ESP): FAT32 partitions typically mounted at /boot/efi. UEFI supports GPT partition tables, disks larger than 2 TB, and more than four partitions natively. The firmware reads the bootloader binary directly from the ESP rather than from an MBR sector. This means the bootloader is just a file on a filesystem, making it easier to update and manage. UEFI also provides a firmware-level shell and supports secure boot, which verifies the bootloader's digital signature before executing it.
 
 To check which firmware your system uses:
 
@@ -28,7 +28,7 @@ This shows you the boot order, the ESP device, and the path to the bootloader bi
 
 GRUB2 is the standard bootloader on most Linux distributions. It stages itself in two or three phases depending on whether the system uses BIOS or UEFI.
 
-**Stage 1** lives in the MBR (BIOS) or as an EFI binary (UEFI). Its only job is to load Stage 1.5 or Stage 2. On BIOS systems, **Stage 1.5** sits in the gap between the MBR and the first partition, typically about 31 kilobytes of space. It contains enough filesystem code to read /boot on ext4, XFS, or Btrfs. **Stage 2** reads its configuration from `/boot/grub2/grub.cfg` (RHEL/CentOS) or `/boot/grub/grub.cfg` (Debian/Ubuntu). This file is auto-generated — you never edit it directly.
+**Stage 1** lives in the MBR (BIOS) or as an EFI binary (UEFI). Its only job is to load Stage 1.5 or Stage 2. On BIOS systems, **Stage 1.5** sits in the gap between the MBR and the first partition, typically about 31 kilobytes of space. It contains enough filesystem code to read /boot on ext4, XFS, or Btrfs. **Stage 2** reads its configuration from `/boot/grub2/grub.cfg` (RHEL/CentOS) or `/boot/grub/grub.cfg` (Debian/Ubuntu). This file is auto-generated: you never edit it directly.
 
 Instead, you edit `/etc/default/grub` and then regenerate `grub.cfg`. Key settings include `GRUB_TIMEOUT` which controls how many seconds GRUB waits before booting the default entry, `GRUB_DEFAULT` which sets the default kernel (use "saved" to remember the last booted kernel), `GRUB_CMDLINE_LINUX` which passes kernel parameters at boot, and `GRUB_DISABLE_RECOVERY` which controls whether recovery menu entries appear.
 
@@ -60,7 +60,7 @@ A common failure scenario: you install a server with software RAID, but the init
 
 ## systemd: The Init System
 
-Once the kernel mounts the root filesystem and executes the initramfs `init` script, it launches PID 1 — which on modern systems is `systemd`. This is where the real initialization begins. systemd is not just an init system. It is a complete service management framework that handles mounting filesystems, starting network services, managing timers, and much more.
+Once the kernel mounts the root filesystem and executes the initramfs `init` script, it launches PID 1: which on modern systems is `systemd`. This is where the real initialization begins. systemd is not just an init system. It is a complete service management framework that handles mounting filesystems, starting network services, managing timers, and much more.
 
 ### systemd Targets
 
@@ -164,7 +164,7 @@ When you need to test a new kernel quickly without a full reboot cycle, `kexec` 
 
 Before diving into GRUB and kernel configuration, understanding firmware settings is important because they directly affect how the system boots. Enter the BIOS/UEFI setup utility by pressing a key during POST (usually Delete, F2, or F10). Key settings include boot order which determines which device is tried first, secure boot which verifies bootloader signatures, virtualization support (VT-x/AMD-V) which must be enabled for KVM, and hardware-level features like NUMA and SR-IOV that affect performance.
 
-On UEFI systems, the boot manager stores entries in NVRAM. You can manage these with `efibootmgr`. To create a new boot entry, use `efibootmgr --create` with the disk, partition, loader path, and description. To delete, use `--delete` with the boot number. To reorder, use `-o` with a comma-separated list of boot numbers. The BIOS boot order is simpler but less flexible — you typically set it once in the firmware setup utility and rarely change it.
+On UEFI systems, the boot manager stores entries in NVRAM. You can manage these with `efibootmgr`. To create a new boot entry, use `efibootmgr --create` with the disk, partition, loader path, and description. To delete, use `--delete` with the boot number. To reorder, use `-o` with a comma-separated list of boot numbers. The BIOS boot order is simpler but less flexible: you typically set it once in the firmware setup utility and rarely change it.
 
 ## Understanding Boot Parameters
 
@@ -176,7 +176,7 @@ For persistent parameters, edit `/etc/default/grub` and add to `GRUB_CMDLINE_LIN
 
 ## systemd Unit Dependencies and Ordering
 
-Understanding how systemd orders unit startup is critical for complex systems. The `After=` directive does not create a dependency — it only specifies ordering. If you want a unit to start only if another is available, you must also use `Requires=` or `Wants=`. The `Requires=` directive creates a hard dependency: if the required unit fails, this unit fails too. `Wants=` is softer — the system tries to start the dependency but continues if it fails.
+Understanding how systemd orders unit startup is critical for complex systems. The `After=` directive does not create a dependency: it only specifies ordering. If you want a unit to start only if another is available, you must also use `Requires=` or `Wants=`. The `Requires=` directive creates a hard dependency: if the required unit fails, this unit fails too. `Wants=` is softer: the system tries to start the dependency but continues if it fails.
 
 A common mistake is using `After=` without `Requires=`. The unit starts after the dependency but does not pull it in. If the dependency is not started elsewhere, your unit may start before it is ready. Always pair ordering with dependency directives.
 

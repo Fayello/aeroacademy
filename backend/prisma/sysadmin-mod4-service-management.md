@@ -1,4 +1,4 @@
-# Module 4 — Service Management
+# Module 4: Service Management
 
 Every application on a Linux server runs as a service. When it crashes, you need it to restart automatically. When the server reboots, services need to come up in the right order. When you need to limit how much CPU or memory a service consumes, systemd handles that. This module covers systemd in depth: unit types, creating custom services, log analysis with journald, replacing cron with timers, and resource control. You will learn to migrate cron jobs to systemd timers which is a practical skill for modernizing server management.
 
@@ -6,7 +6,7 @@ Every application on a Linux server runs as a service. When it crashes, you need
 
 systemd manages everything as units. The main types you will work with are **service** units for daemons and applications, **socket** units for on-demand activation when a client connects, **timer** units for time-based activation that replace cron jobs with better logging and dependency handling, **mount** units for filesystem mounts as alternatives to fstab entries, **target** units for grouping units that represent a system state like runlevels, **path** units for activation when a file or directory changes, and **slice** units for resource control grouping where you apply CPU and memory limits to a group of related services.
 
-Understanding these unit types helps you choose the right approach for different scenarios. Services are the most common. Timers are the modern replacement for cron. Sockets are useful for lazy-start services that should only run when needed. Path units watch for file changes and trigger services — useful for processing uploads or monitoring log directories.
+Understanding these unit types helps you choose the right approach for different scenarios. Services are the most common. Timers are the modern replacement for cron. Sockets are useful for lazy-start services that should only run when needed. Path units watch for file changes and trigger services: useful for processing uploads or monitoring log directories.
 
 ## Inspecting Services
 
@@ -78,7 +78,7 @@ Use `systemctl list-timers --all` to see all timers, `enable --now` to enable an
 
 ### Key Advantages Over Cron
 
-Systemd timers provide logging through journald where you can see exactly what output each timer run produced. `Persistent=true` fires missed runs on next boot — if the server was off when a timer should have fired, it runs immediately on boot. Dependency handling lets services depend on other services. Resource limits let you constrain timer-triggered services. Security hardening with `ProtectSystem` and `PrivateTmp` applies to timer-triggered services. Sub-second accuracy enables precise scheduling.
+Systemd timers provide logging through journald where you can see exactly what output each timer run produced. `Persistent=true` fires missed runs on next boot: if the server was off when a timer should have fired, it runs immediately on boot. Dependency handling lets services depend on other services. Resource limits let you constrain timer-triggered services. Security hardening with `ProtectSystem` and `PrivateTmp` applies to timer-triggered services. Sub-second accuracy enables precise scheduling.
 
 ### Converting Cron Jobs to Timers
 
@@ -114,7 +114,7 @@ Once verified, remove the old cron entries with `crontab -e` or by removing file
 
 ## Service Ordering and Dependencies
 
-Understanding when services start relative to each other is critical for complex applications. `Requires` is a hard dependency where if the required service fails, this unit also fails. `Wants` is softer — the system tries to start the dependency but continues if it does not start. `After` provides ordering without pulling in the dependency. `Before` provides reverse ordering. `Conflicts` means the unit cannot run alongside another.
+Understanding when services start relative to each other is critical for complex applications. `Requires` is a hard dependency where if the required service fails, this unit also fails. `Wants` is softer: the system tries to start the dependency but continues if it does not start. `After` provides ordering without pulling in the dependency. `Before` provides reverse ordering. `Conflicts` means the unit cannot run alongside another.
 
 ### Common Targets
 
@@ -149,7 +149,7 @@ systemd targets represent system states. Understanding target dependencies helps
 
 ### Target Dependencies
 
-Use `systemctl list-dependencies multi-user.target` to see what your server needs. The output shows hard dependencies (red) and soft dependencies (green). Understanding this tree helps you identify why a service fails to start — if a dependency is missing or broken, the dependent service cannot start.
+Use `systemctl list-dependencies multi-user.target` to see what your server needs. The output shows hard dependencies (red) and soft dependencies (green). Understanding this tree helps you identify why a service fails to start: if a dependency is missing or broken, the dependent service cannot start.
 
 ### Custom Targets
 
@@ -161,11 +161,11 @@ systemd uses Linux control groups (cgroups) for resource management. Each servic
 
 ### CPU Control
 
-`CPUQuota=80%` limits to 80% of one CPU core. On a 4-core server, `CPUQuota=200%` allows up to 2 cores. `CPUWeight=100` sets relative scheduling weight — a service with weight 200 gets twice the CPU of one with weight 100. Use `systemctl show` to see current resource settings.
+`CPUQuota=80%` limits to 80% of one CPU core. On a 4-core server, `CPUQuota=200%` allows up to 2 cores. `CPUWeight=100` sets relative scheduling weight: a service with weight 200 gets twice the CPU of one with weight 100. Use `systemctl show` to see current resource settings.
 
 ### Memory Control
 
-`MemoryMax=2G` is a hard limit — the service is OOM-killed if it exceeds this. `MemoryHigh=1.5G` is a soft limit — the service is throttled above this but not killed. For most services, set `MemoryHigh` to 80% of `MemoryMax`. `MemorySwapMax` controls swap usage independently.
+`MemoryMax=2G` is a hard limit: the service is OOM-killed if it exceeds this. `MemoryHigh=1.5G` is a soft limit: the service is throttled above this but not killed. For most services, set `MemoryHigh` to 80% of `MemoryMax`. `MemorySwapMax` controls swap usage independently.
 
 ### I/O Control
 

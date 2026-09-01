@@ -1,4 +1,4 @@
-# Module 3 — Model Training
+# Module 3: Model Training
 
 ## Training Is Not Just `model.fit()`
 
@@ -351,7 +351,7 @@ def train_worker(rank, world_size, dataset):
 # Launch with: torchrun --nproc_per_node=4 train.py
 ```
 
-The `DistributedSampler` ensures each GPU sees a different subset of the data. The `set_epoch(epoch)` call is necessary because the sampler shuffles data differently each epoch—without it, every epoch would use the same ordering, which degrades training.
+The `DistributedSampler` ensures each GPU sees a different subset of the data. The `set_epoch(epoch)` call is necessary because the sampler shuffles data differently each epochwithout it, every epoch would use the same ordering, which degrades training.
 
 The gradient averaging step (`all_reduce`) synchronizes gradients across all GPUs. Each GPU computes gradients on its local batch, then the gradients are summed and divided by the world size. This means the effective batch size is `local_batch_size * world_size`. If you have 4 GPUs with batch size 64, your effective batch size is 256.
 
@@ -435,7 +435,7 @@ The `GradScaler` prevents underflow in 16-bit gradients. Without it, small gradi
 
 ## Checkpointing for Fault Tolerance
 
-Training large models takes hours or days. If the process crashes at hour 18 of a 24-hour training run, you lose everything. Checkpointing saves the model state periodically so you can resume from the last checkpoint. This is not optional for production training—it is a requirement.
+Training large models takes hours or days. If the process crashes at hour 18 of a 24-hour training run, you lose everything. Checkpointing saves the model state periodically so you can resume from the last checkpoint. This is not optional for production trainingit is a requirement.
 
 ```python
 import os
@@ -735,9 +735,9 @@ Implement and compare three learning rate schedules.
 
 ## Evidence
 
-- `hyperparameter_search.py` — Script implementing grid search, random search, and Bayesian optimization with timing comparisons
-- `distributed_training.py` — DDP training script with gradient accumulation and mixed precision
-- `checkpoint_manager.py` — Checkpointing module with save, load, and cleanup functionality
-- `lr_schedules.py` — Learning rate schedule implementations with comparison plots
-- `training_comparison.csv` — Results table comparing all training approaches
-- `convergence_plots.png` — Visualization of optimization convergence for each method
+- `hyperparameter_search.py`: Script implementing grid search, random search, and Bayesian optimization with timing comparisons
+- `distributed_training.py`: DDP training script with gradient accumulation and mixed precision
+- `checkpoint_manager.py`: Checkpointing module with save, load, and cleanup functionality
+- `lr_schedules.py`: Learning rate schedule implementations with comparison plots
+- `training_comparison.csv`: Results table comparing all training approaches
+- `convergence_plots.png`: Visualization of optimization convergence for each method

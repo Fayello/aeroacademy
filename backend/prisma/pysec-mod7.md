@@ -1,10 +1,10 @@
-# Module 7 — Cryptography with Python
+# Module 7: Cryptography with Python
 
-Cryptography protects data. It's how passwords are stored, how TLS secures HTTPS, how SSH tunnels work, how Bitcoin proves ownership. This module teaches you the practical cryptography you need as a security professional — hashing, encryption, key derivation, and digital signatures — using Python's `cryptography` library.
+Cryptography protects data. It's how passwords are stored, how TLS secures HTTPS, how SSH tunnels work, how Bitcoin proves ownership. This module teaches you the practical cryptography you need as a security professional: hashing, encryption, key derivation, and digital signatures: using Python's `cryptography` library.
 
 ## Why Cryptography Matters for Security Professionals
 
-You don't need to be a cryptographer. You need to use cryptographic tools correctly. The difference between secure and insecure systems is often just a configuration choice — using SHA-256 instead of MD5, using AES-GCM instead of AES-ECB, using Argon2 instead of plain hashing. These choices have massive security implications, and they're the kind of decisions security professionals make every day.
+You don't need to be a cryptographer. You need to use cryptographic tools correctly. The difference between secure and insecure systems is often just a configuration choice: using SHA-256 instead of MD5, using AES-GCM instead of AES-ECB, using Argon2 instead of plain hashing. These choices have massive security implications, and they're the kind of decisions security professionals make every day.
 
 Cryptography shows up everywhere in security work. Password storage uses hashing and key derivation. Data protection uses symmetric encryption. Secure communications use TLS, which combines symmetric encryption, asymmetric encryption, and digital signatures. Forensic analysis involves recovering encrypted data or understanding how encryption was applied. Incident response often requires decrypting captured traffic or verifying data integrity with hashes.
 
@@ -19,7 +19,7 @@ A hash function takes arbitrary input and produces a fixed-size string. The same
 ```python
 import hashlib
 
-# MD5 (broken — don't use for security, but you'll encounter it)
+# MD5 (broken: don't use for security, but you'll encounter it)
 md5 = hashlib.md5(b"password123")
 print(f"MD5: {md5.hexdigest()}")
 
@@ -74,9 +74,9 @@ MD5 and SHA-1 are broken. Collisions can be found in seconds on a laptop:
 # sha256(file1) != sha256(file2)
 ```
 
-Use SHA-256 for general hashing. Use SHA-3 or BLAKE2 if you need the latest algorithms. Never use MD5 or SHA-1 for anything security-related. You'll still see them in legacy systems — that's a finding in a security audit, not a practice to follow.
+Use SHA-256 for general hashing. Use SHA-3 or BLAKE2 if you need the latest algorithms. Never use MD5 or SHA-1 for anything security-related. You'll still see them in legacy systems: that's a finding in a security audit, not a practice to follow.
 
-### HMAC — Authenticated Hashing
+### HMAC: Authenticated Hashing
 
 HMAC combines a hash with a secret key. It proves that data hasn't been tampered with AND that the creator knew the key:
 
@@ -113,11 +113,11 @@ print(f"Tampered: {verify_hmac('Tampered data', key, signature)}")
 
 ### When to Use Hashing vs HMAC vs Encryption
 
-Hashing verifies data integrity without secrecy. If you want to know whether a file has been modified, hash it. If the hash matches, the file is unchanged. Hashing is one-way — you cannot recover the original data from the hash.
+Hashing verifies data integrity without secrecy. If you want to know whether a file has been modified, hash it. If the hash matches, the file is unchanged. Hashing is one-way: you cannot recover the original data from the hash.
 
 HMAC adds authentication to hashing. If you want to verify that data hasn't been modified AND that the modifier knew a secret key, use HMAC. Without the key, an attacker can't generate a valid HMAC even if they know the hash algorithm.
 
-Encryption provides confidentiality. If you want to store or transmit data that only authorized parties can read, encrypt it. Encryption is two-way — the authorized party can decrypt and recover the original data.
+Encryption provides confidentiality. If you want to store or transmit data that only authorized parties can read, encrypt it. Encryption is two-way: the authorized party can decrypt and recover the original data.
 
 Common use cases: password storage uses hashing (specifically, password hashing like Argon2). API authentication uses HMAC. Data protection uses encryption. File integrity checking uses hashing. Code signing uses asymmetric encryption (digital signatures).
 
@@ -127,7 +127,7 @@ Symmetric encryption uses the same key for encryption and decryption. It's fast 
 
 ### Fernet (Easy Mode)
 
-The `cryptography` library provides Fernet — authenticated symmetric encryption that handles key generation, padding, and authentication automatically:
+The `cryptography` library provides Fernet: authenticated symmetric encryption that handles key generation, padding, and authentication automatically:
 
 ```python
 from cryptography.fernet import Fernet
@@ -263,7 +263,7 @@ except Exception as e:
 
 ## Asymmetric Encryption
 
-Asymmetric encryption uses a key pair — public key encrypts, private key decrypts. It's slower than symmetric but solves the key distribution problem.
+Asymmetric encryption uses a key pair: public key encrypts, private key decrypts. It's slower than symmetric but solves the key distribution problem.
 
 ### RSA
 
@@ -377,7 +377,7 @@ except Exception:
 
 ## Key Derivation
 
-You don't use passwords directly as encryption keys. Passwords are low-entropy — they're guessable. Key derivation functions (KDFs) stretch a password into a cryptographic key by applying repeated hashing.
+You don't use passwords directly as encryption keys. Passwords are low-entropy: they're guessable. Key derivation functions (KDFs) stretch a password into a cryptographic key by applying repeated hashing.
 
 ### PBKDF2
 
@@ -665,7 +665,7 @@ def generate_password(length=20):
             return password
 ```
 
-The `random` module uses the Mersenne Twister algorithm, which is deterministic — given the same seed, it produces the same sequence. An attacker who observes enough outputs can predict future values. `os.urandom()` reads from the operating system's entropy pool, which collects noise from hardware events. For security purposes, always use `os.urandom()` or the `secrets` module.
+The `random` module uses the Mersenne Twister algorithm, which is deterministic: given the same seed, it produces the same sequence. An attacker who observes enough outputs can predict future values. `os.urandom()` reads from the operating system's entropy pool, which collects noise from hardware events. For security purposes, always use `os.urandom()` or the `secrets` module.
 
 ## Common Cryptographic Mistakes
 
@@ -780,13 +780,13 @@ Build an encrypted file storage system. Time limit: 90 minutes.
 
 ## Key Management
 
-The hardest part of cryptography is not the algorithms — it's key management. An encrypted system with poorly managed keys is worse than an unencrypted system because it gives a false sense of security.
+The hardest part of cryptography is not the algorithms: it's key management. An encrypted system with poorly managed keys is worse than an unencrypted system because it gives a false sense of security.
 
 Key generation must use cryptographically secure random number generators. Never use `random` module for key generation. Never use a password directly as a key. Always derive keys from passwords using a KDF with a random salt.
 
 Key storage must protect keys at rest. Keys in source code are compromised keys. Keys in environment variables are better but still accessible to processes running as the same user. Keys in hardware security modules or encrypted key vaults are ideal. For development, encrypted configuration files with restricted permissions are acceptable.
 
-Key rotation must happen regularly. Encryption keys should have expiration dates. When a key expires, all data encrypted with it must be re-encrypted with a new key. This limits the damage from a compromised key — only data encrypted during the key's lifetime is affected.
+Key rotation must happen regularly. Encryption keys should have expiration dates. When a key expires, all data encrypted with it must be re-encrypted with a new key. This limits the damage from a compromised key: only data encrypted during the key's lifetime is affected.
 
 Key revocation must be immediate when compromise is suspected. If you suspect a key has been compromised, rotate it immediately. Don't wait for the next scheduled rotation. Don't investigate first. Rotate, then investigate. The investigation can take days; the key compromise is happening now.
 

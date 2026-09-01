@@ -1,4 +1,4 @@
-# Module 9 — ML Governance
+# Module 9: ML Governance
 
 ## Governance Is How You Sleep at Night
 
@@ -482,7 +482,7 @@ workflow.approve(request.request_id, 'ml-director', 'Approved for production')
 
 ## Audit Logging
 
-Every action on a model must be logged. Who registered the model, who approved it, who deployed it, who modified it. Audit logs are not optional—they are required by regulations like GDPR, HIPAA, and SOX.
+Every action on a model must be logged. Who registered the model, who approved it, who deployed it, who modified it. Audit logs are not optionalthey are required by regulations like GDPR, HIPAA, and SOX.
 
 ```python
 import logging
@@ -860,7 +860,7 @@ The risk score combines likelihood and impact. A high-likelihood, high-impact ri
 
 ## Change Management for ML Models
 
-Changing a production model is not like changing a production API. An API change is atomic—you deploy the new code and it takes effect immediately. A model change is gradual—you deploy the new model and its effects emerge over time as it processes new data. This gradual effect makes change management more complex.
+Changing a production model is not like changing a production API. An API change is atomicyou deploy the new code and it takes effect immediately. A model change is gradualyou deploy the new model and its effects emerge over time as it processes new data. This gradual effect makes change management more complex.
 
 The change management process for ML has five steps. First, document the change: what is different, why it is different, and what the expected impact is. Second, get approval: the change must be reviewed by someone who understands the model and its implications. Third, test the change: run the model on historical data and compare results. Fourth, deploy gradually: use canary deployment to limit the blast radius. Fifth, monitor the change: watch for unexpected effects and be ready to roll back.
 
@@ -939,7 +939,7 @@ The change management process also creates an audit trail. When an auditor asks 
 
 ## Building a Governance Culture
 
-Governance is not just tools and processes—it is a culture. The best governance system fails if people do not follow it. Building a governance culture requires leadership buy-in, clear communication, and consistent enforcement.
+Governance is not just tools and processesit is a culture. The best governance system fails if people do not follow it. Building a governance culture requires leadership buy-in, clear communication, and consistent enforcement.
 
 Leadership buy-in means executives must value governance. If the VP of Engineering says "just ship it, we will fix it later," engineers will skip governance steps. If the VP says "no model reaches production without passing quality gates," engineers will follow the process. Leadership sets the tone.
 
@@ -1015,10 +1015,10 @@ Run a compliance audit on a production model.
 
 ## Evidence
 
-- `model_registry.py` — Complete model registry with versioning and stage management
-- `lineage_tracker.py` — Lineage tracking module with data and code hash verification
-- `approval_workflow.py` — Approval workflow with quality gates and multi-approver support
-- `audit_logger.py` — Audit logging system with structured event storage
-- `model_card_template.md` — Model card template with all required sections
-- `compliance_checker.py` — Compliance checking module for GDPR and SOX
-- `audit_report.pdf` — Sample audit report from a production model
+- `model_registry.py`: Complete model registry with versioning and stage management
+- `lineage_tracker.py`: Lineage tracking module with data and code hash verification
+- `approval_workflow.py`: Approval workflow with quality gates and multi-approver support
+- `audit_logger.py`: Audit logging system with structured event storage
+- `model_card_template.md`: Model card template with all required sections
+- `compliance_checker.py`: Compliance checking module for GDPR and SOX
+- `audit_report.pdf`: Sample audit report from a production model

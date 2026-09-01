@@ -1,10 +1,10 @@
-# Module 7 — Encryption
+# Module 7: Encryption
 
 Encryption protects data at three states: at rest (stored on disk), in transit (moving across the network), and in use (being processed in memory). This module covers the practical implementation of each. We will configure Transparent Data Encryption (TDE), implement column-level encryption for specific sensitive fields, set up SSL/TLS for database connections, and discuss key management strategies that do not involve storing encryption keys next to the data they protect. The scenario walks through encrypting a production PostgreSQL database handling payment card data.
 
 ## Transparent Data Encryption (TDE)
 
-TDE encrypts the entire database at the storage level. The database engine encrypts data before writing it to disk and decrypts it when reading. The application does not need to change — encryption and decryption are transparent to queries.
+TDE encrypts the entire database at the storage level. The database engine encrypts data before writing it to disk and decrypts it when reading. The application does not need to change: encryption and decryption are transparent to queries.
 
 **MySQL TDE (InnoDB Tablespace Encryption):**
 
@@ -44,7 +44,7 @@ CREATE TABLE payments (
 ) ENCRYPTION='Y';
 ```
 
-MySQL TDE uses AES-256-CBC for tablespace encryption. The keyring plugin manages the encryption keys. The `keyring_file` plugin stores keys in a local file — suitable for single-server deployments. For production with multiple servers, use `keyring_okv` (KMIP-compatible) or `keyring_hashicorp` (HashiCorp Vault).
+MySQL TDE uses AES-256-CBC for tablespace encryption. The keyring plugin manages the encryption keys. The `keyring_file` plugin stores keys in a local file: suitable for single-server deployments. For production with multiple servers, use `keyring_okv` (KMIP-compatible) or `keyring_hashicorp` (HashiCorp Vault).
 
 **PostgreSQL TDE (pgcrypto or File-Level Encryption):**
 
@@ -138,7 +138,7 @@ SELECT id, customer_id,
 FROM customer_payments
 WHERE customer_id = '11111111-1111-1111-1111-111111111111';
 
--- Search by encrypted column (requires decrypting all rows — slow)
+-- Search by encrypted column (requires decrypting all rows: slow)
 SELECT * FROM customer_payments
 WHERE pgp_sym_decrypt(card_number, 'aes_key_from_vault') = '4111111111111111';
 ```
@@ -231,15 +231,15 @@ encrypted = cipher.encrypt('1234567812345678')
 decrypted = cipher.decrypt(encrypted)
 ```
 
-FPE maintains referential integrity in the database — you can still use the encrypted value in foreign keys and indexes.
+FPE maintains referential integrity in the database: you can still use the encrypted value in foreign keys and indexes.
 
 ## Encryption Algorithms and Hashing
 
-Choosing the right algorithm matters. Using a weak algorithm is like using a flimsy lock — it looks like security but provides little protection.
+Choosing the right algorithm matters. Using a weak algorithm is like using a flimsy lock: it looks like security but provides little protection.
 
 **Symmetric Encryption (same key for encrypt and decrypt):**
 
-AES (Advanced Encryption Standard) is the standard for symmetric encryption. AES-256 is the recommended variant — it uses a 256-bit key and has no known practical attacks.
+AES (Advanced Encryption Standard) is the standard for symmetric encryption. AES-256 is the recommended variant: it uses a 256-bit key and has no known practical attacks.
 
 ```python
 # AES-256-GCM (authenticated encryption)
@@ -252,7 +252,7 @@ aesgcm = AESGCM(key)
 nonce = os.urandom(12)  # Unique nonce per encryption
 
 # Encrypt with associated data (AAD)
-# AAD is authenticated but not encrypted — useful for metadata
+# AAD is authenticated but not encrypted: useful for metadata
 plaintext = b'4111111111111111'
 associated_data = b'customer:12345'
 ciphertext = aesgcm.encrypt(nonce, plaintext, associated_data)
@@ -302,7 +302,7 @@ assert decrypted_key == symmetric_key
 
 **Hashing (one-way,不可逆):**
 
-Hashing produces a fixed-size fingerprint of data. Unlike encryption, hashing is irreversible — you cannot recover the original data from the hash. Hashing is used for password storage, data integrity verification, and lookup indexes.
+Hashing produces a fixed-size fingerprint of data. Unlike encryption, hashing is irreversible: you cannot recover the original data from the hash. Hashing is used for password storage, data integrity verification, and lookup indexes.
 
 ```python
 import hashlib
@@ -319,15 +319,15 @@ assert hashlib.sha256(data).hexdigest() == hash_value
 import bcrypt
 password = b'user_password'
 hashed = bcrypt.hashpw(password, bcrypt.gensalt(rounds=12))
-# rounds=12 means 2^12 iterations — slow by design
+# rounds=12 means 2^12 iterations: slow by design
 
 # Verify password
 assert bcrypt.checkpw(password, hashed)
 ```
 
-**Password Hashing — Never Use MD5 or SHA-256:**
+**Password Hashing: Never Use MD5 or SHA-256:**
 
-MD5 and SHA-256 are fast hashes. An attacker with a GPU can compute billions of MD5 hashes per second, making brute-force attacks practical. Use bcrypt, scrypt, or Argon2 — these are slow, memory-hard hashes designed for password storage.
+MD5 and SHA-256 are fast hashes. An attacker with a GPU can compute billions of MD5 hashes per second, making brute-force attacks practical. Use bcrypt, scrypt, or Argon2: these are slow, memory-hard hashes designed for password storage.
 
 ```python
 # WRONG: Fast hash for passwords
@@ -336,7 +336,7 @@ hashed = hashlib.sha256(password.encode()).hexdigest()
 
 # RIGHT: Slow hash for passwords
 hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=12))
-# An attacker can try ~10,000 passwords per second — 1 million times slower
+# An attacker can try ~10,000 passwords per second: 1 million times slower
 ```
 
 **Encryption Performance Considerations:**
@@ -387,7 +387,7 @@ Encryption is only as strong as the key management. Storing encryption keys in t
 
 1. **Separation of duties:** The person who manages the database should not manage the encryption keys. If the database is compromised, the attacker gets data but not the keys.
 
-2. **Key rotation:** Rotate encryption keys regularly. If a key is compromised, only data encrypted with that key is affected. The rotation period depends on the sensitivity of the data — financial data might rotate quarterly, healthcare data annually.
+2. **Key rotation:** Rotate encryption keys regularly. If a key is compromised, only data encrypted with that key is affected. The rotation period depends on the sensitivity of the data: financial data might rotate quarterly, healthcare data annually.
 
 3. **Key escrow:** Maintain secure backups of encryption keys. If keys are lost, the encrypted data is permanently unrecoverable.
 
@@ -520,7 +520,7 @@ ssl_ciphers = 'HIGH:!aNULL:!MD5:!3DES:!RC4'
 ```
 
 ```ini
-# pg_hba.conf — require SSL for all connections
+# pg_hba.conf: require SSL for all connections
 hostssl  myapp  appuser  10.0.1.0/24  scram-sha-256
 hostnossl all    all      10.0.1.0/24  reject
 ```
@@ -633,7 +633,7 @@ The entire process should take under 15 minutes and cause zero downtime because 
 Not all TLS versions and ciphers are secure. Disable old versions and weak ciphers:
 
 ```ini
-# postgresql.conf — secure TLS configuration
+# postgresql.conf: secure TLS configuration
 ssl_min_protocol_version = 'TLSv1.2'  # Disable TLS 1.0 and 1.1
 ssl_ciphers = 'HIGH:!aNULL:!MD5:!3DES:!RC4:!SEED:!IDEA:!CAMELLIA'
 ```
@@ -669,10 +669,10 @@ SHOW STATUS LIKE 'Ssl_cipher';
 
 **Mutual TLS (mTLS):**
 
-Mutual TLS requires both the server and the client to present certificates. This provides authentication in both directions — the server verifies the client, and the client verifies the server. It prevents man-in-the-middle attacks even if an attacker has a valid server certificate.
+Mutual TLS requires both the server and the client to present certificates. This provides authentication in both directions: the server verifies the client, and the client verifies the server. It prevents man-in-the-middle attacks even if an attacker has a valid server certificate.
 
 ```ini
-# pg_hba.conf — require client certificates
+# pg_hba.conf: require client certificates
 hostssl  myapp  appuser  10.0.1.0/24  cert
 ```
 
@@ -812,7 +812,7 @@ ssl_cert_file = '/etc/postgresql/ssl/server.crt'
 ssl_key_file = '/etc/postgresql/ssl/server.key'
 ssl_ca_file = '/etc/postgresql/ssl/ca.crt'
 
-# pg_hba.conf — only allow encrypted connections
+# pg_hba.conf: only allow encrypted connections
 hostssl  myapp  appuser  10.0.1.0/24  cert
 hostnossl all    all      0.0.0.0/0   reject
 ```

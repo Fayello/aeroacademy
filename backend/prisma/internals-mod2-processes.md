@@ -1,8 +1,8 @@
-# Module 2 — Process Management
+# Module 2: Process Management
 
 ## Processes: The Fundamental Unit of Work
 
-Every running program on a Linux system is a process. Understanding how processes work — how they are created, how they are scheduled, how they communicate, and how they die — is essential for debugging production systems. When a service hangs, when CPU utilization spikes, or when a server runs out of resources, the problem is almost always rooted in process behavior.
+Every running program on a Linux system is a process. Understanding how processes work: how they are created, how they are scheduled, how they communicate, and how they die: is essential for debugging production systems. When a service hangs, when CPU utilization spikes, or when a server runs out of resources, the problem is almost always rooted in process behavior.
 
 This module covers the Linux process model from the system call level up to the tools you use daily for diagnosis.
 
@@ -24,7 +24,7 @@ You can see these states with:
 ps aux | awk '{print $8}' | sort | uniq -c | sort -rn
 ```
 
-The **D state** (uninterruptible sleep) deserves special attention. When a process is in D state, it cannot be killed — not even with `kill -9`. This is by design: the kernel guarantees that I/O operations complete atomically. If a process is writing to disk and you could kill it mid-operation, the filesystem could be left in an inconsistent state.
+The **D state** (uninterruptible sleep) deserves special attention. When a process is in D state, it cannot be killed: not even with `kill -9`. This is by design: the kernel guarantees that I/O operations complete atomically. If a process is writing to disk and you could kill it mid-operation, the filesystem could be left in an inconsistent state.
 
 The most common cause of widespread D state processes is an NFS server becoming unreachable. The NFS client waits indefinitely for the server to respond, and every process that touches an NFS-mounted path enters D state. The kernel parameter `intr` (or `soft` mount option) can make NFS operations interruptible, but this risks data corruption.
 
@@ -74,18 +74,18 @@ if (pid == 0) {
 
 After `fork()`, the child typically calls one of the `exec()` family to replace its address space with a new program:
 
-- `execl(path, arg0, arg1, ..., NULL)` — arguments as list
-- `execv(path, argv[])` — arguments as array
-- `execle(path, arg0, ..., NULL, envp[])` — with environment
-- `execve(path, argv[], envp[])` — the actual syscall (all others are wrappers)
-- `execlp(file, arg0, ..., NULL)` — searches PATH
-- `execvp(file, argv[])` — searches PATH
+- `execl(path, arg0, arg1, ..., NULL)`: arguments as list
+- `execv(path, argv[])`: arguments as array
+- `execle(path, arg0, ..., NULL, envp[])`: with environment
+- `execve(path, argv[], envp[])`: the actual syscall (all others are wrappers)
+- `execlp(file, arg0, ..., NULL)`: searches PATH
+- `execvp(file, argv[])`: searches PATH
 
 The `execve()` syscall is the only one that actually enters the kernel. The others are library wrappers that eventually call `execve()`.
 
 ### vfork() and clone()
 
-`vfork()` is an optimization that shares the parent's address space without COW. The parent is suspended until the child calls `exec()` or `_exit()`. This is dangerous if the child modifies memory and is rarely used directly — `posix_spawn()` is preferred.
+`vfork()` is an optimization that shares the parent's address space without COW. The parent is suspended until the child calls `exec()` or `_exit()`. This is dangerous if the child modifies memory and is rarely used directly: `posix_spawn()` is preferred.
 
 `clone()` is the low-level syscall used to create threads. Unlike `fork()`, `clone()` lets you specify exactly which resources are shared between parent and child:
 
@@ -93,11 +93,11 @@ The `execve()` syscall is the only one that actually enters the kernel. The othe
 clone(child_fn, stack_ptr, CLONE_VM | CLONE_FS | CLONE_FILES, NULL);
 ```
 
-- `CLONE_VM` — share address space (threads)
-- `CLONE_FS` — share filesystem info
-- `CLONE_FILES` — share file descriptor table
-- `CLONE_NEWNS` — create new mount namespace (containers)
-- `CLONE_NEWPID` — create new PID namespace (containers)
+- `CLONE_VM`: share address space (threads)
+- `CLONE_FS`: share filesystem info
+- `CLONE_FILES`: share file descriptor table
+- `CLONE_NEWNS`: create new mount namespace (containers)
+- `CLONE_NEWPID`: create new PID namespace (containers)
 
 The `pthread_create()` library function uses `clone()` internally with the appropriate flags for POSIX threads.
 
@@ -119,7 +119,7 @@ if (child > 0) {
 
 If the parent dies before calling `wait()`, the child becomes an orphan and is adopted by `init` (PID 1) or `systemd`, which calls `wait()` promptly. This is why zombie processes are usually temporary.
 
-A **zombie epidemic** occurs when a parent process has a bug in its `wait()` logic — it either never calls `wait()`, or only calls it sporadically. Each child that exits becomes a zombie, consuming a PID and a process table entry. Eventually the system runs out of PIDs.
+A **zombie epidemic** occurs when a parent process has a bug in its `wait()` logic: it either never calls `wait()`, or only calls it sporadically. Each child that exits becomes a zombie, consuming a PID and a process table entry. Eventually the system runs out of PIDs.
 
 ```bash
 # Find zombie processes
@@ -136,7 +136,7 @@ The only way to clear zombies is to either fix the parent so it calls `wait()`, 
 
 ## Process Scheduling: CFS
 
-Linux uses the **Completely Fair Scheduler (CFS)** for normal processes. CFS is based on the concept of virtual runtime — each process gets a share of CPU time proportional to its weight (determined by nice value).
+Linux uses the **Completely Fair Scheduler (CFS)** for normal processes. CFS is based on the concept of virtual runtime: each process gets a share of CPU time proportional to its weight (determined by nice value).
 
 ### Nice Values
 
@@ -167,8 +167,8 @@ The relationship between nice value and weight is:
 
 Linux supports two real-time scheduling policies:
 
-- **SCHED_FIFO** — First-in, first-out. The process runs until it voluntarily yields or is preempted by a higher-priority real-time process. No time slicing.
-- **SCHED_RR** — Round-robin. Same as FIFO but with time slicing among processes at the same priority level.
+- **SCHED_FIFO**: First-in, first-out. The process runs until it voluntarily yields or is preempted by a higher-priority real-time process. No time slicing.
+- **SCHED_RR**: Round-robin. Same as FIFO but with time slicing among processes at the same priority level.
 
 Real-time priorities range from 1 to 99. These processes always preempt normal CFS processes. Misconfigured real-time processes can starve the entire system:
 
@@ -215,9 +215,9 @@ ls /proc/self/
 
 ### Key Files
 
-**/proc/[pid]/stat** — Machine-readable process status. One line with 44 fields separated by spaces. Field 1 is PID, field 2 is command name (in parentheses), field 3 is state character.
+**/proc/[pid]/stat**: Machine-readable process status. One line with 44 fields separated by spaces. Field 1 is PID, field 2 is command name (in parentheses), field 3 is state character.
 
-**/proc/[pid]/status** — Human-readable version of stat. Key fields:
+**/proc/[pid]/status**: Human-readable version of stat. Key fields:
 
 ```
 Name:   bash
@@ -229,11 +229,11 @@ VmSize: 12345 kB
 VmRSS:  8901 kB
 ```
 
-**/proc/[pid]/cmdline** — The command line arguments, null-separated. Use `cat -v /proc/[pid]/cmdline | tr '\0' ' '` to read it.
+**/proc/[pid]/cmdline**: The command line arguments, null-separated. Use `cat -v /proc/[pid]/cmdline | tr '\0' ' '` to read it.
 
-**/proc/[pid]/environ** — The environment variables, null-separated.
+**/proc/[pid]/environ**: The environment variables, null-separated.
 
-**/proc/[pid]/fd/** — Directory of open file descriptors. Each entry is a symlink to the actual file/socket/pipe:
+**/proc/[pid]/fd/**: Directory of open file descriptors. Each entry is a symlink to the actual file/socket/pipe:
 
 ```bash
 ls -la /proc/1234/fd/
@@ -242,7 +242,7 @@ ls -la /proc/1234/fd/
 # lrwx------ 1 root root 64 ... 3 -> socket:[12346]
 ```
 
-**/proc/[pid]/maps** — Memory mapping. Shows which parts of the address space are mapped to which files:
+**/proc/[pid]/maps**: Memory mapping. Shows which parts of the address space are mapped to which files:
 
 ```bash
 cat /proc/1234/maps
@@ -251,7 +251,7 @@ cat /proc/1234/maps
 # 7f123000-7f156000 r-xp 00000000 08:01 262145  /lib/x86_64-linux-gnu/libc.so.6
 ```
 
-**/proc/[pid]/io** — I/O statistics:
+**/proc/[pid]/io**: I/O statistics:
 
 ```
 rchar: 1234567      # bytes read (including cache)
@@ -260,9 +260,9 @@ read_bytes: 100000  # actual disk reads
 write_bytes: 50000  # actual disk writes
 ```
 
-**/proc/[pid]/limits** — Resource limits (open files, memory, CPU time, etc.)
+**/proc/[pid]/limits**: Resource limits (open files, memory, CPU time, etc.)
 
-**/proc/[pid]/oom_score** — The OOM killer score for this process. Higher = more likely to be killed.
+**/proc/[pid]/oom_score**: The OOM killer score for this process. Higher = more likely to be killed.
 
 ## Process Groups and Sessions
 
@@ -278,21 +278,21 @@ ps -eo pid,pgid,sid,comm | head -20
 setsid bash   # New session, new process group
 ```
 
-Process groups matter for signal delivery. When you press Ctrl+C in a terminal, the SIGINT is sent to all processes in the foreground process group — not just the current process. This is why all three processes in a pipeline receive the signal.
+Process groups matter for signal delivery. When you press Ctrl+C in a terminal, the SIGINT is sent to all processes in the foreground process group: not just the current process. This is why all three processes in a pipeline receive the signal.
 
 Sessions matter for job control. Each terminal emulator creates a new session. Background jobs (`&`) are placed in their own process groups within the session.
 
 ## Signals
 
-Signals are the primary inter-process communication mechanism for process control. A signal is a one-bit notification — either the signal exists or it does not. There is no queue of signals; if a signal is sent twice before it is handled, only one is delivered.
+Signals are the primary inter-process communication mechanism for process control. A signal is a one-bit notification: either the signal exists or it does not. There is no queue of signals; if a signal is sent twice before it is handled, only one is delivered.
 
 ### Signal Delivery
 
 When a signal is sent to a process (via `kill()`, a terminal action, or a kernel event), the signal is marked as pending. Before returning to user space, the kernel checks for pending signals and delivers them according to the process's signal disposition:
 
-1. **Ignore** (`SIG_IGN`) — Signal is discarded. Exception: `SIGKILL` and `SIGSTOP` cannot be ignored.
-2. **Default** (`SIG_DFL`) — Depends on the signal. Most terminate the process. `SIGCHLD` is ignored by default.
-3. **Handler** — A user-defined function registered with `sigaction()`:
+1. **Ignore** (`SIG_IGN`): Signal is discarded. Exception: `SIGKILL` and `SIGSTOP` cannot be ignored.
+2. **Default** (`SIG_DFL`): Depends on the signal. Most terminate the process. `SIGCHLD` is ignored by default.
+3. **Handler**: A user-defined function registered with `sigaction()`:
 
 ```c
 void handler(int sig) {
@@ -455,7 +455,7 @@ ps -p 12345 -o pid,ppid,comm,args
 # 12345  1      etl-app  /opt/etl/bin/etl-app --config /etc/etl/prod.conf
 ```
 
-The ETL application was the parent of all zombies. Examining `/proc/12345/fd/` showed 31,847 open file descriptors — all pipes to zombie child processes.
+The ETL application was the parent of all zombies. Examining `/proc/12345/fd/` showed 31,847 open file descriptors: all pipes to zombie child processes.
 
 ### Root Cause
 

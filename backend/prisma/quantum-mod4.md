@@ -1,10 +1,10 @@
-# Module 4 — Cryptographic Threats
+# Module 4: Cryptographic Threats
 
 ## The Quantum Threat to Cryptography
 
 Modern cryptography rests on the computational difficulty of certain mathematical problems. RSA relies on the difficulty of factoring large integers. Elliptic curve cryptography (ECC) relies on the difficulty of the discrete logarithm problem on elliptic curves. Diffie-Hellman key exchange relies on the discrete logarithm problem in finite fields. These assumptions have held for decades, but quantum computing fundamentally changes the landscape.
 
-Shor's algorithm provides an exponential speedup for both integer factoring and discrete logarithms. A sufficiently large quantum computer running Shor's algorithm could break RSA, ECC, and Diffie-Hellman in polynomial time. This is not a theoretical curiosity — it is a concrete threat to the infrastructure that secures internet communications, financial transactions, and government secrets.
+Shor's algorithm provides an exponential speedup for both integer factoring and discrete logarithms. A sufficiently large quantum computer running Shor's algorithm could break RSA, ECC, and Diffie-Hellman in polynomial time. This is not a theoretical curiosity: it is a concrete threat to the infrastructure that secures internet communications, financial transactions, and government secrets.
 
 The threat is not limited to Shor's algorithm. Grover's algorithm provides a quadratic speedup for brute-force search, which reduces the effective security of symmetric key algorithms by half. A 128-bit AES key would provide only 64 bits of security against a quantum adversary.
 
@@ -20,7 +20,7 @@ For RSA-2048, N is a 2048-bit number (approximately 617 decimal digits). The bes
 
 L_N[1/3, (64/9)^(1/3)] ≈ e^(1.923 · (ln N)^(1/3) · (ln ln N)^(2/3))
 
-For N ≈ 2²⁰⁴⁸, this is approximately 2¹¹² operations — computationally infeasible with current or near-term classical computers.
+For N ≈ 2²⁰⁴⁸, this is approximately 2¹¹² operations: computationally infeasible with current or near-term classical computers.
 
 ### Shor's Algorithm for RSA
 
@@ -53,13 +53,13 @@ Multiple organizations have published estimates of when a cryptographically rele
 - NIST (2022): Recommends transitioning to post-quantum cryptography by 2035
 - Various industry estimates: 2030-2045 for a CRQC
 
-The "harvest now, decrypt later" attack is already a concern: adversaries can collect encrypted communications today and decrypt them once a CRQC is available. This makes the threat immediate, even though the quantum computer does not yet exist. Sensitive data with long-term confidentiality requirements — such as government secrets, health records, intellectual property, and financial data — is particularly vulnerable to this attack vector. Adversaries with sufficient storage capacity can archive intercepted traffic for years or decades until quantum computers become available.
+The "harvest now, decrypt later" attack is already a concern: adversaries can collect encrypted communications today and decrypt them once a CRQC is available. This makes the threat immediate, even though the quantum computer does not yet exist. Sensitive data with long-term confidentiality requirements: such as government secrets, health records, intellectual property, and financial data: is particularly vulnerable to this attack vector. Adversaries with sufficient storage capacity can archive intercepted traffic for years or decades until quantum computers become available.
 
 ## Breaking ECC
 
 ### ECC Background
 
-Elliptic curve cryptography uses the elliptic curve discrete logarithm problem (ECDLP): given points P and Q on an elliptic curve where Q = kP (scalar multiplication), find k. The best classical algorithm for ECDLP on a curve of order n is Pollard's rho algorithm, requiring O(√n) operations. For a 256-bit curve, this is approximately 2¹²⁸ operations — infeasible classically.
+Elliptic curve cryptography uses the elliptic curve discrete logarithm problem (ECDLP): given points P and Q on an elliptic curve where Q = kP (scalar multiplication), find k. The best classical algorithm for ECDLP on a curve of order n is Pollard's rho algorithm, requiring O(√n) operations. For a 256-bit curve, this is approximately 2¹²⁸ operations: infeasible classically.
 
 ### Shor's Algorithm for ECC
 
@@ -74,7 +74,7 @@ For a 256-bit elliptic curve (ECC-256, commonly used in TLS), Shor's algorithm r
 - Approximately 5-10 million physical qubits with error correction
 - Similar wall-clock time as RSA factoring
 
-**Key insight:** ECC keys are shorter than RSA keys for equivalent classical security. A 256-bit ECC key provides the same classical security as a 3072-bit RSA key. However, quantum attacks are equally effective against both — Shor's algorithm breaks ECC-256 with the same ease as RSA-2048.
+**Key insight:** ECC keys are shorter than RSA keys for equivalent classical security. A 256-bit ECC key provides the same classical security as a 3072-bit RSA key. However, quantum attacks are equally effective against both: Shor's algorithm breaks ECC-256 with the same ease as RSA-2048.
 
 ### Comparison of Quantum Attacks on Public Key Algorithms
 
@@ -128,7 +128,7 @@ NIST recommends:
 
 ### Impact on HMAC and Authentication
 
-HMAC security depends on both the hash function and the key length. If the hash function has n-bit quantum security, HMAC provides min(k/2, n/2) bits of quantum security. For HMAC-SHA256 with a 256-bit key, quantum security is 128 bits — sufficient.
+HMAC security depends on both the hash function and the key length. If the hash function has n-bit quantum security, HMAC provides min(k/2, n/2) bits of quantum security. For HMAC-SHA256 with a 256-bit key, quantum security is 128 bits: sufficient.
 
 **Key derivation functions:**
 - HKDF-SHA256: Provides 128-bit quantum security. Sufficient for most applications.

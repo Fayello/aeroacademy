@@ -1,6 +1,6 @@
-# Module 10 — Building Custom Security Tools
+# Module 10: Building Custom Security Tools
 
-You've spent nine modules learning individual techniques. This module teaches you to package them into professional, reusable tools. A security tool isn't just a script — it has a CLI interface, configuration management, error handling, plugins, and distribution. This module covers the software engineering practices that turn scripts into tools.
+You've spent nine modules learning individual techniques. This module teaches you to package them into professional, reusable tools. A security tool isn't just a script: it has a CLI interface, configuration management, error handling, plugins, and distribution. This module covers the software engineering practices that turn scripts into tools.
 
 ## Why Build Custom Security Tools
 
@@ -14,7 +14,7 @@ The final reason is career growth. Security professionals who can build tools ar
 
 ## Plugin Architecture
 
-Real security tools are extensible. You don't hardcode every check — you define a plugin interface and let users add their own. This is how Nessus, Metasploit, and Burp Suite work.
+Real security tools are extensible. You don't hardcode every check: you define a plugin interface and let users add their own. This is how Nessus, Metasploit, and Burp Suite work.
 
 ### Base Plugin Interface
 
@@ -604,7 +604,7 @@ if __name__ == "__main__":
 
 ## Real Scenario: Building a Custom Vulnerability Scanner
 
-Combine everything — plugins, CLI, packaging — into a complete vulnerability scanner.
+Combine everything: plugins, CLI, packaging: into a complete vulnerability scanner.
 
 ```python
 #!/usr/bin/env python3
@@ -920,13 +920,13 @@ Documentation maintenance matters as much as code maintenance. When you change f
 
 User feedback is your best source of bug reports and feature requests. When someone reports a problem, thank them and fix it. When someone suggests a feature, evaluate it against your tool's purpose. Not every suggestion belongs in your tool, but every suggestion tells you something about how people use it.
 
-The tools you build in this course are starting points. They solve specific problems today. As you use them, you'll find bugs, missing features, and better approaches. That's normal. Software is never finished — it evolves with the problems it solves.
+The tools you build in this course are starting points. They solve specific problems today. As you use them, you'll find bugs, missing features, and better approaches. That's normal. Software is never finished: it evolves with the problems it solves.
 
 ## Evidence
 
-Building custom security tools is the capstone of this course. Everything you learned — socket programming, web scraping, cryptography, forensics, automation — comes together in tools that solve real problems. The difference between a script and a tool is engineering: error handling, configuration, documentation, and distribution.
+Building custom security tools is the capstone of this course. Everything you learned: socket programming, web scraping, cryptography, forensics, automation: comes together in tools that solve real problems. The difference between a script and a tool is engineering: error handling, configuration, documentation, and distribution.
 
-The plugins you wrote demonstrate the core principle of security tool design: separation of concerns. The framework handles CLI, output, and orchestration. The plugins handle the actual scanning logic. This makes the tool extensible without modifying the core — exactly how professional security tools are built.
+The plugins you wrote demonstrate the core principle of security tool design: separation of concerns. The framework handles CLI, output, and orchestration. The plugins handle the actual scanning logic. This makes the tool extensible without modifying the core: exactly how professional security tools are built.
 
 **Libraries covered:** abc, importlib, pkgutil, argparse, click, json, pathlib, concurrent.futures
 

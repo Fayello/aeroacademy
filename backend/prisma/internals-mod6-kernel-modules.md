@@ -1,10 +1,10 @@
-# Module 6 — Kernel Modules and eBPF
+# Module 6: Kernel Modules and eBPF
 
 ## Extending the Kernel Without Rebooting
 
 The Linux kernel is modular. Unlike monolithic kernels where everything is compiled in, Linux allows you to load and unload code at runtime. This capability is the foundation of device driver support, filesystem implementations, and the modern observability revolution driven by eBPF.
 
-This module covers kernel module management — from the traditional insmod/rmmod approach to the eBPF revolution that lets you write custom kernel programs safely.
+This module covers kernel module management: from the traditional insmod/rmmod approach to the eBPF revolution that lets you write custom kernel programs safely.
 
 ## Kernel Modules: The Traditional Approach
 
@@ -32,7 +32,7 @@ Unloaded from kernel
 insmod /lib/modules/$(uname -r)/kernel/drivers/net/usb/usbnet.ko
 ```
 
-**modprobe** is smarter — it loads the specified module and any dependencies:
+**modprobe** is smarter: it loads the specified module and any dependencies:
 
 ```bash
 modprobe usbnet
@@ -277,7 +277,7 @@ echo "remove mymodule /usr/local/bin/cleanup.sh" > /etc/modprobe.d/mymodule.conf
 
 ## eBPF: The Modern Kernel Programmability Layer
 
-eBPF (extended Berkeley Packet Filter) is a revolutionary technology that allows user-space programs to run inside the kernel safely. Unlike kernel modules, eBPF programs are verified by the kernel before execution — they cannot crash the kernel or access unauthorized memory.
+eBPF (extended Berkeley Packet Filter) is a revolutionary technology that allows user-space programs to run inside the kernel safely. Unlike kernel modules, eBPF programs are verified by the kernel before execution: they cannot crash the kernel or access unauthorized memory.
 
 ### What eBPF Is
 
@@ -359,7 +359,7 @@ ls /usr/sbin/*-bpfcc
 
 ### Essential bcc Tools
 
-**execsnoop** — Trace new process execution:
+**execsnoop**: Trace new process execution:
 
 ```bash
 execsnoop-bpfcc
@@ -368,7 +368,7 @@ execsnoop-bpfcc
 # cat      1235   1000     0 /usr/bin/cat /proc/cpuinfo
 ```
 
-**opensnoop** — Trace file opens:
+**opensnoop**: Trace file opens:
 
 ```bash
 opensnoop-bpfcc
@@ -377,7 +377,7 @@ opensnoop-bpfcc
 # 1234   bash                3   0 /etc/shadow
 ```
 
-**biolatency** — Block I/O latency distribution:
+**biolatency**: Block I/O latency distribution:
 
 ```bash
 biolatency-bpfcc -D
@@ -394,7 +394,7 @@ biolatency-bpfcc -D
 #       128 -> 255    : 1       |                                        |
 ```
 
-**cachestat** — Page cache hit/miss rate:
+**cachestat**: Page cache hit/miss rate:
 
 ```bash
 cachestat-bpfcc 1
@@ -403,7 +403,7 @@ cachestat-bpfcc 1
 # 23456    890    234     96.32%     128         8192
 ```
 
-**tcpconnect/tcpaccept** — Trace TCP connections:
+**tcpconnect/tcpaccept**: Trace TCP connections:
 
 ```bash
 tcpconnect-bpfcc
@@ -412,7 +412,7 @@ tcpconnect-bpfcc
 # 1235   ssh          4   10.0.0.1       45679  192.168.1.1    22
 ```
 
-**funccount** — Count kernel function calls:
+**funccount**: Count kernel function calls:
 
 ```bash
 funccount-bpfcc 'tcp_*'
@@ -423,7 +423,7 @@ funccount-bpfcc 'tcp_*'
 # tcp_close                   1234
 ```
 
-**profile** — CPU profiling with stack traces:
+**profile**: CPU profiling with stack traces:
 
 ```bash
 profile-bpfcc -f 5
@@ -442,7 +442,7 @@ profile-bpfcc -f 5
 #   total: 890
 ```
 
-**tcplife** — Trace TCP connections with lifetime:
+**tcplife**: Trace TCP connections with lifetime:
 
 ```bash
 tcplife-bpfcc
@@ -451,7 +451,7 @@ tcplife-bpfcc
 # 1235   ssh          10.0.0.1       45679  192.168.1.1    22     1      2      45678.90
 ```
 
-**runqlat** — Run queue latency (scheduling delay):
+**runqlat**: Run queue latency (scheduling delay):
 
 ```bash
 runqlat-bpfcc 10
@@ -466,7 +466,7 @@ runqlat-bpfcc 10
 #        32 -> 63     : 12      |                                        |
 ```
 
-**ext4slower** — Trace slow ext4 operations:
+**ext4slower**: Trace slow ext4 operations:
 
 ```bash
 ext4slower-bpfcc 10  # Show operations slower than 10ms
@@ -475,7 +475,7 @@ ext4slower-bpfcc 10  # Show operations slower than 10ms
 # 1234.890 myapp          1234   W  8192    0       23.456  output.log
 ```
 
-**filetop** — Top file operations by process:
+**filetop**: Top file operations by process:
 
 ```bash
 filetop-bpfcc 5
@@ -637,7 +637,7 @@ A high-throughput web service was experiencing periodic latency spikes. The p99 
 # Step 1: Check block I/O latency
 biolatency-bpfcc -D 10 1
 # Output showed occasional 100+ ms disk I/O operations
-# Not constant — periodic pattern
+# Not constant: periodic pattern
 
 # Step 2: Identify what is doing the I/O
 biosnoop-bpfcc -d sda 10
@@ -698,7 +698,7 @@ interval:s:5
 }
 ```
 
-The eBPF-based approach identified a problem that traditional monitoring could not see: the correlation between file operations, journal flushes, and I/O latency spikes. This is the power of eBPF — it lets you ask questions about kernel behavior that were previously impossible to answer.
+The eBPF-based approach identified a problem that traditional monitoring could not see: the correlation between file operations, journal flushes, and I/O latency spikes. This is the power of eBPF: it lets you ask questions about kernel behavior that were previously impossible to answer.
 
 ## Assessment
 

@@ -1,8 +1,8 @@
-# Module 10 — Production ML
+# Module 10: Production ML
 
 ## Production Is Where Models Go to Die
 
-Training a model is the easy part. Keeping it alive in production is where most ML teams fail. The model degrades. The data changes. The feature pipeline breaks. A downstream service times out. A business stakeholder asks why the model is making weird predictions on a specific customer segment. Production ML is not about building the best model—it is about building a system that monitors itself, heals itself, and improves itself over time.
+Training a model is the easy part. Keeping it alive in production is where most ML teams fail. The model degrades. The data changes. The feature pipeline breaks. A downstream service times out. A business stakeholder asks why the model is making weird predictions on a specific customer segment. Production ML is not about building the best modelit is about building a system that monitors itself, heals itself, and improves itself over time.
 
 This module covers the practices that separate ML experiments from ML products: A/B testing that tells you whether a new model is actually better, canary deployments that reduce risk when rolling out changes, shadow deployment that lets you compare models in real traffic, and the operational practices that keep ML systems running when everything else is failing.
 
@@ -724,7 +724,7 @@ system = ProductionMLSystem()
 
 ## Incident Response for ML Systems
 
-When an ML model causes an incident—a wrong prediction that loses money, a biased decision that harms users, or a serving failure that blocks transactions—you need a structured response. The incident response process for ML is different from traditional software incidents because the root cause is often statistical, not deterministic.
+When an ML model causes an incidenta wrong prediction that loses money, a biased decision that harms users, or a serving failure that blocks transactionsyou need a structured response. The incident response process for ML is different from traditional software incidents because the root cause is often statistical, not deterministic.
 
 The ML incident response has six steps. First, detect: the monitoring system alerts on anomalous behavior. Second, diagnose: determine whether the issue is with the data, the model, or the infrastructure. Third, mitigate: roll back the model, adjust thresholds, or disable the affected feature. Fourth, remediate: fix the root cause. Fifth, verify: confirm the fix works. Sixth, learn: document what happened and prevent it from recurring.
 
@@ -849,7 +849,7 @@ Availability for ML systems is measured as the percentage of requests that retur
 
 Latency is measured at multiple percentiles. P50 (median) tells you the typical experience. P95 tells you the experience for most users. P99 tells you the worst-case experience for 1% of users. P99 matters because it represents the users who have the worst experience, and those users are often the most valuable.
 
-Correctness is measured by comparing predictions to ground truth when it becomes available. This is unique to ML systems—traditional software does not have a correctness metric because the output is deterministic. ML correctness degrades over time as the data distribution changes, which is why monitoring is essential.
+Correctness is measured by comparing predictions to ground truth when it becomes available. This is unique to ML systemstraditional software does not have a correctness metric because the output is deterministic. ML correctness degrades over time as the data distribution changes, which is why monitoring is essential.
 
 ```python
 class ReliabilityMetrics:
@@ -1007,11 +1007,11 @@ Build an end-to-end deployment pipeline.
 
 ## Evidence
 
-- `ab_testing.py` — A/B testing framework with statistical analysis
-- `canary_deployment.py` — Canary deployment system with automatic rollback
-- `shadow_deployment.py` — Shadow deployment with prediction comparison
-- `feature_store.py` — Redis-backed feature store for production serving
-- `model_rollback.py` — Rollback management with deployment history
-- `production_ml_system.py` — End-to-end production deployment pipeline
-- `sample_size_calculator.py` — Minimum sample size calculation for A/B tests
-- `deployment_report.pdf` — Sample deployment report from a canary rollout
+- `ab_testing.py`: A/B testing framework with statistical analysis
+- `canary_deployment.py`: Canary deployment system with automatic rollback
+- `shadow_deployment.py`: Shadow deployment with prediction comparison
+- `feature_store.py`: Redis-backed feature store for production serving
+- `model_rollback.py`: Rollback management with deployment history
+- `production_ml_system.py`: End-to-end production deployment pipeline
+- `sample_size_calculator.py`: Minimum sample size calculation for A/B tests
+- `deployment_report.pdf`: Sample deployment report from a canary rollout

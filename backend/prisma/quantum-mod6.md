@@ -1,4 +1,4 @@
-# Module 6 — Key Exchange
+# Module 6: Key Exchange
 
 ## The Key Exchange Problem
 
@@ -22,7 +22,7 @@ The key generation process:
 
 1. **Seed generation:** Generate a 32-byte random seed ρ and a 32-byte random seed σ.
 
-2. **Matrix expansion:** Use the XOF (Extendable Output Function) based on SHAKE-128 with seed ρ to generate the matrix A ∈ R_q^{k×k}. Each entry of A is a uniformly random polynomial in R_q, but it is generated from the seed (so A does not need to be stored — it is regenerated on demand).
+2. **Matrix expansion:** Use the XOF (Extendable Output Function) based on SHAKE-128 with seed ρ to generate the matrix A ∈ R_q^{k×k}. Each entry of A is a uniformly random polynomial in R_q, but it is generated from the seed (so A does not need to be stored: it is regenerated on demand).
 
 3. **Secret and error sampling:** Use seed σ with a PRF (Pseudorandom Function) to generate the secret vector s ∈ R_q^k and error vector e ∈ R_q^k. The coefficients of s and e are sampled from a centered binomial distribution (CBD) with parameter η (η = 2 for Kyber-512/768, η = 3 for Kyber-1024). The CBD produces small coefficients centered around 0.
 
@@ -47,8 +47,8 @@ The encapsulation process generates a ciphertext and a shared secret:
 2. **Noise generation:** Use m as a seed to generate random vectors r ∈ R_q^k and e₁ ∈ R_q^k (with CBD sampling), and a scalar e₂ ∈ R_q (also CBD).
 
 3. **Ciphertext computation:**
-   - u = Aᵀ·r + e₁ (mod q) — compressed to 10 bits per coefficient (Kyber-512/768) or 9 bits (Kyber-1024)
-   - v = tᵀ·r + e₂ + ⌈q/2⌋·m (mod q) — compressed to 4 bits per coefficient
+   - u = Aᵀ·r + e₁ (mod q): compressed to 10 bits per coefficient (Kyber-512/768) or 9 bits (Kyber-1024)
+   - v = tᵀ·r + e₂ + ⌈q/2⌋·m (mod q): compressed to 4 bits per coefficient
 
 4. **Ciphertext:** ct = (Compress(u), Compress(v))
 
@@ -62,13 +62,13 @@ The decapsulation process recovers the shared secret from the ciphertext:
 
 1. **Compute noise:** Compute a = v - sᵀ·u (mod q)
 
-2. **Recover message:** The message m is encoded in the low-order bits of v. Compute m' = Round(a · 2/ q) — this extracts the message by rounding.
+2. **Recover message:** The message m is encoded in the low-order bits of v. Compute m' = Round(a · 2/ q): this extracts the message by rounding.
 
 3. **Re-encryption:** Using m', re-encapsulate to get (u', v').
 
 4. **Validation:** Check if (u', v') equals (u, v) from the ciphertext (after decompression).
 
-5. **Output:** If valid, output K = SHA3-256(m'). If invalid, output K = SHA3-256(Hash(ct)) — this is the implicit rejection mechanism.
+5. **Output:** If valid, output K = SHA3-256(m'). If invalid, output K = SHA3-256(Hash(ct)): this is the implicit rejection mechanism.
 
 The implicit rejection is critical: if an attacker sends a malformed ciphertext, the decapsulation produces a pseudorandom shared secret instead of failing. This prevents attackers from distinguishing valid from invalid ciphertexts, which would leak information.
 
@@ -109,13 +109,13 @@ NIST initiated the PQC standardization process in 2016, receiving 82 submissions
 **Round 3 (2020-2022):** 7 finalists and 8 alternates. Selected for standardization:
 
 **KEM Standards:**
-- CRYSTALS-Kyber (primary) — FIPS 203
-- ML-KEM (Module-Lattice-based Key-Encapsulation Mechanism) — the standardized version of Kyber
+- CRYSTALS-Kyber (primary): FIPS 203
+- ML-KEM (Module-Lattice-based Key-Encapsulation Mechanism): the standardized version of Kyber
 
 **Signature Standards:**
-- CRYSTALS-Dilithium (primary) — FIPS 204
-- FALCON (alternative) — based on NTRU lattices, more complex but smaller signatures
-- SPHINCS+ (stateless hash-based) — FIPS 205
+- CRYSTALS-Dilithium (primary): FIPS 204
+- FALCON (alternative): based on NTRU lattices, more complex but smaller signatures
+- SPHINCS+ (stateless hash-based): FIPS 205
 
 **Additional candidates under evaluation:**
 - Classic McEliece (code-based)

@@ -1,12 +1,12 @@
-# Module 3 — DNS
+# Module 3: DNS
 
-DNS is the internet's phone book, but that analogy undersells its complexity. A phone book is static; DNS is a distributed, hierarchical, eventually-consistent database that handles trillions of queries per day with millisecond latency. When it works, nobody notices. When it breaks, everything stops — email, websites, APIs, authentication, certificate validation. DNS is the single point of failure that everyone takes for granted.
+DNS is the internet's phone book, but that analogy undersells its complexity. A phone book is static; DNS is a distributed, hierarchical, eventually-consistent database that handles trillions of queries per day with millisecond latency. When it works, nobody notices. When it breaks, everything stops: email, websites, APIs, authentication, certificate validation. DNS is the single point of failure that everyone takes for granted.
 
 This module covers DNS resolution in depth, record types and their practical uses, DNS security mechanisms, common attacks, and the real-world process of migrating DNS for a large domain. You will learn to use dig and nslookup for diagnostics, understand how caching affects propagation, and recognize the telltale signs of DNS-based attacks.
 
 ## DNS Hierarchy
 
-DNS is organized as a tree of name servers, each responsible for a portion of the namespace. At the top are the root name servers (13 logical servers, A through M, distributed globally using anycast). Below the roots are the TLD (Top-Level Domain) servers — the servers responsible for .com, .org, .net, .uk, .io, etc. Below the TLDs are the authoritative name servers for individual domains.
+DNS is organized as a tree of name servers, each responsible for a portion of the namespace. At the top are the root name servers (13 logical servers, A through M, distributed globally using anycast). Below the roots are the TLD (Top-Level Domain) servers: the servers responsible for .com, .org, .net, .uk, .io, etc. Below the TLDs are the authoritative name servers for individual domains.
 
 When you query for www.example.com, the resolution process is iterative:
 
@@ -22,9 +22,9 @@ In practice, most resolvers already have the root hints cached (or hardcoded), a
 The distinction between recursive resolvers and authoritative servers is critical:
 
 - **Recursive resolver**: The server your device queries. It does the work of walking the hierarchy, caching results, and returning the final answer. Examples: your ISP's resolver, 8.8.8.8 (Google), 1.1.1.1 (Cloudflare), 9.9.9.9 (Quad9).
-- **Authoritative server**: The server that actually holds the DNS records for a domain. It does not query other servers — it either has the answer or returns NXDOMAIN (name does not exist). Examples: ns1.example.com, ns2.example.com.
+- **Authoritative server**: The server that actually holds the DNS records for a domain. It does not query other servers: it either has the answer or returns NXDOMAIN (name does not exist). Examples: ns1.example.com, ns2.example.com.
 
-When someone says "DNS propagation," they mean that resolvers worldwide have cached the old answer and need to wait for the TTL to expire before querying the authoritative server again. This is not propagation in the sense of pushing updates — it is cache expiration.
+When someone says "DNS propagation," they mean that resolvers worldwide have cached the old answer and need to wait for the TTL to expire before querying the authoritative server again. This is not propagation in the sense of pushing updates: it is cache expiration.
 
 ## Record Types
 
@@ -32,7 +32,7 @@ DNS carries many types of records. Each serves a specific purpose, and confusing
 
 ### A and AAAA Records
 
-A records map a hostname to an IPv4 address. AAAA records (quad-A, because they are 4 times the size of an A record — 128 bits vs 32 bits) map to IPv6 addresses.
+A records map a hostname to an IPv4 address. AAAA records (quad-A, because they are 4 times the size of an A record: 128 bits vs 32 bits) map to IPv6 addresses.
 
 ```
 example.com.        IN  A       93.184.216.34
@@ -112,7 +112,7 @@ SRV records are used by SIP (VoIP), XMPP (chat), LDAP, and other protocols. They
 
 ### PTR Records
 
-PTR (Pointer) records provide reverse DNS — mapping an IP address to a hostname. They live in the in-addr.arpa (for IPv4) or ip6.arpa (for IPv6) zones.
+PTR (Pointer) records provide reverse DNS: mapping an IP address to a hostname. They live in the in-addr.arpa (for IPv4) or ip6.arpa (for IPv6) zones.
 
 ```
 34.216.184.93.in-addr.arpa.    IN  PTR www.example.com.
@@ -171,9 +171,9 @@ example.com.           86400   IN      A       93.184.216.34
 ```
 
 The response shows:
-- status: NOERROR — the domain exists
-- ANSWER: 2 records — a CNAME and an A record
-- Query time: 23ms — this is the round-trip time to the resolver and back
+- status: NOERROR: the domain exists
+- ANSWER: 2 records: a CNAME and an A record
+- Query time: 23ms: this is the round-trip time to the resolver and back
 - The CNAME chain: www.example.com → example.com → 93.184.216.34
 
 The TTL (Time To Live) is 86400 seconds (24 hours). This means resolvers worldwide will cache this answer for up to 24 hours before re-querying.
@@ -238,7 +238,7 @@ When a resolver supports DNSSEC, it validates the chain of trust:
 - Root zone → .com zone → example.com zone
 - If any link in the chain is broken or invalid, the resolver returns SERVFAIL instead of the potentially spoofed answer.
 
-DNSSEC does not encrypt DNS queries — it only provides authentication and integrity. Someone observing your queries can still see which domains you are resolving.
+DNSSEC does not encrypt DNS queries: it only provides authentication and integrity. Someone observing your queries can still see which domains you are resolving.
 
 ### DNS over HTTPS (DoH) and DNS over TLS (DoT)
 
@@ -293,7 +293,7 @@ Mitigations:
 
 ### Zone Transfer Attacks
 
-Zone transfer (AXFR) replicates the entire DNS zone to another name server. If an attacker can trigger a zone transfer, they get a complete map of your DNS zone — all hostnames, IPs, and record types — which is reconnaissance gold.
+Zone transfer (AXFR) replicates the entire DNS zone to another name server. If an attacker can trigger a zone transfer, they get a complete map of your DNS zone: all hostnames, IPs, and record types: which is reconnaissance gold.
 
 ```bash
 # Attempt zone transfer (this should fail if properly configured)
@@ -434,7 +434,7 @@ Keep the old name servers running as secondary servers during the transition. So
 
 If something goes wrong during migration:
 1. Revert the NS records at the registrar to the old name servers immediately.
-2. Wait for propagation (use the lowered TTL of 300 seconds — worst case 5 minutes).
+2. Wait for propagation (use the lowered TTL of 300 seconds: worst case 5 minutes).
 3. Investigate the issue with the new infrastructure.
 4. Re-attempt the migration after fixing the problem.
 
@@ -543,4 +543,4 @@ Save the following to your portfolio:
 3. Your DNS migration plan with timeline and rollback procedures
 4. A written explanation (200-300 words) of why DNS propagation is not instantaneous and what TTLs do
 
-DNS is the invisible infrastructure that makes the internet usable. Mastering DNS diagnostics is not optional for network engineers — it is a survival skill. When someone says "the internet is down," the first thing you should check is DNS.
+DNS is the invisible infrastructure that makes the internet usable. Mastering DNS diagnostics is not optional for network engineers: it is a survival skill. When someone says "the internet is down," the first thing you should check is DNS.

@@ -1,10 +1,10 @@
-# Module 9 — Network Forensics
+# Module 9: Network Forensics
 
-Network forensics is the analysis of network traffic and logs to understand attacker activity. While memory and disk forensics focus on individual systems, network forensics provides a broader view of how attackers move through your network, communicate with external infrastructure, and exfiltrate data. Every network connection leaves traces — packet captures, NetFlow records, firewall logs, and proxy logs. This module covers how to capture and analyze network traffic, use NetFlow for traffic analysis, correlate logs across systems, detect command and control channels, and investigate network activity from compromised hosts.
+Network forensics is the analysis of network traffic and logs to understand attacker activity. While memory and disk forensics focus on individual systems, network forensics provides a broader view of how attackers move through your network, communicate with external infrastructure, and exfiltrate data. Every network connection leaves traces: packet captures, NetFlow records, firewall logs, and proxy logs. This module covers how to capture and analyze network traffic, use NetFlow for traffic analysis, correlate logs across systems, detect command and control channels, and investigate network activity from compromised hosts.
 
 ## Packet Capture Analysis
 
-Packet captures record raw network traffic, preserving every byte of every packet. Packet analysis reveals the content of network communications — the protocols used, the data transferred, and the endpoints involved.
+Packet captures record raw network traffic, preserving every byte of every packet. Packet analysis reveals the content of network communications: the protocols used, the data transferred, and the endpoints involved.
 
 ### Capturing Packets
 
@@ -40,7 +40,7 @@ DNS analysis looks for:
 - Subdomain encoding (data hidden in subdomain names)
 - Queries to IP addresses instead of domain names (DNS over HTTPS or direct IP connections)
 
-**HTTP/HTTPS** is the most common protocol for web traffic. HTTP is unencrypted and can be analyzed directly. HTTPS is encrypted, but TLS metadata — certificates, SNI (Server Name Indication), and connection patterns — provides useful forensic information.
+**HTTP/HTTPS** is the most common protocol for web traffic. HTTP is unencrypted and can be analyzed directly. HTTPS is encrypted, but TLS metadata: certificates, SNI (Server Name Indication), and connection patterns: provides useful forensic information.
 
 HTTP analysis looks for:
 
@@ -83,7 +83,7 @@ SSH analysis looks for:
 
 **Protocol conformance analysis** checks whether traffic conforms to protocol specifications. Malware that implements protocols incorrectly may produce traffic that does not conform to the specification.
 
-**Content analysis** examines the payload of network packets. This reveals the actual data being transferred — files, commands, credentials, and other sensitive information. Content analysis is only possible for unencrypted protocols or when you have the decryption keys.
+**Content analysis** examines the payload of network packets. This reveals the actual data being transferred: files, commands, credentials, and other sensitive information. Content analysis is only possible for unencrypted protocols or when you have the decryption keys.
 
 **Behavioral analysis** examines patterns of network behavior over time. Regular, periodic connections to the same external IP may indicate a C2 beacon. Large data transfers during off-hours may indicate data exfiltration.
 
@@ -93,9 +93,9 @@ NetFlow is a network protocol that collects metadata about network flows. A flow
 
 ### Why NetFlow Matters
 
-Packet captures provide detailed content but are expensive to store and analyze. A full packet capture of a busy network requires enormous storage and processing power. NetFlow provides a middle ground — it captures enough metadata to understand network activity without the storage overhead of full packet captures.
+Packet captures provide detailed content but are expensive to store and analyze. A full packet capture of a busy network requires enormous storage and processing power. NetFlow provides a middle ground: it captures enough metadata to understand network activity without the storage overhead of full packet captures.
 
-NetFlow data is typically retained for weeks or months, while packet captures are usually retained for hours or days. This longer retention makes NetFlow invaluable for historical investigations — you can go back weeks or months to see what network activity occurred.
+NetFlow data is typically retained for weeks or months, while packet captures are usually retained for hours or days. This longer retention makes NetFlow invaluable for historical investigations: you can go back weeks or months to see what network activity occurred.
 
 ### NetFlow Data Structure
 
@@ -134,15 +134,15 @@ nfdump -r flows.nfs - "src ip 203.0.113.50"
 
 **Beacon analysis** identifies periodic connections to external IPs. Malware often communicates with C2 servers at regular intervals (beacons). By analyzing the timing of connections, you can identify beaconing behavior.
 
-**Connection mapping** identifies which internal systems are communicating with which external systems. This reveals the scope of a compromise — if multiple internal systems are communicating with the same external IP, they may all be compromised.
+**Connection mapping** identifies which internal systems are communicating with which external systems. This reveals the scope of a compromise: if multiple internal systems are communicating with the same external IP, they may all be compromised.
 
-**Port analysis** examines which ports are being used. Unusual port usage — like HTTP traffic on port 4444 or DNS queries on port 8080 — may indicate malware using non-standard ports to evade detection.
+**Port analysis** examines which ports are being used. Unusual port usage: like HTTP traffic on port 4444 or DNS queries on port 8080: may indicate malware using non-standard ports to evade detection.
 
 **Protocol anomaly analysis** identifies traffic that does not match expected protocol behavior. DNS traffic on non-standard ports, HTTP traffic with unusual methods, or ICMP traffic with unusual payloads all indicate potential malicious activity.
 
 ## Log Correlation
 
-Log correlation connects dots across multiple log sources to build a complete picture of attacker activity. No single log source tells the whole story — you need to combine logs from firewalls, proxies, IDS, authentication systems, and applications.
+Log correlation connects dots across multiple log sources to build a complete picture of attacker activity. No single log source tells the whole story: you need to combine logs from firewalls, proxies, IDS, authentication systems, and applications.
 
 ### Log Sources for Correlation
 
@@ -276,9 +276,9 @@ The NetFlow data also revealed that two other workstations in the IT department 
 
 The network forensic analysis revealed:
 
-- **Initial compromise:** Unknown (likely phishing or exploit) — the initial infection vector was not determined from network analysis alone
+- **Initial compromise:** Unknown (likely phishing or exploit): the initial infection vector was not determined from network analysis alone
 - **C2 infrastructure:** A self-signed TLS server on port 443 with a recently registered domain
-- **Lateral movement:** None detected in network traffic — the attacker may have used other methods
+- **Lateral movement:** None detected in network traffic: the attacker may have used other methods
 - **Data exfiltration:** Approximately 45 MB of data transferred over 72 hours
 - **Scope:** Three compromised workstations in the IT department
 
@@ -292,7 +292,7 @@ The findings were used to:
 
 Key lessons from this investigation:
 
-**Multiple network forensic sources provided a complete picture.** No single source — packet captures, NetFlow, DNS logs, or proxy logs — told the whole story. Correlating across sources revealed the full scope and timeline.
+**Multiple network forensic sources provided a complete picture.** No single source: packet captures, NetFlow, DNS logs, or proxy logs: told the whole story. Correlating across sources revealed the full scope and timeline.
 
 **NetFlow revealed scope expansion.** The initial alert was about one workstation, but NetFlow analysis revealed two additional compromised systems. Without NetFlow analysis, those systems would have been missed.
 
@@ -342,7 +342,7 @@ You are given NetFlow data from a network segment. Your task is to analyze the d
 
 ### Lab Exercise 3: Log Correlation Exercise (60 minutes)
 
-You are given logs from multiple sources — firewall, proxy, DNS, and authentication. Your task is to correlate the logs and build a timeline of attacker activity.
+You are given logs from multiple sources: firewall, proxy, DNS, and authentication. Your task is to correlate the logs and build a timeline of attacker activity.
 
 **Lab Tasks:**
 
@@ -362,8 +362,8 @@ You are given logs from multiple sources — firewall, proxy, DNS, and authentic
 
 ### Key Concepts
 
-- **Packet Capture:** Raw network traffic recording — captures every byte of every packet
-- **NetFlow:** Network flow metadata — captures connection metadata without full packet content
+- **Packet Capture:** Raw network traffic recording: captures every byte of every packet
+- **NetFlow:** Network flow metadata: captures connection metadata without full packet content
 - **Log Correlation:** Connecting events across multiple log sources to build a complete picture
 - **C2 Detection:** Identifying command and control channels through beaconing analysis, DNS analysis, and protocol analysis
 - **Protocol Analysis:** Understanding how network protocols are used and abused by attackers

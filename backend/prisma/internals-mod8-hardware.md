@@ -1,4 +1,4 @@
-# Module 8 — Device Drivers and Hardware
+# Module 8: Device Drivers and Hardware
 
 ## How Linux Talks to Hardware
 
@@ -49,26 +49,26 @@ brw-rw---- 1 root disk 8, 2 ... /dev/sda2
 Linux provides several virtual devices with unique behavior:
 
 ```bash
-# /dev/null — Discards all data written to it
+# /dev/null: Discards all data written to it
 echo "data" > /dev/null    # Gone forever
 
-# /dev/zero — Provides infinite stream of zeros
+# /dev/zero: Provides infinite stream of zeros
 dd if=/dev/zero of=/tmp/zeros bs=1M count=100
 
-# /dev/random — High-quality random data (blocks when entropy is low)
+# /dev/random: High-quality random data (blocks when entropy is low)
 head -c 32 /dev/random | xxd
 
-# /dev/urandom — Fast random data (never blocks, slightly lower quality)
+# /dev/urandom: Fast random data (never blocks, slightly lower quality)
 head -c 32 /dev/urandom | xxd
 
-# /dev/full — Always returns "no space left on device"
+# /dev/full: Always returns "no space left on device"
 echo "data" > /dev/full
 # bash: echo: write error: No space left on device
 
-# /dev/tty — Current controlling terminal
+# /dev/tty: Current controlling terminal
 echo "hello" > /dev/tty   # Appears on terminal
 
-# /dev/loop — Loop devices (mount files as block devices)
+# /dev/loop: Loop devices (mount files as block devices)
 losetup -f /tmp/disk.img
 mount /dev/loop0 /mnt
 ```
@@ -326,7 +326,7 @@ Tasklets are built on top of softirqs. They provide a simpler API for deferred w
 
 ### Interrupt Affinity
 
-Modern systems support interrupt affinity — binding specific device interrupts to specific CPUs:
+Modern systems support interrupt affinity: binding specific device interrupts to specific CPUs:
 
 ```bash
 # View current IRQ affinity
@@ -449,7 +449,7 @@ lspci -x -s 04:00.0
 
 ## SCSI Subsystem
 
-SCSI (Small Computer System Interface) is not just a parallel bus — it is a command protocol used by SATA, SAS, USB storage, and virtual disks:
+SCSI (Small Computer System Interface) is not just a parallel bus: it is a command protocol used by SATA, SAS, USB storage, and virtual disks:
 
 ```bash
 # View SCSI devices
@@ -541,12 +541,12 @@ A new NVMe SSD was installed in a production server but was not detected by the 
 ```bash
 # Step 1: Check if the device appears in PCI
 lspci | grep -i nvme
-# No output — the device is not being enumerated by the kernel
+# No output: the device is not being enumerated by the kernel
 
 # Step 2: Check kernel messages for errors
 dmesg | grep -i nvme
 # [0.000000] NVMe: updating nvme kernel parameters
-# No further NVMe messages — the driver is not finding the device
+# No further NVMe messages: the driver is not finding the device
 
 # Step 3: Check if the NVMe module is loaded
 lsmod | grep nvme

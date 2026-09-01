@@ -1,4 +1,4 @@
-# Module 6 — Ansible
+# Module 6: Ansible
 
 Terraform provisions infrastructure. Ansible configures it. That is the division of labor in most IaC setups. Terraform creates the servers, load balancers, and databases. Ansible installs packages, manages configuration files, deploys applications, and handles everything that happens on the operating system after the infrastructure exists.
 
@@ -747,7 +747,7 @@ ansible/
   notify: Restart PostgreSQL
 ```
 
-**site.yml** — The main playbook:
+**site.yml**: The main playbook:
 
 ```yaml
 ---

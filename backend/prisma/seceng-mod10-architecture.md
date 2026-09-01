@@ -1,8 +1,8 @@
-# Module 10 — Security Architecture
+# Module 10: Security Architecture
 
-Security architecture is the practice of designing the overall structure of a system's security controls, from network topology to identity management to data protection to monitoring and response. It is the highest-level abstraction of security engineering — it defines how all the individual security components (authentication, authorization, encryption, monitoring, logging) fit together into a coherent, defensible system. A well-designed security architecture does not just add security controls; it designs the system so that security is an emergent property of the architecture itself.
+Security architecture is the practice of designing the overall structure of a system's security controls, from network topology to identity management to data protection to monitoring and response. It is the highest-level abstraction of security engineering: it defines how all the individual security components (authentication, authorization, encryption, monitoring, logging) fit together into a coherent, defensible system. A well-designed security architecture does not just add security controls; it designs the system so that security is an emergent property of the architecture itself.
 
-The security architect's job is to make architectural decisions that balance security, performance, availability, cost, and operational complexity. Every security control has costs — in performance, in development time, in operational overhead, in user friction. The architect's skill is in making these tradeoffs explicitly and defensibly, choosing controls that provide the most risk reduction for the least cost.
+The security architect's job is to make architectural decisions that balance security, performance, availability, cost, and operational complexity. Every security control has costs: in performance, in development time, in operational overhead, in user friction. The architect's skill is in making these tradeoffs explicitly and defensibly, choosing controls that provide the most risk reduction for the least cost.
 
 ## Zero Trust Architecture
 
@@ -10,7 +10,7 @@ Zero Trust is a security architecture model that eliminates the concept of a tru
 
 The three core principles of Zero Trust:
 
-**Verify explicitly:** Always authenticate and authorize based on all available data points — user identity, device health, location, service or workload, data classification, and anomalies. Never trust a request based solely on its source.
+**Verify explicitly:** Always authenticate and authorize based on all available data points: user identity, device health, location, service or workload, data classification, and anomalies. Never trust a request based solely on its source.
 
 **Use least privilege access:** Limit user and service access to the minimum necessary for the specific task. Use just-in-time and just-enough access (JIT/JEA) to reduce the window of opportunity for attackers.
 
@@ -26,7 +26,7 @@ Implementing Zero Trust is a multi-phase journey, not a single product deploymen
 
 **Policy Enforcement Point (PEP):** The gatekeeper that sits between subjects and resources. The PEP intercepts all access requests, forwards them to the PE for evaluation, and enforces the PE's decisions. The PEP can be a proxy, a gateway, a sidecar, or a host-based agent.
 
-**Identity Provider (IdP):** Manages user identities and authentication. In Zero Trust, the IdP is the foundation — every access decision starts with verifying the user's identity.
+**Identity Provider (IdP):** Manages user identities and authentication. In Zero Trust, the IdP is the foundation: every access decision starts with verifying the user's identity.
 
 **Device Trust Provider:** Evaluates the health and compliance of the device requesting access. Device trust includes patch level, security software status, encryption status, and certificate validity.
 
@@ -113,13 +113,13 @@ Cloud security architecture differs from on-premises architecture because the se
 
 ### Shared Responsibility Model
 
-**Infrastructure as a Service (IaaS):** The customer manages everything above the hypervisor — operating systems, applications, data, network configuration, and identity management. The cloud provider manages physical security, hypervisor, and network infrastructure.
+**Infrastructure as a Service (IaaS):** The customer manages everything above the hypervisor: operating systems, applications, data, network configuration, and identity management. The cloud provider manages physical security, hypervisor, and network infrastructure.
 
 **Platform as a Service (PaaS):** The customer manages applications and data. The cloud provider manages everything else, including the operating system, runtime, and middleware.
 
 **Software as a Service (SaaS):** The customer manages only identity and data access. The cloud provider manages everything else.
 
-The most common security failures in cloud are customer misconfigurations — public S3 buckets, overly permissive IAM policies, unencrypted databases, and exposed management interfaces. These are not cloud security failures; they are security architecture failures that happen to occur in a cloud environment.
+The most common security failures in cloud are customer misconfigurations: public S3 buckets, overly permissive IAM policies, unencrypted databases, and exposed management interfaces. These are not cloud security failures; they are security architecture failures that happen to occur in a cloud environment.
 
 ### AWS Security Architecture
 
@@ -180,7 +180,7 @@ The API gateway handles authentication (verifying the caller's identity) and aut
 
 - **JWT validation:** The gateway validates JWT tokens issued by an identity provider. The gateway checks the token signature, expiration, issuer, and audience before forwarding the request to the backend service.
 - **OAuth 2.0 introspection:** The gateway calls the identity provider's introspection endpoint to validate opaque tokens. This adds latency but provides real-time token validation.
-- **API key validation:** The gateway validates API keys against a database of registered keys. API keys provide identification but not authentication — they identify the application, not the user.
+- **API key validation:** The gateway validates API keys against a database of registered keys. API keys provide identification but not authentication: they identify the application, not the user.
 
 ### Rate Limiting
 
@@ -204,7 +204,7 @@ The API gateway provides protection against common API attacks:
 
 ## Secrets Management
 
-Secrets management is the practice of securely storing, accessing, and rotating sensitive credentials — API keys, database passwords, encryption keys, certificates, and other secrets. Hardcoded secrets in source code or configuration files are one of the most common and preventable vulnerability classes.
+Secrets management is the practice of securely storing, accessing, and rotating sensitive credentials: API keys, database passwords, encryption keys, certificates, and other secrets. Hardcoded secrets in source code or configuration files are one of the most common and preventable vulnerability classes.
 
 ### HashiCorp Vault
 
@@ -343,13 +343,13 @@ A security architecture review process:
 
 **Step 6: Risk assessment.** Assess the residual risk after the proposed controls are implemented. Identify risks that exceed the organization's risk tolerance and recommend additional controls or risk acceptance decisions.
 
-**Step 7: Review report.** Produce a review report that summarizes the findings, rates the overall security posture, and provides specific recommendations. The report should be actionable — each recommendation should include a specific implementation approach and a priority rating.
+**Step 7: Review report.** Produce a review report that summarizes the findings, rates the overall security posture, and provides specific recommendations. The report should be actionable: each recommendation should include a specific implementation approach and a priority rating.
 
 The review should be conducted by someone who was not involved in the design, to provide an independent perspective. For high-risk systems, the review should involve multiple reviewers with different areas of expertise.
 
 ## Assessment
 
-**Lab 10.1 — Zero Trust Architecture Design (60 minutes)**
+**Lab 10.1: Zero Trust Architecture Design (60 minutes)**
 Design a Zero Trust architecture for a financial services company with 3,000 employees, five office locations, remote workers, a customer-facing web application, and internal microservices running in AWS. The design must address identity verification, device trust, network segmentation, application access, data protection, and monitoring. Produce an architecture document with diagrams and implementation guidelines.
 
 **Grading criteria:**
@@ -360,7 +360,7 @@ Design a Zero Trust architecture for a financial services company with 3,000 emp
 - Data protection and secrets management (10 points)
 - Monitoring and detection architecture (5 points)
 
-**Lab 10.2 — Cloud Security Architecture Review (45 minutes)**
+**Lab 10.2: Cloud Security Architecture Review (45 minutes)**
 Review a provided AWS architecture (architecture diagram and configuration files) for security issues. The architecture includes a VPC with public and private subnets, an RDS database, an S3 bucket, IAM policies, and a Lambda function. Identify at least 8 security issues, explain the risk of each, and provide specific remediation steps.
 
 **Grading criteria:**
@@ -368,7 +368,7 @@ Review a provided AWS architecture (architecture diagram and configuration files
 - Accurate risk assessment for each issue (16 points, 2 per issue)
 - Specific, implementable remediation steps (16 points, 2 per issue)
 
-**Lab 10.3 — API Gateway Security Configuration (45 minutes)**
+**Lab 10.3: API Gateway Security Configuration (45 minutes)**
 Configure an API gateway (Kong, AWS API Gateway, or similar) for a provided API specification. The configuration must include JWT authentication, rate limiting (per-client and per-endpoint), request validation, CORS configuration, and logging. Test the configuration against a set of attack scenarios (injection, brute force, token replay) and verify that each attack is blocked.
 
 **Grading criteria:**
@@ -381,11 +381,11 @@ Configure an API gateway (Kong, AWS API Gateway, or similar) for a provided API 
 
 ## Evidence
 
-Security architecture is the strategic layer of security engineering. It defines the overall structure that determines how all other security controls — authentication, authorization, encryption, monitoring, incident response — fit together. A well-designed security architecture makes individual security controls more effective by placing them in the right context and ensuring they work together as a system.
+Security architecture is the strategic layer of security engineering. It defines the overall structure that determines how all other security controls: authentication, authorization, encryption, monitoring, incident response: fit together. A well-designed security architecture makes individual security controls more effective by placing them in the right context and ensuring they work together as a system.
 
 Zero Trust architecture represents a fundamental shift from perimeter-based security to identity-based security. The traditional approach of trusting everything inside the perimeter has failed because attackers routinely breach the perimeter through phishing, credential theft, supply chain attacks, and insider threats. Zero Trust eliminates implicit trust and verifies every access decision, reducing the blast radius of any individual compromise.
 
-Cloud security architecture requires understanding the shared responsibility model and implementing controls that address the customer's portion of the responsibility. Most cloud security failures are misconfigurations — public S3 buckets, overly permissive IAM policies, unencrypted databases — not cloud platform vulnerabilities. Security architecture ensures that these misconfigurations are prevented through design rather than detected after deployment.
+Cloud security architecture requires understanding the shared responsibility model and implementing controls that address the customer's portion of the responsibility. Most cloud security failures are misconfigurations: public S3 buckets, overly permissive IAM policies, unencrypted databases: not cloud platform vulnerabilities. Security architecture ensures that these misconfigurations are prevented through design rather than detected after deployment.
 
 The security architecture review process ensures that security is designed in, not bolted on. By reviewing the architecture before implementation, you identify design weaknesses that are cheap to fix and that would be expensive to remediate after deployment. The review process is the mechanism that enforces security architecture principles and ensures that the design meets the organization's security requirements.
 

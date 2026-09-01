@@ -1,10 +1,10 @@
-# Module 9 — Security
+# Module 9: Security
 
 Security is not a feature. It is a requirement. Every web application is a target, and the most common attacks are the simplest ones. This module covers XSS prevention, CSRF protection, input validation, and how to harden an Express application against real attacks.
 
 ## Why Security Matters
 
-The OWASP Top 10 lists the most critical web application security risks. The same vulnerabilities appear year after year: injection, broken authentication, cross-site scripting, insecure deserialization. These are not exotic attacks — they are simple mistakes that any developer can prevent with the right knowledge.
+The OWASP Top 10 lists the most critical web application security risks. The same vulnerabilities appear year after year: injection, broken authentication, cross-site scripting, insecure deserialization. These are not exotic attacks: they are simple mistakes that any developer can prevent with the right knowledge.
 
 A security breach is not just a technical problem. It destroys user trust, violates regulations, and can put people at risk. The cost of prevention is a fraction of the cost of remediation.
 
@@ -82,18 +82,18 @@ app.use(securityHeaders);
 **Never use `innerHTML` with user data.** Always use `textContent` or React's JSX (which escapes by default):
 
 ```javascript
-// DANGEROUS — allows XSS
+// DANGEROUS: allows XSS
 element.innerHTML = userInput;
 
-// SAFE — escapes HTML
+// SAFE: escapes HTML
 element.textContent = userInput;
 
-// React is safe by default — JSX escapes values
+// React is safe by default: JSX escapes values
 function Comment({ text }) {
   return <p>{text}</p>; // text is escaped automatically
 }
 
-// DANGEROUS — only use with trusted content
+// DANGEROUS: only use with trusted content
 function Comment({ html }) {
   return <p dangerouslySetInnerHTML={{ __html: html }} />;
 }
@@ -170,7 +170,7 @@ Format validation ensures that input matches a specific pattern. An email must m
 
 Business rule validation ensures that input satisfies your application's requirements. A password must be at least 8 characters. A username must be unique. A date must be in the future. A quantity must be positive. These rules are specific to your application and cannot be validated with generic validation libraries.
 
-The key principle of input validation is: validate early, validate thoroughly, and fail fast. Validate input as soon as it arrives (in middleware), validate all fields (not just the ones you use immediately), and return clear error messages when validation fails. Do not silently ignore invalid input or try to fix it — reject it and tell the user what is wrong.
+The key principle of input validation is: validate early, validate thoroughly, and fail fast. Validate input as soon as it arrives (in middleware), validate all fields (not just the ones you use immediately), and return clear error messages when validation fails. Do not silently ignore invalid input or try to fix it: reject it and tell the user what is wrong.
 
 ### Schema Validation with Joi
 
@@ -255,17 +255,17 @@ app.post("/api/posts", validate("createPost"), createPost);
 SQL injection occurs when user input is concatenated directly into SQL queries:
 
 ```javascript
-// DANGEROUS — SQL injection vulnerability
+// DANGEROUS: SQL injection vulnerability
 const query = `SELECT * FROM users WHERE email = '${email}'`;
 const user = await db.query(query);
 
-// SAFE — use parameterized queries
+// SAFE: use parameterized queries
 const user = await db.query(
   "SELECT * FROM users WHERE email = $1",
   [email]
 );
 
-// SAFE — use ORM
+// SAFE: use ORM
 const user = await User.findOne({ where: { email } });
 ```
 
@@ -274,18 +274,18 @@ const user = await User.findOne({ where: { email } });
 MongoDB is also vulnerable to injection:
 
 ```javascript
-// DANGEROUS — NoSQL injection
+// DANGEROUS: NoSQL injection
 const user = await User.findOne({ email: req.body.email });
 
 // If req.body.email is { "$gt": "" }, it matches all users
 // Attacker sends: { "email": { "$gt": "" }, "password": "anything" }
 
-// SAFE — validate types
+// SAFE: validate types
 const user = await User.findOne({
   email: typeof req.body.email === "string" ? req.body.email : null
 });
 
-// BETTER — use schema validation
+// BETTER: use schema validation
 const schema = Joi.object({
   email: Joi.string().email().required()
 });
@@ -338,7 +338,7 @@ Rate limiting should be combined with other defenses. It slows down attacks but 
 
 Password security is one of the most important aspects of application security. If your database is compromised and passwords are not hashed, every user's account is at risk. If passwords are hashed with a weak algorithm, crackers can recover most passwords within hours.
 
-The standard for password hashing is bcrypt. It is slow by design — hashing a password takes about 100ms, which makes brute force attacks impractical. It includes a salt (random data mixed into the password before hashing) to prevent rainbow table attacks. It uses a cost factor that determines how slow the hashing is — higher cost means slower hashing and better security.
+The standard for password hashing is bcrypt. It is slow by design: hashing a password takes about 100ms, which makes brute force attacks impractical. It includes a salt (random data mixed into the password before hashing) to prevent rainbow table attacks. It uses a cost factor that determines how slow the hashing is: higher cost means slower hashing and better security.
 
 ```javascript
 const bcrypt = require("bcryptjs");
@@ -366,7 +366,7 @@ function isStrongPassword(password) {
 }
 ```
 
-Never store passwords in plain text. Never use MD5 or SHA-1 for password hashing — they are too fast and do not include salting. Never use a custom hashing algorithm — use bcrypt, scrypt, or Argon2. Never log passwords or include them in error messages. Never send passwords over unencrypted connections.
+Never store passwords in plain text. Never use MD5 or SHA-1 for password hashing: they are too fast and do not include salting. Never use a custom hashing algorithm: use bcrypt, scrypt, or Argon2. Never log passwords or include them in error messages. Never send passwords over unencrypted connections.
 
 Password policies should balance security with usability. Requiring too many character types or frequent password changes leads to weak passwords (users write them down or use predictable patterns). A good policy requires a minimum length of 8 characters, checks against common passwords, and allows all character types. Consider supporting passphrases (multiple random words) as an alternative to complex passwords.
 

@@ -1,12 +1,12 @@
-# Module 3 — Cross-Site Scripting (XSS)
+# Module 3: Cross-Site Scripting (XSS)
 
-Cross-Site Scripting is the vulnerability class where an attacker injects malicious JavaScript into a page that other users view. The browser trusts the script because it comes from the legitimate origin. XSS is not a single bug — it is a family of vulnerabilities that differ in how the payload is delivered, where it executes, and what defenses must be bypassed. The impact ranges from session hijacking to full account takeover, depending on what cookies and tokens the application stores and what actions the injected script can perform.
+Cross-Site Scripting is the vulnerability class where an attacker injects malicious JavaScript into a page that other users view. The browser trusts the script because it comes from the legitimate origin. XSS is not a single bug: it is a family of vulnerabilities that differ in how the payload is delivered, where it executes, and what defenses must be bypassed. The impact ranges from session hijacking to full account takeover, depending on what cookies and tokens the application stores and what actions the injected script can perform.
 
 XSS is consistently ranked in the top five of the OWASP Top 10 because it is easy to find in modern web applications, easy to exploit with minimal technical skill, and has high impact when combined with other vulnerabilities. Understanding XSS requires understanding how browsers parse HTML, how JavaScript executes in different contexts, and how security mechanisms like CSP and HttpOnly cookies provide partial but not complete protection.
 
 ## Reflected XSS
 
-Reflected XSS occurs when user input is included in the server's response without proper encoding. The input is not stored — it is reflected back immediately. A search function is the classic example:
+Reflected XSS occurs when user input is included in the server's response without proper encoding. The input is not stored: it is reflected back immediately. A search function is the classic example:
 
 ```
 https://app.example.com/search?q=<script>alert(1)</script>
@@ -78,16 +78,16 @@ The payload construction is context-dependent. There is no universal XSS payload
 
 Different encoding contexts require different payloads:
 
-- **HTML body**: `<script>alert(1)</script>` — raw HTML tags work directly.
-- **HTML attribute**: `"><script>alert(1)</script>` — close the attribute and tag.
-- **JavaScript string**: `';alert(1);//` — close the string and inject code.
-- **URL attribute**: `javascript:alert(1)` — use the javascript protocol.
-- **CSS**: `expression(alert(1))` — for legacy IE (not recommended).
-- **Comment**: `--><script>alert(1)</script>` — break out of HTML comments.
+- **HTML body**: `<script>alert(1)</script>`: raw HTML tags work directly.
+- **HTML attribute**: `"><script>alert(1)</script>`: close the attribute and tag.
+- **JavaScript string**: `';alert(1);//`: close the string and inject code.
+- **URL attribute**: `javascript:alert(1)`: use the javascript protocol.
+- **CSS**: `expression(alert(1))`: for legacy IE (not recommended).
+- **Comment**: `--><script>alert(1)</script>`: break out of HTML comments.
 
 ## Stored XSS
 
-Stored XSS occurs when the malicious script is saved by the application (in a database, file, or other persistent storage) and later served to other users. This is more dangerous than reflected XSS because the payload executes automatically when any user views the affected page — no social engineering required to deliver the URL.
+Stored XSS occurs when the malicious script is saved by the application (in a database, file, or other persistent storage) and later served to other users. This is more dangerous than reflected XSS because the payload executes automatically when any user views the affected page: no social engineering required to deliver the URL.
 
 Common locations for stored XSS:
 
@@ -130,7 +130,7 @@ This captures passwords, credit card numbers, private messages, and any other te
 
 ## DOM-Based XSS
 
-DOM-based XSS occurs entirely in the client-side code. The server's response is safe — the vulnerability exists in how JavaScript processes the data after it arrives in the browser.
+DOM-based XSS occurs entirely in the client-side code. The server's response is safe: the vulnerability exists in how JavaScript processes the data after it arrives in the browser.
 
 The most dangerous sink functions in JavaScript are:
 
@@ -171,7 +171,7 @@ var safeName = document.createTextNode(name);
 document.getElementById('greeting').appendChild(safeName);
 ```
 
-`textContent` does not parse HTML — it treats the string as plain text. `createTextNode` achieves the same effect.
+`textContent` does not parse HTML: it treats the string as plain text. `createTextNode` achieves the same effect.
 
 More complex DOM-based XSS involves chains of sinks and sources. The data might pass through multiple functions, be transformed, and eventually reach a dangerous sink. Static analysis tools struggle to track these flows because the data can cross function boundaries, be stored in objects, and be modified along the way.
 
@@ -400,7 +400,7 @@ document.head.appendChild(script);
 
 **Step 4**: The attacker now has the admin's session cookie. They set it in their browser and access the admin panel. They also have the CSRF token for making authenticated requests. They can create, modify, or delete content, access user data, and maintain persistence by creating an admin account.
 
-This chain demonstrates why XSS is consistently rated as a high-impact vulnerability. It is not just about showing an alert dialog — it is about what an attacker can do with the JavaScript context of a logged-in user's browser.
+This chain demonstrates why XSS is consistently rated as a high-impact vulnerability. It is not just about showing an alert dialog: it is about what an attacker can do with the JavaScript context of a logged-in user's browser.
 
 ## Practical Exercise: XSS Attack Lab
 

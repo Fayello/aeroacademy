@@ -1,4 +1,4 @@
-# Module 7 — Namespaces and Containers
+# Module 7: Namespaces and Containers
 
 ## Containers Are Not Magic
 
@@ -564,7 +564,7 @@ Device mapper is being replaced by OverlayFS in most distributions because Overl
 
 ### The Goal
 
-Build a minimal container without Docker — just using the Linux primitives (unshare, mount, chroot, cgroups). This exercise demonstrates exactly what a container is at the kernel level.
+Build a minimal container without Docker: just using the Linux primitives (unshare, mount, chroot, cgroups). This exercise demonstrates exactly what a container is at the kernel level.
 
 ### Step 1: Create a Root Filesystem
 
@@ -636,7 +636,7 @@ echo 50000 100000 > /sys/fs/cgroup/cpu/mycontainer/cpu.cfs_quota_us
 
 ```bash
 #!/bin/bash
-# run_container.sh — Create and enter a container
+# run_container.sh: Create and enter a container
 
 CONTAINER_ROOT=/tmp/mycontainer/rootfs
 CGROUP_PATH=/sys/fs/cgroup/memory/mycontainer
@@ -697,7 +697,7 @@ cat /proc/meminfo | head  # Memory limited to 256 MB
 
 ```bash
 # On the host, set up networking for the container
-# (Simplified — Docker does this automatically)
+# (Simplified: Docker does this automatically)
 
 # Create veth pair
 ip link add veth0 type veth peer name veth1

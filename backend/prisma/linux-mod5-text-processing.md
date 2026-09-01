@@ -1,8 +1,8 @@
-# Module 5 — Text Processing
+# Module 5: Text Processing
 
 ## Why This Matters
 
-Linux systems generate enormous amounts of text — log files, configuration files, CSV exports, API responses, database dumps. The ability to search, transform, and analyze text at the command line is what separates someone who manually opens files in an editor from someone who can process 10GB of logs in seconds without breaking a sweat.
+Linux systems generate enormous amounts of text: log files, configuration files, CSV exports, API responses, database dumps. The ability to search, transform, and analyze text at the command line is what separates someone who manually opens files in an editor from someone who can process 10GB of logs in seconds without breaking a sweat.
 
 Every tool in this module is designed to compose. You chain them together with pipes, building complex transformations from simple, focused commands. This is the Unix philosophy in action, and it is the most powerful feature of the Linux command line.
 
@@ -42,7 +42,7 @@ grep --include="*.log" -r "ERROR" /var/  # Only search files matching *.log
 grep -m5 "connection" app.log            # Stop after 5 matches
 ```
 
-The `-A`, `-B`, and `-C` (context, which shows both before and after) flags are essential for debugging. A single error line rarely tells you the full story — you need the surrounding context.
+The `-A`, `-B`, and `-C` (context, which shows both before and after) flags are essential for debugging. A single error line rarely tells you the full story: you need the surrounding context.
 
 ```bash
 grep -C5 "OutOfMemoryError" java.log
@@ -101,7 +101,7 @@ The `-o` flag outputs only the matching part of the line, not the entire line. T
 fgrep "10.0.0.5" access.log
 ```
 
-Use `grep -F` instead of `fgrep` — `fgrep` is deprecated on some systems. The difference matters when your search string contains regex metacharacters like `.`, `*`, or `+`. With `grep`, the string `10.0.0.5` would match `10X0Y0Z5` because `.` matches any character. With `grep -F`, it matches only the literal string `10.0.0.5`.
+Use `grep -F` instead of `fgrep`: `fgrep` is deprecated on some systems. The difference matters when your search string contains regex metacharacters like `.`, `*`, or `+`. With `grep`, the string `10.0.0.5` would match `10X0Y0Z5` because `.` matches any character. With `grep -F`, it matches only the literal string `10.0.0.5`.
 
 ### grep with Regular Expressions
 
@@ -153,7 +153,7 @@ grep -b "ERROR" app.log
 
 ## sed: Stream Editor
 
-`sed` is a stream editor that performs text transformations line by line. It reads input, applies operations, and writes the result. Unlike a text editor, sed processes text as a stream — it does not load the entire file into memory, making it efficient for large files.
+`sed` is a stream editor that performs text transformations line by line. It reads input, applies operations, and writes the result. Unlike a text editor, sed processes text as a stream: it does not load the entire file into memory, making it efficient for large files.
 
 ### Substitution
 
@@ -174,7 +174,7 @@ sed 's|/usr/local|/opt|g' path.txt      # Use | as delimiter
 sed 's#old#new#g' file.txt              # Use # as delimiter (useful for paths)
 ```
 
-The `g` flag replaces all occurrences on each line (without it, only the first is replaced). The `i` flag edits the file in-place. Always use the backup extension (`-i.bak`) when modifying important files — it is cheap insurance.
+The `g` flag replaces all occurrences on each line (without it, only the first is replaced). The `i` flag edits the file in-place. Always use the backup extension (`-i.bak`) when modifying important files: it is cheap insurance.
 
 ```bash
 # Change a setting in a config file
@@ -580,12 +580,12 @@ grep "ERROR" /var/log/app.log | awk -F'] ' '{print $2}' | sort | uniq -c | sort 
 
 Here is what happens at each stage:
 
-1. `grep "ERROR"` — filters lines containing "ERROR"
-2. `awk -F'] ' '{print $2}'` — extracts the message part (after the first `] `)
-3. `sort` — groups identical messages together
-4. `uniq -c` — counts each unique message
-5. `sort -rn` — sorts by count in descending order
-6. `head -10` — shows the top 10
+1. `grep "ERROR"`: filters lines containing "ERROR"
+2. `awk -F'] ' '{print $2}'`: extracts the message part (after the first `] `)
+3. `sort`: groups identical messages together
+4. `uniq -c`: counts each unique message
+5. `sort -rn`: sorts by count in descending order
+6. `head -10`: shows the top 10
 
 ### Redirection
 
@@ -699,7 +699,7 @@ awk '{print $7}' access.log | sort | uniq -c | sort -rn | head -20
      98765 /api/analytics
 ```
 
-Processing 87.6 million lines took about 45 seconds on a standard disk. On SSD, it would be faster. The pipeline uses no temporary files — everything streams through pipes.
+Processing 87.6 million lines took about 45 seconds on a standard disk. On SSD, it would be faster. The pipeline uses no temporary files: everything streams through pipes.
 
 **Step 3: Top 10 IPs.**
 
@@ -795,7 +795,7 @@ awk '{sum[$7]+=$(NF); count[$7]++} END {for(url in sum) printf "%8.3f avg  %6d r
    0.321 avg    2109 reqs  /api/notifications
 ```
 
-The search endpoint averages 12.3 seconds response time — a clear performance problem. Despite having fewer requests than /api/users, it is the slowest endpoint.
+The search endpoint averages 12.3 seconds response time: a clear performance problem. Despite having fewer requests than /api/users, it is the slowest endpoint.
 
 **Step 9: Error rate by hour.**
 

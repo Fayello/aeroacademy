@@ -1,8 +1,8 @@
-# Module 7 — API Versioning
+# Module 7: API Versioning
 
 APIs evolve. Endpoints change, response formats shift, new fields appear, old fields are removed. Without versioning, these changes break every client that depends on your API. Versioning lets you make changes without breaking existing clients.
 
-This module covers versioning strategies — URL-based, header-based, and query parameter versioning — along with backward compatibility, deprecation workflows, and version management for a real API.
+This module covers versioning strategies: URL-based, header-based, and query parameter versioning: along with backward compatibility, deprecation workflows, and version management for a real API.
 
 ## Why Versioning Matters
 
@@ -394,9 +394,9 @@ console.log(data.email);
 
 **Semantic versioning for APIs.** Use semver for your API version:
 
-- **Major version** (v1, v2, v3) — Breaking changes
-- **Minor version** (v1.1, v1.2) — New features, backward compatible
-- **Patch version** (v1.0.1, v1.0.2) — Bug fixes, backward compatible
+- **Major version** (v1, v2, v3): Breaking changes
+- **Minor version** (v1.1, v1.2): New features, backward compatible
+- **Patch version** (v1.0.1, v1.0.2): Bug fixes, backward compatible
 
 ## Deprecation Workflow
 
@@ -522,14 +522,14 @@ app.use('/api', (req, res, next) => {
 Consider a flight training API with these endpoints:
 
 ```
-GET    /api/v1/pilots              — List pilots
-POST   /api/v1/pilots              — Create pilot
-GET    /api/v1/pilots/:id          — Get pilot
-PUT    /api/v1/pilots/:id          — Update pilot
-DELETE /api/v1/pilots/:id          — Delete pilot
-GET    /api/v1/aircraft            — List aircraft
-GET    /api/v1/training-sessions   — List training sessions
-POST   /api/v1/training-sessions   — Create training session
+GET    /api/v1/pilots             : List pilots
+POST   /api/v1/pilots             : Create pilot
+GET    /api/v1/pilots/:id         : Get pilot
+PUT    /api/v1/pilots/:id         : Update pilot
+DELETE /api/v1/pilots/:id         : Delete pilot
+GET    /api/v1/aircraft           : List aircraft
+GET    /api/v1/training-sessions  : List training sessions
+POST   /api/v1/training-sessions  : Create training session
 ```
 
 ### The Breaking Change
@@ -836,14 +836,14 @@ Use these metrics to answer: "How many users are still on v1?" "Which endpoints 
 Consider a flight training API with these endpoints:
 
 ```
-GET    /api/v1/pilots              — List pilots
-POST   /api/v1/pilots              — Create pilot
-GET    /api/v1/pilots/:id          — Get pilot
-PUT    /api/v1/pilots/:id          — Update pilot
-DELETE /api/v1/pilots/:id          — Delete pilot
-GET    /api/v1/aircraft            — List aircraft
-GET    /api/v1/training-sessions   — List training sessions
-POST   /api/v1/training-sessions   — Create training session
+GET    /api/v1/pilots             : List pilots
+POST   /api/v1/pilots             : Create pilot
+GET    /api/v1/pilots/:id         : Get pilot
+PUT    /api/v1/pilots/:id         : Update pilot
+DELETE /api/v1/pilots/:id         : Delete pilot
+GET    /api/v1/aircraft           : List aircraft
+GET    /api/v1/training-sessions  : List training sessions
+POST   /api/v1/training-sessions  : Create training session
 ```
 
 ### The Breaking Change

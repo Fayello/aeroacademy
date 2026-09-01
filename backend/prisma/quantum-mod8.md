@@ -1,8 +1,8 @@
-# Module 8 — Migration
+# Module 8: Migration
 
 ## The Migration Challenge
 
-Migrating to post-quantum cryptography is not a simple algorithm swap. It requires changes to protocols, certificate infrastructures, hardware security modules, key management systems, and application code. The migration must be backward compatible — old clients must still be able to communicate with new servers during the transition period.
+Migrating to post-quantum cryptography is not a simple algorithm swap. It requires changes to protocols, certificate infrastructures, hardware security modules, key management systems, and application code. The migration must be backward compatible: old clients must still be able to communicate with new servers during the transition period.
 
 This module covers the practical aspects of migrating to post-quantum cryptography, including crypto agility, hybrid TLS, certificate infrastructure changes, and migration planning for real systems.
 
@@ -59,7 +59,7 @@ TLS 1.3 provides a natural integration point for post-quantum cryptography. The 
 4. Shared secrets are combined using HKDF
 5. Application data is encrypted
 
-The hybrid approach requires no protocol changes — it is implemented as an additional key share in the ClientHello and ServerHello.
+The hybrid approach requires no protocol changes: it is implemented as an additional key share in the ClientHello and ServerHello.
 
 ### Google Chrome Deployment
 

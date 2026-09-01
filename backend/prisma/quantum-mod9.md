@@ -1,4 +1,4 @@
-# Module 9 — Implementation
+# Module 9: Implementation
 
 ## Quantum Computing Implementation
 

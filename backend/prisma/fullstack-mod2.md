@@ -1,4 +1,4 @@
-# Module 2 — Node.js and Express
+# Module 2: Node.js and Express
 
 Node.js changed the game by letting developers write server-side code in JavaScript. Express is the minimal framework that sits on top of Node.js and gives you the tools to build web applications and APIs without reinventing the wheel. This module covers everything you need to build production-ready servers: setting up Express, designing middleware, handling routes, managing errors, and building a complete REST API.
 
@@ -6,13 +6,13 @@ Node.js changed the game by letting developers write server-side code in JavaScr
 
 Node.js uses the V8 JavaScript engine and an event-driven, non-blocking I/O model. This means it can handle thousands of concurrent connections with a single thread. For a full-stack JavaScript developer, this means you write one language on both sides of the application, share validation logic, and move between frontend and backend without context switching.
 
-Express gives you the building blocks: routing, middleware, request/response handling. It does not impose opinions about project structure, database access, or authentication. This flexibility is both its strength and its challenge — you need to understand the patterns to build something maintainable.
+Express gives you the building blocks: routing, middleware, request/response handling. It does not impose opinions about project structure, database access, or authentication. This flexibility is both its strength and its challenge: you need to understand the patterns to build something maintainable.
 
 Understanding the event-driven architecture of Node.js is essential for writing performant server code. When a request arrives, Node.js does not create a new thread to handle it. Instead, it adds the request to an event loop and continues processing other events. When an asynchronous operation completes (like reading from a database or file system), Node.js executes the callback function associated with that operation. This model is efficient for I/O-bound workloads (like web servers that spend most of their time waiting for database responses) but inefficient for CPU-bound workloads (like image processing or complex calculations).
 
-Express is intentionally minimal. It provides the essential features for building web applications — routing, middleware, template engines, static file serving — but leaves everything else to you. This means you choose your own database driver, authentication library, validation framework, and testing tools. The advantage is that you are not forced to use tools you do not need. The disadvantage is that you need to make these choices yourself and integrate them correctly.
+Express is intentionally minimal. It provides the essential features for building web applications: routing, middleware, template engines, static file serving: but leaves everything else to you. This means you choose your own database driver, authentication library, validation framework, and testing tools. The advantage is that you are not forced to use tools you do not need. The disadvantage is that you need to make these choices yourself and integrate them correctly.
 
-The middleware pattern is what makes Express powerful. Middleware functions are small, focused units of code that process HTTP requests. They can log requests, parse body content, authenticate users, validate input, handle errors, and more. You chain middleware together to build complex request processing pipelines. Understanding how middleware works — how it receives the request, how it calls `next()` to pass control, and how it can send a response to end the chain — is the key to writing Express applications.
+The middleware pattern is what makes Express powerful. Middleware functions are small, focused units of code that process HTTP requests. They can log requests, parse body content, authenticate users, validate input, handle errors, and more. You chain middleware together to build complex request processing pipelines. Understanding how middleware works: how it receives the request, how it calls `next()` to pass control, and how it can send a response to end the chain: is the key to writing Express applications.
 
 ## Setting Up a Node.js Project
 
@@ -47,19 +47,19 @@ Update `package.json` with scripts:
 ```
 my-api/
   src/
-    index.js          — Entry point
-    app.js            — Express app configuration
+    index.js         : Entry point
+    app.js           : Express app configuration
     routes/
-      users.js        — User routes
-      orders.js       — Order routes
+      users.js       : User routes
+      orders.js      : Order routes
     middleware/
-      auth.js         — Authentication middleware
-      errorHandler.js — Global error handling
-      validate.js     — Request validation
+      auth.js        : Authentication middleware
+      errorHandler.js: Global error handling
+      validate.js    : Request validation
     models/
-      User.js         — User data model
+      User.js        : User data model
     services/
-      userService.js  — Business logic
+      userService.js : Business logic
   package.json
   .env
   .env.example
@@ -69,7 +69,7 @@ The key principle: `index.js` is only responsible for starting the server. `app.
 
 ### The Entry Point
 
-The entry point is responsible for starting the server, connecting to the database, and handling process signals. It should be as simple as possible — all configuration happens in `app.js`.
+The entry point is responsible for starting the server, connecting to the database, and handling process signals. It should be as simple as possible: all configuration happens in `app.js`.
 
 ```javascript
 // src/index.js
@@ -89,7 +89,7 @@ process.on("SIGTERM", () => {
 });
 ```
 
-Notice the `SIGTERM` handler. When your application runs in production (behind a load balancer or in a container), it needs to shut down gracefully — finish processing current requests, close database connections, then exit. Without this, you get dropped connections and data corruption.
+Notice the `SIGTERM` handler. When your application runs in production (behind a load balancer or in a container), it needs to shut down gracefully: finish processing current requests, close database connections, then exit. Without this, you get dropped connections and data corruption.
 
 The `server` variable is important. The `app.listen()` method returns an HTTP server instance, which you need for the graceful shutdown. Calling `server.close()` stops the server from accepting new connections but allows existing connections to complete. The callback passed to `server.close()` runs after all connections are closed, which is when you should exit the process.
 
@@ -107,7 +107,7 @@ process.on("unhandledRejection", (reason, promise) => {
 });
 ```
 
-These handlers should log the error and exit the process. Do not try to recover from uncaught exceptions — the application is in an undefined state and should be restarted. The difference between SIGTERM and SIGINT is that SIGTERM can be caught and handled gracefully, while SIGINT (Ctrl+C) is typically used for immediate termination. In production, you will almost always receive SIGTERM from the process manager or container orchestrator.
+These handlers should log the error and exit the process. Do not try to recover from uncaught exceptions: the application is in an undefined state and should be restarted. The difference between SIGTERM and SIGINT is that SIGTERM can be caught and handled gracefully, while SIGINT (Ctrl+C) is typically used for immediate termination. In production, you will almost always receive SIGTERM from the process manager or container orchestrator.
 
 ## Express App Configuration
 
@@ -149,12 +149,12 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", uptime: process.uptime() });
 });
 
-// 404 handler — must come after all routes
+// 404 handler: must come after all routes
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// Global error handler — must be last
+// Global error handler: must be last
 app.use(errorHandler);
 
 module.exports = app;
@@ -790,12 +790,12 @@ Build a REST API for a simple bookmark management application. The API should su
 5. **Error Handling:** Proper error responses for all failure cases.
 
 **Required Endpoints:**
-- `POST /api/auth/register` — Register a new user
-- `POST /api/auth/login` — Login and receive a JWT
-- `GET /api/bookmarks` — List bookmarks (with filtering and pagination)
-- `POST /api/bookmarks` — Create a bookmark
-- `PUT /api/bookmarks/:id` — Update a bookmark (owner only)
-- `DELETE /api/bookmarks/:id` — Delete a bookmark (owner only)
+- `POST /api/auth/register`: Register a new user
+- `POST /api/auth/login`: Login and receive a JWT
+- `GET /api/bookmarks`: List bookmarks (with filtering and pagination)
+- `POST /api/bookmarks`: Create a bookmark
+- `PUT /api/bookmarks/:id`: Update a bookmark (owner only)
+- `DELETE /api/bookmarks/:id`: Delete a bookmark (owner only)
 
 **Requirements:**
 - Use Express Router for modular route organization

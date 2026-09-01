@@ -1,4 +1,4 @@
-# Module 5 — Network Configuration
+# Module 5: Network Configuration
 
 A server with no network is a very expensive paperweight. Network misconfiguration is one of the most common causes of service outages, and fixing it often means losing access to the very system you need to fix. This module covers network configuration across major distributions, including NetworkManager, Netplan, static and DHCP setup, bonding, bridging, VLANs, and DNS configuration. You will learn to configure a multi-homed server which is one of the most practical network administration scenarios.
 
@@ -78,7 +78,7 @@ Bridges act like a virtual switch. All interfaces connected to the bridge can co
 
 Virtual LANs segment a single physical network into multiple logical networks. They are essential for separating production, management, and backup traffic. Create VLANs with `nmcli` by adding a type `vlan` connection with the VLAN ID and parent device. Each VLAN gets its own IP subnet and routing.
 
-Verify VLAN configuration with `cat /proc/net/vlan/config`. VLAN tagging happens at the switch port level — configure the switch to trunk multiple VLANs on the port connected to the Linux server.
+Verify VLAN configuration with `cat /proc/net/vlan/config`. VLAN tagging happens at the switch port level: configure the switch to trunk multiple VLANs on the port connected to the Linux server.
 
 ## DNS Configuration
 
@@ -234,7 +234,7 @@ Use `ethtool` to tune NIC settings: increase ring buffer size with `-G`, enable 
 
 ### Monitoring Network Performance
 
-Use `iperf3` for throughput testing between servers. Use `nload` or `iftop` for real-time bandwidth monitoring. Use `sar -n DEV` for historical network statistics. Monitor `netstat -s` for TCP retransmissions — high retransmission rates indicate network problems.
+Use `iperf3` for throughput testing between servers. Use `nload` or `iftop` for real-time bandwidth monitoring. Use `sar -n DEV` for historical network statistics. Monitor `netstat -s` for TCP retransmissions: high retransmission rates indicate network problems.
 
 ## Practical Assessment
 

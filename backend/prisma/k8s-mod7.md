@@ -1,10 +1,10 @@
-# Module 7 — Cluster Hardening
+# Module 7: Cluster Hardening
 
 A default Kubernetes installation is not hardened. The API server accepts connections on unencrypted ports, etcd stores data without encryption, audit logging is disabled, and many security features are turned off. Cluster hardening means configuring every component to follow security best practices. This module covers the CIS Kubernetes Benchmark, audit logging, API server security, etcd encryption, and the practical work of hardening a cluster for compliance.
 
 ## CIS Kubernetes Benchmark
 
-The Center for Internet Security (CIS) publishes a Kubernetes Benchmark — a checklist of over 200 configuration items organized by control plane, etcd, control plane configuration, worker nodes, and policies. The benchmark is freely available and is the industry standard for Kubernetes security.
+The Center for Internet Security (CIS) publishes a Kubernetes Benchmark: a checklist of over 200 configuration items organized by control plane, etcd, control plane configuration, worker nodes, and policies. The benchmark is freely available and is the industry standard for Kubernetes security.
 
 ### Key Categories
 
@@ -681,7 +681,7 @@ EOF
 
 ## Assessment
 
-### Lab 1 — CIS Benchmark Audit (30 minutes)
+### Lab 1: CIS Benchmark Audit (30 minutes)
 
 1. Run kube-bench on the lab cluster and save the results.
 2. Identify all CRITICAL and HIGH severity failures.
@@ -691,7 +691,7 @@ EOF
 
 **Grading**: 10 points. 2 points per task. Full credit for accurate audit, correct identification, and working fixes.
 
-### Lab 2 — API Server Hardening (45 minutes)
+### Lab 2: API Server Hardening (45 minutes)
 
 1. Create a hardened API server configuration with all security flags.
 2. Enable audit logging with a comprehensive audit policy.
@@ -701,7 +701,7 @@ EOF
 
 **Grading**: 15 points. 3 points per task. Full credit for correct configuration, working audit logging, and accurate analysis.
 
-### Lab 3 — Full Cluster Hardening (45 minutes)
+### Lab 3: Full Cluster Hardening (45 minutes)
 
 1. Harden a cluster to meet CIS Benchmark Level 2.
 2. Apply Pod Security Standards (restricted) to all namespaces.

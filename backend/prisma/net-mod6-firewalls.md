@@ -1,6 +1,6 @@
-# Module 6 — Firewalls
+# Module 6: Firewalls
 
-Firewalls are the gatekeepers of network security. They examine traffic flowing between network segments and make allow/deny decisions based on rules. But a firewall is only as good as the rules you write — overly permissive rules leave you exposed, overly restrictive rules break legitimate services, and poorly organized rulesets become unmaintainable as they grow.
+Firewalls are the gatekeepers of network security. They examine traffic flowing between network segments and make allow/deny decisions based on rules. But a firewall is only as good as the rules you write: overly permissive rules leave you exposed, overly restrictive rules break legitimate services, and poorly organized rulesets become unmaintainable as they grow.
 
 This module covers packet filtering with iptables/nftables, stateful vs stateless firewalls, next-generation firewalls, web application firewalls, rule optimization, and the practical process of building a firewall ruleset for a web server. You will learn to write rules that are both secure and maintainable.
 
@@ -73,7 +73,7 @@ iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A INPUT -j DROP
 ```
 
-The order of rules matters — iptables evaluates rules top to bottom and applies the first match. The `-A` flag appends the rule to the end of the chain.
+The order of rules matters: iptables evaluates rules top to bottom and applies the first match. The `-A` flag appends the rule to the end of the chain.
 
 ### Rule Elements
 
@@ -180,7 +180,7 @@ nft add element inet filter allowed_tcp_ports { 22, 80, 443, 8080 }
 nft add rule inet filter input tcp dport @allowed_tcp_ports accept
 ```
 
-Updating the set automatically updates all rules that reference it — no need to modify individual rules.
+Updating the set automatically updates all rules that reference it: no need to modify individual rules.
 
 ### nftables Complete Web Server Ruleset
 
@@ -355,7 +355,7 @@ CheckRule "$XSS >= 8" BLOCK;
 
 ### WAF Rule Tuning
 
-WAFs produce false positives — legitimate requests flagged as attacks. Tuning is the process of adjusting rules to reduce false positives without creating false negatives.
+WAFs produce false positives: legitimate requests flagged as attacks. Tuning is the process of adjusting rules to reduce false positives without creating false negatives.
 
 ```bash
 # Example: Whitelist a specific IP range for a SQL injection rule

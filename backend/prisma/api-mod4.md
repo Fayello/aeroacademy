@@ -1,8 +1,8 @@
-# Module 4 — Authorization
+# Module 4: Authorization
 
 Authentication tells you who someone is. Authorization tells you what they can do. A pilot can view their own training records but not another pilot's. An instructor can grade flight sessions but not modify the aircraft registry. An administrator can do both. These distinctions are the domain of authorization.
 
-This module covers the three main authorization models — Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC), and scope-based access — along with rate limiting as a form of abuse prevention. We will look at how to implement each model, where each model breaks down, and how to combine them for fine-grained access control in a real API.
+This module covers the three main authorization models: Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC), and scope-based access: along with rate limiting as a form of abuse prevention. We will look at how to implement each model, where each model breaks down, and how to combine them for fine-grained access control in a real API.
 
 ## Role-Based Access Control (RBAC)
 
@@ -241,7 +241,7 @@ allow {
 
 ## Scope-Based Access Control
 
-Scope-based access is a model commonly used in OAuth 2.0. Instead of assigning roles, you assign scopes — fine-grained permissions that specify what the client is allowed to do.
+Scope-based access is a model commonly used in OAuth 2.0. Instead of assigning roles, you assign scopes: fine-grained permissions that specify what the client is allowed to do.
 
 ### How Scopes Work
 
@@ -295,7 +295,7 @@ app.put('/api/v1/training-sessions/:id/grade',
 
 ### Where Scopes Work Well
 
-**Third-party access.** Scopes are the standard model for OAuth 2.0. When a third-party application requests access to your API, you let the user choose which scopes to grant. This follows the principle of least privilege — the application gets only the permissions it needs.
+**Third-party access.** Scopes are the standard model for OAuth 2.0. When a third-party application requests access to your API, you let the user choose which scopes to grant. This follows the principle of least privilege: the application gets only the permissions it needs.
 
 **API-driven systems.** Scopes map naturally to API endpoints. Each endpoint requires a specific scope, and the token's scopes determine which endpoints the client can access.
 
@@ -331,7 +331,7 @@ X-Rate-Limit-Remaining: 42
 X-Rate-Limit-Reset: 1693424060
 ```
 
-The problem is the "boundary burst" — a client can make 100 requests at 11:59:59 and 100 more at 12:00:01, getting 200 requests in 2 seconds despite a limit of 100 per minute.
+The problem is the "boundary burst": a client can make 100 requests at 11:59:59 and 100 more at 12:00:01, getting 200 requests in 2 seconds despite a limit of 100 per minute.
 
 **Sliding Window Log.** Store the timestamp of every request. When a new request arrives, count the requests in the last N seconds. This eliminates the boundary burst but requires more memory (you store every request timestamp).
 

@@ -1,12 +1,12 @@
-# Module 8 — Backup and Recovery
+# Module 8: Backup and Recovery
 
-Backups are your last line of defense. Everything else — replication, clustering, high availability — can fail simultaneously. When a ransomware attack encrypts your data, when an accidental DROP TABLE wipes out a production table, or when a disk failure corrupts your data files, the backup is what determines whether you recover gracefully or explain to the CEO why the company lost six months of data. This module covers backup strategies, point-in-time recovery, backup testing, disaster recovery planning, and a real scenario of recovering from accidental data deletion.
+Backups are your last line of defense. Everything else: replication, clustering, high availability: can fail simultaneously. When a ransomware attack encrypts your data, when an accidental DROP TABLE wipes out a production table, or when a disk failure corrupts your data files, the backup is what determines whether you recover gracefully or explain to the CEO why the company lost six months of data. This module covers backup strategies, point-in-time recovery, backup testing, disaster recovery planning, and a real scenario of recovering from accidental data deletion.
 
 ## Backup Strategies: Full, Incremental, Differential
 
 **Full Backup:**
 
-A full backup copies the entire database. It is the simplest to restore from — you restore one file and you are done. The downside is time and storage: a 500GB database requires 500GB of backup storage per full backup.
+A full backup copies the entire database. It is the simplest to restore from: you restore one file and you are done. The downside is time and storage: a 500GB database requires 500GB of backup storage per full backup.
 
 ```bash
 # PostgreSQL full backup with pg_dump
@@ -119,7 +119,7 @@ psql -c "SELECT pg_is_in_recovery();"
 # Should return false after recovery completes
 ```
 
-The `recovery_target_time` parameter tells PostgreSQL to replay WAL until it reaches the specified timestamp. This is how you recover from an accidental deletion that happened at 2:30 PM — you restore to 2:29 PM.
+The `recovery_target_time` parameter tells PostgreSQL to replay WAL until it reaches the specified timestamp. This is how you recover from an accidental deletion that happened at 2:30 PM: you restore to 2:29 PM.
 
 Other recovery target options:
 
@@ -208,13 +208,13 @@ wal_level = replica
 max_wal_senders = 5
 ```
 
-The `archive_command` copies completed WAL segments to the archive directory. The `test ! -f` prevents overwriting existing archives. The archive directory should be on a different physical disk or on network storage — if the database disk fails, you lose both data and WAL archives.
+The `archive_command` copies completed WAL segments to the archive directory. The `test ! -f` prevents overwriting existing archives. The archive directory should be on a different physical disk or on network storage: if the database disk fails, you lose both data and WAL archives.
 
 **Automated WAL Archiving with S3:**
 
 ```bash
 #!/bin/bash
-# archive_wal.sh — upload WAL segments to S3
+# archive_wal.sh: upload WAL segments to S3
 ARCHIVE_DIR="/archive"
 S3_BUCKET="s3://myapp-pg-wal-archive"
 
@@ -279,7 +279,7 @@ sudo -u postgres psql -d myapp -c "SELECT COUNT(*) FROM orders WHERE created_at 
 
 ## Backup Verification and Integrity Checking
 
-A backup file that exists is not the same as a backup that works. You must verify that backups are complete, consistent, and restorable. Backup failures are silent — the backup script runs, writes a file, and logs success, but the file might be corrupted, truncated, or incomplete.
+A backup file that exists is not the same as a backup that works. You must verify that backups are complete, consistent, and restorable. Backup failures are silent: the backup script runs, writes a file, and logs success, but the file might be corrupted, truncated, or incomplete.
 
 **PostgreSQL Backup Integrity Checks:**
 
@@ -289,7 +289,7 @@ pg_restore --list /backups/myapp_20260115.dump > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "Backup integrity: OK"
 else
-    echo "Backup integrity: FAILED — file may be corrupted"
+    echo "Backup integrity: FAILED: file may be corrupted"
 fi
 
 # Verify backup file size is reasonable
@@ -313,7 +313,7 @@ gunzip -t /backups/full_20260115.sql.gz
 if [ $? -eq 0 ]; then
     echo "Backup integrity: OK"
 else
-    echo "Backup integrity: FAILED — file may be corrupted"
+    echo "Backup integrity: FAILED: file may be corrupted"
 fi
 
 # Verify XtraBackup integrity
@@ -329,11 +329,11 @@ fi
 
 ```bash
 #!/bin/bash
-# test_backup.sh — verify backup integrity by restoring to a test server
+# test_backup.sh: verify backup integrity by restoring to a test server
 
 ```bash
 #!/bin/bash
-# test_backup.sh — verify backup integrity by restoring to a test server
+# test_backup.sh: verify backup integrity by restoring to a test server
 
 BACKUP_FILE="$1"
 TEST_DB="backup_test_$(date +%Y%m%d_%H%M%S)"
@@ -417,7 +417,7 @@ FROM backup_log WHERE status = 'success';
 
 - Daily: Verify backup file exists and is non-empty
 - Weekly: Restore backup to test server and verify table counts
-- Monthly: Full disaster recovery drill — restore to a separate environment, run application smoke tests
+- Monthly: Full disaster recovery drill: restore to a separate environment, run application smoke tests
 - Quarterly: Test backup encryption/decryption, verify key management
 
 ## Common Backup Mistakes
@@ -428,7 +428,7 @@ These mistakes are surprisingly common and can turn a backup strategy into a fal
 
 The backup runs every night. The log shows success. The file is the right size. But nobody has actually restored from it. When the disaster happens, the restore fails because the backup was created with a different PostgreSQL version, or the custom format flag was wrong, or the file was silently corrupted during transfer to offsite storage.
 
-Test restores monthly. Document the results. If a restore fails, fix it immediately — do not wait for the next monthly test.
+Test restores monthly. Document the results. If a restore fails, fix it immediately: do not wait for the next monthly test.
 
 **Mistake 2: Backups on the Same Disk as Data**
 
@@ -491,7 +491,7 @@ Hot Standby: A second server with data replicated synchronously. Automatic failo
 
 **DR Runbook:**
 
-Every DR plan needs a runbook — a step-by-step document that any qualified DBA can follow without prior knowledge of the specific system.
+Every DR plan needs a runbook: a step-by-step document that any qualified DBA can follow without prior knowledge of the specific system.
 
 ```markdown
 ## DR Runbook: Database Recovery
@@ -540,7 +540,7 @@ You are the DBA for a SaaS application. At 2:47 PM on a Tuesday, a junior develo
 **Immediate Response (First 5 Minutes):**
 
 ```sql
--- 1. Stop the bleeding — identify the session that ran the DELETE
+-- 1. Stop the bleeding: identify the session that ran the DELETE
 SELECT pid, usename, application_name, query_start, query
 FROM pg_stat_activity
 WHERE query LIKE '%DELETE FROM orders%'
@@ -552,15 +552,15 @@ SELECT pg_terminate_backend(<pid_from_above>);
 -- 3. Check if the DELETE committed
 SELECT * FROM pg_stat_activity WHERE datname = 'myapp';
 
--- 4. Do NOT start making changes yet — assess first
+-- 4. Do NOT start making changes yet: assess first
 ```
 
 **Recovery Decision (Minutes 5-10):**
 
 The DELETE committed at 2:47 PM. You need to restore to 2:46 PM. Options:
 
-1. Restore from last night's backup and replay WAL to 2:46 PM — takes 30-60 minutes
-2. Use the continuous WAL archive to replay to 2:46 PM — takes 15-30 minutes
+1. Restore from last night's backup and replay WAL to 2:46 PM: takes 30-60 minutes
+2. Use the continuous WAL archive to replay to 2:46 PM: takes 15-30 minutes
 
 Since you have WAL archiving configured, option 2 is faster.
 

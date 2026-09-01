@@ -1,4 +1,4 @@
-# Module 8 — Monitoring and Logging
+# Module 8: Monitoring and Logging
 
 A Kubernetes cluster without monitoring is flying blind. You don't know when nodes are running low on resources, when pods are crashing, or when the API server is slow. Monitoring and logging give you visibility into cluster health, application performance, and security events. This module covers Prometheus for metrics, Grafana for dashboards, Fluentd/Fluent Bit for logging, Jaeger for tracing, and the practical setup of a production observability stack.
 
@@ -6,7 +6,7 @@ A Kubernetes cluster without monitoring is flying blind. You don't know when nod
 
 ### How Prometheus Works
 
-Prometheus is a time-series database that scrapes metrics from HTTP endpoints. It follows a pull model — Prometheus pulls metrics from targets, rather than targets pushing to Prometheus.
+Prometheus is a time-series database that scrapes metrics from HTTP endpoints. It follows a pull model: Prometheus pulls metrics from targets, rather than targets pushing to Prometheus.
 
 Key concepts:
 - **Metrics**: Numerical measurements (CPU usage, request count, error rate).
@@ -751,7 +751,7 @@ kubectl -n tracing port-forward svc/jaeger-query 16686:16686
 
 ## Assessment
 
-### Lab 1 — Prometheus Setup (30 minutes)
+### Lab 1: Prometheus Setup (30 minutes)
 
 1. Install Prometheus Operator and verify all components are running.
 2. Create a ServiceMonitor for a test application.
@@ -761,7 +761,7 @@ kubectl -n tracing port-forward svc/jaeger-query 16686:16686
 
 **Grading**: 10 points. 2 points per task. Full credit for correct installation, working ServiceMonitor, and accurate alerts.
 
-### Lab 2 — Grafana Dashboards (45 minutes)
+### Lab 2: Grafana Dashboards (45 minutes)
 
 1. Access the Grafana instance and explore built-in dashboards.
 2. Create a custom dashboard with 5 panels for your application.
@@ -771,7 +771,7 @@ kubectl -n tracing port-forward svc/jaeger-query 16686:16686
 
 **Grading**: 15 points. 3 points per task. Full credit for comprehensive dashboards, working variables, and accurate alerting.
 
-### Lab 3 — Full Observability Stack (45 minutes)
+### Lab 3: Full Observability Stack (45 minutes)
 
 1. Install and configure Elasticsearch, Fluent Bit, and Kibana.
 2. Verify logs are being collected from all pods.

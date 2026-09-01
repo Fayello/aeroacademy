@@ -1,6 +1,6 @@
-# Module 5 — Authentication
+# Module 5: Authentication
 
-Authentication is the process of verifying who a user is. Authorization is the process of verifying what they can do. This module covers both: implementing JWT-based authentication, understanding OAuth 2.0, managing sessions, and building a complete login/logout flow. Security is not optional — every mistake here is a potential data breach.
+Authentication is the process of verifying who a user is. Authorization is the process of verifying what they can do. This module covers both: implementing JWT-based authentication, understanding OAuth 2.0, managing sessions, and building a complete login/logout flow. Security is not optional: every mistake here is a potential data breach.
 
 ## Authentication vs Authorization
 
@@ -28,7 +28,7 @@ JSON Web Tokens (JWT) are the standard for stateless authentication. A JWT is a 
 6. Client sends the token in the `Authorization` header with each request.
 7. Server verifies the token signature and extracts user information.
 
-The token is self-contained — the server does not need to look up the user in the database for every request. The trade-off is that you cannot revoke a JWT before it expires (without additional mechanisms).
+The token is self-contained: the server does not need to look up the user in the database for every request. The trade-off is that you cannot revoke a JWT before it expires (without additional mechanisms).
 
 ### Token Generation
 

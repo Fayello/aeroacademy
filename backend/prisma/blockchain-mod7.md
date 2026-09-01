@@ -1,6 +1,6 @@
-# Module 7 — Exchange Security
+# Module 7: Exchange Security
 
-Cryptocurrency exchanges are high-value targets. They hold customer funds in hot wallets (online, accessible for withdrawals) and cold wallets (offline, for long-term storage). The security of an exchange depends on the balance between availability (hot wallets for instant withdrawals) and security (cold wallets for maximum protection). When this balance is wrong, the result is catastrophic — Mt. Gox lost 850,000 BTC, QuadrigaCX lost 190 million CAD, and FTX lost billions in customer deposits. This module covers the architecture, security controls, and operational procedures that secure an exchange.
+Cryptocurrency exchanges are high-value targets. They hold customer funds in hot wallets (online, accessible for withdrawals) and cold wallets (offline, for long-term storage). The security of an exchange depends on the balance between availability (hot wallets for instant withdrawals) and security (cold wallets for maximum protection). When this balance is wrong, the result is catastrophic: Mt. Gox lost 850,000 BTC, QuadrigaCX lost 190 million CAD, and FTX lost billions in customer deposits. This module covers the architecture, security controls, and operational procedures that secure an exchange.
 
 ## Exchange Architecture
 
@@ -38,7 +38,7 @@ A hot wallet is an online wallet that can process withdrawals immediately. It ho
 - Real-time monitoring and anomaly detection.
 - Automatic rebalancing to maintain target balance.
 
-The hot wallet is the first line of defense. It must be fast enough to process withdrawals within minutes but secure enough to resist unauthorized access. The key tradeoff is availability versus security — a fully offline wallet is maximally secure but cannot process withdrawals, while a fully online wallet is maximally available but maximally vulnerable. The warm wallet approach bridges this gap for mid-tier withdrawal amounts.
+The hot wallet is the first line of defense. It must be fast enough to process withdrawals within minutes but secure enough to resist unauthorized access. The key tradeoff is availability versus security: a fully offline wallet is maximally secure but cannot process withdrawals, while a fully online wallet is maximally available but maximally vulnerable. The warm wallet approach bridges this gap for mid-tier withdrawal amounts.
 
 ### Cold Wallet
 
@@ -57,11 +57,11 @@ A cold wallet is an offline wallet that requires manual intervention to sign tra
 - Video recording of all signing sessions.
 - Tamper-evident bags for hardware wallet storage.
 
-The cold wallet is the ultimate backstop. It should never be accessed under normal operations — only during large rebalancing events or when the hot and warm wallets need replenishment. The signing ceremony for cold wallet transactions should be treated with the same formality as a bank vault opening: scheduled in advance, witnessed by multiple parties, and fully documented.
+The cold wallet is the ultimate backstop. It should never be accessed under normal operations: only during large rebalancing events or when the hot and warm wallets need replenishment. The signing ceremony for cold wallet transactions should be treated with the same formality as a bank vault opening: scheduled in advance, witnessed by multiple parties, and fully documented.
 
 ### Warm Wallet
 
-A warm wallet is a middle ground — partially online with automated signing but stricter controls than a hot wallet. It might hold 5-10% of assets and process withdrawals above the hot wallet limit.
+A warm wallet is a middle ground: partially online with automated signing but stricter controls than a hot wallet. It might hold 5-10% of assets and process withdrawals above the hot wallet limit.
 
 **Security properties:**
 - Semi-online → moderate availability and security.
@@ -406,7 +406,7 @@ Exchanges may carry insurance to cover losses from security incidents:
 - **Crime insurance:** Covers losses from employee fraud, social engineering, or other criminal activity.
 - ** Custodial insurance:** Covers losses from third-party custodian failures.
 
-Insurance does not replace security controls. It is a last resort. The premium is proportional to the exchange's security posture — better security means lower premiums. Major exchanges typically carry $100M+ in insurance coverage, with premiums ranging from 1-5% of coverage annually.
+Insurance does not replace security controls. It is a last resort. The premium is proportional to the exchange's security posture: better security means lower premiums. Major exchanges typically carry $100M+ in insurance coverage, with premiums ranging from 1-5% of coverage annually.
 
 Insurance claims require detailed forensic analysis and documentation. Exchanges must maintain comprehensive records of security controls, access logs, and transaction history to support potential claims.
 

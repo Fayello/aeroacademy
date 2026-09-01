@@ -1,4 +1,4 @@
-# Module 3 — Terraform Modules
+# Module 3: Terraform Modules
 
 After writing Terraform configurations for a while, you notice patterns. Every project needs a VPC. Every environment needs a set of security groups. Every application needs an S3 bucket with specific policies and lifecycle rules. You could copy-paste these blocks between projects, but that is exactly the kind of repetition that causes problems. You update the VPC configuration in one project and forget to update it in five others. You fix a security group rule in one place but not the others. The inconsistencies multiply until nobody is sure which configuration is correct.
 
@@ -23,7 +23,7 @@ There is no special declaration needed. Any directory with Terraform files is a 
 
 ```
 infrastructure/
-├── main.tf              # Root module — calls child modules
+├── main.tf              # Root module: calls child modules
 ├── variables.tf
 ├── outputs.tf
 └── modules/
@@ -428,7 +428,7 @@ modules/vpc/
 └── README.md
 ```
 
-**versions.tf** — Required providers:
+**versions.tf**: Required providers:
 
 ```hcl
 terraform {
@@ -443,7 +443,7 @@ terraform {
 }
 ```
 
-**variables.tf** — All inputs with validation:
+**variables.tf**: All inputs with validation:
 
 ```hcl
 variable "name" {
@@ -535,7 +535,7 @@ variable "tags" {
 }
 ```
 
-**main.tf** — Resource definitions:
+**main.tf**: Resource definitions:
 
 ```hcl
 locals {
@@ -710,7 +710,7 @@ resource "aws_iam_role_policy" "flow_log" {
 }
 ```
 
-**outputs.tf** — Export everything callers need:
+**outputs.tf**: Export everything callers need:
 
 ```hcl
 output "vpc_id" {

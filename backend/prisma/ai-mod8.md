@@ -1,4 +1,4 @@
-# Module 8 — ML Infrastructure
+# Module 8: ML Infrastructure
 
 ## Infrastructure Is Not an Afterthought
 
@@ -8,7 +8,7 @@ You will learn to manage GPU resources efficiently, orchestrate training across 
 
 ## GPU Management: Making Every FLOP Count
 
-GPU memory is the most expensive and scarce resource in ML. A single A100 has 80GB of memory. A modern language model can require hundreds of gigabytes. Even a modest fraud detection model with a large feature set can consume several gigabytes per training run. Managing GPU memory is not optional—it is survival.
+GPU memory is the most expensive and scarce resource in ML. A single A100 has 80GB of memory. A modern language model can require hundreds of gigabytes. Even a modest fraud detection model with a large feature set can consume several gigabytes per training run. Managing GPU memory is not optionalit is survival.
 
 ```python
 import torch
@@ -510,7 +510,7 @@ output "training_data_bucket" {
 
 ## Cost Optimization
 
-ML infrastructure is expensive. A single A100 costs roughly $3 per hour. A team of 10 running experiments can easily spend $10,000 per month on GPU compute. Cost optimization is not optional—it is a survival skill.
+ML infrastructure is expensive. A single A100 costs roughly $3 per hour. A team of 10 running experiments can easily spend $10,000 per month on GPU compute. Cost optimization is not optionalit is a survival skill.
 
 ```python
 class ResourceTracker:
@@ -576,7 +576,7 @@ tracker.log_job(
 print(tracker.summary())
 ```
 
-Spot instances reduce GPU costs by 60-80%. The risk is that the instance can be reclaimed at any time. Checkpointing mitigates this risk—if a spot instance is reclaimed, you restart from the last checkpoint rather than from scratch.
+Spot instances reduce GPU costs by 60-80%. The risk is that the instance can be reclaimed at any time. Checkpointing mitigates this riskif a spot instance is reclaimed, you restart from the last checkpoint rather than from scratch.
 
 ## GPU Cluster Architecture
 
@@ -819,11 +819,11 @@ Set up ML infrastructure using containers and orchestration.
 
 ## Evidence
 
-- `gpu_manager.py` — GPU memory management with auto-adjustment and monitoring
-- `multi_gpu_trainer.py` — DDP training implementation with distributed sampling
-- `distributed_storage.py` — Storage abstraction for local and S3 backends
-- `k8s_training_job.yaml` — Kubernetes Job definition for training
-- `Dockerfile.training` — Container definition for the training environment
-- `resource_tracker.py` — Cost tracking and optimization module
-- `infrastructure.tf` — Terraform configuration for ML infrastructure
-- `benchmark_results.csv` — GPU scaling benchmarks from 1 to 4 GPUs
+- `gpu_manager.py`: GPU memory management with auto-adjustment and monitoring
+- `multi_gpu_trainer.py`: DDP training implementation with distributed sampling
+- `distributed_storage.py`: Storage abstraction for local and S3 backends
+- `k8s_training_job.yaml`: Kubernetes Job definition for training
+- `Dockerfile.training`: Container definition for the training environment
+- `resource_tracker.py`: Cost tracking and optimization module
+- `infrastructure.tf`: Terraform configuration for ML infrastructure
+- `benchmark_results.csv`: GPU scaling benchmarks from 1 to 4 GPUs

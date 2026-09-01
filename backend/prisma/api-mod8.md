@@ -1,8 +1,8 @@
-# Module 8 — GraphQL Security
+# Module 8: GraphQL Security
 
 GraphQL APIs are powerful but introduce security risks that REST APIs do not have. The flexible query language means clients can request deeply nested data, which can exhaust server resources. The single endpoint model means rate limiting and authentication work differently. The introspection system can expose your entire schema to attackers.
 
-This module covers GraphQL-specific security risks — query depth attacks, introspection abuse, N+1 query problems, batching attacks, and how to secure a GraphQL API for production use.
+This module covers GraphQL-specific security risks: query depth attacks, introspection abuse, N+1 query problems, batching attacks, and how to secure a GraphQL API for production use.
 
 ## The GraphQL Attack Surface
 
@@ -58,7 +58,7 @@ GraphQL APIs often enable introspection, which allows clients to query the entir
 }
 ```
 
-This returns the complete API schema — every type, every field, every relationship. An attacker can use this information to:
+This returns the complete API schema: every type, every field, every relationship. An attacker can use this information to:
 
 - Discover sensitive fields (e.g., `password_hash`, `ssn`, `internal_notes`)
 - Map the database structure

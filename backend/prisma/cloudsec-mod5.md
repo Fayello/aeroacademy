@@ -1,4 +1,4 @@
-# Module 5 — Logging and Monitoring
+# Module 5: Logging and Monitoring
 
 ## The Difference Between Having Logs and Having Security Visibility
 
@@ -106,19 +106,19 @@ GuardDuty generates findings with severity levels (Low, Medium, High, Critical) 
 ### Key Finding Types
 
 **Reconnaissance:**
-- `UnauthorizedAccess:EC2/MaliciousIPCaller.Custom` — EC2 instance receiving connections from a known malicious IP
-- `Recon:IAMUser/NetworkPermissions` — IAM user changed network permissions (security group, NACL)
-- `Recon:IAMUser/UserPermissions` — IAM user enumerated permissions
+- `UnauthorizedAccess:EC2/MaliciousIPCaller.Custom`: EC2 instance receiving connections from a known malicious IP
+- `Recon:IAMUser/NetworkPermissions`: IAM user changed network permissions (security group, NACL)
+- `Recon:IAMUser/UserPermissions`: IAM user enumerated permissions
 
 **Compromise:**
-- `UnauthorizedAccess:EC2/TorIPCaller` — EC2 instance communicating with a Tor exit node
-- `CredentialAccess:IAMUser/AnomalousBehavior` — IAM user making API calls at unusual times or from unusual locations
-- `DefenseEvasion:IAMUser/ConsoleLogin` — Console login with subsequent disabling of security controls
+- `UnauthorizedAccess:EC2/TorIPCaller`: EC2 instance communicating with a Tor exit node
+- `CredentialAccess:IAMUser/AnomalousBehavior`: IAM user making API calls at unusual times or from unusual locations
+- `DefenseEvasion:IAMUser/ConsoleLogin`: Console login with subsequent disabling of security controls
 
 **Instance compromise:**
-- `UnauthorizedAccess:EC2/TorClient` — EC2 instance acting as a Tor client
-- `Behavior:IAMUser/InstanceConnect` — EC2 instance connect to from an unusual location
-- `Trojan:EC2/DGADomainRequest破解` — EC2 instance communicating with a domain generation algorithm (DGA) domain
+- `UnauthorizedAccess:EC2/TorClient`: EC2 instance acting as a Tor client
+- `Behavior:IAMUser/InstanceConnect`: EC2 instance connect to from an unusual location
+- `Trojan:EC2/DGADomainRequest破解`: EC2 instance communicating with a domain generation algorithm (DGA) domain
 
 ### GuardDuty Configuration
 
@@ -169,14 +169,14 @@ Config continuously monitors resource configurations. When a resource changes (s
 AWS provides dozens of managed Config rules for common compliance checks:
 
 **Security-focused rules:**
-- `s3-bucket-public-read-prohibited` — Detects S3 buckets with public read access
-- `s3-bucket-ssl-requests-only` — Detects S3 buckets without HTTPS-only access
-- `restricted-ssh` — Detects security groups allowing unrestricted SSH access
-- `ec2-instance-no-public-ip` — Detects EC2 instances with public IP addresses (useful for production)
-- `iam-user-mfa-enabled` — Detects IAM users without MFA enabled
-- `iam-password-policy` — Validates password policy meets requirements
-- `root-account-mfa-enabled` — Detects root account without MFA
-- `access-keys-rotated` — Detects access keys older than 90 days
+- `s3-bucket-public-read-prohibited`: Detects S3 buckets with public read access
+- `s3-bucket-ssl-requests-only`: Detects S3 buckets without HTTPS-only access
+- `restricted-ssh`: Detects security groups allowing unrestricted SSH access
+- `ec2-instance-no-public-ip`: Detects EC2 instances with public IP addresses (useful for production)
+- `iam-user-mfa-enabled`: Detects IAM users without MFA enabled
+- `iam-password-policy`: Validates password policy meets requirements
+- `root-account-mfa-enabled`: Detects root account without MFA
+- `access-keys-rotated`: Detects access keys older than 90 days
 
 ### Custom Config Rules
 
@@ -301,7 +301,7 @@ In August 2023, a mid-size e-commerce company detected a security incident throu
 
 **Day 1, 15:02 UTC:** The attacker called `iam:CreateAccessKey` on the developer's own user. This generated a new access key, which the attacker used for subsequent operations.
 
-**Day 1, 15:10 UTC:** GuardDuty generated a finding: `CredentialAccess:IAMUser/AnomalousBehavior` — the developer's access key was used from a Tor exit node at an unusual time.
+**Day 1, 15:10 UTC:** GuardDuty generated a finding: `CredentialAccess:IAMUser/AnomalousBehavior`: the developer's access key was used from a Tor exit node at an unusual time.
 
 **Day 1, 15:15 UTC:** The security team received the GuardDuty finding notification and began investigation.
 

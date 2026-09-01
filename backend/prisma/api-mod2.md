@@ -1,8 +1,8 @@
-# Module 2 — RESTful Design
+# Module 2: RESTful Design
 
 Building a REST API that works is easy. Building one that other developers actually want to use is harder. The difference comes down to design decisions that seem small in the moment but compound over time: how you name your resources, how you structure your URLs, how you handle pagination, and how you communicate errors. This module is about making those decisions well.
 
-REST is an architectural style, not a standard. That means there is no RFC that defines the "correct" way to build a REST API. There are conventions — strong conventions, backed by years of collective experience — but no spec. This freedom is both REST's strength (you can adapt it to any domain) and its weakness (every API looks slightly different, and the differences matter).
+REST is an architectural style, not a standard. That means there is no RFC that defines the "correct" way to build a REST API. There are conventions: strong conventions, backed by years of collective experience: but no spec. This freedom is both REST's strength (you can adapt it to any domain) and its weakness (every API looks slightly different, and the differences matter).
 
 ## Resource Naming
 
@@ -10,9 +10,9 @@ Resources are the nouns of your API. An API that manages flight training might h
 
 ### Rules That Hold Up
 
-**Use nouns, not verbs.** The HTTP method is the verb. The URL is the noun. `GET /pilots` is correct. `GET /get-pilots` or `GET /listAllPilots` is not. The method already tells you what action is happening — the URL should tell you what thing it is happening to.
+**Use nouns, not verbs.** The HTTP method is the verb. The URL is the noun. `GET /pilots` is correct. `GET /get-pilots` or `GET /listAllPilots` is not. The method already tells you what action is happening: the URL should tell you what thing it is happening to.
 
-**Use plural nouns for collections.** `/pilots` not `/pilot`. The collection always exists even if it is empty. `GET /pilots` returns a list (even if the list is empty). `GET /pilots/123` returns a single pilot. This consistency eliminates ambiguity — developers never have to guess whether a URL expects singular or plural.
+**Use plural nouns for collections.** `/pilots` not `/pilot`. The collection always exists even if it is empty. `GET /pilots` returns a list (even if the list is empty). `GET /pilots/123` returns a single pilot. This consistency eliminates ambiguity: developers never have to guess whether a URL expects singular or plural.
 
 **Use kebab-case for multi-word resource names.** `/training-sessions` not `/trainingSessions` or `/training_sessions`. Kebab-case is the convention in HTTP headers (e.g., `Content-Type`), and it reads cleanly in URLs. CamelCase in URLs is hard to read and easy to mistype.
 
@@ -41,7 +41,7 @@ Notice the two patterns for relationships. `/pilots/123/certifications` uses a n
 
 **Mixing singular and plural.** If some endpoints use `/pilot` and others use `/pilots`, developers will get confused. Pick one convention and enforce it everywhere. Plural is almost always the right choice.
 
-**Using CRUD verbs in URLs.** `/createPilot`, `/updatePilot`, `/deletePilot` — these are RPC-style endpoints pretending to be REST. The HTTP method already communicates the action. Repeating it in the URL is redundant noise.
+**Using CRUD verbs in URLs.** `/createPilot`, `/updatePilot`, `/deletePilot`: these are RPC-style endpoints pretending to be REST. The HTTP method already communicates the action. Repeating it in the URL is redundant noise.
 
 **Using abbreviations.** `/pilots/123/trn-sess` saves no one any time. Write out full words. URLs are read by humans, and abbreviations make them harder to parse.
 
@@ -55,13 +55,13 @@ You learned the basics of HTTP methods in Module 1. Here we go deeper into the s
 
 GET retrieves a resource or collection. The server returns the current state of the resource. GET must be safe (no side effects) and idempotent (same result every time).
 
-A common violation of this rule is incrementing a view counter in a GET handler. `GET /articles/123` should not update a `view_count` column in the database. If you need to track views, use a separate mechanism — an analytics endpoint that accepts POST requests, or a background job that reads from access logs.
+A common violation of this rule is incrementing a view counter in a GET handler. `GET /articles/123` should not update a `view_count` column in the database. If you need to track views, use a separate mechanism: an analytics endpoint that accepts POST requests, or a background job that reads from access logs.
 
 GET requests should never expose sensitive data in the URL. If you are filtering by a user's email, do not put it in the query string: `GET /users?email=user@secret.com`. The email will appear in server logs, browser history, and proxy logs. Instead, use POST with a body for searches that might contain sensitive data, even though this breaks the pure REST convention.
 
 ### POST
 
-POST creates a new resource. The server decides the URL of the new resource and returns it in the `Location` header. POST is not idempotent — sending the same POST request twice should create two resources (unless the server has deduplication logic, which adds complexity).
+POST creates a new resource. The server decides the URL of the new resource and returns it in the `Location` header. POST is not idempotent: sending the same POST request twice should create two resources (unless the server has deduplication logic, which adds complexity).
 
 A common confusion is using POST for updates. If the client sends a POST request with an ID that already exists, what should the server do? Options include: return 409 Conflict, update the resource (making POST behave like PUT), or ignore the ID and always create a new resource. The cleanest approach is to always create a new resource and let the client use PUT or PATCH for updates.
 
@@ -72,7 +72,7 @@ POST responses should return:
 
 ### PUT
 
-PUT replaces the entire resource. The client sends the complete representation, and the server replaces the stored version with it. PUT is idempotent — sending the same PUT request multiple times produces the same result.
+PUT replaces the entire resource. The client sends the complete representation, and the server replaces the stored version with it. PUT is idempotent: sending the same PUT request multiple times produces the same result.
 
 The critical difference between PUT and POST is that PUT requires the client to know the full state of the resource. If a pilot record has 20 fields and the client only sends 3, what happens to the other 17? There are two valid interpretations:
 
@@ -110,7 +110,7 @@ JSON Patch is more powerful (it can handle removals, additions, and nested opera
 
 ### DELETE
 
-DELETE removes a resource. It is idempotent — deleting something that is already deleted returns either 200 (with the deleted resource) or 404 (if the resource is gone). Both are valid. The choice depends on whether your API wants to confirm what was deleted or signal that it was already gone.
+DELETE removes a resource. It is idempotent: deleting something that is already deleted returns either 200 (with the deleted resource) or 404 (if the resource is gone). Both are valid. The choice depends on whether your API wants to confirm what was deleted or signal that it was already gone.
 
 DELETE should not permanently destroy data in most cases. Soft deletion (setting a `deleted_at` timestamp) is the standard approach for production APIs. This allows recovery from accidental deletions and maintains referential integrity. The API can filter out soft-deleted resources by default while still allowing administrators to access them.
 
@@ -176,7 +176,7 @@ A standard response looks like:
 
 ### Cursor-Based Pagination
 
-Instead of an offset, the client passes a cursor — a opaque string that encodes the position in the result set:
+Instead of an offset, the client passes a cursor: a opaque string that encodes the position in the result set:
 
 ```
 GET /api/v1/pilots?cursor=eyJpZCI6MTIzfQ==&limit=25
@@ -195,7 +195,7 @@ The server decodes the cursor (which typically contains the last ID seen) and re
 }
 ```
 
-Cursor-based pagination eliminates the deep pagination problem because the database uses an index seek (`WHERE id > 123 LIMIT 25`) instead of an offset. It is also resilient to data changes — if a new record is inserted while the user is paginating, offset-based pagination might skip or duplicate records. Cursor-based pagination does not have this issue because it uses the last seen ID as the anchor.
+Cursor-based pagination eliminates the deep pagination problem because the database uses an index seek (`WHERE id > 123 LIMIT 25`) instead of an offset. It is also resilient to data changes: if a new record is inserted while the user is paginating, offset-based pagination might skip or duplicate records. Cursor-based pagination does not have this issue because it uses the last seen ID as the anchor.
 
 The trade-off is that cursors are opaque. The client cannot jump to an arbitrary page. There is no "go to page 5" with cursor pagination. If the user needs to navigate to specific pages, offset-based pagination is still the right choice.
 
@@ -239,7 +239,7 @@ For text search, use a `q` parameter:
 GET /api/v1/pilots?q=smith
 ```
 
-The `q` parameter triggers a full-text search across relevant fields (name, email, license number). The implementation is database-specific — PostgreSQL uses `ts_vector` and `ts_query`, MySQL uses `FULLTEXT` indexes.
+The `q` parameter triggers a full-text search across relevant fields (name, email, license number). The implementation is database-specific: PostgreSQL uses `ts_vector` and `ts_query`, MySQL uses `FULLTEXT` indexes.
 
 ### Sorting
 
@@ -326,7 +326,7 @@ REST, in its purest form, includes hypermedia as the engine of application state
 }
 ```
 
-The idea is that the client discovers available actions by following links, rather than hardcoding URLs. In theory, this makes the API more resilient to URL changes — if the server changes the URL for certifications, the client does not need to be updated because it follows the link.
+The idea is that the client discovers available actions by following links, rather than hardcoding URLs. In theory, this makes the API more resilient to URL changes: if the server changes the URL for certifications, the client does not need to be updated because it follows the link.
 
 In practice, HATEOAS is rarely implemented fully. Most REST APIs include self links but skip the full hypermedia approach because:
 - It adds significant response size overhead
@@ -343,12 +343,12 @@ You are building the API for a flight training management system. The platform t
 ### Resource Identification
 
 The core resources are:
-- `pilots` — People learning to fly
-- `aircraft` — The planes used for training
-- `training-sessions` — Scheduled flight or ground training
-- `instructors` — Certified flight instructors
-- `certifications` — Pilot ratings and certificates
-- `flight-logs` — Records of completed flights
+- `pilots`: People learning to fly
+- `aircraft`: The planes used for training
+- `training-sessions`: Scheduled flight or ground training
+- `instructors`: Certified flight instructors
+- `certifications`: Pilot ratings and certificates
+- `flight-logs`: Records of completed flights
 
 ### URL Structure
 

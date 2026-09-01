@@ -1,4 +1,4 @@
-# Module 3 — Packet Analysis
+# Module 3: Packet Analysis
 
 You can scan networks and discover hosts. Now you need to understand what traffic crosses them. Packet analysis is how you answer questions like "What data did that malware exfiltrate?", "Is that employee SSH-ing to unauthorized servers?", or "Why is this application slow?"
 
@@ -8,11 +8,11 @@ This module teaches you to read, filter, and analyze packet captures. You'll bui
 
 Every network communication leaves traces. When a user visits a website, their browser sends DNS queries, establishes TCP connections, and exchanges HTTP requests. When malware communicates with its command server, it creates network connections that reveal its behavior. When an employee exfiltrates data, the data crosses the network in packets that can be captured and analyzed.
 
-Packet analysis is the microscope of network security. It lets you see exactly what happened on the wire, byte by byte. Other security tools make inferences — port scanners guess at services based on response behavior, IDS systems match patterns against known signatures. Packet analysis gives you ground truth. You see the actual data, the actual timing, the actual sequence of events.
+Packet analysis is the microscope of network security. It lets you see exactly what happened on the wire, byte by byte. Other security tools make inferences: port scanners guess at services based on response behavior, IDS systems match patterns against known signatures. Packet analysis gives you ground truth. You see the actual data, the actual timing, the actual sequence of events.
 
 The challenge is volume. A single pcap file from a busy network can contain millions of packets and gigabytes of data. You can't read every packet manually. You need tools that filter, aggregate, and highlight interesting patterns. Python excels at this because you can write custom logic that understands your specific investigation needs. Commercial tools give you generic dashboards. Python scripts give you exactly the analysis you need.
 
-Real investigations follow a pattern: capture traffic, load the pcap, filter to the interesting subset, extract statistics, identify anomalies, and reconstruct conversations. Each step produces smaller, more focused datasets. By the end, you've found the needle in the haystack — the DNS tunnel, the data exfiltration, the credential theft. This module teaches you each step of that process.
+Real investigations follow a pattern: capture traffic, load the pcap, filter to the interesting subset, extract statistics, identify anomalies, and reconstruct conversations. Each step produces smaller, more focused datasets. By the end, you've found the needle in the haystack: the DNS tunnel, the data exfiltration, the credential theft. This module teaches you each step of that process.
 
 ## Reading pcap Files
 
@@ -48,7 +48,7 @@ with PcapReader("large_capture.pcap") as reader:
             break
 ```
 
-Pcap files can come from Wireshark, tcpdump, tshark, or any tool that captures network traffic. The format is standardized — a pcap reader can parse captures from any source.
+Pcap files can come from Wireshark, tcpdump, tshark, or any tool that captures network traffic. The format is standardized: a pcap reader can parse captures from any source.
 
 ## Protocol Dissection
 
@@ -166,13 +166,13 @@ packets = sniff(filter="tcp and port 80", count=100)
 ```
 
 Common BPF filters:
-- `host 192.168.1.1` — traffic to/from this IP
-- `net 192.168.1.0/24` — traffic to/from this subnet
-- `port 80` — traffic on port 80
-- `tcp` — TCP traffic only
-- `udp` — UDP traffic only
-- `icmp` — ICMP traffic only
-- `tcp[tcpflags] & tcp-syn != 0` — TCP SYN packets
+- `host 192.168.1.1`: traffic to/from this IP
+- `net 192.168.1.0/24`: traffic to/from this subnet
+- `port 80`: traffic on port 80
+- `tcp`: TCP traffic only
+- `udp`: UDP traffic only
+- `icmp`: ICMP traffic only
+- `tcp[tcpflags] & tcp-syn != 0`: TCP SYN packets
 
 ### Python Filtering
 
@@ -315,7 +315,7 @@ print_stats(stats)
 
 ## Building a Packet Sniffer
 
-A sniffer captures live traffic. Scapy's `sniff` function does this, but let's build something more useful — a sniffer that logs, filters, and displays traffic in real time.
+A sniffer captures live traffic. Scapy's `sniff` function does this, but let's build something more useful: a sniffer that logs, filters, and displays traffic in real time.
 
 ```python
 from scapy.all import sniff, IP, TCP, UDP, DNS, Raw
@@ -800,7 +800,7 @@ You are given a pcap file containing suspicious network traffic. Analyze it and 
 
 ## Common Packet Analysis Challenges
 
-Real-world packet analysis presents challenges that textbook examples don't cover. Encrypted traffic is the biggest one. TLS encrypts HTTP traffic, SSH encrypts terminal sessions, VPNs encrypt everything. You can see the connections but not the content. Analysis shifts from examining payloads to analyzing metadata — connection timing, packet sizes, destination IPs, and DNS queries.
+Real-world packet analysis presents challenges that textbook examples don't cover. Encrypted traffic is the biggest one. TLS encrypts HTTP traffic, SSH encrypts terminal sessions, VPNs encrypt everything. You can see the connections but not the content. Analysis shifts from examining payloads to analyzing metadata: connection timing, packet sizes, destination IPs, and DNS queries.
 
 Fragmented and segmented packets complicate analysis. TCP segmentation splits large packets into smaller segments. IP fragmentation splits packets that exceed the network MTU. Reassembling these fragments requires tracking sequence numbers and reassembling the original data. Scapy handles basic reassembly, but complex scenarios require custom logic.
 
@@ -812,7 +812,7 @@ Timestamp analysis requires careful attention. Packet timestamps are in UTC by d
 
 Packet analysis is the forensic backbone of network security. When something goes wrong on a network, the pcap file is the black box recorder. You can see every connection, every byte transferred, every DNS query. The skill is finding the needle in the haystack.
 
-The tools you built here — packet sniffer, traffic analyzer, incident reporter — are directly applicable to security operations. Security analysts spend their days staring at packet captures, looking for signs of compromise. Now you can automate that process.
+The tools you built here: packet sniffer, traffic analyzer, incident reporter: are directly applicable to security operations. Security analysts spend their days staring at packet captures, looking for signs of compromise. Now you can automate that process.
 
 **Libraries covered:** scapy (rdpcap, sniff, PcapReader), collections, re, json, datetime
 

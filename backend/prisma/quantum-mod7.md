@@ -1,4 +1,4 @@
-# Module 7 — Digital Signatures
+# Module 7: Digital Signatures
 
 ## Digital Signatures in the Post-Quantum Era
 
@@ -202,11 +202,11 @@ SPHINCS+ eliminates the state management requirement of XMSS and LMS by using a 
 | SPHINCS+-SHA2-192s | 3 (192-bit) | 48 | 16,224 |
 | SPHINCS+-SHA2-256s | 5 (256-bit) | 64 | 16,224 |
 
-The "s" variants optimize for signature size (slower signing). The "f" variants optimize for signing speed (larger signatures). SPHINCS+ provides conservative security because it relies only on the security of the hash function — no algebraic assumptions.
+The "s" variants optimize for signature size (slower signing). The "f" variants optimize for signing speed (larger signatures). SPHINCS+ provides conservative security because it relies only on the security of the hash function: no algebraic assumptions.
 
 ### Security Foundation
 
-SPHINCS+ security reduces to the security of the underlying hash function. If SHA-256 is collision-resistant and preimage-resistant, SPHINCS+ is secure. This is the strongest possible security foundation — it does not rely on any number-theoretic or algebraic assumption.
+SPHINCS+ security reduces to the security of the underlying hash function. If SHA-256 is collision-resistant and preimage-resistant, SPHINCS+ is secure. This is the strongest possible security foundation: it does not rely on any number-theoretic or algebraic assumption.
 
 The main disadvantage is signature size: SPHINCS+ signatures are much larger than Dilithium or FALCON signatures. This makes SPHINCS+ less suitable for bandwidth-constrained applications but ideal for high-security applications where the security foundation is paramount.
 

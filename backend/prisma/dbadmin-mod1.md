@@ -1,18 +1,18 @@
-# Module 1 — Database Fundamentals
+# Module 1: Database Fundamentals
 
-Databases sit at the center of nearly every application you will encounter in the field. Whether you are building a simple blog, a banking platform, or an IoT data pipeline, the way you store, retrieve, and manage data determines how far you can scale, how reliably your system performs, and how much pain you will face when things go wrong. This module lays the groundwork for everything that follows in this course. We will not gloss over the basics — we will go deep into why relational databases still dominate, when NoSQL is the right call, and how to think about consistency, availability, and durability in practical terms you can apply on your first day on the job.
+Databases sit at the center of nearly every application you will encounter in the field. Whether you are building a simple blog, a banking platform, or an IoT data pipeline, the way you store, retrieve, and manage data determines how far you can scale, how reliably your system performs, and how much pain you will face when things go wrong. This module lays the groundwork for everything that follows in this course. We will not gloss over the basics: we will go deep into why relational databases still dominate, when NoSQL is the right call, and how to think about consistency, availability, and durability in practical terms you can apply on your first day on the job.
 
 ## Relational vs NoSQL: When to Use Which
 
 Every data storage decision starts with a question: what shape is my data, and how will I query it? The answer determines whether a relational database (RDBMS) or a NoSQL store is the better fit.
 
-Relational databases organize data into tables with predefined schemas. Each row represents a record, each column represents a field, and relationships between tables are enforced through foreign keys. This model works exceptionally well when your data is structured, your queries are known in advance, and you need transactions that span multiple operations. Think of a financial system where you must debit one account and credit another atomically — either both happen or neither happens. Relational databases guarantee this through ACID properties (covered below).
+Relational databases organize data into tables with predefined schemas. Each row represents a record, each column represents a field, and relationships between tables are enforced through foreign keys. This model works exceptionally well when your data is structured, your queries are known in advance, and you need transactions that span multiple operations. Think of a financial system where you must debit one account and credit another atomically: either both happen or neither happens. Relational databases guarantee this through ACID properties (covered below).
 
 NoSQL databases take different approaches. Document stores like MongoDB store JSON-like documents with flexible schemas. Key-value stores like Redis are optimized for simple lookups by key. Column-family stores like Cassandra spread data across nodes for horizontal scalability. Graph databases like Neo4j model relationships between entities as first-class citizens. Each model trades off something in exchange for advantages in specific use cases.
 
-Consider an e-commerce product catalog. Products have varying attributes — a shirt has size and color, a laptop has RAM and CPU specs, a book has ISBN and page count. A rigid relational schema forces you into either a sparse table with many NULL columns or a complex web of joined tables. MongoDB handles this naturally: each product document contains only the fields relevant to that product type, and the schema evolves without migrations. You add a new product type with new attributes and existing queries still work.
+Consider an e-commerce product catalog. Products have varying attributes: a shirt has size and color, a laptop has RAM and CPU specs, a book has ISBN and page count. A rigid relational schema forces you into either a sparse table with many NULL columns or a complex web of joined tables. MongoDB handles this naturally: each product document contains only the fields relevant to that product type, and the schema evolves without migrations. You add a new product type with new attributes and existing queries still work.
 
-But now consider the order processing system for that same e-commerce platform. Orders reference customers, products, inventory, and payment records. An order must update inventory counts, record the transaction, and generate a shipment — all atomically. If the payment goes through but the inventory decrement fails, you have oversold a product. MongoDB 4.0+ supports multi-document transactions, but they come with performance overhead and complexity that makes a relational database the natural choice here.
+But now consider the order processing system for that same e-commerce platform. Orders reference customers, products, inventory, and payment records. An order must update inventory counts, record the transaction, and generate a shipment: all atomically. If the payment goes through but the inventory decrement fails, you have oversold a product. MongoDB 4.0+ supports multi-document transactions, but they come with performance overhead and complexity that makes a relational database the natural choice here.
 
 The real world does not force a single choice. Most production systems use multiple data stores. PostgreSQL handles transactional data. Redis caches session information and recent queries. Elasticsearch powers full-text search across product catalogs. The skill is knowing which tool fits which job, not picking one database for everything.
 
@@ -20,7 +20,7 @@ The real world does not force a single choice. Most production systems use multi
 
 Use a relational database when you need ACID transactions, your schema is stable or changes infrequently, your queries involve joins across multiple entities, or you need complex reporting with aggregations. Use NoSQL when your schema is highly variable, you need to scale horizontally across many nodes, your access patterns are simple (key-based lookups), or your data volume exceeds what a single relational server can handle without sharding complexity.
 
-Be cautious of the "NoSQL is faster" claim. NoSQL databases are faster for specific workloads — typically simple reads and writes at massive scale. A well-tuned PostgreSQL instance with proper indexing will outperform MongoDB for complex analytical queries. The performance advantage of NoSQL comes from relaxed consistency guarantees and denormalized data, not from some magical architectural superiority.
+Be cautious of the "NoSQL is faster" claim. NoSQL databases are faster for specific workloads: typically simple reads and writes at massive scale. A well-tuned PostgreSQL instance with proper indexing will outperform MongoDB for complex analytical queries. The performance advantage of NoSQL comes from relaxed consistency guarantees and denormalized data, not from some magical architectural superiority.
 
 ## ACID Properties with Real Examples
 
@@ -35,7 +35,7 @@ UPDATE accounts SET balance = balance + 500 WHERE account_id = 'B';
 COMMIT;
 ```
 
-If anything fails between BEGIN and COMMIT, the entire transaction is rolled back. No partial updates persist. Without Atomicity, you would need compensating logic to detect and fix half-completed transactions — a maintenance nightmare that scales poorly.
+If anything fails between BEGIN and COMMIT, the entire transaction is rolled back. No partial updates persist. Without Atomicity, you would need compensating logic to detect and fix half-completed transactions: a maintenance nightmare that scales poorly.
 
 **Consistency** ensures that every transaction moves the database from one valid state to another, respecting all defined constraints. If you have a CHECK constraint requiring account balances to be non-negative, a transaction that would make a balance negative is rejected entirely. Consider:
 
@@ -43,7 +43,7 @@ If anything fails between BEGIN and COMMIT, the entire transaction is rolled bac
 ALTER TABLE accounts ADD CONSTRAINT positive_balance CHECK (balance >= 0);
 ```
 
-Now if Account A has $300 and you try to withdraw $500, the CHECK constraint fails, the transaction rolls back, and the database remains in a consistent state. Consistency is enforced by the database engine through constraints, triggers, and rules. It is not something your application layer can reliably enforce on its own — concurrent requests can race past application checks.
+Now if Account A has $300 and you try to withdraw $500, the CHECK constraint fails, the transaction rolls back, and the database remains in a consistent state. Consistency is enforced by the database engine through constraints, triggers, and rules. It is not something your application layer can reliably enforce on its own: concurrent requests can race past application checks.
 
 **Isolation** determines how concurrent transactions interact. Without proper isolation, one transaction can read uncommitted changes from another (dirty reads), miss updates entirely (non-repeatable reads), or see phantom rows that appear or disappear between reads. PostgreSQL defaults to READ COMMITTED isolation, which prevents dirty reads but allows non-repeatable reads. For financial systems, SERIALIZABLE isolation is often required:
 
@@ -71,7 +71,7 @@ Setting synchronous_commit to off improves write performance but means you could
 
 ## CAP Theorem
 
-The CAP theorem, proposed by Eric Brewer in 2000 and proven by Gilbert and Lynch in 2002, states that a distributed data store can provide at most two of three guarantees: Consistency, Availability, and Partition tolerance. In practice, network partitions happen — servers lose connectivity, network cards fail, data centers lose communication. Since you cannot prevent partitions, you must choose between consistency and availability when a partition occurs.
+The CAP theorem, proposed by Eric Brewer in 2000 and proven by Gilbert and Lynch in 2002, states that a distributed data store can provide at most two of three guarantees: Consistency, Availability, and Partition tolerance. In practice, network partitions happen: servers lose connectivity, network cards fail, data centers lose communication. Since you cannot prevent partitions, you must choose between consistency and availability when a partition occurs.
 
 **Consistency (C):** Every read receives the most recent write or an error. All nodes see the same data at the same time. If you write a value to one node, any subsequent read from any node returns that value.
 
@@ -95,7 +95,7 @@ For a banking system that must never show inconsistent balances, a CP system lik
 
 The database engine is the component that actually stores, retrieves, and manipulates data. Choosing the right engine within a database system matters as much as choosing the database system itself.
 
-**InnoDB (MySQL):** InnoDB is the default storage engine for MySQL since version 5.5. It supports transactions, row-level locking, foreign keys, and crash recovery through redo logs. InnoDB uses a clustered index for primary keys, meaning the data is physically ordered by the primary key. This makes primary key lookups very fast but means you should choose your primary keys carefully — auto-incrementing integers are ideal, while random UUIDs cause page splits and performance degradation.
+**InnoDB (MySQL):** InnoDB is the default storage engine for MySQL since version 5.5. It supports transactions, row-level locking, foreign keys, and crash recovery through redo logs. InnoDB uses a clustered index for primary keys, meaning the data is physically ordered by the primary key. This makes primary key lookups very fast but means you should choose your primary keys carefully: auto-incrementing integers are ideal, while random UUIDs cause page splits and performance degradation.
 
 ```sql
 -- InnoDB stores data in the primary key order
@@ -113,7 +113,7 @@ InnoDB's buffer pool caches both data and indexes in memory. For a dedicated MyS
 
 For a read-only reporting table that is bulk-loaded periodically, MyISAM might outperform InnoDB. But for any system with concurrent writes, InnoDB is the correct choice. The table-level locking in MyISAM means a single UPDATE locks the entire table, blocking all other operations.
 
-**PostgreSQL Engine Architecture:** PostgreSQL does not have pluggable storage engines like MySQL. Instead, it uses a single, unified storage engine with MVCC (Multi-Version Concurrency Control) built in. MVCC means readers do not block writers and writers do not block readers — each transaction sees a snapshot of the data as it existed at the start of the transaction. This is fundamentally different from MySQL's InnoDB, which uses undo logs to provide MVCC-like behavior.
+**PostgreSQL Engine Architecture:** PostgreSQL does not have pluggable storage engines like MySQL. Instead, it uses a single, unified storage engine with MVCC (Multi-Version Concurrency Control) built in. MVCC means readers do not block writers and writers do not block readers: each transaction sees a snapshot of the data as it existed at the start of the transaction. This is fundamentally different from MySQL's InnoDB, which uses undo logs to provide MVCC-like behavior.
 
 PostgreSQL stores data in 8KB pages organized into heap files. Each tuple (row) has a xmin (transaction that created it) and xmax (transaction that deleted or updated it) field. When you read a row, PostgreSQL checks whether the creating transaction committed and the deleting transaction has not, using this visibility information to show each transaction its own consistent snapshot.
 
@@ -159,9 +159,9 @@ CREATE TABLE product_tags (
 
 Second Normal Form (2NF): Every non-key column depends on the entire primary key, not just part of it. This matters primarily for composite primary keys.
 
-Third Normal Form (3NF): Non-key columns depend only on the primary key, not on other non-key columns. If you have a customers table where city determines state, state should not be in the customers table — it should be in a separate zip_codes table.
+Third Normal Form (3NF): Non-key columns depend only on the primary key, not on other non-key columns. If you have a customers table where city determines state, state should not be in the customers table: it should be in a separate zip_codes table.
 
-Denormalization is the opposite of normalization — you deliberately add redundancy to improve read performance. A common pattern is to store a computed total in an orders table rather than calculating it from order_items every time. The trade-off is clear: reads are faster, but writes must update the denormalized value.
+Denormalization is the opposite of normalization: you deliberately add redundancy to improve read performance. A common pattern is to store a computed total in an orders table rather than calculating it from order_items every time. The trade-off is clear: reads are faster, but writes must update the denormalized value.
 
 ```sql
 -- Denormalized: total stored alongside order items
@@ -194,9 +194,9 @@ CREATE TRIGGER order_items_changed
 Choosing the wrong data type wastes disk space, slows queries, and causes bugs. A few practical guidelines:
 
 - Use UUIDs for primary keys when you need distributed generation or merge from multiple sources. Use auto-incrementing integers for single-server OLTP workloads where sequential access patterns matter.
-- Use NUMERIC (exact) for money. Never use FLOAT or DOUBLE for financial calculations — floating-point rounding produces incorrect totals.
+- Use NUMERIC (exact) for money. Never use FLOAT or DOUBLE for financial calculations: floating-point rounding produces incorrect totals.
 - Use TIMESTAMPTZ (timestamp with time zone) for all timestamps. Store in UTC, convert to local time in the application layer.
-- Use TEXT/VARCHAR with appropriate length limits. MySQL's VARCHAR(255) is not the same as VARCHAR(255) in other databases — MySQL VARCHAR uses 1 byte for lengths under 256, 2 bytes for longer.
+- Use TEXT/VARCHAR with appropriate length limits. MySQL's VARCHAR(255) is not the same as VARCHAR(255) in other databases: MySQL VARCHAR uses 1 byte for lengths under 256, 2 bytes for longer.
 - Use JSONB (PostgreSQL) or JSON (MySQL 8.0+) for semi-structured data that benefits from indexing. Use TEXT for opaque JSON that is only read by the application.
 
 ```sql
@@ -224,11 +224,11 @@ You decide to migrate the product catalog to MongoDB. The document model handles
 db.products.createIndex({ category: 1, price: -1 })
 ```
 
-**User Accounts and Authentication:** User data is structured, relational, and requires transactions. A user creation must atomically create the user record, default preferences, and initial session. PostgreSQL handles this well. The schema is stable — every user has a name, email, hashed password, and created timestamp. Joins between users and orders are frequent.
+**User Accounts and Authentication:** User data is structured, relational, and requires transactions. A user creation must atomically create the user record, default preferences, and initial session. PostgreSQL handles this well. The schema is stable: every user has a name, email, hashed password, and created timestamp. Joins between users and orders are frequent.
 
-**Orders and Payments:** Orders reference users, products (now in MongoDB), and payment records. This is the most transactionally critical data. An order must atomically: create the order record, decrement inventory, record the payment, and generate a shipment. The payment processing requires ACID guarantees — a partial order is unacceptable.
+**Orders and Payments:** Orders reference users, products (now in MongoDB), and payment records. This is the most transactionally critical data. An order must atomically: create the order record, decrement inventory, record the payment, and generate a shipment. The payment processing requires ACID guarantees: a partial order is unacceptable.
 
-You keep orders in PostgreSQL but face a design question: orders reference products in MongoDB. You solve this by embedding a snapshot of the product details (name, price at time of purchase) in the order record. This is a common pattern in polyglot persistence — embed immutable copies of cross-store references so you never need a cross-database join.
+You keep orders in PostgreSQL but face a design question: orders reference products in MongoDB. You solve this by embedding a snapshot of the product details (name, price at time of purchase) in the order record. This is a common pattern in polyglot persistence: embed immutable copies of cross-store references so you never need a cross-database join.
 
 ```sql
 CREATE TABLE orders (
@@ -251,7 +251,7 @@ CREATE TABLE orders (
 - Elasticsearch: Product search (full-text, faceted)
 - Redis: Session cache, rate limiting (ephemeral, fast)
 
-This polyglot approach is more complex than a single database, but each component handles what it does best. The alternative — shoving everything into PostgreSQL or everything into MongoDB — would create performance bottlenecks and development friction that slow the team down more than the operational complexity of multiple stores.
+This polyglot approach is more complex than a single database, but each component handles what it does best. The alternative: shoving everything into PostgreSQL or everything into MongoDB: would create performance bottlenecks and development friction that slow the team down more than the operational complexity of multiple stores.
 
 **Migration Planning:** You do not rip out MySQL overnight. The migration happens in phases:
 

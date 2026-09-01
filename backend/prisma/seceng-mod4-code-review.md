@@ -1,14 +1,14 @@
-# Module 4 — Secure Code Review
+# Module 4: Secure Code Review
 
 Secure code review is the process of examining source code to identify security vulnerabilities, logic flaws, and deviations from secure coding standards. It is the most effective method of finding vulnerabilities before they reach production because it examines the actual logic that will execute, rather than observing behavior from the outside as testing does. A penetration test might find 10% of the vulnerabilities in a codebase. A thorough code review can find the other 90%.
 
-The challenge is that most code reviews are not designed to find security issues. Standard code reviews focus on functionality, readability, performance, and maintainability. Security is either assumed to be handled elsewhere or addressed through automated tools that miss context-dependent vulnerabilities. Effective secure code review requires a different mindset — you are not asking "does this code work?" but "how can this code be abused?"
+The challenge is that most code reviews are not designed to find security issues. Standard code reviews focus on functionality, readability, performance, and maintainability. Security is either assumed to be handled elsewhere or addressed through automated tools that miss context-dependent vulnerabilities. Effective secure code review requires a different mindset: you are not asking "does this code work?" but "how can this code be abused?"
 
 ## Manual Code Review Checklist
 
 A manual code review checklist provides structure to an activity that otherwise risks being unfocused and inconsistent. The checklist should cover the most common vulnerability classes and be tailored to the language, framework, and application type.
 
-**Input Validation:** Every piece of data that enters the application from an external source must be validated. This includes HTTP request parameters, headers, cookies, URL paths, file uploads, API payloads, database query results, message queue contents, and data from third-party services. Validation should be applied at the boundary — the earliest point where data enters the application — and should enforce allowlists rather than denylists. Denylists are inherently incomplete because they cannot anticipate every possible malicious input.
+**Input Validation:** Every piece of data that enters the application from an external source must be validated. This includes HTTP request parameters, headers, cookies, URL paths, file uploads, API payloads, database query results, message queue contents, and data from third-party services. Validation should be applied at the boundary: the earliest point where data enters the application: and should enforce allowlists rather than denylists. Denylists are inherently incomplete because they cannot anticipate every possible malicious input.
 
 **Output Encoding:** Every piece of data that leaves the application toward a browser, API client, log file, or other external system must be encoded appropriately for the destination context. HTML context requires HTML entity encoding. JavaScript context requires JavaScript string encoding. SQL context requires parameterized queries (not string encoding). URL context requires URL encoding. Each encoding type protects against a specific class of injection, and using the wrong encoding provides no protection.
 
@@ -156,11 +156,11 @@ This version uses Django's ORM, which handles parameterization automatically, se
 
 Security must be integrated into the code review process, not treated as a separate activity. This means training developers to identify security issues during standard code reviews, establishing security review requirements for high-risk changes, and using automated tools to augment human review.
 
-The first step is training. Developers who review code should understand the vulnerability classes most relevant to their technology stack. This does not require every developer to be a security expert — it requires them to recognize common patterns and know when to escalate to the security team. A two-hour training session covering the top 10 vulnerability classes for a specific language and framework provides sufficient foundation.
+The first step is training. Developers who review code should understand the vulnerability classes most relevant to their technology stack. This does not require every developer to be a security expert: it requires them to recognize common patterns and know when to escalate to the security team. A two-hour training session covering the top 10 vulnerability classes for a specific language and framework provides sufficient foundation.
 
-The second step is establishing review requirements. High-risk changes — modifications to authentication logic, changes to authorization checks, new API endpoints, database schema changes, changes to encryption or key management, and integrations with external services — should require review by someone with security training. This does not need to be a dedicated security reviewer; a senior developer with security training can fulfill this role.
+The second step is establishing review requirements. High-risk changes: modifications to authentication logic, changes to authorization checks, new API endpoints, database schema changes, changes to encryption or key management, and integrations with external services: should require review by someone with security training. This does not need to be a dedicated security reviewer; a senior developer with security training can fulfill this role.
 
-The third step is integrating automated tools into the review process. Static analysis tools, linters with security rules, and dependency vulnerability scanners should run automatically on every pull request and flag potential issues before human review. The tools do not replace human review — they reduce the cognitive load on reviewers by catching obvious issues, allowing reviewers to focus on logic and context-dependent vulnerabilities.
+The third step is integrating automated tools into the review process. Static analysis tools, linters with security rules, and dependency vulnerability scanners should run automatically on every pull request and flag potential issues before human review. The tools do not replace human review: they reduce the cognitive load on reviewers by catching obvious issues, allowing reviewers to focus on logic and context-dependent vulnerabilities.
 
 The fourth step is establishing feedback loops. When security issues are found in code review, the findings should be documented and used to improve the review process. If a particular class of vulnerability is consistently missed, the checklist should be updated and additional training provided. If a particular developer or team consistently introduces security issues, targeted training should be provided.
 
@@ -168,7 +168,7 @@ The fifth step is measuring effectiveness. Track the number of security issues f
 
 ## Assessment
 
-**Lab 4.1 — Code Review Exercise (60 minutes)**
+**Lab 4.1: Code Review Exercise (60 minutes)**
 Review the following code files for security vulnerabilities. Each file contains at least three distinct vulnerability classes. Identify each vulnerability, explain the attack scenario, and provide a specific code fix. You must find at least 12 vulnerabilities across the four files.
 
 Files provided:
@@ -183,7 +183,7 @@ Files provided:
 - Correct, compilable/runnable code fixes (24 points, 2 per vulnerability)
 - Identification of at least two vulnerabilities requiring understanding of the application's business logic (12 points)
 
-**Lab 4.2 — Security-Focused Code Review Report (45 minutes)**
+**Lab 4.2: Security-Focused Code Review Report (45 minutes)**
 Write a code review report for a provided codebase (a Django application with 15 source files). The report should categorize findings by severity (Critical, High, Medium, Low), provide specific file and line references, and include prioritized remediation recommendations. The report should be written for a technical audience but should not assume knowledge of the specific codebase.
 
 **Grading criteria:**
@@ -193,7 +193,7 @@ Write a code review report for a provided codebase (a Django application with 15
 - Prioritization that considers both severity and remediation effort (10 points)
 - Professional report format (10 points)
 
-**Lab 4.3 — Secure Coding Standards (45 minutes)**
+**Lab 4.3: Secure Coding Standards (45 minutes)**
 Write a secure coding standards document for a Python Django development team. The document should cover the top 10 vulnerability classes relevant to Django applications, with specific do and do-not examples for each. Include code examples showing both vulnerable and secure patterns. The document should be concise enough that developers will actually read it (target: 5 pages).
 
 **Grading criteria:**
@@ -217,7 +217,7 @@ The result is a development process that produces secure code by default, not by
 
 ## Code Review Efficiency
 
-Effective security code review requires balancing thoroughness with velocity. Reviewing every line of code for every possible vulnerability is impractical. The solution is risk-based review — focusing security attention on the code that matters most.
+Effective security code review requires balancing thoroughness with velocity. Reviewing every line of code for every possible vulnerability is impractical. The solution is risk-based review: focusing security attention on the code that matters most.
 
 High-risk code includes: authentication and authorization logic, cryptographic operations, input validation and output encoding, database queries, file operations, network calls, deserialization logic, and code that handles sensitive data. These areas should receive focused security review from reviewers with security training.
 
@@ -225,4 +225,4 @@ Low-risk code includes: unit tests, documentation, configuration files (with no 
 
 The risk-based approach reduces the security review burden by approximately 60% while maintaining coverage of the security-critical code. This makes security review practical for teams with limited security expertise and tight development timelines.
 
-Another efficiency technique is incremental review. Rather than reviewing an entire codebase for security issues, focus security review on the diff — the changes introduced by the pull request. This is faster and more targeted than full codebase review, and it catches new vulnerabilities as they are introduced. The limitation is that it does not catch vulnerabilities in pre-existing code, which is why periodic full codebase security scans (using SAST tools) complement incremental review.
+Another efficiency technique is incremental review. Rather than reviewing an entire codebase for security issues, focus security review on the diff: the changes introduced by the pull request. This is faster and more targeted than full codebase review, and it catches new vulnerabilities as they are introduced. The limitation is that it does not catch vulnerabilities in pre-existing code, which is why periodic full codebase security scans (using SAST tools) complement incremental review.

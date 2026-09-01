@@ -1,4 +1,4 @@
-# Module 1 — DevOps Culture and Principles
+# Module 1: DevOps Culture and Principles
 
 ## What DevOps Actually Means
 
@@ -12,13 +12,13 @@ The shift requires rethinking how teams are structured. In traditional organizat
 
 The core principles come from the DevOps DORA (DevOps Research and Assessment) team's years of research. They found four key metrics that distinguish elite performers from low performers:
 
-**Deployment Frequency** — How often do you deploy to production? Elite teams deploy on demand, sometimes hundreds of times per day. Low performers deploy once every six months.
+**Deployment Frequency**: How often do you deploy to production? Elite teams deploy on demand, sometimes hundreds of times per day. Low performers deploy once every six months.
 
-**Lead Time for Changes** — How long does it take from commit to running in production? Elite teams measure this in hours. Low teams measure this in months.
+**Lead Time for Changes**: How long does it take from commit to running in production? Elite teams measure this in hours. Low teams measure this in months.
 
-**Time to Restore Service** — When something breaks, how long until it is fixed? Elite teams restore service in less than an hour. Low teams take days or weeks.
+**Time to Restore Service**: When something breaks, how long until it is fixed? Elite teams restore service in less than an hour. Low teams take days or weeks.
 
-**Change Failure Rate** — What percentage of deployments cause a failure? Elite teams have a rate under 5%. Low teams exceed 45%.
+**Change Failure Rate**: What percentage of deployments cause a failure? Elite teams have a rate under 5%. Low teams exceed 45%.
 
 These are not aspirational numbers. These are real measurements from real companies. The DORA team published their findings in the book "Accelerate" and backed them with statistical analysis of thousands of organizations. The pattern is consistent: organizations that adopt DevOps practices improve all four metrics simultaneously.
 
@@ -26,21 +26,21 @@ These are not aspirational numbers. These are real measurements from real compan
 
 DevOps is often visualized as an infinity loop because it is a continuous process, not a one-time project. The loop has eight stages, and every stage feeds into the next while also feeding back to earlier stages.
 
-**Plan** — Work gets prioritized. This is not just project management. In DevOps, planning includes defining what you will measure, what your SLOs (Service Level Objectives) are, and what your deployment strategy will be. A team that plans well knows which features matter, which metrics to watch, and what "done" means.
+**Plan**: Work gets prioritized. This is not just project management. In DevOps, planning includes defining what you will measure, what your SLOs (Service Level Objectives) are, and what your deployment strategy will be. A team that plans well knows which features matter, which metrics to watch, and what "done" means.
 
-**Code** — Developers write code and commit it to version control. The key difference in DevOps is that code review is automated where possible, and every commit triggers something. There are no "throwaway" commits. Every change goes through the same pipeline.
+**Code**: Developers write code and commit it to version control. The key difference in DevOps is that code review is automated where possible, and every commit triggers something. There are no "throwaway" commits. Every change goes through the same pipeline.
 
-**Build** — Code gets compiled, dependencies get resolved, artifacts get created. This stage is fully automated. If your build takes more than 10 minutes, you have a problem. Build caches, parallel compilation, and dependency caching are not optimizations — they are requirements.
+**Build**: Code gets compiled, dependencies get resolved, artifacts get created. This stage is fully automated. If your build takes more than 10 minutes, you have a problem. Build caches, parallel compilation, and dependency caching are not optimizations: they are requirements.
 
-**Test** — Automated tests run. Unit tests, integration tests, security scans, linting, code coverage. The goal is to catch problems in minutes, not weeks. If your test suite takes longer than your build, you need to parallelize or rethink your testing strategy.
+**Test**: Automated tests run. Unit tests, integration tests, security scans, linting, code coverage. The goal is to catch problems in minutes, not weeks. If your test suite takes longer than your build, you need to parallelize or rethink your testing strategy.
 
-**Release** — Artifacts get versioned and approved for deployment. This can be automatic (every passing build gets released) or manual (requires approval). The key is that the process is consistent and auditable.
+**Release**: Artifacts get versioned and approved for deployment. This can be automatic (every passing build gets released) or manual (requires approval). The key is that the process is consistent and auditable.
 
-**Deploy** — Artifacts get deployed to environments. Blue-green deployments, canary releases, rolling updates. The deployment process should be boring. If deploying is exciting, something is wrong.
+**Deploy**: Artifacts get deployed to environments. Blue-green deployments, canary releases, rolling updates. The deployment process should be boring. If deploying is exciting, something is wrong.
 
-**Operate** — The system runs and serves users. This is where observability matters. You need to know what is happening inside your systems without SSHing into boxes and running commands.
+**Operate**: The system runs and serves users. This is where observability matters. You need to know what is happening inside your systems without SSHing into boxes and running commands.
 
-**Monitor** — Metrics, logs, and traces tell you what is happening. This feeds back into Plan because you are measuring the impact of your changes and identifying what to fix next.
+**Monitor**: Metrics, logs, and traces tell you what is happening. This feeds back into Plan because you are measuring the impact of your changes and identifying what to fix next.
 
 The loop is continuous. You do not complete one iteration and stop. Each cycle makes the next one faster and more reliable.
 
@@ -170,7 +170,7 @@ There are two approaches to IaC:
 
 **Imperative** (how to get there): You write scripts that execute steps. Ansible, Chef, and Puppet are imperative. You say "install nginx, configure it, start it" and the tool executes those steps.
 
-Declarative is generally preferred because it is idempotent — running it multiple times produces the same result. If you run `terraform apply` twice, the second time is a no-op because the infrastructure already matches the desired state.
+Declarative is generally preferred because it is idempotent: running it multiple times produces the same result. If you run `terraform apply` twice, the second time is a no-op because the infrastructure already matches the desired state.
 
 Here is a minimal but real Terraform example for an AWS EC2 instance:
 
@@ -220,11 +220,11 @@ Monitoring is not optional. It is not something you add "when we have time." It 
 
 There are three types of monitoring that matter:
 
-**Infrastructure monitoring** — CPU, memory, disk, network. The basics. If your server is at 95% CPU, something is wrong. Tools: Prometheus, Datadog, CloudWatch.
+**Infrastructure monitoring**: CPU, memory, disk, network. The basics. If your server is at 95% CPU, something is wrong. Tools: Prometheus, Datadog, CloudWatch.
 
-**Application monitoring** — Request latency, error rates, throughput. These are the metrics that tell you whether users are happy. If your p99 latency jumped from 200ms to 2 seconds, your users noticed even if your servers are fine.
+**Application monitoring**: Request latency, error rates, throughput. These are the metrics that tell you whether users are happy. If your p99 latency jumped from 200ms to 2 seconds, your users noticed even if your servers are fine.
 
-**Business monitoring** — Signups, conversions, revenue. The metrics that actually matter to the business. If a deploy causes signups to drop 20%, you need to know immediately, not when the monthly report comes out.
+**Business monitoring**: Signups, conversions, revenue. The metrics that actually matter to the business. If a deploy causes signups to drop 20%, you need to know immediately, not when the monthly report comes out.
 
 The feedback loop works like this: you deploy a change, monitoring detects the impact, and the data feeds back into planning. Maybe a feature you thought would increase engagement actually decreased it. Maybe a performance optimization made the code harder to maintain without meaningful user impact. Monitoring tells you the truth. Planning uses that truth.
 
@@ -254,7 +254,7 @@ The company also discovered an unexpected benefit: developer satisfaction. Devel
 
 ## Anti-Patterns
 
-The most common DevOps anti-pattern is creating a "DevOps team." This is a team that owns the tools and infrastructure while developers continue to write code and throw it over a different wall. You have just renamed operations. The cultural problem remains. DevOps is not a team — it is a practice that involves everyone. If you have a "DevOps team," you have not adopted DevOps. You have created a new silo.
+The most common DevOps anti-pattern is creating a "DevOps team." This is a team that owns the tools and infrastructure while developers continue to write code and throw it over a different wall. You have just renamed operations. The cultural problem remains. DevOps is not a team: it is a practice that involves everyone. If you have a "DevOps team," you have not adopted DevOps. You have created a new silo.
 
 The second anti-pattern is tool-only adoption. The team buys Jenkins, installs Docker, deploys Kubernetes, and declares victory. The tools are necessary but not sufficient. If your developers still do not talk to operations, if your deployments still require a weekend maintenance window, if your monitoring is still an afterthought, the tools do not matter. You have expensive shelfware.
 
@@ -266,7 +266,7 @@ The fifth anti-pattern is ignoring the human element. DevOps requires trust, col
 
 The sixth anti-pattern is premature optimization of the pipeline. Teams spend weeks optimizing their CI/CD pipeline to run in under 2 minutes before they have a working test suite. The order matters: get tests working first, then make them fast. A fast pipeline with bad tests gives you fast feedback on the wrong things.
 
-The seventh anti-pattern is ignoring technical debt. Every shortcut, every "we will fix it later," every workaround accumulates. Technical debt slows you down, makes changes riskier, and demoralizes the team. DevOps does not eliminate technical debt — it makes it visible. Measure it, track it, and allocate time to pay it down.
+The seventh anti-pattern is ignoring technical debt. Every shortcut, every "we will fix it later," every workaround accumulates. Technical debt slows you down, makes changes riskier, and demoralizes the team. DevOps does not eliminate technical debt: it makes it visible. Measure it, track it, and allocate time to pay it down.
 
 ## Assessment
 

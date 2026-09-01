@@ -1,4 +1,4 @@
-# Module 6 — Performance Optimization
+# Module 6: Performance Optimization
 
 ## Profiling: Finding Where Time Is Spent
 

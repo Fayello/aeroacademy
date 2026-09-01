@@ -1,8 +1,8 @@
-# Module 3 — Processes and Systemd
+# Module 3: Processes and Systemd
 
 ## Why This Matters
 
-Every running program on a Linux system is a process. A web server is a process. A cron job spawns a process. Your SSH session is a process. When something goes wrong — a service hangs, a process eats all your RAM, a cron job silently fails — you need to understand how Linux manages processes so you can diagnose and fix it.
+Every running program on a Linux system is a process. A web server is a process. A cron job spawns a process. Your SSH session is a process. When something goes wrong: a service hangs, a process eats all your RAM, a cron job silently fails: you need to understand how Linux manages processes so you can diagnose and fix it.
 
 This module covers how processes are created, tracked, prioritized, and killed. It also covers systemd, the init system that manages services, timers, and system state on virtually every modern Linux distribution. Between process management and systemd, you have the tools to keep a server running and debug it when it misbehaves.
 
@@ -16,15 +16,15 @@ The process hierarchy starts with PID 1, which is the init process (systemd on m
 
 Processes exist in one of several states:
 
-- **Running (R)** — The process is actively using the CPU or is ready to run.
-- **Sleeping (S)** — The process is waiting for an event (disk I/O, network data, a signal). Most processes spend most of their time sleeping.
-- **Disk Sleep (D)** — The process is waiting for disk I/O and cannot be interrupted, even by signals. If you see processes stuck in this state, you may have a disk problem.
-- **Stopped (T)** — The process has been stopped by a signal (usually `Ctrl+Z` or `SIGSTOP`). It resumes when sent `SIGCONT`.
-- **Zombie (Z)** — The process has exited but its parent has not yet called `wait()` to collect its exit status. Zombies consume no resources except a PID entry, but too many of them indicate a bug.
+- **Running (R)**: The process is actively using the CPU or is ready to run.
+- **Sleeping (S)**: The process is waiting for an event (disk I/O, network data, a signal). Most processes spend most of their time sleeping.
+- **Disk Sleep (D)**: The process is waiting for disk I/O and cannot be interrupted, even by signals. If you see processes stuck in this state, you may have a disk problem.
+- **Stopped (T)**: The process has been stopped by a signal (usually `Ctrl+Z` or `SIGSTOP`). It resumes when sent `SIGCONT`.
+- **Zombie (Z)**: The process has exited but its parent has not yet called `wait()` to collect its exit status. Zombies consume no resources except a PID entry, but too many of them indicate a bug.
 
 ### Nice Values and Priorities
 
-Every process has a nice value ranging from -20 (highest priority) to +19 (lowest priority). The name is counterintuitive — a "nicer" process yields more CPU time to others.
+Every process has a nice value ranging from -20 (highest priority) to +19 (lowest priority). The name is counterintuitive: a "nicer" process yields more CPU time to others.
 
 ```bash
 nice -n -5 ./heavy-computation.sh     # Run with higher priority (requires root)
@@ -36,7 +36,7 @@ Most users can only increase the nice value (lower priority). Only root can decr
 
 ## Finding Processes
 
-### ps — Process Snapshot
+### ps: Process Snapshot
 
 `ps` shows a snapshot of current processes. The two most common invocations:
 
@@ -56,16 +56,16 @@ admin     1567  2.1  1.5 1456320 128000 ?      Sl   10:35   0:15 python3 app.py
 ```
 
 The flags:
-- `a` — show processes from all users
-- `u` — show user/owner column and other details
-- `x` — include processes not attached to a terminal
+- `a`: show processes from all users
+- `u`: show user/owner column and other details
+- `x`: include processes not attached to a terminal
 
 The key columns:
-- `%CPU` — CPU usage percentage
-- `%MEM` — memory usage percentage
-- `RSS` — resident set size (actual physical memory used, in KB)
-- `STAT` — process state (R=running, S=sleeping, Z=zombie, etc.)
-- `COMMAND` — the command that started the process
+- `%CPU`: CPU usage percentage
+- `%MEM`: memory usage percentage
+- `RSS`: resident set size (actual physical memory used, in KB)
+- `STAT`: process state (R=running, S=sleeping, Z=zombie, etc.)
+- `COMMAND`: the command that started the process
 
 For a tree view showing parent-child relationships:
 
@@ -84,7 +84,7 @@ www-data   569   567  0  Jan15 ?        00:11:22      \_ /usr/sbin/apache2 -k st
 
 This makes it easy to see that `sshd` (PID 342) spawned a child `sshd` (PID 2456) which spawned a bash shell (PID 2460).
 
-### top and htop — Real-Time Monitoring
+### top and htop: Real-Time Monitoring
 
 `top` shows a live, updating view of processes:
 
@@ -115,7 +115,7 @@ htop
 
 Press `F5` for tree view, `F6` to sort by a column, `F9` to kill a process, and `F10` to quit.
 
-### pgrep and pidof — Finding PIDs by Name
+### pgrep and pidof: Finding PIDs by Name
 
 ```bash
 pgrep nginx
@@ -150,17 +150,17 @@ Signals are software interrupts that tell a process to do something. The most im
 
 | Signal | Number | Default Action | Description |
 |--------|--------|----------------|-------------|
-| SIGHUP | 1 | Terminate | Hangup — often means "reload configuration" |
+| SIGHUP | 1 | Terminate | Hangup: often means "reload configuration" |
 | SIGINT | 2 | Terminate | Interrupt (Ctrl+C) |
 | SIGQUIT | 3 | Core dump | Quit with core dump |
-| SIGKILL | 9 | Terminate | Force kill — cannot be caught or ignored |
-| SIGTERM | 15 | Terminate | Graceful termination — the polite "please stop" |
+| SIGKILL | 9 | Terminate | Force kill: cannot be caught or ignored |
+| SIGTERM | 15 | Terminate | Graceful termination: the polite "please stop" |
 | SIGSTOP | 19 | Stop | Pause process (cannot be caught or ignored) |
 | SIGCONT | 18 | Continue | Resume a stopped process |
 | SIGUSR1 | 10 | Terminate | User-defined signal 1 |
 | SIGUSR2 | 12 | Terminate | User-defined signal 2 |
 
-### kill — Sending Signals to Processes
+### kill: Sending Signals to Processes
 
 ```bash
 kill 1234                          # Send SIGTERM (default)
@@ -170,7 +170,7 @@ kill -USR1 1234                    # Send SIGUSR1
 kill -TERM 1234                    # Explicit SIGTERM
 ```
 
-### killall — Kill by Name
+### killall: Kill by Name
 
 ```bash
 killall nginx                      # Send SIGTERM to all nginx processes
@@ -178,7 +178,7 @@ killall -9 python3                 # Force kill all python3 processes
 killall -u www-data                # Kill all processes owned by www-data
 ```
 
-### pkill — Kill by Pattern
+### pkill: Kill by Pattern
 
 ```bash
 pkill -f "python3 app.py"         # Kill processes matching the pattern
@@ -189,7 +189,7 @@ The `-f` flag matches against the full command line, not just the process name.
 
 ### The Graceful Shutdown Sequence
 
-When you want to stop a process, always try SIGTERM first. It gives the process a chance to clean up — close files, flush buffers, release locks, notify peers. Only use SIGKILL as a last resort.
+When you want to stop a process, always try SIGTERM first. It gives the process a chance to clean up: close files, flush buffers, release locks, notify peers. Only use SIGKILL as a last resort.
 
 ```bash
 # Step 1: Ask nicely
@@ -232,17 +232,17 @@ On virtually all modern Linux distributions (Ubuntu, Debian, CentOS, Fedora, RHE
 
 A unit is a systemd object that describes a system resource. The most common unit types:
 
-- **service** — a daemon or background process (nginx, sshd, postgresql)
-- **socket** — a socket for socket-activated services
-- **timer** — a cron-like scheduler
-- **mount** — a filesystem mount point
-- **target** — a group of units that define system state (like runlevels)
+- **service**: a daemon or background process (nginx, sshd, postgresql)
+- **socket**: a socket for socket-activated services
+- **timer**: a cron-like scheduler
+- **mount**: a filesystem mount point
+- **target**: a group of units that define system state (like runlevels)
 
 Unit files live in three directories, in order of precedence:
 
-1. `/etc/systemd/system/` — administrator-created units (highest priority)
-2. `/run/systemd/system/` — runtime units (created by the system)
-3. `/usr/lib/systemd/system/` — distribution-provided units (lowest priority)
+1. `/etc/systemd/system/`: administrator-created units (highest priority)
+2. `/run/systemd/system/`: runtime units (created by the system)
+3. `/usr/lib/systemd/system/`: distribution-provided units (lowest priority)
 
 ### systemctl: The Control Interface
 
@@ -347,12 +347,12 @@ sudo systemctl status myapp         # Verify
 
 Key directives:
 
-- `After=network.target` — start after the network is up
-- `Requires=postgresql.service` — if postgresql fails, myapp fails too
-- `Type=simple` — the command in ExecStart is the main process
-- `Restart=on-failure` — restart automatically if the process exits with an error
-- `RestartSec=10` — wait 10 seconds before restarting
-- `StandardOutput=journal` — send stdout to the journal
+- `After=network.target`: start after the network is up
+- `Requires=postgresql.service`: if postgresql fails, myapp fails too
+- `Type=simple`: the command in ExecStart is the main process
+- `Restart=on-failure`: restart automatically if the process exits with an error
+- `RestartSec=10`: wait 10 seconds before restarting
+- `StandardOutput=journal`: send stdout to the journal
 
 ### systemd Timers
 
@@ -404,12 +404,12 @@ The `Persistent=true` directive ensures that if the system was off at 2 AM, the 
 
 Timer expressions:
 
-- `OnCalendar=daily` — once per day at midnight
-- `OnCalendar=*-*-* 02:00:00` — every day at 2 AM
-- `OnCalendar=hourly` — once per hour
-- `OnCalendar=*-*-01 00:00:00` — first day of every month
-- `OnBootSec=5min` — 5 minutes after boot
-- `OnUnitActiveSec=1h` — 1 hour after the unit last activated
+- `OnCalendar=daily`: once per day at midnight
+- `OnCalendar=*-*-* 02:00:00`: every day at 2 AM
+- `OnCalendar=hourly`: once per hour
+- `OnCalendar=*-*-01 00:00:00`: first day of every month
+- `OnBootSec=5min`: 5 minutes after boot
+- `OnUnitActiveSec=1h`: 1 hour after the unit last activated
 
 Check when a timer last ran and when it will next run:
 
@@ -439,10 +439,10 @@ sudo systemctl get-default                   # Show current default target
 
 Common targets:
 
-- `multi-user.target` — non-graphical, multi-user (servers)
-- `graphical.target` — graphical desktop
-- `rescue.target` — single-user mode for maintenance
-- `emergency.target` — minimal system for emergency repairs
+- `multi-user.target`: non-graphical, multi-user (servers)
+- `graphical.target`: graphical desktop
+- `rescue.target`: single-user mode for maintenance
+- `emergency.target`: minimal system for emergency repairs
 
 ## Debugging a Runaway Process
 
@@ -464,7 +464,7 @@ MiB Swap:   4096.0 total,      0.0 free,   4096.0 used.   1023.4 avail Mem
    3456 deploy    20   0 1823456 1.4g  16384 R 100.0  8.9  45:12.34 python3 app.py
 ```
 
-Load average is 7.85 on an 8-core system — almost saturated. PID 3456 is consuming 100% of one core and 1.4GB of RAM.
+Load average is 7.85 on an 8-core system: almost saturated. PID 3456 is consuming 100% of one core and 1.4GB of RAM.
 
 **Step 2: Find out what this process is doing.**
 
@@ -542,7 +542,7 @@ top -bn1 | grep python3
   4567 deploy    20   0  823456 64000  8192 S   2.3   0.4  0:00.15 python3 app.py
 ```
 
-CPU usage dropped from 100% to 2.3%. The issue is resolved (temporarily — you still need to find the root cause).
+CPU usage dropped from 100% to 2.3%. The issue is resolved (temporarily: you still need to find the root cause).
 
 **Step 7: Investigate logs for the root cause.**
 

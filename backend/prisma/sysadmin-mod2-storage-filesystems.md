@@ -1,4 +1,4 @@
-# Module 2 — Storage and Filesystems
+# Module 2: Storage and Filesystems
 
 Disk space does not grow on trees. When your PostgreSQL database is 400 GB and the partition is 500 GB, you have maybe two months before things break. When a production server runs out of /var/log space, your SSH sessions start failing and log-based debugging becomes impossible. Storage management is one of those skills that separates reactive firefighters from proactive sysadmins. This module covers the full storage stack: block devices, partitioning, filesystems, LVM, RAID, network-mounted storage, disk I/O performance tuning, swap management, and the critical skill of expanding storage on a live server without downtime. You will learn every tool and technique needed to manage storage from a single disk to a multi-terabyte production system.
 
@@ -30,13 +30,13 @@ For disks over 2 TB or needing more than four partitions, use GPT with `parted`.
 
 ### ext4
 
-The battle-tested workhorse. Create with `mkfs.ext4 -L label`. Key mount options: `noatime` for read performance, `discard` for SSD TRIM. Tune with `tune2fs`: reduce reserved blocks with `-m 1` (reclaims 5% of disk), change journal mode with `-o`. The reserved block count matters — 5% on a 1 TB disk is 50 GB reserved. Reduce to 1% for data volumes. Never use 0%.
+The battle-tested workhorse. Create with `mkfs.ext4 -L label`. Key mount options: `noatime` for read performance, `discard` for SSD TRIM. Tune with `tune2fs`: reduce reserved blocks with `-m 1` (reclaims 5% of disk), change journal mode with `-o`. The reserved block count matters: 5% on a 1 TB disk is 50 GB reserved. Reduce to 1% for data volumes. Never use 0%.
 
 Check and repair with `e2fsck` (must be unmounted). Use `-y` for automatic fixes, `-f` for forced full check.
 
 ### XFS
 
-Default on RHEL/CentOS 7+. Excellent for large files and parallel I/O. Cannot be shrunk — plan sizes carefully. Create with `mkfs.xfs -L label`. Grow online with `xfs_growfs`. Repair with `xfs_repair` (unmounted). The `-L` flag clears the log (last resort for corruption).
+Default on RHEL/CentOS 7+. Excellent for large files and parallel I/O. Cannot be shrunk: plan sizes carefully. Create with `mkfs.xfs -L label`. Grow online with `xfs_growfs`. Repair with `xfs_repair` (unmounted). The `-L` flag clears the log (last resort for corruption).
 
 XFS allocates separate allocation groups for parallel writes, making it ideal for databases with multiple tablespaces and high-concurrency workloads.
 
@@ -66,11 +66,11 @@ The killer feature: grow LVs and filesystems without unmounting. `lvextend -r -L
 
 ### Snapshots
 
-Copy-on-write point-in-time copies. Use for backups (freeze snapshot, back up, release) and testing (snapshot production, test on copy). Size depends on change rate — monitor with `lvs`. If snapshot fills, it invalidates. Remove with `lvremove` after unmounting.
+Copy-on-write point-in-time copies. Use for backups (freeze snapshot, back up, release) and testing (snapshot production, test on copy). Size depends on change rate: monitor with `lvs`. If snapshot fills, it invalidates. Remove with `lvremove` after unmounting.
 
 ### Thin Provisioning
 
-Allocate less than requested. Over-commits storage. Works when actual usage is lower than allocated. Create thin pool, then thin volumes within it. Monitor carefully — pool exhaustion makes all thin volumes read-only.
+Allocate less than requested. Over-commits storage. Works when actual usage is lower than allocated. Create thin pool, then thin volumes within it. Monitor carefully: pool exhaustion makes all thin volumes read-only.
 
 ## RAID
 
@@ -114,11 +114,11 @@ For SSDs: ensure TRIM runs with `fstrim -av` or enable `fstrim.timer`. Choose pe
 
 ## Disk I/O Performance
 
-Monitor with `iostat -x 1`. Key metrics: `%util` (above 80% = bottleneck), `await` (above 10ms SSD / 20ms HDD = slow), `r/s` and `w/s` (IOPS). Benchmark with `fio` for realistic workload testing. Check scheduler with `cat /sys/block/sda/queue/scheduler` — use `none` or `mq-deadline` for SSDs, `bfq` for HDDs.
+Monitor with `iostat -x 1`. Key metrics: `%util` (above 80% = bottleneck), `await` (above 10ms SSD / 20ms HDD = slow), `r/s` and `w/s` (IOPS). Benchmark with `fio` for realistic workload testing. Check scheduler with `cat /sys/block/sda/queue/scheduler`: use `none` or `mq-deadline` for SSDs, `bfq` for HDDs.
 
 ## Swap Management
 
-Create with `mkswap` and `swapon`. For files: `fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`. Add to fstab. Control with `vm.swappiness` — lower for databases (1-10), higher for desktops (30-60). Monitor with `free -h` and `vmstat 1`.
+Create with `mkswap` and `swapon`. For files: `fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`. Add to fstab. Control with `vm.swappiness`: lower for databases (1-10), higher for desktops (30-60). Monitor with `free -h` and `vmstat 1`.
 
 ## Practical Assessment
 
@@ -165,7 +165,7 @@ Boot from rescue media. Unmount the partition. Run `xfs_repair /dev/sdXN`. If th
 
 ### Recovering Deleted Files
 
-For ext4, use `extundelete` which reads the journal to recover recently deleted files. For XFS, use `xfsundelete` or commercial tools like `R-Studio`. For any filesystem, the sooner you act the better — deleted data is overwritten over time. Unmount the partition immediately to prevent further overwrites.
+For ext4, use `extundelete` which reads the journal to recover recently deleted files. For XFS, use `xfsundelete` or commercial tools like `R-Studio`. For any filesystem, the sooner you act the better: deleted data is overwritten over time. Unmount the partition immediately to prevent further overwrites.
 
 ## LVM Snapshots in Depth
 
@@ -173,7 +173,7 @@ LVM snapshots use copy-on-write to create point-in-time copies. When a snapshot 
 
 ### Snapshot Sizing
 
-Size the snapshot based on the expected change rate during the snapshot lifetime. For a backup that runs for 1 hour, estimate how much data changes in 1 hour. A common rule of thumb is 10-20% of the source volume. Monitor snapshot usage with `lvs` — if the allocated column approaches the snapshot size, expand or remove it before it invalidates.
+Size the snapshot based on the expected change rate during the snapshot lifetime. For a backup that runs for 1 hour, estimate how much data changes in 1 hour. A common rule of thumb is 10-20% of the source volume. Monitor snapshot usage with `lvs`: if the allocated column approaches the snapshot size, expand or remove it before it invalidates.
 
 ### Snapshot for Backup Workflow
 
@@ -187,7 +187,7 @@ This provides a consistent backup because the snapshot freezes the filesystem st
 
 ## NFS Performance Tuning
 
-NFS performance depends on several factors. The `rsize` and `wsize` parameters control read and write block sizes — larger values improve throughput for large files but increase memory usage. Default is usually 1 MB. The `hard` option retries indefinitely which is essential for databases but causes hangs if the NFS server is down. `soft` returns errors after timeout which is acceptable for non-critical shares.
+NFS performance depends on several factors. The `rsize` and `wsize` parameters control read and write block sizes: larger values improve throughput for large files but increase memory usage. Default is usually 1 MB. The `hard` option retries indefinitely which is essential for databases but causes hangs if the NFS server is down. `soft` returns errors after timeout which is acceptable for non-critical shares.
 
 ### NFS Mount Options for Different Workloads
 

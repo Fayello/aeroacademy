@@ -1,6 +1,6 @@
-# Module 10 — Advanced Security
+# Module 10: Advanced Security
 
-Kubernetes security isn't a single layer — it's defense in depth. Pod security stops you from running privileged containers. RBAC limits who can do what. Network policies control traffic. But attackers find ways around individual controls. Advanced security means layering multiple controls so that no single bypass gives an attacker full access. This module covers OPA/Gatekeeper policies, Falco runtime detection, network policy enforcement, supply chain security, and the practical implementation of defense in depth.
+Kubernetes security isn't a single layer: it's defense in depth. Pod security stops you from running privileged containers. RBAC limits who can do what. Network policies control traffic. But attackers find ways around individual controls. Advanced security means layering multiple controls so that no single bypass gives an attacker full access. This module covers OPA/Gatekeeper policies, Falco runtime detection, network policy enforcement, supply chain security, and the practical implementation of defense in depth.
 
 ## OPA/Gatekeeper
 
@@ -8,8 +8,8 @@ Open Policy Agent (OPA) is a general-purpose policy engine. Gatekeeper is the Ku
 
 ### How Gatekeeper Works
 
-1. You define a `ConstraintTemplate` — a reusable Rego policy.
-2. You create a `Constraint` — an instance of the template with specific parameters.
+1. You define a `ConstraintTemplate`: a reusable Rego policy.
+2. You create a `Constraint`: an instance of the template with specific parameters.
 3. Gatekeeper watches for resource changes and evaluates them against active Constraints.
 4. If a resource violates a Constraint, Gatekeeper rejects it (or warns, depending on enforcement mode).
 
@@ -926,7 +926,7 @@ EOF
 
 ## Assessment
 
-### Lab 1 — OPA/Gatekeeper (30 minutes)
+### Lab 1: OPA/Gatekeeper (30 minutes)
 
 1. Install Gatekeeper and create 3 constraint templates.
 2. Create constraints that enforce: required labels, allowed registries, and resource limits.
@@ -936,7 +936,7 @@ EOF
 
 **Grading**: 10 points. 2 points per task. Full credit for correct templates, constraints, and working enforcement.
 
-### Lab 2 — Falco Runtime Detection (45 minutes)
+### Lab 2: Falco Runtime Detection (45 minutes)
 
 1. Install Falco with custom rules.
 2. Create rules that detect: file writes in containers, sensitive file access, and unexpected network connections.
@@ -946,7 +946,7 @@ EOF
 
 **Grading**: 15 points. 3 points per task. Full credit for correct rule creation, working alerts, and accurate analysis.
 
-### Lab 3 — Defense in Depth (45 minutes)
+### Lab 3: Defense in Depth (45 minutes)
 
 1. Implement all 7 layers of defense in depth.
 2. Test each layer independently.

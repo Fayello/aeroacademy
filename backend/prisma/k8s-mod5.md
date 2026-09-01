@@ -1,6 +1,6 @@
-# Module 5 — Secrets Management
+# Module 5: Secrets Management
 
-Kubernetes stores sensitive configuration — database passwords, API keys, TLS certificates, OAuth tokens — as Secrets. A Secret is a base64-encoded object stored in etcd. It's not encrypted by default. Anyone with `kubectl get secret` and the right RBAC permissions can read it. Anyone with access to etcd can read it. This module covers Kubernetes Secrets, Sealed Secrets, HashiCorp Vault integration, External Secrets Operator, and the practical work of managing secrets across environments.
+Kubernetes stores sensitive configuration: database passwords, API keys, TLS certificates, OAuth tokens: as Secrets. A Secret is a base64-encoded object stored in etcd. It's not encrypted by default. Anyone with `kubectl get secret` and the right RBAC permissions can read it. Anyone with access to etcd can read it. This module covers Kubernetes Secrets, Sealed Secrets, HashiCorp Vault integration, External Secrets Operator, and the practical work of managing secrets across environments.
 
 ## Kubernetes Secrets
 
@@ -353,7 +353,7 @@ kubectl -n kube-system delete secret -l sealedsecrets.bitnami.com/sealed-secrets
 ### Limitations
 
 - Sealed Secrets can't encrypt metadata (labels, annotations are visible).
-- No built-in rotation — you must re-seal manually.
+- No built-in rotation: you must re-seal manually.
 - The controller is a single point of failure (back up the signing key).
 - Can't use with admission webhooks that modify Secrets.
 
@@ -928,7 +928,7 @@ volumeMounts:
 
 ## Assessment
 
-### Lab 1 — Kubernetes Secrets (30 minutes)
+### Lab 1: Kubernetes Secrets (30 minutes)
 
 1. Create a Secret with database credentials using both `data` and `stringData` fields.
 2. Mount the Secret as an environment variable and as a volume in a pod.
@@ -938,7 +938,7 @@ volumeMounts:
 
 **Grading**: 10 points. 2 points per task. Full credit for correct Secret creation, mounting, and encryption.
 
-### Lab 2 — Sealed Secrets (45 minutes)
+### Lab 2: Sealed Secrets (45 minutes)
 
 1. Install the Sealed Secrets controller and kubeseal CLI.
 2. Create a Secret, seal it with kubeseal, and apply it to the cluster.
@@ -948,7 +948,7 @@ volumeMounts:
 
 **Grading**: 15 points. 3 points per task. Full credit for correct installation, sealing, and rotation.
 
-### Lab 3 — External Secrets Operator (45 minutes)
+### Lab 3: External Secrets Operator (45 minutes)
 
 1. Install ESO and configure a SecretStore for AWS Secrets Manager.
 2. Create an ExternalSecret that syncs from AWS Secrets Manager to a Kubernetes Secret.

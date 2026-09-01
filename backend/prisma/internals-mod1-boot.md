@@ -1,8 +1,8 @@
-# Module 1 — How the Kernel Boots
+# Module 1: How the Kernel Boots
 
 ## The Boot Process: From Power Button to Login Prompt
 
-When you press the power button on a Linux server, a remarkably complex chain of events unfolds before you see a login prompt. Understanding this chain is not academic curiosity — it is the difference between a five-minute fix and a three-hour outage when a server refuses to boot after a kernel update, a disk replacement, or a misconfigured GRUB.
+When you press the power button on a Linux server, a remarkably complex chain of events unfolds before you see a login prompt. Understanding this chain is not academic curiosity: it is the difference between a five-minute fix and a three-hour outage when a server refuses to boot after a kernel update, a disk replacement, or a misconfigured GRUB.
 
 This module walks through every stage of the Linux boot process, from firmware initialization through the kernel taking control, to systemd bringing up services. We will focus on what actually happens, the files involved, and how to troubleshoot when things go wrong.
 
@@ -12,7 +12,7 @@ This module walks through every stage of the Linux boot process, from firmware i
 
 The Basic Input/Output System (BIOS) has been the standard firmware interface for IBM-compatible PCs since the early 1980s. When a BIOS system powers on, the CPU loads the firmware from a ROM chip on the motherboard. The firmware performs a Power-On Self Test (POST), initializes hardware, and then reads the first 512-byte sector (the Master Boot Record, or MBR) from the boot disk.
 
-The MBR contains three things: a 446-byte bootstrap code area, a 64-byte partition table, and a 2-byte signature (0x55AA). The BIOS loads this sector into memory at address 0x7C00 and jumps to it. This is the critical handoff point — the firmware has done its job, and now the bootloader takes over.
+The MBR contains three things: a 446-byte bootstrap code area, a 64-byte partition table, and a 2-byte signature (0x55AA). The BIOS loads this sector into memory at address 0x7C00 and jumps to it. This is the critical handoff point: the firmware has done its job, and now the bootloader takes over.
 
 The fundamental limitation of MBR is its 2 TB disk size limit and its maximum of four primary partitions. For modern servers with multi-terabyte drives, this is a real constraint.
 
@@ -45,7 +45,7 @@ GRUB2 (GRand Unified Bootloader version 2) is the standard bootloader on most Li
 
 ### GRUB2 Configuration
 
-GRUB2 reads its configuration from `/boot/grub2/grub.cfg` (on RHEL/CentOS) or `/boot/grub/grub.cfg` (on Debian/Ubuntu). You should never edit this file directly — it is auto-generated. Instead, edit `/etc/default/grub` and then regenerate:
+GRUB2 reads its configuration from `/boot/grub2/grub.cfg` (on RHEL/CentOS) or `/boot/grub/grub.cfg` (on Debian/Ubuntu). You should never edit this file directly: it is auto-generated. Instead, edit `/etc/default/grub` and then regenerate:
 
 ```bash
 grub2-mkconfig -o /boot/grub2/grub.cfg    # RHEL/CentOS
@@ -97,17 +97,17 @@ grub2-install /dev/sda
 
 Kernel parameters control behavior that cannot be determined at compile time. Some critical ones:
 
-- `root=/dev/sda2` — Specifies the root filesystem device
-- `ro` — Mount root filesystem read-only initially
-- `init=/bin/bash` — Boot directly to a shell (emergency recovery)
-- `single` or `1` — Boot into single-user mode
-- `systemd.unit=rescue.target` — Boot into rescue mode
-- `systemd.unit=emergency.target` — Boot into emergency mode
-- `crashkernel=256M` — Reserve memory for kdump
-- `nomodeset` — Disable kernel mode setting (useful for GPU driver issues)
-- `rd.break` — Break before switching from initramfs to real root
-- `rd.shell` — Drop to shell if initramfs fails
-- `biosdevname=0` — Use traditional network interface naming (eth0 instead of ens192)
+- `root=/dev/sda2`: Specifies the root filesystem device
+- `ro`: Mount root filesystem read-only initially
+- `init=/bin/bash`: Boot directly to a shell (emergency recovery)
+- `single` or `1`: Boot into single-user mode
+- `systemd.unit=rescue.target`: Boot into rescue mode
+- `systemd.unit=emergency.target`: Boot into emergency mode
+- `crashkernel=256M`: Reserve memory for kdump
+- `nomodeset`: Disable kernel mode setting (useful for GPU driver issues)
+- `rd.break`: Break before switching from initramfs to real root
+- `rd.shell`: Drop to shell if initramfs fails
+- `biosdevname=0`: Use traditional network interface naming (eth0 instead of ens192)
 
 To view the current kernel command line on a running system:
 
@@ -121,7 +121,7 @@ To modify parameters temporarily at boot, press 'e' in the GRUB menu to edit the
 
 ### What initramfs Contains
 
-The initial RAM filesystem (initramfs) is a compressed archive containing the minimum files needed to mount the real root filesystem. It includes kernel modules for storage controllers, filesystem drivers, and LVM/RAID tools. Without initramfs, the kernel would need every possible storage driver compiled in — an impractical approach for distribution kernels.
+The initial RAM filesystem (initramfs) is a compressed archive containing the minimum files needed to mount the real root filesystem. It includes kernel modules for storage controllers, filesystem drivers, and LVM/RAID tools. Without initramfs, the kernel would need every possible storage driver compiled in: an impractical approach for distribution kernels.
 
 A typical initramfs contains:
 
@@ -130,11 +130,11 @@ lsinitrd /boot/initramfs-$(uname -r).img
 ```
 
 You will see:
-- `/bin`, `/sbin` — BusyBox or klibc utilities
-- `/etc/udev/` — udev rules for device detection
-- `/lib/modules/` — Kernel modules needed before root mount
-- `/lib/dracut/` (on systemd systems) — dracut modules
-- `/scripts/` — Boot scripts that assemble RAID, LUKS, LVM, then mount root
+- `/bin`, `/sbin`: BusyBox or klibc utilities
+- `/etc/udev/`: udev rules for device detection
+- `/lib/modules/`: Kernel modules needed before root mount
+- `/lib/dracut/` (on systemd systems): dracut modules
+- `/scripts/`: Boot scripts that assemble RAID, LUKS, LVM, then mount root
 
 ### How initramfs Gets Built
 
@@ -194,7 +194,7 @@ When GRUB loads the kernel and initramfs into memory, it jumps to the kernel's e
 
 1. **Decompression**: The kernel is typically compressed (gzip, lz4, or zstd). The decompressor runs first.
 
-2. **Hardware detection**: The kernel probes for CPUs, memory, buses, and essential devices. At this stage, only built-in drivers work — loadable modules are not yet available.
+2. **Hardware detection**: The kernel probes for CPUs, memory, buses, and essential devices. At this stage, only built-in drivers work: loadable modules are not yet available.
 
 3. **Memory initialization**: The kernel sets up page tables, initializes the buddy allocator, and creates the kernel address space.
 
@@ -263,7 +263,7 @@ uname -r
 ls -la /boot/initramfs-*
 ```
 
-The initramfs for the new kernel was 40% smaller than expected — a sign that critical modules were not included.
+The initramfs for the new kernel was 40% smaller than expected: a sign that critical modules were not included.
 
 ```bash
 # Check what the new initramfs contains

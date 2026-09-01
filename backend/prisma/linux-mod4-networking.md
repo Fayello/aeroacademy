@@ -1,4 +1,4 @@
-# Module 4 — Networking
+# Module 4: Networking
 
 ## Why This Matters
 
@@ -10,7 +10,7 @@ This module covers the tools you need to configure, inspect, and debug network c
 
 The `ip` command is part of the iproute2 suite and replaces the older `ifconfig` and `route` commands. It is the standard tool on every modern Linux distribution. If you learn one networking tool, make it this one.
 
-### ip addr — Show and Configure IP Addresses
+### ip addr: Show and Configure IP Addresses
 
 ```bash
 ip addr show
@@ -41,7 +41,7 @@ Key information from this output:
 - `eth0` has IP `10.0.0.5` with a `/24` subnet mask (255.255.255.0)
 - `eth1` has IP `10.0.1.5` with a `/24` subnet mask
 - Both interfaces show `UP` and `LOWER_UP`, meaning the interface is administratively up and the physical link is active
-- `mtu 1500` is the Maximum Transmission Unit — the largest packet size in bytes
+- `mtu 1500` is the Maximum Transmission Unit: the largest packet size in bytes
 - `qdisc fq_codel` is the queuing discipline (flow queue controlled delay, good for preventing bufferbloat)
 
 The shorter version:
@@ -83,7 +83,7 @@ These changes are temporary. They disappear on reboot. To make them persistent, 
 - Debian: `/etc/network/interfaces`
 - RHEL/CentOS: NetworkManager or `/etc/sysconfig/network-scripts/`
 
-### ip link — Link Layer Information
+### ip link: Link Layer Information
 
 ```bash
 ip link show
@@ -96,7 +96,7 @@ ip link show
 
 This shows interface state, MTU, and MAC addresses (the `link/ether` lines from `ip addr`).
 
-### ip route — Routing Table
+### ip route: Routing Table
 
 ```bash
 ip route show
@@ -110,10 +110,10 @@ default via 10.0.0.1 dev eth0 proto dhcp metric 100
 
 Reading this routing table line by line:
 
-1. `default via 10.0.0.1 dev eth0` — traffic that does not match any other route goes to the default gateway 10.0.0.1 via eth0
-2. `10.0.0.0/24 dev eth0` — traffic to the 10.0.0.0/24 subnet goes directly out eth0 (no gateway needed — it is on the local network)
-3. `10.0.1.0/24 dev eth1` — traffic to the 10.0.1.0/24 subnet goes directly out eth1
-4. `10.10.10.0/24 via 10.0.0.254 dev eth0` — traffic to 10.10.10.0/24 goes through gateway 10.0.0.254 via eth0
+1. `default via 10.0.0.1 dev eth0`: traffic that does not match any other route goes to the default gateway 10.0.0.1 via eth0
+2. `10.0.0.0/24 dev eth0`: traffic to the 10.0.0.0/24 subnet goes directly out eth0 (no gateway needed: it is on the local network)
+3. `10.0.1.0/24 dev eth1`: traffic to the 10.0.1.0/24 subnet goes directly out eth1
+4. `10.10.10.0/24 via 10.0.0.254 dev eth0`: traffic to 10.10.10.0/24 goes through gateway 10.0.0.254 via eth0
 
 The `metric` value is the route cost. Lower metric means higher priority. If two routes match, the one with the lower metric wins.
 
@@ -133,7 +133,7 @@ sudo ip route del 192.168.200.0/24
 sudo ip route flush all
 ```
 
-### ip neigh — ARP Table
+### ip neigh: ARP Table
 
 ```bash
 ip neigh show
@@ -144,13 +144,13 @@ ip neigh show
 10.0.1.10 dev eth1 lladdr 11:22:33:44:55:66 REACHABLE
 ```
 
-This shows the neighbor (ARP) table — IP-to-MAC-address mappings for devices on the local network. The states mean:
+This shows the neighbor (ARP) table: IP-to-MAC-address mappings for devices on the local network. The states mean:
 
-- `REACHABLE` — the neighbor is confirmed to be reachable
-- `STALE` — the neighbor was reachable but has not been confirmed recently
-- `DELAY` — waiting to confirm reachability
-- `FAILED` — reachability confirmation failed
-- `INCOMPLETE` — address resolution is in progress (ARP request sent, no response yet)
+- `REACHABLE`: the neighbor is confirmed to be reachable
+- `STALE`: the neighbor was reachable but has not been confirmed recently
+- `DELAY`: waiting to confirm reachability
+- `FAILED`: reachability confirmation failed
+- `INCOMPLETE`: address resolution is in progress (ARP request sent, no response yet)
 
 ## ss: Socket Statistics
 
@@ -171,17 +171,17 @@ LISTEN   0        128      0.0.0.0:8080         0.0.0.0:*           users:(("pyt
 ```
 
 The flags:
-- `-t` — TCP sockets
-- `-l` — listening sockets only
-- `-n` — numeric (do not resolve hostnames — faster and avoids DNS lookups)
-- `-p` — show the process using the socket
+- `-t`: TCP sockets
+- `-l`: listening sockets only
+- `-n`: numeric (do not resolve hostnames: faster and avoids DNS lookups)
+- `-p`: show the process using the socket
 
 Key columns:
-- `Recv-Q` — data waiting to be read by the application
-- `Send-Q` — data waiting to be sent by the kernel
-- `Local Address:Port` — what the socket is bound to
-- `Peer Address:Port` — the remote end (empty for listening sockets)
-- `Process` — the process and file descriptor
+- `Recv-Q`: data waiting to be read by the application
+- `Send-Q`: data waiting to be sent by the kernel
+- `Local Address:Port`: what the socket is bound to
+- `Peer Address:Port`: the remote end (empty for listening sockets)
+- `Process`: the process and file descriptor
 
 A high `Recv-Q` on a listening socket means the application is not accepting connections fast enough. A high `Send-Q` on an established connection means the remote end is not reading data fast enough.
 
@@ -201,10 +201,10 @@ FIN-WAIT-2 0        0        10.0.0.5:80            10.0.0.200:12346    users:((
 ```
 
 Connection states:
-- `ESTAB` — established connection, data is flowing
-- `TIME-WAIT` — connection is closing but waiting for any delayed packets. This is normal and temporary.
-- `CLOSE-WAIT` — the remote end closed the connection but the local end has not yet closed its side. This often indicates a bug in the application (it is not calling close() on the socket).
-- `FIN-WAIT-2` — the local end sent a FIN and is waiting for the remote end's FIN. Also normal and temporary.
+- `ESTAB`: established connection, data is flowing
+- `TIME-WAIT`: connection is closing but waiting for any delayed packets. This is normal and temporary.
+- `CLOSE-WAIT`: the remote end closed the connection but the local end has not yet closed its side. This often indicates a bug in the application (it is not calling close() on the socket).
+- `FIN-WAIT-2`: the local end sent a FIN and is waiting for the remote end's FIN. Also normal and temporary.
 
 ### Filtering
 
@@ -219,7 +219,7 @@ ss -tanp dst 10.0.0.200 dport = :80  # Connections to 10.0.0.200 on port 80
 
 ## Diagnostic Tools
 
-### ping — Basic Connectivity
+### ping: Basic Connectivity
 
 ```bash
 ping -c 4 10.0.0.1
@@ -239,10 +239,10 @@ rtt min/avg/max/mdev = 0.387/0.407/0.432/0.017 ms
 `-c 4` sends exactly 4 packets. Without it, ping runs indefinitely until you press `Ctrl+C`.
 
 Key metrics:
-- `ttl=64` — time to live (number of hops remaining). Linux defaults to 64, Windows to 128.
-- `time` — round-trip time in milliseconds. Under 1ms is typical for local network, 10-50ms for cross-country, 100-300ms for transcontinental.
-- `packet loss` — any non-zero value indicates a problem.
-- `mdev` — standard deviation of round-trip times. High mdev indicates inconsistent latency.
+- `ttl=64`: time to live (number of hops remaining). Linux defaults to 64, Windows to 128.
+- `time`: round-trip time in milliseconds. Under 1ms is typical for local network, 10-50ms for cross-country, 100-300ms for transcontinental.
+- `packet loss`: any non-zero value indicates a problem.
+- `mdev`: standard deviation of round-trip times. High mdev indicates inconsistent latency.
 
 ```bash
 ping -c 4 -i 0.2 10.0.0.1        # Send packets every 200ms
@@ -250,7 +250,7 @@ ping -s 1400 -M do 10.0.0.1      # Test path MTU (1400 bytes, don't fragment)
 ping -f 10.0.0.1                  # Flood ping (requires root, use carefully)
 ```
 
-### traceroute — Path Discovery
+### traceroute: Path Discovery
 
 ```bash
 traceroute 8.8.8.8
@@ -269,7 +269,7 @@ If you see timeouts (asterisks) at a particular hop, that hop is either dropping
 
 Some hosts block ICMP, so `traceroute` may show timeouts that are not actual problems. Use it alongside other tools.
 
-### mtr — Continuous Path Analysis
+### mtr: Continuous Path Analysis
 
 `mtr` combines ping and traceroute into a continuous display:
 
@@ -288,7 +288,7 @@ The `Loss%` column is the key metric. If hop 3 shows 4% loss but hops 1, 2, and 
 
 Use `mtr -r -c 100 8.8.8.8` for a report mode that sends 100 packets and then exits.
 
-### dig — DNS Queries
+### dig: DNS Queries
 
 `dig` is the standard tool for DNS troubleshooting. It is more powerful and detailed than `nslookup`.
 
@@ -355,7 +355,7 @@ dig +trace example.com
 
 This shows the full DNS resolution path from root servers down to the authoritative server. It is like traceroute for DNS.
 
-### nslookup — Quick DNS Lookups
+### nslookup: Quick DNS Lookups
 
 ```bash
 nslookup example.com
@@ -371,7 +371,7 @@ Address: 93.184.216.34
 
 `nslookup` is simpler than `dig` but less powerful. For quick checks, it is fine. For serious DNS debugging, use `dig`.
 
-### host — Simple DNS Lookups
+### host: Simple DNS Lookups
 
 ```bash
 host example.com
@@ -395,9 +395,9 @@ search internal.example.com example.com
 options timeout:2 attempts:3
 ```
 
-- `nameserver` — DNS servers to query (in order of preference). The system tries the first one and falls back to the second.
-- `search` — domains to append when resolving short names. Typing `db01` resolves to `db01.internal.example.com`.
-- `options` — timeout in seconds, number of attempts.
+- `nameserver`: DNS servers to query (in order of preference). The system tries the first one and falls back to the second.
+- `search`: domains to append when resolving short names. Typing `db01` resolves to `db01.internal.example.com`.
+- `options`: timeout in seconds, number of attempts.
 
 On systems using `systemd-resolved`, `/etc/resolv.conf` may point to `127.0.0.53` (the local stub resolver). Check with:
 
@@ -426,11 +426,11 @@ Entries in `/etc/hosts` are checked before DNS. This is useful for overriding DN
 ### Understanding Chains and Tables
 
 The key concepts:
-- **Tables** — categories of rules (filter, nat, mangle, raw). The `filter` table is the default and most commonly used.
-- **Chains** — points in the packet flow where rules are applied:
-  - `INPUT` — packets destined for this machine
-  - `OUTPUT` — packets originating from this machine
-  - `FORWARD` — packets passing through this machine (routing between interfaces)
+- **Tables**: categories of rules (filter, nat, mangle, raw). The `filter` table is the default and most commonly used.
+- **Chains**: points in the packet flow where rules are applied:
+  - `INPUT`: packets destined for this machine
+  - `OUTPUT`: packets originating from this machine
+  - `FORWARD`: packets passing through this machine (routing between interfaces)
 
 Packets flow through the chain from top to bottom. Each rule is evaluated in order. If a packet matches a rule, the action (target) is applied. If no rule matches, the default policy is applied.
 
@@ -456,9 +456,9 @@ Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
 ```
 
 The flags:
-- `-L` — list rules
-- `-v` — verbose (show packet and byte counters)
-- `-n` — numeric output (do not resolve hostnames or port names)
+- `-L`: list rules
+- `-v`: verbose (show packet and byte counters)
+- `-n`: numeric output (do not resolve hostnames or port names)
 
 This output shows:
 - 150 packets (12KB) matched the ESTABLISHED,RELATED rule

@@ -1,4 +1,4 @@
-# Module 1 — Who Secures What? The Cloud Responsibility Model
+# Module 1: Who Secures What? The Cloud Responsibility Model
 
 ## The Fundamental Question Every Cloud Engineer Must Answer
 
@@ -86,7 +86,7 @@ Azure also has a more explicit model for platform services. For Azure SQL Databa
 GCP follows a similar framework but with its own nuances. Google emphasizes "shared fate" rather than "shared responsibility," which is more than marketing language. Google provides security tooling (Security Command Center, Cloud Armor, Identity-Aware Proxy) and encourages customers to use it.
 
 **Google Managed:** Physical infrastructure, network, hypervisor, host OS
-**Shared:** Managed services (GKE, Cloud SQL, App Engine) — Google manages the platform, you manage the configuration
+**Shared:** Managed services (GKE, Cloud SQL, App Engine): Google manages the platform, you manage the configuration
 **Customer Managed:** Data, IAM configuration, application code, encryption settings
 
 GKE (Google Kubernetes Engine) illustrates the split well. Google manages the Kubernetes control plane, the master nodes, the etcd cluster, and the underlying infrastructure. You manage the worker nodes (unless you use Autopilot, where Google manages those too), the pod configurations, the network policies, the secrets, and the container images.

@@ -1,12 +1,12 @@
-# Module 2 — Subnetting and IP Addressing
+# Module 2: Subnetting and IP Addressing
 
 Every device on an IP network needs a unique address. How those addresses are assigned, divided, and managed determines whether your network scales gracefully or collapses under its own weight. This module covers IPv4 subnetting from first principles, VLSM for efficient allocation, IPv6 basics, NAT/PAT for address conservation, and the practical decisions you face when designing addressing for a real network.
 
-You will learn to subnet by hand — no calculators. The goal is not to memorize binary arithmetic but to understand it deeply enough that you can reason about addressing problems intuitively. When you are staring at a routing table at 2 AM and something does not add up, you need to be able to mentally verify that 10.0.48.0/22 actually covers the range you think it does.
+You will learn to subnet by hand: no calculators. The goal is not to memorize binary arithmetic but to understand it deeply enough that you can reason about addressing problems intuitively. When you are staring at a routing table at 2 AM and something does not add up, you need to be able to mentally verify that 10.0.48.0/22 actually covers the range you think it does.
 
 ## IPv4 Address Structure
 
-An IPv4 address is a 32-bit number, typically written as four decimal octets separated by dots: 192.168.1.100. Each octet represents 8 bits, so the full range is 0.0.0.0 to 255.255.255.255 — about 4.3 billion addresses.
+An IPv4 address is a 32-bit number, typically written as four decimal octets separated by dots: 192.168.1.100. Each octet represents 8 bits, so the full range is 0.0.0.0 to 255.255.255.255: about 4.3 billion addresses.
 
 In binary, 192.168.1.100 looks like this:
 
@@ -148,21 +148,21 @@ VLSM requires classless routing protocols (OSPF, EIGRP, BGP) that advertise the 
 RFC 1918 defines three private IP address ranges that are not routable on the public internet:
 
 ```
-10.0.0.0/8       (10.0.0.0 - 10.255.255.255)      — 16,777,216 addresses
-172.16.0.0/12    (172.16.0.0 - 172.31.255.255)     — 1,048,576 addresses
-192.168.0.0/16   (192.168.0.0 - 192.168.255.255)   — 65,536 addresses
+10.0.0.0/8       (10.0.0.0 - 10.255.255.255)     : 16,777,216 addresses
+172.16.0.0/12    (172.16.0.0 - 172.31.255.255)    : 1,048,576 addresses
+192.168.0.0/16   (192.168.0.0 - 192.168.255.255)  : 65,536 addresses
 ```
 
 These addresses can be used freely within private networks but must not be routed on the public internet. When a private-addressed host needs to communicate with the internet, its traffic passes through a NAT device that translates private addresses to public ones.
 
 Additional special-purpose address ranges:
 - 127.0.0.0/8: Loopback (127.0.0.1 is localhost)
-- 169.254.0.0/16: Link-local (APIPA — used when DHCP fails)
+- 169.254.0.0/16: Link-local (APIPA: used when DHCP fails)
 - 224.0.0.0/4: Multicast
 - 240.0.0.0/4: Reserved for future use
 - 0.0.0.0/8: "This" network (used in bootstrapping)
 
-IPv4 address exhaustion drove the need for NAT. In the early 1990s, it was clear that 4.3 billion addresses would not be enough. Classless addressing (CIDR) extended the lifespan, and NAT made it possible for millions of devices to share a single public IP. But NAT breaks the end-to-end principle — hosts behind NAT cannot be directly reached from the internet without port forwarding.
+IPv4 address exhaustion drove the need for NAT. In the early 1990s, it was clear that 4.3 billion addresses would not be enough. Classless addressing (CIDR) extended the lifespan, and NAT made it possible for millions of devices to share a single public IP. But NAT breaks the end-to-end principle: hosts behind NAT cannot be directly reached from the internet without port forwarding.
 
 ## NAT, PAT, and Port Forwarding
 
@@ -266,7 +266,7 @@ While IPv6 eliminates the need for NAT and subnetting in the traditional sense, 
 
 ### IPv6 Subnetting
 
-IPv6 uses /64 subnets by default for host networks. This is because SLAAC (Stateless Address Autoconfiguration) requires a /64 prefix. You do not subnet /64s into smaller pieces — instead, you allocate /64s from your allocated prefix.
+IPv6 uses /64 subnets by default for host networks. This is because SLAAC (Stateless Address Autoconfiguration) requires a /64 prefix. You do not subnet /64s into smaller pieces: instead, you allocate /64s from your allocated prefix.
 
 If you have a /48 allocation from your ISP, you have:
 - 2^(48-64) = 2^-16 ... wait, that's wrong.
@@ -306,21 +306,21 @@ Shared infrastructure: 2 core routers, 8 access switches, 2 WAN links, 4 access 
 
 ```
 VLAN 10 - Floor 1 Data:      192.168.0.0/24    (254 hosts, need 150+30% = 195)
-VLAN 11 - Floor 1 VoIP:      192.168.1.0/26    (62 hosts, need 50+30% = 65, but 62 is tight — see below)
+VLAN 11 - Floor 1 VoIP:      192.168.1.0/26    (62 hosts, need 50+30% = 65, but 62 is tight: see below)
 VLAN 12 - Floor 1 Printers:  192.168.1.64/27   (30 hosts, need 30)
 VLAN 13 - Floor 1 Cameras:   192.168.1.96/27   (30 hosts, need 20)
 
-VLAN 20 - Floor 2 Data:      192.168.2.0/25    (126 hosts, need 120+30% = 156 — not enough)
+VLAN 20 - Floor 2 Data:      192.168.2.0/25    (126 hosts, need 120+30% = 156: not enough)
 ```
 
-Wait — 120 employees + 30% growth = 156 hosts, but /25 only gives 126. We need to adjust:
+Wait: 120 employees + 30% growth = 156 hosts, but /25 only gives 126. We need to adjust:
 
 ```
 VLAN 20 - Floor 2 Data:      192.168.2.0/24    (254 hosts, need 156)
 VLAN 21 - Floor 2 VoIP:      192.168.3.0/26    (62 hosts, need 40+30% = 52)
 VLAN 22 - Floor 2 Printers:  192.168.3.64/27   (30 hosts, need 15)
 
-VLAN 30 - Floor 3 Data:      192.168.4.0/25    (126 hosts, need 100+30% = 130 — too small)
+VLAN 30 - Floor 3 Data:      192.168.4.0/25    (126 hosts, need 100+30% = 130: too small)
 ```
 
 Adjust again:
@@ -339,7 +339,7 @@ WAN Links:
   Link 2 (Backup ISP):      192.168.0.248/30  (192.168.0.249 usable)
 ```
 
-Wait — we used /22 (192.168.0.0 to 192.168.3.255). But our allocation spans into 192.168.4.x, 192.168.5.x, 192.168.6.x, 192.168.7.x. That does not fit in /22. We need to re-examine the available space.
+Wait: we used /22 (192.168.0.0 to 192.168.3.255). But our allocation spans into 192.168.4.x, 192.168.5.x, 192.168.6.x, 192.168.7.x. That does not fit in /22. We need to re-examine the available space.
 
 A /22 gives us 192.168.0.0 through 192.168.3.255 (1,024 addresses). We have allocated well beyond that. The correct approach is to work within the actual allocation:
 
@@ -350,7 +350,7 @@ VLAN 10 - Floor 1 Data:      192.168.0.0/24    (254 hosts)
 VLAN 11 - Floor 1 VoIP:      192.168.1.0/26    (62 hosts)
 VLAN 12 - Floor 1 Printers:  192.168.1.64/27   (30 hosts)
 VLAN 13 - Floor 1 Cameras:   192.168.1.96/27   (30 hosts)
-VLAN 20 - Floor 2 Data:      192.168.1.128/25  (126 hosts — tight but acceptable with /25)
+VLAN 20 - Floor 2 Data:      192.168.1.128/25  (126 hosts: tight but acceptable with /25)
 VLAN 21 - Floor 2 VoIP:      192.168.2.0/26    (62 hosts)
 VLAN 22 - Floor 2 Printers:  192.168.2.64/27   (30 hosts)
 VLAN 30 - Floor 3 Data:      192.168.2.128/25  (126 hosts)

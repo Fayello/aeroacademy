@@ -1,4 +1,4 @@
-# Module 6 — Error Handling
+# Module 6: Error Handling
 
 Error handling is how your API communicates failure. A well-designed error response tells the client exactly what went wrong, why it went wrong, and what the client can do to fix it. A poorly designed error response leaks internal details, confuses the client, or gives no information at all.
 
@@ -52,46 +52,46 @@ Every error response from your API should follow the same structure. Consistency
 
 **Fields:**
 
-`error` — A machine-readable error code. This is the primary field clients use to handle errors programmatically. Use snake_case: `not_found`, `validation_error`, `rate_limit_exceeded`, `unauthorized`.
+`error`: A machine-readable error code. This is the primary field clients use to handle errors programmatically. Use snake_case: `not_found`, `validation_error`, `rate_limit_exceeded`, `unauthorized`.
 
-`message` — A human-readable description of what went wrong. This is for developers debugging the issue. Keep it clear and specific.
+`message`: A human-readable description of what went wrong. This is for developers debugging the issue. Keep it clear and specific.
 
-`details` — An array of additional error information. Use this for validation errors, where multiple fields may have issues.
+`details`: An array of additional error information. Use this for validation errors, where multiple fields may have issues.
 
-`request_id` — A unique identifier for the request. Clients can provide this to support when debugging.
+`request_id`: A unique identifier for the request. Clients can provide this to support when debugging.
 
 ### HTTP Status Codes
 
 The HTTP status code communicates the category of error:
 
-**2xx — Success:**
-- `200 OK` — Request succeeded
-- `201 Created` — Resource created
-- `204 No Content` — Request succeeded, no response body (for DELETE)
+**2xx: Success:**
+- `200 OK`: Request succeeded
+- `201 Created`: Resource created
+- `204 No Content`: Request succeeded, no response body (for DELETE)
 
-**4xx — Client Error:**
-- `400 Bad Request` — Malformed request, invalid JSON, missing required fields
-- `401 Unauthorized` — Missing or invalid authentication credentials
-- `403 Forbidden` — Authenticated but not authorized for this action
-- `404 Not Found` — Resource does not exist
-- `409 Conflict` — Conflict with current state (duplicate email, concurrent modification)
-- `422 Unprocessable Entity` — Valid JSON but semantically incorrect (business rule violation)
-- `429 Too Many Requests` — Rate limit exceeded
+**4xx: Client Error:**
+- `400 Bad Request`: Malformed request, invalid JSON, missing required fields
+- `401 Unauthorized`: Missing or invalid authentication credentials
+- `403 Forbidden`: Authenticated but not authorized for this action
+- `404 Not Found`: Resource does not exist
+- `409 Conflict`: Conflict with current state (duplicate email, concurrent modification)
+- `422 Unprocessable Entity`: Valid JSON but semantically incorrect (business rule violation)
+- `429 Too Many Requests`: Rate limit exceeded
 
-**5xx — Server Error:**
-- `500 Internal Server Error` — Unexpected server failure
-- `502 Bad Gateway` — Upstream service unavailable
-- `503 Service Unavailable` — Server temporarily unavailable (maintenance, overload)
+**5xx: Server Error:**
+- `500 Internal Server Error`: Unexpected server failure
+- `502 Bad Gateway`: Upstream service unavailable
+- `503 Service Unavailable`: Server temporarily unavailable (maintenance, overload)
 
 ### Choosing Between 400, 422, and 500
 
 The distinction between 400, 422, and 500 confuses many developers.
 
-**400 Bad Request** — The request is structurally invalid. The JSON is malformed, a required field is missing, or a field has the wrong type. The client can fix this by correcting the request structure.
+**400 Bad Request**: The request is structurally invalid. The JSON is malformed, a required field is missing, or a field has the wrong type. The client can fix this by correcting the request structure.
 
-**422 Unprocessable Entity** — The request is structurally valid (correct JSON, correct types) but semantically invalid. The date is in the past, the email is already taken, the user is not old enough. The client can fix this by changing the field values, not the structure.
+**422 Unprocessable Entity**: The request is structurally valid (correct JSON, correct types) but semantically invalid. The date is in the past, the email is already taken, the user is not old enough. The client can fix this by changing the field values, not the structure.
 
-**500 Internal Server Error** — The server failed to process a valid request. The database is down, a third-party service is unavailable, or there is a bug in the server code. The client cannot fix this.
+**500 Internal Server Error**: The server failed to process a valid request. The database is down, a third-party service is unavailable, or there is a bug in the server code. The client cannot fix this.
 
 ```
 // 400: Structure is wrong
@@ -111,59 +111,59 @@ Define a consistent set of error codes for your API. Here is a taxonomy for a fl
 ### Authentication Errors
 
 ```
-missing_token         — Authorization header is missing
-invalid_token         — Token is malformed or expired
-token_expired         — Token has expired
-invalid_credentials   — Email/password combination is incorrect
-account_locked        — Account has been locked due to too many failed attempts
-email_not_verified    — Email address has not been verified
+missing_token        : Authorization header is missing
+invalid_token        : Token is malformed or expired
+token_expired        : Token has expired
+invalid_credentials  : Email/password combination is incorrect
+account_locked       : Account has been locked due to too many failed attempts
+email_not_verified   : Email address has not been verified
 ```
 
 ### Authorization Errors
 
 ```
-forbidden             — User does not have permission for this action
-insufficient_scope    — Token does not include the required scope
-not_your_resource     — User is trying to access another user's resource
-school_accessDenied   — User does not belong to this school
+forbidden            : User does not have permission for this action
+insufficient_scope   : Token does not include the required scope
+not_your_resource    : User is trying to access another user's resource
+school_accessDenied  : User does not belong to this school
 ```
 
 ### Validation Errors
 
 ```
-validation_error      — Request body failed validation
-invalid_format        — Field value does not match expected format
-value_too_long        — String exceeds maximum length
-value_too_short       — String is below minimum length
-value_out_of_range    — Number is outside allowed range
-required_field        — Required field is missing
-duplicate_entry       — Unique constraint violation
+validation_error     : Request body failed validation
+invalid_format       : Field value does not match expected format
+value_too_long       : String exceeds maximum length
+value_too_short      : String is below minimum length
+value_out_of_range   : Number is outside allowed range
+required_field       : Required field is missing
+duplicate_entry      : Unique constraint violation
 ```
 
 ### Resource Errors
 
 ```
-not_found             — Resource does not exist
-already_exists        — Resource already exists
-gone                  — Resource has been permanently deleted
-conflict              — Conflict with current state
+not_found            : Resource does not exist
+already_exists       : Resource already exists
+gone                 : Resource has been permanently deleted
+conflict             : Conflict with current state
 ```
 
 ### Rate Limiting Errors
 
 ```
-rate_limit_exceeded   — Too many requests
-daily_limit_exceeded  — Daily quota exceeded
-monthly_limit_exceeded — Monthly quota exceeded
+rate_limit_exceeded  : Too many requests
+daily_limit_exceeded : Daily quota exceeded
+monthly_limit_exceeded: Monthly quota exceeded
 ```
 
 ### Server Errors
 
 ```
-internal_error        — Unexpected server failure
-service_unavailable   — Upstream service is unavailable
-database_error        — Database operation failed
-timeout               — Request processing timed out
+internal_error       : Unexpected server failure
+service_unavailable  : Upstream service is unavailable
+database_error       : Database operation failed
+timeout              : Request processing timed out
 ```
 
 ## Implementation

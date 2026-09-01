@@ -1,6 +1,6 @@
-# Module 4 — Routing
+# Module 4: Routing
 
-Routing is the process of forwarding packets from one network to another based on destination IP addresses. Every router maintains a routing table — a map of known networks and how to reach them. When a packet arrives, the router looks up the destination IP in its routing table, finds the best match, and forwards the packet to the next hop toward the destination.
+Routing is the process of forwarding packets from one network to another based on destination IP addresses. Every router maintains a routing table: a map of known networks and how to reach them. When a packet arrives, the router looks up the destination IP in its routing table, finds the best match, and forwards the packet to the next hop toward the destination.
 
 This module covers static routing, dynamic routing protocols (OSPF and BGP), route table mechanics, policy-based routing, and the practical reality of connecting two data centers over BGP. You will learn to read routing tables, troubleshoot routing loops, and design routing architectures that scale.
 
@@ -26,9 +26,9 @@ default via 192.168.1.1 dev eth0 proto dhcp metric 100
 Breaking this down:
 - `default via 192.168.1.1`: Packets with no more specific match go to 192.168.1.1 (the default gateway).
 - `10.0.0.0/8 via 10.1.1.1`: All 10.x.x.x traffic goes through the next hop 10.1.1.1.
-- `10.1.1.0/24 dev eth1`: This is a directly connected network. No next-hop needed — the router is on this subnet.
+- `10.1.1.0/24 dev eth1`: This is a directly connected network. No next-hop needed: the router is on this subnet.
 - `192.168.1.0/24 dev eth0`: Another directly connected network.
-- `172.16.0.0/12 via 10.1.1.1`: Traffic for 172.16.x.x goes through the same next hop but with a higher metric (less preferred than the 10.0.0.0/8 route if they overlap — but they don't in this case).
+- `172.16.0.0/12 via 10.1.1.1`: Traffic for 172.16.x.x goes through the same next hop but with a higher metric (less preferred than the 10.0.0.0/8 route if they overlap: but they don't in this case).
 
 ### Administrative Distance and Metric
 
@@ -99,7 +99,7 @@ ip route 0.0.0.0 0.0.0.0 192.168.1.1
 
 ### Static Route Types
 
-**Floating static routes**: Static routes with a higher-than-default AD. They serve as backups — the primary route is learned dynamically, and the floating static only activates if the dynamic route disappears.
+**Floating static routes**: Static routes with a higher-than-default AD. They serve as backups: the primary route is learned dynamically, and the floating static only activates if the dynamic route disappears.
 
 ```
 # Primary route via OSPF (AD 110)
@@ -131,11 +131,11 @@ ip route 172.16.0.0 255.255.0.0 10.1.1.1 200
 - Large networks with many subnets (too much administrative overhead)
 - Networks with multiple paths (static routes cannot adapt to link failures)
 - Networks that change frequently (adding a new subnet requires updating every router)
-- When convergence time matters (static routes do not detect failures — they stay in the table until manually removed)
+- When convergence time matters (static routes do not detect failures: they stay in the table until manually removed)
 
 ## Dynamic Routing Protocols
 
-Dynamic routing protocols allow routers to share reachability information and automatically adapt to network changes. When a link fails, routers running a dynamic protocol detect the failure and reroute traffic within seconds or minutes — without any manual intervention.
+Dynamic routing protocols allow routers to share reachability information and automatically adapt to network changes. When a link fails, routers running a dynamic protocol detect the failure and reroute traffic within seconds or minutes: without any manual intervention.
 
 ### Distance Vector vs Link State
 
@@ -215,7 +215,7 @@ If a neighbor gets stuck in a state (e.g., 2-Way or ExStart), there is a configu
 
 OSPF calculates cost as: Cost = Reference Bandwidth / Interface Bandwidth
 
-The default reference bandwidth is 100 Mbps. On a 100 Mbps link, the cost is 1. On a 1 Gbps link, the cost is also 1 (because 100M / 1G = 0.1, rounded up to 1). This is a problem — OSPF cannot distinguish between 100 Mbps and 10 Gbps links with default settings.
+The default reference bandwidth is 100 Mbps. On a 100 Mbps link, the cost is 1. On a 1 Gbps link, the cost is also 1 (because 100M / 1G = 0.1, rounded up to 1). This is a problem: OSPF cannot distinguish between 100 Mbps and 10 Gbps links with default settings.
 
 Fix this by adjusting the reference bandwidth:
 ```
@@ -278,22 +278,22 @@ BGP (Border Gateway Protocol) is the protocol that holds the internet together. 
 
 **iBGP (Internal BGP)**: Within the same autonomous system. iBGP is used to distribute external routes learned via eBGP to all routers within the AS. iBGP requires a full mesh (every iBGP speaker must peer with every other iBGP speaker) or route reflectors / confederations to scale.
 
-The iBGP split-horizon rule prevents loops: a router learned an iBGP route will not advertise it to other iBGP peers. This is why a full mesh is required — every router must learn routes directly from the originating router.
+The iBGP split-horizon rule prevents loops: a router learned an iBGP route will not advertise it to other iBGP peers. This is why a full mesh is required: every router must learn routes directly from the originating router.
 
 ### BGP Path Selection
 
 BGP selects the best path using a multi-step process. The key decision points (in order):
 
-1. **Weight** (Cisco proprietary, local to router) — highest wins
-2. **Local Preference** (higher is better, shared within AS) — indicates the preferred exit point from the AS
-3. **Locally originated routes** (prefer routes you originated) — routes you advertised are preferred over learned routes
-4. **AS Path length** (shorter is better) — the number of autonomous systems the route has traversed
-5. **Origin type** (IGP > EGP > Incomplete) — how the route was originally injected
-6. **MED** (Multi-Exit Discriminator, lower is better) — hints to neighboring ASes about preferred entry points
-7. **eBGP over iBGP** (prefer eBGP-learned routes) — eBGP routes are more trustworthy because they come directly from the source
-8. **Lowest IGP metric to next hop** — prefer the route reachable with the lowest internal cost
-9. **Oldest route** (prefer the route you have had longest) — stability preference
-10. **Lowest router ID** (tiebreaker) — deterministic selection
+1. **Weight** (Cisco proprietary, local to router): highest wins
+2. **Local Preference** (higher is better, shared within AS): indicates the preferred exit point from the AS
+3. **Locally originated routes** (prefer routes you originated): routes you advertised are preferred over learned routes
+4. **AS Path length** (shorter is better): the number of autonomous systems the route has traversed
+5. **Origin type** (IGP > EGP > Incomplete): how the route was originally injected
+6. **MED** (Multi-Exit Discriminator, lower is better): hints to neighboring ASes about preferred entry points
+7. **eBGP over iBGP** (prefer eBGP-learned routes): eBGP routes are more trustworthy because they come directly from the source
+8. **Lowest IGP metric to next hop**: prefer the route reachable with the lowest internal cost
+9. **Oldest route** (prefer the route you have had longest): stability preference
+10. **Lowest router ID** (tiebreaker): deterministic selection
 
 ### BGP Configuration
 
@@ -332,7 +332,7 @@ write
 
 ### BGP Communities
 
-BGP communities are tags that can be applied to routes to influence routing decisions. They are 32-bit values typically written as AS:VALUE (e.g., 65001:100). Communities are transitive — they can be passed between ASes, allowing upstream providers to honor community-based policies.
+BGP communities are tags that can be applied to routes to influence routing decisions. They are 32-bit values typically written as AS:VALUE (e.g., 65001:100). Communities are transitive: they can be passed between ASes, allowing upstream providers to honor community-based policies.
 
 Common community values:
 - NO_EXPORT (0xFFFFFF01): Do not advertise this route to eBGP peers.
@@ -340,9 +340,9 @@ Common community values:
 - Local AS (0xFFFFFF03): Do not advertise this route outside the local AS.
 
 ISPs often define custom communities for customers:
-- 65001:100 — Prefer this path (set local preference to 200)
-- 65001:200 — Blackhole this prefix (RTBH)
-- 65001:300 — prepend AS path 3 times (depref this path)
+- 65001:100: Prefer this path (set local preference to 200)
+- 65001:200: Blackhole this prefix (RTBH)
+- 65001:300: prepend AS path 3 times (depref this path)
 
 ### BGP Troubleshooting
 
@@ -367,9 +367,9 @@ clear ip bgp 10.0.0.2 soft
 ```
 
 Common BGP issues:
-- **Neighbors not establishing**: Check AS numbers, IP addresses, TCP connectivity (port 179), and access lists. BGP uses TCP port 179 — if a firewall blocks this port, the peering will never form.
+- **Neighbors not establishing**: Check AS numbers, IP addresses, TCP connectivity (port 179), and access lists. BGP uses TCP port 179: if a firewall blocks this port, the peering will never form.
 - **Routes not advertised**: Verify the network statement matches exactly (including mask), check if the route exists in the IGP, and verify neighbor policy.
-- **Suboptimal routing**: Check local preference, AS path prepending, MED, and communities. The BGP best path selection is deterministic — you can trace through the algorithm to understand why a particular path was chosen.
+- **Suboptimal routing**: Check local preference, AS path prepending, MED, and communities. The BGP best path selection is deterministic: you can trace through the algorithm to understand why a particular path was chosen.
 - **Route flapping**: Check for link instability, MTU issues, or memory exhaustion. Flapping routes cause constant re-convergence and waste CPU on all BGP speakers.
 
 ## Policy-Based Routing
@@ -421,12 +421,12 @@ Both data centers have dual ISP connections for redundancy. You need to establis
 
 ```
 DC-A (New York):
-  Router A1 (10.0.0.1) — connects to ISP-A via 203.0.113.0/30
-  Router A2 (10.0.0.2) — connects to ISP-B via 198.51.100.0/30
+  Router A1 (10.0.0.1): connects to ISP-A via 203.0.113.0/30
+  Router A2 (10.0.0.2): connects to ISP-B via 198.51.100.0/30
 
 DC-B (London):
-  Router B1 (10.1.0.1) — connects to ISP-C via 192.0.2.0/30
-  Router B2 (10.1.0.2) — connects to ISP-D via 198.18.0.0/30
+  Router B1 (10.1.0.1): connects to ISP-C via 192.0.2.0/30
+  Router B2 (10.1.0.2): connects to ISP-D via 198.18.0.0/30
 ```
 
 ### Configuration

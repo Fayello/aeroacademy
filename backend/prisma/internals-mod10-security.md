@@ -1,16 +1,16 @@
-# Module 10 — Kernel Security
+# Module 10: Kernel Security
 
 ## Defense in Depth at the Kernel Level
 
-Kernel security is not about a single mechanism — it is about layers. Even if an attacker gains root access through a vulnerable application, kernel security features can prevent them from reading other users' files, loading malicious modules, or modifying the system. This module covers the kernel's security mechanisms: SELinux, AppArmor, seccomp-bpf, kernel lockdown, and Secure Boot.
+Kernel security is not about a single mechanism: it is about layers. Even if an attacker gains root access through a vulnerable application, kernel security features can prevent them from reading other users' files, loading malicious modules, or modifying the system. This module covers the kernel's security mechanisms: SELinux, AppArmor, seccomp-bpf, kernel lockdown, and Secure Boot.
 
 ## SELinux: Mandatory Access Control
 
-SELinux (Security-Enhanced Linux) implements mandatory access control (MAC). In standard Linux (discretionary access control, or DAC), the file owner decides who can access the file. In MAC, the system policy decides — even root cannot override the policy unless explicitly allowed.
+SELinux (Security-Enhanced Linux) implements mandatory access control (MAC). In standard Linux (discretionary access control, or DAC), the file owner decides who can access the file. In MAC, the system policy decides: even root cannot override the policy unless explicitly allowed.
 
 ### How SELinux Works
 
-SELinux labels every process and every file with a **security context**. When a process tries to access a file, the kernel checks the process's context against the file's context and the system policy. If the policy does not explicitly allow the access, it is denied — even for root.
+SELinux labels every process and every file with a **security context**. When a process tries to access a file, the kernel checks the process's context against the file's context and the system policy. If the policy does not explicitly allow the access, it is denied: even for root.
 
 ```bash
 # View SELinux context of a process
@@ -36,7 +36,7 @@ user:role:type:level
 
 - **user**: SELinux user mapping (not the same as Linux user)
 - **role**: Role-based access control (not heavily used in targeted policy)
-- **type**: The most important field — determines access rules
+- **type**: The most important field: determines access rules
 - **level**: MLS/MCS level (used for multi-level security and containers)
 
 ### SELinux Modes
@@ -67,7 +67,7 @@ setenforce 1    # Enforcing
 # SELINUX=enforcing
 ```
 
-**Permissive mode** logs policy violations without enforcing them. This is essential for troubleshooting — you can see what would be denied without breaking anything.
+**Permissive mode** logs policy violations without enforcing them. This is essential for troubleshooting: you can see what would be denied without breaking anything.
 
 ### SELinux Booleans
 
@@ -359,7 +359,7 @@ Both provide defense in depth for containers, but at different layers:
 | What it controls | File access, capabilities | System call access |
 | Configuration | Profile per program | Filter per system call |
 | Kernel interaction | LSM hooks | seccomp-bpf filters |
-| Complementary | Yes — use both together | Yes — use both together |
+| Complementary | Yes: use both together | Yes: use both together |
 
 For containers, the recommended approach is:
 1. Use AppArmor for file and capability restrictions
@@ -572,7 +572,7 @@ A production web server running nginx and a custom PHP application was compromis
 2. Scan the internal network
 3. Write files to arbitrary locations
 
-The DAC permissions were correct — www-data should not have been able to read `/etc/shadow`. But the file was world-readable (a misconfiguration from an earlier debugging session).
+The DAC permissions were correct: www-data should not have been able to read `/etc/shadow`. But the file was world-readable (a misconfiguration from an earlier debugging session).
 
 ### Solution: Implement SELinux
 

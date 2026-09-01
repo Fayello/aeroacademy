@@ -1,8 +1,8 @@
-# Module 7 — SSH Hardening
+# Module 7: SSH Hardening
 
 ## Why This Matters
 
-SSH is the front door to your server. If an attacker can log in over SSH, they own the machine. The default SSH configuration on most Linux distributions is functional but not hardened — it allows password authentication, permits root login, runs on port 22 (the most scanned port on the internet), and has no brute-force protection.
+SSH is the front door to your server. If an attacker can log in over SSH, they own the machine. The default SSH configuration on most Linux distributions is functional but not hardened: it allows password authentication, permits root login, runs on port 22 (the most scanned port on the internet), and has no brute-force protection.
 
 SSH hardening is not optional. It is one of the first things you do on any new server, and it is the first thing you audit when you suspect a breach. This module covers every layer of SSH security, from key-based authentication to intrusion detection, and walks through a complete hardening scenario.
 
@@ -10,15 +10,15 @@ SSH hardening is not optional. It is one of the first things you do on any new s
 
 Before hardening, understand what you are defending against:
 
-1. **Brute-force attacks** — automated bots trying thousands of username/password combinations against port 22. These bots scan the entire internet, targeting every IP address that has port 22 open. They can attempt thousands of passwords per minute.
+1. **Brute-force attacks**: automated bots trying thousands of username/password combinations against port 22. These bots scan the entire internet, targeting every IP address that has port 22 open. They can attempt thousands of passwords per minute.
 
-2. **Credential stuffing** — using leaked passwords from other breaches to attempt login. If a user reuses their password across services, a breach at one service exposes all accounts using that password.
+2. **Credential stuffing**: using leaked passwords from other breaches to attempt login. If a user reuses their password across services, a breach at one service exposes all accounts using that password.
 
-3. **Unauthorized access** — someone who should not have access trying to log in. This could be a disgruntled former employee, a contractor whose access was not revoked, or an attacker who obtained credentials through phishing.
+3. **Unauthorized access**: someone who should not have access trying to log in. This could be a disgruntled former employee, a contractor whose access was not revoked, or an attacker who obtained credentials through phishing.
 
-4. **Privilege escalation** — an attacker who compromises a low-privilege account and tries to become root. Once they have a shell, they can exploit kernel vulnerabilities, misconfigured sudo rules, or SUID binaries.
+4. **Privilege escalation**: an attacker who compromises a low-privilege account and tries to become root. Once they have a shell, they can exploit kernel vulnerabilities, misconfigured sudo rules, or SUID binaries.
 
-5. **Man-in-the-middle** — an attacker intercepting SSH connections to capture credentials or modify traffic. This is less common on modern networks but possible on shared infrastructure or compromised networks.
+5. **Man-in-the-middle**: an attacker intercepting SSH connections to capture credentials or modify traffic. This is less common on modern networks but possible on shared infrastructure or compromised networks.
 
 Each hardening measure addresses one or more of these threats. Understanding the threat model helps you prioritize which measures to implement first.
 
@@ -106,7 +106,7 @@ If you absolutely need root login (for example, during initial provisioning with
 PermitRootLogin prohibit-password
 ```
 
-This allows root to log in with keys but not with passwords. It is a middle ground — still secure against brute-force, but allows key-based root access for automation.
+This allows root to log in with keys but not with passwords. It is a middle ground: still secure against brute-force, but allows key-based root access for automation.
 
 ### Alternative: Use a Deploy User with sudo
 
@@ -215,13 +215,13 @@ MaxStartups 10:30:60
 LoginGraceTime 30
 ```
 
-- `ClientAliveInterval 300` + `ClientAliveCountMax 2` — the server sends a keepalive every 300 seconds. After 2 missed responses (10 minutes total), the connection is dropped. This prevents abandoned sessions from remaining open indefinitely.
+- `ClientAliveInterval 300` + `ClientAliveCountMax 2`: the server sends a keepalive every 300 seconds. After 2 missed responses (10 minutes total), the connection is dropped. This prevents abandoned sessions from remaining open indefinitely.
 
-- `MaxAuthTries 3` — after 3 failed attempts within a single connection, the connection is terminated. The client must reconnect. This slows down brute-force attacks within a single connection.
+- `MaxAuthTries 3`: after 3 failed attempts within a single connection, the connection is terminated. The client must reconnect. This slows down brute-force attacks within a single connection.
 
-- `MaxStartups 10:30:60` — when 10 unauthenticated connections are active, new connections are rate-limited (30% chance of being dropped). At 60, all new connections are dropped. This prevents an attacker from opening thousands of concurrent connections.
+- `MaxStartups 10:30:60`: when 10 unauthenticated connections are active, new connections are rate-limited (30% chance of being dropped). At 60, all new connections are dropped. This prevents an attacker from opening thousands of concurrent connections.
 
-- `LoginGraceTime 30` — the server waits 30 seconds for authentication before disconnecting. If a user cannot authenticate within 30 seconds, something is wrong.
+- `LoginGraceTime 30`: the server waits 30 seconds for authentication before disconnecting. If a user cannot authenticate within 30 seconds, something is wrong.
 
 ## Step 6: Disable Unused Authentication Methods
 
@@ -386,7 +386,7 @@ sudo dnf install fail2ban
 
 ### Configuration
 
-Do not edit `/etc/fail2ban/jail.conf` directly — it gets overwritten on upgrades. Create a local override:
+Do not edit `/etc/fail2ban/jail.conf` directly: it gets overwritten on upgrades. Create a local override:
 
 ```bash
 sudo cp /etc/fail2ban/jail.local /etc/fail2ban/jail.local 2>/dev/null || true
@@ -505,7 +505,7 @@ ssh -A admin@bastion          # Log into bastion with agent forwarding
 ssh admin@internal-db         # From bastion, log into internal server
 ```
 
-Agent forwarding is risky — a root user on the bastion could intercept your SSH agent socket and use your keys.
+Agent forwarding is risky: a root user on the bastion could intercept your SSH agent socket and use your keys.
 
 ### With ProxyJump (New Way)
 
@@ -528,7 +528,7 @@ Host internal-*
     IdentityFile ~/.ssh/id_ed25519
 ```
 
-Now typing `ssh internal-db-01` automatically goes through the bastion. Your private key never leaves your machine — the SSH handshake is proxied through the bastion. This is more secure than agent forwarding.
+Now typing `ssh internal-db-01` automatically goes through the bastion. Your private key never leaves your machine: the SSH handshake is proxied through the bastion. This is more secure than agent forwarding.
 
 ### Hardening the Bastion
 

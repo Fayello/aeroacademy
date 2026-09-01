@@ -1,4 +1,4 @@
-# Module 3 — RBAC
+# Module 3: RBAC
 
 Role-Based Access Control is the mechanism that determines who can do what in your Kubernetes cluster. Without RBAC, anyone with API access can read secrets, delete deployments, and create new users. With RBAC, you can restrict a service account to only reading ConfigMaps in a single namespace while a human admin can manage RBAC itself. This module covers the complete RBAC system: Roles, ClusterRoles, RoleBindings, ClusterRoleBindings, service account tokens, and the practical implementation of least privilege.
 
@@ -89,7 +89,7 @@ Key difference: A ClusterRole that defines permissions for namespace-scoped reso
 
 ### Aggregated ClusterRoles
 
-ClusterRoles can be aggregated — you can combine multiple ClusterRoles into one. This is useful for building incremental permission sets:
+ClusterRoles can be aggregated: you can combine multiple ClusterRoles into one. This is useful for building incremental permission sets:
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -165,7 +165,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-This grants the `pod-manager` Role to the User `jane@example.com`, the Group `dev-team`, and the ServiceAccount `my-app-sa` — all within the `production` namespace.
+This grants the `pod-manager` Role to the User `jane@example.com`, the Group `dev-team`, and the ServiceAccount `my-app-sa`: all within the `production` namespace.
 
 ### ClusterRoleBinding
 
@@ -208,7 +208,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-This grants the `view` ClusterRole to the `qa-team` group — but only in the `production` namespace. This is a common pattern: define permissions once in a ClusterRole, bind them per-namespace with RoleBindings.
+This grants the `view` ClusterRole to the `qa-team` group: but only in the `production` namespace. This is a common pattern: define permissions once in a ClusterRole, bind them per-namespace with RoleBindings.
 
 ## Service Account Tokens
 
@@ -733,7 +733,7 @@ kubectl -n production delete secret $(kubectl -n production get secret | \
 
 ## Assessment
 
-### Lab 1 — RBAC Basics (30 minutes)
+### Lab 1: RBAC Basics (30 minutes)
 
 1. Create a Role that allows reading pods and services in the `default` namespace.
 2. Create a RoleBinding that grants this Role to a user `dev@example.com`.
@@ -743,7 +743,7 @@ kubectl -n production delete secret $(kubectl -n production get secret | \
 
 **Grading**: 10 points. 2 points per task. Full credit for correct manifests and accurate permission tests.
 
-### Lab 2 — CI/CD RBAC (45 minutes)
+### Lab 2: CI/CD RBAC (45 minutes)
 
 1. Create a CI/CD namespace with two service accounts: `cicd-staging` and `cicd-production`.
 2. Create Roles that allow the CI/CD service accounts to manage deployments, services, and configmaps in their respective namespaces.
@@ -753,7 +753,7 @@ kubectl -n production delete secret $(kubectl -n production get secret | \
 
 **Grading**: 15 points. 3 points per task. Full credit for correct RBAC setup, working kubeconfigs, and accurate tests.
 
-### Lab 3 — Least Privilege Audit (45 minutes)
+### Lab 3: Least Privilege Audit (45 minutes)
 
 1. Audit all ClusterRoleBindings in the cluster. Identify any subjects bound to `cluster-admin`.
 2. For each `cluster-admin` binding, determine if a more restrictive role would suffice.

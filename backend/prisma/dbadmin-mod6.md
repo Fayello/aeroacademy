@@ -1,6 +1,6 @@
-# Module 6 — Database Access Control
+# Module 6: Database Access Control
 
-Controlling who can access your database and what they can do once they are in is the foundation of database security. Granting too many privileges is the most common DBA mistake — every user gets readWrite on everything, and then the breach happens. This module covers the practical mechanics of database access control: roles, row-level security, column-level permissions, dynamic data masking, and audit logging. We will build a complete RBAC system for a multi-tenant application as the running scenario.
+Controlling who can access your database and what they can do once they are in is the foundation of database security. Granting too many privileges is the most common DBA mistake: every user gets readWrite on everything, and then the breach happens. This module covers the practical mechanics of database access control: roles, row-level security, column-level permissions, dynamic data masking, and audit logging. We will build a complete RBAC system for a multi-tenant application as the running scenario.
 
 ## Roles and Permissions
 
@@ -111,7 +111,7 @@ REVOKE DROP, ALTER, CREATE ON myapp.* FROM 'appuser'@'10.0.1.%';
 
 ## Row-Level Security
 
-Row-level security (RLS) restricts which rows a user can see or modify. In a multi-tenant application, tenant isolation is the most common use case — each tenant sees only their own data.
+Row-level security (RLS) restricts which rows a user can see or modify. In a multi-tenant application, tenant isolation is the most common use case: each tenant sees only their own data.
 
 **PostgreSQL RLS:**
 
@@ -211,7 +211,7 @@ def set_tenant_context():
     )
 ```
 
-The security of RLS depends on the application correctly setting the session variable. If the application forgets to set `app.current_tenant`, the query fails (no rows match an empty tenant_id). This is the safe default — fail closed, not open.
+The security of RLS depends on the application correctly setting the session variable. If the application forgets to set `app.current_tenant`, the query fails (no rows match an empty tenant_id). This is the safe default: fail closed, not open.
 
 ## Column-Level Permissions
 
@@ -277,11 +277,11 @@ GRANT SELECT ON employee_manager TO db_manager;
 GRANT SELECT ON employees TO db_hr;
 ```
 
-Views provide a cleaner abstraction than column-level grants on the base table. The application code does not need to change based on the user's role — it queries the appropriate view.
+Views provide a cleaner abstraction than column-level grants on the base table. The application code does not need to change based on the user's role: it queries the appropriate view.
 
 ## Dynamic Data Masking
 
-Dynamic data masking transforms data at query time based on the user's role. The underlying data is unchanged — the masking is applied during retrieval. This is different from column-level permissions, which either show the full value or nothing.
+Dynamic data masking transforms data at query time based on the user's role. The underlying data is unchanged: the masking is applied during retrieval. This is different from column-level permissions, which either show the full value or nothing.
 
 **PostgreSQL Masking with pgcrypto:**
 
@@ -397,7 +397,7 @@ In practice, this means:
 
 **Regular Access Reviews:**
 
-Quarterly reviews of database access prevent privilege creep. Employees change roles, contractors leave, applications are decommissioned — but their database access often remains.
+Quarterly reviews of database access prevent privilege creep. Employees change roles, contractors leave, applications are decommissioned: but their database access often remains.
 
 ```sql
 -- Find users who have not logged in for 90 days

@@ -1,4 +1,4 @@
-# Module 4 — Terraform Workspaces
+# Module 4: Terraform Workspaces
 
 You have got a Terraform configuration that provisions a VPC, some instances, and a database. It works perfectly in development. Now you need the same infrastructure in staging and production. You could copy the configuration three times, but then you are maintaining three copies of the same code and updating all three whenever something changes. You could use variable files, but that does not solve the state isolation problem. All three environments would share the same state file, and a terraform destroy in development could accidentally wipe out production.
 

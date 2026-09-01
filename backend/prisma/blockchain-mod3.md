@@ -1,4 +1,4 @@
-# Module 3 — Smart Contract Vulnerabilities
+# Module 3: Smart Contract Vulnerabilities
 
 Smart contract vulnerabilities are not theoretical. They have resulted in billions of dollars in losses. The DAO hack in 2016 drained 3.6 million ETH. The Parity wallet freeze locked up 280 million USD permanently. The Wormhole bridge exploit drained 320 million USD in 2022. Each of these incidents exploited a vulnerability that was well-understood in the security community but was either overlooked or misimplemented in the deployed contract. This module covers the most critical vulnerability classes, explains the mechanics of each exploit, and provides code examples that you can use to practice identifying and fixing vulnerabilities in real contracts.
 
@@ -106,7 +106,7 @@ contract CrossFunctionReentrancy {
 }
 ```
 
-If the attacker's `receive` function calls `transfer` instead of `withdraw`, the attacker can move the same balance to a different address, effectively bypassing the withdrawal limit. The `withdraw` function zeroed the balance, but the `transfer` function increments the recipient's balance — and the attacker controls the recipient.
+If the attacker's `receive` function calls `transfer` instead of `withdraw`, the attacker can move the same balance to a different address, effectively bypassing the withdrawal limit. The `withdraw` function zeroed the balance, but the `transfer` function increments the recipient's balance: and the attacker controls the recipient.
 
 The fix is the same: update all shared state before any external call. Alternatively, use a reentrancy guard.
 
@@ -206,7 +206,7 @@ Front-running exploits the transparency of the mempool. When you submit a transa
 
 ### The MEV Problem
 
-Miner Extractable Value (MEV) is the profit that block producers (miners or validators) can extract by reordering, inserting, or censoring transactions within a block. MEV is not just front-running — it includes back-running (placing a transaction after yours to profit from the state change), sandwich attacks (placing transactions before and after yours), and time-bandit attacks (rewriting history to extract MEV from past blocks).
+Miner Extractable Value (MEV) is the profit that block producers (miners or validators) can extract by reordering, inserting, or censoring transactions within a block. MEV is not just front-running: it includes back-running (placing a transaction after yours to profit from the state change), sandwich attacks (placing transactions before and after yours), and time-bandit attacks (rewriting history to extract MEV from past blocks).
 
 The most common MEV strategy is the sandwich attack on decentralized exchanges:
 
@@ -417,7 +417,7 @@ function tallyVotes() external view returns (uint256) {
 
 ## Oracle Manipulation
 
-Smart contracts cannot access off-chain data directly. They rely on oracles — services that provide external data (like token prices) to the blockchain. If the oracle can be manipulated, the contract's logic can be exploited. Oracle manipulation is one of the most common and most profitable attack vectors in DeFi, responsible for over $400 million in losses across multiple protocols.
+Smart contracts cannot access off-chain data directly. They rely on oracles: services that provide external data (like token prices) to the blockchain. If the oracle can be manipulated, the contract's logic can be exploited. Oracle manipulation is one of the most common and most profitable attack vectors in DeFi, responsible for over $400 million in losses across multiple protocols.
 
 ### Spot Price Manipulation
 
@@ -438,7 +438,7 @@ An attacker can:
 3. Interact with a protocol that uses the manipulated spot price.
 4. Swap back and repay the flash loan, keeping the profit.
 
-The key insight is that the spot price changes instantly with each trade, but the protocol's accounting does not update until the next block. This one-block window is all an attacker needs. The cost of manipulation depends on the pool's liquidity — a pool with $10 million in liquidity might cost $500,000 in trading fees to move the price by 10%, while a pool with $100,000 in liquidity might cost only $5,000.
+The key insight is that the spot price changes instantly with each trade, but the protocol's accounting does not update until the next block. This one-block window is all an attacker needs. The cost of manipulation depends on the pool's liquidity: a pool with $10 million in liquidity might cost $500,000 in trading fees to move the price by 10%, while a pool with $100,000 in liquidity might cost only $5,000.
 
 ### Time-Weighted Average Price (TWAP)
 

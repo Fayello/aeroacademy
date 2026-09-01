@@ -1,6 +1,6 @@
-# Module 4 — Authentication and Session Attacks
+# Module 4: Authentication and Session Attacks
 
-Authentication and session management are the most targeted components in any web application. An attacker who compromises authentication can bypass all other security controls. This module covers the full spectrum of attacks against authentication mechanisms — from credential-based attacks to session manipulation and token forgery. Every technique here has been used in real breaches affecting millions of users.
+Authentication and session management are the most targeted components in any web application. An attacker who compromises authentication can bypass all other security controls. This module covers the full spectrum of attacks against authentication mechanisms: from credential-based attacks to session manipulation and token forgery. Every technique here has been used in real breaches affecting millions of users.
 
 ## Brute Force Attacks
 
@@ -32,9 +32,9 @@ Most applications implement rate limiting to prevent brute force. Common impleme
 
 **IP-based rate limiting**: The application limits requests per IP address. Bypass by rotating IP addresses through a proxy pool, using Tor exit nodes, or distributing requests across multiple source IPs. Cloud-based IP rotation services provide thousands of rotating IPs.
 
-**Token-based rate limiting**: A token bucket or sliding window rate limiter tracks requests using a client-provided identifier. If the identifier is client-controlled (IP address, User-Agent, custom header), it can be modified on each request. Check whether the rate limit uses a header like `X-Forwarded-For` — if the application trusts this header, the attacker can set a unique value on each request to bypass the limit.
+**Token-based rate limiting**: A token bucket or sliding window rate limiter tracks requests using a client-provided identifier. If the identifier is client-controlled (IP address, User-Agent, custom header), it can be modified on each request. Check whether the rate limit uses a header like `X-Forwarded-For`: if the application trusts this header, the attacker can set a unique value on each request to bypass the limit.
 
-**Account lockout**: After N failed attempts, the account is locked. Bypass by targeting multiple accounts simultaneously — try each password once across thousands of accounts rather than trying all passwords on one account. This avoids triggering per-account lockouts while still achieving brute force coverage across the user base.
+**Account lockout**: After N failed attempts, the account is locked. Bypass by targeting multiple accounts simultaneously: try each password once across thousands of accounts rather than trying all passwords on one account. This avoids triggering per-account lockouts while still achieving brute force coverage across the user base.
 
 **Response time analysis**: Rate limiters sometimes introduce artificial delays rather than blocking. Measure response times to distinguish between throttled and non-throttled responses, then adjust attack speed accordingly.
 
@@ -90,7 +90,7 @@ Session hijacking involves stealing or manipulating the session token that authe
 
 ### Cookie Theft
 
-The most common session hijacking vector is stealing the session cookie. This requires an additional vulnerability — typically XSS — because cookies are protected by the browser's Same-Origin Policy. An attacker on `evil.com` cannot directly read `bank.com`'s cookies.
+The most common session hijacking vector is stealing the session cookie. This requires an additional vulnerability: typically XSS: because cookies are protected by the browser's Same-Origin Policy. An attacker on `evil.com` cannot directly read `bank.com`'s cookies.
 
 But if the application has XSS, the injected script can read `document.cookie` (unless the cookie has the HttpOnly flag) and send it to the attacker. The attacker then sets this cookie in their own browser and accesses the application as the victim.
 
@@ -160,7 +160,7 @@ hashcat -m 16500 jwt.txt wordlist.txt
 
 Common weak secrets include: `secret`, `password`, `jwt_secret`, `changeme`, `key123`. Applications that use framework defaults for the JWT secret are vulnerable if the default is publicly known.
 
-**Defense**: Use a secret of at least 256 bits (32 bytes). Generate it with a CSPRNG. Never hardcode it in source code — use environment variables or a secrets manager.
+**Defense**: Use a secret of at least 256 bits (32 bytes). Generate it with a CSPRNG. Never hardcode it in source code: use environment variables or a secrets manager.
 
 ### Algorithm Confusion
 
@@ -197,7 +197,7 @@ https://auth.example.com/authorize?client_id=app123&redirect_uri=https://evil.co
 
 After the user authenticates, the authorization code is sent to `evil.com` instead of the legitimate application. The attacker exchanges the authorization code for an access token.
 
-**Defense**: Always validate redirect_uri against a pre-registered whitelist. Never use dynamic redirects. If the application supports multiple redirect URIs, validate the exact match — not partial or pattern matching.
+**Defense**: Always validate redirect_uri against a pre-registered whitelist. Never use dynamic redirects. If the application supports multiple redirect URIs, validate the exact match: not partial or pattern matching.
 
 ### State Parameter Bypass
 
@@ -216,7 +216,7 @@ redirect_url = f"https://auth.example.com/authorize?client_id=app123&state={stat
 # The attacker's account is now linked to the victim's identity (or vice versa)
 ```
 
-**Defense**: Generate a cryptographically random state parameter, store it in the session, and verify it on the callback. Do not accept the state from the request — compare it against the stored value.
+**Defense**: Generate a cryptographically random state parameter, store it in the session, and verify it on the callback. Do not accept the state from the request: compare it against the stored value.
 
 ### Token Leakage Through Logs
 

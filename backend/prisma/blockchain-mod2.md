@@ -1,6 +1,6 @@
-# Module 2 — Ethereum and Smart Contracts
+# Module 2: Ethereum and Smart Contracts
 
-Smart contracts are autonomous programs deployed on the Ethereum blockchain. Once deployed, they execute exactly as written, cannot be modified (unless specifically designed to be upgradeable), and are called by users or other contracts through transactions. A smart contract vulnerability is not a bug you can patch on Tuesday — it is a permanent flaw in a system that holds real money. This module covers Solidity fundamentals, contract deployment mechanics, gas optimization, and the practical skills you need to read, write, and assess contracts.
+Smart contracts are autonomous programs deployed on the Ethereum blockchain. Once deployed, they execute exactly as written, cannot be modified (unless specifically designed to be upgradeable), and are called by users or other contracts through transactions. A smart contract vulnerability is not a bug you can patch on Tuesday: it is a permanent flaw in a system that holds real money. This module covers Solidity fundamentals, contract deployment mechanics, gas optimization, and the practical skills you need to read, write, and assess contracts.
 
 ## The EVM Execution Model
 
@@ -143,7 +143,7 @@ abstract contract ERC20 is IERC20 {
 }
 ```
 
-Interfaces define the ABI (Application Binary Interface) without implementation. Abstract contracts provide partial implementation. Understanding interfaces is critical because contract interactions happen through the ABI — when contract A calls contract B, it ABI-encodes the function call and sends it as calldata.
+Interfaces define the ABI (Application Binary Interface) without implementation. Abstract contracts provide partial implementation. Understanding interfaces is critical because contract interactions happen through the ABI: when contract A calls contract B, it ABI-encodes the function call and sends it as calldata.
 
 ## Contract Deployment
 
@@ -195,7 +195,7 @@ The security implication: CREATE2 contracts can be redeployed. If a contract sel
 
 ## Gas Optimization
 
-Gas is not just a cost — it is a security constraint. Transactions that consume too much gas are rejected, and contracts that waste gas are economically uncompetitive. Here are the most impactful optimization patterns.
+Gas is not just a cost: it is a security constraint. Transactions that consume too much gas are rejected, and contracts that waste gas are economically uncompetitive. Here are the most impactful optimization patterns.
 
 ### Storage Packing
 

@@ -1,4 +1,4 @@
-# Module 8 — Server-Side Request Forgery (SSRF)
+# Module 8: Server-Side Request Forgery (SSRF)
 
 Server-Side Request Forgery occurs when an application fetches a resource from a URL provided by the user, and the server makes the request on behalf of the user. The attacker manipulates the URL to make the server request internal resources, cloud metadata endpoints, or other services that should not be accessible from the internet. SSRF is one of the most impactful vulnerability classes in modern cloud environments because it bridges the gap between external web applications and internal infrastructure.
 
@@ -75,19 +75,19 @@ for port in range(1, 65536):
         print(f'Port {port}: open (response time: {result:.2f}s)')
 ```
 
-The scanning approach varies based on the application's behavior. If the application returns different responses for open vs closed ports (connection error vs HTTP response), status code analysis is sufficient. If the application returns the same error for both, timing analysis is necessary — open ports typically respond faster than closed ports because the connection handshake completes.
+The scanning approach varies based on the application's behavior. If the application returns different responses for open vs closed ports (connection error vs HTTP response), status code analysis is sufficient. If the application returns the same error for both, timing analysis is necessary: open ports typically respond faster than closed ports because the connection handshake completes.
 
 Common internal services to scan for:
 
-- **Port 22**: SSH — may allow credential brute force
-- **Port 3306**: MySQL — may have weak credentials
-- **Port 5432**: PostgreSQL — may have weak credentials
-- **Port 6379**: Redis — often unauthenticated
-- **Port 8080/8443**: Internal web applications — may have weaker security controls
-- **Port 27017**: MongoDB — often unauthenticated
-- **Port 9200**: Elasticsearch — may expose sensitive data
-- **Port 2181**: ZooKeeper — may expose configuration data
-- **Port 8500**: Consul — may expose service discovery data
+- **Port 22**: SSH: may allow credential brute force
+- **Port 3306**: MySQL: may have weak credentials
+- **Port 5432**: PostgreSQL: may have weak credentials
+- **Port 6379**: Redis: often unauthenticated
+- **Port 8080/8443**: Internal web applications: may have weaker security controls
+- **Port 27017**: MongoDB: often unauthenticated
+- **Port 9200**: Elasticsearch: may expose sensitive data
+- **Port 2181**: ZooKeeper: may expose configuration data
+- **Port 8500**: Consul: may expose service discovery data
 
 ## Cloud Metadata Exploitation
 
@@ -243,8 +243,8 @@ print(decimal)  # 2852039166
 DNS rebinding attacks bypass SSRF protections by first resolving the domain to a safe IP (passing validation) and then resolving it to the internal target:
 
 1. The attacker registers `evil.attacker.com` and points it to `1.2.3.4` (safe IP).
-2. The application validates the URL — `evil.attacker.com` resolves to `1.2.3.4`, which passes the whitelist check.
-3. The application makes the request — `evil.attacker.com` now resolves to `169.254.169.254` (metadata endpoint).
+2. The application validates the URL: `evil.attacker.com` resolves to `1.2.3.4`, which passes the whitelist check.
+3. The application makes the request: `evil.attacker.com` now resolves to `169.254.169.254` (metadata endpoint).
 4. The DNS TTL expires and the domain is re-resolved to the internal target.
 
 DNS rebinding works because many applications resolve the domain once for validation and again for the actual request. Setting a very low TTL (0 or 1 second) on the DNS record ensures rebinding occurs.
@@ -371,7 +371,7 @@ The IAM role had the `AmazonS3ReadOnlyAccess` policy attached, granting read acc
 2. Implement a URL whitelist for approved domains.
 3. Block requests to private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16).
 4. Implement IMDSv2 on the AWS instance.
-5. Follow the principle of least privilege for IAM roles — grant access only to specific buckets needed for the application's function.
+5. Follow the principle of least privilege for IAM roles: grant access only to specific buckets needed for the application's function.
 6. Deploy network-level controls (security groups, NACLs) to restrict which internal services can be reached from the application tier.
 
 ## Practical Exercise: SSRF Lab

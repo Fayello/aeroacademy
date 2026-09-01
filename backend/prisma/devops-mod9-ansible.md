@@ -1,8 +1,8 @@
-# Module 9 — Configuration Management with Ansible
+# Module 9: Configuration Management with Ansible
 
 ## What Ansible Does
 
-Ansible automates configuration management, application deployment, and task automation. It connects to remote servers over SSH, executes tasks, and reports results. There is no agent to install on remote servers — Ansible uses SSH, which is already there.
+Ansible automates configuration management, application deployment, and task automation. It connects to remote servers over SSH, executes tasks, and reports results. There is no agent to install on remote servers: Ansible uses SSH, which is already there.
 
 The core concept is the playbook: a YAML file that describes what should happen on remote servers. Playbooks use modules (small programs that perform specific tasks) to execute operations. The `apt` module installs packages. The `template` module renders configuration files. The `service` module starts and stops services. The `copy` module transfers files.
 
@@ -68,7 +68,7 @@ hostnames:
   - private-ip-address
 ```
 
-This generates inventory dynamically from AWS EC2. Servers are grouped by their `Role` tag. No static file to maintain — the inventory always reflects the current state.
+This generates inventory dynamically from AWS EC2. Servers are grouped by their `Role` tag. No static file to maintain: the inventory always reflects the current state.
 
 ### Inventory Structure
 
@@ -199,13 +199,13 @@ Playbooks are the core of Ansible. They define tasks, handlers, and roles for co
 
 Playbooks have three main sections:
 
-**hosts** — Which servers to run on. Can be a group name, a hostname, or a pattern.
+**hosts**: Which servers to run on. Can be a group name, a hostname, or a pattern.
 
-**vars** — Variables available in the playbook. Can be overridden by inventory variables, extra variables, or role defaults.
+**vars**: Variables available in the playbook. Can be overridden by inventory variables, extra variables, or role defaults.
 
-**tasks** — The actual work. Each task has a name (for documentation), a module (the action), and parameters. Tasks run sequentially.
+**tasks**: The actual work. Each task has a name (for documentation), a module (the action), and parameters. Tasks run sequentially.
 
-**handlers** — Tasks that run only when notified. If the nginx configuration changes, the handler reloads nginx. If it does not change, the handler does not run. Handlers run at the end of the play, not immediately when notified.
+**handlers**: Tasks that run only when notified. If the nginx configuration changes, the handler reloads nginx. If it does not change, the handler does not run. Handlers run at the end of the play, not immediately when notified.
 
 ### Task Control Flow
 
@@ -587,7 +587,7 @@ The `--check --diff` flags on playbook runs show what would change without actua
 
 ### Idempotency
 
-Every task should be idempotent — running it twice produces the same result as running it once. The `apt` module with `state: present` is idempotent. The `command` module with `creates` is idempotent. The `shell` module without conditions is not idempotent.
+Every task should be idempotent: running it twice produces the same result as running it once. The `apt` module with `state: present` is idempotent. The `command` module with `creates` is idempotent. The `shell` module without conditions is not idempotent.
 
 ```yaml
 # Good: idempotent
@@ -751,12 +751,12 @@ ansible_python_interpreter=/usr/bin/python3
 
 The second step was creating roles for common configurations:
 
-1. **common** — Base packages, NTP configuration, SSH hardening, user accounts
-2. **security** — Firewall rules, fail2ban, SSH key management, password policies
-3. **monitoring** — Node exporter, Prometheus configuration, alert rules
-4. **webserver** — Nginx configuration, SSL certificates, application deployment
-5. **database** — PostgreSQL configuration, backup scripts, replication setup
-6. **cache** — Redis configuration, memory limits, persistence settings
+1. **common**: Base packages, NTP configuration, SSH hardening, user accounts
+2. **security**: Firewall rules, fail2ban, SSH key management, password policies
+3. **monitoring**: Node exporter, Prometheus configuration, alert rules
+4. **webserver**: Nginx configuration, SSL certificates, application deployment
+5. **database**: PostgreSQL configuration, backup scripts, replication setup
+6. **cache**: Redis configuration, memory limits, persistence settings
 
 The third step was creating playbooks for each configuration category:
 
@@ -793,7 +793,7 @@ The third step was creating playbooks for each configuration category:
 
 The team ran the playbooks in stages:
 
-**Day 1: Audit.** They ran all playbooks in check mode to see what would change. The output was massive — 47,000 changes across 200 servers. They reviewed the changes and adjusted the playbooks for edge cases (servers with custom configurations that should not be changed).
+**Day 1: Audit.** They ran all playbooks in check mode to see what would change. The output was massive: 47,000 changes across 200 servers. They reviewed the changes and adjusted the playbooks for edge cases (servers with custom configurations that should not be changed).
 
 **Day 2-3: Common configuration.** They ran the common role on all servers. This standardized SSH configurations, installed base packages, configured NTP, and created the deploy user account. The role took about 30 seconds per server, completing all 200 servers in 20 minutes.
 
@@ -813,12 +813,12 @@ AWX is the open-source version of Ansible Tower. It provides a web interface for
 
 ### AWX Features
 
-- **Web interface** — Run playbooks from a browser without SSH access
-- **Credential management** — Store vault passwords, SSH keys, and cloud credentials securely
-- **RBAC** — Control who can run which playbooks on which servers
-- **Job scheduling** — Run playbooks on a schedule (daily security scan, weekly configuration audit)
-- **Audit logging** — Track who ran what, when, and what changed
-- **REST API** — Integrate with CI/CD pipelines and other tools
+- **Web interface**: Run playbooks from a browser without SSH access
+- **Credential management**: Store vault passwords, SSH keys, and cloud credentials securely
+- **RBAC**: Control who can run which playbooks on which servers
+- **Job scheduling**: Run playbooks on a schedule (daily security scan, weekly configuration audit)
+- **Audit logging**: Track who ran what, when, and what changed
+- **REST API**: Integrate with CI/CD pipelines and other tools
 
 ### Running Playbooks in AWX
 

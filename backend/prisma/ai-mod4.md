@@ -1,4 +1,4 @@
-# Module 4 — Model Deployment
+# Module 4: Model Deployment
 
 ## The Model Is Not the Product. The API Is.
 
@@ -222,7 +222,7 @@ The `/reload` endpoint enables zero-downtime model updates. When a new model is 
 
 ## Inference Optimization
 
-Production inference has two constraints: latency and throughput. Latency is how long a single prediction takes. Throughput is how many predictions per second the system can handle. These constraints often conflict—batching improves throughput but increases latency.
+Production inference has two constraints: latency and throughput. Latency is how long a single prediction takes. Throughput is how many predictions per second the system can handle. These constraints often conflictbatching improves throughput but increases latency.
 
 Model quantization reduces the precision of model weights from 32-bit floats to 8-bit integers. This reduces model size by 4x and speeds up inference on CPUs and GPUs that support integer arithmetic. The accuracy loss is typically 1-2%, which is acceptable for most applications. The speedup comes from two sources: less memory bandwidth (reading 8-bit values is faster than 32-bit) and specialized integer arithmetic units on modern processors.
 
@@ -296,7 +296,7 @@ benchmark_onnx('models/model.onnx', X_test[:100])
 
 Not all predictions need real-time responses. If you are scoring millions of records for a weekly report, batch prediction is more efficient. It processes data in large chunks, maximizes GPU utilization, and writes results to a database or file system.
 
-Batch prediction is fundamentally different from online serving. Online serving optimizes for latency—each request must complete quickly. Batch prediction optimizes for throughput—process as many records as possible per second. This means larger batch sizes, more aggressive parallelization, and less concern about individual record latency.
+Batch prediction is fundamentally different from online serving. Online serving optimizes for latencyeach request must complete quickly. Batch prediction optimizes for throughputprocess as many records as possible per second. This means larger batch sizes, more aggressive parallelization, and less concern about individual record latency.
 
 ```python
 import pandas as pd
@@ -654,7 +654,7 @@ class RollingUpdate:
         print(f"Rolling back batch: {batch}")
 ```
 
-Blue-green deployment is safer because rollback is instant—you just switch the load balancer back. The downside is that you need double the infrastructure during deployment. Rolling updates use less infrastructure but rollback is slower because you need to redeploy the previous version to each instance.
+Blue-green deployment is safer because rollback is instantyou just switch the load balancer back. The downside is that you need double the infrastructure during deployment. Rolling updates use less infrastructure but rollback is slower because you need to redeploy the previous version to each instance.
 
 ## Load Testing and Capacity Planning
 
@@ -793,10 +793,10 @@ Build a batch prediction pipeline that processes large datasets.
 
 ## Evidence
 
-- `serving_api.py` — FastAPI serving application with model management and health checks
-- `Dockerfile` — Container definition for the serving API
-- `batch_predictor.py` — Batch prediction pipeline with chunked processing
-- `onnx_export.py` — Script to export and benchmark ONNX models
-- `quantize_model.py` — Model quantization script with before/after benchmarks
-- `circuit_breaker.py` — Circuit breaker implementation for fault tolerance
-- `benchmark_results.csv` — Comparison of inference latency across all configurations
+- `serving_api.py`: FastAPI serving application with model management and health checks
+- `Dockerfile`: Container definition for the serving API
+- `batch_predictor.py`: Batch prediction pipeline with chunked processing
+- `onnx_export.py`: Script to export and benchmark ONNX models
+- `quantize_model.py`: Model quantization script with before/after benchmarks
+- `circuit_breaker.py`: Circuit breaker implementation for fault tolerance
+- `benchmark_results.csv`: Comparison of inference latency across all configurations

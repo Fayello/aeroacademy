@@ -1,4 +1,4 @@
-# Module 9 — Testing Infrastructure as Code
+# Module 9: Testing Infrastructure as Code
 
 You have written Terraform modules, set up workspaces, and added security scanning. But how do you know your infrastructure actually works? A Terraform apply might succeed with all resources created, but the VPC does not route traffic correctly, the database is not accessible from the application servers, or the load balancer health checks fail. The resources exist, but the system does not function.
 

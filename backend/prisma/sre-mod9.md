@@ -1,4 +1,4 @@
-# Module 9 — Chaos Engineering
+# Module 9: Chaos Engineering
 
 ## Chaos Monkey Principles
 

@@ -1,4 +1,4 @@
-# Module 9 — Virtualization
+# Module 9: Virtualization
 
 Virtualization lets you run multiple isolated operating systems on a single physical server. For sysadmins, it means you can spin up test environments in minutes, isolate workloads for security, and maximize hardware utilization. This module covers KVM/QEMU fundamentals, libvirt management, VM templates with cloud-init, nested virtualization, and GPU passthrough. You will learn to set up a virtualization host that can run production workloads efficiently.
 

@@ -1,4 +1,4 @@
-# Module 10 — Ansible Automation
+# Module 10: Ansible Automation
 
 Manually configuring one server takes five minutes. Configuring 50 servers the same way takes five hours by hand or five minutes with Ansible. Automation is not optional when you manage more than a handful of servers. Ansible is agentless, uses SSH, and writes automation in human-readable YAML. This module covers inventory management, playbook authoring, Jinja2 templating, roles, Vault secrets, and a real-world server provisioning scenario. You will learn to automate server provisioning so that new servers are configured identically every time.
 
@@ -221,7 +221,7 @@ project/
 
 ### Idempotency
 
-Write tasks to be idempotent — running them multiple times produces the same result. Use modules like `copy`, `template`, `package`, and `service` which are inherently idempotent. Avoid `shell` and `command` modules unless you implement idempotency checks with `creates`, `removes`, or `when` conditions.
+Write tasks to be idempotent: running them multiple times produces the same result. Use modules like `copy`, `template`, `package`, and `service` which are inherently idempotent. Avoid `shell` and `command` modules unless you implement idempotency checks with `creates`, `removes`, or `when` conditions.
 
 ### Testing
 

@@ -1,16 +1,16 @@
-# Module 1 — ML Fundamentals
+# Module 1: ML Fundamentals
 
 ## Why Most Models Fail Before They Leave the Notebook
 
-The gap between a working Jupyter notebook and a model that actually serves predictions is enormous. Most ML practitioners learn the mechanics of training a model—fit, predict, score—without ever understanding why their model fails when it encounters data it has never seen. This module strips away the abstractions and forces you to confront the fundamental mechanics of how models learn, how they fail, and how you diagnose those failures before they become production incidents.
+The gap between a working Jupyter notebook and a model that actually serves predictions is enormous. Most ML practitioners learn the mechanics of training a modelfit, predict, scorewithout ever understanding why their model fails when it encounters data it has never seen. This module strips away the abstractions and forces you to confront the fundamental mechanics of how models learn, how they fail, and how you diagnose those failures before they become production incidents.
 
 You will build a classifier from scratch on a real dataset, not a clean benchmark. You will encounter missing values, class imbalance, and features that correlate in ways that produce misleading accuracy scores. By the end, you will be able to look at a model's training curve and immediately identify whether it is underfitting, overfitting, or sitting in the narrow band where generalization actually happens.
 
 ## The Mechanics of Learning from Data
 
-A machine learning model is a function that maps inputs to outputs. During training, you adjust the parameters of that function to minimize some loss on training data. The specific algorithm—gradient descent, tree splitting, kernel trick—is an implementation detail. What matters is understanding that every training process is an optimization problem, and every optimization problem has failure modes.
+A machine learning model is a function that maps inputs to outputs. During training, you adjust the parameters of that function to minimize some loss on training data. The specific algorithmgradient descent, tree splitting, kernel trickis an implementation detail. What matters is understanding that every training process is an optimization problem, and every optimization problem has failure modes.
 
-Consider a simple binary classification task: given features about a bank transaction, predict whether it is fraudulent. You have 50,000 transactions, 2,000 of which are fraudulent. This is your first real problem—class imbalance. If you train a model and it predicts "not fraudulent" for every single transaction, it achieves 96% accuracy. That number is meaningless. The model has learned nothing about fraud.
+Consider a simple binary classification task: given features about a bank transaction, predict whether it is fraudulent. You have 50,000 transactions, 2,000 of which are fraudulent. This is your first real problemclass imbalance. If you train a model and it predicts "not fraudulent" for every single transaction, it achieves 96% accuracy. That number is meaningless. The model has learned nothing about fraud.
 
 This is where the bias-variance tradeoff enters. A high-bias model makes strong assumptions about the data structure. It underfits. A high-variance model memorizes the training data without learning generalizable patterns. It overfits. The sweet spot is a model that captures the true signal while ignoring noise.
 
@@ -44,13 +44,13 @@ print(f"Train fraud rate: {y_train.mean():.4f}")
 print(f"Test fraud rate: {y_test.mean():.4f}")
 ```
 
-Notice the `stratify=y` parameter. Without it, your random split might put most fraud cases in the test set, giving you a misleadingly bad test score—or worse, a misleadingly good one. Stratified splitting ensures both sets have the same class distribution. This is a detail that separates practitioners from people who just call `train_test_split` and hope for the best.
+Notice the `stratify=y` parameter. Without it, your random split might put most fraud cases in the test set, giving you a misleadingly bad test scoreor worse, a misleadingly good one. Stratified splitting ensures both sets have the same class distribution. This is a detail that separates practitioners from people who just call `train_test_split` and hope for the best.
 
 The `random_state=42` parameter makes the split reproducible. Every time you run this code, you get the same split. This is essential for debugging. If your model performance changes between runs, you need to know whether it is because of the data split, the model initialization, or a code change. Fixed random seeds eliminate one source of variance.
 
 ## Why Accuracy Lies
 
-Accuracy is the default metric for classification, and it is almost always the wrong one. When you have imbalanced classes, accuracy rewards models that simply predict the majority class. What you actually need are metrics that tell you how well the model handles the minority class—the class you care about.
+Accuracy is the default metric for classification, and it is almost always the wrong one. When you have imbalanced classes, accuracy rewards models that simply predict the majority class. What you actually need are metrics that tell you how well the model handles the minority classthe class you care about.
 
 Precision answers: of all the transactions the model flagged as fraud, how many were actually fraud? High precision means few false positives. In a fraud detection system, false positives mean legitimate transactions get blocked and angry customers call support.
 
@@ -87,7 +87,7 @@ print(f"Best threshold for F1: {best_threshold:.4f}")
 
 The `class_weight='balanced'` parameter adjusts the loss function to penalize misclassifying the minority class more heavily. Without it, the model optimizes for overall accuracy and largely ignores fraud. The weight is computed as `n_samples / (n_classes * n_samples_per_class)`, so the minority class gets a proportionally higher weight.
 
-The threshold tuning at the end is critical—by default, most models use 0.5 as the classification threshold, but that threshold was chosen for convenience, not performance. The optimal threshold depends on the relative cost of false positives versus false negatives. In fraud detection, a false negative (missed fraud) costs more than a false positive (blocked transaction), so you want a lower threshold that catches more fraud even if it means more false alarms.
+The threshold tuning at the end is criticalby default, most models use 0.5 as the classification threshold, but that threshold was chosen for convenience, not performance. The optimal threshold depends on the relative cost of false positives versus false negatives. In fraud detection, a false negative (missed fraud) costs more than a false positive (blocked transaction), so you want a lower threshold that catches more fraud even if it means more false alarms.
 
 ## Overfitting: When Your Model Hallucinates Patterns
 
@@ -97,7 +97,7 @@ To understand overfitting mechanically, think about what a decision tree does. I
 
 Random forests combat this by averaging many deep trees. Each tree overfits differently, so the average smooths out the individual overfitting. But even random forests can overfit if you give them enough trees or enough depth. The key insight is that ensembles reduce variance without increasing bias, but only if the individual models are diverse.
 
-The learning curve is your diagnostic tool. It plots training score and validation score as a function of training set size. Three patterns tell you what is happening. If both scores are low and converging, you have high bias—the model is too simple. If training score is high but validation is low and the gap is large, you have high variance—the model is overfitting. If both scores are high and converging, your model is well-calibrated and you might benefit from more data.
+The learning curve is your diagnostic tool. It plots training score and validation score as a function of training set size. Three patterns tell you what is happening. If both scores are low and converging, you have high biasthe model is too simple. If training score is high but validation is low and the gap is large, you have high variancethe model is overfitting. If both scores are high and converging, your model is well-calibrated and you might benefit from more data.
 
 ```python
 from sklearn.model_selection import learning_curve
@@ -128,7 +128,7 @@ plt.legend()
 plt.savefig('learning_curve.png', dpi=150)
 ```
 
-The shaded regions show the standard deviation across cross-validation folds. Wide shaded regions mean the model's performance is unstable—it performs differently on different subsets of data. Narrow regions mean consistent performance. If the validation curve has wide bands, you need more data or a simpler model.
+The shaded regions show the standard deviation across cross-validation folds. Wide shaded regions mean the model's performance is unstableit performs differently on different subsets of data. Narrow regions mean consistent performance. If the validation curve has wide bands, you need more data or a simpler model.
 
 The gap between training and validation curves tells you the magnitude of overfitting. A gap of 0.05 is usually acceptable. A gap of 0.20 means the model is substantially overfitting and you need to add regularization, reduce model complexity, or get more training data.
 
@@ -187,7 +187,7 @@ For transaction data, raw amounts are less informative than relative amounts. A 
 
 Time-based features are particularly powerful for fraud detection. Transactions at 3 AM are more suspicious than transactions at 2 PM. Transactions on weekends differ from weekday transactions. The hour of day, day of week, and whether the transaction occurs during the user's typical active hours all provide signal.
 
-User behavioral features capture patterns over time. A user who normally spends $50 per transaction and suddenly makes a $5,000 transaction is suspicious. A user who normally transacts in New York and suddenly transacts in London is suspicious. These patterns require historical aggregation—computing rolling averages, standard deviations, and counts over multiple time windows.
+User behavioral features capture patterns over time. A user who normally spends $50 per transaction and suddenly makes a $5,000 transaction is suspicious. A user who normally transacts in New York and suddenly transacts in London is suspicious. These patterns require historical aggregationcomputing rolling averages, standard deviations, and counts over multiple time windows.
 
 ```python
 def engineer_features(df):
@@ -232,17 +232,17 @@ X_train = engineer_features(X_train)
 X_test = engineer_features(X_test)
 ```
 
-Feature engineering is iterative. You create features, train a model, examine which features matter, and create better features based on what you learn. Feature importance from tree-based models is your guide here—it tells you which features the model actually uses and which are noise.
+Feature engineering is iterative. You create features, train a model, examine which features matter, and create better features based on what you learn. Feature importance from tree-based models is your guide hereit tells you which features the model actually uses and which are noise.
 
 The `amount_zscore` feature is powerful because it normalizes the amount relative to the user's history. A z-score of 3 means the transaction is 3 standard deviations above the user's average. This is far more informative than the raw amount because it adapts to each user's spending pattern.
 
-The interaction feature `high_amount_new_merchant` combines two signals: an unusually large transaction and a merchant the user has never transacted with before. Either signal alone is weak. Combined, they are strong. This is the essence of feature engineering—creating features that capture relationships between variables that the model might not discover on its own.
+The interaction feature `high_amount_new_merchant` combines two signals: an unusually large transaction and a merchant the user has never transacted with before. Either signal alone is weak. Combined, they are strong. This is the essence of feature engineeringcreating features that capture relationships between variables that the model might not discover on its own.
 
 ## Handling Missing Data Without Destroying Signal
 
-Missing data is not a bug—it is information. The fact that a field is missing often correlates with the outcome. A transaction missing a zip code might be more likely to be fraudulent. Simply filling missing values with zeros or means destroys this signal.
+Missing data is not a bugit is information. The fact that a field is missing often correlates with the outcome. A transaction missing a zip code might be more likely to be fraudulent. Simply filling missing values with zeros or means destroys this signal.
 
-There are three strategies for handling missing data, and you should use all three. First, add missing indicators—binary columns that tell the model whether a value was missing. Second, impute the missing values using a method that preserves relationships between features. Third, let the model handle missing values natively if it supports them (XGBoost and LightGBM do).
+There are three strategies for handling missing data, and you should use all three. First, add missing indicatorsbinary columns that tell the model whether a value was missing. Second, impute the missing values using a method that preserves relationships between features. Third, let the model handle missing values natively if it supports them (XGBoost and LightGBM do).
 
 KNN imputation finds the k most similar rows based on other features and uses their values to estimate the missing value. This preserves relationships between features that simple mean imputation destroys. The missing indicators tell the model which values were imputed, preserving the information that the data was missing in the first place.
 
@@ -360,17 +360,17 @@ print(f"Average probability: {false_negatives['probability'].mean():.4f}")
 print(f"Top features in FN:\n{false_negatives[numeric_features].mean()}")
 ```
 
-Error analysis reveals patterns. If your false negatives have low probability scores, your model is uncertain about them—you might need more features for those cases. If your false positives share common characteristics, you might need to add features that distinguish those cases from true positives. This is an iterative process, and it is where real model improvement happens.
+Error analysis reveals patterns. If your false negatives have low probability scores, your model is uncertain about themyou might need more features for those cases. If your false positives share common characteristics, you might need to add features that distinguish those cases from true positives. This is an iterative process, and it is where real model improvement happens.
 
-The probability analysis is particularly important. False negatives with high probability (close to 0.5) indicate the model is genuinely uncertain. These are cases where additional features or a more complex model might help. False negatives with low probability indicate the model is confidently wrong—these are harder to fix and might indicate a fundamental limitation of the feature set.
+The probability analysis is particularly important. False negatives with high probability (close to 0.5) indicate the model is genuinely uncertain. These are cases where additional features or a more complex model might help. False negatives with low probability indicate the model is confidently wrongthese are harder to fix and might indicate a fundamental limitation of the feature set.
 
 ## When to Stop Tuning
 
 There is a point of diminishing returns in hyperparameter tuning. After the first round of grid search, you typically capture 80-90% of the available improvement. Subsequent rounds might improve your F1 by 0.005 while consuming hours of compute time.
 
-The learning curve tells you when to stop. If your validation scores have plateaued and the gap between training and validation is stable, further tuning will not help. At that point, you need either more data, better features, or a different model architecture—not better hyperparameters.
+The learning curve tells you when to stop. If your validation scores have plateaued and the gap between training and validation is stable, further tuning will not help. At that point, you need either more data, better features, or a different model architecturenot better hyperparameters.
 
-Save your model with the exact parameters and pipeline that produced it. Version your data, your features, and your model artifacts. When someone asks "why did the model predict fraud on this transaction three months ago?", you need to be able to reproduce that prediction exactly. This is not optional in production—it is the difference between a system you can debug and a black box that makes mysterious decisions.
+Save your model with the exact parameters and pipeline that produced it. Version your data, your features, and your model artifacts. When someone asks "why did the model predict fraud on this transaction three months ago?", you need to be able to reproduce that prediction exactly. This is not optional in productionit is the difference between a system you can debug and a black box that makes mysterious decisions.
 
 Reproducibility means fixing every random seed, recording every library version, and storing every configuration. A model trained on Monday with numpy 1.24 might behave differently than the same model trained on Tuesday with numpy 1.25. These subtle differences compound and produce results that are impossible to reproduce without exact version pinning.
 
@@ -419,9 +419,9 @@ Using the same dataset, train models with varying complexity and diagnose overfi
 
 ## Evidence
 
-- `fraud_classifier.py` — Complete training pipeline with all preprocessing steps
-- `learning_curve_analysis.py` — Script that generates learning curves for model diagnosis
-- `error_analysis_report.md` — Written analysis of model errors with recommendations for improvement
-- `hyperparameter_search_results.json` — Grid search results with all parameter combinations and scores
-- `feature_importance.csv` — Feature importance rankings from the trained model
-- `precision_recall_threshold.py` — Threshold optimization script with visualization
+- `fraud_classifier.py`: Complete training pipeline with all preprocessing steps
+- `learning_curve_analysis.py`: Script that generates learning curves for model diagnosis
+- `error_analysis_report.md`: Written analysis of model errors with recommendations for improvement
+- `hyperparameter_search_results.json`: Grid search results with all parameter combinations and scores
+- `feature_importance.csv`: Feature importance rankings from the trained model
+- `precision_recall_threshold.py`: Threshold optimization script with visualization

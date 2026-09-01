@@ -1,4 +1,4 @@
-# Module 4 — Change Management
+# Module 4: Change Management
 
 ## Why Changes Break Things
 

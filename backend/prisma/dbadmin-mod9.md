@@ -1,10 +1,10 @@
-# Module 9 — Performance Tuning
+# Module 9: Performance Tuning
 
 Slow queries are the most common database performance problem. A single poorly written query can consume all available resources and bring the entire system to a crawl. This module teaches you how to diagnose and fix slow queries using indexes, EXPLAIN ANALYZE, query optimization techniques, and connection pooling. We will work through real execution plans, real performance problems, and real solutions that you can apply on your first day as a DBA.
 
 ## Indexes: B-Tree, Hash, GIN, GiST
 
-An index is a data structure that speeds up data retrieval at the cost of additional storage and write overhead. Choosing the wrong index type is like using a screwdriver when you need a wrench — it might work, but poorly.
+An index is a data structure that speeds up data retrieval at the cost of additional storage and write overhead. Choosing the wrong index type is like using a screwdriver when you need a wrench: it might work, but poorly.
 
 **B-Tree Index (Default):**
 
@@ -45,7 +45,7 @@ Hash indexes are smaller than B-Tree indexes and faster for equality lookups. If
 
 **GIN (Generalized Inverted Index):**
 
-GIN indexes are designed for composite types, arrays, full-text search, and JSONB. They store a mapping from values to the rows that contain those values. Think of it like an index at the back of a book — it maps terms to page numbers.
+GIN indexes are designed for composite types, arrays, full-text search, and JSONB. They store a mapping from values to the rows that contain those values. Think of it like an index at the back of a book: it maps terms to page numbers.
 
 ```sql
 -- GIN index for full-text search
@@ -68,7 +68,7 @@ CREATE INDEX idx_products_tags ON products USING gin (tags);
 SELECT * FROM products WHERE tags @> ARRAY['sale', 'clearance'];
 ```
 
-The `@>` operator means "contains" — it checks if the left operand contains the right operand. GIN indexes make these containment queries fast. Without a GIN index, JSONB and array queries require scanning every row.
+The `@>` operator means "contains": it checks if the left operand contains the right operand. GIN indexes make these containment queries fast. Without a GIN index, JSONB and array queries require scanning every row.
 
 The downside of GIN indexes: they are slow to update. Every insert or update that modifies a GIN-indexed column requires updating the index, which involves multiple page writes. For write-heavy workloads with JSONB columns, this can be a bottleneck. Consider `fastupdate = off` for write-heavy GIN indexes:
 
@@ -78,7 +78,7 @@ CREATE INDEX idx_events_data ON events USING gin (data) WITH (fastupdate = off);
 
 **GiST (Generalized Search Tree):**
 
-GiST indexes support range types, geometric data, and full-text search. They are lossy — they store approximate locations of data, not exact positions. This makes them faster for some queries but less precise.
+GiST indexes support range types, geometric data, and full-text search. They are lossy: they store approximate locations of data, not exact positions. This makes them faster for some queries but less precise.
 
 ```sql
 -- GiST index for range queries
@@ -145,9 +145,9 @@ Execution Time: 45.234 ms
 
 **Reading the Output:**
 
-- `Seq Scan on orders o` — Full table scan on orders. This is the bottleneck.
-- `Rows Removed by Filter: 99111` — The scan read 100,000 rows and discarded 99,111, keeping only 889.
-- `Hash Join` — The database is building a hash table of all customers, then probing it for each order.
+- `Seq Scan on orders o`: Full table scan on orders. This is the bottleneck.
+- `Rows Removed by Filter: 99111`: The scan read 100,000 rows and discarded 99,111, keeping only 889.
+- `Hash Join`: The database is building a hash table of all customers, then probing it for each order.
 - The total execution time is 45ms, mostly spent on the sequential scan of orders.
 
 **Identifying the Problem:**
@@ -181,15 +181,15 @@ Planning Time: 0.156 ms
 Execution Time: 0.123 ms
 ```
 
-The index scan reads only the matching rows. Execution time dropped from 45ms to 0.1ms — a 360x improvement.
+The index scan reads only the matching rows. Execution time dropped from 45ms to 0.1ms: a 360x improvement.
 
 **Common EXPLAIN Patterns to Watch For:**
 
-1. `Seq Scan` on large tables — usually means a missing index
-2. `Sort Method: external merge Disk` — sort spilled to disk, increase work_mem
-3. `Hash Batch` count > 1 — hash table too large for memory, increase work_mem
-4. `Rows Removed by Filter` much larger than rows returned — index would help
-5. `Nested Loop` with high loop count — consider hash join or merge join
+1. `Seq Scan` on large tables: usually means a missing index
+2. `Sort Method: external merge Disk`: sort spilled to disk, increase work_mem
+3. `Hash Batch` count > 1: hash table too large for memory, increase work_mem
+4. `Rows Removed by Filter` much larger than rows returned: index would help
+5. `Nested Loop` with high loop count: consider hash join or merge join
 
 ## Query Optimization
 
@@ -206,7 +206,7 @@ SELECT id, total_amount, status, created_at
 FROM orders WHERE customer_id = 123;
 ```
 
-SELECT * forces the database to read all columns from disk. If the table has large columns (TEXT, JSONB) that the query does not need, you are wasting I/O. Additionally, SELECT * prevents index-only scans — the database must visit the heap to retrieve columns not in the index.
+SELECT * forces the database to read all columns from disk. If the table has large columns (TEXT, JSONB) that the query does not need, you are wasting I/O. Additionally, SELECT * prevents index-only scans: the database must visit the heap to retrieve columns not in the index.
 
 **Use EXISTS Instead of IN for Subqueries:**
 
@@ -215,7 +215,7 @@ SELECT * forces the database to read all columns from disk. If the table has lar
 SELECT * FROM customers
 WHERE id IN (SELECT customer_id FROM orders WHERE total_amount > 1000);
 
--- Good: EXISTS — can stop at the first match
+-- Good: EXISTS: can stop at the first match
 SELECT * FROM customers c
 WHERE EXISTS (
     SELECT 1 FROM orders o
@@ -224,7 +224,7 @@ WHERE EXISTS (
 );
 ```
 
-EXISTS can short-circuit — it stops as soon as it finds one matching row. IN must materialize the entire subquery result set before comparing.
+EXISTS can short-circuit: it stops as soon as it finds one matching row. IN must materialize the entire subquery result set before comparing.
 
 **Avoid Functions on Indexed Columns:**
 
@@ -408,7 +408,7 @@ Common issues and fixes:
 4. Transaction state leaking: A client starts a transaction in transaction mode but does not commit/rollback. The connection stays assigned. Fix: enforce `AUTOCOMMIT` or use `reset_query = DISCARD ALL`.
 
 ```ini
-# pgbouncer.ini — handle connection leaks
+# pgbouncer.ini: handle connection leaks
 server_idle_timeout = 300      # Close idle server connections after 5 min
 query_timeout = 30             # Kill queries running > 30s
 client_idle_timeout = 600      # Disconnect idle clients after 10 min
@@ -442,11 +442,11 @@ SAVE MYSQL SERVERS TO DISK;
 SAVE MYSQL QUERY RULES TO DISK;
 ```
 
-ProxySQL can route read queries to replicas and write queries to the primary, manage connection pooling, and perform query rewriting — all without changing the application.
+ProxySQL can route read queries to replicas and write queries to the primary, manage connection pooling, and perform query rewriting: all without changing the application.
 
 ## Real Scenario: Optimizing a Slow Query
 
-You are the DBA for an e-commerce platform. The customer support team reports that the "Order History" page loads slowly — 8-12 seconds. The page shows a customer's recent orders with product details. The application team has asked for help.
+You are the DBA for an e-commerce platform. The customer support team reports that the "Order History" page loads slowly: 8-12 seconds. The page shows a customer's recent orders with product details. The application team has asked for help.
 
 **Step 1: Identify the Query.**
 
@@ -546,7 +546,7 @@ Planning Time: 0.456 ms
 Execution Time: 0.345 ms
 ```
 
-The index allows the database to locate the 50 matching orders directly without scanning the entire table. Execution time dropped from 8,234ms to 0.345ms — a 23,867x improvement.
+The index allows the database to locate the 50 matching orders directly without scanning the entire table. Execution time dropped from 8,234ms to 0.345ms: a 23,867x improvement.
 
 **Step 5: Verify with Realistic Load.**
 

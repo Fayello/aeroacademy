@@ -1,8 +1,8 @@
-# Module 2 — MLOps Pipeline
+# Module 2: MLOps Pipeline
 
 ## The Pipeline Is the Product
 
-A machine learning model that lives in a notebook is a proof of concept. A machine learning model in production is a system, and systems need pipelines. The pipeline is what transforms raw data into predictions at scale, and it is what makes your model maintainable, reproducible, and debuggable when things go wrong—and things will go wrong.
+A machine learning model that lives in a notebook is a proof of concept. A machine learning model in production is a system, and systems need pipelines. The pipeline is what transforms raw data into predictions at scale, and it is what makes your model maintainable, reproducible, and debuggable when things go wrongand things will go wrong.
 
 This module walks through building an end-to-end ML pipeline that handles data ingestion, feature engineering, model training, evaluation, and deployment. You will use tools that are standard in production environments: Apache Airflow for orchestration, MLflow for experiment tracking, and feature stores for managing feature computation. The goal is not to learn every tool in the ecosystem but to understand the architecture of a production ML system and the failure modes you must guard against.
 
@@ -16,7 +16,7 @@ The first principle of data ingestion is idempotency. Running the same ingestion
 
 The second principle is validation. Data quality issues at the source propagate through the entire pipeline and corrupt your model. A null value in a critical feature, a type mismatch, or an out-of-range value can cause silent failures that degrade model performance without triggering errors. Validate early and fail loudly.
 
-The third principle is lineage. Every row of data should be traceable back to its source. When you discover that a batch of data was corrupted, you need to know exactly which training runs used that data and which models were affected. Lineage tracking is not optional in production—it is the difference between a targeted fix and a full retraining.
+The third principle is lineage. Every row of data should be traceable back to its source. When you discover that a batch of data was corrupted, you need to know exactly which training runs used that data and which models were affected. Lineage tracking is not optional in productionit is the difference between a targeted fix and a full retraining.
 
 ```python
 import pandas as pd
@@ -121,7 +121,7 @@ The validation checks catch the most common data quality issues. Empty dataframe
 
 Feature engineering in production is fundamentally different from feature engineering in a notebook. In a notebook, you compute features on a static dataset. In production, you need to compute features on new data in real-time or in batch, and you need the exact same feature computation logic to apply during training and serving.
 
-This is where feature stores come in. A feature store is a centralized repository for computed features that provides consistent access across training and serving. It solves the training-serving skew problem—the silent killer of ML systems. Training-serving skew occurs when the features used during training differ from the features used during serving. The model was trained on one set of feature values and receives different values in production. The predictions are unreliable, but no error is thrown.
+This is where feature stores come in. A feature store is a centralized repository for computed features that provides consistent access across training and serving. It solves the training-serving skew problemthe silent killer of ML systems. Training-serving skew occurs when the features used during training differ from the features used during serving. The model was trained on one set of feature values and receives different values in production. The predictions are unreliable, but no error is thrown.
 
 Feature stores solve this by providing a single source of truth for feature computation. During training, you compute features from historical data and store them in the feature store. During serving, you compute features from real-time data using the same logic and store them in the same feature store. The model always reads from the same location, ensuring consistency.
 
@@ -232,9 +232,9 @@ Statistical features like skewness and kurtosis capture the shape of the user's 
 
 When you train a model, you need to record exactly what you did: the code version, the data version, the hyperparameters, the metrics, and the artifacts. Without this, you cannot reproduce your results, and you cannot explain to a stakeholder why one model is better than another.
 
-MLflow is the standard tool for this. It tracks experiments, logs parameters and metrics, and stores model artifacts. But the tool is less important than the discipline. You must log everything, every time, without exception. The most common failure in ML systems is not a technical failure—it is a documentation failure. Someone trains a great model, forgets to log the parameters, and two weeks later cannot reproduce it.
+MLflow is the standard tool for this. It tracks experiments, logs parameters and metrics, and stores model artifacts. But the tool is less important than the discipline. You must log everything, every time, without exception. The most common failure in ML systems is not a technical failureit is a documentation failure. Someone trains a great model, forgets to log the parameters, and two weeks later cannot reproduce it.
 
-The experiment tracking system must capture four things. First, the code version—what git commit produced this model. Second, the data version—what dataset was used. Third, the configuration—what hyperparameters and preprocessing steps were applied. Fourth, the results—what metrics were achieved. Without any one of these, the experiment is unreproducible.
+The experiment tracking system must capture four things. First, the code versionwhat git commit produced this model. Second, the data versionwhat dataset was used. Third, the configurationwhat hyperparameters and preprocessing steps were applied. Fourth, the resultswhat metrics were achieved. Without any one of these, the experiment is unreproducible.
 
 ```python
 import mlflow
@@ -306,7 +306,7 @@ results = train_and_track_model(
 
 The `registered_model_name` parameter registers the model in MLflow's model registry. This is how you track which model version is in production, which is in staging, and which has been retired. Without a model registry, you end up with a directory of model files named `model_v3_final_FINAL.pkl` and no idea which one is actually deployed.
 
-Cross-validation scores are logged alongside test set scores. This lets you compare offline and online performance. If cross-validation says F1 is 0.85 but the test set says 0.72, something has changed—either the data distribution has shifted or there is data leakage in your cross-validation procedure.
+Cross-validation scores are logged alongside test set scores. This lets you compare offline and online performance. If cross-validation says F1 is 0.85 but the test set says 0.72, something has changedeither the data distribution has shifted or there is data leakage in your cross-validation procedure.
 
 ## Building the Orchestration Layer
 
@@ -407,7 +407,7 @@ ingest >> features >> train >> evaluate >> deploy
 
 The `max_active_runs=1` parameter prevents multiple pipeline runs from overlapping. If the daily run takes longer than 24 hours, Airflow skips the next run rather than starting a second one in parallel. The `execution_timeout` kills tasks that hang, preventing a stuck step from consuming cluster resources indefinitely.
 
-XCom (cross-communication) passes data between tasks. The ingestion task pushes the row count, and the feature engineering task pulls it. This is for metadata only—large datasets should be passed through files or a feature store, not through XCom, which has size limits.
+XCom (cross-communication) passes data between tasks. The ingestion task pushes the row count, and the feature engineering task pulls it. This is for metadata onlylarge datasets should be passed through files or a feature store, not through XCom, which has size limits.
 
 The `catchup=False` parameter prevents Airflow from running all missed runs since the start date. Without it, if the DAG has been offline for a week, Airflow would try to run seven backfills simultaneously, which can overwhelm your cluster.
 
@@ -447,7 +447,7 @@ The workflow is: you commit code changes to Git and data changes to DVC. The `.d
 
 Putting it all together, the production pipeline runs on a schedule, handles failures gracefully, and produces artifacts that are versioned and reproducible. The pipeline consists of five stages: ingestion, feature engineering, training, evaluation, and deployment.
 
-Each stage writes its outputs to a specific location with a timestamp. Each stage reads its inputs from the previous stage's output. If any stage fails, the pipeline stops, alerts are sent, and the previous day's model continues serving predictions. This is the "last known good" pattern—if the new pipeline fails, the old model is better than no model.
+Each stage writes its outputs to a specific location with a timestamp. Each stage reads its inputs from the previous stage's output. If any stage fails, the pipeline stops, alerts are sent, and the previous day's model continues serving predictions. This is the "last known good" patternif the new pipeline fails, the old model is better than no model.
 
 ```python
 class ProductionPipeline:
@@ -793,10 +793,10 @@ Create an Airflow DAG that orchestrates the full pipeline.
 
 ## Evidence
 
-- `data_ingestion.py` — Complete data ingestion module with deduplication, validation, and schema detection
-- `feature_engineering.py` — Feature engineering pipeline with user, merchant, and interaction features
-- `airflow_dag.py` — Airflow DAG definition with all tasks and dependencies
-- `dvc_config.yaml` — DVC configuration for data versioning
-- `pipeline_config.json` — Pipeline configuration with all parameters
-- `test_pipeline.py` — Unit tests for each pipeline stage
-- `mlflow_experiment.log` — Export of experiment tracking runs with parameters and metrics
+- `data_ingestion.py`: Complete data ingestion module with deduplication, validation, and schema detection
+- `feature_engineering.py`: Feature engineering pipeline with user, merchant, and interaction features
+- `airflow_dag.py`: Airflow DAG definition with all tasks and dependencies
+- `dvc_config.yaml`: DVC configuration for data versioning
+- `pipeline_config.json`: Pipeline configuration with all parameters
+- `test_pipeline.py`: Unit tests for each pipeline stage
+- `mlflow_experiment.log`: Export of experiment tracking runs with parameters and metrics

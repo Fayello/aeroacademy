@@ -1,12 +1,12 @@
-# Module 2 — Pod Security
+# Module 2: Pod Security
 
-Containers run as root by default. That's the default in Docker, containerd, and every OCI-compliant runtime. In a Kubernetes cluster, this means a compromised container has root access to the node — and depending on the runtime configuration, potentially to other containers on the same node. Pod security is about restricting what containers can do, what users they run as, and what resources they can access.
+Containers run as root by default. That's the default in Docker, containerd, and every OCI-compliant runtime. In a Kubernetes cluster, this means a compromised container has root access to the node: and depending on the runtime configuration, potentially to other containers on the same node. Pod security is about restricting what containers can do, what users they run as, and what resources they can access.
 
 This module covers the evolution from PodSecurityPolicy (deprecated and removed) to Pod Security Standards, security contexts, service accounts, and the practical work of securing a multi-tenant cluster.
 
 ## The Problem: Why Pod Security Exists
 
-Consider this scenario: a developer deploys a pod that runs as root, mounts the host filesystem at `/`, and opens a reverse shell. If you have no pod security controls, that pod is running on your node with full host access. The developer didn't mean to do this — they just copied a Dockerfile from Stack Overflow that runs everything as root.
+Consider this scenario: a developer deploys a pod that runs as root, mounts the host filesystem at `/`, and opens a reverse shell. If you have no pod security controls, that pod is running on your node with full host access. The developer didn't mean to do this: they just copied a Dockerfile from Stack Overflow that runs everything as root.
 
 Or consider this: a pod has access to the Kubernetes API with cluster-admin privileges. An attacker who compromises the pod can create new cluster-admin roles, read all secrets, and pivot to every namespace. This is exactly what happened in the 2018 Tesla cryptojacking incident.
 
@@ -50,7 +50,7 @@ spec:
   readOnlyRootFilesystem: true
 ```
 
-PSP had problems. The API was confusing. The interaction between PSP, RBAC, and admission was poorly documented. Debugging why a pod was rejected was a nightmare. And the deprecation timeline was aggressive — PSP was removed entirely in Kubernetes 1.25.
+PSP had problems. The API was confusing. The interaction between PSP, RBAC, and admission was poorly documented. Debugging why a pod was rejected was a nightmare. And the deprecation timeline was aggressive: PSP was removed entirely in Kubernetes 1.25.
 
 If you're on a Kubernetes version before 1.25, you might still encounter PSP. Don't invest in it. Plan your migration to Pod Security Standards.
 
@@ -110,13 +110,13 @@ Three modes:
 Use `warn` and `audit` before `enforce`. Switch all namespaces to `enforce` at once and you'll break things. Roll out progressively:
 
 ```bash
-# Step 1: Audit only — see what would be rejected
+# Step 1: Audit only: see what would be rejected
 kubectl label namespace production pod-security.kubernetes.io/audit=restricted
 
-# Step 2: Warn — see warnings in kubectl output
+# Step 2: Warn: see warnings in kubectl output
 kubectl label namespace production pod-security.kubernetes.io/warn=restricted
 
-# Step 3: Enforce — reject non-compliant pods
+# Step 3: Enforce: reject non-compliant pods
 kubectl label namespace production pod-security.kubernetes.io/enforce=restricted
 ```
 
@@ -223,7 +223,7 @@ Linux capabilities break root privileges into discrete units. Instead of "root" 
 - `CAP_NET_RAW`: Use raw sockets (needed for ping, not needed for most apps)
 - `CAP_SYS_ADMIN`: A catch-all that grants many privileges (avoid this)
 
-Here's a practical example — a web server that needs to bind to port 80 but nothing else:
+Here's a practical example: a web server that needs to bind to port 80 but nothing else:
 
 ```yaml
 apiVersion: apps/v1
@@ -791,7 +791,7 @@ polaris audit --set-exit-code-on-failure
 
 ## Assessment
 
-### Lab 1 — Pod Security Standards (40 minutes)
+### Lab 1: Pod Security Standards (40 minutes)
 
 1. Create three namespaces: `privileged-ns`, `baseline-ns`, `restricted-ns`. Label each with the appropriate enforcement level.
 2. Write a pod manifest that satisfies the `baseline` policy. Deploy it to `baseline-ns`. Verify it works.
@@ -801,7 +801,7 @@ polaris audit --set-exit-code-on-failure
 
 **Grading**: 15 points. 3 points per task. Full credit for correct manifests, accurate observations, and clear explanations.
 
-### Lab 2 — Security Context Hardening (45 minutes)
+### Lab 2: Security Context Hardening (45 minutes)
 
 1. Take an existing Deployment that runs as root. Modify it to comply with the restricted policy. Document every change you made.
 2. Write a security context that drops ALL capabilities and adds only NET_BIND_SERVICE. Test it by deploying a pod that listens on port 80.
@@ -811,7 +811,7 @@ polaris audit --set-exit-code-on-failure
 
 **Grading**: 20 points. 4 points per task. Full credit for correct security contexts, working tests, and accurate observations.
 
-### Lab 3 — Multi-Tenant Security Design (35 minutes)
+### Lab 3: Multi-Tenant Security Design (35 minutes)
 
 1. Design a multi-tenant security model for a cluster with three teams: `platform`, `backend`, `frontend`. Define namespaces, RBAC roles, network policies, and pod security standards for each.
 2. Write a script that creates all namespaces, service accounts, RBAC bindings, and network policies in one command.

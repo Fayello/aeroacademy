@@ -1,4 +1,4 @@
-# Module 5 — System Calls and the Kernel Interface
+# Module 5: System Calls and the Kernel Interface
 
 ## The System Call: Where User Meets Kernel
 
@@ -145,29 +145,29 @@ Key observations:
 
 ### Common strace Patterns for Debugging
 
-**Stuck process — what is it waiting on?**
+**Stuck process: what is it waiting on?**
 
 ```bash
 strace -p <PID> -e trace=network,read,write
 # If it shows:
-# read(5,  ← blank — it is waiting for data on file descriptor 5
-# poll([{fd=5, events=POLLIN}], 1, -1) = 1  — waiting indefinitely for input
-# futex(0x55a1b2c3d120, FUTEX_WAIT, 0, NULL) = 0  — waiting on a mutex
+# read(5,  ← blank: it is waiting for data on file descriptor 5
+# poll([{fd=5, events=POLLIN}], 1, -1) = 1 : waiting indefinitely for input
+# futex(0x55a1b2c3d120, FUTEX_WAIT, 0, NULL) = 0 : waiting on a mutex
 
 # This tells you WHAT the process is blocked on
 ```
 
-**Slow application — where is time being spent?**
+**Slow application: where is time being spent?**
 
 ```bash
 strace -T -e trace=network,write -p <PID>
 # Look for syscalls with large time values
 # write(7, "large data..."..., 65536) = 65536 <0.000012>
 # recvfrom(7, "response..."..., 8192, 0, NULL, NULL) = 4096 <0.023456>
-# The recvfrom took 23ms — this is the bottleneck
+# The recvfrom took 23ms: this is the bottleneck
 ```
 
-**Permission denied — which file access fails?**
+**Permission denied: which file access fails?**
 
 ```bash
 strace -e trace=open,openat,access,stat -f my_program 2>&1 | grep -i "denied\|EACCES\|EPERM"
@@ -510,7 +510,7 @@ cat /proc/12345/status | grep -E "Threads|voluntary"
 # Threads:        32
 # Voluntary_ctxt_switches:    567890
 # Nonvoluntary_ctxt_switches:  1234
-# High voluntary context switches — it is blocking somewhere
+# High voluntary context switches: it is blocking somewhere
 
 # Step 3: Attach strace to see what syscalls are in progress
 strace -p 12345 -e trace=network,read,write -f
@@ -530,17 +530,17 @@ strace -p 12345 -e trace=network,read,write -f
 ss -tnp | grep 12345 | wc -l
 # 234
 
-# Many connections — some may be stale
+# Many connections: some may be stale
 ss -tnp | grep 12345 | awk '{print $1}' | sort | uniq -c
 # ESTAB  200
 # CLOSE-WAIT  34
 # TIME-WAIT  0
 
-# 34 connections in CLOSE-WAIT — the remote end closed but the app has not
+# 34 connections in CLOSE-WAIT: the remote end closed but the app has not
 
 # Step 6: Check strace on threads in CLOSE-WAIT
 strace -p 12345 -e trace=close -f 2>&1 | head -5
-# Not closing sockets — this is the bug
+# Not closing sockets: this is the bug
 ```
 
 ### Root Cause
@@ -580,11 +580,11 @@ sock.settimeout(30)  # Read timeout of 30 seconds
 
 ### Lessons Learned
 
-1. **Always set socket timeouts** — Never block indefinitely on network I/O
-2. **Monitor CLOSE-WAIT connections** — They indicate application bugs
-3. **strace reveals the truth** — Even when monitoring tools show the process is "alive"
-4. **Thread pool exhaustion** — A few stuck connections can block the entire application
-5. **TCP keepalive is not enough** — Default keepalive timeout is 2+ hours; set it shorter for application-level detection
+1. **Always set socket timeouts**: Never block indefinitely on network I/O
+2. **Monitor CLOSE-WAIT connections**: They indicate application bugs
+3. **strace reveals the truth**: Even when monitoring tools show the process is "alive"
+4. **Thread pool exhaustion**: A few stuck connections can block the entire application
+5. **TCP keepalive is not enough**: Default keepalive timeout is 2+ hours; set it shorter for application-level detection
 
 ## Assessment
 
@@ -593,7 +593,7 @@ sock.settimeout(30)  # Read timeout of 30 seconds
 1. Use strace to trace `ls -la /usr/bin/` and identify all filesystem-related syscalls
 2. Count the number of `openat`, `read`, and `close` calls
 3. Find the total time spent in `read` calls using strace `-c` (summary mode)
-4. Compare the strace output to the actual file count — are they consistent?
+4. Compare the strace output to the actual file count: are they consistent?
 5. Document the complete syscall sequence from open to close for a single file
 
 **Grading**: Correct strace usage (20%), syscall counting (20%), timing analysis (20%), sequence documentation (20%), accuracy (20%)

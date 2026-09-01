@@ -1,10 +1,10 @@
-# Module 1 — Blockchain Fundamentals
+# Module 1: Blockchain Fundamentals
 
 A blockchain is a distributed, append-only ledger maintained by a network of nodes that agree on a shared state without a central authority. Before you can assess the security of smart contracts or decentralized protocols, you need a working mental model of how blocks are created, how transactions propagate and get finalized, and why certain design decisions in consensus and data structure lead to real attack surfaces. This module gives you that foundation by walking through the internals of Bitcoin and Ethereum, examining Merkle trees, and tracing a single Ether transfer from wallet signature to confirmed state change.
 
 ## Why Blockchain Security Is Different
 
-In traditional client-server systems, a compromised database can be rolled back, permissions can be revoked, and traffic can be filtered at the network perimeter. On a public blockchain, code is immutable once deployed, transactions are irreversible, and every node in the world can observe your state transitions. That means vulnerabilities are not theoretical — they are permanent and exploitable at scale. A single reentrancy bug cost Ethereum users over 150 million ETH in 2016. A misconfigured access control on a bridge led to a 600 million dollar loss in 2021. Understanding the low-level mechanics is not optional; it is the prerequisite for every other module in this course.
+In traditional client-server systems, a compromised database can be rolled back, permissions can be revoked, and traffic can be filtered at the network perimeter. On a public blockchain, code is immutable once deployed, transactions are irreversible, and every node in the world can observe your state transitions. That means vulnerabilities are not theoretical: they are permanent and exploitable at scale. A single reentrancy bug cost Ethereum users over 150 million ETH in 2016. A misconfigured access control on a bridge led to a 600 million dollar loss in 2021. Understanding the low-level mechanics is not optional; it is the prerequisite for every other module in this course.
 
 ## Consensus Mechanisms
 
@@ -12,7 +12,7 @@ Consensus is the process by which independent nodes agree on which block is the 
 
 ### Proof of Work
 
-Proof of Work (PoW) was the first practical solution to the Byzantine Generals Problem applied to digital currency. In PoW, miners compete to solve a computational puzzle — finding a nonce such that the SHA-256 hash of the block header is below a target difficulty. The probability of finding a valid nonce is proportional to the hash rate a miner controls.
+Proof of Work (PoW) was the first practical solution to the Byzantine Generals Problem applied to digital currency. In PoW, miners compete to solve a computational puzzle: finding a nonce such that the SHA-256 hash of the block header is below a target difficulty. The probability of finding a valid nonce is proportional to the hash rate a miner controls.
 
 The security argument for PoW is economic: rewriting history requires re-mining every block after the point you want to change, which costs real electricity. The longer a transaction has been confirmed, the more cumulative work an attacker must redo to reverse it. This is why exchanges wait for multiple confirmations before crediting a deposit.
 
@@ -28,7 +28,7 @@ The weakness is energy consumption and centralization of mining hardware. ASIC-r
 
 ### Proof of Stake
 
-Proof of Stake (PoS) replaces computational work with economic collateral. Validators lock up a minimum amount of the native currency (32 ETH on Ethereum) as a security deposit. The protocol pseudo-randomly selects a validator to propose the next block, and other validators attest to its validity. If a validator proposes an invalid block or attests to conflicting blocks, their stake is slashed — partially or fully destroyed.
+Proof of Stake (PoS) replaces computational work with economic collateral. Validators lock up a minimum amount of the native currency (32 ETH on Ethereum) as a security deposit. The protocol pseudo-randomly selects a validator to propose the next block, and other validators attest to its validity. If a validator proposes an invalid block or attests to conflicting blocks, their stake is slashed: partially or fully destroyed.
 
 Ethereum's PoS implementation, launched in September 2022 via the Merge, uses a mechanism called LMD-GHOST (Latest Message Driven - Greedy Heaviest Observed Subtree) for fork choice and Casper FFG (Friendly Finality Gadget) for finality. In practical terms, this means:
 
@@ -36,7 +36,7 @@ Ethereum's PoS implementation, launched in September 2022 via the Merge, uses a 
 - **Epoch:** 32 slots (6.4 minutes). At the end of each epoch, finality is checked.
 - **Finality:** A block is finalized when two-thirds of the total staked ETH (by weight) have attested to it across two consecutive epochs. Finalized blocks cannot be reverted without at least one-third of all staked ETH being slashed.
 
-The security model of PoS is different from PoS. In PoW, attacking the network requires ongoing energy expenditure. In PoS, attacking requires acquiring and locking one-third of all staked ETH — a one-time capital cost that is then at risk of slashing. The "nothing at stake" problem (where validators could cheaply support multiple forks) is addressed by slashing conditions that penalize validators who sign conflicting blocks.
+The security model of PoS is different from PoS. In PoW, attacking the network requires ongoing energy expenditure. In PoS, attacking requires acquiring and locking one-third of all staked ETH: a one-time capital cost that is then at risk of slashing. The "nothing at stake" problem (where validators could cheaply support multiple forks) is addressed by slashing conditions that penalize validators who sign conflicting blocks.
 
 A key difference for security assessment: in PoS, validator behavior is monitored by the protocol itself, and misbehavior results in automatic economic penalties. In PoW, the only penalty for misbehavior is wasted electricity. This means PoS has more protocol-level enforcement mechanisms, but also more complexity in the slashing logic.
 
@@ -105,7 +105,7 @@ A Merkle tree is a binary hash tree where every leaf node is a hash of a transac
 
 The key property: if a single transaction is modified, the Merkle root changes. This means a light client can verify that a transaction is included in a block by downloading only the block header and a logarithmic number of hashes (the Merkle proof), rather than the entire block.
 
-For a block with 1,000 transactions, a Merkle proof requires about 10 hashes (log₂(1000) ≈ 10). Each hash is 32 bytes, so a Merkle proof is roughly 320 bytes — trivial to transmit and verify.
+For a block with 1,000 transactions, a Merkle proof requires about 10 hashes (log₂(1000) ≈ 10). Each hash is 32 bytes, so a Merkle proof is roughly 320 bytes: trivial to transmit and verify.
 
 Ethereum uses a modified Merkle structure called a Merkle Patricia Trie for three different tries:
 
@@ -119,9 +119,9 @@ The use of a Patricia trie (a radix tree) allows efficient updates, insertions, 
 
 Bitcoin and Ethereum serve different purposes and make different architectural tradeoffs.
 
-**Bitcoin** is designed as digital gold — a store of value and medium of exchange. Its scripting language is intentionally limited (Turing incomplete) to reduce the attack surface. Bitcoin scripts can enforce conditions like multi-signature requirements, time locks, and hash locks, but they cannot implement arbitrary logic. This limitation is a security feature: the simpler the scripting language, the fewer bugs are possible.
+**Bitcoin** is designed as digital gold: a store of value and medium of exchange. Its scripting language is intentionally limited (Turing incomplete) to reduce the attack surface. Bitcoin scripts can enforce conditions like multi-signature requirements, time locks, and hash locks, but they cannot implement arbitrary logic. This limitation is a security feature: the simpler the scripting language, the fewer bugs are possible.
 
-**Ethereum** is designed as a world computer — a platform for arbitrary computation via smart contracts. The Ethereum Virtual Machine (EVM) is Turing complete, meaning it can execute any computable program given enough gas. This flexibility enables decentralized applications (DeFi, NFTs, DAOs) but dramatically increases the attack surface. Every new opcode, every interaction between contracts, and every external call is a potential vulnerability.
+**Ethereum** is designed as a world computer: a platform for arbitrary computation via smart contracts. The Ethereum Virtual Machine (EVM) is Turing complete, meaning it can execute any computable program given enough gas. This flexibility enables decentralized applications (DeFi, NFTs, DAOs) but dramatically increases the attack surface. Every new opcode, every interaction between contracts, and every external call is a potential vulnerability.
 
 The practical differences that matter for security:
 
@@ -184,7 +184,7 @@ If valid, the node adds the transaction to its mempool and propagates it to peer
 
 Before the transaction is mined, it sits in the mempool, which is publicly observable. This creates the front-running attack surface: an attacker can see Alice's pending transaction, and if it interacts with a DEX, the attacker can submit their own transaction with a higher gas price to be included first, profiting from Alice's trade.
 
-For a simple ETH transfer, front-running is not a concern (you cannot front-run a transfer — the recipient is fixed). But for contract interactions, front-running is a critical vulnerability that we will cover in Module 3.
+For a simple ETH transfer, front-running is not a concern (you cannot front-run a transfer: the recipient is fixed). But for contract interactions, front-running is a critical vulnerability that we will cover in Module 3.
 
 **Step 5: Block inclusion**
 
@@ -199,7 +199,7 @@ The state trie is updated with new balances for Alice, Bob's contract, and the v
 
 **Step 6: Confirmation and finality**
 
-The block is added to the chain. Other validators attest to the block. After two epochs (~15 minutes), the block is finalized — meaning it cannot be reverted without at least one-third of all staked ETH being slashed.
+The block is added to the chain. Other validators attest to the block. After two epochs (~15 minutes), the block is finalized: meaning it cannot be reverted without at least one-third of all staked ETH being slashed.
 
 For a simple transfer, 12-30 confirmations (2-6 minutes) is generally considered safe for most purposes. For high-value transfers, waiting for finality is recommended.
 
@@ -213,7 +213,7 @@ Alice's wallet receives a transaction receipt containing:
 - **blockNumber:** The block containing the transaction.
 - **transactionHash:** The unique identifier of the transaction.
 
-Alice can verify the receipt to confirm that the transaction succeeded and the ETH was transferred. The transaction hash is a permanent, immutable record of the transfer. Anyone can look up this hash on Etherscan or any other block explorer to verify the transaction details independently. This transparency is a core property of public blockchains — every transaction is publicly verifiable, though the identities behind the addresses remain pseudonymous.
+Alice can verify the receipt to confirm that the transaction succeeded and the ETH was transferred. The transaction hash is a permanent, immutable record of the transfer. Anyone can look up this hash on Etherscan or any other block explorer to verify the transaction details independently. This transparency is a core property of public blockchains: every transaction is publicly verifiable, though the identities behind the addresses remain pseudonymous.
 
 ## Gas Economics
 
