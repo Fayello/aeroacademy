@@ -11,6 +11,9 @@ import {
   Download,
   Lock,
   CheckCircle2,
+  ExternalLink,
+  ShieldCheck,
+  Copy,
 } from "lucide-react";
 
 interface CertificateData {
@@ -134,6 +137,16 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const copyVerificationLink = async () => {
+    if (!data?.certificate?.credentialUrl) return;
+    try {
+      await navigator.clipboard.writeText(data.certificate.credentialUrl);
+      toast.success("Verification link copied");
+    } catch {
+      toast.error("Failed to copy verification link");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -207,10 +220,24 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div className="p-6 space-y-5">
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { title: "Issuer", text: "XpertClass Academy", icon: ShieldCheck },
+              { title: "Record type", text: "Verifiable course certificate", icon: Award },
+              { title: "Status", text: "Issued and registry-ready", icon: CheckCircle2 },
+            ].map((item) => (
+              <div key={item.title} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <item.icon size={16} className="text-[#7AD62A] mb-2" />
+                <p className="text-xs uppercase tracking-wide text-slate-500">{item.title}</p>
+                <p className="text-sm font-medium text-white mt-1">{item.text}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="text-center">
             <CheckCircle2 size={40} className="text-[#7AD62A] mx-auto mb-2" />
             <h2 className="text-lg font-bold text-white">Congratulations!</h2>
-            <p className="text-sm text-slate-600 mt-1">
+            <p className="text-sm text-slate-400 mt-1">
               You have successfully completed <span className="font-medium">{cert.courseName}</span>.
             </p>
           </div>
@@ -236,11 +263,22 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Credential ID</span>
-              <span className="font-mono text-[11px] text-slate-600">{cert.id}</span>
+              <span className="font-mono text-[11px] text-slate-300">{cert.id}</span>
+            </div>
+            <div className="flex justify-between text-sm items-start gap-4">
+              <span className="text-slate-500">Verification URL</span>
+              <span className="font-mono text-[11px] text-slate-300 text-right break-all">{cert.credentialUrl}</span>
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Issuer statement</p>
+            <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+              This certificate confirms that the holder completed the stated course requirements recorded by XpertClass Academy and may be checked through the public verification flow.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={generatePDF}
               disabled={generating}
@@ -249,6 +287,21 @@ export default function CertificatePage({ params }: { params: Promise<{ id: stri
               {generating ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
               {generating ? "Generating..." : "Download PDF"}
             </button>
+            <button
+              onClick={copyVerificationLink}
+              className="flex-1 border border-white/10 hover:bg-white/5 text-slate-200 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <Copy size={14} />
+              Copy Verification Link
+            </button>
+            <Link
+              href={cert.credentialUrl}
+              target="_blank"
+              className="flex-1 border border-white/10 hover:bg-white/5 text-slate-200 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <ExternalLink size={14} />
+              Open Registry Record
+            </Link>
           </div>
         </div>
       </div>

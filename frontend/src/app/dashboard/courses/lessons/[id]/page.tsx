@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef, type ReactNode, type ReactElement, cloneElement } from "react";
+import { useEffect, useState, useRef, useId, type ReactNode, type ReactElement, cloneElement } from "react";
 import { fetchApi } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, ChevronDown, ChevronUp, AlertCircle, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2, Microscope, Award, ArrowLeft, ArrowRight, Sparkles, AlertCircle, BookOpen, FileCheck, Target, Clock3, ShieldCheck } from "lucide-react";
 import mermaid from "mermaid";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -65,7 +65,8 @@ function processChildren(children: ReactNode): ReactNode {
 function MermaidDiagram({ chart }: { chart: string }) {
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState(false);
-  const idRef = useRef(`mermaid-${Math.random().toString(36).slice(2, 9)}`);
+  const mermaidId = useId();
+  const idRef = useRef(`mermaid-${mermaidId.replace(/:/g, "")}`);
 
   useEffect(() => {
     mermaid.initialize({
@@ -144,6 +145,10 @@ interface CourseProgress {
   percentage: number;
 }
 
+type LessonResponse = Lesson & {
+  completed?: boolean;
+};
+
 export default function LessonPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -172,16 +177,17 @@ export default function LessonPage() {
     let cancelled = false;
     async function loadLesson() {
       try {
-        const data = await fetchApi(`/courses/lessons/${id}`);
+        const data = await fetchApi<LessonResponse>(`/courses/lessons/${id}`);
         if (!cancelled) {
-          setLesson(data as Lesson);
+          setLesson(data);
+          setCompleted(Boolean(data.completed));
           fetchApi("/progress/start", {
             method: "POST",
             body: JSON.stringify({ lessonId: id }),
           }).catch(() => {});
 
           // Load course sections and progress
-          const courseId = (data as any)?.section?.courseId;
+          const courseId = data.section?.courseId;
           if (courseId) {
             localStorage.setItem(`lastViewedLesson:${courseId}`, id as string);
             const [sectionsData, progressData] = await Promise.allSettled([
@@ -205,6 +211,17 @@ export default function LessonPage() {
   }, [id]);
 
   const handleMarkComplete = async (andNext = false) => {
+    if (lesson?.quiz && !quizCorrect) {
+      setModalConfig({
+        isOpen: true,
+        title: "Knowledge check required",
+        message: "Complete and pass the lesson knowledge check before this lesson can be recorded as complete.",
+        type: "warning",
+        confirmText: "Understood",
+      });
+      return;
+    }
+
     setModalConfig({
       isOpen: true,
       title: "Mark as complete",
@@ -239,7 +256,7 @@ export default function LessonPage() {
   };
 
   const handleVideoEnded = () => {
-    if (!completed) handleMarkComplete();
+    if (!completed && !lesson?.quiz) handleMarkComplete();
   };
 
   // Find current lesson position and prev/next
@@ -293,6 +310,17 @@ export default function LessonPage() {
 
   const nav = findLessonNav();
   const currentSection = sections[nav.sectionIndex];
+  const estimatedReadMinutes = Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200));
+  const knowledgeCheckCount = lesson.quiz?.questions?.length || 0;
+  const knowledgeCheckRequired = knowledgeCheckCount > 0;
+  const canRecordCompletion = !knowledgeCheckRequired || quizCorrect;
+  const nextMilestoneLabel = lesson.labId
+    ? "Apply this lesson in the linked practice lab"
+    : lesson.quiz
+    ? "Finish the knowledge check to validate understanding"
+    : nav.next
+    ? "Continue into the next lesson to maintain momentum"
+    : "Return to the course and review completion status";
 
   return (
     <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500">
@@ -333,17 +361,19 @@ export default function LessonPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-medium px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full">{lesson.section?.title}</span>
-                <span className="text-xs text-white/60">~{Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200))} min read</span>
+                <span className="text-xs text-white/60">~{estimatedReadMinutes} min read</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{lesson.title}</h1>
             </div>
             <button
               onClick={() => handleMarkComplete()}
-              disabled={saving || completed}
+              disabled={saving || completed || !canRecordCompletion}
               className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all shrink-0 ${
                 completed
                   ? "bg-[#7AD62A] text-[#0F203A]"
-                  : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+                  : canRecordCompletion
+                    ? "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+                    : "bg-white/10 text-white/55"
               } disabled:opacity-50`}
             >
               <CheckCircle size={16} />
@@ -358,13 +388,74 @@ export default function LessonPage() {
             {!completed && nav.next && (
               <button
                 onClick={() => handleMarkComplete(true)}
-                disabled={saving}
+                disabled={saving || !canRecordCompletion}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-[#7AD62A] text-[#0F203A] hover:bg-[#6bc424] transition-all shrink-0 disabled:opacity-50"
               >
                 <Sparkles size={14} />
                 Complete & next
               </button>
             )}
+          </div>
+          {knowledgeCheckRequired && !quizCorrect && (
+            <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3">
+              <p className="text-sm font-medium text-amber-300">Completion is locked until the knowledge check is passed.</p>
+              <p className="text-xs text-amber-100/70 mt-1">
+                This lesson only enters your training record after the required validation step is completed.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-4 mb-6">
+        <div className="angular-card bg-[#0f172a] border border-white/10 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Lesson Briefing</p>
+          <h2 className="text-lg font-bold text-white mt-2">One lesson, one measurable step forward</h2>
+          <p className="text-sm text-slate-300 mt-3 leading-relaxed">
+            Complete the lesson carefully, validate understanding, and then move into practice or the next module without breaking your progression trail.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3 mt-5">
+            {[
+              { title: "Study", text: `${estimatedReadMinutes} minute learning block`, icon: BookOpen },
+              { title: "Validate", text: knowledgeCheckCount > 0 ? `${knowledgeCheckCount} knowledge-check question${knowledgeCheckCount !== 1 ? "s" : ""}` : "No quiz in this lesson", icon: Target },
+              { title: "Progress", text: courseProgress ? `${courseProgress.completed} of ${courseProgress.total} lessons completed` : "Progress record loading", icon: FileCheck },
+            ].map((item) => (
+              <div key={item.title} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <item.icon size={16} className="text-[#7AD62A] mb-2" />
+                <p className="text-sm font-semibold text-white">{item.title}</p>
+                <p className="text-xs text-slate-400 mt-1">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+          <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Next Milestone</p>
+          <h2 className="text-lg font-bold text-white mt-2">{nextMilestoneLabel}</h2>
+          <div className="space-y-3 mt-4">
+            {[
+              "Finish this lesson before jumping to unrelated content.",
+              lesson.labId ? "Use the lab to convert theory into evidence." : "Record completion so your pathway stays measurable.",
+              nav.next ? `Prepare to continue into ${nav.next.title}.` : "Return to the course overview and confirm what comes next.",
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-3">
+                <ShieldCheck size={14} className="text-[#7AD62A] shrink-0 mt-0.5" />
+                <p className="text-sm text-slate-300">{item}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <p className="text-[10px] uppercase tracking-wide text-slate-500">Record status</p>
+            <p className="text-sm font-semibold text-white mt-2">
+              {completed ? "Recorded as complete" : canRecordCompletion ? "Ready to record" : "Awaiting validation"}
+            </p>
+            <p className="text-xs text-slate-400 mt-1">
+              {completed
+                ? "This lesson has been added to your training record."
+                : canRecordCompletion
+                  ? "You can now record completion and continue."
+                  : "Pass the knowledge check before this lesson can count toward the pathway."}
+            </p>
           </div>
         </div>
       </div>
@@ -445,7 +536,16 @@ export default function LessonPage() {
             {/* Quiz Section */}
             {lesson.quiz && (
               <div className="mt-12 pt-8 border-t border-white/10">
-                <h3 className="text-lg font-semibold text-white mb-6">Knowledge Check</h3>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Knowledge Check</p>
+                    <h3 className="text-lg font-semibold text-white mt-2">Validate understanding before you advance</h3>
+                  </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                <p className="text-[10px] uppercase tracking-wide text-slate-500">Assessment intent</p>
+                <p className="text-xs text-slate-300 mt-1">This check confirms lesson comprehension and supports cleaner progression.</p>
+              </div>
+            </div>
                 <div className="space-y-8">
                   {lesson.quiz.questions.map((question: QuizQuestion, qIdx: number) => (
                     <div key={question.id} className="bg-white/5 rounded-xl p-6 border border-white/10">
@@ -489,40 +589,63 @@ export default function LessonPage() {
                 </div>
 
                 {!quizSubmitted ? (
-                  <button
-                    onClick={async () => {
-                      if (!lesson.quiz) return;
-                      if (Object.keys(quizAnswer).length < (lesson.quiz.questions?.length || 0)) {
-                        toast.error("Please answer all questions.");
-                        return;
-                      }
-                      setSaving(true);
-                      try {
-                        const result = await fetchApi(`/quiz/submit/${lesson.quiz.id}`, {
-                          method: "POST",
-                          body: JSON.stringify({ answers: quizAnswer }),
-                        }) as QuizSubmissionResult;
-                        setSubmissionResult(result);
-                        setQuizSubmitted(true);
-                        setQuizCorrect(result.passed);
-                        toast[result.passed ? "success" : "error"](`Score: ${result.score}%`);
-                      } catch (err) {
-                        toast.error(err instanceof Error ? err.message : "Submission failed.");
-                      } finally {
-                        setSaving(false);
-                      }
-                    }}
-                    disabled={saving}
-                    className="btn-primary w-full mt-6"
-                  >
-                    {saving ? <Loader2 className="animate-spin" size={16} /> : null}
-                    Submit answers
-                  </button>
+                  <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-slate-500">Completion rule</p>
+                        <p className="text-sm text-slate-300 mt-1">Answer every question and pass this check before the lesson can be recorded as complete.</p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (!lesson.quiz) return;
+                          if (Object.keys(quizAnswer).length < (lesson.quiz.questions?.length || 0)) {
+                            toast.error("Please answer all questions.");
+                            return;
+                          }
+                          setSaving(true);
+                          try {
+                            const result = await fetchApi(`/quiz/submit/${lesson.quiz.id}`, {
+                              method: "POST",
+                              body: JSON.stringify({ answers: quizAnswer }),
+                            }) as QuizSubmissionResult;
+                            setSubmissionResult(result);
+                            setQuizSubmitted(true);
+                            setQuizCorrect(result.passed);
+                            toast[result.passed ? "success" : "error"](`Score: ${result.score}%`);
+                          } catch (err) {
+                            toast.error(err instanceof Error ? err.message : "Submission failed.");
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={saving}
+                        className="btn-primary"
+                      >
+                        {saving ? <Loader2 className="animate-spin" size={16} /> : null}
+                        Submit answers
+                      </button>
+                    </div>
+                  </div>
                 ) : (
                   <div className={`mt-6 p-6 rounded-xl border ${quizCorrect ? "bg-[#7AD62A]/10 border-[#7AD62A]/20" : "bg-red-500/10 border-red-500/20"}`}>
-                    <p className={`font-medium ${quizCorrect ? "text-[#7AD62A]" : "text-red-400"}`}>
-                      {quizCorrect ? "Great work! You passed." : "Review the corrections above and try again."}
-                    </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <p className={`font-medium ${quizCorrect ? "text-[#7AD62A]" : "text-red-400"}`}>
+                          {quizCorrect ? "Knowledge check passed." : "Knowledge check not yet passed."}
+                        </p>
+                        {submissionResult && (
+                          <p className="text-sm text-slate-300 mt-1">
+                            Result: {submissionResult.correctCount} of {submissionResult.totalCount} correct.
+                          </p>
+                        )}
+                      </div>
+                      <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-right">
+                        <p className="text-[10px] uppercase tracking-wide text-slate-500">Score</p>
+                        <p className={`text-lg font-bold ${quizCorrect ? "text-[#7AD62A]" : "text-red-400"}`}>
+                          {submissionResult?.score ?? 0}%
+                        </p>
+                      </div>
+                    </div>
                     <button
                       onClick={() => { setQuizSubmitted(false); setQuizAnswer({}); setSubmissionResult(null); }}
                       className="btn-secondary mt-4 text-sm"
@@ -578,6 +701,38 @@ export default function LessonPage() {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-4">
+          <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
+            <h3 className="text-sm font-semibold text-white mb-3">Progress Record</h3>
+            <div className="space-y-3">
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400">Lesson status</span>
+                  <span className={`font-medium ${completed ? "text-[#7AD62A]" : "text-slate-200"}`}>
+                    {completed ? "Completed" : "In progress"}
+                  </span>
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400">Knowledge check</span>
+                  <span className={`font-medium ${knowledgeCheckRequired && !quizCorrect ? "text-amber-300" : "text-slate-200"}`}>
+                    {knowledgeCheckCount > 0
+                      ? quizCorrect
+                        ? "Passed"
+                        : `${knowledgeCheckCount} question${knowledgeCheckCount !== 1 ? "s" : ""} required`
+                      : "Not included"}
+                  </span>
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400">Expected time</span>
+                  <span className="font-medium text-slate-200">{estimatedReadMinutes} min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {lesson.labId && (
             <div className="bg-blue-500/10 rounded-xl border border-white/10 p-6">
               <div className="flex items-center gap-2 text-blue-400 mb-3">
@@ -635,22 +790,18 @@ export default function LessonPage() {
           )}
 
           <div className="bg-[#0f172a] rounded-xl border border-white/10 p-5">
-            <h3 className="text-sm font-semibold text-white mb-3">Lesson Info</h3>
-            <div className="space-y-2 text-sm text-slate-400">
-              <div className="flex justify-between">
-                <span>Section</span>
-                <span className="font-medium text-white">{lesson.section?.title}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Status</span>
-                <span className={`font-medium ${completed ? "text-[#7AD62A]" : "text-slate-400"}`}>
-                  {completed ? "Completed" : "In progress"}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>XP Reward</span>
-                <span className="font-medium text-[#7AD62A]">+10 XP</span>
-              </div>
+            <h3 className="text-sm font-semibold text-white mb-3">Completion Standard</h3>
+            <div className="space-y-3">
+              {[
+                "Study the lesson content in full.",
+                lesson.quiz ? "Pass the knowledge check before the lesson enters your record." : "Record completion once the lesson is understood.",
+                lesson.labId ? "Use the linked lab to reinforce practical retention." : "Continue directly into the next guided lesson.",
+              ].map((item) => (
+                <div key={item} className="flex items-start gap-2">
+                  <Clock3 size={14} className="text-[#7AD62A] shrink-0 mt-0.5" />
+                  <p className="text-sm text-slate-300">{item}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import {
   Shield, Target, Microscope, ArrowRight, CheckCircle2, Play,
   Terminal, Users, BookOpen, Award, Server, Code, Network, Layers, BarChart3,
-  Calendar, Clock, Video, UserCheck, ChevronRight, Zap, Lock
+  Calendar, Clock, Video, ChevronRight, Menu, X
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";
@@ -24,8 +24,8 @@ const AUDIENCES = [
     title: "Launch your tech career with real skills",
     description: "Go beyond theory. Deploy real labs, crack real systems, and build a portfolio that gets you hired.",
     features: ["Hands-on labs with real tools", "Certified skill paths", "Leaderboard & gamification", "Career-ready portfolio"],
-    cta: "Start Learning Free",
-    href: "/get-started",
+    cta: "Start Free for 1 Year",
+    href: "/register",
     icon: BookOpen,
     color: "emerald" as const,
   },
@@ -34,7 +34,7 @@ const AUDIENCES = [
     title: "Scale security & DevOps skills across your org",
     description: "Custom learning paths, progress analytics, and sandbox environments built for enterprise readiness.",
     features: ["Custom learning paths", "Progress analytics dashboard", "Team leaderboards", "Isolated lab environments"],
-    cta: "Request a Demo",
+    cta: "Contact Sales",
     href: "/get-started",
     icon: Users,
     color: "blue" as const,
@@ -44,7 +44,7 @@ const AUDIENCES = [
     title: "Teach with live, interactive environments",
     description: "Manage classrooms, track student progress, and deploy pre-built lab scenarios in one click.",
     features: ["Classroom management", "Assignment & grading tools", "30+ pre-built lab scenarios", "Student analytics"],
-    cta: "Get Started",
+    cta: "Explore Educator Tools",
     href: "/get-started",
     icon: Award,
     color: "violet" as const,
@@ -140,6 +140,51 @@ const TESTIMONIALS = [
   { quote: "As a university instructor, the platform lets me deploy labs for my students without any infrastructure headaches. Game changer.", name: "Dr. Moussa C.", role: "CS Faculty, Maroua" },
 ];
 
+const NAV_ITEMS = [
+  { label: "Platform", href: "#platform" },
+  { label: "Courses", href: "#courses" },
+  { label: "Labs", href: "#labs" },
+  { label: "Master Classes", href: "#master-classes" },
+  { label: "Training", href: "#training" },
+  { label: "Enterprise", href: "#enterprise" },
+];
+
+const TRUST_PILLARS = [
+  {
+    title: "Structured certification pathways",
+    description: "Every credential is tied to defined domains, measurable outcomes, and a visible progression from training to assessment to issuance.",
+    icon: Target,
+  },
+  {
+    title: "Practical assessment evidence",
+    description: "Learners earn certificates through hands-on work, scored attempts, and competency proof instead of passive course consumption alone.",
+    icon: Shield,
+  },
+  {
+    title: "Public verification",
+    description: "Credentials can be checked through a verification page with issuer, issue date, status, and supporting evidence summary.",
+    icon: Award,
+  },
+];
+
+const CERTIFICATION_STEPS = [
+  {
+    step: "01",
+    title: "Learn the standard",
+    description: "Follow a mapped curriculum with the lessons, labs, and outcomes required for your target certificate.",
+  },
+  {
+    step: "02",
+    title: "Prove practical ability",
+    description: "Complete guided labs and controlled practical exams with transparent scoring and attempt rules.",
+  },
+  {
+    step: "03",
+    title: "Verify your credential",
+    description: "Share a credential ID that employers and partners can verify through the public registry.",
+  },
+];
+
 const COLOR_MAP = {
   emerald: { bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/20", text: "text-[#0F203A]", icon: "text-[#7AD62A] bg-[#7AD62A]/10", dot: "bg-[#7AD62A]" },
   blue: { bg: "bg-blue-500/10", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-600 bg-blue-100", dot: "bg-blue-500" },
@@ -155,16 +200,28 @@ const LEVEL_COLORS: Record<string, string> = {
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalLabs: 0 });
   const [masterClasses, setMasterClasses] = useState<MasterClass[]>([]);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
-  const { convert, config: currencyConfig } = useCurrency();
+  const { convert } = useCurrency();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileNavOpen(false);
+    }
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [mobileNavOpen]);
 
   useEffect(() => {
     fetchApi("/dashboard/public-stats")
@@ -200,21 +257,75 @@ export default function LandingPage() {
               </span>
             </Link>
             <div className="hidden lg:flex items-center gap-1">
-              {["Platform", "Courses", "Labs", "Master Classes", "Training", "Enterprise"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase().replace(/ /g, "-")}`} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-500 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
-                  {item}
+              {NAV_ITEMS.map((item) => (
+                <a key={item.label} href={item.href} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-500 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
+                  {item.label}
                 </a>
               ))}
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <CurrencySwitcher />
+            <div className="hidden sm:block">
+              <CurrencySwitcher />
+            </div>
             <Link href="/login" className={`hidden sm:inline-flex btn-ghost text-sm ${scrolled ? "" : "text-white/80 hover:text-white"}`}>Sign in</Link>
             <Link href="/get-started" className="angular-btn btn-primary text-sm px-5 py-2">
               <span>Get Started</span> <ArrowRight size={14} />
             </Link>
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen((open) => !open)}
+              className={`lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border transition-colors ${
+                scrolled
+                  ? "border-slate-200 text-slate-700 hover:bg-slate-100"
+                  : "border-white/10 text-white hover:bg-white/10"
+              }`}
+              aria-expanded={mobileNavOpen}
+              aria-controls="mobile-nav"
+              aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+            >
+              {mobileNavOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </div>
+        {mobileNavOpen && (
+          <div
+            id="mobile-nav"
+            className="lg:hidden border-t border-white/10 bg-[#0F203A]/95 backdrop-blur-xl"
+          >
+            <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-2">
+              <div className="sm:hidden pb-2">
+                <CurrencySwitcher />
+              </div>
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setMobileNavOpen(false)}
+                  className="px-3 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <div className="flex gap-3 pt-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="flex-1 inline-flex items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="flex-1 inline-flex items-center justify-center rounded-xl bg-[#7AD62A] px-4 py-3 text-sm font-semibold text-[#0F203A] hover:bg-[#6bc422] transition-colors"
+                >
+                  Start Free
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ═══════════ HERO ═══════════ */}
@@ -228,24 +339,24 @@ export default function LandingPage() {
             <div className="lg:pr-8">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-[#7AD62A] text-xs font-semibold mb-6 label-tracking">
                 <CheckCircle2 size={14} />
-                Built for hands-on learners
+                1 year free for early learners
               </div>
               <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-white tracking-tight leading-[1.02] glitch-hover">
-                Master the <span className="text-gradient-brand">technologies</span> that power modern software
+                XpertClass <span className="text-gradient-brand">Academy</span>
               </h1>
               <p className="text-lg text-white/60 mt-6 leading-relaxed max-w-xl">
-                Hands-on training in security, Linux, DevOps, and cloud infrastructure. Deploy real labs, break real systems, build real skills.
+                An African-rooted, globally benchmarked training and certification system for security, Linux, DevOps, and cloud capability. Start free for 12 months, then prove what you can do.
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-4 mt-10">
-                <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/20 hover:shadow-[#7AD62A]/40 magnetic-btn">
-                  <span>Start Learning Free</span> <ArrowRight size={18} />
+                <Link href="/register" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/20 hover:shadow-[#7AD62A]/40 magnetic-btn">
+                  <span>Start Free for 1 Year</span> <ArrowRight size={18} />
                 </Link>
-                <a href="#labs" className="btn-ghost text-sm px-6 py-3.5 text-white/60 hover:text-white">
-                  <Play size={14} /> Explore Labs
+                <a href="#certification-system" className="btn-ghost text-sm px-6 py-3.5 text-white/60 hover:text-white">
+                  <Play size={14} /> See Certification System
                 </a>
               </div>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-sm text-white/40">
-                {["No credit card required", `${stats.totalLabs || 35}+ hands-on labs`, "Free tier available"].map((item) => (
+                {["No credit card required", `${stats.totalLabs || 35}+ hands-on labs`, "12 months of free access"].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
                     <CheckCircle2 size={14} className="text-[#7AD62A]" /> {item}
                   </div>
@@ -303,7 +414,7 @@ export default function LandingPage() {
       {/* ═══════════ TRUSTED BY ═══════════ */}
       <section className="py-8 px-6 bg-[#0a1628] border-b border-white/5 relative">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-[10px] text-white/30 font-semibold tracking-[0.25em] uppercase mb-5">Trusted by engineers at</p>
+          <p className="text-[10px] text-white/30 font-semibold tracking-[0.25em] uppercase mb-5">Built for Cameroon&apos;s next generation of engineers</p>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-white/40">
             <span className="hover:text-white/70 transition-colors">University of Yaoundé</span>
             <span className="text-white/10">|</span>
@@ -314,6 +425,59 @@ export default function LandingPage() {
             <span className="hover:text-white/70 transition-colors">Cameroon Tech Hub</span>
             <span className="text-white/10">|</span>
             <span className="hover:text-white/70 transition-colors">Garoua Innovation Hub</span>
+          </div>
+        </div>
+      </section>
+
+      <AngularDivider />
+
+      <section id="certification-system" className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 angular-grid-bg opacity-[0.03]" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
+            <div>
+              <SectionLabel>Authority First</SectionLabel>
+              <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
+                Built to feel like a trusted certification body, not just a learning portal
+              </h2>
+              <p className="text-lg text-slate-400 mt-5 max-w-2xl leading-relaxed">
+                AeroAcademy/XpertClass is designed around practical rigor, transparent progression, and verifiable outcomes. The learner should always know what they are preparing for and why it matters.
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 mt-8">
+                {TRUST_PILLARS.map((pillar) => (
+                  <div key={pillar.title} className="angular-card bg-[#0f172a] border border-white/10 p-5">
+                    <pillar.icon size={20} className="text-[#7AD62A] mb-3" />
+                    <h3 className="text-sm font-semibold text-white mb-2">{pillar.title}</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">{pillar.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Issuer Identity</p>
+              <h3 className="text-2xl font-bold text-white mt-3">Certification trust architecture</h3>
+              <div className="space-y-4 mt-6">
+                {[
+                  "Curriculum mapped to domains and measurable outcomes",
+                  "Practical exams with scoring, pass thresholds, and attempt controls",
+                  "Public credential verification with issued status and evidence summary",
+                  "Learner dashboards that show progress toward a real credential",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-300 leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-7 pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3">
+                <Link href="/dashboard/certifications" className="angular-btn btn-primary text-sm justify-center">
+                  Explore Credentials
+                </Link>
+                <Link href="/privacy" className="angular-btn btn-ghost text-sm justify-center border border-white/10 hover:border-[#7AD62A] hover:text-[#7AD62A]">
+                  Review Policies
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -428,7 +592,7 @@ export default function LandingPage() {
             <p className="text-lg text-white/60 mt-4">From sign-up to skill mastery in three simple steps.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {STEPS.map((step, i) => (
+            {STEPS.map((step) => (
               <div key={step.number} className="relative">
                 <div className="angular-card relative bg-white/[0.04] backdrop-blur-sm p-8 border border-white/[0.06] hover:border-[#7AD62A]/20 hover:bg-white/[0.06] transition-all duration-300 group">
                   <div className="text-6xl font-extrabold text-[#7AD62A]/10 absolute top-4 right-6 group-hover:text-[#7AD62A]/20 transition-colors">{step.number}</div>
@@ -531,6 +695,29 @@ export default function LandingPage() {
 
       <AngularDivider />
 
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <SectionLabel>Pathway Clarity</SectionLabel>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">From first lesson to verified certificate</h2>
+            <p className="text-lg text-slate-400 mt-4">
+              The learner journey should always answer four questions: what am I training for, what must I complete, what assessment comes next, and how will my credential be verified?
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {CERTIFICATION_STEPS.map((step) => (
+              <div key={step.step} className="angular-card bg-[#0f172a] border border-white/10 p-7">
+                <div className="text-4xl font-extrabold text-[#7AD62A]/20 mb-4">{step.step}</div>
+                <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <AngularDivider />
+
       {/* ═══════════ MASTER CLASSES ═══════════ */}
       <section id="master-classes" className="py-28 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -544,7 +731,7 @@ export default function LandingPage() {
               View All <ChevronRight size={14} />
             </Link>
           </div>
-          {masterClasses.length > 0 && (
+          {masterClasses.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {masterClasses.map((mc: MasterClass, i) => (
                 <div key={mc.id} className={`angular-card bg-[#0f172a] border border-white/10/80 overflow-hidden hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
@@ -583,6 +770,23 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+          ) : (
+            <div className="angular-card bg-[#0f172a] border border-dashed border-violet-400/20 p-8 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center mx-auto mb-4">
+                <Video size={24} className="text-violet-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">New master classes are being scheduled</h3>
+              <p className="text-sm text-slate-400 mt-2 max-w-md mx-auto">
+                We don&apos;t have a live or upcoming session listed right now, but the catalog is still available for learners who want to explore past formats.
+              </p>
+              <Link
+                href="/dashboard/master-classes"
+                className="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 text-sm font-medium transition-colors"
+              >
+                Browse Master Classes
+                <ChevronRight size={14} />
+              </Link>
+            </div>
           )}
         </div>
       </section>
@@ -602,7 +806,7 @@ export default function LandingPage() {
               Browse Trainers <ChevronRight size={14} />
             </Link>
           </div>
-          {trainers.length > 0 && (
+          {trainers.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {trainers.map((trainer: Trainer, i) => (
                 <Link key={trainer.id} href={`/dashboard/training/${trainer.id}`} className={`angular-card bg-[#0f172a] p-6 border border-white/10/80 hover-lift transition-all duration-300 group animate-fade-in-up animate-delay-${i + 1}`}>
@@ -621,6 +825,31 @@ export default function LandingPage() {
                   </div>
                 </Link>
               ))}
+            </div>
+          ) : (
+            <div className="angular-card bg-[#0f172a] border border-dashed border-amber-400/20 p-8 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                <Users size={24} className="text-amber-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">Trainer sessions open soon</h3>
+              <p className="text-sm text-slate-400 mt-2 max-w-md mx-auto">
+                Private coaching is part of the platform direction, but there are no trainer profiles published yet. You can still start with courses and labs today.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors"
+                >
+                  Start Learning
+                  <ArrowRight size={14} />
+                </Link>
+                <Link
+                  href="/get-started"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-200 text-sm font-medium transition-colors"
+                >
+                  Ask About Team Training
+                </Link>
+              </div>
             </div>
           )}
         </div>
@@ -659,18 +888,18 @@ export default function LandingPage() {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <SectionLabel>Simple Pricing</SectionLabel>
             <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Choose your plan</h2>
-            <p className="text-lg text-slate-500 mt-4">Start free, upgrade when you are ready. No hidden fees.</p>
+            <p className="text-lg text-slate-500 mt-4">Start with 12 months of free access. Upgrade paths can come later, after you have built real proof of skill.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Tier */}
             <div className="angular-card bg-[#0f172a] p-8 border border-white/10/80 hover-lift transition-all duration-300">
               <div className="mb-6">
-                <span className="label-tracking text-slate-400 mb-2 block">Free</span>
+                <span className="label-tracking text-slate-400 mb-2 block">Early Learner</span>
                 <div className="flex items-end gap-1">
                   <span className="text-5xl font-extrabold text-white">{convert(0)}</span>
-                  <span className="text-slate-500 mb-2">/mo</span>
+                  <span className="text-slate-500 mb-2">for 12 months</span>
                 </div>
-                <p className="text-slate-500 text-sm mt-3">Everything you need to get started</p>
+                <p className="text-slate-500 text-sm mt-3">Everything you need to start learning, practicing, and earning proof of skill</p>
               </div>
               <ul className="space-y-3 mb-8">
                 {["All courses", "Hands-on labs", "Community access", "Basic certifications"].map((feature) => (
@@ -679,8 +908,8 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/get-started" className="angular-btn btn-ghost text-sm w-full justify-center border border-white/10 hover:border-[#7AD62A] hover:text-[#7AD62A]">
-                <span>Get Started Free</span>
+              <Link href="/register" className="angular-btn btn-ghost text-sm w-full justify-center border border-white/10 hover:border-[#7AD62A] hover:text-[#7AD62A]">
+                <span>Create Free Account</span>
               </Link>
             </div>
 
@@ -692,12 +921,12 @@ export default function LandingPage() {
                 </span>
               </div>
               <div className="mb-6">
-                <span className="label-tracking text-[#7AD62A] mb-2 block">Pro</span>
+                <span className="label-tracking text-[#7AD62A] mb-2 block">Institutions & Teams</span>
                 <div className="flex items-end gap-1">
-                  <span className="text-5xl font-extrabold text-white">{convert(29)}</span>
-                  <span className="text-slate-500 mb-2">/mo</span>
+                  <span className="text-5xl font-extrabold text-white">Custom</span>
+                  <span className="text-slate-500 mb-2">plans</span>
                 </div>
-                <p className="text-slate-500 text-sm mt-3">For serious practitioners</p>
+                <p className="text-slate-500 text-sm mt-3">For schools, cohorts, and organizations that need reporting and managed learning</p>
               </div>
               <ul className="space-y-3 mb-8">
                 {["Everything in Free", "Priority lab access", "1-on-1 training sessions", "Advanced certifications", "Team analytics"].map((feature) => (
@@ -707,7 +936,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <Link href="/get-started" className="angular-btn btn-primary text-sm w-full justify-center shadow-lg shadow-[#7AD62A]/20 hover:shadow-[#7AD62A]/40">
-                <span>Start Pro Trial</span> <ArrowRight size={14} />
+                <span>Discuss Team Access</span> <ArrowRight size={14} />
               </Link>
             </div>
           </div>
@@ -752,14 +981,14 @@ export default function LandingPage() {
             Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-            <Link href="/get-started" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/25 hover:shadow-[#7AD62A]/40 magnetic-btn">
-              <span>Start Free Today</span> <ArrowRight size={18} />
+            <Link href="/register" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/25 hover:shadow-[#7AD62A]/40 magnetic-btn">
+              <span>Start Free for 1 Year</span> <ArrowRight size={18} />
             </Link>
             <a href="#courses" className="text-white/60 hover:text-white text-sm font-medium px-6 py-4 transition-colors">
               Browse Courses
             </a>
           </div>
-          <p className="text-sm text-white/40 mt-5">No credit card required. Free tier available.</p>
+          <p className="text-sm text-white/40 mt-5">No credit card required. 12 months free for early learners.</p>
         </div>
       </section>
 
@@ -793,10 +1022,10 @@ export default function LandingPage() {
                 { label: "Linux Fundamentals", href: "/dashboard/courses" },
                 { label: "Security Training", href: "/dashboard/courses" },
                 { label: "DevOps Paths", href: "/dashboard/courses" },
-                { label: "Documentation", href: "#" },
+                { label: "Documentation", href: "/dashboard/courses" },
               ],
               Company: [
-                { label: "About Us", href: "/about" },
+                { label: "Mission", href: "/get-started" },
                 { label: "Contact", href: "mailto:contact@xpertclass.academy" },
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "Terms of Service", href: "/terms" },
@@ -827,8 +1056,8 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
             <p>&copy; 2026 XpertClass. All rights reserved.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-slate-300 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-slate-300 transition-colors">Terms</a>
+              <Link href="/privacy" className="hover:text-slate-300 transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-slate-300 transition-colors">Terms</Link>
               <a href="mailto:contact@xpertclass.academy" className="hover:text-slate-300 transition-colors">Contact</a>
             </div>
           </div>

@@ -21,8 +21,6 @@ import {
   Target,
   Zap,
   Lock,
-  Eye,
-  Bug,
   Terminal,
   Globe,
   ArrowRight,
@@ -40,8 +38,12 @@ import {
   Smartphone,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
-
-const ONBOARDING_KEY = "onboardingComplete";
+import {
+  EMPTY_ONBOARDING_SELECTIONS,
+  markOnboardingComplete,
+  writeOnboardingSelections,
+  type OnboardingSelections,
+} from "@/lib/onboarding";
 
 const testimonials = [
   {
@@ -76,28 +78,10 @@ const testimonials = [
   },
 ];
 
-type Selections = {
-  purpose: string[];
-  field: string[];
-  role: string;
-  experience: string;
-  skills: string[];
-  jobInterests: string[];
-};
-
-const TOTAL_STEPS = 7; // welcome + 6 questions
-
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(-1); // -1 = welcome screen
-  const [selections, setSelections] = useState<Selections>({
-    purpose: [],
-    field: [],
-    role: "",
-    experience: "",
-    skills: [],
-    jobInterests: [],
-  });
+  const [selections, setSelections] = useState<OnboardingSelections>(EMPTY_ONBOARDING_SELECTIONS);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -145,15 +129,19 @@ export default function OnboardingPage() {
 
       await fetchApi("/auth/profile", {
         method: "PATCH",
-        body: JSON.stringify({ userExperience }),
+        body: JSON.stringify({
+          userExperience,
+          onboardingCompleted: true,
+          onboardingSelections: selections,
+        }),
       });
 
-      localStorage.setItem(ONBOARDING_KEY, "true");
-      localStorage.setItem("onboardingSelections", JSON.stringify(selections));
+      markOnboardingComplete();
+      writeOnboardingSelections(selections);
       router.push("/dashboard");
     } catch {
-      localStorage.setItem(ONBOARDING_KEY, "true");
-      localStorage.setItem("onboardingSelections", JSON.stringify(selections));
+      markOnboardingComplete();
+      writeOnboardingSelections(selections);
       toast.error("Failed to save preferences. You can update them later in Settings.");
       router.push("/dashboard");
     } finally {
@@ -162,7 +150,7 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = () => {
-    localStorage.setItem(ONBOARDING_KEY, "true");
+    markOnboardingComplete();
     router.push("/dashboard");
   };
 
@@ -178,7 +166,6 @@ export default function OnboardingPage() {
   }, []);
 
   const currentTestimonial = testimonials[(step >= 0 ? step : 0) % testimonials.length];
-  const wizardStep = step >= 0 ? step : 0;
   const completedSteps = Math.max(0, step + 1);
   const progressPercent = (completedSteps / 6) * 100;
   const circumference = 2 * Math.PI * 44;
@@ -492,7 +479,7 @@ function StepContent({
 }: {
   title: React.ReactNode;
   subtitle: string;
-  options: { id: string; label: string; icon: any; description: string }[];
+  options: { id: string; label: string; icon: React.ComponentType<{ size?: number; className?: string }>; description: string }[];
   selected: string[];
   onToggle: (id: string) => void;
   multi: boolean;

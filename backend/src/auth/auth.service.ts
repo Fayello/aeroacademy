@@ -308,6 +308,18 @@ export class AuthService {
         createdAt: true,
         organization: { select: { id: true, name: true, type: true } },
         team: { select: { id: true, name: true, description: true } },
+        preference: {
+          select: {
+            interests: true,
+            weakSkills: true,
+            preferredDifficulty: true,
+            notificationsEnabled: true,
+            weeklyDigestEnabled: true,
+            displayMode: true,
+            onboardingCompleted: true,
+            onboardingSelections: true,
+          },
+        },
         _count: {
           select: {
             achievements: true,
@@ -467,6 +479,8 @@ export class AuthService {
       organizationId?: string;
       avatarUrl?: string;
       userExperience?: string;
+      onboardingCompleted?: boolean;
+      onboardingSelections?: Record<string, unknown>;
     },
   ) {
     if (data.email) {
@@ -504,10 +518,46 @@ export class AuthService {
       if (org) updateData.organizationId = data.organizationId;
     }
 
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-    });
+    const updatedUser = Object.keys(updateData).length
+      ? await this.prisma.user.update({
+          where: { id: userId },
+          data: updateData,
+        })
+      : await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+
+    if (data.onboardingCompleted !== undefined || data.onboardingSelections !== undefined) {
+      const selections = data.onboardingSelections || {};
+      const fieldSelections = selections.field;
+      const experienceSelection = selections.experience;
+      const interests = Array.isArray(fieldSelections)
+        ? fieldSelections.filter((item): item is string => typeof item === 'string')
+        : undefined;
+      const preferredDifficulty =
+        experienceSelection === 'None'
+          ? 'BEGINNER'
+          : experienceSelection === '5+'
+            ? 'ADVANCED'
+            : undefined;
+
+      await this.prisma.userPreference.upsert({
+        where: { userId },
+        create: {
+          userId,
+          interests: interests || [],
+          preferredDifficulty: preferredDifficulty || 'MEDIUM',
+          onboardingCompleted: data.onboardingCompleted ?? false,
+          onboardingSelections: data.onboardingSelections || {},
+        },
+        update: {
+          ...(interests ? { interests } : {}),
+          ...(preferredDifficulty ? { preferredDifficulty } : {}),
+          ...(data.onboardingCompleted !== undefined ? { onboardingCompleted: data.onboardingCompleted } : {}),
+          ...(data.onboardingSelections !== undefined ? { onboardingSelections: data.onboardingSelections } : {}),
+        },
+      });
+    }
+
+    return updatedUser;
   }
 
   async changePassword(userId: string, oldPass: string, newPass: string) {

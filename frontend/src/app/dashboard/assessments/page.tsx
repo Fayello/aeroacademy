@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import toast from "@/lib/toast";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import {
   ClipboardCheck,
   Loader2,
   ChevronRight,
-  BarChart3,
   BookOpen,
-  CheckCircle2,
-  XCircle,
+  ShieldCheck,
+  FileCheck,
+  Target,
 } from "lucide-react";
 
 interface Assessment {
@@ -64,7 +63,47 @@ export default function AssessmentsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <PageHeader title="Skill Assessments" description="Evaluate your skills and get personalized recommendations" />
+      <PageHeader title="Readiness Assessments" description="Measure current capability, identify gaps, and route learners into the right training path" />
+
+      <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-4">
+        <div className="angular-card border border-white/10 bg-[#0f172a] p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Assessment Purpose</p>
+          <h2 className="text-xl font-bold text-white mt-2">Use assessments to place learners accurately before higher-stakes certification work</h2>
+          <p className="text-sm text-slate-400 mt-3 leading-relaxed">
+            These assessments are designed to identify readiness, not just reward recall. Results help learners understand where to train next and give instructors a cleaner starting point.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3 mt-5">
+            {[
+              { title: "Baseline", text: "Measure starting capability", icon: Target },
+              { title: "Guidance", text: "Map results to next training steps", icon: BookOpen },
+              { title: "Evidence", text: "Keep a record of prior attempts", icon: FileCheck },
+            ].map((item) => (
+              <div key={item.title} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <item.icon size={16} className="text-[#7AD62A] mb-2" />
+                <p className="text-sm font-semibold text-white">{item.title}</p>
+                <p className="text-xs text-slate-400 mt-1">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="angular-card border border-[#7AD62A]/20 bg-[#0f172a] p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Standards</p>
+          <div className="space-y-3 mt-4">
+            {[
+              "Assessments should inform the learner’s next move, not confuse it.",
+              "Results remain visible so progress can be compared over time.",
+              "Course recommendations should become more relevant after each attempt.",
+              "Use assessments before advanced labs or certification-prep sequences when possible.",
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-3">
+                <ShieldCheck size={14} className="text-[#7AD62A] shrink-0 mt-0.5" />
+                <p className="text-sm text-slate-300 leading-relaxed">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {assessments.length === 0 ? (
         <div className="angular-card border border-white/10 bg-[#0f172a] p-12 text-center">
@@ -108,7 +147,7 @@ export default function AssessmentsPage() {
 
       {results.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-white mb-4">Past Results</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">Assessment Record</h2>
           <div className="angular-card border border-white/10 bg-[#0f172a] overflow-hidden">
             <div className="divide-y divide-slate-100">
               {results.map((r) => {
@@ -118,7 +157,11 @@ export default function AssessmentsPage() {
                     <div>
                       <p className="text-sm font-medium text-white">{r.assessment.title}</p>
                       <p className="text-xs text-slate-500">
-                        {new Date(r.createdAt).toLocaleDateString()} · {r.score}/{r.maxScore}
+                        {new Date(r.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })} · {r.score}/{r.maxScore}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -130,7 +173,7 @@ export default function AssessmentsPage() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-xs font-bold text-slate-700">{pct}%</span>
+                      <span className="text-xs font-bold text-slate-300">{pct}%</span>
                     </div>
                   </div>
                 );

@@ -8,10 +8,8 @@ import { auth, API_URL, API_VERSION } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Cookies from "js-cookie";
 import toast from "@/lib/toast";
-import { initTokenRefresh } from "@/lib/api";
-import { Mail, Lock, UserPlus, Loader2, Shield, User, CheckCircle2, XCircle } from "lucide-react";
+import { Mail, Lock, UserPlus, Loader2, User, CheckCircle2, XCircle } from "lucide-react";
 
   const registerSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -23,7 +21,7 @@ import { Mail, Lock, UserPlus, Loader2, Shield, User, CheckCircle2, XCircle } fr
       .regex(/[A-Z]/, "Must contain at least one uppercase letter")
       .regex(/\d/, "Must contain at least one number"),
     confirmPassword: z.string(),
-    acceptTerms: z.literal(true as boolean, { message: "You must accept the terms and conditions" }),
+    acceptTerms: z.boolean().refine((value) => value, "You must accept the terms and conditions"),
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -32,18 +30,18 @@ import { Mail, Lock, UserPlus, Loader2, Shield, User, CheckCircle2, XCircle } fr
 type RegisterValues = z.infer<typeof registerSchema>;
 
 const BENEFITS = [
-  "Free access to all courses & labs",
+  "12 months of free access",
+  "Courses, labs, and guided beginner paths",
   "Earn XP & climb the leaderboard",
   "Deploy real Docker sandbox labs",
   "Earn industry-recognized certifications",
-  "Join a community of engineers",
 ];
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { acceptTerms: false as any },
+    defaultValues: { acceptTerms: false },
   });
 
   const passwordValue = useWatch({ control: control, name: "password" }) || "";
@@ -84,10 +82,10 @@ export default function RegisterPage() {
         <div className="relative z-10 flex flex-col justify-center px-12 py-12">
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Start your journey in security, Linux & DevOps
+              Start free for 1 year
             </h2>
             <p className="text-slate-300 text-lg mb-10">
-              Join thousands of engineers across Cameroon building real skills through hands-on labs and structured courses.
+              Build proof of skill through hands-on labs, structured courses, and a personalized first path.
             </p>
 
             <div className="space-y-4">
@@ -102,7 +100,7 @@ export default function RegisterPage() {
             <div className="mt-10 flex items-center gap-6 text-sm text-slate-300">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
-                <span>Free to start</span>
+                <span>12 months free</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
@@ -120,13 +118,13 @@ export default function RegisterPage() {
           <Link href="/" className="flex items-center gap-2.5 mb-10">
             <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
             <span className="text-xl font-bold tracking-tight">
-              <span className="text-[#0F203A]">Xpert</span><span className="text-[#7AD62A]">Class</span>
+              <span className="text-white">Xpert</span><span className="text-[#7AD62A]">Class</span>
             </span>
           </Link>
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white tracking-tight">Create your account</h1>
-            <p className="text-slate-500 mt-2">Start your tech training journey today</p>
+            <p className="text-slate-500 mt-2">No credit card required. Verify your email, personalize your path, and start practicing.</p>
           </div>
 
           {/* Social Buttons */}
@@ -271,7 +269,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#6bc422] text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] font-medium py-3 px-5 rounded-xl transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <UserPlus size={18} />}
               {isSubmitting ? "Creating account..." : "Create account"}

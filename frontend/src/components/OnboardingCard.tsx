@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GraduationCap, Microscope, Trophy, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
-
-const ONBOARDING_KEY = "xpertclass_onboarded";
+import { ONBOARDING_COMPLETE_KEY, markOnboardingComplete } from "@/lib/onboarding";
 
 const steps = [
   {
@@ -34,19 +33,17 @@ const steps = [
 ];
 
 export default function OnboardingCard() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => {
+    try {
+      return !localStorage.getItem(ONBOARDING_COMPLETE_KEY);
+    } catch {
+      return false;
+    }
+  });
   const [step, setStep] = useState(0);
 
-  useEffect(() => {
-    try {
-      setVisible(!localStorage.getItem(ONBOARDING_KEY));
-    } catch {
-      setVisible(false);
-    }
-  }, []);
-
   const dismiss = () => {
-    localStorage.setItem(ONBOARDING_KEY, "true");
+    markOnboardingComplete();
     setVisible(false);
   };
 

@@ -19,11 +19,13 @@ import {
   Users,
   Award,
   Heart,
+  ShieldCheck,
+  FileBadge2,
 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
-import type { Course, Section } from "@/types/api";
+import type { Course } from "@/types/api";
 
 const CATEGORIES: Record<string, { label: string; color: string; bg: string }> = {
   aerodynamics: { label: "Aerodynamics", color: "text-sky-600", bg: "bg-sky-50 border-sky-200" },
@@ -47,6 +49,14 @@ const DIFFICULTY_MAP: Record<number, { label: string; dots: number; color: strin
   3: { label: "Intermediate", dots: 3, color: "text-amber-600" },
   4: { label: "Advanced", dots: 4, color: "text-orange-600" },
   5: { label: "Expert", dots: 5, color: "text-rose-600" },
+};
+
+type CategoryStyle = { label: string; color: string; bg: string };
+type DifficultyInfo = { label: string; dots: number; color: string };
+type CourseLockInfo = ReturnType<typeof getCourseLock>;
+type CourseListItem = Course & {
+  averageRating?: number;
+  _count?: Course["_count"] & { enrollments?: number };
 };
 
 type TabFilter = "all" | "in-progress" | "completed";
@@ -102,16 +112,15 @@ function ShimmerSkeleton() {
   );
 }
 
-function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonCount, categoryStyle, difficulty, gate, isFavorited, onToggleFavorite }: {
-  course: Course & { averageRating?: number; _count?: any };
+function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, categoryStyle, difficulty, gate, isFavorited, onToggleFavorite }: {
+  course: CourseListItem;
   index: number;
   isLocked: boolean;
   isEnrolled: boolean;
   sectionCount: number;
-  lessonCount: number;
-  categoryStyle: any;
-  difficulty: any;
-  gate: any;
+  categoryStyle: CategoryStyle;
+  difficulty: DifficultyInfo;
+  gate: CourseLockInfo;
   isFavorited: boolean;
   onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
@@ -237,16 +246,14 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, lessonC
   );
 }
 
-function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCount, categoryStyle, difficulty, gate, isFavorited, onToggleFavorite }: {
-  course: Course & { averageRating?: number; _count?: any };
+function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, categoryStyle, difficulty, isFavorited, onToggleFavorite }: {
+  course: CourseListItem;
   index: number;
   isLocked: boolean;
   isEnrolled: boolean;
   sectionCount: number;
-  lessonCount: number;
-  categoryStyle: any;
-  difficulty: any;
-  gate: any;
+  categoryStyle: CategoryStyle;
+  difficulty: DifficultyInfo;
   isFavorited: boolean;
   onToggleFavorite: (courseId: string, e: React.MouseEvent) => void;
 }) {
@@ -322,10 +329,16 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, lessonCo
 
 export default function CoursesPage() {
   const searchParams = useSearchParams();
-  const [courses, setCourses] = useState<(Course & { averageRating?: number; _count?: any })[]>([]);
+  const [courses, setCourses] = useState<CourseListItem[]>([]);
   const [enrollments, setEnrollments] = useState<Record<string, { enrolledAt: string; lastActivityAt: string }>>({});
   const [loading, setLoading] = useState(true);
-  const [level, setLevel] = useState(1);
+  const [level] = useState(() => {
+    try {
+      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {
+      return 1;
+    }
+  });
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
@@ -350,19 +363,6 @@ export default function CoursesPage() {
   };
 
   useEffect(() => {
-    try {
-      setLevel(getLevel(parseInt(localStorage.getItem("xp") || "0", 10)));
-    } catch {
-      setLevel(1);
-    }
-  }, []);
-
-  useEffect(() => {
-    const q = searchParams.get("q");
-    if (q) setSearchQuery(q);
-  }, [searchParams]);
-
-  useEffect(() => {
     fetchApi("/courses/my-favorites")
       .then((ids) => setFavorites(new Set(ids as string[])))
       .catch(() => {});
@@ -373,7 +373,7 @@ export default function CoursesPage() {
     async function loadCourses() {
       try {
         const [data, enrollmentsData] = await Promise.all([
-          fetchApi<any[]>("/courses"),
+          fetchApi<CourseListItem[]>("/courses"),
           fetchApi("/courses/my-enrollments").catch(() => []),
         ]);
         if (!cancelled) {
@@ -444,9 +444,50 @@ export default function CoursesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
-        title="Courses"
-        description={`${courses.length} course${courses.length !== 1 ? "s" : ""} available`}
+        title="Course Pathways"
+        description="Structured training designed to move you from learning to assessment readiness"
       />
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-4">
+        <div className="angular-card bg-[#0f172a] border border-white/10 p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Training Architecture</p>
+          <h2 className="text-xl font-bold text-white mt-2">Choose a pathway you can finish with confidence</h2>
+          <p className="text-sm text-slate-400 mt-3 max-w-2xl leading-relaxed">
+            Each course is part of a larger progression system: build foundations, complete practical work, prepare for assessments, and move toward verifiable outcomes.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3 mt-5">
+            {[
+              { title: "Learn", text: "Structured modules and guided lessons", icon: BookOpen },
+              { title: "Prove", text: "Lab-linked skill application and progress evidence", icon: ShieldCheck },
+              { title: "Qualify", text: "Clear route toward exams and certification readiness", icon: FileBadge2 },
+            ].map((item) => (
+              <div key={item.title} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <item.icon size={16} className="text-[#7AD62A] mb-2" />
+                <p className="text-sm font-semibold text-white">{item.title}</p>
+                <p className="text-xs text-slate-400 mt-1">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">At A Glance</p>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            {[
+              { label: "Published", value: String(courses.length), icon: BookOpen },
+              { label: "In Progress", value: String(tabCounts["in-progress"]), icon: Clock },
+              { label: "Completed", value: String(tabCounts.completed), icon: Award },
+              { label: "Favorites", value: String(favorites.size), icon: Heart },
+            ].map((item) => (
+              <div key={item.label} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <item.icon size={15} className="text-[#7AD62A] mb-2" />
+                <div className="text-lg font-bold text-white">{item.value}</div>
+                <div className="text-xs uppercase tracking-wide text-slate-400">{item.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-white/10">
@@ -493,7 +534,7 @@ export default function CoursesPage() {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search courses..."
+            placeholder="Search by title or learning outcome..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 text-sm bg-[#0f172a] border border-white/10 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
@@ -558,6 +599,34 @@ export default function CoursesPage() {
         )}
       </div>
 
+      {(searchQuery || selectedCategory || selectedDifficulty || activeTab !== "all") && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+          <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+            {filteredCourses.length} result{filteredCourses.length !== 1 ? "s" : ""}
+          </span>
+          {searchQuery && (
+            <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+              Search: {searchQuery}
+            </span>
+          )}
+          {selectedCategory && (
+            <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+              Category: {getCategoryStyle(selectedCategory).label}
+            </span>
+          )}
+          {selectedDifficulty && (
+            <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+              Level: {Object.values(DIFFICULTY_MAP).find((item) => item.dots === selectedDifficulty)?.label}
+            </span>
+          )}
+          {activeTab !== "all" && (
+            <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+              View: {TABS.find((tab) => tab.id === activeTab)?.label}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Results */}
       {filteredCourses.length === 0 ? (
         <div className="angular-card bg-[#0f172a] py-16 text-center">
@@ -596,11 +665,6 @@ export default function CoursesPage() {
             const isLocked = gate.locked;
             const isEnrolled = !!enrollments[course.id];
             const sectionCount = course._count?.sections || course.sections?.length || 0;
-            const lessonCount =
-              course.sections?.reduce(
-                (acc: number, s: Section) => acc + (s._count?.lessons || s.lessons?.length || 0),
-                0
-              ) || 0;
             const categoryStyle = getCategoryStyle(course.category);
             const difficulty = getDifficulty(course.difficulty || 1);
 
@@ -612,7 +676,6 @@ export default function CoursesPage() {
                 isLocked={isLocked}
                 isEnrolled={isEnrolled}
                 sectionCount={sectionCount}
-                lessonCount={lessonCount}
                 categoryStyle={categoryStyle}
                 difficulty={difficulty}
                 gate={gate}
@@ -640,11 +703,6 @@ export default function CoursesPage() {
             const isLocked = gate.locked;
             const isEnrolled = !!enrollments[course.id];
             const sectionCount = course._count?.sections || course.sections?.length || 0;
-            const lessonCount =
-              course.sections?.reduce(
-                (acc: number, s: Section) => acc + (s._count?.lessons || s.lessons?.length || 0),
-                0
-              ) || 0;
             const categoryStyle = getCategoryStyle(course.category);
             const difficulty = getDifficulty(course.difficulty || 1);
 
@@ -656,10 +714,8 @@ export default function CoursesPage() {
                 isLocked={isLocked}
                 isEnrolled={isEnrolled}
                 sectionCount={sectionCount}
-                lessonCount={lessonCount}
                 categoryStyle={categoryStyle}
                 difficulty={difficulty}
-                gate={gate}
                 isFavorited={favorites.has(course.id)}
                 onToggleFavorite={toggleFavorite}
               />

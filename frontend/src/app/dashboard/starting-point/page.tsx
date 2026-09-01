@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { getDifficultyStyle } from "@/lib/labs";
-import { Rocket, Star, CheckCircle, Clock, Lock, ArrowRight } from "lucide-react";
+import { Rocket, Star, CheckCircle, Clock, Lock, ArrowRight, Shield, FileCheck } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -36,7 +36,6 @@ function getDifficultyInfo(d: number) {
 export default function StartingPointPage() {
   const [labs, setLabs] = useState<StartingLab[]>([]);
   const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -80,7 +79,6 @@ export default function StartingPointPage() {
 
         const all = [...beginnerLabs, ...extraLabs];
         setLabs(all);
-        setProgress(0);
       } catch {
         // Use fallback curated list
         const fallback = CURATED_BEGINNER_LABS.map((title, idx) => ({
@@ -128,8 +126,8 @@ export default function StartingPointPage() {
   return (
     <div className="p-6 space-y-6">
       <PageHeader
-        title="Your Learning Path"
-        description="Follow this guided sequence of beginner labs to build your skills step by step"
+        title="Foundation Path"
+        description="Follow this guided sequence to build your first practical proof and move toward certification readiness"
         action={
           <Link
             href="/dashboard/labs"
@@ -139,6 +137,45 @@ export default function StartingPointPage() {
           </Link>
         }
       />
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4">
+        <div className="angular-card bg-[#0f172a] border border-white/10 p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Guided Certification Start</p>
+          <h2 className="text-xl font-bold text-white mt-2">One disciplined path to your first credible outcome</h2>
+          <p className="text-sm text-slate-400 mt-3 leading-relaxed">
+            This sequence is designed to reduce confusion: start with fundamentals, complete the labs in order, then progress into assessments and certificate-eligible pathways.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3 mt-5">
+            {[
+              { title: "Learn", text: "Build the base", icon: Rocket },
+              { title: "Practice", text: "Complete guided labs", icon: Shield },
+              { title: "Qualify", text: "Prepare for assessments", icon: FileCheck },
+            ].map((item) => (
+              <div key={item.title} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <item.icon size={16} className="text-[#7AD62A] mb-2" />
+                <p className="text-sm font-semibold text-white">{item.title}</p>
+                <p className="text-xs text-slate-400 mt-1">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Outcome</p>
+          <h3 className="text-lg font-bold text-white mt-2">What this path unlocks</h3>
+          <div className="space-y-3 mt-4">
+            {[
+              "Confidence with the platform and its hands-on environments",
+              "Evidence of practical engagement for future exam readiness",
+              "A clean bridge into structured course and certification pathways",
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-3">
+                <CheckCircle size={14} className="text-[#7AD62A] shrink-0 mt-0.5" />
+                <p className="text-sm text-slate-300">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Progress card */}
       <div className="angular-card text-white p-6 overflow-hidden relative" style={{ backgroundColor: "#0F203A" }}>

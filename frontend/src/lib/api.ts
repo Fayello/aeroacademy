@@ -92,6 +92,8 @@ async function refreshAccessToken(): Promise<string> {
   return data.access_token || '';
 }
 
+// Many existing call sites still rely on the historical implicit response shape.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}, apiVersion?: string): Promise<T> {
   const version = apiVersion || API_VERSION;
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -208,6 +210,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function fetchApiV2<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
   return fetchApi<T>(endpoint, options, API_VERSION_V2);
 }
@@ -235,7 +238,15 @@ export const auth = {
   resetPasswordOtp: (email: string, code: string, newPassword: string) =>
     fetchApi('/auth/reset-password-otp', { method: 'POST', body: JSON.stringify({ email, code, newPassword }) }),
   getMe: () => fetchApi('/auth/me'),
-  updateProfile: (data: { name?: string; bio?: string; city?: string; organizationId?: string }) =>
+  updateProfile: (data: {
+    name?: string;
+    bio?: string;
+    city?: string;
+    organizationId?: string;
+    userExperience?: string;
+    onboardingCompleted?: boolean;
+    onboardingSelections?: Record<string, unknown>;
+  }) =>
     fetchApi('/auth/profile', { method: 'PATCH', body: JSON.stringify(data) }),
   changePassword: (data: { oldPassword: string; newPassword: string }) =>
     fetchApi('/auth/change-password', { method: 'POST', body: JSON.stringify(data) }),

@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Loader2, Clock, Shield, Lock, Search, X, LayoutGrid, List } from "lucide-react";
+import { Microscope, Play, Clock, Shield, Lock, Search, X, LayoutGrid, List } from "lucide-react";
 import LabAvatar from "@/components/ui/LabAvatar";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
 import toast from "@/lib/toast";
-import { getLevel, getLabLock } from "@/lib/levelGating";
+import { getLevel } from "@/lib/levelGating";
 import { getDifficultyStyle, getEstimatedTime, getSolvedCount, getProgressStatus } from "@/lib/labs";
+import { getFocusLabelFromOnboarding, readOnboardingSelections, scoreLabAgainstOnboarding } from "@/lib/onboarding";
 import type { Lab, LabStats } from "@/types/api";
 
 type TabFilter = "all" | "not-started" | "in-progress" | "completed";
@@ -23,17 +24,25 @@ const TABS: { id: TabFilter; label: string }[] = [
 export default function LabsCatalog() {
   const [labs, setLabs] = useState<Lab[]>([]);
   const [loading, setLoading] = useState(true);
-  const [systemStats, setSystemStats] = useState<LabStats | null>(null);
-  const [level, setLevel] = useState(1);
+  const [, setSystemStats] = useState<LabStats | null>(null);
+  const [level] = useState(() => {
+    try {
+      return getLevel(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {
+      return 1;
+    }
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [domainFilter, setDomainFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState<"featured" | "domain" | "difficulty" | "title">("featured");
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const onboarding = readOnboardingSelections();
+  const focusLabel = getFocusLabelFromOnboarding(onboarding);
 
   const DIFFICULTIES = ["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
-  const DOMAINS = ["ALL", "Systems", "Networking", "Web Security", "Cloud", "Databases", "DevOps", "AI & MLOps", "IT Ops"];
+  const DOMAINS = ["ALL", "Systems", "Networking", "Web Security", "Security", "Cloud", "Databases", "DevOps", "AI & MLOps", "IT Ops"];
 
   function getLabDomain(lab: Lab): string {
     const t = `${lab.title} ${lab.description}`.toLowerCase();
@@ -70,6 +79,11 @@ export default function LabsCatalog() {
       return matchesSearch && matchesDifficulty && matchesDomain && matchesTab;
     })
     .sort((a, b) => {
+      if (sortBy === "featured") {
+        const scoreA = scoreLabAgainstOnboarding(a.title, a.description, onboarding);
+        const scoreB = scoreLabAgainstOnboarding(b.title, b.description, onboarding);
+        if (scoreA !== scoreB) return scoreB - scoreA;
+      }
       if (sortBy === "domain") return getLabDomain(a).localeCompare(getLabDomain(b));
       if (sortBy === "difficulty") return (a.difficulty || 1200) - (b.difficulty || 1200);
       if (sortBy === "title") return a.title.localeCompare(b.title);
@@ -91,14 +105,6 @@ export default function LabsCatalog() {
     setDomainFilter("ALL");
     setActiveTab("all");
   };
-
-  useEffect(() => {
-    try {
-      setLevel(getLevel(parseInt(localStorage.getItem("xp") || "0", 10)));
-    } catch {
-      setLevel(1);
-    }
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -153,7 +159,11 @@ export default function LabsCatalog() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
         title="Labs"
-        description={`${labs.length} lab${labs.length !== 1 ? "s" : ""} available`}
+        description={
+          focusLabel
+            ? `${labs.length} labs available, ranked for ${focusLabel.toLowerCase()}`
+            : `${labs.length} lab${labs.length !== 1 ? "s" : ""} available`
+        }
       />
 
       {/* Beginner Path CTA */}
@@ -173,6 +183,26 @@ export default function LabsCatalog() {
         </div>
         <span className="text-xs text-white/40 group-hover:text-[#7AD62A] transition-colors">Begin →</span>
       </Link>
+
+      {focusLabel && (
+        <div className="angular-card bg-[#0f172a] border border-white/10 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#7AD62A]">Personalized ranking</p>
+            <p className="text-sm text-white mt-1">
+              Featured labs are now prioritized for <span className="text-[#7AD62A]">{focusLabel}</span>.
+            </p>
+            <p className="text-xs text-slate-400 mt-1">
+              Use the guided path if you want the fastest route to your first completed lab.
+            </p>
+          </div>
+          <Link
+            href="/dashboard/starting-point"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors"
+          >
+            Start Guided Path
+          </Link>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-white/10">
@@ -268,7 +298,7 @@ export default function LabsCatalog() {
           ))}
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
+            onChange={(e) => setSortBy(e.target.value as "featured" | "domain" | "difficulty" | "title")}
             className="ml-2 px-2 py-1.5 text-xs font-medium rounded-full border bg-white/5 text-slate-400 border-white/10 focus:outline-none focus:border-[#7AD62A]/30"
             aria-label="Sort labs"
           >
@@ -418,8 +448,7 @@ export default function LabsCatalog() {
             <span className="w-6 text-center shrink-0">#</span>
             <span className="flex-1 min-w-0">Lab</span>
             <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
-            <span className="hidden md:block w-16 shrink-0">Rating</span>
-            <span className="hidden md:block w-20 shrink-0">Flags</span>
+            <span className="hidden md:block w-20 shrink-0">Progress</span>
             <span className="hidden lg:block w-20 shrink-0">Time</span>
             <span className="w-20 shrink-0 text-right">Status</span>
           </div>

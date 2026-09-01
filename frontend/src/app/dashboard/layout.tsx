@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, Search, Bell, ChevronRight, CheckCheck, Loader2, LogOut, Settings, User as UserIcon, Zap, Command } from "lucide-react";
+import { Menu, Search, Bell, ChevronRight, CheckCheck, Loader2, LogOut, Settings, User as UserIcon, Zap } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import LearningCoach from "@/components/ai/LearningCoach";
@@ -13,8 +14,9 @@ import { DisplayModeProvider } from "@/lib/displayMode";
 import { NavigationProvider } from "@/lib/navigation";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CurrencySwitcher from "@/components/ui/CurrencySwitcher";
-import { initTokenRefresh } from "@/lib/api";
+import { fetchApi, initTokenRefresh } from "@/lib/api";
 import { logout } from "@/lib/auth";
+import { hasCompletedOnboarding, syncOnboardingFromProfile } from "@/lib/onboarding";
 import { useNotifications } from "@/hooks/useNotifications";
 import { NotificationTypeIcon } from "@/components/NotificationTypeIcon";
 import { timeAgo } from "@/lib/format";
@@ -45,15 +47,32 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const onboardingDone = localStorage.getItem("onboardingComplete");
-    if (!onboardingDone) {
-      // Give the router a moment; show a brief loading state then redirect
-      // Don't block forever — if redirect fails, still render dashboard
-      router.replace("/onboarding");
-      const t = setTimeout(() => setChecked(true), 2000);
-      return () => clearTimeout(t);
+    let cancelled = false;
+
+    async function verifyOnboarding() {
+      if (hasCompletedOnboarding()) {
+        setChecked(true);
+        return;
+      }
+
+      try {
+        const profile = await fetchApi<{ preference?: { onboardingCompleted?: boolean; onboardingSelections?: unknown } | null }>("/auth/me");
+        syncOnboardingFromProfile(profile);
+        if (!cancelled && hasCompletedOnboarding()) {
+          setChecked(true);
+          return;
+        }
+      } catch {
+        // If profile hydration fails, continue to onboarding where auth handling can recover.
+      }
+
+      if (!cancelled) {
+        router.replace("/onboarding");
+      }
     }
-    setChecked(true);
+
+    verifyOnboarding();
+    return () => { cancelled = true; };
   }, [router]);
 
   if (!checked) {
@@ -68,23 +87,32 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
 function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const router = useRouter();
-  const [user, setUser] = useState<{ name?: string; avatarUrl?: string } | null>(null);
+  const [user] = useState<{ name?: string; avatarUrl?: string } | null>(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [shortcutKey] = useState(() => {
+    if (typeof navigator === "undefined") return "Ctrl";
+    return /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘" : "Ctrl";
+  });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [xp, setXp] = useState(0);
+  const [xp] = useState(() => {
+    try {
+      return parseInt(localStorage.getItem("xp") || "0", 10);
+    } catch {
+      return 0;
+    }
+  });
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState("");
   const { notifications, unread, loading, markRead, markAllRead } = useNotifications();
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      if (stored) setUser(JSON.parse(stored));
-      setXp(parseInt(localStorage.getItem("xp") || "0", 10));
-    } catch {}
-  }, []);
 
   // Ctrl+/ keyboard shortcut for search
   useEffect(() => {
@@ -137,7 +165,8 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           <input
             ref={searchRef}
             type="text"
-            placeholder="Search courses, labs..."
+            placeholder="Search course catalog..."
+            aria-label="Search course catalog"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onKeyDown={(e) => {
@@ -150,7 +179,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             className="w-full h-8 pl-8 pr-14 rounded-lg bg-white/5 border border-transparent focus:border-[#7AD62A] focus:bg-white/8 focus:outline-none text-sm text-slate-200 placeholder:text-slate-500 transition-colors"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
-            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">⌘</kbd>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">{shortcutKey}</kbd>
             <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white/5 border border-white/10 rounded shadow-sm">/</kbd>
           </div>
         </div>
@@ -270,7 +299,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             aria-label="User menu"
           >
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover border border-white/10" />
+              <Image src={user.avatarUrl} alt="" width={28} height={28} unoptimized className="w-7 h-7 rounded-full object-cover border border-white/10" />
             ) : (
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center text-white text-[10px] font-bold border border-white/10">
                 {initials}
@@ -317,18 +346,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  useEffect(() => {
-    setSidebarCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
-  }, []);
-
   const toggleSidebar = () => {
-    setSidebarCollapsed((prev) => {
-      const next = !prev;
-      localStorage.setItem("sidebar-collapsed", String(next));
-      return next;
-    });
+    const next = localStorage.getItem("sidebar-collapsed") !== "true";
+    localStorage.setItem("sidebar-collapsed", String(next));
     window.dispatchEvent(new Event("sidebar-toggle"));
   };
 

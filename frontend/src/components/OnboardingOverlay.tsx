@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Rocket, Microscope, Target, CheckCircle, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
-
-const ONBOARDING_KEY = "onboardingComplete";
+import { markOnboardingComplete } from "@/lib/onboarding";
 
 const steps = [
   {
@@ -58,7 +57,7 @@ export default function OnboardingOverlay({ onComplete }: OnboardingOverlayProps
 
   const finish = () => {
     try {
-      localStorage.setItem(ONBOARDING_KEY, "true");
+      markOnboardingComplete();
     } catch {
       // localStorage unavailable
     }

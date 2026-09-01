@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import CommandCenter from "@/components/dashboard/CommandCenter";
+import { syncOnboardingFromProfile } from "@/lib/onboarding";
+import type { UserPreference } from "@/types/api";
 
 interface User {
   id: string;
   email: string;
   name?: string;
+  preference?: UserPreference | null;
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(() => {
     try {
       const s = typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -31,8 +36,9 @@ export default function DashboardPage() {
     let cancelled = false;
     async function loadUser() {
       try {
-        const me = await fetchApi<{ id: string; email: string; name?: string }>("/auth/me");
+        const me = await fetchApi<User>("/auth/me");
         if (!cancelled && me) {
+          syncOnboardingFromProfile(me);
           localStorage.setItem("user", JSON.stringify(me));
           setUser(me);
         }
@@ -52,12 +58,17 @@ export default function DashboardPage() {
     }
   }, [userMetrics?.xp]);
 
+  useEffect(() => {
+    if (hydrated && !user) {
+      router.replace("/login");
+    }
+  }, [hydrated, user, router]);
+
   if (!hydrated) {
     return <DashboardSkeleton />;
   }
 
   if (!user) {
-    if (typeof window !== "undefined") window.location.href = "/login";
     return <DashboardSkeleton />;
   }
 

@@ -7,12 +7,11 @@ import {
   Award,
   CheckCircle2,
   Lock,
-  ChevronRight,
   Loader2,
   Shield,
-  Star,
   Target,
   ExternalLink,
+  FileCheck,
 } from "lucide-react";
 
 interface DomainResult {
@@ -105,15 +104,44 @@ export default function CertificationsPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fade-in-up pb-20">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Award size={28} className="text-[#7AD62A]" />
-          Certifications
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Earn industry-recognized certifications based on demonstrated competency
-        </p>
+      <div className="angular-card bg-[#0f172a] border border-white/10 p-6">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Credential System</p>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2 mt-2">
+              <Award size={28} className="text-[#7AD62A]" />
+              Certifications
+            </h1>
+            <p className="text-sm text-slate-400 mt-2 max-w-2xl">
+              Credentials are awarded from demonstrated competency, not just completion. Track your requirements, prove practical ability, and verify what you earn.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 p-4 min-w-[240px]">
+            <p className="text-xs uppercase tracking-wide text-[#7AD62A]">Verification Standard</p>
+            <p className="text-sm text-white mt-2">Each issued credential includes an issuer code, issue date, status, and public verification route.</p>
+          </div>
+        </div>
       </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        {[
+          { title: "Mapped domains", text: "Credentials are tied to domain mastery and practical work.", icon: Shield },
+          { title: "Assessment evidence", text: "Attempts, scores, and progress are part of the trust layer.", icon: FileCheck },
+          { title: "Public registry", text: "Awarded credentials can be verified through a public page.", icon: ExternalLink },
+        ].map((item) => (
+          <div key={item.title} className="angular-card bg-[#0f172a] border border-white/10 p-5">
+            <item.icon size={18} className="text-[#7AD62A] mb-3" />
+            <h2 className="text-sm font-semibold text-white">{item.title}</h2>
+            <p className="text-sm text-slate-400 mt-2 leading-relaxed">{item.text}</p>
+          </div>
+        ))}
+      </div>
+
+      {error && (
+        <div className="angular-card border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-amber-300">
+          {error}
+        </div>
+      )}
 
       {/* Earned Awards */}
       {awards.length > 0 && (
@@ -251,7 +279,7 @@ export default function CertificationsPage() {
                   </div>
 
                   {/* Summary */}
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                  <div className="flex items-center gap-4 text-xs text-slate-400">
                     <span>
                       <span className="font-semibold text-white">{ev.domainsQualified}</span>/{ev.domainResults.length} domains
                     </span>
@@ -267,7 +295,7 @@ export default function CertificationsPage() {
                   {ev.missingRequirements.length > 0 && (
                     <div className="mt-3 space-y-1">
                       {ev.missingRequirements.map((mr, i) => (
-                        <div key={i} className="text-xs text-amber-600 flex items-center gap-1">
+                        <div key={i} className="text-xs text-amber-400 flex items-center gap-1">
                           <Target size={10} />
                           {mr}
                         </div>

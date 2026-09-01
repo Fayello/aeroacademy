@@ -13,6 +13,18 @@ export interface User {
   organizationId: string | null;
   teamId: string | null;
   createdAt: string;
+  preference?: UserPreference | null;
+}
+
+export interface UserPreference {
+  interests: string[];
+  weakSkills: string[];
+  preferredDifficulty: string;
+  notificationsEnabled: boolean;
+  weeklyDigestEnabled: boolean;
+  displayMode: string;
+  onboardingCompleted: boolean;
+  onboardingSelections: Record<string, unknown>;
 }
 
 export interface Organization {
@@ -271,6 +283,7 @@ export interface AuthResponse {
     name: string | null;
     bio: string | null;
     role: string;
+    preference?: UserPreference | null;
   };
 }
 

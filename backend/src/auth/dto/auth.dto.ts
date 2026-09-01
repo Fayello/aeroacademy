@@ -6,6 +6,8 @@ import {
   IsString,
   Matches,
   MaxLength,
+  IsBoolean,
+  IsObject,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -84,6 +86,14 @@ export class UpdateProfileDto {
   @IsString()
   @IsOptional()
   userExperience?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  onboardingCompleted?: boolean;
+
+  @IsObject()
+  @IsOptional()
+  onboardingSelections?: Record<string, unknown>;
 }
 
 export class ChangePasswordDto {

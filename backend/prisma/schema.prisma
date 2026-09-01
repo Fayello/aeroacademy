@@ -1030,6 +1030,8 @@ model UserPreference {
   notificationsEnabled Boolean @default(true)
   weeklyDigestEnabled  Boolean @default(true)
   displayMode  String @default("PROGRESSION") // PROFESSIONAL, PROGRESSION, COMPETITIVE
+  onboardingCompleted Boolean @default(false)
+  onboardingSelections Json @default("{}")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

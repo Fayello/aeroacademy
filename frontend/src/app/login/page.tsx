@@ -6,13 +6,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { auth, API_URL, API_VERSION } from "@/lib/api";
-import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Cookies from "js-cookie";
 import toast from "@/lib/toast";
 import { initTokenRefresh } from "@/lib/api";
-import { Mail, Lock, LogIn, Loader2, Shield, Terminal, Microscope, Award, BookOpen, AlertCircle } from "lucide-react";
+import { Mail, Lock, LogIn, Loader2, Terminal, Microscope, Award, BookOpen, AlertCircle } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -76,7 +75,7 @@ export default function LoginPage() {
           <Link href="/" className="flex items-center gap-2.5 mb-10">
             <img src="/logo-icon.svg" alt="XpertClass" className="w-9 h-9" />
             <span className="text-xl font-bold tracking-tight">
-              <span className="text-[#0F203A]">Xpert</span><span className="text-[#7AD62A]">Class</span>
+              <span className="text-white">Xpert</span><span className="text-[#7AD62A]">Class</span>
             </span>
           </Link>
 
@@ -204,10 +203,10 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-12 py-12">
           <div className="max-w-lg">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Start your journey in security, Linux & DevOps
+              Continue your certification journey
             </h2>
             <p className="text-slate-300 text-lg mb-10">
-              Join thousands of engineers across Cameroon building real skills through hands-on labs and structured courses.
+              Resume your labs, keep your streak alive, and keep building verified proof of skill.
             </p>
 
             <div className="grid grid-cols-2 gap-4">
@@ -223,7 +222,7 @@ export default function LoginPage() {
             <div className="mt-10 flex items-center gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
-                <span>Free to start</span>
+                <span>12 months free</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
@@ -231,7 +230,7 @@ export default function LoginPage() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#7AD62A] rounded-full"></div>
-                <span>Cancel anytime</span>
+                <span>Resume anytime</span>
               </div>
             </div>
           </div>
