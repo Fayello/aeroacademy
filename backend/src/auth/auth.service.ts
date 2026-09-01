@@ -546,13 +546,13 @@ export class AuthService {
           interests: interests || [],
           preferredDifficulty: preferredDifficulty || 'MEDIUM',
           onboardingCompleted: data.onboardingCompleted ?? false,
-          onboardingSelections: data.onboardingSelections || {},
+          onboardingSelections: (data.onboardingSelections || {}) as any,
         },
         update: {
           ...(interests ? { interests } : {}),
           ...(preferredDifficulty ? { preferredDifficulty } : {}),
           ...(data.onboardingCompleted !== undefined ? { onboardingCompleted: data.onboardingCompleted } : {}),
-          ...(data.onboardingSelections !== undefined ? { onboardingSelections: data.onboardingSelections } : {}),
+          ...(data.onboardingSelections !== undefined ? { onboardingSelections: data.onboardingSelections as any } : {}),
         },
       });
     }
