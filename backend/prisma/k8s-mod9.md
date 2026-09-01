@@ -1,279 +1,723 @@
 # Module 9 — Disaster Recovery
 
-## What You'll Actually Do
+Disasters happen. etcd corruption, node failures, accidental deletions, data center outages. The question isn't whether your cluster will fail — it's whether you can recover. This module covers etcd backup and restore, cluster backup strategies, control plane recovery, and the practical work of recovering from etcd corruption.
 
-You'll back up etcd, restore a cluster from backup, implement Velero for workload-level backups, and test disaster recovery procedures. This is about being able to recover when things go wrong — because they will.
+## Why Disaster Recovery Matters
 
-## Core Concepts
+Kubernetes clusters are distributed systems with multiple failure points:
 
-### What Can Go Wrong
+- **etcd corruption**: The single source of truth becomes inconsistent.
+- **Control plane failure**: API server, scheduler, or controller manager goes down.
+- **Node failure**: Worker nodes lose power, disk, or network.
+- **Accidental deletion**: Someone runs `kubectl delete namespace production`.
+- **Data center outage**: Complete loss of a physical location.
+- **Ransomware**: Encrypted etcd data.
 
-- **etcd corruption**: The most catastrophic failure. Lose etcd, lose the cluster.
-- **Control plane failure**: API server down, scheduler stuck, controller manager dead.
-- **Node failure**: Worker node dies, pods need rescheduling.
-- **Namespace deletion**: Accidental `kubectl delete namespace production`.
-- **Data loss**: PersistentVolume corruption or accidental deletion.
+Without backups, these scenarios mean data loss. With proper backup and recovery procedures, you can restore the cluster to a known good state.
 
-### etcd Backup Strategy
+## etcd Backup
 
-etcd is the single point of failure. Back it up frequently and test restores.
+etcd is the only state store in your cluster. Backing up etcd means backing up everything — all objects, all namespaces, all configurations.
+
+### Manual Backup
 
 ```bash
 # Full etcd snapshot
-ETCDCTL_API=3 etcdctl snapshot save /backup/etcd-$(date +%Y%m%d-%H%M).db \
+ETCDCTL_API=3 etcdctl snapshot save /backup/etcd-snapshot-$(date +%Y%m%d-%H%M%S).db \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
 
 # Verify the snapshot
-ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-20260101-0300.db --write-out=table
-
-# Automate with cron
-cat > /etc/cron.d/etcd-backup << 'EOF'
-0 2 * * * root ETCDCTL_API=3 etcdctl snapshot save /backup/etcd-$(date +\%Y\%m\%d-\%H\%M).db --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key && find /backup -name "etcd-*.db" -mtime +7 -delete
-EOF
+ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-snapshot-20240115-143022.db \
+  --write-out=table
 ```
 
-### etcd Restore Process
+Output:
 
-```bash
-# Stop the API server
-mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
-
-# Wait for API server to stop
-sleep 30
-
-# Restore etcd
-ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-20260101-0300.db \
-  --data-dir=/var/lib/etcd-restored \
-  --name=<etcd-member-name> \
-  --initial-cluster=<etcd-member-name>=https://<ip>:2380 \
-  --initial-advertise-peer-urls=https://<ip>:2380 \
-  --initial-cluster-token=etcd-cluster \
-  --advertise-client-urls=https://<ip>:2379
-
-# Update etcd manifest to use restored data
-# Edit /etc/kubernetes/manifests/etcd.yaml
-# Change --data-dir to /var/lib/etcd-restored
-
-# Restart API server
-mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/
-
-# Verify cluster is healthy
-kubectl get nodes
-kubectl get pods -A
+```
++----------+----------+------------+------------+
+| DB SIZE  | REVISIONS | DB VERSION | IS SANDBOX |
++----------+----------+------------+------------+
+| 4.2 MB   | 1234567  | 3.5.12     | false      |
++----------+----------+------------+------------+
 ```
 
-### Velero for Workload Backups
+### Automated Backup
 
-Velero backs up Kubernetes resources and PersistentVolume data. It works at the workload level, not the cluster level.
+Create a CronJob that runs daily:
 
-```bash
-# Install Velero
-curl -fsSL https://github.com/vmware-tanzu/velero/releases/download/v1.13.0/velero-v1.13.0-linux-amd64.tar.gz | tar xz
-sudo mv velero-v1.13.0-linux-amd64/velero /usr/local/bin/
-
-# Create a backup bucket (S3 or MinIO)
-# For MinIO (local testing):
-kubectl apply -f https://raw.githubusercontent.com/minio/operator/master/examples/minio-instance/minio.yaml
-
-# Install Velero with MinIO backend
-velero install \
-  --provider aws \
-  --bucket velero-backups \
-  --secret-file ./credentials-velero \
-  --use-node-agent \
-  --backup-location-config region=minio,s3ForcePathStyle=true,s3Url=http://minio.minio.svc:9000
+```yaml
+# etcd-backup-cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-backup
+  namespace: kube-system
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostNetwork: true
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ""
+          tolerations:
+          - key: node-role.kubernetes.io/control-plane
+            effect: NoSchedule
+          containers:
+          - name: etcd-backup
+            image: registry.k8s.io/etcd:3.5.12-0
+            command:
+            - /bin/sh
+            - -c
+            - |
+              BACKUP_FILE="/backup/etcd-snapshot-$(date +%Y%m%d-%H%M%S).db"
+              
+              etcdctl snapshot save "$BACKUP_FILE" \
+                --endpoints=https://127.0.0.1:2379 \
+                --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+                --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+                --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+              
+              # Verify backup
+              etcdctl snapshot status "$BACKUP_FILE" --write-out=table
+              
+              # Delete backups older than 7 days
+              find /backup -name "etcd-snapshot-*.db" -mtime +7 -delete
+              
+              echo "Backup completed: $BACKUP_FILE"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+            - name: etcd-certs
+              mountPath: /etc/kubernetes/pki/etcd
+              readOnly: true
+            - name: k8s-certs
+              mountPath: /etc/kubernetes/pki
+              readOnly: true
+          volumes:
+          - name: backup
+            hostPath:
+              path: /var/backups/etcd
+              type: DirectoryOrCreate
+          - name: etcd-certs
+            hostPath:
+              path: /etc/kubernetes/pki/etcd
+          - name: k8s-certs
+            hostPath:
+              path: /etc/kubernetes/pki
+          restartPolicy: OnFailure
 ```
 
+### Backup Storage
+
+Store backups in multiple locations:
+
 ```bash
-# Create a backup
-velero backup create full-backup --include-namespaces production
+# Local backup
+cp /backup/etcd-snapshot.db /var/backups/etcd/
 
-# Create a scheduled backup
-velero schedule create daily-backup --schedule="0 2 * * *" --include-namespaces production
+# Remote backup (S3)
+aws s3 cp /backup/etcd-snapshot.db s3://my-cluster-backups/etcd/
 
-# List backups
-velero backup get
+# GCS backup
+gsutil cp /backup/etcd-snapshot.db gs://my-cluster-backups/etcd/
 
-# Restore from backup
-velero restore create --from-backup full-backup
+# Azure backup
+az storage blob upload \
+  --account-name mybackups \
+  --container-name etcd \
+  --name etcd-snapshot.db \
+  --file /backup/etcd-snapshot.db
 ```
 
 ### Backup Verification
 
-A backup you haven't tested is not a backup.
+Always verify backups before you need them:
 
 ```bash
-# Verify etcd backup integrity
-ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-20260101-0300.db --write-out=table
+# Check backup integrity
+ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-snapshot.db --write-out=table
 
-# Test Velero restore in a separate namespace
-velero restore create --from-backup full-backup --namespace-mappings production:production-test
+# Restore to a temporary directory (dry run)
+ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-snapshot.db \
+  --data-dir=/tmp/etcd-restore \
+  --name=etcd-restore-test
 
-# Verify restored resources
-kubectl get all -n production-test
+# Verify restored data
+ls -la /tmp/etcd-restore/
+
+# Clean up
+rm -rf /tmp/etcd-restore
 ```
 
-### RTO and RPO
+## etcd Restore
 
-- **RPO (Recovery Point Objective)**: How much data you can afford to lose. If you back up every hour, RPO = 1 hour.
-- **RTO (Recovery Time Objective)**: How long recovery takes. etcd restore = 10-30 minutes. Velero restore = minutes to hours depending on data.
+### Full Restore
 
-## Hands-On Lab
+If etcd is corrupted or destroyed, restore from a backup:
 
-### Task 1: Create and Verify etcd Backup
+**Step 1: Stop the API server**
 
 ```bash
-# Create backup directory
-sudo mkdir -p /backup
+# On the control plane node, stop the API server
+mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
 
-# Take a snapshot
-ETCDCTL_API=3 etcdctl snapshot save /backup/etcd-test.db \
+# Wait for API server to stop
+crictl ps | grep kube-apiserver
+```
+
+**Step 2: Stop etcd**
+
+```bash
+# Stop etcd
+systemctl stop etcd
+
+# Or if running as static pod
+crictl stopp $(crictl pods --name etcd -q)
+```
+
+**Step 3: Backup current etcd data (if any)**
+
+```bash
+# Move existing data out of the way
+mv /var/lib/etcd /var/lib/etcd.bak
+```
+
+**Step 4: Restore etcd**
+
+```bash
+# Restore from snapshot
+ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-snapshot.db \
+  --data-dir=/var/lib/etcd \
+  --name=<etcd-member-name> \
+  --initial-cluster=<etcd-member-name>=https://<etcd-ip>:2380 \
+  --initial-advertise-peer-urls=https://<etcd-ip>:2380 \
+  --advertise-client-urls=https://<etcd-ip>:2379 \
+  --listen-client-urls=https://<etcd-ip>:2379
+```
+
+**Step 5: Start etcd**
+
+```bash
+# Start etcd
+systemctl start etcd
+
+# Or if running as static pod
+mv /etc/kubernetes/manifests/etcd.yaml.bak /etc/kubernetes/manifests/etcd.yaml
+```
+
+**Step 6: Start API server**
+
+```bash
+# Move API server manifest back
+mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/
+
+# Wait for API server to start
+crictl ps | grep kube-apiserver
+```
+
+**Step 7: Verify restoration**
+
+```bash
+# Check cluster status
+kubectl get nodes
+kubectl get pods --all-namespaces
+
+# Verify data integrity
+kubectl get deployments --all-namespaces
+kubectl get services --all-namespaces
+kubectl get secrets --all-namespaces
+```
+
+### Restore to Different Cluster
+
+You can restore an etcd snapshot to a different cluster (for migration or testing):
+
+```bash
+# Restore with different cluster name
+ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-snapshot.db \
+  --data-dir=/var/lib/etcd \
+  --name=new-cluster-member \
+  --initial-cluster=new-cluster-member=https://new-ip:2380 \
+  --initial-advertise-peer-urls=https://new-ip:2380 \
+  --advertise-client-urls=https://new-ip:2379 \
+  --listen-client-urls=https://new-ip:2379
+```
+
+## Cluster Backup Strategies
+
+### Control Plane Backup
+
+Back up all control plane components:
+
+```bash
+# Backup API server certificates
+tar czf /backup/k8s-certs-$(date +%Y%m%d).tar.gz /etc/kubernetes/pki/
+
+# Backup API server configuration
+tar czf /backup/k8s-config-$(date +%Y%m%d).tar.gz \
+  /etc/kubernetes/manifests/ \
+  /etc/kubernetes/*.conf \
+  /etc/kubernetes/audit-policy.yaml \
+  /etc/kubernetes/encryption-config.yaml
+
+# Backup kubelet configuration
+tar czf /backup/kubelet-config-$(date +%Y%m%d).tar.gz /var/lib/kubelet/
+```
+
+### Full Cluster Backup Script
+
+```bash
+#!/bin/bash
+# backup-cluster.sh
+
+BACKUP_DIR="/backup/cluster-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+
+echo "=== Backing up etcd ==="
+ETCDCTL_API=3 etcdctl snapshot save "$BACKUP_DIR/etcd-snapshot.db" \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
 
-# Verify the snapshot
-ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-test.db --write-out=table
+echo "=== Backing up certificates ==="
+tar czf "$BACKUP_DIR/k8s-certs.tar.gz" /etc/kubernetes/pki/
 
-# Check file size and date
-ls -lh /backup/etcd-test.db
+echo "=== Backing up configuration ==="
+tar czf "$BACKUP_DIR/k8s-config.tar.gz" \
+  /etc/kubernetes/manifests/ \
+  /etc/kubernetes/*.conf \
+  /etc/kubernetes/audit-policy.yaml \
+  /etc/kubernetes/encryption-config.yaml
+
+echo "=== Backing up Kubernetes resources ==="
+kubectl get deployments --all-namespaces -o yaml > "$BACKUP_DIR/deployments.yaml"
+kubectl get services --all-namespaces -o yaml > "$BACKUP_DIR/services.yaml"
+kubectl get configmaps --all-namespaces -o yaml > "$BACKUP_DIR/configmaps.yaml"
+kubectl get secrets --all-namespaces -o yaml > "$BACKUP_DIR/secrets.yaml"
+kubectl get ingress --all-namespaces -o yaml > "$BACKUP_DIR/ingresses.yaml"
+kubectl get networkpolicies --all-namespaces -o yaml > "$BACKUP_DIR/networkpolicies.yaml"
+kubectl get persistentvolumeclaims --all-namespaces -o yaml > "$BACKUP_DIR/pvcs.yaml"
+kubectl get roles --all-namespaces -o yaml > "$BACKUP_DIR/roles.yaml"
+kubectl get rolebindings --all-namespaces -o yaml > "$BACKUP_DIR/rolebindings.yaml"
+kubectl get clusterroles -o yaml > "$BACKUP_DIR/clusterroles.yaml"
+kubectl get clusterrolebindings -o yaml > "$BACKUP_DIR/clusterrolebindings.yaml"
+
+echo "=== Verifying backup ==="
+ETCDCTL_API=3 etcdctl snapshot status "$BACKUP_DIR/etcd-snapshot.db" --write-out=table
+
+echo "=== Backup complete: $BACKUP_DIR ==="
+ls -lh "$BACKUP_DIR"
 ```
 
-### Task 2: Simulate Namespace Loss and Restore
+### Automate with CronJob
 
-```bash
-# Create a test namespace with resources
-kubectl create namespace disaster-test
-kubectl create deployment nginx --image=nginx -n disaster-test
-kubectl create service clusterip nginx --tcp=80:80 -n disaster-test
-kubectl get all -n disaster-test
-
-# Take backup before deletion
-ETCDCTL_API=3 etcdctl snapshot save /backup/before-delete.db \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
-
-# Delete the namespace
-kubectl delete namespace disaster-test
-
-# Verify it's gone
-kubectl get namespace disaster-test
-
-# Document the loss
-echo "Namespace deleted at $(date)" > /backup/deletion-log.txt
+```yaml
+# cluster-backup-cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cluster-backup
+  namespace: kube-system
+spec:
+  schedule: "0 1 * * *"  # Daily at 1 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostNetwork: true
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ""
+          tolerations:
+          - key: node-role.kubernetes.io/control-plane
+            effect: NoSchedule
+          containers:
+          - name: backup
+            image: registry.k8s.io/kubectl:v1.29.0
+            command:
+            - /bin/sh
+            - -c
+            - |
+              BACKUP_DIR="/backup/cluster-$(date +%Y%m%d-%H%M%S)"
+              mkdir -p "$BACKUP_DIR"
+              
+              # etcd backup
+              etcdctl snapshot save "$BACKUP_DIR/etcd-snapshot.db" \
+                --endpoints=https://127.0.0.1:2379 \
+                --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+                --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+                --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+              
+              # Kubernetes resources
+              kubectl get deployments --all-namespaces -o yaml > "$BACKUP_DIR/deployments.yaml"
+              kubectl get services --all-namespaces -o yaml > "$BACKUP_DIR/services.yaml"
+              kubectl get secrets --all-namespaces -o yaml > "$BACKUP_DIR/secrets.yaml"
+              
+              # Cleanup old backups
+              find /backup -maxdepth 1 -name "cluster-*" -mtime +7 -exec rm -rf {} \;
+              
+              echo "Backup complete: $BACKUP_DIR"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+            - name: etcd-certs
+              mountPath: /etc/kubernetes/pki/etcd
+              readOnly: true
+            - name: k8s-certs
+              mountPath: /etc/kubernetes/pki
+              readOnly: true
+          volumes:
+          - name: backup
+            hostPath:
+              path: /var/backups/cluster
+              type: DirectoryOrCreate
+          - name: etcd-certs
+            hostPath:
+              path: /etc/kubernetes/pki/etcd
+          - name: k8s-certs
+            hostPath:
+              path: /etc/kubernetes/pki
+          restartPolicy: OnFailure
 ```
 
-### Task 3: Restore etcd from Backup
+## Control Plane Recovery
+
+### Single Control Plane Node Recovery
+
+If one control plane node fails and you have a single control plane cluster:
+
+**Scenario: etcd data loss**
 
 ```bash
-# Stop API server
-sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
+# 1. Stop API server
+mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
+
+# 2. Stop etcd
+systemctl stop etcd
+
+# 3. Backup corrupted data
+mv /var/lib/etcd /var/lib/etcd.corrupted
+
+# 4. Restore from backup
+ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-snapshot-latest.db \
+  --data-dir=/var/lib/etcd
+
+# 5. Start etcd
+systemctl start etcd
+
+# 6. Start API server
+mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/
+
+# 7. Wait and verify
 sleep 30
+kubectl get nodes
+kubectl get pods --all-namespaces
+```
 
-# Verify API server is down
-kubectl get nodes  # Should fail
+### Multi-Control Plane Recovery
+
+If you have multiple control plane nodes and one fails:
+
+**Scenario: Control plane node completely lost**
+
+```bash
+# 1. On surviving control plane nodes, check cluster health
+kubectl get nodes
+kubectl -n kube-system get pods
+
+# 2. Remove the failed node from the cluster
+kubectl delete node <failed-node-name>
+
+# 3. On a surviving control plane node, generate new join command
+kubeadm token create --print-join-command --certificate-key $(kubeadm init phase upload-certs --upload-certs 2>/dev/null | tail -1)
+
+# 4. On the new control plane node, run join command
+kubeadm join <api-server>:6443 \
+  --token <token> \
+  --discovery-token-ca-cert-hash sha256:<hash> \
+  --control-plane \
+  --certificate-key <cert-key>
+
+# 5. Verify new node is ready
+kubectl get nodes
+```
+
+### Complete Cluster Recovery
+
+If all control plane nodes are lost:
+
+**Step 1: Provision new control plane node**
+
+```bash
+# Install prerequisites
+# (containerd, kubeadm, kubelet, kubectl - same as initial setup)
 
 # Restore etcd
-sudo ETCDCTL_API=3 etcdctl snapshot restore /backup/before-delete.db \
-  --data-dir=/var/lib/etcd-restored \
-  --name=$(ETCDCTL_API=3 etcdctl member list --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key | grep -oP '(?<=, )[^,]+(?=,)' | head -1) \
-  --initial-cluster-token=etcd-cluster
+ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-snapshot-latest.db \
+  --data-dir=/var/lib/etcd
 
-# Update etcd manifest (adjust data-dir)
-sudo sed -i 's|--data-dir=/var/lib/etcd|--data-dir=/var/lib/etcd-restored|' /etc/kubernetes/manifests/etcd.yaml
+# Initialize cluster with restored etcd
+kubeadm init \
+  --control-plane-endpoint="k8s.example.com:6443" \
+  --upload-certs
 
-# Restart API server
-sudo mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/
-sleep 30
+# Set up kubectl
+mkdir -p $HOME/.kube
+sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# Verify cluster is back
+# Install CNI
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+```
+
+**Step 2: Verify state**
+
+```bash
+# Check all resources are restored
+kubectl get deployments --all-namespaces
+kubectl get services --all-namespaces
+kubectl get pods --all-namespaces
+kubectl get secrets --all-namespaces
+```
+
+**Step 3: Rejoin worker nodes**
+
+```bash
+# Get join command
+kubeadm token create --print-join-command
+
+# On each worker node
+kubeadm join <api-server>:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+
+# Verify
 kubectl get nodes
-kubectl get namespace disaster-test  # Should exist again
-kubectl get all -n disaster-test
 ```
 
-### Task 4: Deploy and Use Velero
+## Real Scenario: Recovering from etcd Corruption
+
+### The Scenario
+
+Your production cluster's etcd database becomes corrupted. The API server can't read or write data. Pods are running but you can't manage them. You have a backup from 6 hours ago.
+
+### Step 1: Assess the Damage
 
 ```bash
-# Install MinIO for local testing
-kubectl create namespace minio
-kubectl apply -n minio -f https://raw.githubusercontent.com/minio/operator/master/examples/minio-instance/minio.yaml
+# Check etcd health
+ETCDCTL_API=3 etcdctl endpoint health \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
 
-# Install Velero
-velero install \
-  --provider aws \
-  --bucket velero-backups \
-  --secret-file ./credentials-velero \
-  --use-node-agent \
-  --backup-location-config region=minio,s3ForcePathStyle=true,s3Url=http://minio.minio.svc:9000
-
-# Create a backup
-velero backup create test-backup --include-namespaces default
-
-# Check backup status
-velero backup describe test-backup
-velero backup logs test-backup
-
-# Create resources, then restore
-kubectl create deployment test --image=nginx
-velero restore create --from-backup test-backup
+# Expected output: "cluster is unhealthy"
 ```
 
-### Task 5: Document Recovery Procedures
+### Step 2: Stop the API Server
 
 ```bash
-# Create a runbook
-cat > disaster-recovery-runbook.md << 'EOF'
-# Disaster Recovery Runbook
+# Move API server manifest
+mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
 
-## etcd Recovery (Cluster Down)
-1. SSH into control plane node
-2. Check etcd health: ETCDCTL_API=3 etcdctl endpoint health
-3. If etcd is corrupted:
-   - Stop API server: mv kube-apiserver.yaml /tmp/
-   - Restore: etcdctl snapshot restore <backup-file>
-   - Update etcd manifest
-   - Restart API server
-4. Verify: kubectl get nodes
+# Wait for API server to stop
+crictl ps | grep kube-apiserver
+# Should be empty
+```
 
-## Namespace Recovery (Accidental Deletion)
-1. Check if Velero backup exists: velero backup get
-2. Restore: velero restore create --from-backup <backup-name>
-3. Verify resources: kubectl get all -n <namespace>
+### Step 3: Stop etcd
 
-## Node Failure
-1. Check node status: kubectl get nodes
-2. Cordon node: kubectl cordon <node>
-3. Drain node: kubectl drain <node> --ignore-daemonsets
-4. Replace hardware
-5. Uncordon: kubectl uncordon <node>
+```bash
+# Stop etcd
+systemctl stop etcd
+
+# Verify it's stopped
+systemctl status etcd
+```
+
+### Step 4: Backup Corrupted Data
+
+```bash
+# Move corrupted data out of the way
+mv /var/lib/etcd /var/lib/etcd.corrupted
+
+# Keep it for analysis
+tar czf /backup/etcd-corrupted-$(date +%Y%m%d).tar.gz /var/lib/etcd.corrupted
+```
+
+### Step 5: Find the Latest Valid Backup
+
+```bash
+# List backups
+ls -lh /backup/etcd-snapshot-*.db
+
+# Check latest backup
+ETCDCTL_API=3 etcdctl snapshot status /backup/etcd-snapshot-latest.db --write-out=table
+```
+
+### Step 6: Restore etcd
+
+```bash
+# Restore from latest backup
+ETCDCTL_API=3 etcdctl snapshot restore /backup/etcd-snapshot-latest.db \
+  --data-dir=/var/lib/etcd \
+  --name=<etcd-member-name> \
+  --initial-cluster=<etcd-member-name>=https://<etcd-ip>:2380 \
+  --initial-advertise-peer-urls=https://<etcd-ip>:2380 \
+  --advertise-client-urls=https://<etcd-ip>:2379 \
+  --listen-client-urls=https://<etcd-ip>:2379
+```
+
+### Step 7: Start etcd
+
+```bash
+# Start etcd
+systemctl start etcd
+
+# Verify etcd health
+ETCDCTL_API=3 etcdctl endpoint health \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+```
+
+### Step 8: Start API Server
+
+```bash
+# Move API server manifest back
+mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/
+
+# Wait for API server to start
+sleep 30
+crictl ps | grep kube-apiserver
+```
+
+### Step 9: Verify Restoration
+
+```bash
+# Check cluster status
+kubectl get nodes
+kubectl get pods --all-namespaces
+
+# Check critical resources
+kubectl get deployments -n production
+kubectl get services -n production
+kubectl get secrets -n production
+
+# Check what changed since the backup
+# (resources created in the last 6 hours are lost)
+kubectl get events --all-namespaces --sort-by='.lastTimestamp' | tail -50
+```
+
+### Step 10: Document and Prevent
+
+```bash
+# Create incident report
+cat <<EOF > /backup/incident-report-$(date +%Y%m%d).md
+# Incident Report: etcd Corruption
+
+## Date: $(date)
+## Duration: ~2 hours
+## Impact: Cluster management unavailable
+## Root Cause: etcd data corruption (investigation ongoing)
+
+## Recovery Steps
+1. Stopped API server
+2. Stopped etcd
+3. Backed up corrupted data
+4. Restored from backup (6 hours old)
+5. Verified cluster health
+
+## Data Loss
+- 6 hours of changes lost
+- Estimated affected resources: [list]
+
+## Prevention
+- Increase backup frequency to every hour
+- Add etcd monitoring for disk and memory
+- Enable etcd compaction and defragmentation
 EOF
+```
+
+## Monitoring etcd Health
+
+```bash
+# etcd metrics
+ETCDCTL_API=3 etcdctl endpoint status \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+  --write-out=table
+
+# etcd alarms
+ETCDCTL_API=3 etcdctl alarm list \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+
+# etcd member list
+ETCDCTL_API=3 etcdctl member list \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+  --write-out=table
+
+# etcd defragmentation (periodic maintenance)
+ETCDCTL_API=3 etcdctl defrag \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key
+
+# etcd compaction
+ETCDCTL_API=3 etcdctl compact $(ETCDCTL_API=3 etcdctl endpoint status --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key --write-out=json | jq -r '.header.revision')
 ```
 
 ## Assessment
 
-**Lab Task**: Create a complete disaster recovery plan: backup etcd, simulate a disaster (namespace deletion), restore from backup, and document the entire procedure with timing.
+### Lab 1 — etcd Backup (30 minutes)
 
-**Time**: 55 minutes
+1. Create a manual etcd snapshot and verify it.
+2. Write a backup script that automates daily backups.
+3. Create a CronJob for automated backups.
+4. Store backups in multiple locations.
+5. Verify a backup by restoring to a temporary directory.
 
-**Grading** (100 points):
-- etcd backup created and verified (20 pts)
-- Disaster simulated successfully (15 pts)
-- Cluster restored from backup (25 pts)
-- All resources recovered (20 pts)
-- Recovery runbook documented with timing (20 pts)
+**Grading**: 10 points. 2 points per task. Full credit for correct backup creation, automation, and verification.
+
+### Lab 2 — etcd Restore (45 minutes)
+
+1. Simulate etcd corruption (stop etcd, corrupt data).
+2. Restore etcd from backup.
+3. Verify all resources are restored.
+4. Calculate what data was lost (time between backup and corruption).
+5. Write a runbook for etcd recovery.
+
+**Grading**: 15 points. 3 points per task. Full credit for successful restoration, accurate data loss assessment, and comprehensive runbook.
+
+### Lab 3 — Full Cluster Recovery (45 minutes)
+
+1. Create a complete cluster backup (etcd + certificates + resources).
+2. Destroy the control plane node.
+3. Provision a new control plane node and restore from backup.
+4. Rejoin worker nodes.
+5. Verify the cluster is fully operational.
+
+**Grading**: 15 points. 3 points per task. Full credit for successful cluster recovery and verification.
 
 ## Evidence
 
-Save the following to your evidence folder:
-1. `etcd-backup-status.txt` — output of etcdctl snapshot status
-2. `disaster-log.txt` — timeline of simulated disaster and recovery
-3. `restoration-output.txt` — output of restore commands
-4. `recovered-resources.txt` — kubectl output showing recovered resources
-5. `disaster-recovery-runbook.md` — your recovery procedures document
+Submit the following as proof of completion:
+
+1. etcd snapshot and verification output
+2. Backup scripts and CronJob configurations
+3. Restore procedure steps and outputs
+4. Cluster backup and recovery procedure
+5. Incident report and prevention recommendations
