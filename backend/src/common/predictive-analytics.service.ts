@@ -300,7 +300,7 @@ export class PredictiveAnalyticsService {
     const level = Math.floor(user.xp / 1000) + 1;
 
     // Calculate XP velocity (xp gained per week)
-    const xpHistory = await this.prisma.$queryRawUnsafe(
+    const xpHistory = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT DATE_TRUNC('week', "createdAt") as week, SUM("amount") as xp_gained
        FROM "SkillMasteryEvent"
        WHERE "userId" = $1 AND "eventType" = 'MASTERY_GAIN'

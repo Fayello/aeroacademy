@@ -20,6 +20,9 @@ import { hasCompletedOnboarding, syncOnboardingFromProfile } from "@/lib/onboard
 import { useNotifications } from "@/hooks/useNotifications";
 import { NotificationTypeIcon } from "@/components/NotificationTypeIcon";
 import { timeAgo } from "@/lib/format";
+import { useNavigation } from "@/lib/navigation";
+import { GraduationCap, Shield } from "lucide-react";
+import ViewSwitcher from "@/components/dashboard/ViewSwitcher";
 import type { NotificationItem } from "@/types/api";
 
 function TokenHandler() {
@@ -87,6 +90,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
 function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const router = useRouter();
+  const { nav } = useNavigation();
   const [user] = useState<{ name?: string; avatarUrl?: string } | null>(() => {
     try {
       const stored = localStorage.getItem("user");
@@ -146,6 +150,18 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     : "?";
 
   const level = Math.floor(xp / 1000) + 1;
+  const isPrivilegedUser =
+    nav.role === "ADMIN" || nav.role === "RECRUITER" || nav.showAdmin;
+  const viewLabel = nav.viewMode === "ADMIN" ? "Admin View" : "Learner View";
+  const viewHint =
+    nav.viewMode === "ADMIN"
+      ? "Operations and control"
+      : "Courses, labs, and personal progress";
+  const ViewIcon = nav.viewMode === "ADMIN" ? Shield : GraduationCap;
+  const viewAccent =
+    nav.viewMode === "ADMIN"
+      ? "border-[#7AD62A]/20 bg-[#7AD62A]/10 text-[#7AD62A]"
+      : "border-blue-400/20 bg-blue-400/10 text-blue-300";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-64 md:py-0 relative overflow-hidden">
@@ -158,11 +174,20 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             </div>
             <div className="min-w-0">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Dashboard</p>
-              <p className="truncate text-xs text-slate-400">Learning, labs, and certification progress</p>
+              <p className="truncate text-xs text-slate-400">{viewHint}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
+            {isPrivilegedUser && (
+              <div className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 ${viewAccent}`}>
+                <ViewIcon size={11} />
+                <span className="text-[10px] font-semibold">{viewLabel}</span>
+              </div>
+            )}
+            <div className="hidden sm:block md:hidden">
+              <ViewSwitcher compact />
+            </div>
             <div className="flex items-center gap-1 rounded-lg border border-[#7AD62A]/20 bg-[#7AD62A]/10 px-2 py-1">
               <Zap size={11} className="text-[#7AD62A]" />
               <span className="text-[10px] font-bold text-white">{xp.toLocaleString()}</span>
@@ -216,6 +241,17 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           <span className="text-xs font-bold text-white">{xp.toLocaleString()}</span>
           <span className="text-[10px] text-[#7AD62A] font-medium">Lv{level}</span>
         </div>
+
+        <div className="hidden md:block">
+          <ViewSwitcher compact />
+        </div>
+
+        {isPrivilegedUser && (
+          <div className={`hidden lg:inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 ${viewAccent}`}>
+            <ViewIcon size={12} />
+            <span className="text-xs font-semibold">{viewLabel}</span>
+          </div>
+        )}
 
         {/* Edit Profile CTA */}
         <Link

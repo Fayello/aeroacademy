@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight, GraduationCap, Home, Shield } from "lucide-react";
+import { useNavigation } from "@/lib/navigation";
 
 const labelMap: Record<string, string> = {
   dashboard: "Dashboard",
@@ -64,7 +65,12 @@ const labelMap: Record<string, string> = {
 
 export default function Breadcrumbs() {
   const pathname = usePathname();
+  const { nav } = useNavigation();
   if (!pathname || pathname === "/dashboard") return null;
+
+  const rootHref = nav.viewMode === "ADMIN" ? "/dashboard/admin" : "/dashboard";
+  const rootLabel = nav.viewMode === "ADMIN" ? "Admin View" : "Learner View";
+  const RootIcon = nav.viewMode === "ADMIN" ? Shield : GraduationCap;
 
   const segments = pathname.split("/").filter(Boolean);
   // Skip "dashboard" from breadcrumb display (it's the root)
@@ -80,10 +86,14 @@ export default function Breadcrumbs() {
   if (crumbs.length === 0) return null;
 
   return (
-    <nav className="flex items-center gap-1 text-sm text-slate-500 mb-4">
-      <Link href="/dashboard" className="hover:text-slate-200 transition-colors">
+    <nav className="mb-4 flex items-center gap-2 text-sm text-slate-500">
+      <Link href={rootHref} className="hover:text-slate-200 transition-colors">
         <Home size={14} />
       </Link>
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] font-semibold text-slate-300">
+        <RootIcon size={11} className={nav.viewMode === "ADMIN" ? "text-[#7AD62A]" : "text-blue-300"} />
+        {rootLabel}
+      </span>
       {crumbs.map((crumb) => (
         <span key={crumb.href} className="flex items-center gap-1">
           <ChevronRight size={12} className="text-slate-600" />

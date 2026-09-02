@@ -209,7 +209,7 @@ export class AssessmentIntelligenceService {
     const domainName = categoryDomainMap[category];
 
     if (domainName) {
-      const skills = await this.prisma.$queryRawUnsafe(
+      const skills = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT AVG(us.mastery) as "avgMastery"
          FROM "UserSkill" us
          JOIN "Skill" s ON s.id = us."skillId"
@@ -342,7 +342,7 @@ export class AssessmentIntelligenceService {
       ) as unknown as Any[],
     ]);
 
-    const domainSkills = await this.prisma.$queryRawUnsafe(
+    const domainSkills = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT sd."displayName" as "domain", s."displayName" as "skill",
               us.mastery, us."lastPracticedAt", us."isDecaying"
        FROM "SkillDomain" sd
@@ -459,7 +459,7 @@ export class AssessmentIntelligenceService {
     const weakDomains = sortedDomains.filter((d) => d.mastery < 50).slice(0, 3);
 
     for (const domain of weakDomains) {
-      const labs = await this.prisma.$queryRawUnsafe(
+      const labs = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT l.id, l.title, l.difficulty
          FROM "Lab" l
          JOIN "LabSkill" lsk ON lsk."labId" = l.id

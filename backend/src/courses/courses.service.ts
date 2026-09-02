@@ -32,7 +32,7 @@ export class CoursesService {
     });
 
     // Batch-fetch all average ratings in a single query instead of N+1
-    const ratings = await this.prisma.$queryRawUnsafe(
+    const ratings = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT "courseId", AVG("rating")::float as "avgRating"
        FROM "CourseReview"
        GROUP BY "courseId"`,
@@ -620,7 +620,7 @@ export class CoursesService {
     // Batch completion check — single query instead of N+1 loop
     const completedCourses: string[] = [];
     if (enrolledIds.length > 0) {
-      const completionData = await this.prisma.$queryRawUnsafe(
+      const completionData = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT s."courseId",
                 COUNT(DISTINCT l.id) as "totalLessons",
                 COUNT(DISTINCT CASE WHEN p.completed = true THEN p."lessonId" END) as "completedLessons"

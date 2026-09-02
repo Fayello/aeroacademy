@@ -704,7 +704,7 @@ Respond in JSON format:
 
   async getRefreshHistory(limit = 50): Promise<RefreshHistoryEntry[]> {
     try {
-      const rows = await this.prisma.$queryRawUnsafe(
+      const rows = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT * FROM "ContentRefreshHistory" ORDER BY "createdAt" DESC LIMIT $1`,
         limit,
       );

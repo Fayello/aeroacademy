@@ -426,7 +426,7 @@ Respond in JSON format only:
       type: string;
     }> = [];
 
-    const domains = await this.prisma.$queryRawUnsafe(
+    const domains = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT sd."displayName" as "domain", AVG(us.mastery) as "mastery"
        FROM "UserSkill" us
        JOIN "Skill" s ON s.id = us."skillId"

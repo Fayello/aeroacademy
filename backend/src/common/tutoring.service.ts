@@ -335,7 +335,7 @@ Be encouraging. Reference the student's skill level.`,
     context: string,
   ): Promise<{ hint: string; level: number; totalLevels: number }> {
     // Check how many hints the student has already requested for this lab
-    const previousHints = await this.prisma.$queryRawUnsafe(
+    const previousHints = await this.prisma.$queryRawUnsafe<any[]>(
       `SELECT COUNT(*) as count FROM "TutoringInteraction"
        WHERE "userId" = $1 AND "labId" = $2 AND "type" = 'hint'`,
       userId,
@@ -453,7 +453,7 @@ Provide:
 
     if (cohortId) {
       // Get users in cohort first, then filter
-      const cohortUserIds = await this.prisma.$queryRawUnsafe(
+      const cohortUserIds = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT "userId" FROM "CohortMember" WHERE "cohortId" = $1`,
         cohortId,
       );
