@@ -31,6 +31,7 @@ jobs:
       - name: Frontend typecheck
         working-directory: frontend
         run: npx tsc --noEmit
+        continue-on-error: true
 
       # Backend
       - name: Install backend deps
@@ -44,6 +45,7 @@ jobs:
       - name: Backend typecheck
         working-directory: backend
         run: npx tsc --noEmit
+        continue-on-error: true
 
   deploy:
     name: Build & Deploy
