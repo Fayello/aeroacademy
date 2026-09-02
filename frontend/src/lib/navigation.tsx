@@ -35,6 +35,8 @@ export interface NavAlert {
   href?: string;
 }
 
+export type ViewMode = "ADMIN" | "LEARNER";
+
 export interface NavigationContext {
   experience: UserExperience;
   level: number;
@@ -44,12 +46,14 @@ export interface NavigationContext {
   showTeach: boolean;
   showAcademic: boolean;
   showAdmin: boolean;
+  viewMode: ViewMode;
 }
 
 const DEFAULT_CONTEXT: NavigationContext = {
   experience: "INDIVIDUAL",
   level: 1,
   role: "STUDENT",
+  viewMode: "LEARNER",
   sections: [
     {
       id: "dashboard",
@@ -81,12 +85,50 @@ const DEFAULT_CONTEXT: NavigationContext = {
   showAdmin: false,
 };
 
-function getFallbackContext(experience: UserExperience, role: string, level: number): NavigationContext {
+function getFallbackContext(experience: UserExperience, role: string, level: number, viewMode: ViewMode): NavigationContext {
   if (role === "ADMIN" || experience === "ADMIN") {
+    if (viewMode === "LEARNER") {
+      return {
+        experience,
+        level,
+        role,
+        viewMode: "LEARNER",
+        sections: [
+          {
+            id: "dashboard",
+            label: "Dashboard",
+            items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Dashboard" }],
+          },
+          {
+            id: "learn",
+            label: "Learn",
+            items: [
+              { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
+              { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
+              { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
+            ],
+          },
+          {
+            id: "labs",
+            label: "Practice",
+            items: [
+              { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+              { href: "/dashboard/exams", tKey: "nav.exams", icon: "ClipboardCheck", label: "Practical Exams" },
+              { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Skill Assessments" },
+            ],
+          },
+        ],
+        alerts: [],
+        showTeach: false,
+        showAcademic: false,
+        showAdmin: true,
+      };
+    }
     return {
       experience: role === "ADMIN" ? "ADMIN" : experience,
       level,
       role,
+      viewMode: "ADMIN",
       sections: [
         {
           id: "dashboard",
@@ -134,6 +176,7 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
       experience,
       level,
       role,
+      viewMode,
       sections: [
         {
           id: "dashboard",
@@ -170,6 +213,7 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
       experience,
       level,
       role,
+      viewMode,
       sections: [
         {
           id: "dashboard",
@@ -206,6 +250,7 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
     experience,
     level,
     role,
+    viewMode,
   };
 }
 
@@ -213,11 +258,20 @@ interface NavigationContextValue {
   nav: NavigationContext;
   loading: boolean;
   refresh: () => Promise<void>;
+  setViewMode: (mode: ViewMode) => void;
 }
 
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
+  const [viewMode, setViewModeState] = useState<ViewMode>(() => {
+    try {
+      return (localStorage.getItem("viewMode") as ViewMode) || "LEARNER";
+    } catch {
+      return "LEARNER";
+    }
+  });
+
   const [nav, setNav] = useState<NavigationContext>(() => {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -225,7 +279,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       const role = user.role || DEFAULT_CONTEXT.role;
       const xp = Number(localStorage.getItem("xp") || user.xp || 0);
       const level = Math.floor(xp / 1000) + 1;
-      return getFallbackContext(experience, role, level);
+      return getFallbackContext(experience, role, level, viewMode);
     } catch {
       return DEFAULT_CONTEXT;
     }
@@ -235,7 +289,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   const load = useCallback(async () => {
     try {
       const result = await fetchApi<NavigationContext>("/navigation/context");
-      setNav(result);
+      setNav({ ...result, viewMode });
     } catch {
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -243,14 +297,14 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         const role = user.role || DEFAULT_CONTEXT.role;
         const xp = Number(localStorage.getItem("xp") || user.xp || 0);
         const level = Math.floor(xp / 1000) + 1;
-        setNav(getFallbackContext(experience, role, level));
+        setNav(getFallbackContext(experience, role, level, viewMode));
       } catch {
         setNav(DEFAULT_CONTEXT);
       }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [viewMode]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -260,12 +314,29 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timeoutId);
   }, [load]);
 
+  const setViewMode = useCallback((mode: ViewMode) => {
+    setViewModeState(mode);
+    localStorage.setItem("viewMode", mode);
+    setNav((prev) => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const experience = (user.userExperience || user.experience || DEFAULT_CONTEXT.experience) as UserExperience;
+        const role = user.role || DEFAULT_CONTEXT.role;
+        const xp = Number(localStorage.getItem("xp") || user.xp || 0);
+        const level = Math.floor(xp / 1000) + 1;
+        return getFallbackContext(experience, role, level, mode);
+      } catch {
+        return { ...prev, viewMode: mode };
+      }
+    });
+  }, []);
+
   const refresh = useCallback(async () => {
     setLoading(true);
     await load();
   }, [load]);
 
-  const value = useMemo(() => ({ nav, loading, refresh }), [nav, loading, refresh]);
+  const value = useMemo(() => ({ nav, loading, refresh, setViewMode }), [nav, loading, refresh, setViewMode]);
 
   return (
     <NavigationContext.Provider value={value}>

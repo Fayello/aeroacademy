@@ -133,6 +133,18 @@ class UpdateInquiryDto {
   notes?: string;
 }
 
+class UpdateCommunityApplicationDto {
+  @IsOptional()
+  @IsString()
+  @IsIn(['NEW', 'REVIEWING', 'INTERVIEW', 'ACCEPTED', 'CLOSED'])
+  status?: 'NEW' | 'REVIEWING' | 'INTERVIEW' | 'ACCEPTED' | 'CLOSED';
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  notes?: string;
+}
+
 @ApiTags('admin')
 @ApiBearerAuth('JWT-auth')
 @Controller('v1/admin')
@@ -243,5 +255,25 @@ export class AdminController {
     @Body() body: UpdateInquiryDto,
   ) {
     return this.adminService.updateInstitutionalInquiry(id, req.user.id, body);
+  }
+
+  @Get('community-programs')
+  @ApiQuery({ name: 'status', required: false, type: String })
+  @ApiQuery({ name: 'type', required: false, type: String })
+  async getCommunityProgramApplications(
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+  ) {
+    return this.adminService.getCommunityProgramApplications({ status, type });
+  }
+
+  @Patch('community-programs/:id')
+  @Audit('COMMUNITY_APPLICATION_UPDATED')
+  async updateCommunityProgramApplication(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UpdateCommunityApplicationDto,
+  ) {
+    return this.adminService.updateCommunityProgramApplication(id, req.user.id, body);
   }
 }

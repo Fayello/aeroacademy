@@ -63,6 +63,7 @@ model User {
   activityEvents           ActivityEvent[]
   auditLogs                AuditLog[]
   assignedInquiries        InstitutionalInquiry[]
+  assignedCommunityApplications CommunityProgramApplication[]
   notifications            Notification[]
   enrollments              CourseEnrollment[]
   badges                   UserBadge[]
@@ -181,6 +182,34 @@ model InstitutionalInquiry {
 
   @@index([status, createdAt(sort: Desc)])
   @@index([inquiryType, createdAt(sort: Desc)])
+  @@index([email])
+}
+
+model CommunityProgramApplication {
+  id            String                         @id @default(uuid())
+  programType   CommunityProgramType
+  status        CommunityProgramApplicationStatus @default(NEW)
+  name          String
+  email         String
+  city          String?
+  organization  String?
+  role          String?
+  experience    String?
+  interests     String[]                       @default([])
+  contribution  String
+  availability  String?
+  linkedinUrl   String?
+  portfolioUrl  String?
+  sourcePage    String?                        @default("/community")
+  notes         String?
+  assignedToId  String?
+  createdAt     DateTime                       @default(now())
+  updatedAt     DateTime                       @updatedAt
+
+  assignedTo User? @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([programType, createdAt(sort: Desc)])
   @@index([email])
 }
 
@@ -537,6 +566,19 @@ enum InstitutionalInquiryStatus {
   REVIEWING
   CONTACTED
   QUALIFIED
+  CLOSED
+}
+
+enum CommunityProgramType {
+  AMBASSADOR
+  VOLUNTEER
+}
+
+enum CommunityProgramApplicationStatus {
+  NEW
+  REVIEWING
+  INTERVIEW
+  ACCEPTED
   CLOSED
 }
 

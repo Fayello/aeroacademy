@@ -442,4 +442,62 @@ export class AdminService {
       },
     });
   }
+
+  async getCommunityProgramApplications(filters: { status?: string; type?: string }) {
+    const where = {
+      ...(filters.status
+        ? { status: filters.status as 'NEW' | 'REVIEWING' | 'INTERVIEW' | 'ACCEPTED' | 'CLOSED' }
+        : {}),
+      ...(filters.type
+        ? { programType: filters.type as 'AMBASSADOR' | 'VOLUNTEER' }
+        : {}),
+    };
+
+    const [items, totals] = await Promise.all([
+      this.prisma.communityProgramApplication.findMany({
+        where,
+        orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
+        include: {
+          assignedTo: {
+            select: { id: true, name: true, email: true },
+          },
+        },
+      }),
+      this.prisma.communityProgramApplication.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+    ]);
+
+    return {
+      items,
+      totals: totals.reduce<Record<string, number>>((acc, row) => {
+        acc[row.status] = row._count;
+        return acc;
+      }, {}),
+    };
+  }
+
+  async updateCommunityProgramApplication(
+    id: string,
+    actorId: string,
+    data: { status?: 'NEW' | 'REVIEWING' | 'INTERVIEW' | 'ACCEPTED' | 'CLOSED'; notes?: string },
+  ) {
+    const existing = await this.prisma.communityProgramApplication.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Community application not found');
+
+    return this.prisma.communityProgramApplication.update({
+      where: { id },
+      data: {
+        ...(data.status !== undefined ? { status: data.status } : {}),
+        ...(data.notes !== undefined ? { notes: data.notes } : {}),
+        assignedToId: actorId,
+      },
+      include: {
+        assignedTo: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    });
+  }
 }

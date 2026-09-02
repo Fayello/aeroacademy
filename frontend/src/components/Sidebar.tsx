@@ -64,7 +64,7 @@ export default function Sidebar() {
   useEffect(() => {
     setCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
   }, []);
-  const { nav, loading } = useNavigation();
+  const { nav, loading, setViewMode } = useNavigation();
 
   const level = getLevel(xp);
   const progress = getLevelProgress(xp);
@@ -230,8 +230,36 @@ export default function Sidebar() {
           </div>
         </div>
       ) : (
-        <div className="mx-1.5 mt-2 p-2 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center" title={`Level ${level} — ${xp.toLocaleString()} XP — ${divisionLabel}`}>
+        <div className="mx-1.5 mt-2 p-2 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center" title={`Level ${level}: ${xp.toLocaleString()} XP: ${divisionLabel}`}>
           <Award size={16} className="text-[#7AD62A]" />
+        </div>
+      )}
+
+      {/* Collapsed View Switcher */}
+      {isAdmin && collapsed && (
+        <div className="mx-1.5 mt-2 flex flex-col gap-1">
+          <button
+            onClick={() => setViewMode("ADMIN")}
+            title="Admin View"
+            className={`p-2 rounded-lg transition-colors ${
+              nav.viewMode === "ADMIN"
+                ? "bg-[#7AD62A] text-[#0a0f1a]"
+                : "text-slate-500 hover:text-slate-200 hover:bg-white/5"
+            }`}
+          >
+            <Shield size={14} className="mx-auto" />
+          </button>
+          <button
+            onClick={() => setViewMode("LEARNER")}
+            title="Learner View"
+            className={`p-2 rounded-lg transition-colors ${
+              nav.viewMode === "LEARNER"
+                ? "bg-[#7AD62A] text-[#0a0f1a]"
+                : "text-slate-500 hover:text-slate-200 hover:bg-white/5"
+            }`}
+          >
+            <GraduationCap size={14} className="mx-auto" />
+          </button>
         </div>
       )}
 
@@ -254,6 +282,36 @@ export default function Sidebar() {
               </Link>
             );
           })}
+        </div>
+      )}
+
+      {/* View Switcher (Admin only) */}
+      {isAdmin && !collapsed && (
+        <div className="px-3 pt-3">
+          <div className="flex items-center bg-white/5 rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode("ADMIN")}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                nav.viewMode === "ADMIN"
+                  ? "bg-[#7AD62A] text-[#0a0f1a] shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <Shield size={11} />
+              Admin
+            </button>
+            <button
+              onClick={() => setViewMode("LEARNER")}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                nav.viewMode === "LEARNER"
+                  ? "bg-[#7AD62A] text-[#0a0f1a] shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <GraduationCap size={11} />
+              Learner
+            </button>
+          </div>
         </div>
       )}
 
@@ -370,8 +428,8 @@ export default function Sidebar() {
           );
         })}
 
-        {/* Admin */}
-        {isAdmin && (
+        {/* Admin quick link (only when in learner view) */}
+        {isAdmin && nav.viewMode === "LEARNER" && (
           <>
             {!collapsed && (
               <div className="pt-2 mt-2 border-t border-white/6">
@@ -381,14 +439,9 @@ export default function Sidebar() {
             <Link
               href="/dashboard/admin"
               title={collapsed ? "Admin Panel" : undefined}
-              aria-current={pathname.startsWith("/dashboard/admin") ? "page" : undefined}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
-                pathname.startsWith("/dashboard/admin")
-                  ? "bg-[#7AD62A]/10 text-white"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"
-              } ${collapsed ? "justify-center" : ""}`}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 text-slate-300 hover:bg-white/5 hover:text-white ${collapsed ? "justify-center" : ""}`}
             >
-              <Shield size={16} className={pathname.startsWith("/dashboard/admin") ? "text-[#7AD62A]" : "text-slate-500"} />
+              <Shield size={16} className="text-slate-500" />
               {!collapsed && "Admin Panel"}
             </Link>
           </>

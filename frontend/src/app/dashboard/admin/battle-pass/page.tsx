@@ -65,8 +65,8 @@ export default function AdminBattlePassPage() {
         fetchApiV2<BattlePass[]>("/battle-pass"),
         fetchApiV2<Season[]>("/seasons"),
       ]);
-      setBattlePasses(bpData);
-      setSeasons(seasonData);
+      setBattlePasses(Array.isArray(bpData) ? bpData : bpData ? [bpData] : []);
+      setSeasons(Array.isArray(seasonData) ? seasonData : seasonData ? [seasonData] : []);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -155,7 +155,7 @@ export default function AdminBattlePassPage() {
 
   const getSeasonName = (seasonId: string) => {
     const s = seasons.find((s) => s.id === seasonId);
-    return s ? `Season ${s.seasonNumber} — ${s.name}` : "Unknown";
+    return s ? `Season ${s.seasonNumber}: ${s.name}` : "Unknown";
   };
 
   if (loading) {
@@ -269,7 +269,7 @@ export default function AdminBattlePassPage() {
               >
                 <option value="">Select season...</option>
                 {seasons.map((s) => (
-                  <option key={s.id} value={s.id}>Season {s.seasonNumber} — {s.name}</option>
+                  <option key={s.id} value={s.id}>Season {s.seasonNumber}: {s.name}</option>
                 ))}
               </select>
             </div>

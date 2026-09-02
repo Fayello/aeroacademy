@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SubmitInquiryDto } from './dto/submit-inquiry.dto';
+import { SubmitCommunityApplicationDto } from './dto/submit-community-application.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 export type EmailSender = 'auth' | 'labs' | 'noreply' | 'info';
@@ -190,6 +191,116 @@ export class EmailService implements OnModuleInit {
       <p style="margin:0 0 14px;color:#0f172a;font-size:15px;line-height:1.7;">Hi ${escapeHtml(displayName)},</p>
       <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.7;">We received your ${inquiryLabel} inquiry and shared it with our team.</p>
       <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;">We’ll review your message and get back to you using this email address.</p>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+  }
+
+  async createCommunityProgramApplicationRecord(application: SubmitCommunityApplicationDto) {
+    return this.prisma.communityProgramApplication.create({
+      data: {
+        programType: application.programType === 'ambassador' ? 'AMBASSADOR' : 'VOLUNTEER',
+        name: application.name,
+        email: application.email,
+        city: application.city || null,
+        organization: application.organization || null,
+        role: application.role || null,
+        experience: application.experience || null,
+        interests: application.interests || [],
+        contribution: application.contribution,
+        availability: application.availability || null,
+        linkedinUrl: application.linkedinUrl || null,
+        portfolioUrl: application.portfolioUrl || null,
+        sourcePage: application.sourcePage || '/community',
+      },
+      select: {
+        id: true,
+        programType: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async sendCommunityProgramApplication(application: SubmitCommunityApplicationDto) {
+    const programLabel = application.programType === 'ambassador' ? 'Brand ambassador' : 'Volunteer';
+    const submittedAt = new Date().toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+
+    return this.send({
+      to: 'contact@xpertclass.academy',
+      from: 'info',
+      subject: `${programLabel} application from ${application.name}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
+    <div style="background:#0F203A;padding:28px 32px;">
+      <p style="margin:0;color:#7AD62A;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">Community application</p>
+      <h1 style="margin:12px 0 0;color:#ffffff;font-size:24px;">${programLabel} application</h1>
+      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">A new community-program application was submitted through XpertClass.</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;width:180px;">Program</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;font-weight:600;">${programLabel}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Name</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.name)}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Email</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.email)}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">City</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.city || 'Not provided')}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Organization</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.organization || 'Not provided')}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Role</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.role || 'Not provided')}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Experience</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.experience || 'Not provided')}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Availability</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.availability || 'Not provided')}</td></tr>
+        <tr><td style="padding:10px 0;color:#64748b;font-size:13px;">Submitted</td><td style="padding:10px 0;color:#0f172a;font-size:14px;">${submittedAt}</td></tr>
+      </table>
+
+      <div style="margin-top:24px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;padding:20px;">
+        <p style="margin:0 0 10px;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Interests</p>
+        <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.7;">${escapeHtml((application.interests || []).join(', ') || 'Not provided')}</p>
+      </div>
+
+      <div style="margin-top:16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;padding:20px;">
+        <p style="margin:0 0 10px;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Contribution</p>
+        <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.7;white-space:pre-wrap;">${escapeHtml(application.contribution)}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+  }
+
+  async sendCommunityProgramAcknowledgement(
+    email: string,
+    name: string,
+    programType: 'ambassador' | 'volunteer',
+  ) {
+    const displayName = name || 'there';
+    const programLabel = programType === 'ambassador' ? 'brand ambassador' : 'volunteer';
+
+    return this.send({
+      to: email,
+      from: 'info',
+      subject: 'We received your XpertClass community application',
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
+    <div style="background:#0F203A;padding:28px 32px;text-align:center;">
+      <h1 style="margin:0;color:#ffffff;font-size:24px;">Application received</h1>
+      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">Thanks for applying to support XpertClass.</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <p style="margin:0 0 14px;color:#0f172a;font-size:15px;line-height:1.7;">Hi ${escapeHtml(displayName)},</p>
+      <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.7;">We received your ${programLabel} application and shared it with our team.</p>
+      <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;">We’ll review your interest, experience, and proposed contribution and reply using this email address.</p>
     </div>
   </div>
 </body>

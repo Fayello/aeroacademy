@@ -11,6 +11,25 @@ export class BattlePassService {
     private readonly progressionService: ProgressionService,
   ) {}
 
+  async getAllBattlePasses() {
+    const battlePasses = await this.prisma.battlePass.findMany({
+      include: { tiers: { orderBy: { tierNumber: 'asc' } }, season: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const results = await Promise.all(
+      battlePasses.map(async (bp) => {
+        const playerCount = await this.prisma.battlePassProgress.groupBy({
+          by: ['userId'],
+          where: { tier: { battlePassId: bp.id } },
+        });
+        return { ...bp, _count: { progress: playerCount.length } };
+      }),
+    );
+
+    return results;
+  }
+
   async getBattlePass(seasonId?: string) {
     const where = seasonId ? { seasonId } : { isActive: true };
     return this.prisma.battlePass.findFirst({
@@ -48,6 +67,46 @@ export class BattlePassService {
 
     this.logger.log(`Battle pass created for season ${seasonId}: ${tiers.length} tiers, ${totalXp} total XP`);
     return battlePass;
+  }
+
+  async updateBattlePass(id: string, data: { seasonId?: string; title?: string; tiers?: Array<{ tierNumber: number; title: string; xpRequired: number; rewards: any; isPremium?: boolean }> }) {
+    const existing = await this.prisma.battlePass.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Battle pass not found');
+
+    const updateData: any = {};
+    if (data.title) updateData.title = data.title;
+    if (data.seasonId) updateData.seasonId = data.seasonId;
+
+    if (data.tiers) {
+      await this.prisma.battlePassTier.deleteMany({ where: { battlePassId: id } });
+      updateData.tiers = {
+        create: data.tiers.map(t => ({
+          tierNumber: t.tierNumber,
+          title: t.title,
+          xpRequired: t.xpRequired,
+          rewards: t.rewards,
+          isPremium: t.isPremium ?? false,
+        })),
+      };
+      updateData.totalTiers = data.tiers.length;
+    }
+
+    return this.prisma.battlePass.update({
+      where: { id },
+      data: updateData,
+      include: { tiers: { orderBy: { tierNumber: 'asc' } }, season: true },
+    });
+  }
+
+  async deactivateBattlePass(id: string) {
+    const existing = await this.prisma.battlePass.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Battle pass not found');
+
+    return this.prisma.battlePass.update({
+      where: { id },
+      data: { isActive: false },
+      include: { tiers: { orderBy: { tierNumber: 'asc' } }, season: true },
+    });
   }
 
   async getUserProgress(userId: string) {

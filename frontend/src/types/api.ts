@@ -291,6 +291,33 @@ export interface DashboardRecommendations {
   };
 }
 
+export interface CommunityProgramApplication {
+  id: string;
+  programType: "AMBASSADOR" | "VOLUNTEER";
+  status: "NEW" | "REVIEWING" | "INTERVIEW" | "ACCEPTED" | "CLOSED";
+  name: string;
+  email: string;
+  city: string | null;
+  organization: string | null;
+  role: string | null;
+  experience: string | null;
+  interests: string[];
+  contribution: string;
+  availability: string | null;
+  linkedinUrl: string | null;
+  portfolioUrl: string | null;
+  sourcePage: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  assignedTo?: { id: string; name: string | null; email: string } | null;
+}
+
+export interface CommunityProgramApplicationResponse {
+  items: CommunityProgramApplication[];
+  totals: Record<string, number>;
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token: string;
