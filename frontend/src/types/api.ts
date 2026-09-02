@@ -144,6 +144,7 @@ export interface LabInstance {
 
 export interface LabTelemetry {
   containerId: string;
+  labId?: string | null;
   labName: string;
   cpu: number;
   memory: number;
@@ -272,6 +273,22 @@ export interface LabStats {
   capacityPercentage: number;
   maxCapacity: number;
   systemStatus: string;
+}
+
+export interface DashboardRecommendations {
+  courses: { id: string; title: string; description: string; imageUrl: string | null }[];
+  learningPaths: { id: string; title: string; description: string; imageUrl: string | null; careerRole: string | null }[];
+  labs: { id: string; title: string; description: string; difficulty: number }[];
+  similarUsers: { id: string; name: string | null; username: string | null; xp: number }[];
+  source?: "ai" | "rules";
+  insights?: {
+    weakDomains: string[];
+    level: number;
+    streak: number;
+    focusAreas?: string[];
+    journeySummary?: string;
+    personalizationMode?: "ai" | "rules";
+  };
 }
 
 export interface AuthResponse {

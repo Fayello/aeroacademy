@@ -77,6 +77,10 @@ const DIVISION_INFO: Record<string, { color: string; bg: string; next: string; n
   TITAN:    { color: "text-indigo-600", bg: "bg-indigo-100", next: "", nextAt: Infinity },
 };
 
+function isGradientAvatar(value?: string | null): boolean {
+  return Boolean(value && value.includes("from-") && value.includes("to-"));
+}
+
 export default function PublicProfilePage() {
   const params = useParams();
   const userId = params.userId as string;
@@ -163,7 +167,7 @@ export default function PublicProfilePage() {
     : userBadges.filter((ub) => allBadges.some((b) => b.id === ub.badgeId));
 
   const getAvatarContent = () => {
-    if (user.avatarUrl) {
+    if (user.avatarUrl && !isGradientAvatar(user.avatarUrl)) {
       return (
         <Image
           src={user.avatarUrl}
@@ -197,7 +201,7 @@ export default function PublicProfilePage() {
       <div className="relative overflow-hidden bg-[#0f172a] rounded-xl border border-white/10 p-6">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#E9F8EE] to-transparent rounded-bl-full opacity-60" />
         <div className="flex flex-col sm:flex-row items-start gap-5 relative">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#7AD62A] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg overflow-hidden">
+          <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${isGradientAvatar(user.avatarUrl) ? user.avatarUrl : "from-[#7AD62A] to-[#7AD62A]"} flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg overflow-hidden`}>
             {getAvatarContent()}
           </div>
           <div className="flex-1 min-w-0">

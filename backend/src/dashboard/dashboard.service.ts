@@ -6,7 +6,7 @@ import * as os from 'os';
 @Injectable()
 export class DashboardService implements OnModuleInit {
   private docker: Docker;
-  private dockerStatsCache: { data: { containerId: string; labName: string; cpu: number; memory: number; network: number; status: string }[]; timestamp: number } | null = null;
+  private dockerStatsCache: { data: { containerId: string; labId: string | null; labName: string; cpu: number; memory: number; network: number; status: string }[]; timestamp: number } | null = null;
   private readonly DOCKER_STATS_TTL_MS = 8000;
 
   constructor(private prisma: PrismaService) {
@@ -191,9 +191,33 @@ export class DashboardService implements OnModuleInit {
       const labContainers = containers.filter((c) =>
         c.Names.some((n) => n.includes('lab-')),
       );
+      const activeInstances = await this.prisma.labInstance.findMany({
+        where: {
+          status: 'RUNNING',
+          containerId: { not: null },
+        },
+        select: {
+          containerId: true,
+          labId: true,
+          lab: {
+            select: {
+              title: true,
+            },
+          },
+        },
+      });
+      const instanceByContainerId = new Map(
+        activeInstances
+          .filter((instance) => instance.containerId)
+          .map((instance) => [
+            instance.containerId as string,
+            { labId: instance.labId, labTitle: instance.lab.title },
+          ]),
+      );
 
       const telemetry = await Promise.all(
         labContainers.map(async (container) => {
+          const instanceMeta = instanceByContainerId.get(container.Id);
           try {
             const stats = await this.docker
               .getContainer(container.Id)
@@ -213,7 +237,8 @@ export class DashboardService implements OnModuleInit {
 
             return {
               containerId: container.Id,
-              labName: container.Names[0].split('-')[1],
+              labId: instanceMeta?.labId || null,
+              labName: instanceMeta?.labTitle || container.Names[0].replace(/^\//, ''),
               cpu: Math.min(Math.round(cpuPercent || 0), 100),
               memory: Math.round(memPercent || 0),
               network:
@@ -223,7 +248,8 @@ export class DashboardService implements OnModuleInit {
           } catch {
             return {
               containerId: container.Id,
-              labName: container.Names[0].split('-')[1],
+              labId: instanceMeta?.labId || null,
+              labName: instanceMeta?.labTitle || container.Names[0].replace(/^\//, ''),
               cpu: 0,
               memory: 0,
               network: 0,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { fetchApiV2 } from "@/lib/api";
 import toast from "@/lib/toast";
@@ -59,7 +59,7 @@ export default function MyMissionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"available" | "active" | "completed" | "history">("available");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -74,11 +74,14 @@ export default function MyMissionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const timer = setTimeout(() => {
+      void fetchData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchData]);
 
   const handleAccept = async (missionId: string) => {
     try {
@@ -147,24 +150,25 @@ export default function MyMissionsPage() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F203A] flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-2xl font-bold text-white">
             <Swords className="w-7 h-7 text-[#7AD62A]" />
             {t("missions.title")}
           </h1>
-          <p className="text-slate-500 text-sm mt-1">{t("missions.subtitle")}</p>
+          <p className="mt-1 text-sm text-slate-300">{t("missions.subtitle")}</p>
         </div>
         <button
           onClick={fetchData}
-          className="p-2 text-slate-400 hover:text-slate-300 transition-colors"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/5"
         >
           <RefreshCw className="w-5 h-5" />
+          Refresh
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+      <div className="flex gap-2 overflow-x-auto border-b border-white/10 pb-2">
         {[
           { key: "available", label: t("missions.available"), count: availableMissions.length },
           { key: "active", label: t("missions.active"), count: activeMissions.length },
@@ -177,7 +181,7 @@ export default function MyMissionsPage() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.key
                 ? "bg-[#0F203A] text-white"
-                : "text-slate-600 hover:bg-white/5"
+                : "text-slate-300 hover:bg-white/5"
             }`}
           >
             {tab.label}
@@ -197,13 +201,13 @@ export default function MyMissionsPage() {
       {/* Missions Grid */}
       {displayMissions.length === 0 ? (
         <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/10">
             <Swords size={28} className="text-purple-500" />
           </div>
           <h2 className="text-sm font-semibold text-white mb-1">
             {t("missions.noMissions")}
           </h2>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="mx-auto max-w-sm text-xs text-slate-300">
             {t("missions.noMissionsDesc")}
           </p>
         </div>
@@ -236,10 +240,10 @@ export default function MyMissionsPage() {
 
                 {/* Mission Body */}
                 <div className="p-4 space-y-3">
-                  <p className="text-slate-600 text-sm">{mission.description}</p>
+                  <p className="text-sm leading-relaxed text-slate-300">{mission.description}</p>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
                     <div className="flex items-center gap-1">
                       <Zap className="w-3 h-3 text-amber-500" />
                       <span>{mission.xpReward} XP</span>
@@ -267,14 +271,14 @@ export default function MyMissionsPage() {
 
                   {/* Target Info */}
                   {(mission.skill || mission.domain) && (
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
                       {mission.skill && (
-                        <span className="bg-slate-100 px-2 py-1 rounded">
+                        <span className="rounded bg-white/5 px-2 py-1">
                           {mission.skill.displayName}
                         </span>
                       )}
                       {mission.domain && (
-                        <span className="bg-slate-100 px-2 py-1 rounded">
+                        <span className="rounded bg-white/5 px-2 py-1">
                           {mission.domain.displayName}
                         </span>
                       )}

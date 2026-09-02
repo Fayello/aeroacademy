@@ -119,12 +119,16 @@ export default function BossMissionsPage() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
-  const [now, setNow] = useState(0);
+  const [now, setNow] = useState(() => 0);
 
   useEffect(() => {
-    setNow(new Date().getTime());
+    const syncNow = () => setNow(new Date().getTime());
+    const initialTimer = setTimeout(syncNow, 0);
     const interval = setInterval(() => setNow(new Date().getTime()), 60000);
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {

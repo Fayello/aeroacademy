@@ -25,7 +25,8 @@ import {
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
 import { getLevel, getCourseLock } from "@/lib/levelGating";
-import type { Course } from "@/types/api";
+import { getFocusLabelFromOnboarding, getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreTextAgainstOnboarding } from "@/lib/onboarding";
+import type { Course, DashboardRecommendations } from "@/types/api";
 
 const CATEGORIES: Record<string, { label: string; color: string; bg: string }> = {
   aerodynamics: { label: "Aerodynamics", color: "text-sky-600", bg: "bg-sky-50 border-sky-200" },
@@ -347,6 +348,11 @@ export default function CoursesPage() {
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
+  const onboarding = readOnboardingSelections();
+  const focusLabel = getFocusLabelFromOnboarding(onboarding);
+  const focusTokens = getInterestTokensFromOnboarding(onboarding);
+  const recommendedCourseIds = recommendations?.courses?.map((course) => course.id) || [];
 
   const toggleFavorite = async (courseId: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -374,12 +380,14 @@ export default function CoursesPage() {
     let cancelled = false;
     async function loadCourses() {
       try {
-        const [data, enrollmentsData] = await Promise.all([
+        const [data, enrollmentsData, recommendationData] = await Promise.all([
           fetchApi<CourseListItem[]>("/courses"),
           fetchApi("/courses/my-enrollments").catch(() => []),
+          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
         if (!cancelled) {
           setCourses(data);
+          setRecommendations(recommendationData);
           const enrollMap: Record<string, { enrolledAt: string; lastActivityAt: string }> = {};
           if (Array.isArray(enrollmentsData)) {
             for (const e of enrollmentsData) {
@@ -398,7 +406,7 @@ export default function CoursesPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = reorderItemsByIds(courses, recommendedCourseIds).filter((course) => {
     const matchesSearch =
       !searchQuery ||
       course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -413,6 +421,24 @@ export default function CoursesPage() {
     if (activeTab === "completed" && !(course.progress === 100)) return false;
 
     return matchesSearch && matchesCategory && matchesDifficulty;
+  }).sort((a, b) => {
+    const recommendedA = recommendedCourseIds.indexOf(a.id);
+    const recommendedB = recommendedCourseIds.indexOf(b.id);
+    const textA = `${a.title} ${a.description} ${a.category || ""} ${a.sections?.map((section) => section.title).join(" ") || ""}`.toLowerCase();
+    const textB = `${b.title} ${b.description} ${b.category || ""} ${b.sections?.map((section) => section.title).join(" ") || ""}`.toLowerCase();
+    const onboardingA = scoreTextAgainstOnboarding(textA, onboarding) +
+      focusTokens.reduce((score, token) => score + (textA.includes(token) ? 1 : 0), 0);
+    const onboardingB = scoreTextAgainstOnboarding(textB, onboarding) +
+      focusTokens.reduce((score, token) => score + (textB.includes(token) ? 1 : 0), 0);
+
+    if (recommendedA !== -1 || recommendedB !== -1) {
+      if (recommendedA === -1) return 1;
+      if (recommendedB === -1) return -1;
+      if (recommendedA !== recommendedB) return recommendedA - recommendedB;
+    }
+    if (onboardingA !== onboardingB) return onboardingB - onboardingA;
+    if ((a.progress ?? 0) !== (b.progress ?? 0)) return (b.progress ?? 0) - (a.progress ?? 0);
+    return a.title.localeCompare(b.title);
   });
 
   const activeCategories = Array.from(
@@ -458,6 +484,19 @@ export default function CoursesPage() {
           <p className="text-sm text-slate-400 mt-3 max-w-2xl leading-relaxed">
             Each course is part of a larger progression system: build foundations, complete practical work, prepare for assessments, and move toward verifiable outcomes.
           </p>
+          {focusLabel && (
+            <div className="mt-4 rounded-xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">Personalized focus</p>
+              <p className="mt-2 text-sm text-white">
+                This catalog is being ranked for <span className="text-[#7AD62A]">{focusLabel}</span>, while still leaving room for adjacent skills that support your broader path.
+              </p>
+              {recommendations?.insights?.journeySummary && (
+                <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                  {recommendations.insights.journeySummary}
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
             {[
               { title: "Learn", text: "Structured modules and guided lessons", icon: BookOpen },

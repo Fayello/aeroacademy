@@ -5,27 +5,16 @@ import { fetchApi } from "@/lib/api";
 import { Loader2, Compass, BookOpen, Target, Users, Sparkles } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
-
-interface Recommendations {
-  courses: { id: string; title: string; description: string; imageUrl: string | null }[];
-  learningPaths: { id: string; title: string; description: string; imageUrl: string | null; careerRole: string | null }[];
-  labs: { id: string; title: string; description: string; difficulty: number }[];
-  similarUsers: { id: string; name: string | null; username: string | null; xp: number }[];
-  insights?: {
-    weakDomains: string[];
-    level: number;
-    streak: number;
-  };
-}
+import type { DashboardRecommendations } from "@/types/api";
 
 export default function RecommendationsPage() {
-  const [data, setData] = useState<Recommendations | null>(null);
+  const [data, setData] = useState<DashboardRecommendations | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const result = await fetchApi<Recommendations>("/dashboard/recommendations");
+        const result = await fetchApi<DashboardRecommendations>("/dashboard/recommendations");
         setData(result);
       } catch {
         // silent
@@ -56,7 +45,34 @@ export default function RecommendationsPage() {
       </div>
 
       {/* Insights */}
-      {data.insights && data.insights.weakDomains && data.insights.weakDomains.length > 0 && (
+      {data.insights && (
+        <div className="space-y-3">
+          <div className="rounded-xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 p-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">
+                  {data.insights.personalizationMode === "ai" ? "AI-guided journey" : "Adaptive fallback journey"}
+                </p>
+                <p className="mt-1 text-sm text-white">
+                  {data.insights.journeySummary || "Your next steps are being shaped from your skills, momentum, and interests."}
+                </p>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-wide text-slate-300">
+                Source: {data.source === "ai" ? "AI" : "Rules"}
+              </span>
+            </div>
+            {data.insights.focusAreas && data.insights.focusAreas.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {data.insights.focusAreas.slice(0, 5).map((focus) => (
+                  <span key={focus} className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] text-slate-200">
+                    {focus}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {data.insights.weakDomains && data.insights.weakDomains.length > 0 && (
         <div className="bg-amber-500/10 border border-amber-200 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles size={16} className="text-amber-600" />
@@ -66,6 +82,8 @@ export default function RecommendationsPage() {
             We noticed you could improve in: <span className="font-semibold">{data.insights.weakDomains.join(", ")}</span>.
             Check out the recommended courses below to level up.
           </p>
+        </div>
+          )}
         </div>
       )}
 

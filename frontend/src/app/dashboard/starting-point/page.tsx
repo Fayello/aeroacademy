@@ -6,7 +6,8 @@ import { getDifficultyStyle, getProgressStatus } from "@/lib/labs";
 import { Rocket, Star, CheckCircle, Clock, Lock, ArrowRight, Shield, FileCheck } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
-import type { Lab } from "@/types/api";
+import { getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreLabAgainstOnboarding } from "@/lib/onboarding";
+import type { DashboardRecommendations, Lab } from "@/types/api";
 
 interface StartingLab {
   id: string;
@@ -35,45 +36,89 @@ const CURATED_BEGINNER_LABS = [
   "Cloud Computing 101",
 ];
 
+const STARTER_KEYWORDS = [
+  "intro",
+  "introduction",
+  "beginner",
+  "basic",
+  "basics",
+  "fundamental",
+  "fundamentals",
+  "first",
+  "starter",
+  "linux",
+  "network",
+  "web",
+  "database",
+  "command line",
+  "cloud",
+];
+
 function getDifficultyInfo(d: number) {
   const s = getDifficultyStyle(d);
   return { label: s.label, color: s.color, bar: s.bar, dot: s.dot, bg: s.dot.replace("bg-", "bg-") + "/10" };
 }
 
+function rankStarterLabs(allLabs: Lab[], recommendedIds: string[] = []) {
+  const onboarding = readOnboardingSelections();
+  const onboardingTokens = getInterestTokensFromOnboarding(onboarding);
+  return reorderItemsByIds([...allLabs], recommendedIds)
+    .sort((a, b) => {
+      const recommendedA = recommendedIds.indexOf(a.id);
+      const recommendedB = recommendedIds.indexOf(b.id);
+      const textA = `${a.title} ${a.description}`.toLowerCase();
+      const textB = `${b.title} ${b.description}`.toLowerCase();
+      const curatedA = CURATED_BEGINNER_LABS.some((title) => textA.includes(title.toLowerCase())) ? 1 : 0;
+      const curatedB = CURATED_BEGINNER_LABS.some((title) => textB.includes(title.toLowerCase())) ? 1 : 0;
+      const starterA = STARTER_KEYWORDS.reduce((score, keyword) => score + (textA.includes(keyword) ? 1 : 0), 0);
+      const starterB = STARTER_KEYWORDS.reduce((score, keyword) => score + (textB.includes(keyword) ? 1 : 0), 0);
+      const onboardingA = scoreLabAgainstOnboarding(a.title, a.description, onboarding);
+      const onboardingB = scoreLabAgainstOnboarding(b.title, b.description, onboarding);
+      const tokenMatchA = onboardingTokens.reduce((score, token) => score + (textA.includes(token) ? 1 : 0), 0);
+      const tokenMatchB = onboardingTokens.reduce((score, token) => score + (textB.includes(token) ? 1 : 0), 0);
+      const blendedBonusA = starterA > 0 && onboardingA > 0 ? 2 : 0;
+      const blendedBonusB = starterB > 0 && onboardingB > 0 ? 2 : 0;
+
+      if (recommendedA !== -1 || recommendedB !== -1) {
+        if (recommendedA === -1) return 1;
+        if (recommendedB === -1) return -1;
+        if (recommendedA !== recommendedB) return recommendedA - recommendedB;
+      }
+      if (curatedA !== curatedB) return curatedB - curatedA;
+      if (blendedBonusA !== blendedBonusB) return blendedBonusB - blendedBonusA;
+      if (onboardingA !== onboardingB) return onboardingB - onboardingA;
+      if (tokenMatchA !== tokenMatchB) return tokenMatchB - tokenMatchA;
+      if (starterA !== starterB) return starterB - starterA;
+      if (a.difficulty !== b.difficulty) return a.difficulty - b.difficulty;
+      return a.title.localeCompare(b.title);
+    })
+    .filter((lab, index, array) => array.findIndex((item) => item.id === lab.id) === index)
+    .slice(0, 6);
+}
+
 export default function StartingPointPage() {
   const [labs, setLabs] = useState<StartingLab[]>([]);
+  const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
-        const [allLabs, activeLabs] = await Promise.all([
+        const [allLabs, activeLabs, recommendationData] = await Promise.all([
           fetchApi<Lab[]>("/labs?take=200"),
           fetchApi<ActiveLabInstance[]>("/dashboard/active-labs").catch(() => []),
+          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
+        if (!cancelled && recommendationData) {
+          setRecommendations(recommendationData);
+        }
         const activeLabIds = new Set(
           (activeLabs || [])
             .map((item) => item.labId || item.lab?.id)
             .filter((value): value is string => !!value),
         );
-        const curatedMatches = CURATED_BEGINNER_LABS
-          .map((title) =>
-            allLabs.find((lab) => lab.title.toLowerCase().includes(title.toLowerCase())),
-          )
-          .filter((lab, index, array): lab is Lab => !!lab && array.findIndex((item) => item?.id === lab.id) === index);
-        const extraLabs = allLabs
-          .filter((lab) => {
-            const title = lab.title.toLowerCase();
-            return (
-              lab.difficulty < 600 &&
-              !curatedMatches.some((match) => match.id === lab.id) &&
-              !CURATED_BEGINNER_LABS.some((curated) => title.includes(curated.toLowerCase()))
-            );
-          })
-          .sort((a, b) => a.difficulty - b.difficulty)
-          .slice(0, Math.max(0, 6 - curatedMatches.length));
-        const chosenLabs = [...curatedMatches, ...extraLabs];
+        const chosenLabs = rankStarterLabs(allLabs, recommendationData?.labs?.map((lab) => lab.id) || []);
         const beginnerLabs: StartingLab[] = [];
         chosenLabs.forEach((lab, idx) => {
           const progressStatus = getProgressStatus(lab.flags);
@@ -123,6 +168,12 @@ export default function StartingPointPage() {
 
   const completedCount = labs.filter((l) => l.completed).length;
   const pct = labs.length > 0 ? Math.round((completedCount / labs.length) * 100) : 0;
+  const journeySummary = recommendations?.insights?.journeySummary;
+  const journeyMode = recommendations?.insights?.personalizationMode || recommendations?.source || "rules";
+  const nextLab = labs.find((lab, idx) => {
+    const previousCompleted = idx === 0 || labs[idx - 1]?.completed;
+    return lab.available && (lab.inProgress || (!lab.completed && previousCompleted));
+  }) || labs.find((lab) => lab.available);
 
   if (loading) {
     return (
@@ -149,7 +200,7 @@ export default function StartingPointPage() {
     <div className="p-6 space-y-6">
       <PageHeader
         title="Foundation Path"
-        description="Follow this guided sequence to build your first practical proof and move toward certification readiness"
+        description={journeySummary || "Follow this guided sequence to build your first practical proof and move toward certification readiness"}
         action={
           <Link
             href="/dashboard/labs"
@@ -160,12 +211,35 @@ export default function StartingPointPage() {
         }
       />
 
+      {nextLab && (
+        <div className="angular-card border border-[#7AD62A]/20 bg-[#0F203A] p-5 text-white">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">Next Recommended Lab</p>
+              <h2 className="mt-2 text-xl font-bold">{nextLab.title}</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">
+                {journeyMode === "ai"
+                  ? "This starting point was refined from your goals, recent progress, and current momentum so the first hands-on win fits your path better."
+                  : "Start here to get your first hands-on win quickly, then continue through the sequence in order."}
+              </p>
+            </div>
+            <Link
+              href={`/dashboard/labs/${nextLab.id}`}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7AD62A] px-5 py-2.5 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422]"
+            >
+              Launch First Lab
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4">
         <div className="angular-card bg-[#0f172a] border border-white/10 p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Guided Certification Start</p>
           <h2 className="text-xl font-bold text-white mt-2">One disciplined path to your first credible outcome</h2>
           <p className="text-sm text-slate-400 mt-3 leading-relaxed">
-            This sequence is designed to reduce confusion: start with fundamentals, complete the labs in order, then progress into assessments and certificate-eligible pathways.
+            {journeySummary || "This sequence is designed to reduce confusion: start with fundamentals, complete the labs in order, then progress into assessments and certificate-eligible pathways."}
           </p>
           <div className="grid sm:grid-cols-3 gap-3 mt-5">
             {[
@@ -225,6 +299,24 @@ export default function StartingPointPage() {
       </div>
 
       {/* Lab list */}
+      {labs.length === 0 ? (
+        <div className="angular-card border border-white/10 bg-[#0f172a] p-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#7AD62A]/10">
+            <Rocket size={24} className="text-[#7AD62A]" />
+          </div>
+          <h3 className="text-lg font-semibold text-white">No starter labs were selected automatically</h3>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-300">
+            Your catalog is live, but this guided path could not identify a starter sequence confidently enough. Browse the full labs catalog and pick a beginner-friendly lab to begin.
+          </p>
+          <Link
+            href="/dashboard/labs"
+            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#7AD62A] px-5 py-2.5 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422]"
+          >
+            Browse Live Labs
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      ) : (
       <div className="space-y-3">
         {labs.map((lab, idx) => {
           const diff = getDifficultyInfo(lab.difficulty);
@@ -309,6 +401,7 @@ export default function StartingPointPage() {
           );
         })}
       </div>
+      )}
 
       {/* Encouragement */}
       {labs.length > 0 && completedCount === labs.length && (

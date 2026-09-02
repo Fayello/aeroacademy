@@ -38,6 +38,7 @@ interface UserProfile extends User {
   longestStreak?: number;
   lastActivityDate?: string | null;
   timezone?: string;
+  avatarUrl?: string | null;
   organization?: { id: string; name: string; type: string } | null;
   team?: { id: string; name: string; description?: string | null } | null;
   level?: number;
@@ -175,6 +176,10 @@ function formatActivityType(type: string): string {
   return type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
+function isGradientAvatar(value?: string | null): boolean {
+  return Boolean(value && value.includes("from-") && value.includes("to-"));
+}
+
 export default function ProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [myBadges, setMyBadges] = useState<UserBadge[]>([]);
@@ -190,6 +195,7 @@ export default function ProfilePage() {
   const { userMetrics } = useDashboard();
 
   useEffect(() => {
+    let cancelled = false;
     const loadData = async () => {
       try {
         const storedUser = localStorage.getItem("user");
@@ -204,40 +210,49 @@ export default function ProfilePage() {
         ]);
 
         const profile = fullProfile.status === "fulfilled" ? fullProfile.value : parsedUser;
-        setUser(profile);
-        if (stats.status === "fulfilled") setUserStats(stats.value);
-        if (act.status === "fulfilled") setActivity(act.value);
-        if (an.status === "fulfilled") setAnalytics(an.value);
-        if (paths.status === "fulfilled") setLearningPaths(paths.value);
+        const analyticsData = an.status === "fulfilled" ? an.value : null;
+        if (!cancelled) {
+          setUser(profile);
+          setPinnedBadgeIds(profile?.pinnedBadges || []);
+          if (stats.status === "fulfilled") setUserStats(stats.value);
+          if (act.status === "fulfilled") setActivity(act.value);
+          if (analyticsData) setAnalytics(analyticsData);
+          if (paths.status === "fulfilled") setLearningPaths(paths.value);
+        }
 
-        if (profile?._count && analytics) {
+        if (profile?._count && analyticsData) {
           const certResults = await Promise.allSettled(
-            (analytics.courseProgress || []).map((cp) =>
+            (analyticsData.courseProgress || []).map((cp) =>
               fetchApi<Certificate>(`/courses/${cp.courseId}/certificate`)
             )
           );
-          setCertificates(
-            certResults
-              .filter((r): r is PromiseFulfilledResult<Certificate> => r.status === "fulfilled")
-              .map((r) => r.value)
-              .filter((c) => c.certificate)
-          );
+          if (!cancelled) {
+            setCertificates(
+              certResults
+                .filter((r): r is PromiseFulfilledResult<Certificate> => r.status === "fulfilled")
+                .map((r) => r.value)
+                .filter((c) => c.certificate)
+            );
+          }
         }
       } catch {
-        setUser(null);
+        if (!cancelled) setUser(null);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadData();
-    fetchApi<UserBadge[]>("/badges/my").then(setMyBadges).catch(() => {});
-    fetchApi<Record<string, number>>("/dashboard/activity/yearly").then(setYearlyActivity).catch(() => {});
+    fetchApi<UserBadge[]>("/badges/my").then((data) => {
+      if (!cancelled) setMyBadges(data);
+    }).catch(() => {});
+    fetchApi<Record<string, number>>("/dashboard/activity/yearly").then((data) => {
+      if (!cancelled) setYearlyActivity(data);
+    }).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-  useEffect(() => {
-    if (user?.pinnedBadges) setPinnedBadgeIds(user.pinnedBadges);
-  }, [user?.pinnedBadges]);
 
   const pinnedBadges = myBadges.filter((ub) => pinnedBadgeIds.includes(ub.badgeId));
 
@@ -339,20 +354,23 @@ export default function ProfilePage() {
     return grid;
   })();
 
+  const avatarGradient = isGradientAvatar(user.avatarUrl) ? user.avatarUrl : "from-[#7AD62A] to-[#7AD62A]";
+  const profileName = user.name || user.email.split("@")[0];
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Profile Header */}
       <div className="relative overflow-hidden angular-card border-white/10 p-6">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#E9F8EE] to-transparent rounded-bl-full opacity-60" />
         <div className="flex flex-col sm:flex-row items-start gap-5 relative">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#7AD62A] to-[#7AD62A] flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg">
+          <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg`}>
             <span className="text-2xl font-bold text-white">
-              {(user.name || user.email).charAt(0).toUpperCase()}
+              {profileName.charAt(0).toUpperCase()}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold text-white">{user.name || user.email.split("@")[0]}</h1>
+              <h1 className="text-2xl font-bold text-white">{profileName}</h1>
               <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${divInfo.bg} ${divInfo.color}`}>
                 <Shield size={12} />
                 {division}

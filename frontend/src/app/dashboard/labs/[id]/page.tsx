@@ -81,6 +81,7 @@ interface LabInstance {
   port?: number | null;
   expiresAt?: string | null;
   containerId?: string | null;
+  serverId?: string | null;
   labId?: string;
   lab?: { id: string; title: string; description: string; difficulty: number };
 }
@@ -111,6 +112,18 @@ function getEstimatedTime(flags: number) {
   if (flags <= 4) return "1-2h";
   if (flags <= 6) return "2-4h";
   return "4h+";
+}
+
+function buildLabAccessUrl(instance: LabInstance | null, basePath?: string) {
+  if (!instance?.port) return null;
+
+  try {
+    const api = new URL(API_URL);
+    return `${api.protocol}//${api.hostname}:${instance.port}${basePath || ""}`;
+  } catch {
+    if (typeof window === "undefined") return null;
+    return `${window.location.protocol}//${window.location.hostname}:${instance.port}${basePath || ""}`;
+  }
 }
 
 export default function LabWorkspace() {
@@ -290,11 +303,16 @@ export default function LabWorkspace() {
 
   const telemetry =
     (labTelemetry || []).find(
-      (t: LabTelemetry) => t.labName === id,
+      (t: LabTelemetry) =>
+        (instance?.containerId && t.containerId === instance.containerId) ||
+        t.labId === id,
     ) || null;
+  const accessUrl = buildLabAccessUrl(instance, lab?.basePath);
 
   const isExpired = !!instance?.expiresAt && new Date(instance.expiresAt).getTime() <= now.getTime();
   const isRunning = instance?.status === "RUNNING" && !isExpired;
+  const isProvisioning = instance?.status === "PROVISIONING" || provisioning;
+  const isStopped = instance?.status === "STOPPED";
   const minutesRemaining = instance?.expiresAt
     ? Math.floor((new Date(instance.expiresAt).getTime() - now.getTime()) / 60000)
     : Infinity;
@@ -964,10 +982,12 @@ export default function LabWorkspace() {
                 {connected ? "Connected" : "Connecting..."}
               </span>
               <a
-                href={`http://${window.location.hostname}${instance.port ? `:${instance.port}` : ""}${lab?.basePath || ""}`}
+                href={accessUrl || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition-colors"
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-colors ${
+                  accessUrl ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-600 cursor-not-allowed opacity-60"
+                }`}
               >
                 <ExternalLink size={12} />
                 <span className="hidden sm:inline">Open UI</span>
@@ -981,7 +1001,7 @@ export default function LabWorkspace() {
                 Stop
               </button>
             </>
-          ) : instance?.status === "PROVISIONING" || provisioning ? (
+          ) : isProvisioning ? (
             <span className="flex items-center gap-2 text-xs text-amber-400">
               <Loader2 className="animate-spin" size={14} />
               Provisioning...
@@ -1247,18 +1267,22 @@ export default function LabWorkspace() {
                 <TerminalIcon size={28} className="text-slate-300" />
                 <div className="text-center">
                   <p className="text-sm font-medium">
-                    {isExpired ? "Lab instance expired" : "Terminal offline"}
+                    {isExpired ? "Lab instance expired" : isProvisioning ? "Lab is provisioning" : isStopped ? "Lab stopped" : "Terminal offline"}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
                     {isExpired
                       ? "Start a fresh instance to continue"
-                      : "Start a lab instance to connect"}
+                      : isProvisioning
+                        ? "Your environment is being prepared. The terminal will connect when the lab becomes ready."
+                        : isStopped
+                          ? "The last attempt has ended. Start a fresh instance to continue."
+                          : "Start a lab instance to connect"}
                   </p>
                 </div>
-                {!isRunning && instance?.status !== "PROVISIONING" && !provisioning && (
+                {!isRunning && !isProvisioning && (
                   <button onClick={handleLaunch} className="btn-primary text-sm">
                     <Play size={14} />
-                    Start Lab
+                    {isStopped || isExpired ? "Start Fresh Instance" : "Start Lab"}
                   </button>
                 )}
               </div>

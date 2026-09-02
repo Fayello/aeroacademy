@@ -6,7 +6,7 @@ import * as z from "zod";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
 import { useRouter } from "next/navigation";
-import { Lock, Save, ArrowLeft, Loader2 } from "lucide-react";
+import { Lock, Save, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import toast from "@/lib/toast";
 
@@ -60,9 +60,22 @@ export default function ChangePasswordPage() {
       </div>
 
       <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+        <div className="mb-5 rounded-xl border border-white/10 bg-white/5 p-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-[#7AD62A]/10">
+              <ShieldCheck size={18} className="text-[#7AD62A]" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-white">Security update</h2>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Use a unique password with uppercase, lowercase, and numeric characters. After updating it, use the new password on all signed-in devices.
+              </p>
+            </div>
+          </div>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label htmlFor="oldPassword" className="block text-sm font-medium text-slate-700 mb-2">Current password</label>
+            <label htmlFor="oldPassword" className="mb-2 block text-sm font-medium text-slate-300">Current password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input
@@ -77,7 +90,7 @@ export default function ChangePasswordPage() {
           </div>
 
           <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700 mb-2">New password</label>
+            <label htmlFor="newPassword" className="mb-2 block text-sm font-medium text-slate-300">New password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input
@@ -92,7 +105,7 @@ export default function ChangePasswordPage() {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">Confirm new password</label>
+            <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-slate-300">Confirm new password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input

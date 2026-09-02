@@ -537,8 +537,9 @@ export class LabsService implements OnModuleInit {
   }
 
   async getLabStatus(userId: string, labId: string) {
-    return this.prisma.labInstance.findFirst({
-      where: { userId, labId, status: 'RUNNING' },
+    const latestInstance = await this.prisma.labInstance.findFirst({
+      where: { userId, labId },
+      orderBy: { createdAt: 'desc' },
       include: {
         lab: {
           select: {
@@ -550,6 +551,30 @@ export class LabsService implements OnModuleInit {
         },
       },
     });
+
+    if (!latestInstance) return null;
+
+    if (
+      latestInstance.status === 'RUNNING' &&
+      latestInstance.expiresAt.getTime() <= Date.now()
+    ) {
+      return this.prisma.labInstance.update({
+        where: { id: latestInstance.id },
+        data: { status: 'EXPIRED' },
+        include: {
+          lab: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              difficulty: true,
+            },
+          },
+        },
+      });
+    }
+
+    return latestInstance;
   }
 
   async findAll(opts?: { skip?: number; take?: number; userId?: string; userRole?: string }) {
@@ -800,10 +825,6 @@ export class LabsService implements OnModuleInit {
           credentials = [];
         }
       }
-    }
-
-    if (userRole !== 'ADMIN') {
-      return { ...lab, credentials: null };
     }
 
     return { ...lab, credentials };

@@ -59,11 +59,43 @@ const SKILL_TO_KEYWORDS: Record<string, string[]> = {
   design: ["design", "ui", "ux"],
 };
 
+const TERM_ALIASES: Record<string, string[]> = {
+  security: ["security", "cybersecurity", "defense", "blue team", "soc", "siem", "threat"],
+  cybersecurity: ["cybersecurity", "security", "defensive security", "offensive security"],
+  appsec: ["appsec", "application security", "web security", "api security", "owasp", "xss", "ssrf", "sql injection"],
+  devsecops: ["devsecops", "secure ci", "secure pipeline", "sast", "dast", "supply chain"],
+  devops: ["devops", "platform", "infrastructure", "automation", "reliability", "sre"],
+  cloud: ["cloud", "aws", "azure", "gcp", "terraform", "iam", "s3", "serverless"],
+  containers: ["containers", "container", "docker", "kubernetes", "k8s", "helm"],
+  kubernetes: ["kubernetes", "k8s", "helm", "argo", "cluster"],
+  cicd: ["cicd", "ci/cd", "pipeline", "github actions", "gitlab", "jenkins", "automation"],
+  networking: ["networking", "network", "routing", "firewall", "vpn", "dns", "tcp/ip"],
+  software: ["software", "engineering", "backend", "frontend", "api", "architecture"],
+  web: ["web", "frontend", "backend", "react", "node", "browser", "http"],
+  mobile: ["mobile", "android", "ios", "apk", "react native", "flutter"],
+  data: ["data", "analytics", "warehouse", "etl", "sql", "bi"],
+  "data-eng": ["data engineering", "etl", "warehouse", "pipeline", "postgres", "mysql", "mongo", "redis"],
+  ai: ["ai", "machine learning", "ml", "llm", "nlp", "vision"],
+  "ml-ops": ["mlops", "ml ops", "model serving", "vector", "qdrant", "kubeflow", "feast"],
+  design: ["design", "ux", "ui", "research", "figma"],
+  other: [],
+};
+
 export interface OnboardingRecommendation {
   title: string;
   description: string;
   href: string;
   cta: string;
+}
+
+export function reorderItemsByIds<T extends { id: string }>(items: T[], orderedIds: string[]): T[] {
+  if (!orderedIds.length) return items;
+  const itemMap = new Map(items.map((item) => [item.id, item]));
+  const orderedItems = orderedIds
+    .map((id) => itemMap.get(id))
+    .filter((item): item is T => Boolean(item));
+  const seen = new Set(orderedItems.map((item) => item.id));
+  return [...orderedItems, ...items.filter((item) => !seen.has(item.id))];
 }
 
 export function readOnboardingSelections(): OnboardingSelections | null {
@@ -139,12 +171,19 @@ export function getRoleLabelFromOnboarding(selections: OnboardingSelections | nu
 
 export function getFocusLabelFromOnboarding(selections: OnboardingSelections | null): string {
   if (!selections) return "";
-  if (selections.skills.length > 0) {
-    return formatSlugLabel(selections.skills[0]);
+  const focusLabels = [
+    ...selections.skills.map((item) => formatSlugLabel(item)),
+    ...selections.field.map((item) => FIELD_LABELS[item] || formatSlugLabel(item)),
+  ].filter((value, index, array) => value && array.indexOf(value) === index);
+
+  if (focusLabels.length > 1) {
+    return `${focusLabels[0]} + ${focusLabels[1]}`;
   }
-  if (selections.field.length > 0) {
-    return FIELD_LABELS[selections.field[0]] || formatSlugLabel(selections.field[0]);
+
+  if (focusLabels.length > 0) {
+    return focusLabels[0];
   }
+
   return "";
 }
 
@@ -244,15 +283,7 @@ export function scoreLabAgainstOnboarding(
   if (!selections) return 0;
 
   const haystack = `${title} ${description}`.toLowerCase();
-  let score = 0;
-
-  for (const field of selections.field) {
-    score += keywordScore(haystack, SKILL_TO_KEYWORDS[field] || []);
-  }
-
-  for (const skill of selections.skills) {
-    score += keywordScore(haystack, SKILL_TO_KEYWORDS[skill] || []);
-  }
+  let score = scoreTextAgainstOnboarding(haystack, selections);
 
   if (selections.experience === "None" && /(intro|beginner|basic|fundamental|first)/.test(haystack)) {
     score += 3;
@@ -265,8 +296,68 @@ export function scoreLabAgainstOnboarding(
   return score;
 }
 
-function keywordScore(haystack: string, keywords: string[]): number {
-  return keywords.reduce((total, keyword) => total + (haystack.includes(keyword) ? 2 : 0), 0);
+export function scoreTextAgainstOnboarding(text: string, selections: OnboardingSelections | null): number {
+  if (!selections) return 0;
+
+  const haystack = text.toLowerCase();
+  let score = 0;
+
+  for (const keyword of getInterestKeywords(selections)) {
+    if (!keyword) continue;
+    if (haystack.includes(keyword)) {
+      score += keyword.includes(" ") ? 3 : keyword.length > 4 ? 2 : 1;
+    }
+  }
+
+  for (const token of getInterestTokensFromOnboarding(selections)) {
+    if (!token) continue;
+    if (haystack.includes(token)) {
+      score += token.length > 4 ? 2 : 1;
+    }
+  }
+
+  return score;
+}
+
+export function getInterestTokensFromOnboarding(selections: OnboardingSelections | null): string[] {
+  if (!selections) return [];
+
+  const rawValues = [
+    ...selections.field,
+    ...selections.skills,
+    ...selections.purpose,
+    ...selections.jobInterests,
+    selections.role,
+    selections.experience,
+  ].filter(Boolean);
+
+  const expanded = rawValues.flatMap((value) => {
+    const normalized = value.toLowerCase().trim();
+    const aliases = TERM_ALIASES[normalized] || SKILL_TO_KEYWORDS[normalized] || [];
+    return [
+      normalized,
+      ...normalized.split(/[\s/_-]+/),
+      ...aliases,
+    ];
+  });
+
+  return expanded
+    .map((value) => value.trim().toLowerCase())
+    .filter((value, index, array) => value.length > 1 && array.indexOf(value) === index);
+}
+
+export function getInterestKeywords(selections: OnboardingSelections | null): string[] {
+  if (!selections) return [];
+
+  const keywordGroups = [
+    ...selections.field.map((field) => SKILL_TO_KEYWORDS[field] || TERM_ALIASES[field] || []),
+    ...selections.skills.map((skill) => SKILL_TO_KEYWORDS[skill] || TERM_ALIASES[skill] || []),
+  ];
+
+  return keywordGroups
+    .flat()
+    .map((value) => value.toLowerCase().trim())
+    .filter((value, index, array) => value.length > 1 && array.indexOf(value) === index);
 }
 
 function formatSlugLabel(value: string) {

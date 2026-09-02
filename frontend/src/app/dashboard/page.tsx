@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
 import { DashboardSkeleton } from "@/components/Skeleton";
-import CommandCenter from "@/components/dashboard/CommandCenter";
+import Dashboard from "@/components/dashboard/Dashboard";
 import { syncOnboardingFromProfile } from "@/lib/onboarding";
 import type { UserPreference } from "@/types/api";
 
@@ -74,7 +74,7 @@ export default function DashboardPage() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <CommandCenter />
+      <Dashboard />
     </div>
   );
 }

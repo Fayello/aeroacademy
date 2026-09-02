@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchApiV2 } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { Loader2, Crown, Lock, CheckCircle2, Star, Zap, Gift, Shield, Trophy, Sparkles } from "lucide-react";
+import { Loader2, Crown, Lock, CheckCircle2, Star, Zap, Gift, Shield, Trophy, Sparkles, Medal, Award } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
@@ -81,20 +81,17 @@ export default function BattlePassPage() {
   const [battlePass, setBattlePass] = useState<BattlePassData | null>(null);
   const [progress, setProgress] = useState<BattlePassProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setUserId(parsed.id);
-      } catch {
-        setUserId(null);
-      }
+  const [userId] = useState<string | null>(() => {
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      if (!stored) return null;
+      const parsed = JSON.parse(stored) as { id?: string };
+      return parsed.id || null;
+    } catch {
+      return null;
     }
-  }, []);
+  });
+  const [loading, setLoading] = useState(() => Boolean(userId));
 
   useEffect(() => {
     if (!userId) return;
@@ -145,6 +142,13 @@ export default function BattlePassPage() {
     return { bg: "bg-[#0f172a] border-white/10", text: "text-slate-300" };
   }
 
+  function getPlacementMeta(position: number) {
+    if (position === 1) return { label: "1st", icon: Trophy, iconClass: "text-amber-400" };
+    if (position === 2) return { label: "2nd", icon: Medal, iconClass: "text-slate-300" };
+    if (position === 3) return { label: "3rd", icon: Award, iconClass: "text-orange-400" };
+    return { label: `#${position}`, icon: null as null | typeof Trophy, iconClass: "text-slate-400" };
+  }
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -161,11 +165,11 @@ export default function BattlePassPage() {
       <div className="space-y-6">
         <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
         <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10">
             <Crown size={28} className="text-purple-500" />
           </div>
           <h3 className="text-sm font-semibold text-white mb-1">No battle pass active</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-300">
             Battle passes bring tiered rewards and exclusive content. The next one is being prepared — check back soon.
           </p>
         </div>
@@ -244,13 +248,13 @@ export default function BattlePassPage() {
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setActiveTab("tiers")}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "tiers"
               ? "bg-slate-800 text-white"
-              : "bg-white/5 text-slate-500 hover:bg-white/10"
+              : "bg-white/5 text-slate-300 hover:bg-white/10"
           }`}
         >
           Tiers
@@ -260,7 +264,7 @@ export default function BattlePassPage() {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             activeTab === "leaderboard"
               ? "bg-slate-800 text-white"
-              : "bg-white/5 text-slate-500 hover:bg-white/10"
+              : "bg-white/5 text-slate-300 hover:bg-white/10"
           }`}
         >
           Leaderboard
@@ -384,15 +388,18 @@ export default function BattlePassPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10 bg-white/5">
-                      <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Position</th>
-                      <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">User</th>
-                      <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">XP</th>
-                      <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Tiers</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Position</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Candidate</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">XP</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-400">Tiers</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/10">
                     {leaderboard.map((entry) => {
                       const style = getPositionStyle(entry.position);
+                      const placement = getPlacementMeta(entry.position);
+                      const isCurrentUser = entry.userId === userId;
+                      const displayName = isCurrentUser ? "You" : `Learner ${entry.userId.slice(0, 8)}`;
                       return (
                         <tr
                           key={entry.userId}
@@ -401,15 +408,16 @@ export default function BattlePassPage() {
                           }`}
                         >
                           <td className="px-4 py-3">
-                            <span className={`text-sm font-bold ${style.text}`}>
-                              {entry.position === 1 && "\u{1F947} "}
-                              {entry.position === 2 && "\u{1F948} "}
-                              {entry.position === 3 && "\u{1F949} "}
-                              #{entry.position}
-                            </span>
+                            <div className={`flex items-center gap-2 text-sm font-bold ${style.text}`}>
+                              {placement.icon ? <placement.icon size={14} className={placement.iconClass} /> : null}
+                              <span>{placement.label}</span>
+                            </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-sm text-white font-medium">{entry.userId}</span>
+                            <div>
+                              <span className="text-sm font-medium text-white">{displayName}</span>
+                              <p className="text-[11px] text-slate-400">{isCurrentUser ? "Current season record" : "Verified learner record"}</p>
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <span className="text-sm text-slate-300 font-mono">{entry.totalXp.toLocaleString()}</span>
@@ -422,6 +430,32 @@ export default function BattlePassPage() {
                     })}
                   </tbody>
                 </table>
+              </div>
+              <div className="space-y-3 border-t border-white/10 p-4 sm:hidden">
+                {leaderboard.map((entry) => {
+                  const style = getPositionStyle(entry.position);
+                  const placement = getPlacementMeta(entry.position);
+                  const isCurrentUser = entry.userId === userId;
+                  const displayName = isCurrentUser ? "You" : `Learner ${entry.userId.slice(0, 8)}`;
+                  return (
+                    <div key={`mobile-${entry.userId}`} className={`rounded-xl border p-4 ${style.bg}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className={`flex items-center gap-2 text-sm font-semibold ${style.text}`}>
+                            {placement.icon ? <placement.icon size={14} className={placement.iconClass} /> : null}
+                            <span>{placement.label}</span>
+                          </div>
+                          <p className="mt-1 text-sm font-medium text-white">{displayName}</p>
+                          <p className="text-[11px] text-slate-400">{isCurrentUser ? "Current season record" : "Verified learner record"}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-slate-200">{entry.totalXp.toLocaleString()} XP</p>
+                          <p className="text-[11px] text-slate-400">{entry.tiersUnlocked} tier{entry.tiersUnlocked !== 1 ? "s" : ""} unlocked</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

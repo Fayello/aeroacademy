@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDisplayMode } from "@/lib/displayMode";
+import toast from "@/lib/toast";
 
 interface CapabilityEntry {
   position: number;
@@ -63,7 +64,10 @@ export default function CapabilityRankingPage() {
     async function load() {
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
-        if (!user.id) return;
+        if (!user.id) {
+          if (!cancelled) setLoading(false);
+          return;
+        }
 
         const [lb, cap] = await Promise.allSettled([
           fetchApiV2<CapabilityEntry[]>("/domain-ranking/capability-leaderboard?limit=50"),
@@ -75,7 +79,7 @@ export default function CapabilityRankingPage() {
           if (cap.status === "fulfilled") setMyCap(cap.value);
         }
       } catch {
-        // silent
+        if (!cancelled) toast.error("Unable to load capability ranking");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -88,8 +92,8 @@ export default function CapabilityRankingPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <Shield size={48} className="text-slate-300 mb-4" />
-        <h2 className="text-lg font-semibold text-slate-700 mb-2">Rankings not available</h2>
-        <p className="text-sm text-slate-500">Switch to Competitive mode to see rankings</p>
+        <h2 className="mb-2 text-lg font-semibold text-white">Rankings not available</h2>
+        <p className="text-sm text-slate-300">Switch to Competitive mode to see rankings</p>
       </div>
     );
   }
@@ -133,45 +137,45 @@ export default function CapabilityRankingPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-6 mb-6">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
             <div className="text-center">
               <p className="text-4xl font-bold text-[#7AD62A]">{myCap.capabilityScore}</p>
-              <p className="text-xs text-slate-500 mt-1">Capability Score</p>
+              <p className="mt-1 text-xs text-slate-300">Capability Score</p>
             </div>
-            <div className="flex-1 grid grid-cols-4 gap-3">
-              <div className="text-center p-3 bg-blue-500/10 rounded-lg">
+            <div className="grid flex-1 grid-cols-2 gap-3 md:grid-cols-4">
+              <div className="rounded-lg bg-blue-500/10 p-3 text-center">
                 <p className="text-lg font-bold text-blue-600">{myCap.breakdown.technicalPerformance}</p>
-                <p className="text-[10px] text-slate-500">Technical</p>
+                <p className="text-[10px] text-slate-300">Technical</p>
               </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg">
+              <div className="rounded-lg bg-purple-500/10 p-3 text-center">
                 <p className="text-lg font-bold text-purple-600">{myCap.breakdown.difficulty}</p>
-                <p className="text-[10px] text-slate-500">Difficulty</p>
+                <p className="text-[10px] text-slate-300">Difficulty</p>
               </div>
-              <div className="text-center p-3 bg-amber-500/10 rounded-lg">
+              <div className="rounded-lg bg-amber-500/10 p-3 text-center">
                 <p className="text-lg font-bold text-amber-600">{myCap.breakdown.consistency}</p>
-                <p className="text-[10px] text-slate-500">Consistency</p>
+                <p className="text-[10px] text-slate-300">Consistency</p>
               </div>
-              <div className="text-center p-3 bg-emerald-50 rounded-lg">
+              <div className="rounded-lg bg-emerald-500/10 p-3 text-center">
                 <p className="text-lg font-bold text-[#7AD62A]">{myCap.breakdown.problemSolving}</p>
-                <p className="text-[10px] text-slate-500">Problem Solving</p>
+                <p className="text-[10px] text-slate-300">Problem Solving</p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-            <div className="flex items-center gap-2 text-slate-600">
+          <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            <div className="flex items-center gap-2 text-slate-300">
               <Target size={14} className="text-blue-500" />
               <span>{myCap.details.assessmentsCompleted} assessments</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-600">
+            <div className="flex items-center gap-2 text-slate-300">
               <Zap size={14} className="text-[#7AD62A]" />
               <span>{myCap.details.labsCompleted} labs</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-600">
+            <div className="flex items-center gap-2 text-slate-300">
               <Award size={14} className="text-purple-500" />
               <span>{myCap.details.flagsSolved} flags</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-600">
+            <div className="flex items-center gap-2 text-slate-300">
               <Clock size={14} className="text-amber-500" />
               <span>{myCap.details.activeDaysLast30}/30 active days</span>
             </div>
@@ -188,11 +192,11 @@ export default function CapabilityRankingPage() {
         {leaderboard.length === 0 ? (
           <EmptyState icon={Trophy} title="No capability data yet" description="Complete labs across multiple domains to build your capability profile and appear on the leaderboard." />
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-white/10">
             {leaderboard.map((entry) => {
               const tierStyle = TIER_COLORS[entry.tier] || TIER_COLORS.UNRANKED;
               return (
-                <div key={entry.userId} className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-colors">
+                <div key={entry.userId} className="flex flex-col gap-4 px-4 py-4 transition-colors hover:bg-white/5 sm:flex-row sm:items-center sm:px-6">
                   <div className="w-8 text-center">
                     {entry.position <= 3 ? (
                       <span className="inline-flex items-center justify-center">
@@ -216,12 +220,12 @@ export default function CapabilityRankingPage() {
                     </span>
                   </div>
 
-                  <div className="text-right">
+                  <div className="sm:ml-auto sm:text-right">
                     <p className="text-lg font-bold text-[#7AD62A]">{entry.capabilityScore}</p>
                     <p className="text-[10px] text-slate-400">capability</p>
                   </div>
 
-                  <div className="hidden sm:flex items-center gap-2 text-[10px] text-slate-500 w-48">
+                  <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-300 sm:flex sm:w-48 sm:items-center">
                     <span className="text-blue-600">{entry.breakdown.technicalPerformance}</span>
                     <span className="text-purple-600">{entry.breakdown.difficulty}</span>
                     <span className="text-amber-600">{entry.breakdown.consistency}</span>

@@ -27,13 +27,16 @@ import {
   getExperienceLabel,
   getFieldCountFromOnboarding,
   getFocusLabelFromOnboarding,
+  getInterestTokensFromOnboarding,
   getPrimaryRecommendation,
   getRoleLabelFromOnboarding,
+  reorderItemsByIds,
   getSecondaryRecommendation,
   readOnboardingSelections,
+  scoreTextAgainstOnboarding,
   syncOnboardingFromProfile,
 } from "@/lib/onboarding";
-import type { UserPreference } from "@/types/api";
+import type { DashboardRecommendations, UserPreference } from "@/types/api";
 
 interface User {
   id: string;
@@ -178,7 +181,7 @@ function getReadinessBand(score: number) {
   };
 }
 
-export default function CommandCenter() {
+export default function Dashboard() {
   const [user, setUser] = useState<User | null>(() => {
     try {
       const s = typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -188,6 +191,7 @@ export default function CommandCenter() {
   const [activeLabs, setActiveLabs] = useState<ActiveLab[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
   const [competency, setCompetency] = useState<CompetencyData | null>(null);
+  const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
   const [loading, setLoading] = useState(true);
   const { userMetrics } = useDashboard();
 
@@ -237,6 +241,14 @@ export default function CommandCenter() {
         })
         .catch(() => {});
 
+      fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
+        .then((data) => {
+          if (!cancelled && data) {
+            setRecommendations(data);
+          }
+        })
+        .catch(() => {});
+
       fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`)
         .then((data) => { if (cancelled || !data) return; setCompetency(data); })
         .catch(() => {})
@@ -256,7 +268,10 @@ export default function CommandCenter() {
   const onboarding = readOnboardingSelections();
   const roleLabel = getRoleLabelFromOnboarding(onboarding);
   const focusLabel = getFocusLabelFromOnboarding(onboarding);
+  const focusTokens = getInterestTokensFromOnboarding(onboarding);
   const experienceLabel = getExperienceLabel(onboarding);
+  const journeySummary = recommendations?.insights?.journeySummary;
+  const personalizationMode = recommendations?.insights?.personalizationMode || recommendations?.source || "rules";
   const purpose = onboarding?.purpose || [];
   const fieldCount = getFieldCountFromOnboarding(onboarding);
   const isNewUser = !loading && userMetrics !== null && xp === 0 && activeLabs.length === 0 && enrolledCourses.length === 0;
@@ -325,6 +340,20 @@ export default function CommandCenter() {
         };
 
   const primaryPurpose = purpose[0] || "other";
+  const recommendedOpenCourse = recommendations?.courses?.[0] || null;
+  const personalizedCourse = reorderItemsByIds(
+    enrolledCourses.slice(),
+    recommendations?.courses?.map((course) => course.id) || [],
+  )
+    .sort((a, b) => {
+      const scoreA = scoreTextAgainstOnboarding(`${a.title}`, onboarding);
+      const scoreB = scoreTextAgainstOnboarding(`${b.title}`, onboarding);
+      return scoreB - scoreA;
+    })[0] || null;
+  const interestSummary = focusTokens
+    .filter((token) => token.length > 3)
+    .slice(0, 4)
+    .map((token) => token.replace(/\b\w/g, (char) => char.toUpperCase()));
   const purposeTitle: Record<string, string> = {
     learn: "Ready to start learning?",
     train: "Ready to level up?",
@@ -378,6 +407,15 @@ export default function CommandCenter() {
                 <Pencil size={11} />
               </button>
             </p>
+            {interestSummary.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {interestSummary.map((token) => (
+                  <span key={token} className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-slate-200">
+                    {token}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           <Link
             href="/dashboard/profile"
@@ -412,9 +450,16 @@ export default function CommandCenter() {
               <p className="text-xs text-slate-400 mt-1">{readinessBand.description}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Progress signal</p>
-              <p className="text-sm font-semibold text-white mt-2">{completedPathwaySteps}/3 pathway stages active</p>
-              <p className="text-xs text-slate-400 mt-1">Training, practical evidence, and assessment readiness.</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Personalization signal</p>
+              <p className="text-sm font-semibold text-white mt-2">
+                {focusLabel ? `Optimized for ${focusLabel}` : `${completedPathwaySteps}/3 pathway stages active`}
+              </p>
+              <p className="text-xs text-slate-400 mt-1">
+                {journeySummary ||
+                  (focusLabel
+                    ? "Labs, courses, and guided starts are being reshaped around your selected interests."
+                    : "Training, practical evidence, and assessment readiness.")}
+              </p>
             </div>
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -422,9 +467,15 @@ export default function CommandCenter() {
               {primaryAction.cta}
               <ArrowRight size={14} />
             </Link>
+            {(recommendedOpenCourse || personalizedCourse) && (
+              <Link href={`/dashboard/courses/${(recommendedOpenCourse || personalizedCourse)?.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 sm:w-auto">
+                {recommendedOpenCourse ? "AI-ranked course" : "Recommended course"}
+                <BookOpen size={14} />
+              </Link>
+            )}
             <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-slate-200 sm:w-auto">
               <Clock size={13} className="text-[#7AD62A]" />
-              {primaryAction.meta}
+              {personalizationMode === "ai" ? `AI-guided · ${primaryAction.meta}` : primaryAction.meta}
             </span>
           </div>
         </div>
@@ -485,7 +536,9 @@ export default function CommandCenter() {
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">{journeyGuide.eyebrow}</p>
             <h2 className="mt-2 text-xl font-bold text-white">{journeyGuide.title}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">{journeyGuide.description}</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
+              {journeySummary || journeyGuide.description}
+            </p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:min-w-[24rem]">
             {pathwaySteps.map((step, index) => (

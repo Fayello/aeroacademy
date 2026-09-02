@@ -9,8 +9,8 @@ import Link from "next/link";
 import toast from "@/lib/toast";
 import { getLevel } from "@/lib/levelGating";
 import { getDifficultyStyle, getEstimatedTime, getSolvedCount, getProgressStatus } from "@/lib/labs";
-import { getFocusLabelFromOnboarding, readOnboardingSelections, scoreLabAgainstOnboarding } from "@/lib/onboarding";
-import type { Lab, LabStats } from "@/types/api";
+import { getFocusLabelFromOnboarding, getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreLabAgainstOnboarding } from "@/lib/onboarding";
+import type { DashboardRecommendations, Lab, LabStats } from "@/types/api";
 
 type TabFilter = "all" | "not-started" | "in-progress" | "completed";
 
@@ -38,8 +38,11 @@ export default function LabsCatalog() {
   const [sortBy, setSortBy] = useState<"featured" | "domain" | "difficulty" | "title">("featured");
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
   const onboarding = readOnboardingSelections();
   const focusLabel = getFocusLabelFromOnboarding(onboarding);
+  const focusTokens = getInterestTokensFromOnboarding(onboarding);
+  const recommendedLabIds = recommendations?.labs?.map((lab) => lab.id) || [];
 
   const DIFFICULTIES = ["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
   const DOMAINS = ["ALL", "Systems", "Networking", "Web Security", "Security", "Cloud", "Databases", "DevOps", "AI & MLOps", "IT Ops"];
@@ -57,7 +60,7 @@ export default function LabsCatalog() {
     return "Systems";
   }
 
-  const filteredLabs = (labs || [])
+  const filteredLabs = reorderItemsByIds((labs || []), recommendedLabIds)
     .filter((lab) => {
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
@@ -80,8 +83,19 @@ export default function LabsCatalog() {
     })
     .sort((a, b) => {
       if (sortBy === "featured") {
-        const scoreA = scoreLabAgainstOnboarding(a.title, a.description, onboarding);
-        const scoreB = scoreLabAgainstOnboarding(b.title, b.description, onboarding);
+        const recommendedA = recommendedLabIds.indexOf(a.id);
+        const recommendedB = recommendedLabIds.indexOf(b.id);
+        const haystackA = `${a.title} ${a.description}`.toLowerCase();
+        const haystackB = `${b.title} ${b.description}`.toLowerCase();
+        const scoreA = scoreLabAgainstOnboarding(a.title, a.description, onboarding) +
+          focusTokens.reduce((score, token) => score + (haystackA.includes(token) ? 1 : 0), 0);
+        const scoreB = scoreLabAgainstOnboarding(b.title, b.description, onboarding) +
+          focusTokens.reduce((score, token) => score + (haystackB.includes(token) ? 1 : 0), 0);
+        if (recommendedA !== -1 || recommendedB !== -1) {
+          if (recommendedA === -1) return 1;
+          if (recommendedB === -1) return -1;
+          if (recommendedA !== recommendedB) return recommendedA - recommendedB;
+        }
         if (scoreA !== scoreB) return scoreB - scoreA;
       }
       if (sortBy === "domain") return getLabDomain(a).localeCompare(getLabDomain(b));
@@ -110,13 +124,15 @@ export default function LabsCatalog() {
     let cancelled = false;
     async function loadData() {
       try {
-        const [labsData, stats] = await Promise.all([
+        const [labsData, stats, recommendationData] = await Promise.all([
           fetchApi("/labs?take=200"),
           fetchApi("/labs/stats"),
+          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
         if (!cancelled) {
           setLabs(labsData);
           setSystemStats(stats);
+          setRecommendations(recommendationData);
         }
       } catch {
         if (!cancelled) toast.error("Failed to load labs");
@@ -192,14 +208,15 @@ export default function LabsCatalog() {
               Featured labs are now prioritized for <span className="text-[#7AD62A]">{focusLabel}</span>.
             </p>
             <p className="text-xs text-slate-400 mt-1">
-              Use the guided path if you want the fastest route to your first completed lab.
+              {recommendations?.insights?.journeySummary ||
+                "Your interests shape this ranking dynamically, so blended goals like security plus DevOps can surface a mixed practice path."}
             </p>
           </div>
           <Link
             href="/dashboard/starting-point"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors"
           >
-            Start Guided Path
+            {recommendations?.source === "ai" ? "Open AI-guided path" : "Start Guided Path"}
           </Link>
         </div>
       )}

@@ -9,9 +9,10 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { LabsModule } from '../labs/labs.module';
 import { AuthModule } from '../auth/auth.module';
 import { EventsModule } from '../common/events.module';
+import { AiModule } from '../common/ai.module';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => LabsModule), AuthModule, EventsModule],
+  imports: [PrismaModule, forwardRef(() => LabsModule), AuthModule, EventsModule, AiModule],
   controllers: [DashboardController],
   providers: [
     DashboardService,
