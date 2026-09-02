@@ -188,8 +188,8 @@ export default function LearningCoach() {
                 <div
                   className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-[#7AD62A] text-white rounded-br-sm"
-                      : "bg-slate-100 text-slate-200 rounded-bl-sm"
+                      ? "bg-[#7AD62A] text-[#0F203A] rounded-br-sm"
+                      : "border border-white/10 bg-slate-100 text-slate-800 rounded-bl-sm"
                   }`}
                 >
                   {msg.content}
@@ -206,7 +206,7 @@ export default function LearningCoach() {
                 <div className="w-6 h-6 rounded-full bg-[#7AD62A]/10 flex items-center justify-center shrink-0">
                   <Bot size={12} className="text-[#7AD62A]" />
                 </div>
-                <div className="bg-slate-100 px-3 py-2 rounded-xl rounded-bl-sm">
+                <div className="border border-white/10 bg-slate-100 px-3 py-2 rounded-xl rounded-bl-sm">
                   <div className="flex gap-1">
                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
@@ -242,7 +242,7 @@ export default function LearningCoach() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask your coach..."
                 disabled={loading}
-                className="flex-1 px-3 py-2 text-sm rounded-xl border border-white/10 focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] outline-none disabled:opacity-50"
+                className="flex-1 rounded-xl border border-white/10 bg-[#111a2d] px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A] focus:ring-2 focus:ring-[#7AD62A]/20 outline-none disabled:opacity-50"
               />
               <button
                 onClick={sendMessage}

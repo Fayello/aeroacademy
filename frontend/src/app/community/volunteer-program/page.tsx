@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, CheckCircle2, HandHeart, Users, School2 } from "lucide-react";
+import CommunityProgramApplicationForm from "../CommunityProgramApplicationForm";
 import { PROGRAM_DETAILS } from "../programData";
 
 const program = PROGRAM_DETAILS.volunteer;
@@ -34,7 +35,7 @@ export default function VolunteerProgramPage() {
                 <h1 className="mt-3 text-3xl font-bold text-white sm:text-5xl">{program.title}</h1>
                 <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">{program.summary}</p>
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <Link href="/community" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7AD62A] px-5 py-3 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422]">
+                  <Link href="#apply" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7AD62A] px-5 py-3 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422]">
                     Apply now
                     <ArrowRight size={16} />
                   </Link>
@@ -115,6 +116,25 @@ export default function VolunteerProgramPage() {
                 ))}
               </div>
             </div>
+          </section>
+
+          <section id="apply" className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr] scroll-mt-24">
+            <div className="rounded-2xl border border-[#7AD62A]/20 bg-gradient-to-br from-[#0F203A] to-[#122a47] p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Apply directly</p>
+              <h2 className="mt-3 text-2xl font-bold text-white">Start your volunteer application here</h2>
+              <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                Volunteers can now understand the role and submit interest from the same page, which makes this feel like a real program destination instead of a detour.
+              </p>
+              <div className="mt-5 space-y-3">
+                {program.focusPoints.map((item) => (
+                  <div key={item} className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-sm text-slate-200">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <CommunityProgramApplicationForm programType="volunteer" sourcePage="/community/volunteer-program" />
           </section>
         </div>
       </div>

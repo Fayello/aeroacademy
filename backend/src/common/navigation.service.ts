@@ -39,6 +39,10 @@ export interface NavigationContext {
   showTeach: boolean;
   showAcademic: boolean;
   showAdmin: boolean;
+  canAccessAdminView: boolean;
+  adminHomePath: string | null;
+  adminViewLabel: string | null;
+  adminRoutePrefixes: string[];
 }
 
 @Injectable()
@@ -135,7 +139,22 @@ export class NavigationService {
 
     const isEnrolledInCohort = cohortMemberships.length > 0;
     const isTeaching = teachingCohorts.length > 0;
+    const canAccessAdminView = role === 'ADMIN' || role === 'RECRUITER';
     const isAdmin = role === 'ADMIN';
+    const adminHomePath =
+      role === 'RECRUITER' ? '/dashboard/enterprise' : '/dashboard/admin';
+    const adminViewLabel =
+      role === 'RECRUITER' ? 'Recruitment Workspace' : 'Admin Workspace';
+    const adminRoutePrefixes =
+      role === 'RECRUITER'
+        ? [
+            '/dashboard/enterprise',
+            '/dashboard/admin/inquiries',
+            '/dashboard/admin/community-programs',
+          ]
+        : canAccessAdminView
+          ? ['/dashboard/admin', '/dashboard/enterprise']
+          : [];
 
     // ─── BUILD CORE SECTIONS ───
     const sections: NavSection[] = [];
@@ -317,7 +336,11 @@ export class NavigationService {
       alerts,
       showTeach: isTeaching,
       showAcademic: isEnrolledInCohort,
-      showAdmin: isAdmin,
+      showAdmin: canAccessAdminView,
+      canAccessAdminView,
+      adminHomePath: canAccessAdminView ? adminHomePath : null,
+      adminViewLabel: canAccessAdminView ? adminViewLabel : null,
+      adminRoutePrefixes,
     };
   }
 
@@ -408,6 +431,10 @@ export class NavigationService {
       showTeach: false,
       showAcademic: false,
       showAdmin: false,
+      canAccessAdminView: false,
+      adminHomePath: null,
+      adminViewLabel: null,
+      adminRoutePrefixes: [],
     };
   }
 }

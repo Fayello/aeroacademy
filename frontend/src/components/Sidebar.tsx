@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  ShieldCheck,
   Award,
   Flame,
   Settings,
@@ -25,6 +26,12 @@ import {
   Target,
   BookOpen,
   Bell,
+  Activity,
+  Building2,
+  Inbox,
+  Megaphone,
+  TrendingUp,
+  ShieldAlert,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { fetchApi } from "@/lib/api";
@@ -44,6 +51,7 @@ const ICON_MAP: Record<string, typeof Home> = {
   Users,
   User,
   Shield,
+  ShieldCheck,
   Award,
   ClipboardCheck,
   Route,
@@ -51,11 +59,16 @@ const ICON_MAP: Record<string, typeof Home> = {
   ScrollText,
   Target,
   BookOpen,
+  Activity,
+  Building2,
+  Inbox,
+  Megaphone,
+  TrendingUp,
+  ShieldAlert,
 };
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [userRole, setUserRole] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [xp, setXp] = useState(0);
   const [division, setDivision] = useState("Bronze");
@@ -73,13 +86,10 @@ export default function Sidebar() {
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        const stored = localStorage.getItem("user");
-        if (stored) setUserRole(JSON.parse(stored).role || "STUDENT");
-        else setUserRole("STUDENT");
         setXp(parseInt(localStorage.getItem("xp") || "0", 10));
         setDivision(localStorage.getItem("division") || "Bronze");
       } catch {
-        setUserRole("STUDENT");
+        // Ignore local hydration errors for non-critical sidebar stats.
       }
     }, 0);
     return () => clearTimeout(timer);
@@ -140,7 +150,9 @@ export default function Sidebar() {
     return () => window.removeEventListener("sidebar-toggle", handleToggle);
   }, []);
 
-  const isAdmin = userRole === "ADMIN" || userRole === "RECRUITER";
+  const canAccessAdminView = nav.canAccessAdminView;
+  const adminHomePath = nav.adminHomePath || "/dashboard/admin";
+  const adminWorkspaceLabel = nav.adminViewLabel || "Admin Workspace";
 
   if (loading) {
     return (
@@ -237,7 +249,7 @@ export default function Sidebar() {
       )}
 
       {/* Collapsed View Switcher */}
-      {isAdmin && collapsed && (
+      {canAccessAdminView && collapsed && (
         <div className="mx-1.5 mt-2">
           <ViewSwitcher compact />
         </div>
@@ -266,7 +278,7 @@ export default function Sidebar() {
       )}
 
       {/* View Switcher (Admin only) */}
-      {isAdmin && !collapsed && (
+      {canAccessAdminView && !collapsed && (
         <div className="px-3 pt-3">
           <ViewSwitcher compact />
         </div>
@@ -386,20 +398,22 @@ export default function Sidebar() {
         })}
 
         {/* Admin quick link (only when in learner view) */}
-        {isAdmin && nav.viewMode === "LEARNER" && (
+        {canAccessAdminView && nav.viewMode === "LEARNER" && (
           <>
             {!collapsed && (
               <div className="pt-2 mt-2 border-t border-white/6">
-                <p className="px-3 mb-1 text-[9px] font-semibold text-slate-500 uppercase tracking-wider">Admin</p>
+                <p className="px-3 mb-1 text-[9px] font-semibold text-slate-500 uppercase tracking-wider">
+                  {nav.role === "RECRUITER" ? "Recruiting" : "Admin"}
+                </p>
               </div>
             )}
             <Link
-              href="/dashboard/admin"
-              title={collapsed ? "Admin Panel" : undefined}
+              href={adminHomePath}
+              title={collapsed ? adminWorkspaceLabel : undefined}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 text-slate-300 hover:bg-white/5 hover:text-white ${collapsed ? "justify-center" : ""}`}
             >
               <Shield size={16} className="text-slate-500" />
-              {!collapsed && "Admin Panel"}
+              {!collapsed && adminWorkspaceLabel}
             </Link>
           </>
         )}

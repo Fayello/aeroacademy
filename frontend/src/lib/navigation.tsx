@@ -47,6 +47,10 @@ export interface NavigationContext {
   showAcademic: boolean;
   showAdmin: boolean;
   viewMode: ViewMode;
+  canAccessAdminView: boolean;
+  adminHomePath: string | null;
+  adminViewLabel: string | null;
+  adminRoutePrefixes: string[];
 }
 
 const DEFAULT_CONTEXT: NavigationContext = {
@@ -83,101 +87,49 @@ const DEFAULT_CONTEXT: NavigationContext = {
   showTeach: false,
   showAcademic: false,
   showAdmin: false,
+  canAccessAdminView: false,
+  adminHomePath: null,
+  adminViewLabel: null,
+  adminRoutePrefixes: [],
 };
 
-function getFallbackContext(experience: UserExperience, role: string, level: number, viewMode: ViewMode): NavigationContext {
-  if (role === "ADMIN" || experience === "ADMIN") {
-    if (viewMode === "LEARNER") {
-      return {
-        experience,
-        level,
-        role,
-        viewMode: "LEARNER",
-        sections: [
-          {
-            id: "dashboard",
-            label: "Dashboard",
-            items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Dashboard" }],
-          },
-          {
-            id: "learn",
-            label: "Learn",
-            items: [
-              { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
-              { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
-              { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
-            ],
-          },
-          {
-            id: "labs",
-            label: "Practice",
-            items: [
-              { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
-              { href: "/dashboard/exams", tKey: "nav.exams", icon: "ClipboardCheck", label: "Practical Exams" },
-              { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Skill Assessments" },
-            ],
-          },
-        ],
-        alerts: [],
-        showTeach: false,
-        showAcademic: false,
-        showAdmin: true,
-      };
-    }
-    return {
-      experience: role === "ADMIN" ? "ADMIN" : experience,
-      level,
-      role,
-      viewMode: "ADMIN",
-      sections: [
-        {
-          id: "dashboard",
-          label: "Operations",
-          items: [{ href: "/dashboard/admin", tKey: "nav.adminDashboard", icon: "ShieldCheck", label: "Admin Overview" }],
-        },
-        {
-          id: "platform",
-          label: "Platform Control",
-          items: [
-            { href: "/dashboard/admin/users", tKey: "nav.users", icon: "Users", label: "Users" },
-            { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Inquiries" },
-            { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community Programs" },
-            { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Lab Monitoring" },
-            { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
-          ],
-        },
-        {
-          id: "delivery",
-          label: "Delivery Systems",
-          items: [
-            { href: "/dashboard/admin/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
-            { href: "/dashboard/admin/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
-            { href: "/dashboard/admin/assessments", tKey: "nav.assessments", icon: "ClipboardCheck", label: "Assessments" },
-          ],
-        },
-        {
-          id: "intelligence",
-          label: "Analytics",
-          items: [
-            { href: "/dashboard/admin/analytics", tKey: "nav.analytics", icon: "TrendingUp", label: "Analytics" },
-            { href: "/dashboard/admin/cohort-intelligence", tKey: "nav.cohorts", icon: "Users", label: "Cohort Intelligence" },
-            { href: "/dashboard/admin/predictive-analytics", tKey: "nav.predictive", icon: "ShieldAlert", label: "Predictive Analytics" },
-          ],
-        },
-      ],
-      alerts: [],
-      showTeach: true,
-      showAcademic: true,
-      showAdmin: true,
-    };
-  }
+function canAccessAdminView(role: string) {
+  return role === "ADMIN" || role === "RECRUITER";
+}
 
+function getAdminHomePath(role: string) {
+  if (role === "RECRUITER") return "/dashboard/enterprise";
+  if (role === "ADMIN") return "/dashboard/admin";
+  return null;
+}
+
+function getAdminViewLabel(role: string) {
+  if (role === "RECRUITER") return "Recruitment Workspace";
+  if (role === "ADMIN") return "Admin Workspace";
+  return null;
+}
+
+function getAdminRoutePrefixes(role: string) {
+  if (role === "RECRUITER") {
+    return [
+      "/dashboard/enterprise",
+      "/dashboard/admin/inquiries",
+      "/dashboard/admin/community-programs",
+    ];
+  }
+  if (role === "ADMIN") {
+    return ["/dashboard/admin", "/dashboard/enterprise"];
+  }
+  return [];
+}
+
+function getLearnerFallbackContext(experience: UserExperience, role: string, level: number): NavigationContext {
   if (experience === "UNIVERSITY" || role === "INSTRUCTOR") {
     return {
       experience,
       level,
       role,
-      viewMode,
+      viewMode: "LEARNER",
       sections: [
         {
           id: "dashboard",
@@ -205,7 +157,11 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
       alerts: [],
       showTeach: true,
       showAcademic: true,
-      showAdmin: role === "ADMIN",
+      showAdmin: canAccessAdminView(role),
+      canAccessAdminView: canAccessAdminView(role),
+      adminHomePath: getAdminHomePath(role),
+      adminViewLabel: getAdminViewLabel(role),
+      adminRoutePrefixes: getAdminRoutePrefixes(role),
     };
   }
 
@@ -214,7 +170,7 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
       experience,
       level,
       role,
-      viewMode,
+      viewMode: "LEARNER",
       sections: [
         {
           id: "dashboard",
@@ -242,7 +198,11 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
       alerts: [],
       showTeach: false,
       showAcademic: true,
-      showAdmin: role === "ADMIN",
+      showAdmin: canAccessAdminView(role),
+      canAccessAdminView: canAccessAdminView(role),
+      adminHomePath: getAdminHomePath(role),
+      adminViewLabel: getAdminViewLabel(role),
+      adminRoutePrefixes: getAdminRoutePrefixes(role),
     };
   }
 
@@ -251,8 +211,118 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
     experience,
     level,
     role,
-    viewMode,
+    viewMode: "LEARNER",
+    showAdmin: canAccessAdminView(role),
+    canAccessAdminView: canAccessAdminView(role),
+    adminHomePath: getAdminHomePath(role),
+    adminViewLabel: getAdminViewLabel(role),
+    adminRoutePrefixes: getAdminRoutePrefixes(role),
   };
+}
+
+function getAdminFallbackContext(role: string, level: number): NavigationContext {
+  if (role === "RECRUITER") {
+    return {
+      experience: "CORPORATE",
+      level,
+      role,
+      viewMode: "ADMIN",
+      sections: [
+        {
+          id: "dashboard",
+          label: "Recruitment",
+          items: [{ href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Building2", label: "Talent Portal" }],
+        },
+        {
+          id: "pipeline",
+          label: "Talent Pipeline",
+          items: [
+            { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Users", label: "Talent Pool" },
+            { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Institutional Inquiries" },
+            { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community Programs" },
+          ],
+        },
+      ],
+      alerts: [],
+      showTeach: false,
+      showAcademic: false,
+      showAdmin: true,
+      canAccessAdminView: true,
+      adminHomePath: "/dashboard/enterprise",
+      adminViewLabel: "Recruitment Workspace",
+      adminRoutePrefixes: getAdminRoutePrefixes(role),
+    };
+  }
+
+  return {
+    experience: "ADMIN",
+    level,
+    role,
+    viewMode: "ADMIN",
+    sections: [
+      {
+        id: "dashboard",
+        label: "Operations",
+        items: [{ href: "/dashboard/admin", tKey: "nav.adminDashboard", icon: "ShieldCheck", label: "Admin Overview" }],
+      },
+      {
+        id: "platform",
+        label: "Platform Control",
+        items: [
+          { href: "/dashboard/admin/users", tKey: "nav.users", icon: "Users", label: "Users" },
+          { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Inquiries" },
+          { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community Programs" },
+          { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Lab Monitoring" },
+          { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
+        ],
+      },
+      {
+        id: "delivery",
+        label: "Delivery Systems",
+        items: [
+          { href: "/dashboard/admin/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
+          { href: "/dashboard/admin/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+          { href: "/dashboard/admin/assessments", tKey: "nav.assessments", icon: "ClipboardCheck", label: "Assessments" },
+        ],
+      },
+      {
+        id: "intelligence",
+        label: "Analytics",
+        items: [
+          { href: "/dashboard/admin/analytics", tKey: "nav.analytics", icon: "TrendingUp", label: "Analytics" },
+          { href: "/dashboard/admin/cohort-intelligence", tKey: "nav.cohorts", icon: "Users", label: "Cohort Intelligence" },
+          { href: "/dashboard/admin/predictive-analytics", tKey: "nav.predictive", icon: "ShieldAlert", label: "Predictive Analytics" },
+        ],
+      },
+    ],
+    alerts: [],
+    showTeach: true,
+    showAcademic: true,
+    showAdmin: true,
+    canAccessAdminView: true,
+    adminHomePath: "/dashboard/admin",
+    adminViewLabel: "Admin Workspace",
+    adminRoutePrefixes: getAdminRoutePrefixes(role),
+  };
+}
+
+function buildNavigationContext(
+  base: Omit<NavigationContext, "viewMode">,
+  viewMode: ViewMode,
+): NavigationContext {
+  if (viewMode === "ADMIN" && base.canAccessAdminView) {
+    return getAdminFallbackContext(base.role, base.level);
+  }
+
+  return {
+    ...base,
+    viewMode: "LEARNER",
+  };
+}
+
+function getFallbackContext(experience: UserExperience, role: string, level: number, viewMode: ViewMode): NavigationContext {
+  const learnerBase = getLearnerFallbackContext(experience, role, level);
+  return buildNavigationContext(learnerBase, viewMode);
 }
 
 interface NavigationContextValue {
@@ -280,7 +350,8 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       const role = user.role || DEFAULT_CONTEXT.role;
       const xp = Number(localStorage.getItem("xp") || user.xp || 0);
       const level = Math.floor(xp / 1000) + 1;
-      return getFallbackContext(experience, role, level, viewMode);
+      const safeViewMode = canAccessAdminView(role) ? viewMode : "LEARNER";
+      return getFallbackContext(experience, role, level, safeViewMode);
     } catch {
       return DEFAULT_CONTEXT;
     }
@@ -289,8 +360,9 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
 
   const load = useCallback(async () => {
     try {
-      const result = await fetchApi<NavigationContext>("/navigation/context");
-      setNav({ ...result, viewMode });
+      const result = await fetchApi<Omit<NavigationContext, "viewMode">>("/navigation/context");
+      const safeViewMode = result.canAccessAdminView ? viewMode : "LEARNER";
+      setNav(buildNavigationContext(result, safeViewMode));
     } catch {
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -298,7 +370,8 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         const role = user.role || DEFAULT_CONTEXT.role;
         const xp = Number(localStorage.getItem("xp") || user.xp || 0);
         const level = Math.floor(xp / 1000) + 1;
-        setNav(getFallbackContext(experience, role, level, viewMode));
+        const safeViewMode = canAccessAdminView(role) ? viewMode : "LEARNER";
+        setNav(getFallbackContext(experience, role, level, safeViewMode));
       } catch {
         setNav(DEFAULT_CONTEXT);
       }
@@ -316,8 +389,9 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   }, [load]);
 
   const setViewMode = useCallback((mode: ViewMode) => {
-    setViewModeState(mode);
-    localStorage.setItem("viewMode", mode);
+    const nextMode = nav.canAccessAdminView ? mode : "LEARNER";
+    setViewModeState(nextMode);
+    localStorage.setItem("viewMode", nextMode);
     setNav((prev) => {
       try {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -325,12 +399,12 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         const role = user.role || DEFAULT_CONTEXT.role;
         const xp = Number(localStorage.getItem("xp") || user.xp || 0);
         const level = Math.floor(xp / 1000) + 1;
-        return getFallbackContext(experience, role, level, mode);
+        return getFallbackContext(experience, role, level, nextMode);
       } catch {
-        return { ...prev, viewMode: mode };
+        return buildNavigationContext({ ...prev }, nextMode);
       }
     });
-  }, []);
+  }, [nav.canAccessAdminView]);
 
   const refresh = useCallback(async () => {
     setLoading(true);

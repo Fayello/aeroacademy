@@ -152,6 +152,23 @@ class UpdateCommunityApplicationDto {
   notes?: string;
 }
 
+class UpdateCommunityMemberDto {
+  @IsOptional()
+  @IsString()
+  @IsIn(['ONBOARDING', 'ACTIVE', 'PAUSED', 'ALUMNI'])
+  status?: 'ONBOARDING' | 'ACTIVE' | 'PAUSED' | 'ALUMNI';
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  onboardingStage?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  onboardingNotes?: string;
+}
+
 @ApiTags('admin')
 @ApiBearerAuth('JWT-auth')
 @Controller('v1/admin')
@@ -285,6 +302,30 @@ export class AdminController {
     @Body() body: UpdateCommunityApplicationDto,
   ) {
     return this.adminService.updateCommunityProgramApplication(
+      id,
+      req.user.id,
+      body,
+    );
+  }
+
+  @Get('community-program-members')
+  @ApiQuery({ name: 'status', required: false, type: String })
+  @ApiQuery({ name: 'type', required: false, type: String })
+  async getCommunityProgramMembers(
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+  ) {
+    return this.adminService.getCommunityProgramMembers({ status, type });
+  }
+
+  @Patch('community-program-members/:id')
+  @Audit('COMMUNITY_MEMBER_UPDATED')
+  async updateCommunityProgramMember(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UpdateCommunityMemberDto,
+  ) {
+    return this.adminService.updateCommunityProgramMember(
       id,
       req.user.id,
       body,

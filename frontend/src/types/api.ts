@@ -318,6 +318,42 @@ export interface CommunityProgramApplicationResponse {
   totals: Record<string, number>;
 }
 
+export interface CommunityProgramMember {
+  id: string;
+  applicationId: string;
+  programType: "AMBASSADOR" | "VOLUNTEER";
+  status: "ONBOARDING" | "ACTIVE" | "PAUSED" | "ALUMNI";
+  name: string;
+  email: string;
+  city: string | null;
+  organization: string | null;
+  role: string | null;
+  interests: string[];
+  contribution: string;
+  availability: string | null;
+  linkedinUrl: string | null;
+  portfolioUrl: string | null;
+  onboardingStage: string;
+  onboardingNotes: string | null;
+  joinedAt: string;
+  activatedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  owner?: { id: string; name: string | null; email: string } | null;
+  application?: {
+    id: string;
+    status: "NEW" | "REVIEWING" | "INTERVIEW" | "ACCEPTED" | "CLOSED";
+    sourcePage: string | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+}
+
+export interface CommunityProgramMemberResponse {
+  items: CommunityProgramMember[];
+  totals: Record<string, number>;
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token: string;

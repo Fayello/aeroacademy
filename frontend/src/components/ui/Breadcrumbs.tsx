@@ -68,8 +68,8 @@ export default function Breadcrumbs() {
   const { nav } = useNavigation();
   if (!pathname || pathname === "/dashboard") return null;
 
-  const rootHref = nav.viewMode === "ADMIN" ? "/dashboard/admin" : "/dashboard";
-  const rootLabel = nav.viewMode === "ADMIN" ? "Admin View" : "Learner View";
+  const rootHref = nav.viewMode === "ADMIN" ? nav.adminHomePath || "/dashboard/admin" : "/dashboard";
+  const rootLabel = nav.viewMode === "ADMIN" ? nav.adminViewLabel || "Admin View" : "Learner View";
   const RootIcon = nav.viewMode === "ADMIN" ? Shield : GraduationCap;
 
   const segments = pathname.split("/").filter(Boolean);

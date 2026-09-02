@@ -64,6 +64,7 @@ model User {
   auditLogs                AuditLog[]
   assignedInquiries        InstitutionalInquiry[]
   assignedCommunityApplications CommunityProgramApplication[]
+  communityProgramMembers  CommunityProgramMember[]
   notifications            Notification[]
   enrollments              CourseEnrollment[]
   badges                   UserBadge[]
@@ -207,9 +208,41 @@ model CommunityProgramApplication {
   updatedAt     DateTime                       @updatedAt
 
   assignedTo User? @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  member     CommunityProgramMember?
 
   @@index([status, createdAt(sort: Desc)])
   @@index([programType, createdAt(sort: Desc)])
+  @@index([email])
+}
+
+model CommunityProgramMember {
+  id               String                     @id @default(uuid())
+  applicationId    String                     @unique
+  programType      CommunityProgramType
+  status           CommunityProgramMemberStatus @default(ONBOARDING)
+  name             String
+  email            String
+  city             String?
+  organization     String?
+  role             String?
+  interests        String[]                   @default([])
+  contribution     String
+  availability     String?
+  linkedinUrl      String?
+  portfolioUrl     String?
+  onboardingStage  String                     @default("WELCOME")
+  onboardingNotes  String?
+  ownerId          String?
+  joinedAt         DateTime                   @default(now())
+  activatedAt      DateTime?
+  createdAt        DateTime                   @default(now())
+  updatedAt        DateTime                   @updatedAt
+
+  application CommunityProgramApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  owner       User?                       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+
+  @@index([programType, status])
+  @@index([status, joinedAt(sort: Desc)])
   @@index([email])
 }
 
@@ -580,6 +613,13 @@ enum CommunityProgramApplicationStatus {
   INTERVIEW
   ACCEPTED
   CLOSED
+}
+
+enum CommunityProgramMemberStatus {
+  ONBOARDING
+  ACTIVE
+  PAUSED
+  ALUMNI
 }
 
 model ActivityEvent {

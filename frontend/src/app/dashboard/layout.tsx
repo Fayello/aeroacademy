@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, Search, Bell, ChevronRight, CheckCheck, Loader2, LogOut, Settings, User as UserIcon, Zap } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
@@ -150,18 +150,34 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     : "?";
 
   const level = Math.floor(xp / 1000) + 1;
-  const isPrivilegedUser =
-    nav.role === "ADMIN" || nav.role === "RECRUITER" || nav.showAdmin;
-  const viewLabel = nav.viewMode === "ADMIN" ? "Admin View" : "Learner View";
+  const isPrivilegedUser = nav.canAccessAdminView;
+  const viewLabel =
+    nav.viewMode === "ADMIN"
+      ? nav.adminViewLabel || "Admin View"
+      : "Learner View";
   const viewHint =
     nav.viewMode === "ADMIN"
-      ? "Operations and control"
+      ? nav.role === "RECRUITER"
+        ? "Talent pipeline and institutional outreach"
+        : "Operations and control"
       : "Courses, labs, and personal progress";
   const ViewIcon = nav.viewMode === "ADMIN" ? Shield : GraduationCap;
   const viewAccent =
     nav.viewMode === "ADMIN"
       ? "border-[#7AD62A]/20 bg-[#7AD62A]/10 text-[#7AD62A]"
       : "border-blue-400/20 bg-blue-400/10 text-blue-300";
+  const searchPlaceholder =
+    nav.viewMode === "ADMIN"
+      ? nav.role === "RECRUITER"
+        ? "Search talent pipeline..."
+        : "Search admin workspace..."
+      : "Search course catalog...";
+  const searchAriaLabel =
+    nav.viewMode === "ADMIN"
+      ? nav.role === "RECRUITER"
+        ? "Search talent pipeline"
+        : "Search admin workspace"
+      : "Search course catalog";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-64 md:py-0 relative overflow-hidden">
@@ -211,13 +227,19 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             <input
               ref={searchRef}
               type="text"
-              placeholder="Search course catalog..."
-              aria-label="Search course catalog"
+              placeholder={searchPlaceholder}
+              aria-label={searchAriaLabel}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && searchValue.trim()) {
-                  router.push(`/dashboard/courses?q=${encodeURIComponent(searchValue.trim())}`);
+                  if (nav.viewMode === "ADMIN" && nav.role === "RECRUITER") {
+                    router.push(`/dashboard/enterprise?search=${encodeURIComponent(searchValue.trim())}`);
+                  } else if (nav.viewMode === "ADMIN") {
+                    router.push(nav.adminHomePath || "/dashboard/admin");
+                  } else {
+                    router.push(`/dashboard/courses?q=${encodeURIComponent(searchValue.trim())}`);
+                  }
                   setSearchValue("");
                   searchRef.current?.blur();
                 }
@@ -230,7 +252,11 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             </div>
           </div>
           <p className="mt-1 px-1 text-[10px] text-slate-500 md:hidden">
-            Search courses and press Enter to open the catalog results.
+            {nav.viewMode === "ADMIN"
+              ? nav.role === "RECRUITER"
+                ? "Search recruiting workspaces and press Enter to open the talent view."
+                : "Search the admin workspace and press Enter to open the control surface."
+              : "Search courses and press Enter to open the catalog results."}
           </p>
         </div>
 
@@ -404,6 +430,106 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   );
 }
 
+function DashboardModeBanner() {
+  const pathname = usePathname();
+  const { nav } = useNavigation();
+
+  const isPrivilegedUser = nav.canAccessAdminView;
+
+  if (!isPrivilegedUser) return null;
+
+  const adminMode = nav.viewMode === "ADMIN";
+  const Icon = adminMode ? Shield : GraduationCap;
+  const accentClasses = adminMode
+    ? "border-[#7AD62A]/20 bg-gradient-to-r from-[#7AD62A]/12 via-[#7AD62A]/6 to-transparent"
+    : "border-blue-400/20 bg-gradient-to-r from-blue-400/12 via-blue-400/6 to-transparent";
+  const iconClasses = adminMode
+    ? "border-[#7AD62A]/20 bg-[#7AD62A]/12 text-[#7AD62A]"
+    : "border-blue-400/20 bg-blue-400/12 text-blue-300";
+  const badgeClasses = adminMode
+    ? "border-[#7AD62A]/20 bg-[#7AD62A]/12 text-[#7AD62A]"
+    : "border-blue-400/20 bg-blue-400/12 text-blue-200";
+  const title = adminMode
+    ? `${nav.adminViewLabel || "Admin Workspace"} active`
+    : "Learner View active";
+  const description = adminMode
+    ? nav.role === "RECRUITER"
+      ? "You are in the recruiting workspace. Navigation now prioritizes talent discovery, inquiries, and community pipeline work."
+      : "You are in platform operations. Links, breadcrumbs, and actions are now admin-scoped."
+    : "You are in learner space. Courses, labs, and personal progress are prioritized here.";
+  const destinationHref = adminMode ? "/dashboard" : nav.adminHomePath || "/dashboard/admin";
+  const destinationLabel = adminMode ? "Go to learner workspace" : `Open ${nav.adminViewLabel || "admin workspace"}`;
+  const inAdminWorkspace =
+    pathname.startsWith("/dashboard/admin") || pathname.startsWith("/dashboard/enterprise");
+  const routeHint = inAdminWorkspace
+    ? `Current route: ${nav.adminViewLabel || "admin workspace"}`
+    : "Current route: learner workspace";
+
+  return (
+    <div className={`mb-4 flex flex-col gap-3 rounded-2xl border px-4 py-3 sm:px-5 ${accentClasses}`}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${iconClasses}`}>
+            <Icon size={18} />
+          </div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm font-semibold text-white">{title}</p>
+              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${badgeClasses}`}>
+                {adminMode ? (nav.role === "RECRUITER" ? "Recruiting" : "Admin") : "Learner"}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-slate-300">{description}</p>
+          </div>
+        </div>
+
+        <Link
+          href={destinationHref}
+          className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-slate-100 transition-colors hover:bg-white/8"
+        >
+          {destinationLabel}
+        </Link>
+      </div>
+
+      <p className="text-[11px] font-medium text-slate-400">{routeHint}</p>
+    </div>
+  );
+}
+
+function DashboardRoleGuard() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { nav, loading } = useNavigation();
+
+  useEffect(() => {
+    if (loading) return;
+
+    const onDashboardRoot = pathname === "/dashboard";
+    const onPrivilegedRoute =
+      pathname.startsWith("/dashboard/admin") ||
+      pathname.startsWith("/dashboard/enterprise");
+    const canStayOnPrivilegedRoute = nav.adminRoutePrefixes.some((prefix) =>
+      pathname === prefix || pathname.startsWith(`${prefix}/`),
+    );
+
+    if (onPrivilegedRoute && !nav.canAccessAdminView) {
+      router.replace("/dashboard");
+      return;
+    }
+
+    if (onPrivilegedRoute && !canStayOnPrivilegedRoute) {
+      router.replace(nav.adminHomePath || "/dashboard");
+      return;
+    }
+
+    if (onDashboardRoot && nav.viewMode === "ADMIN" && nav.adminHomePath) {
+      router.replace(nav.adminHomePath);
+    }
+  }, [loading, nav.adminHomePath, nav.adminRoutePrefixes, nav.canAccessAdminView, nav.viewMode, pathname, router]);
+
+  return null;
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -422,6 +548,7 @@ export default function DashboardLayout({
           <div className="min-h-screen bg-[#0a0f1a] relative">
             <div className="absolute inset-0 dot-grid-bg opacity-[0.015] pointer-events-none" />
             <TokenHandler />
+            <DashboardRoleGuard />
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#7AD62A] focus:text-[#0F203A] focus:rounded-xl focus:text-sm focus:font-medium"
@@ -432,6 +559,7 @@ export default function DashboardLayout({
             <Sidebar />
             <main id="main-content" className="pt-32 pb-20 sm:pt-28 md:pt-12 md:pb-0 md:pl-64 min-h-screen" role="main">
               <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
+                <DashboardModeBanner />
                 <div className="hidden md:block">
                   <Breadcrumbs />
                 </div>

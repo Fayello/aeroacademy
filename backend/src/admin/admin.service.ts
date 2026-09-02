@@ -565,6 +565,59 @@ export class AdminService {
     };
   }
 
+  async getCommunityProgramMembers(filters: {
+    status?: string;
+    type?: string;
+  }) {
+    const where = {
+      ...(filters.status
+        ? {
+            status: filters.status as
+              | 'ONBOARDING'
+              | 'ACTIVE'
+              | 'PAUSED'
+              | 'ALUMNI',
+          }
+        : {}),
+      ...(filters.type
+        ? { programType: filters.type as 'AMBASSADOR' | 'VOLUNTEER' }
+        : {}),
+    };
+
+    const [items, totals] = await Promise.all([
+      this.prisma.communityProgramMember.findMany({
+        where,
+        orderBy: [{ status: 'asc' }, { joinedAt: 'desc' }],
+        include: {
+          owner: {
+            select: { id: true, name: true, email: true },
+          },
+          application: {
+            select: {
+              id: true,
+              status: true,
+              sourcePage: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+      }),
+      this.prisma.communityProgramMember.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+    ]);
+
+    return {
+      items,
+      totals: totals.reduce<Record<string, number>>((acc, row) => {
+        acc[row.status] = row._count;
+        return acc;
+      }, {}),
+    };
+  }
+
   async updateCommunityProgramApplication(
     id: string,
     actorId: string,
@@ -579,7 +632,7 @@ export class AdminService {
     if (!existing)
       throw new NotFoundException('Community application not found');
 
-    return this.prisma.communityProgramApplication.update({
+    const updated = await this.prisma.communityProgramApplication.update({
       where: { id },
       data: {
         ...(data.status !== undefined ? { status: data.status } : {}),
@@ -589,6 +642,91 @@ export class AdminService {
       include: {
         assignedTo: {
           select: { id: true, name: true, email: true },
+        },
+      },
+    });
+
+    if (updated.status === 'ACCEPTED') {
+      await this.prisma.communityProgramMember.upsert({
+        where: { applicationId: updated.id },
+        create: {
+          applicationId: updated.id,
+          programType: updated.programType,
+          name: updated.name,
+          email: updated.email,
+          city: updated.city,
+          organization: updated.organization,
+          role: updated.role,
+          interests: updated.interests,
+          contribution: updated.contribution,
+          availability: updated.availability,
+          linkedinUrl: updated.linkedinUrl,
+          portfolioUrl: updated.portfolioUrl,
+          onboardingNotes: updated.notes,
+          ownerId: actorId,
+        },
+        update: {
+          programType: updated.programType,
+          name: updated.name,
+          email: updated.email,
+          city: updated.city,
+          organization: updated.organization,
+          role: updated.role,
+          interests: updated.interests,
+          contribution: updated.contribution,
+          availability: updated.availability,
+          linkedinUrl: updated.linkedinUrl,
+          portfolioUrl: updated.portfolioUrl,
+          onboardingNotes: updated.notes,
+          ownerId: actorId,
+        },
+      });
+    }
+
+    return updated;
+  }
+
+  async updateCommunityProgramMember(
+    id: string,
+    actorId: string,
+    data: {
+      status?: 'ONBOARDING' | 'ACTIVE' | 'PAUSED' | 'ALUMNI';
+      onboardingStage?: string;
+      onboardingNotes?: string;
+    },
+  ) {
+    const existing = await this.prisma.communityProgramMember.findUnique({
+      where: { id },
+    });
+    if (!existing) throw new NotFoundException('Community member not found');
+
+    return this.prisma.communityProgramMember.update({
+      where: { id },
+      data: {
+        ...(data.status !== undefined ? { status: data.status } : {}),
+        ...(data.onboardingStage !== undefined
+          ? { onboardingStage: data.onboardingStage.trim() || 'WELCOME' }
+          : {}),
+        ...(data.onboardingNotes !== undefined
+          ? { onboardingNotes: data.onboardingNotes }
+          : {}),
+        ...(data.status === 'ACTIVE' && existing.activatedAt === null
+          ? { activatedAt: new Date() }
+          : {}),
+        ownerId: actorId,
+      },
+      include: {
+        owner: {
+          select: { id: true, name: true, email: true },
+        },
+        application: {
+          select: {
+            id: true,
+            status: true,
+            sourcePage: true,
+            createdAt: true,
+            updatedAt: true,
+          },
         },
       },
     });
