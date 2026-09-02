@@ -7,25 +7,12 @@ import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import Link from "next/link";
 import EmptyState from "@/components/ui/EmptyState";
-
-interface CandidateProfile {
-  id: string;
-  name: string | null;
-  email: string;
-  city: string | null;
-  bio: string | null;
-  xp: number;
-  division: string;
-  clearance: string;
-  organization: { name: string; type: string } | null;
-  achievements: { achievement: { id: string; title: string; description: string } }[];
-  _count: { labSubmissions: number; progress: number };
-}
+import type { CandidateRegistryProfile } from "@/types/api";
 
 export default function CandidateRegistry() {
   const { id } = useParams();
   const router = useRouter();
-  const [profile, setProfile] = useState<CandidateProfile | null>(null);
+  const [profile, setProfile] = useState<CandidateRegistryProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +20,7 @@ export default function CandidateRegistry() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await fetchApi(`/recruitment/candidate/${id}`) as CandidateProfile;
+        const data = await fetchApi(`/recruitment/candidate/${id}`) as CandidateRegistryProfile;
         if (!cancelled) setProfile(data);
       } catch {
         toast.error("Candidate not found.");
@@ -55,24 +42,14 @@ export default function CandidateRegistry() {
     );
   }
 
-  const readinessLabel =
-    profile._count.labSubmissions >= 10
-      ? "High practical proof"
-      : profile._count.labSubmissions >= 4
-        ? "Growing practical proof"
-        : "Early practical record";
+  const readinessLabel = profile.evidence.proofLabel;
   const evidenceSummary = [
     { label: "Division", value: profile.division },
-    { label: "Lab submissions", value: String(profile._count.labSubmissions) },
-    { label: "Learning progress", value: String(profile._count.progress) },
+    { label: "Evidence score", value: `${profile.evidence.evidenceScore}/100` },
+    { label: "Lab submissions", value: String(profile.evidence.labsSolved) },
+    { label: "Learning progress", value: String(profile.evidence.lessonsCompleted) },
   ];
-  const evidenceScore = Math.min(
-    100,
-    (profile._count.labSubmissions >= 10 ? 40 : profile._count.labSubmissions >= 4 ? 28 : 14) +
-      (profile._count.progress >= 20 ? 30 : profile._count.progress >= 10 ? 20 : 10) +
-      (profile.achievements.length >= 5 ? 20 : profile.achievements.length > 0 ? 12 : 0) +
-      (profile.organization ? 10 : 0),
-  );
+  const evidenceScore = profile.evidence.evidenceScore;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
@@ -100,7 +77,7 @@ export default function CandidateRegistry() {
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Readiness signal</p>
-              <p className="mt-2 text-sm font-semibold text-white">{readinessLabel}</p>
+              <p className="mt-2 text-sm font-semibold text-white">{profile.evidence.readinessLabel}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Organization link</p>
@@ -113,6 +90,10 @@ export default function CandidateRegistry() {
           </div>
         </div>
         <div className="flex flex-col gap-3 w-full sm:w-auto">
+          <Link href={`/dashboard/readiness-transcript?userId=${profile.id}`} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-slate-100 transition-colors hover:bg-white/[0.08]">
+            <FileCheck size={15} />
+            Open Transcript
+          </Link>
           <a href={`mailto:${profile.email}`} className="btn-primary text-sm shrink-0 justify-center">
             Contact
           </a>
@@ -204,13 +185,13 @@ export default function CandidateRegistry() {
               {[
                 {
                   label: "Practical activity",
-                  value: profile._count.labSubmissions > 0 ? "Visible" : "Limited",
-                  detail: `${profile._count.labSubmissions} lab submission${profile._count.labSubmissions === 1 ? "" : "s"} recorded`,
+                  value: profile.evidence.labsSolved > 0 ? "Visible" : "Limited",
+                  detail: `${profile.evidence.labsSolved} lab submission${profile.evidence.labsSolved === 1 ? "" : "s"} recorded`,
                 },
                 {
                   label: "Learning continuity",
-                  value: profile._count.progress > 0 ? "Visible" : "Limited",
-                  detail: `${profile._count.progress} completed lesson record${profile._count.progress === 1 ? "" : "s"}`,
+                  value: profile.evidence.lessonsCompleted > 0 ? "Visible" : "Limited",
+                  detail: `${profile.evidence.lessonsCompleted} completed lesson record${profile.evidence.lessonsCompleted === 1 ? "" : "s"}`,
                 },
                 {
                   label: "Institution context",
@@ -230,6 +211,55 @@ export default function CandidateRegistry() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="card p-6">
+            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+              <Shield size={16} className="text-[#7AD62A]" />
+              Readiness Transcript
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Readiness band</p>
+                <p className="mt-2 text-sm font-semibold text-white">{profile.evidence.readinessLabel}</p>
+                <p className="mt-1 text-xs text-slate-400">{readinessLabel}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Recognition signals</p>
+                <p className="mt-2 text-sm font-semibold text-white">{profile.evidence.achievementsCount} achievement{profile.evidence.achievementsCount === 1 ? "" : "s"}</p>
+                <p className="mt-1 text-xs text-slate-400">Published signals that support practical activity.</p>
+              </div>
+            </div>
+
+            {profile.evidence.topDomains.length > 0 && (
+              <div className="mt-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Top domain strengths</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {profile.evidence.topDomains.map((domain) => (
+                    <span key={domain.domainId} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-200">
+                      {domain.name} {domain.rating}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {profile.capability && (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {[
+                  { label: "Capability score", value: `${profile.capability.capabilityScore}/100`, detail: profile.capability.tier },
+                  { label: "Technical performance", value: `${profile.capability.breakdown.technicalPerformance}`, detail: "Assessments, labs, and flag quality" },
+                  { label: "Consistency", value: `${profile.capability.breakdown.consistency}`, detail: `${profile.capability.details.activeDaysLast30} active days in the last 30` },
+                  { label: "Problem solving", value: `${profile.capability.breakdown.problemSolving}`, detail: `${profile.capability.details.independenceRate}% independent solve rate` },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
+                    <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>
+                    <p className="mt-1 text-xs text-slate-400">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="card p-6">

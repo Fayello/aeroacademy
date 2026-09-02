@@ -6,6 +6,7 @@ import {
   MapPin,
   GraduationCap,
   Star,
+  Scale,
   ChevronRight,
   ChevronLeft,
   BriefcaseBusiness,
@@ -21,20 +22,7 @@ import Link from "next/link";
 import toast from "@/lib/toast";
 import ClassroomCommand from "@/components/enterprise/ClassroomCommand";
 import PageHeader from "@/components/ui/PageHeader";
-
-interface Talent {
-  id: string;
-  name: string;
-  email: string;
-  city: string;
-  xp: number;
-  rank: number;
-  division: string;
-  bio: string;
-  organization: { name: string; type: string } | null;
-  achievements: { achievement: { id: string; title: string; description: string; icon: string; category: string; xpReward: number } }[];
-  _count: { labSubmissions: number };
-}
+import type { TalentPoolCandidate } from "@/types/api";
 
 const divisionBadge: Record<string, string> = {
   TITAN: "bg-indigo-100 text-indigo-700 border-indigo-200",
@@ -44,14 +32,23 @@ const divisionBadge: Record<string, string> = {
 };
 
 const PAGE_SIZE = 12;
+const READINESS_FILTERS = [
+  { id: "ALL", label: "All readiness" },
+  { id: "ASSESSMENT_READY", label: "Assessment-ready" },
+  { id: "BUILDING", label: "Building" },
+  { id: "FOUNDATION", label: "Foundation" },
+] as const;
 
 export default function EnterprisePortal() {
-  const [talent, setTalent] = useState<Talent[]>([]);
+  const [talent, setTalent] = useState<TalentPoolCandidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCity, setSelectedCity] = useState("All");
+  const [readinessFilter, setReadinessFilter] = useState<(typeof READINESS_FILTERS)[number]["id"]>("ALL");
+  const [minLabProof, setMinLabProof] = useState(0);
   const [shortlisted, setShortlisted] = useState<Set<string>>(new Set());
   const [showShortlistedOnly, setShowShortlistedOnly] = useState(false);
+  const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [view, setView] = useState<"TALENT" | "CLASSROOM">("TALENT");
   const [userRole] = useState<string | null>(() => {
     try {
@@ -69,7 +66,7 @@ export default function EnterprisePortal() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await fetchApi<Talent[]>("/recruitment/talent-pool");
+        const data = await fetchApi<TalentPoolCandidate[]>("/recruitment/talent-pool");
         if (!cancelled) setTalent(Array.isArray(data) ? data : []);
       } catch {
         toast.error("Failed to load talent pool.");
@@ -108,30 +105,49 @@ export default function EnterprisePortal() {
     }
   };
 
+  function toggleComparisonCandidate(candidateId: string) {
+    setComparisonIds((current) => {
+      if (current.includes(candidateId)) {
+        return current.filter((id) => id !== candidateId);
+      }
+      if (current.length >= 3) {
+        toast.error("You can compare up to 3 candidates at a time.");
+        return current;
+      }
+      return [...current, candidateId];
+    });
+  }
+
   const filteredTalent = useMemo(() => {
     return talent.filter((entry) => {
       const matchesSearch =
-        entry.name.toLowerCase().includes(search.toLowerCase()) ||
-        entry.organization?.name.toLowerCase().includes(search.toLowerCase());
+        (entry.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        entry.email.toLowerCase().includes(search.toLowerCase()) ||
+        entry.organization?.name.toLowerCase().includes(search.toLowerCase()) ||
+        entry.evidence.topDomains.some((domain) => domain.name.toLowerCase().includes(search.toLowerCase()));
       const matchesCity = selectedCity === "All" || entry.city === selectedCity;
       const matchesShortlist = !showShortlistedOnly || shortlisted.has(entry.id);
-      return matchesSearch && matchesCity && matchesShortlist;
+      const matchesReadiness =
+        readinessFilter === "ALL" || entry.evidence.readinessBand === readinessFilter;
+      const matchesLabProof = entry.evidence.labsSolved >= minLabProof;
+      return matchesSearch && matchesCity && matchesShortlist && matchesReadiness && matchesLabProof;
     });
-  }, [talent, search, selectedCity, showShortlistedOnly, shortlisted]);
+  }, [talent, search, selectedCity, showShortlistedOnly, shortlisted, readinessFilter, minLabProof]);
 
   const totalPages = Math.ceil(filteredTalent.length / PAGE_SIZE);
   const paginatedTalent = filteredTalent.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const shortlistedCandidates = filteredTalent.filter((entry) => shortlisted.has(entry.id)).length;
-  const averageRank =
-    filteredTalent.length > 0
-      ? Math.round(filteredTalent.reduce((sum, entry) => sum + (entry.rank || 1200), 0) / filteredTalent.length)
-      : 0;
   const averageLabProof =
     filteredTalent.length > 0
-      ? Math.round(filteredTalent.reduce((sum, entry) => sum + entry._count.labSubmissions, 0) / filteredTalent.length)
+      ? Math.round(filteredTalent.reduce((sum, entry) => sum + entry.evidence.labsSolved, 0) / filteredTalent.length)
       : 0;
   const universityLinked = filteredTalent.filter((entry) => entry.organization?.type === "UNIVERSITY").length;
-  const highProofCandidates = filteredTalent.filter((entry) => entry._count.labSubmissions >= 10).length;
+  const highProofCandidates = filteredTalent.filter((entry) => entry.evidence.labsSolved >= 10).length;
+  const assessmentReadyCount = filteredTalent.filter((entry) => entry.evidence.readinessBand === "ASSESSMENT_READY").length;
+  const averageEvidenceScore =
+    filteredTalent.length > 0
+      ? Math.round(filteredTalent.reduce((sum, entry) => sum + entry.evidence.evidenceScore, 0) / filteredTalent.length)
+      : 0;
 
   if (loading) {
     return (
@@ -239,8 +255,8 @@ export default function EnterprisePortal() {
                 icon: ShieldCheck,
                 title: "Evidence quality",
                 text:
-                  averageRank > 0
-                    ? `The current filtered set averages about ${averageRank} rating, helping you compare capability consistency.`
+                  averageEvidenceScore > 0
+                    ? `The current filtered set averages about ${averageEvidenceScore}/100 evidence strength, making stronger candidates easier to spot quickly.`
                     : "Rating data becomes more useful as the talent pool grows.",
               },
               {
@@ -281,24 +297,62 @@ export default function EnterprisePortal() {
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Best next action</p>
-              <p className="mt-2 text-sm font-semibold text-white">Open registry records before outreach</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Assessment-ready</p>
+              <p className="mt-2 text-2xl font-bold text-white">{assessmentReadyCount}</p>
               <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                Use the registry detail view to compare evidence, readiness, and organization context before you contact a candidate or start a cohort discussion.
+                candidate{assessmentReadyCount === 1 ? "" : "s"} in this filtered set already look stronger for interview or challenge-based evaluation.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col gap-3">
+            {comparisonIds.length > 0 && (
+              <div className="rounded-2xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7AD62A]">Compare candidates</p>
+                    <p className="mt-1 text-sm text-slate-200">
+                      {comparisonIds.length} candidate{comparisonIds.length === 1 ? "" : "s"} selected for side-by-side evidence review.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setComparisonIds([])}
+                      className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-slate-200 transition-colors hover:bg-white/[0.08]"
+                    >
+                      Clear
+                    </button>
+                    <Link
+                      href={`/dashboard/enterprise/compare?ids=${comparisonIds.join(",")}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7AD62A] px-3 py-2 text-xs font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422]"
+                    >
+                      <Scale size={13} />
+                      Open comparison
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input type="text" placeholder="Search by name or institution..." className="input-field pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex flex-wrap gap-1.5">
               <button onClick={() => setShowShortlistedOnly(!showShortlistedOnly)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${showShortlistedOnly ? "bg-slate-800 text-white border border-slate-800" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}>
                 <Star size={12} className="inline mr-1" fill={showShortlistedOnly ? "currentColor" : "none"} />
                 Saved
               </button>
+              {READINESS_FILTERS.map((filter) => (
+                <button key={filter.id} onClick={() => setReadinessFilter(filter.id)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${readinessFilter === filter.id ? "bg-slate-800 text-white border border-slate-800" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}>
+                  {filter.label}
+                </button>
+              ))}
+              {[0, 4, 10].map((value) => (
+                <button key={value} onClick={() => setMinLabProof(value)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${minLabProof === value ? "bg-slate-800 text-white border border-slate-800" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}>
+                  {value === 0 ? "Any lab proof" : `${value}+ labs`}
+                </button>
+              ))}
               {cities.map((city) => (
                 <button key={city} onClick={() => setSelectedCity(city)} className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${selectedCity === city ? "bg-slate-800 text-white border border-slate-800" : "bg-white/5 text-slate-400 hover:bg-white/10"}`}>
                   {city}
@@ -334,21 +388,31 @@ export default function EnterprisePortal() {
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="bg-white/5 rounded-lg p-2">
-                    <p className="text-slate-500">Rank</p>
-                    <p className="font-semibold text-white">{candidate.rank || 1200}</p>
+                    <p className="text-slate-500">Evidence</p>
+                    <p className="font-semibold text-white">{candidate.evidence.evidenceScore}/100</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-2">
                     <p className="text-slate-500">Labs</p>
-                    <p className="font-semibold text-white">{candidate._count.labSubmissions}</p>
+                    <p className="font-semibold text-white">{candidate.evidence.labsSolved}</p>
                   </div>
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Proof summary</p>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Readiness summary</p>
                   <p className="mt-2 text-sm text-slate-300">
-                    {candidate.organization?.type === "UNIVERSITY" ? "University-linked candidate" : "Independent or enterprise-linked candidate"} with {candidate._count.labSubmissions} lab submission{candidate._count.labSubmissions === 1 ? "" : "s"} and division {candidate.division}.
+                    {candidate.evidence.readinessLabel} with {candidate.evidence.labsSolved} solved lab{candidate.evidence.labsSolved === 1 ? "" : "s"}, {candidate.evidence.lessonsCompleted} completed lesson{candidate.evidence.lessonsCompleted === 1 ? "" : "s"}, and {candidate.evidence.achievementsCount} published achievement{candidate.evidence.achievementsCount === 1 ? "" : "s"}.
                   </p>
                 </div>
+
+                {candidate.evidence.topDomains.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {candidate.evidence.topDomains.map((domain) => (
+                      <span key={`${candidate.id}-${domain.domainId}`} className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] text-slate-300">
+                        {domain.name} {domain.rating}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <GraduationCap size={12} />
@@ -356,6 +420,18 @@ export default function EnterprisePortal() {
                 </div>
 
                 <div className="flex gap-2 pt-2 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => toggleComparisonCandidate(candidate.id)}
+                    className={`inline-flex items-center justify-center gap-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+                      comparisonIds.includes(candidate.id)
+                        ? "border-[#7AD62A]/30 bg-[#7AD62A]/10 text-[#7AD62A]"
+                        : "border-white/10 bg-white/[0.03] text-slate-200 hover:bg-white/[0.08]"
+                    }`}
+                  >
+                    <Scale size={13} />
+                    {comparisonIds.includes(candidate.id) ? "Selected" : "Compare"}
+                  </button>
                   <Link href={`/dashboard/enterprise/registry/${candidate.id}`} className="flex-1 btn-primary text-xs py-2 justify-center">
                     View Profile
                   </Link>

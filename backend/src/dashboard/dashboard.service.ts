@@ -29,12 +29,13 @@ export class DashboardService implements OnModuleInit {
   }
 
   async getPublicStats() {
-    const [totalStudents, totalCourses, totalLabs] = await Promise.all([
+    const [totalStudents, totalCourses, totalLabs, totalLessons] = await Promise.all([
       this.prisma.user.count({ where: { role: 'STUDENT' } }),
       this.prisma.course.count(),
       this.prisma.lab.count(),
+      this.prisma.lesson.count(),
     ]);
-    return { totalStudents, totalCourses, totalLabs };
+    return { totalStudents, totalCourses, totalLabs, totalLessons };
   }
 
   async getSystemIntelligence(userId?: string) {

@@ -376,6 +376,7 @@ export default function Dashboard() {
     { href: "/dashboard/courses", title: "Course pathways", text: "Structured training toward readiness", icon: BookOpen },
     { href: "/dashboard/labs", title: "Hands-on labs", text: "Practical work and skill evidence", icon: FlaskConical },
     { href: "/dashboard/exams", title: "Practical exams", text: "Controlled assessments and reports", icon: Target },
+    { href: "/dashboard/readiness-transcript", title: "Readiness transcript", text: "A recruiter-readable proof record", icon: FileCheck },
   ];
 
   return (

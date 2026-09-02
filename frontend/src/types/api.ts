@@ -267,6 +267,65 @@ export interface Shortlist {
   student?: User;
 }
 
+export interface TalentDomainStrength {
+  domainId: string;
+  name: string;
+  rating: number;
+  mastery?: number;
+}
+
+export interface TalentEvidenceSummary {
+  evidenceScore: number;
+  readinessBand: "ASSESSMENT_READY" | "BUILDING" | "FOUNDATION";
+  readinessLabel: string;
+  proofLabel: string;
+  labsSolved: number;
+  lessonsCompleted: number;
+  achievementsCount: number;
+  topDomains: TalentDomainStrength[];
+}
+
+export interface TalentPoolCandidate {
+  id: string;
+  name: string | null;
+  email: string;
+  city: string | null;
+  xp: number;
+  rank: number;
+  division: string;
+  bio: string | null;
+  organization: { name: string; type: string } | null;
+  achievements: { achievement: { id: string; title: string; description: string; icon: string; category: string; xpReward: number } }[];
+  _count: { labSubmissions: number; progress: number };
+  evidence: TalentEvidenceSummary;
+}
+
+export interface TalentCapabilityBreakdown {
+  technicalPerformance: number;
+  difficulty: number;
+  consistency: number;
+  problemSolving: number;
+}
+
+export interface CandidateRegistryProfile extends TalentPoolCandidate {
+  clearance: string;
+  level: number;
+  capability?: {
+    capabilityScore: number;
+    tier: string;
+    breakdown: TalentCapabilityBreakdown;
+    details: {
+      assessmentsCompleted: number;
+      avgAssessmentScore: number;
+      labsCompleted: number;
+      flagsSolved: number;
+      bossMissionsCompleted: number;
+      activeDaysLast30: number;
+      independenceRate: number;
+    };
+  } | null;
+}
+
 export interface LabStats {
   activeContainers: number;
   activeUsers: number;

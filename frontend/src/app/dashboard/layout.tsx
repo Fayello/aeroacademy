@@ -47,12 +47,28 @@ function TokenHandler() {
 
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const { nav, loading: navLoading } = useNavigation();
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function verifyOnboarding() {
+      if (navLoading) return;
+
+      const onPrivilegedRoute =
+        pathname.startsWith("/dashboard/admin") ||
+        pathname.startsWith("/dashboard/enterprise");
+      const shouldBypassOnboarding =
+        (onPrivilegedRoute && nav.canAccessAdminView) ||
+        (nav.canAccessAdminView && nav.viewMode === "ADMIN");
+
+      if (shouldBypassOnboarding) {
+        if (!cancelled) setChecked(true);
+        return;
+      }
+
       if (hasCompletedOnboarding()) {
         setChecked(true);
         return;
@@ -76,9 +92,9 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
     verifyOnboarding();
     return () => { cancelled = true; };
-  }, [router]);
+  }, [nav.canAccessAdminView, nav.viewMode, navLoading, pathname, router]);
 
-  if (!checked) {
+  if (navLoading || !checked) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="animate-spin text-[#7AD62A]" size={28} />

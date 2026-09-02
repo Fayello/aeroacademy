@@ -1,9 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
 
 @Injectable()
 export class LearningOutcomeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly domainRankingService: DomainRankingService,
+  ) {}
 
   // ─── OUTCOME CRUD ──────────────────────────────────────────────
 
@@ -447,6 +457,142 @@ export class LearningOutcomeService {
       })),
       recommendations,
     };
+  }
+
+  async getReadinessTranscript(userId: string) {
+    const [competency, rankedProfile, capability, publicProfile] =
+      await Promise.all([
+        this.getEnhancedCompetencyProfile(userId),
+        this.domainRankingService.getRankedProfile(userId),
+        this.domainRankingService.getCapabilityRanking(userId),
+        this.prisma.user.findUnique({
+          where: { id: userId },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            city: true,
+            bio: true,
+            xp: true,
+            rank: true,
+            division: true,
+            createdAt: true,
+            organization: { select: { name: true, type: true } },
+          },
+        }),
+      ]);
+
+    if (!publicProfile) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const competencyScore = competency.summary.overallPct || 0;
+    const capabilityScore = capability?.capabilityScore || 0;
+    const assessmentScore = competency.summary.overallAssessmentScore || 0;
+    const labsScore = Math.min(100, competency.summary.totalLabsCompleted * 8);
+    const transcriptScore = Math.round(
+      competencyScore * 0.35 +
+        capabilityScore * 0.3 +
+        assessmentScore * 0.2 +
+        labsScore * 0.15,
+    );
+
+    const readiness =
+      transcriptScore >= 80
+        ? {
+            label: 'Assessment-ready',
+            detail:
+              'Strong enough for practical evaluation and employer review.',
+          }
+        : transcriptScore >= 55
+          ? {
+              label: 'Building readiness',
+              detail:
+                'Meaningful progress is visible, but more proof should be accumulated.',
+            }
+          : {
+              label: 'Foundation stage',
+              detail:
+                'The learner is still assembling a practical record.',
+            };
+
+    return {
+      learner: publicProfile,
+      transcriptScore,
+      readiness,
+      competency,
+      rankedProfile,
+      capability,
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
+  async getReadinessTranscriptForViewer(
+    actor: { id: string; role?: string | null },
+    userId: string,
+  ) {
+    const canView =
+      actor.id === userId ||
+      actor.role === 'ADMIN' ||
+      actor.role === 'RECRUITER';
+
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this transcript');
+    }
+
+    return this.getReadinessTranscript(userId);
+  }
+
+  async createReadinessTranscriptShareLink(
+    actor: { id: string; role?: string | null },
+    userId: string,
+  ) {
+    const canShare =
+      actor.id === userId ||
+      actor.role === 'ADMIN' ||
+      actor.role === 'RECRUITER';
+
+    if (!canShare) {
+      throw new ForbiddenException(
+        'You cannot create a share link for this transcript',
+      );
+    }
+
+    const token = await this.jwtService.signAsync(
+      {
+        type: 'readiness_transcript_share',
+        sub: userId,
+      },
+      { expiresIn: '7d' },
+    );
+
+    return {
+      token,
+      expiresAt: new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+    };
+  }
+
+  async getPublicReadinessTranscript(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync<{
+        type?: string;
+        sub?: string;
+      }>(token);
+
+      if (
+        payload.type !== 'readiness_transcript_share' ||
+        !payload.sub
+      ) {
+        throw new UnauthorizedException('Invalid transcript token');
+      }
+
+      return this.getReadinessTranscript(payload.sub);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
+      throw new UnauthorizedException('Invalid or expired transcript token');
+    }
   }
   // ─── BULK SEED ────────────────────────────────────────────────
 

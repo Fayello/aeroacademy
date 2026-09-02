@@ -6,8 +6,12 @@ import {
   Param,
   Body,
   Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { LearningOutcomeService } from './learning-outcome.service';
+import type { RequestWithUser } from './request-with-user';
 
 @Controller('v1/learning-outcomes')
 export class LearningOutcomeController {
@@ -90,6 +94,35 @@ export class LearningOutcomeController {
   @Get('competency-profile/:userId/enhanced')
   async getEnhancedCompetencyProfile(@Param('userId') userId: string) {
     return this.service.getEnhancedCompetencyProfile(userId);
+  }
+
+  @Get('readiness-transcript/:userId')
+  @UseGuards(AuthGuard('jwt'))
+  async getReadinessTranscript(
+    @Request() req: RequestWithUser,
+    @Param('userId') userId: string,
+  ) {
+    return this.service.getReadinessTranscriptForViewer(
+      { id: req.user.id, role: req.user.role },
+      userId,
+    );
+  }
+
+  @Post('readiness-transcript/share')
+  @UseGuards(AuthGuard('jwt'))
+  async createReadinessTranscriptShareLink(
+    @Request() req: RequestWithUser,
+    @Body('userId') userId?: string,
+  ) {
+    return this.service.createReadinessTranscriptShareLink(
+      { id: req.user.id, role: req.user.role },
+      userId || req.user.id,
+    );
+  }
+
+  @Get('readiness-transcript/public/:token')
+  async getPublicReadinessTranscript(@Param('token') token: string) {
+    return this.service.getPublicReadinessTranscript(token);
   }
 
   // ─── EVIDENCE ─────────────────────────────────────────────────

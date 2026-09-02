@@ -219,7 +219,7 @@ export default function LandingPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalLabs: 0 });
+  const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalLabs: 0, totalLessons: 0 });
   const [masterClasses, setMasterClasses] = useState<MasterClass[]>([]);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const { convert } = useCurrency();
@@ -453,7 +453,7 @@ export default function LandingPage() {
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers Training", icon: Users },
               { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Hands-on Labs", icon: Terminal },
               { value: stats.totalCourses || "7", label: "Expert Courses", icon: BookOpen },
-              { value: "50+", label: "Video Lessons", icon: Award },
+              { value: stats.totalLessons || "50+", label: "Video Lessons", icon: Award },
             ].map((s, i) => (
               <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />
@@ -1051,7 +1051,7 @@ export default function LandingPage() {
             {[
               { value: stats.totalCourses || "7", label: "Courses", icon: BookOpen },
               { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Labs", icon: Microscope },
-              { value: "55+", label: "Lessons", icon: Code },
+              { value: stats.totalLessons || "55+", label: "Lessons", icon: Code },
               { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers", icon: Users },
             ].map((s, i) => (
               <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
