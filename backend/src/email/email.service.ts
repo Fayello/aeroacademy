@@ -1,5 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { SubmitInquiryDto } from './dto/submit-inquiry.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 export type EmailSender = 'auth' | 'labs' | 'noreply' | 'info';
 
@@ -22,6 +24,8 @@ export class EmailService implements OnModuleInit {
   private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter;
   private enabled = false;
+
+  constructor(private readonly prisma: PrismaService) {}
 
   async onModuleInit() {
     const host = process.env.SMTP_HOST;
@@ -71,6 +75,126 @@ export class EmailService implements OnModuleInit {
       this.logger.error(`Email send failed: ${err instanceof Error ? err.message : err}`);
       return false;
     }
+  }
+
+  async sendInstitutionInquiry(inquiry: SubmitInquiryDto) {
+    const inquiryLabel = inquiry.inquiryType === 'university' ? 'University' : 'Enterprise';
+    const submittedAt = new Date().toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+
+    return this.send({
+      to: 'contact@xpertclass.academy',
+      from: 'info',
+      subject: `${inquiryLabel} inquiry from ${inquiry.organization}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
+    <div style="background:#0F203A;padding:28px 32px;">
+      <p style="margin:0;color:#7AD62A;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">New inquiry</p>
+      <h1 style="margin:12px 0 0;color:#ffffff;font-size:24px;">${inquiryLabel} contact request</h1>
+      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">A visitor submitted an institutional inquiry through the XpertClass get-started page.</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;width:180px;">Inquiry type</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;font-weight:600;">${inquiryLabel}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Name</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.name)}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Email</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.email)}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Organization</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.organization)}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Role</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.role || 'Not provided')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Team size</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.teamSize || 'Not provided')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Phone</td>
+          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.phone || 'Not provided')}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;color:#64748b;font-size:13px;">Submitted</td>
+          <td style="padding:10px 0;color:#0f172a;font-size:14px;">${submittedAt}</td>
+        </tr>
+      </table>
+
+      <div style="margin-top:24px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;padding:20px;">
+        <p style="margin:0 0 10px;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Message</p>
+        <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.7;white-space:pre-wrap;">${escapeHtml(inquiry.message)}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
+  }
+
+  async createInquiryRecord(inquiry: SubmitInquiryDto) {
+    return this.prisma.institutionalInquiry.create({
+      data: {
+        inquiryType: inquiry.inquiryType === 'university' ? 'UNIVERSITY' : 'ENTERPRISE',
+        name: inquiry.name,
+        email: inquiry.email,
+        organization: inquiry.organization,
+        role: inquiry.role || null,
+        teamSize: inquiry.teamSize || null,
+        phone: inquiry.phone || null,
+        message: inquiry.message,
+        sourcePage: inquiry.sourcePage || '/get-started',
+      },
+      select: {
+        id: true,
+        inquiryType: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async sendInquiryAcknowledgement(email: string, name: string, inquiryType: 'university' | 'enterprise') {
+    const displayName = name || 'there';
+    const inquiryLabel = inquiryType === 'university' ? 'university' : 'enterprise';
+
+    return this.send({
+      to: email,
+      from: 'info',
+      subject: 'We received your XpertClass inquiry',
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
+    <div style="background:#0F203A;padding:28px 32px;text-align:center;">
+      <h1 style="margin:0;color:#ffffff;font-size:24px;">Inquiry received</h1>
+      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">Thanks for contacting XpertClass.</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <p style="margin:0 0 14px;color:#0f172a;font-size:15px;line-height:1.7;">Hi ${escapeHtml(displayName)},</p>
+      <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.7;">We received your ${inquiryLabel} inquiry and shared it with our team.</p>
+      <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;">We’ll review your message and get back to you using this email address.</p>
+    </div>
+  </div>
+</body>
+</html>`,
+    });
   }
 
   // ─── AUTH EMAILS ───────────────────────────────────────
@@ -1358,4 +1482,13 @@ export class EmailService implements OnModuleInit {
     if (!emailPrefs) return true;
     return emailPrefs[category] !== false;
   }
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

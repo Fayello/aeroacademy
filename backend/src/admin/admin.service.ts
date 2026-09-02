@@ -388,4 +388,58 @@ export class AdminService {
       })),
     };
   }
+
+  async getInstitutionalInquiries(filters: { status?: string; type?: string }) {
+    const where = {
+      ...(filters.status ? { status: filters.status as 'NEW' | 'REVIEWING' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED' } : {}),
+      ...(filters.type ? { inquiryType: filters.type as 'UNIVERSITY' | 'ENTERPRISE' } : {}),
+    };
+
+    const [items, totals] = await Promise.all([
+      this.prisma.institutionalInquiry.findMany({
+        where,
+        orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
+        include: {
+          assignedTo: {
+            select: { id: true, name: true, email: true },
+          },
+        },
+      }),
+      this.prisma.institutionalInquiry.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+    ]);
+
+    return {
+      items,
+      totals: totals.reduce<Record<string, number>>((acc, row) => {
+        acc[row.status] = row._count;
+        return acc;
+      }, {}),
+    };
+  }
+
+  async updateInstitutionalInquiry(
+    id: string,
+    actorId: string,
+    data: { status?: 'NEW' | 'REVIEWING' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED'; notes?: string },
+  ) {
+    const existing = await this.prisma.institutionalInquiry.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Inquiry not found');
+
+    return this.prisma.institutionalInquiry.update({
+      where: { id },
+      data: {
+        ...(data.status !== undefined ? { status: data.status } : {}),
+        ...(data.notes !== undefined ? { notes: data.notes } : {}),
+        assignedToId: actorId,
+      },
+      include: {
+        assignedTo: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    });
+  }
 }

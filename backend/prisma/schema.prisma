@@ -62,6 +62,7 @@ model User {
   bookings                 Booking[]
   activityEvents           ActivityEvent[]
   auditLogs                AuditLog[]
+  assignedInquiries        InstitutionalInquiry[]
   notifications            Notification[]
   enrollments              CourseEnrollment[]
   badges                   UserBadge[]
@@ -157,6 +158,30 @@ model Organization {
   location  String
   users     User[]
   createdAt DateTime @default(now())
+}
+
+model InstitutionalInquiry {
+  id           String                    @id @default(uuid())
+  inquiryType  InstitutionalInquiryType
+  status       InstitutionalInquiryStatus @default(NEW)
+  name         String
+  email        String
+  organization String
+  role         String?
+  teamSize     String?
+  phone        String?
+  message      String
+  sourcePage   String?                   @default("/get-started")
+  notes        String?
+  assignedToId String?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+
+  assignedTo User? @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([inquiryType, createdAt(sort: Desc)])
+  @@index([email])
 }
 
 model Course {
@@ -500,6 +525,19 @@ enum LabStatus {
   STOPPED
   EXPIRED
   PROVISIONING
+}
+
+enum InstitutionalInquiryType {
+  UNIVERSITY
+  ENTERPRISE
+}
+
+enum InstitutionalInquiryStatus {
+  NEW
+  REVIEWING
+  CONTACTED
+  QUALIFIED
+  CLOSED
 }
 
 model ActivityEvent {

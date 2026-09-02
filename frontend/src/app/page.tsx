@@ -472,12 +472,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
             <div>
-              <SectionLabel>Authority First</SectionLabel>
+              <SectionLabel>How it works</SectionLabel>
               <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
-                Built to feel like a trusted certification body, not just a learning portal
+                Training, assessment, and verification in one system
               </h2>
               <p className="text-lg text-slate-400 mt-5 max-w-2xl leading-relaxed">
-                AeroAcademy/XpertClass is designed around practical rigor, transparent progression, and verifiable outcomes. The learner should always know what they are preparing for and why it matters.
+                XpertClass is built around practical work, clear progression, and credentials people can verify. Learners should always know what they are working toward and what comes next.
               </p>
               <div className="grid md:grid-cols-3 gap-4 mt-8">
                 {TRUST_PILLARS.map((pillar) => (
@@ -490,14 +490,14 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="angular-card bg-[#0f172a] border border-[#7AD62A]/20 p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Issuer Identity</p>
-              <h3 className="text-2xl font-bold text-white mt-3">Certification trust architecture</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">What this includes</p>
+              <h3 className="text-2xl font-bold text-white mt-3">What makes the credential credible</h3>
               <div className="space-y-4 mt-6">
                 {[
-                  "Curriculum mapped to domains and measurable outcomes",
-                  "Practical exams with scoring, pass thresholds, and attempt controls",
-                  "Public credential verification with issued status and evidence summary",
-                  "Learner dashboards that show progress toward a real credential",
+                  "Courses tied to defined skill areas and measurable outcomes",
+                  "Practical exams with scoring, pass marks, and attempt rules",
+                  "Public credential verification with issued status and supporting evidence",
+                  "Dashboards that show progress toward a certificate",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <CheckCircle2 size={16} className="text-[#7AD62A] shrink-0 mt-0.5" />
@@ -507,10 +507,10 @@ export default function LandingPage() {
               </div>
               <div className="mt-7 pt-5 border-t border-white/10 flex flex-col sm:flex-row gap-3">
                 <Link href="/dashboard/certifications" className="angular-btn btn-primary text-sm justify-center">
-                  Explore Credentials
+                  View Credentials
                 </Link>
                 <Link href="/privacy" className="angular-btn btn-ghost text-sm justify-center border border-white/10 hover:border-[#7AD62A] hover:text-[#7AD62A]">
-                  Review Policies
+                  See Standards
                 </Link>
               </div>
             </div>

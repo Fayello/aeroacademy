@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { fetchApi } from "@/lib/api";
 import {
   Users,
   BookOpen,
@@ -17,7 +19,9 @@ import {
   BriefcaseBusiness,
   School2,
   ClipboardCheck,
+  Loader2,
 } from "lucide-react";
+import toast from "@/lib/toast";
 
 const ROUTES = [
   {
@@ -43,8 +47,8 @@ const ROUTES = [
     description:
       "Use XpertClass to combine coursework, lab delivery, grading visibility, and learner readiness inside one controlled academic environment.",
     cta: "Discuss university rollout",
-    href: "mailto:enterprise@xpertclass.academy?subject=University%20Program%20Inquiry",
-    external: true,
+    href: "university",
+    external: false,
     tone: "border-blue-200 bg-blue-500/10 text-blue-300",
     bullets: [
       "Academic cohorts and transcript visibility",
@@ -59,8 +63,8 @@ const ROUTES = [
     description:
       "Support internal upskilling, evaluate practical capability, and review candidate evidence through a more structured enterprise workflow.",
     cta: "Contact enterprise team",
-    href: "mailto:enterprise@xpertclass.academy?subject=Enterprise%20Capability%20Inquiry",
-    external: true,
+    href: "enterprise",
+    external: false,
     tone: "border-amber-200 bg-amber-500/10 text-amber-300",
     bullets: [
       "Managed cohorts and talent visibility",
@@ -70,7 +74,78 @@ const ROUTES = [
   },
 ];
 
+type InquiryType = "university" | "enterprise";
+
+type InquiryFormState = {
+  inquiryType: InquiryType;
+  name: string;
+  email: string;
+  organization: string;
+  role: string;
+  teamSize: string;
+  phone: string;
+  message: string;
+};
+
+const INQUIRY_DEFAULTS: Record<InquiryType, InquiryFormState> = {
+  university: {
+    inquiryType: "university",
+    name: "",
+    email: "",
+    organization: "",
+    role: "",
+    teamSize: "",
+    phone: "",
+    message: "We’d like to explore how XpertClass could support our academic program, cohorts, and lab delivery.",
+  },
+  enterprise: {
+    inquiryType: "enterprise",
+    name: "",
+    email: "",
+    organization: "",
+    role: "",
+    teamSize: "",
+    phone: "",
+    message: "We’d like to explore how XpertClass could support workforce training, candidate evaluation, or internal capability development.",
+  },
+};
+
 export default function GetStartedPage() {
+  const [activeInquiry, setActiveInquiry] = useState<InquiryType | null>(null);
+  const [form, setForm] = useState<InquiryFormState>(INQUIRY_DEFAULTS.university);
+  const [submitting, setSubmitting] = useState(false);
+
+  function openInquiryForm(type: InquiryType) {
+    setActiveInquiry(type);
+    setForm((current) => {
+      if (current.inquiryType === type) return current;
+      return INQUIRY_DEFAULTS[type];
+    });
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        document.getElementById("institutional-inquiry")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 0);
+    }
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitting(true);
+    try {
+      await fetchApi("/inquiries", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
+      toast.success("Inquiry sent");
+      setForm(INQUIRY_DEFAULTS[form.inquiryType]);
+      setActiveInquiry(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to send inquiry");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#08111f] flex flex-col">
       <nav className="w-full px-4 sm:px-6 py-5 border-b border-white/10">
@@ -154,18 +229,150 @@ export default function GetStartedPage() {
                     </li>
                   ))}
                 </ul>
-                {route.external ? (
-                  <a href={route.href} className="btn-secondary w-full justify-center text-sm px-6 py-3 border-white/15 text-slate-100 hover:bg-white/5 mt-auto">
-                    {route.cta} <ArrowRight size={16} />
-                  </a>
-                ) : (
+                {route.badge === "For Learners" ? (
                   <Link href={route.href} className="btn-primary w-full justify-center text-sm px-6 py-3 mt-auto">
                     {route.cta} <ArrowRight size={16} />
                   </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => openInquiryForm(route.href as InquiryType)}
+                    className="btn-secondary w-full justify-center text-sm px-6 py-3 border-white/15 text-slate-100 hover:bg-white/5 mt-auto"
+                  >
+                    {route.cta} <ArrowRight size={16} />
+                  </button>
                 )}
               </div>
             ))}
           </div>
+
+          {activeInquiry && (
+            <div id="institutional-inquiry" className="rounded-2xl border border-white/10 bg-[#0f172a] p-6 sm:p-8">
+              <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                <div>
+                  <div className={`inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
+                    activeInquiry === "university"
+                      ? "border-blue-200 bg-blue-500/10 text-blue-300"
+                      : "border-amber-200 bg-amber-500/10 text-amber-300"
+                  }`}>
+                    {activeInquiry === "university" ? <School2 size={14} /> : <BriefcaseBusiness size={14} />}
+                    {activeInquiry === "university" ? "University inquiry" : "Enterprise inquiry"}
+                  </div>
+                  <h2 className="mt-4 text-2xl font-bold text-white">
+                    {activeInquiry === "university" ? "Tell us about your program" : "Tell us about your team"}
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                    Share a few details and the XpertClass team will reply with the right next step.
+                  </p>
+                  <div className="mt-6 space-y-3">
+                    {[
+                      activeInquiry === "university"
+                        ? "Cohort size, departments, or delivery model"
+                        : "Hiring, training, or internal upskilling goals",
+                      "The main skills or domains you care about",
+                      "Any timing, rollout, or reporting requirements",
+                    ].map((item) => (
+                      <div key={item} className="flex items-start gap-3 text-sm text-slate-300">
+                        <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[#7AD62A]" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
+                  <input type="hidden" value={form.inquiryType} />
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-200">Name</span>
+                    <input
+                      value={form.name}
+                      onChange={(event) => setForm({ ...form, name: event.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder="Your name"
+                      required
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-200">Work email</span>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(event) => setForm({ ...form, email: event.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder="name@organization.com"
+                      required
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-200">Organization</span>
+                    <input
+                      value={form.organization}
+                      onChange={(event) => setForm({ ...form, organization: event.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder={activeInquiry === "university" ? "University or school name" : "Company name"}
+                      required
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-200">Role</span>
+                    <input
+                      value={form.role}
+                      onChange={(event) => setForm({ ...form, role: event.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder={activeInquiry === "university" ? "Program lead, dean, instructor..." : "Team lead, HR, CTO..."}
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-200">
+                      {activeInquiry === "university" ? "Expected cohort size" : "Team size"}
+                    </span>
+                    <input
+                      value={form.teamSize}
+                      onChange={(event) => setForm({ ...form, teamSize: event.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder={activeInquiry === "university" ? "e.g. 120 learners" : "e.g. 40 engineers"}
+                    />
+                  </label>
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-200">Phone</span>
+                    <input
+                      value={form.phone}
+                      onChange={(event) => setForm({ ...form, phone: event.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder="Optional"
+                    />
+                  </label>
+                  <label className="space-y-2 sm:col-span-2">
+                    <span className="text-sm font-medium text-slate-200">What do you need?</span>
+                    <textarea
+                      value={form.message}
+                      onChange={(event) => setForm({ ...form, message: event.target.value })}
+                      className="min-h-36 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A]/40 focus:outline-none"
+                      placeholder="Tell us about your program, team, goals, or rollout needs."
+                      required
+                    />
+                  </label>
+                  <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#7AD62A] px-5 py-3 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc422] disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {submitting ? <Loader2 size={16} className="animate-spin" /> : null}
+                      Send inquiry
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveInquiry(null)}
+                      className="inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-3 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[

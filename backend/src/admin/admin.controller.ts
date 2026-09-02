@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
-import { IsString, MaxLength, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import { IsString, MaxLength, IsOptional, IsNumber, IsDateString, IsIn } from 'class-validator';
 import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import type { RequestWithUser } from '../common/request-with-user';
@@ -121,6 +121,18 @@ class UpdateChallengeDto {
   skillId?: string;
 }
 
+class UpdateInquiryDto {
+  @IsOptional()
+  @IsString()
+  @IsIn(['NEW', 'REVIEWING', 'CONTACTED', 'QUALIFIED', 'CLOSED'])
+  status?: 'NEW' | 'REVIEWING' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED';
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  notes?: string;
+}
+
 @ApiTags('admin')
 @ApiBearerAuth('JWT-auth')
 @Controller('v1/admin')
@@ -211,5 +223,25 @@ export class AdminController {
   @Get('analytics/overview')
   async getAnalyticsOverview() {
     return this.adminService.getAnalyticsOverview();
+  }
+
+  @Get('inquiries')
+  @ApiQuery({ name: 'status', required: false, type: String })
+  @ApiQuery({ name: 'type', required: false, type: String })
+  async getInstitutionalInquiries(
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+  ) {
+    return this.adminService.getInstitutionalInquiries({ status, type });
+  }
+
+  @Patch('inquiries/:id')
+  @Audit('INQUIRY_UPDATED')
+  async updateInstitutionalInquiry(
+    @Request() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UpdateInquiryDto,
+  ) {
+    return this.adminService.updateInstitutionalInquiry(id, req.user.id, body);
   }
 }

@@ -98,6 +98,7 @@ function getFallbackContext(experience: UserExperience, role: string, level: num
           label: "Platform Control",
           items: [
             { href: "/dashboard/admin/users", tKey: "nav.users", icon: "Users", label: "Users" },
+            { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Inquiries" },
             { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Lab Monitoring" },
             { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
           ],
