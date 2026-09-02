@@ -384,7 +384,7 @@ export default function SettingsPage() {
               <button
                 onClick={async () => {
                   try {
-                    await fetchApi("/v1/users/me", { method: "DELETE" });
+                    await fetchApi("/users/me", { method: "DELETE" });
                     logout();
                   } catch (err) {
                     console.error("Failed to delete account:", err);

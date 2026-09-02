@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, GraduationCap, FlaskConical, Swords, User, Bell } from "lucide-react";
+import { Home, GraduationCap, FlaskConical, Swords, User, Bell, ShieldCheck, Users, Inbox, Megaphone, Building2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useNavigation } from "@/lib/navigation";
 import NotificationBadge from "@/components/ui/NotificationBadge";
@@ -12,23 +12,40 @@ export default function BottomNav() {
   const { t } = useI18n();
   const { nav } = useNavigation();
 
+  const adminMode = nav.canAccessAdminView && nav.viewMode === "ADMIN";
   const hasCompete = nav.sections.some(s => s.id === "compete");
 
-  const links = [
-    { href: "/dashboard", tKey: "mobile.home", icon: Home, show: true },
-    { href: "/dashboard/courses", tKey: "mobile.learn", icon: GraduationCap, show: true },
-    { href: "/dashboard/labs", tKey: "mobile.labs", icon: FlaskConical, show: true },
-    { href: "/dashboard/leaderboard", tKey: "mobile.compete", icon: Swords, show: hasCompete },
-    { href: "/dashboard/notifications", tKey: "mobile.notifications", icon: Bell, show: true, isNotifications: true },
-    { href: "/dashboard/profile", tKey: "mobile.me", icon: User, show: true },
-  ].filter(l => l.show);
+  const learnerLinks = [
+    { href: "/dashboard", label: t("mobile.home"), icon: Home, show: true },
+    { href: "/dashboard/courses", label: t("mobile.learn"), icon: GraduationCap, show: true },
+    { href: "/dashboard/labs", label: t("mobile.labs"), icon: FlaskConical, show: true },
+    { href: "/dashboard/leaderboard", label: t("mobile.compete"), icon: Swords, show: hasCompete },
+    { href: "/dashboard/notifications", label: t("mobile.notifications"), icon: Bell, show: true, isNotifications: true },
+    { href: "/dashboard/profile", label: t("mobile.me"), icon: User, show: true },
+  ];
+
+  const adminLinks = nav.role === "RECRUITER"
+    ? [
+        { href: "/dashboard/enterprise", label: "Talent", icon: Building2, show: true },
+        { href: "/dashboard/admin/inquiries", label: "Inquiries", icon: Inbox, show: true },
+        { href: "/dashboard/admin/community-programs", label: "Programs", icon: Megaphone, show: true },
+        { href: "/dashboard/notifications", label: "Alerts", icon: Bell, show: true, isNotifications: true },
+      ]
+    : [
+        { href: "/dashboard/admin", label: "Admin", icon: ShieldCheck, show: true },
+        { href: "/dashboard/admin/users", label: "Users", icon: Users, show: true },
+        { href: "/dashboard/admin/inquiries", label: "Inquiries", icon: Inbox, show: true },
+        { href: "/dashboard/admin/community-programs", label: "Programs", icon: Megaphone, show: true },
+        { href: "/dashboard/notifications", label: "Alerts", icon: Bell, show: true, isNotifications: true },
+      ];
+
+  const links = (adminMode ? adminLinks : learnerLinks).filter(l => l.show);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0f1a] border-t border-white/6 md:hidden z-50" aria-label={t("nav.mobile")}>
       <div className="flex justify-around items-center h-16 px-2 safe-area-pb">
-        {links.map(({ href, tKey, icon: Icon, isNotifications }) => {
+        {links.map(({ href, label, icon: Icon, isNotifications }) => {
           const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
-          const label = t(tKey);
           return (
             <Link
               key={href}

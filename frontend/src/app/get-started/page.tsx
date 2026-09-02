@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchApi } from "@/lib/api";
+import { fetchPublicApi } from "@/lib/publicApi";
 import {
   Users,
   BookOpen,
@@ -132,9 +132,9 @@ export default function GetStartedPage() {
     event.preventDefault();
     setSubmitting(true);
     try {
-      await fetchApi("/inquiries", {
+      await fetchPublicApi("/inquiries", {
         method: "POST",
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, sourcePage: "/get-started" }),
       });
       toast.success("Inquiry sent");
       setForm(INQUIRY_DEFAULTS[form.inquiryType]);

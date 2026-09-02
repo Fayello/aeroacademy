@@ -151,6 +151,7 @@ export default function Sidebar() {
   }, []);
 
   const canAccessAdminView = nav.canAccessAdminView;
+  const adminMode = canAccessAdminView && nav.viewMode === "ADMIN";
   const adminHomePath = nav.adminHomePath || "/dashboard/admin";
   const adminWorkspaceLabel = nav.adminViewLabel || "Admin Workspace";
 
@@ -210,7 +211,7 @@ export default function Sidebar() {
       <div className="px-3"><div className="h-px bg-white/6" /></div>
 
       {/* ─── PROGRESS CARD (always visible at top) ─── */}
-      {!collapsed ? (
+      {!collapsed && !adminMode ? (
         <div className="mx-3 mt-3 p-3.5 rounded-xl bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1a3a5c] text-white relative overflow-hidden">
           <div className="absolute inset-0 dot-grid-bg opacity-[0.06] pointer-events-none" />
           <div className="relative z-10">
@@ -242,9 +243,23 @@ export default function Sidebar() {
             </div>
           </div>
         </div>
-      ) : (
+      ) : !adminMode ? (
         <div className="mx-1.5 mt-2 p-2 rounded-xl bg-gradient-to-br from-[#0F203A] to-[#1a3a5c] flex items-center justify-center" title={`Level ${level}: ${xp.toLocaleString()} XP: ${divisionLabel}`}>
           <Award size={16} className="text-[#7AD62A]" />
+        </div>
+      ) : !collapsed ? (
+        <div className="mx-3 mt-3 rounded-xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 p-3.5">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={14} className="text-[#7AD62A]" />
+            <span className="text-xs font-bold text-white">{adminWorkspaceLabel}</span>
+          </div>
+          <p className="mt-2 text-[11px] leading-relaxed text-slate-300">
+            Navigation is scoped to operations, review queues, evidence, and platform control.
+          </p>
+        </div>
+      ) : (
+        <div className="mx-1.5 mt-2 p-2 rounded-xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 flex items-center justify-center" title={adminWorkspaceLabel}>
+          <ShieldCheck size={16} className="text-[#7AD62A]" />
         </div>
       )}
 
@@ -440,19 +455,35 @@ export default function Sidebar() {
           )}
           {collapsed && <NotificationBadge className="absolute -top-1 -right-1" />}
         </Link>
-        <Link
-          href="/dashboard/profile"
-          title={collapsed ? "Profile" : undefined}
-          aria-current={pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/") ? "page" : undefined}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
-            pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/")
-              ? "bg-[#7AD62A]/10 text-white"
-              : "text-slate-300 hover:bg-white/5 hover:text-white"
-          } ${collapsed ? "justify-center px-2" : ""}`}
-        >
-          <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#7AD62A]" : "text-slate-500"} />
-          {!collapsed && "Profile"}
-        </Link>
+        {adminMode ? (
+          <Link
+            href={adminHomePath}
+            title={collapsed ? adminWorkspaceLabel : undefined}
+            aria-current={pathname === adminHomePath ? "page" : undefined}
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
+              pathname === adminHomePath
+                ? "bg-[#7AD62A]/10 text-white"
+                : "text-slate-300 hover:bg-white/5 hover:text-white"
+            } ${collapsed ? "justify-center px-2" : ""}`}
+          >
+            <ShieldCheck size={16} className={pathname === adminHomePath ? "text-[#7AD62A]" : "text-slate-500"} />
+            {!collapsed && adminWorkspaceLabel}
+          </Link>
+        ) : (
+          <Link
+            href="/dashboard/profile"
+            title={collapsed ? "Profile" : undefined}
+            aria-current={pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/") ? "page" : undefined}
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 ${
+              pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/")
+                ? "bg-[#7AD62A]/10 text-white"
+                : "text-slate-300 hover:bg-white/5 hover:text-white"
+            } ${collapsed ? "justify-center px-2" : ""}`}
+          >
+            <User size={16} className={pathname.startsWith("/dashboard/profile") ? "text-[#7AD62A]" : "text-slate-500"} />
+            {!collapsed && "Profile"}
+          </Link>
+        )}
         <Link
           href="/dashboard/settings"
           title={collapsed ? "Settings" : undefined}

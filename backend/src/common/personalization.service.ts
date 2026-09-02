@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiGatewayFactory, type AiGateway } from './ai.gateway';
 
@@ -443,18 +444,56 @@ export class PersonalizationService {
       preferredDifficulty?: string;
       notificationsEnabled?: boolean;
       weeklyDigestEnabled?: boolean;
+      displayMode?: string;
+      onboardingCompleted?: boolean;
+      onboardingSelections?: Prisma.InputJsonValue;
     },
   ) {
+    const updateData: Prisma.UserPreferenceUncheckedUpdateInput = {
+      ...(Array.isArray(data.interests) ? { interests: data.interests } : {}),
+      ...(Array.isArray(data.weakSkills) ? { weakSkills: data.weakSkills } : {}),
+      ...(typeof data.preferredDifficulty === 'string'
+        ? { preferredDifficulty: data.preferredDifficulty }
+        : {}),
+      ...(typeof data.notificationsEnabled === 'boolean'
+        ? { notificationsEnabled: data.notificationsEnabled }
+        : {}),
+      ...(typeof data.weeklyDigestEnabled === 'boolean'
+        ? { weeklyDigestEnabled: data.weeklyDigestEnabled }
+        : {}),
+      ...(typeof data.displayMode === 'string'
+        ? { displayMode: data.displayMode }
+        : {}),
+      ...(typeof data.onboardingCompleted === 'boolean'
+        ? { onboardingCompleted: data.onboardingCompleted }
+        : {}),
+      ...(data.onboardingSelections !== undefined
+        ? { onboardingSelections: data.onboardingSelections }
+        : {}),
+    };
+
     return this.prisma.userPreference.upsert({
       where: { userId },
-      update: data,
+      update: updateData,
       create: {
         userId,
-        interests: data.interests || [],
-        weakSkills: data.weakSkills || [],
-        preferredDifficulty: data.preferredDifficulty || 'MEDIUM',
+        interests: Array.isArray(data.interests) ? data.interests : [],
+        weakSkills: Array.isArray(data.weakSkills) ? data.weakSkills : [],
+        preferredDifficulty:
+          typeof data.preferredDifficulty === 'string'
+            ? data.preferredDifficulty
+            : 'MEDIUM',
         notificationsEnabled: data.notificationsEnabled ?? true,
         weeklyDigestEnabled: data.weeklyDigestEnabled ?? true,
+        displayMode:
+          typeof data.displayMode === 'string'
+            ? data.displayMode
+            : 'PROGRESSION',
+        onboardingCompleted: data.onboardingCompleted ?? false,
+        onboardingSelections:
+          data.onboardingSelections !== undefined
+            ? data.onboardingSelections
+            : {},
       },
     });
   }
