@@ -14,13 +14,41 @@ type OnboardingSelections = {
 };
 
 const TERM_ALIASES: Record<string, string[]> = {
-  security: ['security', 'cybersecurity', 'soc', 'threat', 'blue team', 'defense'],
-  cybersecurity: ['cybersecurity', 'security', 'defensive security', 'offensive security'],
-  appsec: ['appsec', 'application security', 'web security', 'api security', 'owasp', 'xss', 'ssrf', 'sql injection'],
+  security: [
+    'security',
+    'cybersecurity',
+    'soc',
+    'threat',
+    'blue team',
+    'defense',
+  ],
+  cybersecurity: [
+    'cybersecurity',
+    'security',
+    'defensive security',
+    'offensive security',
+  ],
+  appsec: [
+    'appsec',
+    'application security',
+    'web security',
+    'api security',
+    'owasp',
+    'xss',
+    'ssrf',
+    'sql injection',
+  ],
   devops: ['devops', 'platform', 'automation', 'infrastructure', 'sre'],
   devsecops: ['devsecops', 'secure pipeline', 'sast', 'dast', 'supply chain'],
   cloud: ['cloud', 'aws', 'azure', 'gcp', 'terraform', 'iam', 'serverless'],
-  containers: ['containers', 'container', 'docker', 'kubernetes', 'k8s', 'helm'],
+  containers: [
+    'containers',
+    'container',
+    'docker',
+    'kubernetes',
+    'k8s',
+    'helm',
+  ],
   cicd: ['cicd', 'ci/cd', 'pipeline', 'github actions', 'gitlab', 'jenkins'],
   networking: ['networking', 'network', 'routing', 'firewall', 'dns', 'vpn'],
   systems: ['systems', 'linux', 'sysadmin', 'infrastructure'],
@@ -28,9 +56,25 @@ const TERM_ALIASES: Record<string, string[]> = {
   web: ['web', 'frontend', 'backend', 'browser', 'react', 'node'],
   mobile: ['mobile', 'android', 'ios', 'apk'],
   data: ['data', 'analytics', 'sql', 'warehouse', 'etl'],
-  'data-eng': ['data engineering', 'etl', 'warehouse', 'pipeline', 'postgres', 'mongo', 'redis'],
+  'data-eng': [
+    'data engineering',
+    'etl',
+    'warehouse',
+    'pipeline',
+    'postgres',
+    'mongo',
+    'redis',
+  ],
   ai: ['ai', 'machine learning', 'ml', 'llm', 'nlp', 'vision'],
-  'ml-ops': ['mlops', 'ml ops', 'model serving', 'vector', 'qdrant', 'kubeflow', 'feast'],
+  'ml-ops': [
+    'mlops',
+    'ml ops',
+    'model serving',
+    'vector',
+    'qdrant',
+    'kubeflow',
+    'feast',
+  ],
   design: ['design', 'ux', 'ui', 'figma', 'research'],
 };
 
@@ -102,7 +146,9 @@ export class PersonalizationService {
         where: { userId, completed: true },
         orderBy: { updatedAt: 'desc' },
         take: 10,
-        include: { lesson: { include: { section: { include: { course: true } } } } },
+        include: {
+          lesson: { include: { section: { include: { course: true } } } },
+        },
       }),
     ]);
 
@@ -110,7 +156,9 @@ export class PersonalizationService {
     const weakSkillDomains = userSkills
       .filter((us) => us.xp < 200)
       .map((us) => us.skill.domain.displayName || us.skill.domain.name);
-    const onboarding = normalizeOnboardingSelections(user?.preference?.onboardingSelections);
+    const onboarding = normalizeOnboardingSelections(
+      user?.preference?.onboardingSelections,
+    );
     const interestTokens = buildInterestTokens({
       interests: user?.preference?.interests || [],
       weakSkills: user?.preference?.weakSkills || [],
@@ -150,7 +198,9 @@ export class PersonalizationService {
                         skill: {
                           select: {
                             name: true,
-                            domain: { select: { name: true, displayName: true } },
+                            domain: {
+                              select: { name: true, displayName: true },
+                            },
                           },
                         },
                       },
@@ -173,10 +223,10 @@ export class PersonalizationService {
               lesson.title,
               lesson.lab?.title || '',
               lesson.lab?.description || '',
-              ...((lesson.lab?.labSkills || []).flatMap((labSkill) => [
+              ...(lesson.lab?.labSkills || []).flatMap((labSkill) => [
                 labSkill.skill.name,
                 labSkill.skill.domain.displayName || labSkill.skill.domain.name,
-              ])),
+              ]),
             ]),
           ])
           .join(' ');
@@ -189,25 +239,46 @@ export class PersonalizationService {
           imageUrl: course.imageUrl,
           score:
             scoreAgainstTokens(haystack, interestTokens) +
-            scoreDifficultyPreference(difficultyHint, user?.preference?.preferredDifficulty || null) +
-            scoreRecencyBoost(course.id, recentProgress.map((item) => item.lesson.section.courseId)),
+            scoreDifficultyPreference(
+              difficultyHint,
+              user?.preference?.preferredDifficulty || null,
+            ) +
+            scoreRecencyBoost(
+              course.id,
+              recentProgress.map((item) => item.lesson.section.courseId),
+            ),
         };
       })
       .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
       .slice(0, limit)
-      .map(({ id, title, description, imageUrl }) => ({ id, title, description, imageUrl }));
+      .map(({ id, title, description, imageUrl }) => ({
+        id,
+        title,
+        description,
+        imageUrl,
+      }));
 
     // 2. Recommended learning paths based on level
-    const difficulty = level < 5 ? 'BEGINNER' : level < 15 ? 'INTERMEDIATE' : 'ADVANCED';
+    const difficulty =
+      level < 5 ? 'BEGINNER' : level < 15 ? 'INTERMEDIATE' : 'ADVANCED';
     const pathCandidates = await this.prisma.learningPath.findMany({
       where: { difficulty },
       take: 12,
-      select: { id: true, title: true, description: true, imageUrl: true, careerRole: true },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        imageUrl: true,
+        careerRole: true,
+      },
     });
     const recommendedPaths = pathCandidates
       .map((path) => ({
         ...path,
-        score: scoreAgainstTokens(`${path.title} ${path.description} ${path.careerRole || ''}`, interestTokens),
+        score: scoreAgainstTokens(
+          `${path.title} ${path.description} ${path.careerRole || ''}`,
+          interestTokens,
+        ),
       }))
       .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
       .slice(0, 3)
@@ -246,15 +317,25 @@ export class PersonalizationService {
           difficulty: lab.difficulty,
           score:
             scoreAgainstTokens(haystack, interestTokens) +
-            scoreDifficultyPreference(lab.difficulty, user?.preference?.preferredDifficulty || null),
+            scoreDifficultyPreference(
+              lab.difficulty,
+              user?.preference?.preferredDifficulty || null,
+            ),
         };
       })
-      .sort((a, b) => b.score - a.score || a.difficulty - b.difficulty || a.title.localeCompare(b.title))
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          a.difficulty - b.difficulty ||
+          a.title.localeCompare(b.title),
+      )
       .slice(0, 3)
       .map(({ score, ...lab }) => lab);
 
     // 4. "Users like you" — similar XP range
-    const xpRange = user ? { gte: Math.max(0, user.xp - 500), lte: user.xp + 500 } : { gte: 0, lte: 1000 };
+    const xpRange = user
+      ? { gte: Math.max(0, user.xp - 500), lte: user.xp + 500 }
+      : { gte: 0, lte: 1000 };
     const similarUsers = await this.prisma.user.findMany({
       where: { xp: xpRange, id: { not: userId }, role: 'STUDENT' },
       take: 5,
@@ -265,7 +346,12 @@ export class PersonalizationService {
       courses: RecommendationCourse[];
       learningPaths: RecommendationPath[];
       labs: RecommendationLab[];
-      similarUsers: Array<{ id: string; name: string | null; username: string | null; xp: number }>;
+      similarUsers: Array<{
+        id: string;
+        name: string | null;
+        username: string | null;
+        xp: number;
+      }>;
       insights: RecommendationInsights;
       source: 'ai' | 'rules';
     } = {
@@ -305,8 +391,12 @@ export class PersonalizationService {
           focusAreas: interestTokens.slice(0, 8),
           weakDomains: rankedWeakDomains.slice(0, 5),
           onboarding,
-          recentCourseIds: recentProgress.map((item) => item.lesson.section.courseId),
-          recentLessonTitles: uniqueStrings(recentProgress.map((item) => item.lesson.title).filter(isString)),
+          recentCourseIds: recentProgress.map(
+            (item) => item.lesson.section.courseId,
+          ),
+          recentLessonTitles: uniqueStrings(
+            recentProgress.map((item) => item.lesson.title).filter(isString),
+          ),
           enrolledCourseIds: [...enrolledCourseIds],
         },
         candidates: {
@@ -327,8 +417,12 @@ export class PersonalizationService {
         labs: reorderByIds(suggestedLabs, aiResponse.labIds),
         insights: {
           ...baseResponse.insights,
-          journeySummary: aiResponse.journeySummary || baseResponse.insights.journeySummary,
-          focusAreas: aiResponse.focusAreas.length > 0 ? aiResponse.focusAreas : baseResponse.insights.focusAreas,
+          journeySummary:
+            aiResponse.journeySummary || baseResponse.insights.journeySummary,
+          focusAreas:
+            aiResponse.focusAreas.length > 0
+              ? aiResponse.focusAreas
+              : baseResponse.insights.focusAreas,
           personalizationMode: 'ai',
         },
         source: 'ai',
@@ -341,13 +435,16 @@ export class PersonalizationService {
     }
   }
 
-  async updatePreferences(userId: string, data: {
-    interests?: string[];
-    weakSkills?: string[];
-    preferredDifficulty?: string;
-    notificationsEnabled?: boolean;
-    weeklyDigestEnabled?: boolean;
-  }) {
+  async updatePreferences(
+    userId: string,
+    data: {
+      interests?: string[];
+      weakSkills?: string[];
+      preferredDifficulty?: string;
+      notificationsEnabled?: boolean;
+      weeklyDigestEnabled?: boolean;
+    },
+  ) {
     return this.prisma.userPreference.upsert({
       where: { userId },
       update: data,
@@ -409,13 +506,21 @@ export class PersonalizationService {
       `Recent lessons: ${args.profile.recentLessonTitles.join(', ') || 'none'}`,
       '',
       'Candidate courses:',
-      ...args.candidates.courses.map((course) => `- ${course.id} | ${course.title} | ${course.description}`),
+      ...args.candidates.courses.map(
+        (course) => `- ${course.id} | ${course.title} | ${course.description}`,
+      ),
       '',
       'Candidate learning paths:',
-      ...args.candidates.learningPaths.map((path) => `- ${path.id} | ${path.title} | ${path.description} | ${path.careerRole || 'general'}`),
+      ...args.candidates.learningPaths.map(
+        (path) =>
+          `- ${path.id} | ${path.title} | ${path.description} | ${path.careerRole || 'general'}`,
+      ),
       '',
       'Candidate labs:',
-      ...args.candidates.labs.map((lab) => `- ${lab.id} | ${lab.title} | difficulty ${lab.difficulty} | ${lab.description}`),
+      ...args.candidates.labs.map(
+        (lab) =>
+          `- ${lab.id} | ${lab.title} | difficulty ${lab.difficulty} | ${lab.description}`,
+      ),
       '',
       'Return JSON only with this shape:',
       '{"journeySummary":"...", "focusAreas":["..."], "courseIds":["..."], "pathIds":["..."], "labIds":["..."]}',
@@ -428,7 +533,8 @@ export class PersonalizationService {
 
     const response = await args.gateway.generate({
       prompt,
-      system: 'You are a personalization engine for a hands-on certification platform. Respond only with valid JSON.',
+      system:
+        'You are a personalization engine for a hands-on certification platform. Respond only with valid JSON.',
       format: 'json',
       temperature: 0.4,
     });
@@ -444,16 +550,28 @@ export class PersonalizationService {
     }>;
 
     return {
-      journeySummary: typeof parsed.journeySummary === 'string' ? parsed.journeySummary : '',
-      focusAreas: Array.isArray(parsed.focusAreas) ? parsed.focusAreas.filter(isString) : [],
-      courseIds: Array.isArray(parsed.courseIds) ? parsed.courseIds.filter(isString) : [],
-      pathIds: Array.isArray(parsed.pathIds) ? parsed.pathIds.filter(isString) : [],
-      labIds: Array.isArray(parsed.labIds) ? parsed.labIds.filter(isString) : [],
+      journeySummary:
+        typeof parsed.journeySummary === 'string' ? parsed.journeySummary : '',
+      focusAreas: Array.isArray(parsed.focusAreas)
+        ? parsed.focusAreas.filter(isString)
+        : [],
+      courseIds: Array.isArray(parsed.courseIds)
+        ? parsed.courseIds.filter(isString)
+        : [],
+      pathIds: Array.isArray(parsed.pathIds)
+        ? parsed.pathIds.filter(isString)
+        : [],
+      labIds: Array.isArray(parsed.labIds)
+        ? parsed.labIds.filter(isString)
+        : [],
     };
   }
 }
 
-function reorderByIds<T extends { id: string }>(items: T[], orderedIds: string[]): T[] {
+function reorderByIds<T extends { id: string }>(
+  items: T[],
+  orderedIds: string[],
+): T[] {
   if (!orderedIds.length) return items;
   const byId = new Map(items.map((item) => [item.id, item]));
   const ordered = orderedIds
@@ -482,15 +600,22 @@ function buildRuleJourneySummary(args: {
   return `Your journey is being shaped around ${focus}, with ${args.courseCount} course and ${args.labCount} lab options ranked from your current momentum.`;
 }
 
-function normalizeOnboardingSelections(value: unknown): Required<OnboardingSelections> {
-  const source = value && typeof value === 'object' ? (value as OnboardingSelections) : {};
+function normalizeOnboardingSelections(
+  value: unknown,
+): Required<OnboardingSelections> {
+  const source =
+    value && typeof value === 'object' ? (value as OnboardingSelections) : {};
   return {
-    purpose: Array.isArray(source.purpose) ? source.purpose.filter(isString) : [],
+    purpose: Array.isArray(source.purpose)
+      ? source.purpose.filter(isString)
+      : [],
     field: Array.isArray(source.field) ? source.field.filter(isString) : [],
     role: isString(source.role) ? source.role : '',
     experience: isString(source.experience) ? source.experience : '',
     skills: Array.isArray(source.skills) ? source.skills.filter(isString) : [],
-    jobInterests: Array.isArray(source.jobInterests) ? source.jobInterests.filter(isString) : [],
+    jobInterests: Array.isArray(source.jobInterests)
+      ? source.jobInterests.filter(isString)
+      : [],
   };
 }
 
@@ -534,29 +659,45 @@ function averageCourseDifficulty(
   }>,
 ): number | null {
   const difficulties = sections.flatMap((section) =>
-    section.lessons.map((lesson) => lesson.lab?.difficulty).filter((value): value is number => typeof value === 'number'),
+    section.lessons
+      .map((lesson) => lesson.lab?.difficulty)
+      .filter((value): value is number => typeof value === 'number'),
   );
   if (difficulties.length === 0) return null;
-  return Math.round(difficulties.reduce((sum, value) => sum + value, 0) / difficulties.length);
+  return Math.round(
+    difficulties.reduce((sum, value) => sum + value, 0) / difficulties.length,
+  );
 }
 
-function scoreDifficultyPreference(difficulty: number | null, preferredDifficulty: string | null): number {
+function scoreDifficultyPreference(
+  difficulty: number | null,
+  preferredDifficulty: string | null,
+): number {
   if (!difficulty || !preferredDifficulty) return 0;
   const normalized = preferredDifficulty.toUpperCase();
-  if (normalized === 'BEGINNER' || normalized === 'LOW') return difficulty <= 800 ? 2 : 0;
-  if (normalized === 'INTERMEDIATE' || normalized === 'MEDIUM') return difficulty > 800 && difficulty <= 1600 ? 2 : 0;
-  if (normalized === 'ADVANCED' || normalized === 'HIGH') return difficulty > 1600 ? 2 : 0;
+  if (normalized === 'BEGINNER' || normalized === 'LOW')
+    return difficulty <= 800 ? 2 : 0;
+  if (normalized === 'INTERMEDIATE' || normalized === 'MEDIUM')
+    return difficulty > 800 && difficulty <= 1600 ? 2 : 0;
+  if (normalized === 'ADVANCED' || normalized === 'HIGH')
+    return difficulty > 1600 ? 2 : 0;
   return 0;
 }
 
-function scoreRecencyBoost(courseId: string, recentCourseIds: string[]): number {
+function scoreRecencyBoost(
+  courseId: string,
+  recentCourseIds: string[],
+): number {
   return recentCourseIds.includes(courseId) ? 2 : 0;
 }
 
 function uniqueStrings(values: string[]): string[] {
   return values
     .map((value) => value.trim())
-    .filter((value, index, array) => value.length > 1 && array.indexOf(value) === index);
+    .filter(
+      (value, index, array) =>
+        value.length > 1 && array.indexOf(value) === index,
+    );
 }
 
 function isString(value: unknown): value is string {

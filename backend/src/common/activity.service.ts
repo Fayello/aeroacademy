@@ -56,21 +56,27 @@ export class ActivityService {
   }
 
   async getUserStats(userId: string) {
-    const [totalSessions, activeSessions, flagsSolved, distinctDays] = await Promise.all([
-      this.prisma.activityEvent.count({
-        where: { userId, type: 'LAB_STARTED' },
-      }),
-      this.prisma.labInstance.count({ where: { userId, status: 'RUNNING' } }),
-      this.prisma.activityEvent.count({
-        where: { userId, type: 'FLAG_SOLVED' },
-      }),
-      this.prisma.$queryRaw<[{count: bigint}]>`
+    const [totalSessions, activeSessions, flagsSolved, distinctDays] =
+      await Promise.all([
+        this.prisma.activityEvent.count({
+          where: { userId, type: 'LAB_STARTED' },
+        }),
+        this.prisma.labInstance.count({ where: { userId, status: 'RUNNING' } }),
+        this.prisma.activityEvent.count({
+          where: { userId, type: 'FLAG_SOLVED' },
+        }),
+        this.prisma.$queryRaw<[{ count: bigint }]>`
         SELECT COUNT(DISTINCT DATE("createdAt")) as count
         FROM "ActivityEvent"
         WHERE "userId" = ${userId}
-      `.then(r => Number(r[0]?.count || 0)),
-    ]);
-    return { totalSessions, activeSessions, flagsSolved, daysActive: distinctDays };
+      `.then((r) => Number(r[0]?.count || 0)),
+      ]);
+    return {
+      totalSessions,
+      activeSessions,
+      flagsSolved,
+      daysActive: distinctDays,
+    };
   }
 
   async getYearlyActivity(userId: string) {
@@ -87,7 +93,10 @@ export class ActivityService {
 
     const heatmap: Record<string, number> = {};
     for (const row of rows) {
-      const dateStr = typeof row.day === 'string' ? row.day.substring(0, 10) : String(row.day).substring(0, 10);
+      const dateStr =
+        typeof row.day === 'string'
+          ? row.day.substring(0, 10)
+          : String(row.day).substring(0, 10);
       heatmap[dateStr] = Number(row.count);
     }
     return heatmap;

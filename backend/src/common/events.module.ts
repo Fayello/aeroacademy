@@ -7,7 +7,13 @@ import { MasteryCron } from './mastery-cron';
 
 @Global()
 @Module({
-  providers: [EventsService, ActivityService, ProgressionService, MasteryService, MasteryCron],
+  providers: [
+    EventsService,
+    ActivityService,
+    ProgressionService,
+    MasteryService,
+    MasteryCron,
+  ],
   exports: [EventsService, ActivityService, ProgressionService, MasteryService],
 })
 export class EventsModule {}

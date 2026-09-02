@@ -105,7 +105,15 @@ export class TrainingController {
   @Audit('TRAINER_UPDATED')
   async updateTrainer(
     @Param('id') id: string,
-    @Body() body: { name?: string; email?: string; specialties?: string[]; bio?: string; hourlyRate?: number; isActive?: boolean },
+    @Body()
+    body: {
+      name?: string;
+      email?: string;
+      specialties?: string[];
+      bio?: string;
+      hourlyRate?: number;
+      isActive?: boolean;
+    },
   ) {
     return this.trainingService.updateTrainer(id, body);
   }

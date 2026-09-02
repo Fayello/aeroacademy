@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, Body, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DomainRankingService } from './domain-ranking.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -67,7 +75,11 @@ export class DomainRankingController {
   ) {
     const sid = await this.resolveSeasonId(seasonId);
     if (!sid) return [];
-    return this.domainRankingService.getUserRatingHistory(userId, domainId, sid);
+    return this.domainRankingService.getUserRatingHistory(
+      userId,
+      domainId,
+      sid,
+    );
   }
 
   @Get('tiers')

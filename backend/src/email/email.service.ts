@@ -51,7 +51,9 @@ export class EmailService implements OnModuleInit {
       this.enabled = true;
       this.logger.log('SMTP connection verified');
     } catch (err) {
-      this.logger.error(`SMTP verification failed: ${err instanceof Error ? err.message : err}`);
+      this.logger.error(
+        `SMTP verification failed: ${err instanceof Error ? err.message : err}`,
+      );
     }
   }
 
@@ -59,7 +61,9 @@ export class EmailService implements OnModuleInit {
     const sender = SENDER_MAP[options.from || 'noreply'];
 
     if (!this.enabled) {
-      this.logger.debug(`[EMAIL LOG] To: ${options.to} | From: ${sender.address} | Subject: ${options.subject}`);
+      this.logger.debug(
+        `[EMAIL LOG] To: ${options.to} | From: ${sender.address} | Subject: ${options.subject}`,
+      );
       return false;
     }
 
@@ -73,13 +77,16 @@ export class EmailService implements OnModuleInit {
       this.logger.log(`Email sent to ${options.to}: ${options.subject}`);
       return true;
     } catch (err) {
-      this.logger.error(`Email send failed: ${err instanceof Error ? err.message : err}`);
+      this.logger.error(
+        `Email send failed: ${err instanceof Error ? err.message : err}`,
+      );
       return false;
     }
   }
 
   async sendInstitutionInquiry(inquiry: SubmitInquiryDto) {
-    const inquiryLabel = inquiry.inquiryType === 'university' ? 'University' : 'Enterprise';
+    const inquiryLabel =
+      inquiry.inquiryType === 'university' ? 'University' : 'Enterprise';
     const submittedAt = new Date().toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -150,7 +157,8 @@ export class EmailService implements OnModuleInit {
   async createInquiryRecord(inquiry: SubmitInquiryDto) {
     return this.prisma.institutionalInquiry.create({
       data: {
-        inquiryType: inquiry.inquiryType === 'university' ? 'UNIVERSITY' : 'ENTERPRISE',
+        inquiryType:
+          inquiry.inquiryType === 'university' ? 'UNIVERSITY' : 'ENTERPRISE',
         name: inquiry.name,
         email: inquiry.email,
         organization: inquiry.organization,
@@ -169,9 +177,14 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendInquiryAcknowledgement(email: string, name: string, inquiryType: 'university' | 'enterprise') {
+  async sendInquiryAcknowledgement(
+    email: string,
+    name: string,
+    inquiryType: 'university' | 'enterprise',
+  ) {
     const displayName = name || 'there';
-    const inquiryLabel = inquiryType === 'university' ? 'university' : 'enterprise';
+    const inquiryLabel =
+      inquiryType === 'university' ? 'university' : 'enterprise';
 
     return this.send({
       to: email,
@@ -198,10 +211,13 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async createCommunityProgramApplicationRecord(application: SubmitCommunityApplicationDto) {
+  async createCommunityProgramApplicationRecord(
+    application: SubmitCommunityApplicationDto,
+  ) {
     return this.prisma.communityProgramApplication.create({
       data: {
-        programType: application.programType === 'ambassador' ? 'AMBASSADOR' : 'VOLUNTEER',
+        programType:
+          application.programType === 'ambassador' ? 'AMBASSADOR' : 'VOLUNTEER',
         name: application.name,
         email: application.email,
         city: application.city || null,
@@ -224,8 +240,13 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendCommunityProgramApplication(application: SubmitCommunityApplicationDto) {
-    const programLabel = application.programType === 'ambassador' ? 'Brand ambassador' : 'Volunteer';
+  async sendCommunityProgramApplication(
+    application: SubmitCommunityApplicationDto,
+  ) {
+    const programLabel =
+      application.programType === 'ambassador'
+        ? 'Brand ambassador'
+        : 'Volunteer';
     const submittedAt = new Date().toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -281,7 +302,8 @@ export class EmailService implements OnModuleInit {
     programType: 'ambassador' | 'volunteer',
   ) {
     const displayName = name || 'there';
-    const programLabel = programType === 'ambassador' ? 'brand ambassador' : 'volunteer';
+    const programLabel =
+      programType === 'ambassador' ? 'brand ambassador' : 'volunteer';
 
     return this.send({
       to: email,
@@ -387,7 +409,11 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendVerificationEmail(email: string, name: string | null, token: string) {
+  async sendVerificationEmail(
+    email: string,
+    name: string | null,
+    token: string,
+  ) {
     const displayName = name || 'there';
     const verifyUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/verify?token=${token}`;
     return this.send({
@@ -499,9 +525,18 @@ export class EmailService implements OnModuleInit {
 
   // ─── LAB EMAILS ────────────────────────────────────────
 
-  async sendLabStarted(email: string, name: string | null, labTitle: string, expiresAt: Date) {
+  async sendLabStarted(
+    email: string,
+    name: string | null,
+    labTitle: string,
+    expiresAt: Date,
+  ) {
     const displayName = name || 'there';
-    const expiry = expiresAt.toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'short' });
+    const expiry = expiresAt.toLocaleString('en-US', {
+      timeZone: 'UTC',
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
     return this.send({
       to: email,
       from: 'labs',
@@ -539,7 +574,12 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendLabExpiring(email: string, name: string | null, labTitle: string, minutesLeft: number) {
+  async sendLabExpiring(
+    email: string,
+    name: string | null,
+    labTitle: string,
+    minutesLeft: number,
+  ) {
     const displayName = name || 'there';
     return this.send({
       to: email,
@@ -654,7 +694,11 @@ export class EmailService implements OnModuleInit {
 
   // ─── PRODUCT EMAILS ────────────────────────────────────
 
-  async sendCourseEnrolled(email: string, name: string | null, courseTitle: string) {
+  async sendCourseEnrolled(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+  ) {
     const displayName = name || 'there';
     return this.send({
       to: email,
@@ -689,7 +733,11 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendCertificationEarned(email: string, name: string | null, certTitle: string) {
+  async sendCertificationEarned(
+    email: string,
+    name: string | null,
+    certTitle: string,
+  ) {
     const displayName = name || 'there';
     return this.send({
       to: email,
@@ -729,7 +777,12 @@ export class EmailService implements OnModuleInit {
 
   // ─── COURSE ENGAGEMENT EMAILS ──────────────────────────
 
-  async sendCourseStarted(email: string, name: string | null, courseTitle: string, courseId: string) {
+  async sendCourseStarted(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+    courseId: string,
+  ) {
     const displayName = name || 'there';
     const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
     return this.send({
@@ -774,12 +827,20 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendCourseReminder(email: string, name: string | null, courseTitle: string, courseId: string, progressPct: number, daysInactive: number) {
+  async sendCourseReminder(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+    courseId: string,
+    progressPct: number,
+    daysInactive: number,
+  ) {
     const displayName = name || 'there';
     const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
-    const subject = daysInactive <= 7
-      ? `Your course misses you — ${courseTitle}`
-      : `Don't lose your progress — ${courseTitle} is waiting`;
+    const subject =
+      daysInactive <= 7
+        ? `Your course misses you — ${courseTitle}`
+        : `Don't lose your progress — ${courseTitle} is waiting`;
     return this.send({
       to: email,
       from: 'info',
@@ -822,7 +883,13 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendMilestoneAchieved(email: string, name: string | null, courseTitle: string, courseId: string, milestone: string) {
+  async sendMilestoneAchieved(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+    courseId: string,
+    milestone: string,
+  ) {
     const displayName = name || 'there';
     const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
     return this.send({
@@ -930,18 +997,26 @@ export class EmailService implements OnModuleInit {
         <p style="color:#f59e0b;font-size:28px;font-weight:700;margin:0;">${stats.streakDays}</p>
         <p style="color:#64748b;font-size:12px;margin:4px 0 0;">Day Streak</p>
       </div>
-      ${stats.leaderboardPosition ? `
+      ${
+        stats.leaderboardPosition
+          ? `
       <div style="background:#faf5ff;border-radius:8px;padding:16px;text-align:center;">
         <p style="color:#a855f7;font-size:28px;font-weight:700;margin:0;">#${stats.leaderboardPosition}</p>
         <p style="color:#64748b;font-size:12px;margin:4px 0 0;">Leaderboard</p>
-      </div>` : ''}
+      </div>`
+          : ''
+      }
     </div>
 
-    ${stats.coursesInProgress.length > 0 ? `
+    ${
+      stats.coursesInProgress.length > 0
+        ? `
     <p style="color:#334155;font-size:14px;font-weight:600;margin:0 0 12px;">Courses in Progress</p>
     <div style="margin-bottom:24px;">
       ${coursesHtml}
-    </div>` : ''}
+    </div>`
+        : ''
+    }
 
     <div style="text-align:center;margin:28px 0;">
       <a href="${dashboardUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Continue Learning</a>
@@ -1088,7 +1163,11 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendWelcomeDay7(email: string, name: string | null, enrolledCount: number) {
+  async sendWelcomeDay7(
+    email: string,
+    name: string | null,
+    enrolledCount: number,
+  ) {
     const displayName = name || 'there';
     const dashboardUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard`;
     const coursesUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses`;
@@ -1130,7 +1209,12 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendEnrollmentNudge(email: string, name: string | null, courseTitle: string, courseId: string) {
+  async sendEnrollmentNudge(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+    courseId: string,
+  ) {
     const displayName = name || 'there';
     const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
     return this.send({
@@ -1169,7 +1253,14 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendPausedCourseNudge(email: string, name: string | null, courseTitle: string, courseId: string, progressPct: number, daysInactive: number) {
+  async sendPausedCourseNudge(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+    courseId: string,
+    progressPct: number,
+    daysInactive: number,
+  ) {
     const displayName = name || 'there';
     const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
     return this.send({
@@ -1248,7 +1339,12 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendFirstFlagCaptured(email: string, name: string | null, labTitle: string, points: number) {
+  async sendFirstFlagCaptured(
+    email: string,
+    name: string | null,
+    labTitle: string,
+    points: number,
+  ) {
     const displayName = name || 'there';
     const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
     return this.send({
@@ -1288,7 +1384,13 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendLabCompleted(email: string, name: string | null, labTitle: string, totalXp: number, totalFlags: number) {
+  async sendLabCompleted(
+    email: string,
+    name: string | null,
+    labTitle: string,
+    totalXp: number,
+    totalFlags: number,
+  ) {
     const displayName = name || 'there';
     const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
     return this.send({
@@ -1380,7 +1482,14 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendLessonCompleted(email: string, name: string | null, lessonTitle: string, courseTitle: string, courseId: string, progressPct: number) {
+  async sendLessonCompleted(
+    email: string,
+    name: string | null,
+    lessonTitle: string,
+    courseTitle: string,
+    courseId: string,
+    progressPct: number,
+  ) {
     const displayName = name || 'there';
     const courseUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}`;
     return this.send({
@@ -1424,7 +1533,13 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendCourseCompleted(email: string, name: string | null, courseTitle: string, courseId: string, totalXp: number) {
+  async sendCourseCompleted(
+    email: string,
+    name: string | null,
+    courseTitle: string,
+    courseId: string,
+    totalXp: number,
+  ) {
     const displayName = name || 'there';
     const certificateUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses/${courseId}/certificate`;
     const coursesUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/courses`;
@@ -1467,7 +1582,11 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendStreakReminder(email: string, name: string | null, streakDays: number) {
+  async sendStreakReminder(
+    email: string,
+    name: string | null,
+    streakDays: number,
+  ) {
     const displayName = name || 'there';
     const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
     return this.send({
@@ -1507,7 +1626,11 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendReEngagement(email: string, name: string | null, daysInactive: number) {
+  async sendReEngagement(
+    email: string,
+    name: string | null,
+    daysInactive: number,
+  ) {
     const displayName = name || 'there';
     const dashboardUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard`;
     return this.send({
@@ -1546,11 +1669,23 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  async sendMissionCompleted(email: string, name: string | null, missionTitle: string, xpReward: number, missionType: string) {
+  async sendMissionCompleted(
+    email: string,
+    name: string | null,
+    missionTitle: string,
+    xpReward: number,
+    missionType: string,
+  ) {
     const displayName = name || 'there';
     const dashboardUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard`;
-    const emoji = missionType === 'monthly' ? '👑' : missionType === 'weekly' ? '📅' : '🎯';
-    const typeLabel = missionType === 'weekly' ? 'Weekly Challenge' : missionType === 'monthly' ? 'Monthly Boss' : 'Daily Mission';
+    const emoji =
+      missionType === 'monthly' ? '👑' : missionType === 'weekly' ? '📅' : '🎯';
+    const typeLabel =
+      missionType === 'weekly'
+        ? 'Weekly Challenge'
+        : missionType === 'monthly'
+          ? 'Monthly Boss'
+          : 'Daily Mission';
     return this.send({
       to: email,
       from: 'labs',
@@ -1589,7 +1724,10 @@ export class EmailService implements OnModuleInit {
     });
   }
 
-  hasPreference(emailPrefs: Record<string, boolean> | null, category: string): boolean {
+  hasPreference(
+    emailPrefs: Record<string, boolean> | null,
+    category: string,
+  ): boolean {
     if (!emailPrefs) return true;
     return emailPrefs[category] !== false;
   }

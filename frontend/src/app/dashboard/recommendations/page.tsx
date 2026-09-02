@@ -10,7 +10,6 @@ import {
   Loader2,
   Save,
   Sparkles,
-  Target,
   Users,
   WandSparkles,
 } from "lucide-react";

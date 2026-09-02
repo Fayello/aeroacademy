@@ -38,7 +38,10 @@ export class DisplayModeController {
     @Request() req: RequestWithUser,
     @Body('mode') mode: string,
   ) {
-    const newMode = await this.displayModeService.setDisplayMode(req.user.id, mode as DisplayMode);
+    const newMode = await this.displayModeService.setDisplayMode(
+      req.user.id,
+      mode as DisplayMode,
+    );
     const config = await this.displayModeService.getModeConfig(newMode);
 
     await this.metricsService.record({

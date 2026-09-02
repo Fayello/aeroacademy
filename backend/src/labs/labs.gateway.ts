@@ -23,7 +23,12 @@ const JOIN_TIMEOUT_MS = 30 * 1000;
 const INPUT_RATE_LIMIT = 100; // max messages per second
 const INPUT_RATE_WINDOW_MS = 1000;
 const ALLOWED_CONTROL_CHARS = new Set([
-  8, 9, 10, 13, 27, 127, // backspace, tab, newline, carriage return, ESC, DEL
+  8,
+  9,
+  10,
+  13,
+  27,
+  127, // backspace, tab, newline, carriage return, ESC, DEL
 ]);
 
 function sanitizeInput(data: string): string {
@@ -40,7 +45,10 @@ function sanitizeInput(data: string): string {
   return filtered.join('');
 }
 
-function getCookieValue(cookieHeader: string | undefined, name: string): string | null {
+function getCookieValue(
+  cookieHeader: string | undefined,
+  name: string,
+): string | null {
   if (!cookieHeader) return null;
   const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
   return match ? decodeURIComponent(match[1]) : null;
@@ -96,7 +104,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       getCookieValue(client.handshake.headers.cookie, 'token');
     const token = authToken || cookieToken;
     if (!token) {
-      logger.warn(`Terminal connection rejected: no token (client ${client.id})`);
+      logger.warn(
+        `Terminal connection rejected: no token (client ${client.id})`,
+      );
       client.disconnect();
       return;
     }
@@ -108,7 +118,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const userId = payload.sub;
       const currentConnections = this.userConnections.get(userId) || 0;
       if (currentConnections >= MAX_CONNECTIONS_PER_USER) {
-        logger.warn(`Terminal connection rejected: max connections for user ${userId}`);
+        logger.warn(
+          `Terminal connection rejected: max connections for user ${userId}`,
+        );
         client.emit('error', 'Maximum terminal connections reached');
         client.disconnect();
         return;
@@ -125,7 +137,9 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }, JOIN_TIMEOUT_MS);
       (client.data as SocketData).joinTimer = joinTimer;
     } catch (err) {
-      logger.warn(`Terminal connection rejected: invalid token (client ${client.id}): ${err instanceof Error ? err.message : String(err)}`);
+      logger.warn(
+        `Terminal connection rejected: invalid token (client ${client.id}): ${err instanceof Error ? err.message : String(err)}`,
+      );
       client.disconnect();
     }
   }
@@ -161,26 +175,42 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const userId = (client.data as SocketData).user?.sub;
     if (!userId) {
-      logger.warn(`Terminal join rejected: not authenticated (client ${client.id})`);
+      logger.warn(
+        `Terminal join rejected: not authenticated (client ${client.id})`,
+      );
       client.emit('error', 'Not authenticated');
       return;
     }
-    if (!data?.labId || typeof data.labId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.labId)) {
-      logger.warn(`Terminal join rejected: invalid lab ID (client ${client.id})`);
+    if (
+      !data?.labId ||
+      typeof data.labId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        data.labId,
+      )
+    ) {
+      logger.warn(
+        `Terminal join rejected: invalid lab ID (client ${client.id})`,
+      );
       client.emit('error', 'Invalid lab ID');
       return;
     }
-    logger.info(`Terminal join request: user ${userId}, lab ${data.labId}, client ${client.id}`);
+    logger.info(
+      `Terminal join request: user ${userId}, lab ${data.labId}, client ${client.id}`,
+    );
     const instance = await this.labsService.getLabStatus(userId, data.labId);
 
     if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
-      logger.warn(`Terminal join rejected: no active instance (user ${userId}, lab ${data.labId}, status: ${instance?.status})`);
+      logger.warn(
+        `Terminal join rejected: no active instance (user ${userId}, lab ${data.labId}, status: ${instance?.status})`,
+      );
       client.emit('error', 'No active lab instance found');
       return;
     }
 
     try {
-      const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+      const targetDocker =
+        this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
+        this.docker;
       const container = targetDocker.getContainer(instance.containerId);
 
       try {
@@ -188,7 +218,11 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
           AttachStdin: false,
           AttachStdout: false,
           AttachStderr: false,
-          Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
+          Cmd: [
+            'bash',
+            '-c',
+            'id student >/dev/null 2>&1 || (useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0',
+          ],
         });
         await ensureExec.start({ hijack: false, stdin: false });
       } catch {}
@@ -219,14 +253,21 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
               nextStream.once('data', (chunk: Buffer) => {
                 clearTimeout(timeout);
                 const text = chunk.toString();
-                if (text.includes('not found') || text.includes('unable to find user') || text.includes('no such user')) {
+                if (
+                  text.includes('not found') ||
+                  text.includes('unable to find user') ||
+                  text.includes('no such user')
+                ) {
                   nextStream.resume();
                   resolve(false);
                 } else {
                   resolve(true);
                 }
               });
-              nextStream.once('end', () => { clearTimeout(timeout); resolve(false); });
+              nextStream.once('end', () => {
+                clearTimeout(timeout);
+                resolve(false);
+              });
             });
 
             if (!probe) {
@@ -234,12 +275,16 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
               continue;
             }
 
-            logger.info(`Terminal attached: user=${user}, shell=${shell}, client=${client.id}`);
+            logger.info(
+              `Terminal attached: user=${user}, shell=${shell}, client=${client.id}`,
+            );
             execInstance = exec;
             stream = nextStream;
             break;
           } catch (err) {
-            logger.warn(`Exec failed: user=${user}, shell=${shell}: ${err instanceof Error ? err.message : String(err)}`);
+            logger.warn(
+              `Exec failed: user=${user}, shell=${shell}: ${err instanceof Error ? err.message : String(err)}`,
+            );
             continue;
           }
         }

@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MissionService } from './mission.service';
 import { FeatureUnlockService } from './feature-unlock.service';
@@ -44,11 +49,19 @@ export class ChallengesService {
   }
 
   async getDailyMissions(userId: string) {
-    const unlocked = await this.featureUnlockService.isFeatureUnlocked(userId, 'DAILY_MISSIONS');
+    const unlocked = await this.featureUnlockService.isFeatureUnlocked(
+      userId,
+      'DAILY_MISSIONS',
+    );
     if (!unlocked) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } });
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { xp: true },
+      });
       const level = Math.floor((user?.xp || 0) / 1000) + 1;
-      throw new BadRequestException(`Daily missions unlock at Level 2. You are Level ${level}.`);
+      throw new BadRequestException(
+        `Daily missions unlock at Level 2. You are Level ${level}.`,
+      );
     }
     return this.missionService.getDailyMissions(userId);
   }
@@ -58,15 +71,22 @@ export class ChallengesService {
   }
 
   async getSkillProfile(userId: string) {
-    const unlocked = await this.featureUnlockService.isFeatureUnlocked(userId, 'SKILL_PROFILE');
-    const skills = unlocked ? await this.progressionService.getSkillProfile(userId) : [];
+    const unlocked = await this.featureUnlockService.isFeatureUnlocked(
+      userId,
+      'SKILL_PROFILE',
+    );
+    const skills = unlocked
+      ? await this.progressionService.getSkillProfile(userId)
+      : [];
     return { unlocked, skills };
   }
 
   async getLeaderboard(challengeId: string) {
     return this.prisma.userChallenge.findMany({
       where: { challengeId },
-      include: { user: { select: { id: true, name: true, username: true, xp: true } } },
+      include: {
+        user: { select: { id: true, name: true, username: true, xp: true } },
+      },
       orderBy: { progress: 'desc' },
       take: 20,
     });

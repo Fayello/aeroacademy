@@ -38,11 +38,25 @@ export class BattlePassService {
     });
   }
 
-  async createBattlePass(seasonId: string, title: string, tiers: Array<{ tierNumber: number; title: string; xpRequired: number; rewards: any; isPremium?: boolean }>) {
-    const season = await this.prisma.season.findUnique({ where: { id: seasonId } });
+  async createBattlePass(
+    seasonId: string,
+    title: string,
+    tiers: Array<{
+      tierNumber: number;
+      title: string;
+      xpRequired: number;
+      rewards: any;
+      isPremium?: boolean;
+    }>,
+  ) {
+    const season = await this.prisma.season.findUnique({
+      where: { id: seasonId },
+    });
     if (!season) throw new NotFoundException('Season not found');
 
-    const existing = await this.prisma.battlePass.findFirst({ where: { seasonId } });
+    const existing = await this.prisma.battlePass.findFirst({
+      where: { seasonId },
+    });
     if (existing) throw new Error('Battle pass already exists for this season');
 
     const totalXp = tiers.reduce((sum, t) => sum + t.xpRequired, 0);
@@ -53,7 +67,7 @@ export class BattlePassService {
         title,
         totalTiers: tiers.length,
         tiers: {
-          create: tiers.map(t => ({
+          create: tiers.map((t) => ({
             tierNumber: t.tierNumber,
             title: t.title,
             xpRequired: t.xpRequired,
@@ -65,11 +79,26 @@ export class BattlePassService {
       include: { tiers: { orderBy: { tierNumber: 'asc' } } },
     });
 
-    this.logger.log(`Battle pass created for season ${seasonId}: ${tiers.length} tiers, ${totalXp} total XP`);
+    this.logger.log(
+      `Battle pass created for season ${seasonId}: ${tiers.length} tiers, ${totalXp} total XP`,
+    );
     return battlePass;
   }
 
-  async updateBattlePass(id: string, data: { seasonId?: string; title?: string; tiers?: Array<{ tierNumber: number; title: string; xpRequired: number; rewards: any; isPremium?: boolean }> }) {
+  async updateBattlePass(
+    id: string,
+    data: {
+      seasonId?: string;
+      title?: string;
+      tiers?: Array<{
+        tierNumber: number;
+        title: string;
+        xpRequired: number;
+        rewards: any;
+        isPremium?: boolean;
+      }>;
+    },
+  ) {
     const existing = await this.prisma.battlePass.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Battle pass not found');
 
@@ -78,9 +107,11 @@ export class BattlePassService {
     if (data.seasonId) updateData.seasonId = data.seasonId;
 
     if (data.tiers) {
-      await this.prisma.battlePassTier.deleteMany({ where: { battlePassId: id } });
+      await this.prisma.battlePassTier.deleteMany({
+        where: { battlePassId: id },
+      });
       updateData.tiers = {
-        create: data.tiers.map(t => ({
+        create: data.tiers.map((t) => ({
           tierNumber: t.tierNumber,
           title: t.title,
           xpRequired: t.xpRequired,
@@ -110,7 +141,9 @@ export class BattlePassService {
   }
 
   async getUserProgress(userId: string) {
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (!activeSeason) return null;
 
     const battlePass = await this.prisma.battlePass.findFirst({
@@ -143,7 +176,7 @@ export class BattlePassService {
       totalXpEarned,
       currentTier,
       totalTiers: battlePass.totalTiers,
-      tiers: battlePass.tiers.map(t => ({
+      tiers: battlePass.tiers.map((t) => ({
         tierNumber: t.tierNumber,
         title: t.title,
         xpRequired: t.xpRequired,
@@ -156,7 +189,9 @@ export class BattlePassService {
   }
 
   async addBattlePassXp(userId: string, amount: number, source: string) {
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (!activeSeason) return null;
 
     const battlePass = await this.prisma.battlePass.findFirst({
@@ -191,7 +226,9 @@ export class BattlePassService {
 
       if (progress.currentXp + xpToAdd >= tier.xpRequired) {
         unlockedTiers.push(tier.tierNumber);
-        this.logger.log(`User ${userId} unlocked battle pass tier ${tier.tierNumber}`);
+        this.logger.log(
+          `User ${userId} unlocked battle pass tier ${tier.tierNumber}`,
+        );
       }
 
       amount -= xpToAdd;
@@ -202,7 +239,9 @@ export class BattlePassService {
   }
 
   async getLeaderboard() {
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (!activeSeason) return [];
 
     const battlePass = await this.prisma.battlePass.findFirst({

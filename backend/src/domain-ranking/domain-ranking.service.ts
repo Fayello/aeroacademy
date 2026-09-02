@@ -57,22 +57,22 @@ export class DomainRankingService {
     isProvisional: boolean;
     opponentRating?: number;
   }): number {
-    const diffMult = DIFFICULTY_MULTIPLIER[params.difficulty.toUpperCase()] || 1.0;
+    const diffMult =
+      DIFFICULTY_MULTIPLIER[params.difficulty.toUpperCase()] || 1.0;
     const rawScore =
-      params.performance *
-      0.35 +
-      params.quality *
-      0.25 +
-      params.timeEfficiency *
-      0.20 +
-      params.independence *
-      0.20;
+      params.performance * 0.35 +
+      params.quality * 0.25 +
+      params.timeEfficiency * 0.2 +
+      params.independence * 0.2;
 
     const baseDelta = Math.round(rawScore * 100 * diffMult);
-    const kFactor = params.isProvisional ? K_FACTOR_PROVISIONAL : K_FACTOR_NORMAL;
+    const kFactor = params.isProvisional
+      ? K_FACTOR_PROVISIONAL
+      : K_FACTOR_NORMAL;
 
     if (params.opponentRating !== undefined) {
-      const expected = 1 / (1 + Math.pow(10, (params.opponentRating - 1000) / 400));
+      const expected =
+        1 / (1 + Math.pow(10, (params.opponentRating - 1000) / 400));
       const actualScore = rawScore;
       return Math.round(kFactor * (actualScore - expected));
     }
@@ -154,9 +154,11 @@ export class DomainRankingService {
     });
 
     const newRating = Math.max(0, domainRank.rating + ratingDelta);
-    const { name: newDivision, tier: newTier } = this.getDivisionFromRating(newRating);
+    const { name: newDivision, tier: newTier } =
+      this.getDivisionFromRating(newRating);
     const divisionChanged =
-      newDivision !== domainRank.division || newTier !== domainRank.divisionTier;
+      newDivision !== domainRank.division ||
+      newTier !== domainRank.divisionTier;
 
     const newCareerHigh = newRating > domainRank.careerHighRating;
     const newPlacementLeft = domainRank.isProvisional
@@ -180,10 +182,16 @@ export class DomainRankingService {
         gamesPlayed: { increment: 1 },
         wins: ratingDelta > 0 ? { increment: 1 } : undefined,
         losses: ratingDelta < 0 ? { increment: 1 } : undefined,
-        isProvisional: placementJustCompleted ? false : domainRank.isProvisional,
+        isProvisional: placementJustCompleted
+          ? false
+          : domainRank.isProvisional,
         placementMatchesLeft: newPlacementLeft,
-        careerHighRating: newCareerHigh ? newRating : domainRank.careerHighRating,
-        careerHighDivision: newCareerHigh ? newDivision : domainRank.careerHighDivision,
+        careerHighRating: newCareerHigh
+          ? newRating
+          : domainRank.careerHighRating,
+        careerHighDivision: newCareerHigh
+          ? newDivision
+          : domainRank.careerHighDivision,
         careerHighTier: newCareerHigh ? newTier : domainRank.careerHighTier,
       },
     });
@@ -246,11 +254,7 @@ export class DomainRankingService {
     });
   }
 
-  async getDomainLeaderboard(
-    domainId: string,
-    seasonId: string,
-    limit = 100,
-  ) {
+  async getDomainLeaderboard(domainId: string, seasonId: string, limit = 100) {
     return this.prisma.domainRank.findMany({
       where: { domainId, seasonId, isProvisional: false },
       include: {
@@ -289,7 +293,11 @@ export class DomainRankingService {
     }));
   }
 
-  async getUserRatingHistory(userId: string, domainId: string, seasonId: string) {
+  async getUserRatingHistory(
+    userId: string,
+    domainId: string,
+    seasonId: string,
+  ) {
     return this.prisma.domainRatingEvent.findMany({
       where: { userId, domainId, seasonId },
       orderBy: { createdAt: 'desc' },
@@ -302,7 +310,9 @@ export class DomainRankingService {
       where: { seasonId },
     });
 
-    const season = await this.prisma.season.findUnique({ where: { id: seasonId } });
+    const season = await this.prisma.season.findUnique({
+      where: { id: seasonId },
+    });
     const seasonNumber = season?.seasonNumber || 1;
 
     const snapshots = allRanks.map((rank) => ({
@@ -322,7 +332,19 @@ export class DomainRankingService {
     await this.prisma.seasonRankSnapshot.createMany({ data: snapshots });
 
     const userIds = [...new Set(allRanks.map((r) => r.userId))];
-    const globalSnapshots: { userId: string; seasonId: string; seasonNumber: number; globalRating: number; globalDivision: string; globalTier: number; domainCount: number; gamesPlayed: number; wins: number; losses: number; winRate: number }[] = [];
+    const globalSnapshots: {
+      userId: string;
+      seasonId: string;
+      seasonNumber: number;
+      globalRating: number;
+      globalDivision: string;
+      globalTier: number;
+      domainCount: number;
+      gamesPlayed: number;
+      wins: number;
+      losses: number;
+      winRate: number;
+    }[] = [];
 
     for (const uid of userIds) {
       const userRanks = allRanks.filter((r) => r.userId === uid);
@@ -352,7 +374,9 @@ export class DomainRankingService {
     }
 
     if (globalSnapshots.length > 0) {
-      await this.prisma.globalRankSnapshot.createMany({ data: globalSnapshots });
+      await this.prisma.globalRankSnapshot.createMany({
+        data: globalSnapshots,
+      });
     }
 
     const nextSeason = await this.prisma.season.findFirst({
@@ -364,7 +388,8 @@ export class DomainRankingService {
         const compressedRating = Math.round(
           rank.rating - (rank.rating - 1000) * SOFT_RESET_DECAY,
         );
-        const { name: division, tier } = this.getDivisionFromRating(compressedRating);
+        const { name: division, tier } =
+          this.getDivisionFromRating(compressedRating);
 
         await this.prisma.domainRank.create({
           data: {
@@ -393,25 +418,50 @@ export class DomainRankingService {
       `Soft reset completed for season ${seasonId}: ${allRanks.length} domain ranks snapshotted, ${globalSnapshots.length} global ranks snapshotted`,
     );
 
-    return { snapshotted: allRanks.length, globalSnapshots: globalSnapshots.length };
+    return {
+      snapshotted: allRanks.length,
+      globalSnapshots: globalSnapshots.length,
+    };
   }
 
-  computeGlobalRank(domainRanks: { rating: number; gamesPlayed: number; wins: number; losses: number; division: string; divisionTier: number }[]) {
+  computeGlobalRank(
+    domainRanks: {
+      rating: number;
+      gamesPlayed: number;
+      wins: number;
+      losses: number;
+      division: string;
+      divisionTier: number;
+    }[],
+  ) {
     if (domainRanks.length === 0) {
-      return { rating: 1000, division: 'BRONZE', divisionTier: 1, gamesPlayed: 0, totalWins: 0, totalLosses: 0, winRate: 0, domainCount: 0 };
+      return {
+        rating: 1000,
+        division: 'BRONZE',
+        divisionTier: 1,
+        gamesPlayed: 0,
+        totalWins: 0,
+        totalLosses: 0,
+        winRate: 0,
+        domainCount: 0,
+      };
     }
 
     const totalGames = domainRanks.reduce((sum, r) => sum + r.gamesPlayed, 0);
 
     let weightedRating: number;
     if (totalGames > 0) {
-      weightedRating = domainRanks.reduce((sum, r) => sum + r.rating * r.gamesPlayed, 0) / totalGames;
+      weightedRating =
+        domainRanks.reduce((sum, r) => sum + r.rating * r.gamesPlayed, 0) /
+        totalGames;
     } else {
-      weightedRating = domainRanks.reduce((sum, r) => sum + r.rating, 0) / domainRanks.length;
+      weightedRating =
+        domainRanks.reduce((sum, r) => sum + r.rating, 0) / domainRanks.length;
     }
 
     const globalRating = Math.round(weightedRating);
-    const { name: division, tier: divisionTier } = this.getDivisionFromRating(globalRating);
+    const { name: division, tier: divisionTier } =
+      this.getDivisionFromRating(globalRating);
     const totalWins = domainRanks.reduce((sum, r) => sum + r.wins, 0);
     const totalLosses = domainRanks.reduce((sum, r) => sum + r.losses, 0);
 
@@ -428,7 +478,9 @@ export class DomainRankingService {
   }
 
   async getRankedProfile(userId: string) {
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, name: true, avatarUrl: true, xp: true },
@@ -440,7 +492,9 @@ export class DomainRankingService {
     const currentRanks = activeSeason
       ? await this.prisma.domainRank.findMany({
           where: { userId, seasonId: activeSeason.id },
-          include: { domain: { select: { name: true, displayName: true, icon: true } } },
+          include: {
+            domain: { select: { name: true, displayName: true, icon: true } },
+          },
           orderBy: { rating: 'desc' },
         })
       : [];
@@ -479,7 +533,10 @@ export class DomainRankingService {
       include: { skill: { select: { domainId: true } } },
     });
 
-    const domainMasteryMap = new Map<string, { total: number; count: number }>();
+    const domainMasteryMap = new Map<
+      string,
+      { total: number; count: number }
+    >();
     for (const us of userSkills) {
       const domainId = us.skill.domainId;
       const existing = domainMasteryMap.get(domainId) || { total: 0, count: 0 };
@@ -497,7 +554,11 @@ export class DomainRankingService {
       user,
       level,
       activeSeason: activeSeason
-        ? { id: activeSeason.id, name: activeSeason.name, seasonNumber: activeSeason.seasonNumber }
+        ? {
+            id: activeSeason.id,
+            name: activeSeason.name,
+            seasonNumber: activeSeason.seasonNumber,
+          }
         : null,
       globalRank,
       domainMastery,
@@ -553,19 +614,45 @@ export class DomainRankingService {
     const domains = await this.prisma.skillDomain.findMany({
       select: { id: true, name: true, displayName: true },
     });
-    const domainMap = new Map(domains.map((d) => [d.id, d.displayName || d.name]));
+    const domainMap = new Map(
+      domains.map((d) => [d.id, d.displayName || d.name]),
+    );
 
-    const seasons = new Map<number, {
-      seasonNumber: number;
-      seasonName: string;
-      theme: string | null;
-      global: { rating: number; division: string; tier: number; domainCount: number; gamesPlayed: number; wins: number; losses: number; winRate: number } | null;
-      domains: { domain: string; domainId: string; rating: number; division: string; tier: number; gamesPlayed: number; wins: number; losses: number }[];
-    }>();
+    const seasons = new Map<
+      number,
+      {
+        seasonNumber: number;
+        seasonName: string;
+        theme: string | null;
+        global: {
+          rating: number;
+          division: string;
+          tier: number;
+          domainCount: number;
+          gamesPlayed: number;
+          wins: number;
+          losses: number;
+          winRate: number;
+        } | null;
+        domains: {
+          domain: string;
+          domainId: string;
+          rating: number;
+          division: string;
+          tier: number;
+          gamesPlayed: number;
+          wins: number;
+          losses: number;
+        }[];
+      }
+    >();
 
     for (const gs of globalSnapshots) {
       const key = gs.seasonNumber;
-      const gsSeason = gs.season as { name: string; theme: string | null } | null;
+      const gsSeason = gs.season as {
+        name: string;
+        theme: string | null;
+      } | null;
       if (!seasons.has(key)) {
         seasons.set(key, {
           seasonNumber: gs.seasonNumber,
@@ -588,7 +675,10 @@ export class DomainRankingService {
 
     for (const ds of domainSnapshots) {
       const key = ds.seasonNumber;
-      const seasonData = ds.season as { name: string; seasonNumber: number } | null;
+      const seasonData = ds.season as {
+        name: string;
+        seasonNumber: number;
+      } | null;
       if (!seasons.has(key)) {
         seasons.set(key, {
           seasonNumber: ds.seasonNumber,
@@ -611,7 +701,9 @@ export class DomainRankingService {
       });
     }
 
-    return Array.from(seasons.values()).sort((a, b) => b.seasonNumber - a.seasonNumber);
+    return Array.from(seasons.values()).sort(
+      (a, b) => b.seasonNumber - a.seasonNumber,
+    );
   }
 
   async getAllRatingHistory(userId: string) {
@@ -626,7 +718,9 @@ export class DomainRankingService {
     const domains = await this.prisma.skillDomain.findMany({
       select: { id: true, name: true, displayName: true },
     });
-    const domainMap = new Map(domains.map((d) => [d.id, d.displayName || d.name]));
+    const domainMap = new Map(
+      domains.map((d) => [d.id, d.displayName || d.name]),
+    );
 
     return events.map((e) => ({
       date: e.createdAt,
@@ -644,7 +738,9 @@ export class DomainRankingService {
   // ─── PHASE 5: CAPABILITY-BASED RANKING ────────────────────────
 
   async getCapabilityRanking(userId: string) {
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (!activeSeason) return null;
 
     const domainRanks = await this.prisma.domainRank.findMany({
@@ -666,23 +762,32 @@ export class DomainRankingService {
       select: { metadata: true, createdAt: true },
     });
 
-    const avgAssessmentScore = assessments.length > 0
-      ? assessments.reduce((sum, a) => sum + ((a.score || 0) / a.maxScore) * 100, 0) / assessments.length
-      : 50;
+    const avgAssessmentScore =
+      assessments.length > 0
+        ? assessments.reduce(
+            (sum, a) => sum + ((a.score || 0) / a.maxScore) * 100,
+            0,
+          ) / assessments.length
+        : 50;
 
-    const labQuality = labCompletions.length > 0
-      ? Math.min(100, labCompletions.length * 5)
-      : 50;
+    const labQuality =
+      labCompletions.length > 0 ? Math.min(100, labCompletions.length * 5) : 50;
 
-    const flagEfficiency = flagSolves.length > 0
-      ? Math.min(100, flagSolves.length * 5)
-      : 0;
+    const flagEfficiency =
+      flagSolves.length > 0 ? Math.min(100, flagSolves.length * 5) : 0;
 
-    const technicalPerformance = (avgAssessmentScore * 0.4 + labQuality * 0.4 + flagEfficiency * 0.2);
+    const technicalPerformance =
+      avgAssessmentScore * 0.4 + labQuality * 0.4 + flagEfficiency * 0.2;
 
     // 2. Difficulty (25%): level of challenges attempted
     const difficultyMap: Record<string, number> = {
-      BEGINNER: 1, EASY: 1, MEDIUM: 2, HARD: 3, ADVANCED: 4, BOSS: 5, EXPERT: 6,
+      BEGINNER: 1,
+      EASY: 1,
+      MEDIUM: 2,
+      HARD: 3,
+      ADVANCED: 4,
+      BOSS: 5,
+      EXPERT: 6,
     };
 
     const maxDifficultyAttempted = domainRanks.reduce((max, r) => {
@@ -695,7 +800,10 @@ export class DomainRankingService {
       where: { userId, isCompleted: true },
     });
 
-    const difficultyScore = Math.min(100, maxDifficultyAttempted + bossAttempts * 5);
+    const difficultyScore = Math.min(
+      100,
+      maxDifficultyAttempted + bossAttempts * 5,
+    );
 
     // 3. Consistency (20%): regular practice + sustained performance
     const thirtyDaysAgo = new Date();
@@ -716,18 +824,17 @@ export class DomainRankingService {
       return !meta?.hintUsed;
     }).length;
 
-    const independenceRate = flagSolves.length > 0
-      ? (independentFlags / flagSolves.length) * 100
-      : 50;
+    const independenceRate =
+      flagSolves.length > 0 ? (independentFlags / flagSolves.length) * 100 : 50;
 
     const problemSolvingScore = Math.min(100, independenceRate);
 
     // Weighted total (0-100)
     const capabilityScore = Math.round(
-      technicalPerformance * 0.40 +
-      difficultyScore * 0.25 +
-      consistencyScore * 0.20 +
-      problemSolvingScore * 0.15
+      technicalPerformance * 0.4 +
+        difficultyScore * 0.25 +
+        consistencyScore * 0.2 +
+        problemSolvingScore * 0.15,
     );
 
     // Map to tier
@@ -771,7 +878,12 @@ export class DomainRankingService {
       user: { id: string; name: string | null; avatarUrl: string | null };
       capabilityScore: number;
       tier: string;
-      breakdown: { technicalPerformance: number; difficulty: number; consistency: number; problemSolving: number };
+      breakdown: {
+        technicalPerformance: number;
+        difficulty: number;
+        consistency: number;
+        problemSolving: number;
+      };
       xp: number;
     }[] = [];
     for (const user of users) {

@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Any = any;
 
 export interface GradeReport {
@@ -55,7 +58,7 @@ export class ExamService {
   }
 
   async getGradeReport(attemptId: string): Promise<Any> {
-    const attempt = await this.prisma.studentAssessment.findUnique({
+    const attempt = (await this.prisma.studentAssessment.findUnique({
       where: { id: attemptId },
       include: {
         user: { select: { id: true, name: true, email: true } },
@@ -67,14 +70,17 @@ export class ExamService {
           },
         },
       },
-    }) as Any;
+    })) as Any;
 
     if (!attempt) throw new NotFoundException('Attempt not found');
-    if (attempt.status !== 'COMPLETED') throw new BadRequestException('Attempt not completed');
+    if (attempt.status !== 'COMPLETED')
+      throw new BadRequestException('Attempt not completed');
 
     const breakdown = attempt.breakdown as Record<string, number> | null;
     const duration = attempt.completedAt
-      ? Math.round((attempt.completedAt.getTime() - attempt.startedAt.getTime()) / 60000)
+      ? Math.round(
+          (attempt.completedAt.getTime() - attempt.startedAt.getTime()) / 60000,
+        )
       : 0;
 
     // Compute outcome-level breakdown
@@ -160,7 +166,8 @@ export class ExamService {
     const scores = attempts.map((a) => a.score ?? 0).sort((a, b) => a - b);
     const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
     const medianScore = scores[Math.floor(scores.length / 2)];
-    const passRate = (scores.filter((s) => s >= 70).length / scores.length) * 100;
+    const passRate =
+      (scores.filter((s) => s >= 70).length / scores.length) * 100;
 
     const gradeDistribution: Record<string, number> = {};
     for (const score of scores) {
@@ -169,7 +176,9 @@ export class ExamService {
     }
 
     const durations = attempts.map((a) =>
-      a.completedAt ? (a.completedAt.getTime() - a.startedAt.getTime()) / 60000 : 0,
+      a.completedAt
+        ? (a.completedAt.getTime() - a.startedAt.getTime()) / 60000
+        : 0,
     );
     const avgDuration = durations.reduce((a, b) => a + b, 0) / durations.length;
 

@@ -18,7 +18,16 @@ export class SeasonsController {
   }
 
   @Post()
-  createSeason(@Body() body: { name: string; theme?: string; xpMultiplier?: number; startDate: string; endDate: string }) {
+  createSeason(
+    @Body()
+    body: {
+      name: string;
+      theme?: string;
+      xpMultiplier?: number;
+      startDate: string;
+      endDate: string;
+    },
+  ) {
     return this.seasonsService.createSeason(body);
   }
 

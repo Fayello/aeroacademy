@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
@@ -44,9 +49,13 @@ export class SeasonsService {
     startDate: string;
     endDate: string;
   }) {
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (activeSeason) {
-      throw new BadRequestException('A season is already active. End it before starting a new one.');
+      throw new BadRequestException(
+        'A season is already active. End it before starting a new one.',
+      );
     }
 
     const lastSeason = await this.prisma.season.findFirst({
@@ -72,7 +81,9 @@ export class SeasonsService {
   }
 
   async endSeason(seasonId: string) {
-    const season = await this.prisma.season.findUnique({ where: { id: seasonId } });
+    const season = await this.prisma.season.findUnique({
+      where: { id: seasonId },
+    });
     if (!season) throw new NotFoundException('Season not found');
 
     await this.prisma.season.update({
@@ -81,11 +92,16 @@ export class SeasonsService {
     });
 
     this.logger.log(`Season ended: ${season.name} (S${season.seasonNumber})`);
-    return { message: 'Season ended successfully', seasonNumber: season.seasonNumber };
+    return {
+      message: 'Season ended successfully',
+      seasonNumber: season.seasonNumber,
+    };
   }
 
   async rotateSeason() {
-    const active = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const active = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (active) {
       await this.domainRankingService.softResetSeason(active.id);
       await this.battlePassService.resetSeasonProgress(active.id);
@@ -105,17 +121,27 @@ export class SeasonsService {
   }
 
   getDomainThemeMapping(domainTheme: string) {
-    return DOMAIN_THEME_MAP[domainTheme?.toUpperCase()] || ['SYSTEMS', 'NETWORKING', 'DEVOPS'];
+    return (
+      DOMAIN_THEME_MAP[domainTheme?.toUpperCase()] || [
+        'SYSTEMS',
+        'NETWORKING',
+        'DEVOPS',
+      ]
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async checkSeasonExpiry() {
-    const active = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const active = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (!active) return;
 
     const now = new Date();
     if (now >= active.endDate) {
-      this.logger.warn(`Season ${active.name} has expired. Running rotation...`);
+      this.logger.warn(
+        `Season ${active.name} has expired. Running rotation...`,
+      );
       await this.rotateSeason();
     }
   }

@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import Docker from 'dockerode';
 import { Client as SSHClient } from 'ssh2';
 import * as net from 'net';
@@ -49,11 +54,13 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
     // Register remote server from env
     const remoteHost = process.env.REMOTE_DOCKER_HOST;
     const remoteUser = process.env.REMOTE_DOCKER_USER || 'fayell';
-    const remoteKey = process.env.REMOTE_DOCKER_KEY || path.join(
-      process.env.HOME || process.env.USERPROFILE || '',
-      '.ssh',
-      'aeroacademy_deploy',
-    );
+    const remoteKey =
+      process.env.REMOTE_DOCKER_KEY ||
+      path.join(
+        process.env.HOME || process.env.USERPROFILE || '',
+        '.ssh',
+        'aeroacademy_deploy',
+      );
 
     if (remoteHost) {
       await this.addRemoteServer({
@@ -81,7 +88,12 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async addRemoteServer(config: Omit<DockerServer, 'docker' | 'sshClient' | 'tunnelPort' | 'isActive' | 'labCount'>) {
+  async addRemoteServer(
+    config: Omit<
+      DockerServer,
+      'docker' | 'sshClient' | 'tunnelPort' | 'isActive' | 'labCount'
+    >,
+  ) {
     const connect = async (attempt: number) => {
       try {
         const tunnelPort = this.nextTunnelPort++;
@@ -110,22 +122,31 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
               });
 
               server.listen(tunnelPort, '127.0.0.1', () => {
-                logger.log(`Docker tunnel established on 127.0.0.1:${tunnelPort}`);
+                logger.log(
+                  `Docker tunnel established on 127.0.0.1:${tunnelPort}`,
+                );
                 this.tunnelServers.push(server);
                 resolve();
               });
             })
             .on('error', (err) => {
-              logger.error(`SSH connection failed to ${config.host}: ${err.message}`);
+              logger.error(
+                `SSH connection failed to ${config.host}: ${err.message}`,
+              );
               reject(err);
             })
             .on('close', () => {
-              logger.warn(`SSH connection to ${config.host} closed, reconnecting...`);
+              logger.warn(
+                `SSH connection to ${config.host} closed, reconnecting...`,
+              );
               const existing = this.servers.get(config.id);
               if (existing) {
                 existing.isActive = false;
               }
-              setTimeout(() => connect(attempt + 1), Math.min(30000, 1000 * Math.pow(2, attempt)));
+              setTimeout(
+                () => connect(attempt + 1),
+                Math.min(30000, 1000 * Math.pow(2, attempt)),
+              );
             })
             .connect({
               host: config.host,
@@ -154,9 +175,14 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
           labCount: 0,
         });
       } catch (err) {
-        logger.error(`Failed to add remote server ${config.id} (attempt ${attempt}): ${err instanceof Error ? err.message : String(err)}`);
+        logger.error(
+          `Failed to add remote server ${config.id} (attempt ${attempt}): ${err instanceof Error ? err.message : String(err)}`,
+        );
         if (attempt < 5) {
-          setTimeout(() => connect(attempt + 1), Math.min(30000, 1000 * Math.pow(2, attempt)));
+          setTimeout(
+            () => connect(attempt + 1),
+            Math.min(30000, 1000 * Math.pow(2, attempt)),
+          );
         }
       }
     };

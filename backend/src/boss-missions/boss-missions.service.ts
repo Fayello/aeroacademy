@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
 import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
@@ -16,7 +21,11 @@ export class BossMissionsService {
   async getActiveBossMissions() {
     const now = new Date();
     return this.prisma.bossMission.findMany({
-      where: { isActive: true, startsAt: { lte: now }, expiresAt: { gte: now } },
+      where: {
+        isActive: true,
+        startsAt: { lte: now },
+        expiresAt: { gte: now },
+      },
       include: { season: true },
       orderBy: { expiresAt: 'asc' },
     });
@@ -62,7 +71,9 @@ export class BossMissionsService {
   }
 
   async checkDomainRequirements(userId: string, bossId: string) {
-    const boss = await this.prisma.bossMission.findUnique({ where: { id: bossId } });
+    const boss = await this.prisma.bossMission.findUnique({
+      where: { id: bossId },
+    });
     if (!boss) throw new NotFoundException('Boss mission not found');
 
     const requiredDomains = boss.requiredDomains as any[];
@@ -70,7 +81,9 @@ export class BossMissionsService {
       return { eligible: true, requirements: [] };
     }
 
-    const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const activeSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
     if (!activeSeason) return { eligible: true, requirements: [] };
 
     const requirements = await Promise.all(
@@ -101,7 +114,9 @@ export class BossMissionsService {
   }
 
   async getUserAttempts(userId: string, bossId: string) {
-    const boss = await this.prisma.bossMission.findUnique({ where: { id: bossId } });
+    const boss = await this.prisma.bossMission.findUnique({
+      where: { id: bossId },
+    });
     if (!boss) throw new NotFoundException('Boss mission not found');
 
     const attempts = await this.prisma.bossMissionAttempt.findMany({
@@ -109,7 +124,7 @@ export class BossMissionsService {
       orderBy: { createdAt: 'desc' },
     });
 
-    const completed = attempts.some(a => a.isCompleted);
+    const completed = attempts.some((a) => a.isCompleted);
     const domainCheck = await this.checkDomainRequirements(userId, bossId);
 
     return {
@@ -129,7 +144,7 @@ export class BossMissionsService {
         expiresAt: boss.expiresAt,
       },
       domainRequirements: domainCheck,
-      attempts: attempts.map(a => ({
+      attempts: attempts.map((a) => ({
         id: a.id,
         score: a.score,
         maxScore: a.maxScore,
@@ -142,19 +157,31 @@ export class BossMissionsService {
     };
   }
 
-  async submitAttempt(userId: string, bossId: string, score: number, maxScore: number, feedback?: any) {
-    const boss = await this.prisma.bossMission.findUnique({ where: { id: bossId } });
+  async submitAttempt(
+    userId: string,
+    bossId: string,
+    score: number,
+    maxScore: number,
+    feedback?: any,
+  ) {
+    const boss = await this.prisma.bossMission.findUnique({
+      where: { id: bossId },
+    });
     if (!boss) throw new NotFoundException('Boss mission not found');
 
     const now = new Date();
-    if (now > boss.expiresAt) throw new BadRequestException('Boss mission has expired');
+    if (now > boss.expiresAt)
+      throw new BadRequestException('Boss mission has expired');
 
     const domainCheck = await this.checkDomainRequirements(userId, bossId);
     if (!domainCheck.eligible) {
       throw new BadRequestException(
         `Domain requirements not met: ${domainCheck.requirements
           .filter((r) => !r.met)
-          .map((r) => `${r.domainName} (need ${r.minRating}, have ${r.currentRating})`)
+          .map(
+            (r) =>
+              `${r.domainName} (need ${r.minRating}, have ${r.currentRating})`,
+          )
           .join(', ')}`,
       );
     }
@@ -182,17 +209,21 @@ export class BossMissionsService {
     });
 
     if (completed) {
-      const previousCompleted = existingAttempts.some(a => a.isCompleted);
+      const previousCompleted = existingAttempts.some((a) => a.isCompleted);
       if (!previousCompleted) {
         await this.progressionService.awardXP(userId, {
           amount: boss.xpReward,
           source: 'BOSS_MISSION',
           sourceId: bossId,
         });
-        this.logger.log(`User ${userId} completed boss "${boss.title}" for ${boss.xpReward} XP`);
+        this.logger.log(
+          `User ${userId} completed boss "${boss.title}" for ${boss.xpReward} XP`,
+        );
 
         if (boss.domainId && boss.ratingReward > 0) {
-          const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+          const activeSeason = await this.prisma.season.findFirst({
+            where: { isActive: true },
+          });
           if (activeSeason) {
             try {
               const ratingPerf = Math.min(1.0, score / maxScore);
@@ -208,9 +239,13 @@ export class BossMissionsService {
                 timeEfficiency: 0.8,
                 independence: 0.9,
               });
-              this.logger.log(`Awarded domain rating for boss "${boss.title}" in domain ${boss.domainId}`);
+              this.logger.log(
+                `Awarded domain rating for boss "${boss.title}" in domain ${boss.domainId}`,
+              );
             } catch (err) {
-              this.logger.error(`Failed to award domain rating for boss: ${err?.message}`);
+              this.logger.error(
+                `Failed to award domain rating for boss: ${err?.message}`,
+              );
             }
           }
         }
@@ -228,7 +263,11 @@ export class BossMissionsService {
   async getLeaderboard(bossId: string) {
     const attempts = await this.prisma.bossMissionAttempt.findMany({
       where: { bossId, isCompleted: true },
-      include: { user: { select: { id: true, name: true, username: true, avatarUrl: true } } },
+      include: {
+        user: {
+          select: { id: true, name: true, username: true, avatarUrl: true },
+        },
+      },
       orderBy: [{ score: 'desc' }, { createdAt: 'asc' }],
       take: 50,
     });

@@ -12,7 +12,23 @@ import { AiGatewayFactory } from './ai.gateway';
 @Module({
   imports: [PrismaModule],
   controllers: [AiController],
-  providers: [AiService, AiGatewayFactory, LabAnalyticsService, AssessmentIntelligenceService, PredictiveAnalyticsService, TutoringService, ContentRefreshService],
-  exports: [AiService, AiGatewayFactory, LabAnalyticsService, AssessmentIntelligenceService, PredictiveAnalyticsService, TutoringService, ContentRefreshService],
+  providers: [
+    AiService,
+    AiGatewayFactory,
+    LabAnalyticsService,
+    AssessmentIntelligenceService,
+    PredictiveAnalyticsService,
+    TutoringService,
+    ContentRefreshService,
+  ],
+  exports: [
+    AiService,
+    AiGatewayFactory,
+    LabAnalyticsService,
+    AssessmentIntelligenceService,
+    PredictiveAnalyticsService,
+    TutoringService,
+    ContentRefreshService,
+  ],
 })
 export class AiModule {}

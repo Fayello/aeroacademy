@@ -12,7 +12,13 @@ export class LearningPathsService {
           orderBy: { order: 'asc' },
           include: {
             course: {
-              select: { id: true, title: true, description: true, imageUrl: true, estimatedHours: true },
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                imageUrl: true,
+                estimatedHours: true,
+              },
             },
           },
         },
@@ -25,7 +31,10 @@ export class LearningPathsService {
       ...p,
       courseCount: p.courses.length,
       enrollmentCount: p._count.enrollments,
-      totalEstimatedHours: p.courses.reduce((acc, c) => acc + (c.course.estimatedHours || 0), 0),
+      totalEstimatedHours: p.courses.reduce(
+        (acc, c) => acc + (c.course.estimatedHours || 0),
+        0,
+      ),
     }));
   }
 
@@ -49,8 +58,17 @@ export class LearningPathsService {
     });
     if (!path) throw new NotFoundException('Learning path not found');
 
-    let enrollment: { id: string; learningPathId: string; userId: string; enrolledAt: Date; completedAt: Date | null } | null = null;
-    let courseProgress: Record<string, { completed: number; total: number; percentage: number }> = {};
+    let enrollment: {
+      id: string;
+      learningPathId: string;
+      userId: string;
+      enrolledAt: Date;
+      completedAt: Date | null;
+    } | null = null;
+    const courseProgress: Record<
+      string,
+      { completed: number; total: number; percentage: number }
+    > = {};
 
     if (userId) {
       enrollment = await this.prisma.learningPathEnrollment.findUnique({
@@ -58,9 +76,15 @@ export class LearningPathsService {
       });
 
       for (const lpc of path.courses) {
-        const total = await this.prisma.lesson.count({ where: { section: { courseId: lpc.course.id } } });
+        const total = await this.prisma.lesson.count({
+          where: { section: { courseId: lpc.course.id } },
+        });
         const completed = await this.prisma.progress.count({
-          where: { userId, completed: true, lesson: { section: { courseId: lpc.course.id } } },
+          where: {
+            userId,
+            completed: true,
+            lesson: { section: { courseId: lpc.course.id } },
+          },
         });
         courseProgress[lpc.course.id] = {
           completed,
@@ -70,9 +94,15 @@ export class LearningPathsService {
       }
     }
 
-    const overallProgress = path.courses.length > 0
-      ? Math.round(path.courses.reduce((acc, c) => acc + (courseProgress[c.course.id]?.percentage || 0), 0) / path.courses.length)
-      : 0;
+    const overallProgress =
+      path.courses.length > 0
+        ? Math.round(
+            path.courses.reduce(
+              (acc, c) => acc + (courseProgress[c.course.id]?.percentage || 0),
+              0,
+            ) / path.courses.length,
+          )
+        : 0;
 
     return {
       ...path,
@@ -97,7 +127,12 @@ export class LearningPathsService {
         imageUrl: data.imageUrl,
         difficulty: data.difficulty || 'BEGINNER',
         courses: data.courses
-          ? { create: data.courses.map((c, i) => ({ courseId: c.courseId, order: c.order ?? i })) }
+          ? {
+              create: data.courses.map((c, i) => ({
+                courseId: c.courseId,
+                order: c.order ?? i,
+              })),
+            }
           : undefined,
       },
       include: {
@@ -106,18 +141,25 @@ export class LearningPathsService {
     });
   }
 
-  async update(id: string, data: {
-    title?: string;
-    description?: string;
-    imageUrl?: string;
-    difficulty?: string;
-    courses?: { courseId: string; order?: number }[];
-  }) {
-    const existing = await this.prisma.learningPath.findUnique({ where: { id } });
+  async update(
+    id: string,
+    data: {
+      title?: string;
+      description?: string;
+      imageUrl?: string;
+      difficulty?: string;
+      courses?: { courseId: string; order?: number }[];
+    },
+  ) {
+    const existing = await this.prisma.learningPath.findUnique({
+      where: { id },
+    });
     if (!existing) throw new NotFoundException('Learning path not found');
 
     if (data.courses) {
-      await this.prisma.learningPathCourse.deleteMany({ where: { learningPathId: id } });
+      await this.prisma.learningPathCourse.deleteMany({
+        where: { learningPathId: id },
+      });
     }
 
     return this.prisma.learningPath.update({
@@ -128,7 +170,12 @@ export class LearningPathsService {
         imageUrl: data.imageUrl,
         difficulty: data.difficulty,
         courses: data.courses
-          ? { create: data.courses.map((c, i) => ({ courseId: c.courseId, order: c.order ?? i })) }
+          ? {
+              create: data.courses.map((c, i) => ({
+                courseId: c.courseId,
+                order: c.order ?? i,
+              })),
+            }
           : undefined,
       },
       include: {
@@ -138,13 +185,17 @@ export class LearningPathsService {
   }
 
   async remove(id: string) {
-    const existing = await this.prisma.learningPath.findUnique({ where: { id } });
+    const existing = await this.prisma.learningPath.findUnique({
+      where: { id },
+    });
     if (!existing) throw new NotFoundException('Learning path not found');
     return this.prisma.learningPath.delete({ where: { id } });
   }
 
   async enroll(userId: string, learningPathId: string) {
-    const path = await this.prisma.learningPath.findUnique({ where: { id: learningPathId } });
+    const path = await this.prisma.learningPath.findUnique({
+      where: { id: learningPathId },
+    });
     if (!path) throw new NotFoundException('Learning path not found');
 
     return this.prisma.learningPathEnrollment.upsert({
@@ -162,7 +213,9 @@ export class LearningPathsService {
           include: {
             courses: {
               orderBy: { order: 'asc' },
-              include: { course: { select: { id: true, title: true, imageUrl: true } } },
+              include: {
+                course: { select: { id: true, title: true, imageUrl: true } },
+              },
             },
           },
         },

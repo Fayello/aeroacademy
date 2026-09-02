@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GraduationCap, Microscope, Video, Calendar, Users, ArrowRight, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords, Sparkles, ShieldAlert, RefreshCw, Inbox } from "lucide-react";
+import { GraduationCap, Microscope, Video, Calendar, Users, ArrowRight, Activity, ScrollText, TrendingUp, Target, Award, ClipboardCheck, Layers, Swords, Sparkles, ShieldAlert, RefreshCw, Inbox, Megaphone } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -133,6 +133,7 @@ export default function AdminDashboardPage() {
       title: "User Management",
       items: [
         { label: "Inquiries", href: "/dashboard/admin/inquiries", icon: Inbox, description: "University and enterprise lead inbox" },
+        { label: "Community Programs", href: "/dashboard/admin/community-programs", icon: Megaphone, description: "Ambassador and volunteer applications" },
         { label: "Users", href: "/dashboard/admin/users", icon: Users, description: "User accounts & role management" },
       ],
     },

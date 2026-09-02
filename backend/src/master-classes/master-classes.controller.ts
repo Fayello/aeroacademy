@@ -89,7 +89,22 @@ export class MasterClassesController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   @Audit('MASTERCLASS_UPDATED')
-  async update(@Param('id') id: string, @Body() body: { title?: string; description?: string; instructorName?: string; instructorBio?: string; category?: string; scheduledAt?: string; duration?: number; maxParticipants?: number; isLive?: boolean; status?: string }) {
+  async update(
+    @Param('id') id: string,
+    @Body()
+    body: {
+      title?: string;
+      description?: string;
+      instructorName?: string;
+      instructorBio?: string;
+      category?: string;
+      scheduledAt?: string;
+      duration?: number;
+      maxParticipants?: number;
+      isLive?: boolean;
+      status?: string;
+    },
+  ) {
     return this.masterClassesService.update(id, body);
   }
 

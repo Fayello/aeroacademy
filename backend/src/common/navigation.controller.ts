@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { NavigationService } from './navigation.service';
@@ -25,7 +20,9 @@ export class NavigationController {
   @UseGuards(AuthGuard('jwt'))
   @Get('experience')
   async getExperience(@Request() req: RequestWithUser) {
-    const experience = await this.navigationService.detectExperience(req.user.id);
+    const experience = await this.navigationService.detectExperience(
+      req.user.id,
+    );
     return { experience };
   }
 

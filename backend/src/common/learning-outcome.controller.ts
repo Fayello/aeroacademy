@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Delete, Param, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { LearningOutcomeService } from './learning-outcome.service';
 
 @Controller('v1/learning-outcomes')
@@ -21,13 +29,16 @@ export class LearningOutcomeController {
   }
 
   @Post()
-  async createOutcome(@Body() body: {
-    code: string;
-    title: string;
-    description: string;
-    domainId: string;
-    weight?: number;
-  }) {
+  async createOutcome(
+    @Body()
+    body: {
+      code: string;
+      title: string;
+      description: string;
+      domainId: string;
+      weight?: number;
+    },
+  ) {
     return this.service.createOutcome(body);
   }
 
@@ -92,29 +103,35 @@ export class LearningOutcomeController {
   }
 
   @Post('evidence')
-  async recordEvidence(@Body() body: {
-    userId: string;
-    learningOutcomeId: string;
-    activityType: string;
-    activityId: string;
-    score: number;
-    metadata?: Record<string, unknown>;
-  }) {
+  async recordEvidence(
+    @Body()
+    body: {
+      userId: string;
+      learningOutcomeId: string;
+      activityType: string;
+      activityId: string;
+      score: number;
+      metadata?: Record<string, unknown>;
+    },
+  ) {
     return this.service.recordEvidence(body);
   }
 
   // ─── BULK SEED ────────────────────────────────────────────────
 
   @Post('seed')
-  async seedOutcomes(@Body() body: {
-    outcomes: Array<{
-      code: string;
-      title: string;
-      description: string;
-      domainId: string;
-      weight?: number;
-    }>;
-  }) {
+  async seedOutcomes(
+    @Body()
+    body: {
+      outcomes: Array<{
+        code: string;
+        title: string;
+        description: string;
+        domainId: string;
+        weight?: number;
+      }>;
+    },
+  ) {
     return this.service.seedOutcomes(body.outcomes);
   }
 }

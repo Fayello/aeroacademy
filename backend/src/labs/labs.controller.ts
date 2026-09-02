@@ -41,7 +41,11 @@ export class LabsController {
   @ApiBearerAuth('JWT-auth')
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findAll(@Request() req: RequestWithUser, @Query('take') take?: string, @Query('skip') skip?: string) {
+  async findAll(
+    @Request() req: RequestWithUser,
+    @Query('take') take?: string,
+    @Query('skip') skip?: string,
+  ) {
     return this.labsService.findAll({
       userId: req.user.id,
       userRole: req.user.role,
@@ -51,7 +55,10 @@ export class LabsController {
   }
 
   @Get('public')
-  async findAllPublic(@Query('take') take?: string, @Query('skip') skip?: string) {
+  async findAllPublic(
+    @Query('take') take?: string,
+    @Query('skip') skip?: string,
+  ) {
     return this.labsService.findAll({
       take: take ? parseInt(take, 10) : undefined,
       skip: skip ? parseInt(skip, 10) : undefined,
@@ -103,7 +110,15 @@ export class LabsController {
   @Audit('LAB_UPDATED')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { title?: string; description?: string; dockerImage?: string; difficulty?: number; briefing?: string; imageUrl?: string },
+    @Body()
+    body: {
+      title?: string;
+      description?: string;
+      dockerImage?: string;
+      difficulty?: number;
+      briefing?: string;
+      imageUrl?: string;
+    },
   ) {
     return this.labsService.update(id, body);
   }
@@ -251,6 +266,11 @@ export class LabsController {
     @Param('labId') labId: string,
     @Body() body: { rating: number; comment?: string },
   ) {
-    return this.labsService.createLabReview(req.user.id, labId, body.rating, body.comment);
+    return this.labsService.createLabReview(
+      req.user.id,
+      labId,
+      body.rating,
+      body.comment,
+    );
   }
 }

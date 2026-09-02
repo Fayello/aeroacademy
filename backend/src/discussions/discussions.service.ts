@@ -1,11 +1,25 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class DiscussionsService {
   constructor(private prisma: PrismaService) {}
 
-  async getPosts(courseId: string | null, query: { page?: number; limit?: number; tag?: string; sort?: string; search?: string; labId?: string }) {
+  async getPosts(
+    courseId: string | null,
+    query: {
+      page?: number;
+      limit?: number;
+      tag?: string;
+      sort?: string;
+      search?: string;
+      labId?: string;
+    },
+  ) {
     const page = query.page || 1;
     const limit = Math.min(query.limit || 20, 50);
     const skip = (page - 1) * limit;
@@ -22,11 +36,16 @@ export class DiscussionsService {
       ];
     }
 
-    const orderBy: any = query.sort === 'recent'
-      ? [{ isPinned: 'desc' }, { createdAt: 'desc' }]
-      : query.sort === 'popular'
-        ? [{ isPinned: 'desc' }, { upvotes: 'desc' }, { commentCount: 'desc' }]
-        : [{ isPinned: 'desc' }, { createdAt: 'desc' }];
+    const orderBy: any =
+      query.sort === 'recent'
+        ? [{ isPinned: 'desc' }, { createdAt: 'desc' }]
+        : query.sort === 'popular'
+          ? [
+              { isPinned: 'desc' },
+              { upvotes: 'desc' },
+              { commentCount: 'desc' },
+            ]
+          : [{ isPinned: 'desc' }, { createdAt: 'desc' }];
 
     const [posts, total] = await Promise.all([
       this.prisma.discussionPost.findMany({
@@ -102,7 +121,16 @@ export class DiscussionsService {
     return comments;
   }
 
-  async createPost(userId: string, data: { title: string; body: string; tags?: string[]; courseId?: string; labId?: string }) {
+  async createPost(
+    userId: string,
+    data: {
+      title: string;
+      body: string;
+      tags?: string[];
+      courseId?: string;
+      labId?: string;
+    },
+  ) {
     if (data.labId) {
       return this.prisma.discussionPost.create({
         data: {
@@ -134,8 +162,19 @@ export class DiscussionsService {
     });
   }
 
-  async updatePost(userId: string, postId: string, data: { title?: string; body?: string; tags?: string[]; isResolved?: boolean }) {
-    const post = await this.prisma.discussionPost.findUnique({ where: { id: postId } });
+  async updatePost(
+    userId: string,
+    postId: string,
+    data: {
+      title?: string;
+      body?: string;
+      tags?: string[];
+      isResolved?: boolean;
+    },
+  ) {
+    const post = await this.prisma.discussionPost.findUnique({
+      where: { id: postId },
+    });
     if (!post) throw new NotFoundException('Post not found');
     if (post.userId !== userId) throw new ForbiddenException('Not your post');
 
@@ -147,7 +186,9 @@ export class DiscussionsService {
   }
 
   async deletePost(userId: string, postId: string) {
-    const post = await this.prisma.discussionPost.findUnique({ where: { id: postId } });
+    const post = await this.prisma.discussionPost.findUnique({
+      where: { id: postId },
+    });
     if (!post) throw new NotFoundException('Post not found');
     if (post.userId !== userId) throw new ForbiddenException('Not your post');
 
@@ -155,8 +196,14 @@ export class DiscussionsService {
     return { success: true };
   }
 
-  async createComment(userId: string, postId: string, data: { body: string; parentId?: string; parentCommentId?: string }) {
-    const post = await this.prisma.discussionPost.findUnique({ where: { id: postId } });
+  async createComment(
+    userId: string,
+    postId: string,
+    data: { body: string; parentId?: string; parentCommentId?: string },
+  ) {
+    const post = await this.prisma.discussionPost.findUnique({
+      where: { id: postId },
+    });
     if (!post) throw new NotFoundException('Post not found');
 
     const comment = await this.prisma.discussionComment.create({
@@ -178,9 +225,12 @@ export class DiscussionsService {
   }
 
   async deleteComment(userId: string, commentId: string) {
-    const comment = await this.prisma.discussionComment.findUnique({ where: { id: commentId } });
+    const comment = await this.prisma.discussionComment.findUnique({
+      where: { id: commentId },
+    });
     if (!comment) throw new NotFoundException('Comment not found');
-    if (comment.userId !== userId) throw new ForbiddenException('Not your comment');
+    if (comment.userId !== userId)
+      throw new ForbiddenException('Not your comment');
 
     await this.prisma.discussionComment.delete({ where: { id: commentId } });
     await this.prisma.discussionPost.update({
@@ -190,7 +240,10 @@ export class DiscussionsService {
     return { success: true };
   }
 
-  async vote(userId: string, data: { postId?: string; commentId?: string; value: 1 | -1 }) {
+  async vote(
+    userId: string,
+    data: { postId?: string; commentId?: string; value: 1 | -1 },
+  ) {
     if (data.postId) {
       const existing = await this.prisma.discussionVote.findUnique({
         where: { userId_postId: { userId, postId: data.postId } },
@@ -198,7 +251,9 @@ export class DiscussionsService {
 
       if (existing) {
         if (existing.value === data.value) {
-          await this.prisma.discussionVote.delete({ where: { id: existing.id } });
+          await this.prisma.discussionVote.delete({
+            where: { id: existing.id },
+          });
           await this.prisma.discussionPost.update({
             where: { id: data.postId },
             data: { upvotes: { decrement: data.value } },
@@ -233,7 +288,9 @@ export class DiscussionsService {
 
       if (existing) {
         if (existing.value === data.value) {
-          await this.prisma.discussionVote.delete({ where: { id: existing.id } });
+          await this.prisma.discussionVote.delete({
+            where: { id: existing.id },
+          });
           await this.prisma.discussionComment.update({
             where: { id: data.commentId },
             data: { upvotes: { decrement: data.value } },
@@ -270,7 +327,9 @@ export class DiscussionsService {
     const [totalPosts, totalComments, resolvedCount] = await Promise.all([
       this.prisma.discussionPost.count({ where: postWhere }),
       this.prisma.discussionComment.count({ where: { post: postWhere } }),
-      this.prisma.discussionPost.count({ where: { ...postWhere, isResolved: true } }),
+      this.prisma.discussionPost.count({
+        where: { ...postWhere, isResolved: true },
+      }),
     ]);
     return { totalPosts, totalComments, resolvedCount };
   }
@@ -282,7 +341,11 @@ export class DiscussionsService {
       select: { tags: true },
     });
     const tagMap = new Map<string, number>();
-    posts.forEach(p => p.tags.forEach(t => tagMap.set(t, (tagMap.get(t) || 0) + 1)));
-    return Array.from(tagMap.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+    posts.forEach((p) =>
+      p.tags.forEach((t) => tagMap.set(t, (tagMap.get(t) || 0) + 1)),
+    );
+    return Array.from(tagMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
   }
 }

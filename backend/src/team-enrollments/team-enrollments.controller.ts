@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Delete, Param, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TeamEnrollmentsService } from './team-enrollments.service';
 
@@ -35,7 +44,8 @@ export class TeamEnrollmentsController {
   @Post('create')
   createTeam(
     @Req() req: any,
-    @Body() body: {
+    @Body()
+    body: {
       name: string;
       description?: string;
       visibility?: string;
@@ -47,23 +57,26 @@ export class TeamEnrollmentsController {
       tagline?: string;
     },
   ) {
-    return this.teamEnrollmentsService.createTeam(req.user.id, body.name, body.description, body.visibility, body);
+    return this.teamEnrollmentsService.createTeam(
+      req.user.id,
+      body.name,
+      body.description,
+      body.visibility,
+      body,
+    );
   }
 
   @Post('join')
-  joinTeam(
-    @Req() req: any,
-    @Body() body: { inviteCode: string },
-  ) {
+  joinTeam(@Req() req: any, @Body() body: { inviteCode: string }) {
     return this.teamEnrollmentsService.joinTeam(req.user.id, body.inviteCode);
   }
 
   @Post('join-by-name')
-  joinTeamByName(
-    @Req() req: any,
-    @Body() body: { teamName: string },
-  ) {
-    return this.teamEnrollmentsService.joinTeamByName(req.user.id, body.teamName);
+  joinTeamByName(@Req() req: any, @Body() body: { teamName: string }) {
+    return this.teamEnrollmentsService.joinTeamByName(
+      req.user.id,
+      body.teamName,
+    );
   }
 
   @Delete('leave')
@@ -77,7 +90,11 @@ export class TeamEnrollmentsController {
     @Param('userId') userId: string,
     @Req() req: any,
   ) {
-    return this.teamEnrollmentsService.removeMember(teamId, userId, req.user.id);
+    return this.teamEnrollmentsService.removeMember(
+      teamId,
+      userId,
+      req.user.id,
+    );
   }
 
   @Delete(':teamId/disband')
@@ -94,7 +111,8 @@ export class TeamEnrollmentsController {
   updateTeam(
     @Param('teamId') teamId: string,
     @Req() req: any,
-    @Body() body: {
+    @Body()
+    body: {
       name?: string;
       description?: string;
       avatarUrl?: string;
@@ -114,11 +132,18 @@ export class TeamEnrollmentsController {
     @Param('teamId') teamId: string,
     @Param('courseId') courseId: string,
   ) {
-    return this.teamEnrollmentsService.enrollTeamInCourse(teamId, courseId, req.user.id);
+    return this.teamEnrollmentsService.enrollTeamInCourse(
+      teamId,
+      courseId,
+      req.user.id,
+    );
   }
 
   @Delete(':teamId/unenroll/:courseId')
-  unenrollTeam(@Param('teamId') teamId: string, @Param('courseId') courseId: string) {
+  unenrollTeam(
+    @Param('teamId') teamId: string,
+    @Param('courseId') courseId: string,
+  ) {
     return this.teamEnrollmentsService.unenrollTeamFromCourse(teamId, courseId);
   }
 
@@ -133,6 +158,10 @@ export class TeamEnrollmentsController {
     @Param('courseId') courseId: string,
     @Body() body: { teamIds: string[] },
   ) {
-    return this.teamEnrollmentsService.bulkEnrollTeams(courseId, body.teamIds, req.user.id);
+    return this.teamEnrollmentsService.bulkEnrollTeams(
+      courseId,
+      body.teamIds,
+      req.user.id,
+    );
   }
 }

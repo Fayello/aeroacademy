@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { CourseAdminService } from './course-admin.service';
@@ -22,7 +32,10 @@ export class CourseAdminController {
   }
 
   @Patch('sections/:sectionId')
-  updateSection(@Param('sectionId') sectionId: string, @Body() body: { title?: string }) {
+  updateSection(
+    @Param('sectionId') sectionId: string,
+    @Body() body: { title?: string },
+  ) {
     return this.courseAdminService.updateSection(sectionId, body);
   }
 
@@ -32,10 +45,7 @@ export class CourseAdminController {
   }
 
   @Post('sections/:sectionId/lessons')
-  createLesson(
-    @Param('sectionId') sectionId: string,
-    @Body() body: any,
-  ) {
+  createLesson(@Param('sectionId') sectionId: string, @Body() body: any) {
     return this.courseAdminService.createLesson(sectionId, body);
   }
 
@@ -62,7 +72,10 @@ export class CourseAdminController {
     @Param('lessonId') lessonId: string,
     @Body() body: { targetSectionId: string },
   ) {
-    return this.courseAdminService.moveLessonToSection(lessonId, body.targetSectionId);
+    return this.courseAdminService.moveLessonToSection(
+      lessonId,
+      body.targetSectionId,
+    );
   }
 
   @Post(':courseId/sections/:sectionId/lessons/:lessonId/reorder')
@@ -73,7 +86,13 @@ export class CourseAdminController {
     @Body() body: { newOrder: number },
     @Req() req: any,
   ) {
-    return this.courseAdminService.reorderLesson(courseId, sectionId, lessonId, body.newOrder, req.user.id);
+    return this.courseAdminService.reorderLesson(
+      courseId,
+      sectionId,
+      lessonId,
+      body.newOrder,
+      req.user.id,
+    );
   }
 
   @Post(':courseId/sections/:sectionId/reorder')
@@ -83,7 +102,12 @@ export class CourseAdminController {
     @Body() body: { newOrder: number },
     @Req() req: any,
   ) {
-    return this.courseAdminService.reorderSection(courseId, sectionId, body.newOrder, req.user.id);
+    return this.courseAdminService.reorderSection(
+      courseId,
+      sectionId,
+      body.newOrder,
+      req.user.id,
+    );
   }
 
   @Get(':courseId/reorder-history')

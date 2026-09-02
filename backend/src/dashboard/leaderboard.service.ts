@@ -3,7 +3,14 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 export type TimeFilter = 'all' | 'month' | 'week';
-export type DomainFilter = 'all' | 'SECURITY' | 'NETWORKING' | 'DEVOPS' | 'DATABASES' | 'SYSTEMS' | 'QA';
+export type DomainFilter =
+  | 'all'
+  | 'SECURITY'
+  | 'NETWORKING'
+  | 'DEVOPS'
+  | 'DATABASES'
+  | 'SYSTEMS'
+  | 'QA';
 
 @Injectable()
 export class LeaderboardService {
@@ -66,7 +73,13 @@ export class LeaderboardService {
     organizationId?: string;
     city?: string;
   }) {
-    const { limit = 50, time = 'all', domain = 'all', organizationId, city } = params;
+    const {
+      limit = 50,
+      time = 'all',
+      domain = 'all',
+      organizationId,
+      city,
+    } = params;
 
     const now = new Date();
     let timeStart: Date | undefined;
@@ -89,8 +102,13 @@ export class LeaderboardService {
         take: limit,
         orderBy: { xp: 'desc' },
         select: {
-          id: true, name: true, username: true, xp: true, rank: true,
-          division: true, city: true,
+          id: true,
+          name: true,
+          username: true,
+          xp: true,
+          rank: true,
+          division: true,
+          city: true,
           organization: { select: { name: true, type: true } },
           achievements: { include: { achievement: true } },
         },
@@ -132,8 +150,12 @@ export class LeaderboardService {
       const users = await this.prisma.user.findMany({
         where: { ...baseWhere, id: { in: userIds } },
         select: {
-          id: true, name: true, username: true, rank: true,
-          division: true, city: true,
+          id: true,
+          name: true,
+          username: true,
+          rank: true,
+          division: true,
+          city: true,
           organization: { select: { name: true, type: true } },
           achievements: { include: { achievement: true } },
         },
@@ -191,7 +213,10 @@ export class LeaderboardService {
           const meta = p.metadata as Record<string, unknown> | null;
           const skillDomain = meta?.domain as string | undefined;
           if (skillDomain === domain) {
-            timeXpMap.set(p.userId, (timeXpMap.get(p.userId) || 0) + (p.amount || 0));
+            timeXpMap.set(
+              p.userId,
+              (timeXpMap.get(p.userId) || 0) + (p.amount || 0),
+            );
           }
         }
 
@@ -201,8 +226,12 @@ export class LeaderboardService {
         const users = await this.prisma.user.findMany({
           where: { ...baseWhere, id: { in: userIds } },
           select: {
-            id: true, name: true, username: true, rank: true,
-            division: true, city: true,
+            id: true,
+            name: true,
+            username: true,
+            rank: true,
+            division: true,
+            city: true,
             organization: { select: { name: true, type: true } },
             achievements: { include: { achievement: true } },
           },
@@ -231,8 +260,12 @@ export class LeaderboardService {
       const users = await this.prisma.user.findMany({
         where: { ...baseWhere, id: { in: userIds } },
         select: {
-          id: true, name: true, username: true, rank: true,
-          division: true, city: true,
+          id: true,
+          name: true,
+          username: true,
+          rank: true,
+          division: true,
+          city: true,
           organization: { select: { name: true, type: true } },
           achievements: { include: { achievement: true } },
         },
@@ -330,7 +363,13 @@ export class LeaderboardService {
         description: team.description,
         memberCount: team.members.length,
         totalXp: team.members.reduce((sum, m) => sum + m.xp, 0),
-        avgXp: team.members.length > 0 ? Math.round(team.members.reduce((sum, m) => sum + m.xp, 0) / team.members.length) : 0,
+        avgXp:
+          team.members.length > 0
+            ? Math.round(
+                team.members.reduce((sum, m) => sum + m.xp, 0) /
+                  team.members.length,
+              )
+            : 0,
       }))
       .sort((a, b) => b.totalXp - a.totalXp)
       .slice(0, limit)
@@ -363,16 +402,28 @@ export class LeaderboardService {
       this.prisma.user.findUnique({
         where: { id: userId1 },
         select: {
-          id: true, name: true, username: true, xp: true, rank: true,
-          division: true, currentStreak: true, longestStreak: true,
+          id: true,
+          name: true,
+          username: true,
+          xp: true,
+          rank: true,
+          division: true,
+          currentStreak: true,
+          longestStreak: true,
           achievements: { include: { achievement: true } },
         },
       }),
       this.prisma.user.findUnique({
         where: { id: userId2 },
         select: {
-          id: true, name: true, username: true, xp: true, rank: true,
-          division: true, currentStreak: true, longestStreak: true,
+          id: true,
+          name: true,
+          username: true,
+          xp: true,
+          rank: true,
+          division: true,
+          currentStreak: true,
+          longestStreak: true,
           achievements: { include: { achievement: true } },
         },
       }),
@@ -381,10 +432,24 @@ export class LeaderboardService {
     if (!user1 || !user2) return null;
 
     const [flags1, flags2, labs1, labs2] = await Promise.all([
-      this.prisma.labSubmission.count({ where: { userId: userId1, isCorrect: true } }),
-      this.prisma.labSubmission.count({ where: { userId: userId2, isCorrect: true } }),
-      this.prisma.labSubmission.findMany({ where: { userId: userId1, isCorrect: true }, select: { flag: { select: { labId: true } } } }).then((s) => new Set(s.map((x) => x.flag.labId)).size),
-      this.prisma.labSubmission.findMany({ where: { userId: userId2, isCorrect: true }, select: { flag: { select: { labId: true } } } }).then((s) => new Set(s.map((x) => x.flag.labId)).size),
+      this.prisma.labSubmission.count({
+        where: { userId: userId1, isCorrect: true },
+      }),
+      this.prisma.labSubmission.count({
+        where: { userId: userId2, isCorrect: true },
+      }),
+      this.prisma.labSubmission
+        .findMany({
+          where: { userId: userId1, isCorrect: true },
+          select: { flag: { select: { labId: true } } },
+        })
+        .then((s) => new Set(s.map((x) => x.flag.labId)).size),
+      this.prisma.labSubmission
+        .findMany({
+          where: { userId: userId2, isCorrect: true },
+          select: { flag: { select: { labId: true } } },
+        })
+        .then((s) => new Set(s.map((x) => x.flag.labId)).size),
     ]);
 
     return {

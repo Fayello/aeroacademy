@@ -47,7 +47,9 @@ export class OllamaGateway implements AiGateway {
 
   async isAvailable(): Promise<boolean> {
     try {
-      const res = await fetch(`${this.host}/api/tags`, { signal: AbortSignal.timeout(5000) });
+      const res = await fetch(`${this.host}/api/tags`, {
+        signal: AbortSignal.timeout(5000),
+      });
       return res.ok;
     } catch {
       return false;
@@ -62,8 +64,11 @@ export class OllamaGateway implements AiGateway {
       options: {},
     };
     if (options.system) body.system = options.system;
-    if (options.temperature !== undefined) (body.options as Record<string, unknown>).temperature = options.temperature;
-    if (options.maxTokens !== undefined) (body.options as Record<string, unknown>).num_predict = options.maxTokens;
+    if (options.temperature !== undefined)
+      (body.options as Record<string, unknown>).temperature =
+        options.temperature;
+    if (options.maxTokens !== undefined)
+      (body.options as Record<string, unknown>).num_predict = options.maxTokens;
     if (options.format === 'json') body.format = 'json';
 
     const res = await fetch(`${this.host}/api/generate`, {
@@ -85,8 +90,11 @@ export class OllamaGateway implements AiGateway {
       stream: false,
       options: {},
     };
-    if (options.temperature !== undefined) (body.options as Record<string, unknown>).temperature = options.temperature;
-    if (options.maxTokens !== undefined) (body.options as Record<string, unknown>).num_predict = options.maxTokens;
+    if (options.temperature !== undefined)
+      (body.options as Record<string, unknown>).temperature =
+        options.temperature;
+    if (options.maxTokens !== undefined)
+      (body.options as Record<string, unknown>).num_predict = options.maxTokens;
 
     const res = await fetch(`${this.host}/api/chat`, {
       method: 'POST',
@@ -100,7 +108,9 @@ export class OllamaGateway implements AiGateway {
     return data.message?.content || '';
   }
 
-  async chatStream(options: AiChatOptions): Promise<ReadableStream<Uint8Array>> {
+  async chatStream(
+    options: AiChatOptions,
+  ): Promise<ReadableStream<Uint8Array>> {
     const encoder = new TextEncoder();
     const self = this;
 
@@ -120,14 +130,22 @@ export class OllamaGateway implements AiGateway {
 
           if (!res.ok) {
             const errText = await res.text();
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: `Ollama error: ${res.status} ${errText}` })}\n\n`));
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({ error: `Ollama error: ${res.status} ${errText}` })}\n\n`,
+              ),
+            );
             controller.close();
             return;
           }
 
           const reader = res.body?.getReader();
           if (!reader) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'No response body' })}\n\n`));
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({ error: 'No response body' })}\n\n`,
+              ),
+            );
             controller.close();
             return;
           }
@@ -147,10 +165,18 @@ export class OllamaGateway implements AiGateway {
               try {
                 const chunk = JSON.parse(line);
                 if (chunk.message?.content) {
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: chunk.message.content })}\n\n`));
+                  controller.enqueue(
+                    encoder.encode(
+                      `data: ${JSON.stringify({ token: chunk.message.content })}\n\n`,
+                    ),
+                  );
                 }
                 if (chunk.done) {
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+                  controller.enqueue(
+                    encoder.encode(
+                      `data: ${JSON.stringify({ done: true })}\n\n`,
+                    ),
+                  );
                 }
               } catch {}
             }
@@ -160,10 +186,16 @@ export class OllamaGateway implements AiGateway {
             try {
               const chunk = JSON.parse(buffer);
               if (chunk.message?.content) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token: chunk.message.content })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ token: chunk.message.content })}\n\n`,
+                  ),
+                );
               }
               if (chunk.done) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+                controller.enqueue(
+                  encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`),
+                );
               }
             } catch {}
           }
@@ -171,7 +203,9 @@ export class OllamaGateway implements AiGateway {
           controller.close();
         } catch (err: unknown) {
           const message = err instanceof Error ? err.message : 'Stream failed';
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: message })}\n\n`));
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ error: message })}\n\n`),
+          );
           controller.close();
         }
       },

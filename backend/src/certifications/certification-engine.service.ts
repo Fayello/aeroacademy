@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { randomBytes } from 'crypto';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Any = any;
 
 export interface CertificationRequirement {
@@ -81,19 +80,22 @@ export class CertificationEngineService {
       const outcomes = d.learningOutcomes;
       const outcomeScores = outcomes.map((lo) => {
         const scores = lo.evidence.map((e) => e.score);
-        return scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+        return scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
       });
-      const avgMastery = outcomeScores.length > 0
-        ? outcomeScores.reduce((a, b) => a + b, 0) / outcomeScores.length
-        : 0;
+      const avgMastery =
+        outcomeScores.length > 0
+          ? outcomeScores.reduce((a, b) => a + b, 0) / outcomeScores.length
+          : 0;
 
       // Labs completed (unique labs with instances)
       const labIds = new Set(
         d.skills.flatMap((s) =>
           s.labSkills
             .filter((ls) => ls.lab.instances.length > 0)
-            .map((ls) => ls.labId)
-        )
+            .map((ls) => ls.labId),
+        ),
       );
 
       return {
@@ -133,23 +135,23 @@ export class CertificationEngineService {
       }));
 
       const domainsQualified = domainResults.filter(
-        (dr) => dr.meetsMastery && dr.meetsLabs
+        (dr) => dr.meetsMastery && dr.meetsLabs,
       ).length;
 
       const missingRequirements: string[] = [];
       if (domainsQualified < req.minDomains) {
         missingRequirements.push(
-          `Need ${req.minDomains - domainsQualified} more domain(s) with ${req.minMasteryPerDomain}%+ mastery and ${req.minLabsPerDomain}+ labs`
+          `Need ${req.minDomains - domainsQualified} more domain(s) with ${req.minMasteryPerDomain}%+ mastery and ${req.minLabsPerDomain}+ labs`,
         );
       }
       if (passedAssessments < req.minAssessments) {
         missingRequirements.push(
-          `Need ${req.minAssessments - passedAssessments} more passing assessment(s)`
+          `Need ${req.minAssessments - passedAssessments} more passing assessment(s)`,
         );
       }
       if (userXp < cert.xpRequired) {
         missingRequirements.push(
-          `Need ${(cert.xpRequired - userXp).toLocaleString()} more XP`
+          `Need ${(cert.xpRequired - userXp).toLocaleString()} more XP`,
         );
       }
 
@@ -172,7 +174,10 @@ export class CertificationEngineService {
     });
   }
 
-  async awardCertification(userId: string, certificationCode: string): Promise<Any> {
+  async awardCertification(
+    userId: string,
+    certificationCode: string,
+  ): Promise<Any> {
     const cert = await this.prisma.certification.findUnique({
       where: { code: certificationCode },
     });
@@ -192,13 +197,15 @@ export class CertificationEngineService {
     }
 
     // Build evidence snapshot
-    const evidenceSummary = JSON.parse(JSON.stringify({
-      evaluatedAt: new Date().toISOString(),
-      domainResults: evaluation.domainResults,
-      domainsQualified: evaluation.domainsQualified,
-      assessmentsPassed: evaluation.assessmentsPassed,
-      xp: evaluation.xp,
-    }));
+    const evidenceSummary = JSON.parse(
+      JSON.stringify({
+        evaluatedAt: new Date().toISOString(),
+        domainResults: evaluation.domainResults,
+        domainsQualified: evaluation.domainsQualified,
+        assessmentsPassed: evaluation.assessmentsPassed,
+        xp: evaluation.xp,
+      }),
+    );
 
     const credentialId = this.generateCredentialId();
     const expiresAt = new Date();
@@ -243,7 +250,11 @@ export class CertificationEngineService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
-        id: true, name: true, email: true, division: true, xp: true,
+        id: true,
+        name: true,
+        email: true,
+        division: true,
+        xp: true,
         createdAt: true,
       },
     });
@@ -263,7 +274,10 @@ export class CertificationEngineService {
     const domainCompetency = domains.map((d) => {
       const outcomes = d.learningOutcomes;
       const scores = outcomes.flatMap((lo) => lo.evidence.map((e) => e.score));
-      const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+      const avg =
+        scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
       return {
         domainId: d.id,
         name: d.name,
@@ -282,7 +296,11 @@ export class CertificationEngineService {
     // Assessments
     const assessments = await this.prisma.studentAssessment.findMany({
       where: { userId, status: 'COMPLETED' },
-      include: { assessment: { select: { title: true, domain: { select: { name: true } } } } },
+      include: {
+        assessment: {
+          select: { title: true, domain: { select: { name: true } } },
+        },
+      },
       orderBy: { completedAt: 'desc' },
     });
 
@@ -305,7 +323,8 @@ export class CertificationEngineService {
         domainsMastered: domainCompetency.filter((d) => d.mastery >= 80).length,
         totalDomains: domainCompetency.length,
         labsCompleted: uniqueLabs.size,
-        assessmentsPassed: assessments.filter((a) => (a.score ?? 0) >= 70).length,
+        assessmentsPassed: assessments.filter((a) => (a.score ?? 0) >= 70)
+          .length,
         certificationsEarned: awards.length,
         evidenceCount,
       },

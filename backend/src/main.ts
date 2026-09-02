@@ -46,14 +46,17 @@ async function bootstrap() {
   // Static file serving for uploads
   const uploadsDir = join(process.cwd(), 'uploads');
   if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
-  expressApp.use('/api/v1/upload/files', (req: Request, res: Response, next: NextFunction) => {
-    const filePath = join(uploadsDir, req.url);
-    if (existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      next();
-    }
-  });
+  expressApp.use(
+    '/api/v1/upload/files',
+    (req: Request, res: Response, next: NextFunction) => {
+      const filePath = join(uploadsDir, req.url);
+      if (existsSync(filePath)) {
+        res.sendFile(filePath);
+      } else {
+        next();
+      }
+    },
+  );
 
   // Request logging
   app.use((req: Request, _res: Response, next: NextFunction) => {
@@ -75,7 +78,10 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Swagger API documentation (dev only, gated by ENABLE_SWAGGER env)
-  if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_SWAGGER !== 'false') {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    process.env.ENABLE_SWAGGER !== 'false'
+  ) {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('XpertClass API')
       .setDescription(

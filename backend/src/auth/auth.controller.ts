@@ -149,7 +149,10 @@ export class AuthController {
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Audit('AUTH_LOGIN')
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
@@ -205,9 +208,14 @@ export class AuthController {
       });
 
       if (result.isNewUser || !result.user.emailVerified) {
-        const code = await this.otpService.create(profile.email, 'email_verification');
+        const code = await this.otpService.create(
+          profile.email,
+          'email_verification',
+        );
         if (code) {
-          this.emailService.sendOtpVerification(profile.email, profile.name, code).catch(() => {});
+          this.emailService
+            .sendOtpVerification(profile.email, profile.name, code)
+            .catch(() => {});
         }
         res.writeHead(302, {
           Location: `${frontendUrl}/verify-email?email=${encodeURIComponent(profile.email)}`,
@@ -216,8 +224,9 @@ export class AuthController {
         return;
       }
 
-      const { access_token, refresh_token } =
-        await this.authService.login(result.user);
+      const { access_token, refresh_token } = await this.authService.login(
+        result.user,
+      );
       this.setAuthCookies(res, access_token, refresh_token);
 
       res.writeHead(302, {
@@ -365,7 +374,10 @@ export class AuthController {
     @Request() req: RequestWithUser,
     @Body() body: { preferences: Record<string, boolean> },
   ) {
-    return this.authService.updateEmailPreferences(req.user.id, body.preferences);
+    return this.authService.updateEmailPreferences(
+      req.user.id,
+      body.preferences,
+    );
   }
 
   @ApiBearerAuth('JWT-auth')
@@ -433,13 +445,21 @@ export class AuthController {
     @Body('newPassword') newPassword: string,
   ) {
     if (!email || !code || !newPassword) {
-      throw new UnauthorizedException('Email, verification code, and new password are required');
+      throw new UnauthorizedException(
+        'Email, verification code, and new password are required',
+      );
     }
     if (!newPassword || newPassword.length < 8) {
       throw new UnauthorizedException('Password must be at least 8 characters');
     }
-    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
-      throw new UnauthorizedException('Password must contain uppercase, lowercase, and a number');
+    if (
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/\d/.test(newPassword)
+    ) {
+      throw new UnauthorizedException(
+        'Password must contain uppercase, lowercase, and a number',
+      );
     }
     return this.authService.resetPasswordWithOtp(email, code, newPassword);
   }
@@ -454,8 +474,14 @@ export class AuthController {
     if (!newPassword || newPassword.length < 8) {
       throw new UnauthorizedException('Password must be at least 8 characters');
     }
-    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
-      throw new UnauthorizedException('Password must contain uppercase, lowercase, and a number');
+    if (
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/\d/.test(newPassword)
+    ) {
+      throw new UnauthorizedException(
+        'Password must contain uppercase, lowercase, and a number',
+      );
     }
     return this.authService.resetPassword(token, newPassword);
   }
@@ -468,8 +494,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const token = refreshToken || this.getCookieValue(req, 'refresh_token');
-    if (!token)
-      throw new UnauthorizedException('Refresh token required');
+    if (!token) throw new UnauthorizedException('Refresh token required');
     const result = await this.authService.refreshTokens(token);
     this.setAuthCookies(res, result.access_token, result.refresh_token);
     return result;

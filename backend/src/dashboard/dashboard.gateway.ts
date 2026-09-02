@@ -17,7 +17,10 @@ import createLogger from '../common/logger';
 const logger = createLogger('Dashboard');
 const MAX_CONNECTIONS_PER_USER = 3;
 
-function getCookieValue(cookieHeader: string | undefined, name: string): string | null {
+function getCookieValue(
+  cookieHeader: string | undefined,
+  name: string,
+): string | null {
   if (!cookieHeader) return null;
 
   const cookies = cookieHeader.split(';');
@@ -170,7 +173,9 @@ export class DashboardGateway
     if (this.achievementCheckCounter >= 6) {
       this.achievementCheckCounter = 0;
       await Promise.allSettled(
-        uniqueUserIds.map((uid) => this.achievementService.checkAndUnlockAchievements(uid)),
+        uniqueUserIds.map((uid) =>
+          this.achievementService.checkAndUnlockAchievements(uid),
+        ),
       );
     }
 
@@ -189,8 +194,12 @@ export class DashboardGateway
         (r) => r.status === 'fulfilled' && r.value.userId === userId,
       );
       if (result && result.status === 'fulfilled') {
-        this.server.to(socketId).emit('intelligence_update', result.value.intelligence);
-        this.server.to(socketId).emit('user_metrics_update', result.value.userMetrics);
+        this.server
+          .to(socketId)
+          .emit('intelligence_update', result.value.intelligence);
+        this.server
+          .to(socketId)
+          .emit('user_metrics_update', result.value.userMetrics);
       }
     }
   }

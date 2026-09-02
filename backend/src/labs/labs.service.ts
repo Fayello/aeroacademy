@@ -80,18 +80,37 @@ export class LabsService implements OnModuleInit {
     if (!user) return;
     const lastActivity = user.lastActivityDate;
     if (!lastActivity) {
-      await this.prisma.user.update({ where: { id: userId }, data: { currentStreak: 1, longestStreak: Math.max(1, user.longestStreak), lastActivityDate: today } });
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          currentStreak: 1,
+          longestStreak: Math.max(1, user.longestStreak),
+          lastActivityDate: today,
+        },
+      });
       return;
     }
     const lastDay = new Date(lastActivity);
     lastDay.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / 86400000);
+    const diffDays = Math.floor(
+      (today.getTime() - lastDay.getTime()) / 86400000,
+    );
     if (diffDays === 0) return;
     if (diffDays === 1) {
       const newStreak = user.currentStreak + 1;
-      await this.prisma.user.update({ where: { id: userId }, data: { currentStreak: newStreak, longestStreak: Math.max(newStreak, user.longestStreak), lastActivityDate: today } });
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          currentStreak: newStreak,
+          longestStreak: Math.max(newStreak, user.longestStreak),
+          lastActivityDate: today,
+        },
+      });
     } else {
-      await this.prisma.user.update({ where: { id: userId }, data: { currentStreak: 1, lastActivityDate: today } });
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { currentStreak: 1, lastActivityDate: today },
+      });
     }
   }
 
@@ -101,7 +120,9 @@ export class LabsService implements OnModuleInit {
         where: { status: 'RUNNING' },
         select: { containerId: true },
       });
-      const activeContainerIds = new Set(runningInstances.map((i) => i.containerId).filter(Boolean));
+      const activeContainerIds = new Set(
+        runningInstances.map((i) => i.containerId).filter(Boolean),
+      );
 
       const containers = await this.docker.listContainers({ all: true });
       const labContainers = containers.filter((c) =>
@@ -160,7 +181,10 @@ export class LabsService implements OnModuleInit {
     }
   }
 
-  private async resolveLocalImage(requestedImage: string, docker?: Docker): Promise<string> {
+  private async resolveLocalImage(
+    requestedImage: string,
+    docker?: Docker,
+  ): Promise<string> {
     const targetDocker = docker || this.docker;
     try {
       const localImages = await targetDocker.listImages();
@@ -215,7 +239,8 @@ export class LabsService implements OnModuleInit {
     // Pick the best server for this lab
     const serverId = this.dockerManager.pickServer();
     const targetDocker = this.dockerManager.getDockerForServer(serverId);
-    if (!targetDocker) throw new BadRequestException('No Docker servers available');
+    if (!targetDocker)
+      throw new BadRequestException('No Docker servers available');
 
     const result = await this.prisma.$transaction(async (tx) => {
       const runningCount = await tx.labInstance.count({
@@ -249,7 +274,10 @@ export class LabsService implements OnModuleInit {
     const instance = result;
 
     try {
-      const imageName = await this.resolveLocalImage(lab.dockerImage, targetDocker);
+      const imageName = await this.resolveLocalImage(
+        lab.dockerImage,
+        targetDocker,
+      );
 
       try {
         await targetDocker.getImage(imageName).inspect();
@@ -289,8 +317,17 @@ export class LabsService implements OnModuleInit {
         env.push(`MONGODB_URI=mongodb://tactical-mongo:27017/${dbName}`);
       }
 
-      const serviceImages = ['juice-shop', 'webgoat', 'nodegoat', 'webgoat', 'dvwa', 'vapi'];
-      const isServiceImage = serviceImages.some(name => imageName.toLowerCase().includes(name));
+      const serviceImages = [
+        'juice-shop',
+        'webgoat',
+        'nodegoat',
+        'webgoat',
+        'dvwa',
+        'vapi',
+      ];
+      const isServiceImage = serviceImages.some((name) =>
+        imageName.toLowerCase().includes(name),
+      );
 
       const containerOpts: any = {
         Image: imageName,
@@ -316,9 +353,13 @@ export class LabsService implements OnModuleInit {
       try {
         container = await targetDocker.createContainer(containerOpts);
       } catch (netErr) {
-        logger.warn(`Overlay network failed, falling back to bridge: ${netErr instanceof Error ? netErr.message : String(netErr)}`);
+        logger.warn(
+          `Overlay network failed, falling back to bridge: ${netErr instanceof Error ? netErr.message : String(netErr)}`,
+        );
         containerOpts.HostConfig.NetworkMode = 'aeroacademy_labs';
-        containerOpts.NetworkingConfig = { EndpointsConfig: { 'aeroacademy_labs': {} } };
+        containerOpts.NetworkingConfig = {
+          EndpointsConfig: { aeroacademy_labs: {} },
+        };
         container = await targetDocker.createContainer(containerOpts);
       }
 
@@ -330,12 +371,18 @@ export class LabsService implements OnModuleInit {
           AttachStdin: false,
           AttachStdout: false,
           AttachStderr: false,
-          Cmd: ['bash', '-c', 'id student >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq sudo > /dev/null 2>&1 && useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0'],
+          Cmd: [
+            'bash',
+            '-c',
+            'id student >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq sudo > /dev/null 2>&1 && useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0',
+          ],
         });
         await setupExec.start({ hijack: false });
         logger.info('Student user setup complete');
       } catch (err) {
-        logger.warn(`Student user setup failed: ${err instanceof Error ? err.message : String(err)}`);
+        logger.warn(
+          `Student user setup failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
 
       // Install lab-specific packages based on Docker image
@@ -343,20 +390,26 @@ export class LabsService implements OnModuleInit {
         const image = (lab.dockerImage || '').toLowerCase();
         let pkgCmd = '';
         if (image.includes('ubuntu') || image.includes('debian')) {
-          pkgCmd = 'apt-get update -qq && apt-get install -y -qq acl rsyslog openssh-server cron aide iptables fail2ban-client net-tools iputils-ping curl wget > /dev/null 2>&1; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
+          pkgCmd =
+            'apt-get update -qq && apt-get install -y -qq acl rsyslog openssh-server cron aide iptables fail2ban-client net-tools iputils-ping curl wget > /dev/null 2>&1; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
         } else if (image.includes('centos') || image.includes('rhel')) {
-          pkgCmd = 'dnf install -y -q acl rsyslog openssh-server cronie aide iptables-regs net-tools iputils curl wget > /dev/null 2>&1; systemctl start rsyslog 2>/dev/null; systemctl start crond 2>/dev/null; systemctl start sshd 2>/dev/null; exit 0';
+          pkgCmd =
+            'dnf install -y -q acl rsyslog openssh-server cronie aide iptables-regs net-tools iputils curl wget > /dev/null 2>&1; systemctl start rsyslog 2>/dev/null; systemctl start crond 2>/dev/null; systemctl start sshd 2>/dev/null; exit 0';
         }
         if (pkgCmd) {
           const pkgExec = await container.exec({
-            AttachStdin: false, AttachStdout: false, AttachStderr: false,
+            AttachStdin: false,
+            AttachStdout: false,
+            AttachStderr: false,
             Cmd: ['bash', '-c', pkgCmd],
           });
           await pkgExec.start({ hijack: false });
           logger.info(`Package setup complete for image: ${image}`);
         }
       } catch (err) {
-        logger.warn(`Package setup failed: ${err instanceof Error ? err.message : String(err)}`);
+        logger.warn(
+          `Package setup failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
 
       const updated = await this.prisma.labInstance.update({
@@ -369,10 +422,14 @@ export class LabsService implements OnModuleInit {
         where: { userId, id: { not: instance.id } },
       });
       if (priorLabCount === 0) {
-        this.emailService.sendFirstLabLaunched(user.email, user.name).catch(() => {});
+        this.emailService
+          .sendFirstLabLaunched(user.email, user.name)
+          .catch(() => {});
       }
 
-      logger.info(`Lab started on ${serverId}: ${lab.title} for user ${userId}`);
+      logger.info(
+        `Lab started on ${serverId}: ${lab.title} for user ${userId}`,
+      );
 
       await this.activityService
         .log(userId, 'LAB_STARTED', {
@@ -383,7 +440,9 @@ export class LabsService implements OnModuleInit {
         })
         .catch(() => {});
 
-      this.emailService.sendLabStarted(user.email, user.name, lab.title, updated.expiresAt).catch(() => {});
+      this.emailService
+        .sendLabStarted(user.email, user.name, lab.title, updated.expiresAt)
+        .catch(() => {});
 
       return updated;
     } catch (err) {
@@ -416,7 +475,9 @@ export class LabsService implements OnModuleInit {
     }
 
     try {
-      const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+      const targetDocker =
+        this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
+        this.docker;
       const container = targetDocker.getContainer(instance.containerId);
       await container.stop().catch(() => {});
       await container.remove().catch(() => {});
@@ -425,11 +486,10 @@ export class LabsService implements OnModuleInit {
       /* containers may already be stopped/removed */
     }
 
-    await this.prisma.labInstance
-      .update({
-        where: { id: instance.id },
-        data: { status: 'STOPPED' },
-      });
+    await this.prisma.labInstance.update({
+      where: { id: instance.id },
+      data: { status: 'STOPPED' },
+    });
 
     const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
     await this.activityService
@@ -457,7 +517,9 @@ export class LabsService implements OnModuleInit {
       if (!instance.containerId) continue;
 
       try {
-        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const targetDocker =
+          this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
+          this.docker;
         const container = targetDocker.getContainer(instance.containerId);
         const info = await container.inspect();
         if (!info.State.Running) {
@@ -488,7 +550,9 @@ export class LabsService implements OnModuleInit {
     for (const instance of expiredInstances) {
       try {
         if (!instance.containerId) continue;
-        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const targetDocker =
+          this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
+          this.docker;
         const container = targetDocker.getContainer(instance.containerId);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
@@ -501,10 +565,19 @@ export class LabsService implements OnModuleInit {
 
         const labWithUser = await this.prisma.labInstance.findUnique({
           where: { id: instance.id },
-          include: { lab: { select: { title: true } }, user: { select: { email: true, name: true } } },
+          include: {
+            lab: { select: { title: true } },
+            user: { select: { email: true, name: true } },
+          },
         });
         if (labWithUser) {
-          this.emailService.sendLabExpired(labWithUser.user.email, labWithUser.user.name, labWithUser.lab.title).catch(() => {});
+          this.emailService
+            .sendLabExpired(
+              labWithUser.user.email,
+              labWithUser.user.name,
+              labWithUser.lab.title,
+            )
+            .catch(() => {});
         }
       } catch {
         /* container may already be gone */
@@ -521,7 +594,10 @@ export class LabsService implements OnModuleInit {
     for (const instance of staleProvisioning) {
       try {
         if (instance.containerId) {
-          const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+          const targetDocker =
+            this.dockerManager.getDockerForServer(
+              instance.serverId || 'local',
+            ) || this.docker;
           const container = targetDocker.getContainer(instance.containerId);
           await container.stop().catch(() => {});
           await container.remove().catch(() => {});
@@ -577,7 +653,12 @@ export class LabsService implements OnModuleInit {
     return latestInstance;
   }
 
-  async findAll(opts?: { skip?: number; take?: number; userId?: string; userRole?: string }) {
+  async findAll(opts?: {
+    skip?: number;
+    take?: number;
+    userId?: string;
+    userRole?: string;
+  }) {
     const labs = await this.prisma.lab.findMany({
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 200,
@@ -585,7 +666,9 @@ export class LabsService implements OnModuleInit {
         flags: {
           include: {
             submissions: {
-              where: opts?.userId ? { isCorrect: true, userId: opts.userId } : { isCorrect: true },
+              where: opts?.userId
+                ? { isCorrect: true, userId: opts.userId }
+                : { isCorrect: true },
               select: { userId: true },
             },
           },
@@ -594,7 +677,9 @@ export class LabsService implements OnModuleInit {
     });
 
     if (opts?.userId) {
-      const user = await this.prisma.user.findUnique({ where: { id: opts.userId } });
+      const user = await this.prisma.user.findUnique({
+        where: { id: opts.userId },
+      });
       const userLevel = user ? getLevel(user.xp) : 1;
       return labs.map((lab) => {
         const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
@@ -623,7 +708,9 @@ export class LabsService implements OnModuleInit {
       where: { userId, labId: flag.labId, status: 'RUNNING' },
     });
     if (!activeInstance) {
-      throw new BadRequestException('You must have an active lab instance to submit flags.');
+      throw new BadRequestException(
+        'You must have an active lab instance to submit flags.',
+      );
     }
 
     const existingCorrect = await this.prisma.labSubmission.findFirst({
@@ -650,27 +737,44 @@ export class LabsService implements OnModuleInit {
       // Award XP through the progression engine
       const lab = await this.prisma.lab.findUnique({
         where: { id: flag.labId },
-        include: { labSkills: { include: { skill: { include: { domain: true } } } } },
+        include: {
+          labSkills: { include: { skill: { include: { domain: true } } } },
+        },
       });
 
       const primarySkill = lab?.labSkills?.[0]?.skill;
       const domain = primarySkill?.domain?.name;
       const skillName = primarySkill?.name;
 
-      await this.progressionService.awardXP(userId, {
-        amount: flag.points,
-        source: 'FLAG_SOLVED',
-        sourceId: flag.id,
-        domain,
-        skillName,
-      }).catch((err) => logger.error('ProgressionService.awardXP failed', err));
+      await this.progressionService
+        .awardXP(userId, {
+          amount: flag.points,
+          source: 'FLAG_SOLVED',
+          sourceId: flag.id,
+          domain,
+          skillName,
+        })
+        .catch((err) => logger.error('ProgressionService.awardXP failed', err));
 
       // Award domain rating for flag solve
       if (primarySkill?.domain?.id) {
         try {
-          const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+          const activeSeason = await this.prisma.season.findFirst({
+            where: { isActive: true },
+          });
           if (activeSeason) {
-            const difficultyMap: Record<number, string> = { 800: 'EASY', 900: 'EASY', 1000: 'MEDIUM', 1100: 'MEDIUM', 1200: 'HARD', 1300: 'HARD', 1400: 'HARD', 1500: 'EXPERT', 1600: 'EXPERT', 1700: 'EXPERT' };
+            const difficultyMap: Record<number, string> = {
+              800: 'EASY',
+              900: 'EASY',
+              1000: 'MEDIUM',
+              1100: 'MEDIUM',
+              1200: 'HARD',
+              1300: 'HARD',
+              1400: 'HARD',
+              1500: 'EXPERT',
+              1600: 'EXPERT',
+              1700: 'EXPERT',
+            };
             await this.domainRankingService.awardDomainRating({
               userId,
               domainId: primarySkill.domain.id,
@@ -685,12 +789,18 @@ export class LabsService implements OnModuleInit {
             });
           }
         } catch (err) {
-          logger.error(`Domain rating award failed for flag: ${(err as Error)?.message}`);
+          logger.error(
+            `Domain rating award failed for flag: ${(err as Error)?.message}`,
+          );
         }
       }
 
       // Check mission progress
-      await this.missionService.checkProgress(userId, 'FLAG_COMPLETIONS', flag.id).catch((err) => logger.error('MissionService.checkProgress failed', err));
+      await this.missionService
+        .checkProgress(userId, 'FLAG_COMPLETIONS', flag.id)
+        .catch((err) =>
+          logger.error('MissionService.checkProgress failed', err),
+        );
       if (lab)
         await this.leaguesService.calculateUserElo(
           userId,
@@ -703,39 +813,78 @@ export class LabsService implements OnModuleInit {
         where: { userId, isCorrect: true },
       });
       if (priorCorrectCount === 1) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
         if (user) {
-          this.emailService.sendFirstFlagCaptured(user.email, user.name, lab?.title || 'Unknown Lab', flag.points).catch(() => {});
+          this.emailService
+            .sendFirstFlagCaptured(
+              user.email,
+              user.name,
+              lab?.title || 'Unknown Lab',
+              flag.points,
+            )
+            .catch(() => {});
         }
       }
 
       await this.achievementService.checkAndUnlockAchievements(userId);
 
       // Check if lab is now fully complete (all flags captured)
-      const totalFlagsInLab = await this.prisma.labFlag.count({ where: { labId: flag.labId } });
+      const totalFlagsInLab = await this.prisma.labFlag.count({
+        where: { labId: flag.labId },
+      });
       const capturedFlagIds = await this.prisma.labSubmission.findMany({
         where: { userId, isCorrect: true, flag: { labId: flag.labId } },
         select: { flagId: true },
         distinct: ['flagId'],
       });
       if (capturedFlagIds.length >= totalFlagsInLab && totalFlagsInLab > 0) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
         if (user) {
           const flagPoints = await this.prisma.labFlag.findMany({
             where: { labId: flag.labId },
             select: { points: true },
           });
           const totalXp = flagPoints.reduce((sum, f) => sum + f.points, 0);
-          this.emailService.sendLabCompleted(user.email, user.name, lab?.title || 'Unknown Lab', totalXp, totalFlagsInLab).catch(() => {});
+          this.emailService
+            .sendLabCompleted(
+              user.email,
+              user.name,
+              lab?.title || 'Unknown Lab',
+              totalXp,
+              totalFlagsInLab,
+            )
+            .catch(() => {});
         }
-        this.eventsService.emit('LAB_COMPLETED', { userId, labId: flag.labId, labTitle: lab?.title, timestamp: new Date() });
+        this.eventsService.emit('LAB_COMPLETED', {
+          userId,
+          labId: flag.labId,
+          labTitle: lab?.title,
+          timestamp: new Date(),
+        });
 
         // Award bonus domain rating for lab completion
         if (primarySkill?.domain?.id) {
           try {
-            const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+            const activeSeason = await this.prisma.season.findFirst({
+              where: { isActive: true },
+            });
             if (activeSeason) {
-              const difficultyMap: Record<number, string> = { 800: 'EASY', 900: 'EASY', 1000: 'MEDIUM', 1100: 'MEDIUM', 1200: 'HARD', 1300: 'HARD', 1400: 'HARD', 1500: 'EXPERT', 1600: 'EXPERT', 1700: 'EXPERT' };
+              const difficultyMap: Record<number, string> = {
+                800: 'EASY',
+                900: 'EASY',
+                1000: 'MEDIUM',
+                1100: 'MEDIUM',
+                1200: 'HARD',
+                1300: 'HARD',
+                1400: 'HARD',
+                1500: 'EXPERT',
+                1600: 'EXPERT',
+                1700: 'EXPERT',
+              };
               await this.domainRankingService.awardDomainRating({
                 userId,
                 domainId: primarySkill.domain.id,
@@ -750,11 +899,20 @@ export class LabsService implements OnModuleInit {
               });
             }
           } catch (err) {
-            logger.error(`Domain rating award failed for lab completion: ${(err as Error)?.message}`);
+            logger.error(
+              `Domain rating award failed for lab completion: ${(err as Error)?.message}`,
+            );
           }
         }
 
-        await this.missionService.checkProgress(userId, 'LAB_COMPLETIONS', flag.labId).catch((err) => logger.error('MissionService.checkProgress LAB_COMPLETIONS failed', err));
+        await this.missionService
+          .checkProgress(userId, 'LAB_COMPLETIONS', flag.labId)
+          .catch((err) =>
+            logger.error(
+              'MissionService.checkProgress LAB_COMPLETIONS failed',
+              err,
+            ),
+          );
       }
 
       await this.activityService
@@ -777,9 +935,13 @@ export class LabsService implements OnModuleInit {
       });
     } else {
       // V2: ELO adjustment for incorrect submissions
-      const lab = await this.prisma.lab.findUnique({ where: { id: flag.labId } });
+      const lab = await this.prisma.lab.findUnique({
+        where: { id: flag.labId },
+      });
       if (lab) {
-        await this.leaguesService.calculateUserElo(userId, lab.difficulty, false).catch(() => {});
+        await this.leaguesService
+          .calculateUserElo(userId, lab.difficulty, false)
+          .catch(() => {});
       }
     }
 
@@ -796,7 +958,13 @@ export class LabsService implements OnModuleInit {
     const lab = await this.prisma.lab.findUnique({
       where: { id },
       include: {
-        flags: { include: { submissions: { where: userId ? { isCorrect: true, userId } : { isCorrect: true } } } },
+        flags: {
+          include: {
+            submissions: {
+              where: userId ? { isCorrect: true, userId } : { isCorrect: true },
+            },
+          },
+        },
       },
     });
     if (!lab) throw new NotFoundException('Lab not found');
@@ -861,7 +1029,17 @@ export class LabsService implements OnModuleInit {
     return this.prisma.lab.create({ data });
   }
 
-  async update(id: string, data: { title?: string; description?: string; dockerImage?: string; difficulty?: number; briefing?: string; imageUrl?: string }) {
+  async update(
+    id: string,
+    data: {
+      title?: string;
+      description?: string;
+      dockerImage?: string;
+      difficulty?: number;
+      briefing?: string;
+      imageUrl?: string;
+    },
+  ) {
     const lab = await this.prisma.lab.findUnique({ where: { id } });
     if (!lab) throw new NotFoundException('Lab not found');
     return this.prisma.lab.update({ where: { id }, data });
@@ -871,10 +1049,14 @@ export class LabsService implements OnModuleInit {
     const lab = await this.prisma.lab.findUnique({ where: { id } });
     if (!lab) throw new NotFoundException('Lab not found');
 
-    const instances = await this.prisma.labInstance.findMany({ where: { labId: id, containerId: { not: null } } });
+    const instances = await this.prisma.labInstance.findMany({
+      where: { labId: id, containerId: { not: null } },
+    });
     for (const instance of instances) {
       try {
-        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const targetDocker =
+          this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
+          this.docker;
         const container = targetDocker.getContainer(instance.containerId!);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
@@ -892,10 +1074,14 @@ export class LabsService implements OnModuleInit {
   }
 
   async batchRemove(ids: string[]) {
-    const instances = await this.prisma.labInstance.findMany({ where: { labId: { in: ids }, containerId: { not: null } } });
+    const instances = await this.prisma.labInstance.findMany({
+      where: { labId: { in: ids }, containerId: { not: null } },
+    });
     for (const instance of instances) {
       try {
-        const targetDocker = this.dockerManager.getDockerForServer(instance.serverId || 'local') || this.docker;
+        const targetDocker =
+          this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
+          this.docker;
         const container = targetDocker.getContainer(instance.containerId!);
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
@@ -903,7 +1089,9 @@ export class LabsService implements OnModuleInit {
       } catch {}
     }
     await this.prisma.$transaction([
-      this.prisma.labSubmission.deleteMany({ where: { flag: { labId: { in: ids } } } }),
+      this.prisma.labSubmission.deleteMany({
+        where: { flag: { labId: { in: ids } } },
+      }),
       this.prisma.labFlag.deleteMany({ where: { labId: { in: ids } } }),
       this.prisma.labInstance.deleteMany({ where: { labId: { in: ids } } }),
     ]);
@@ -1043,7 +1231,9 @@ export class LabsService implements OnModuleInit {
   async getLabReviews(labId: string) {
     const reviews = await this.prisma.labReview.findMany({
       where: { labId },
-      include: { user: { select: { id: true, name: true, email: true, division: true } } },
+      include: {
+        user: { select: { id: true, name: true, email: true, division: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -1064,15 +1254,23 @@ export class LabsService implements OnModuleInit {
       stats: {
         average: stats._avg.rating || 0,
         total: stats._count.rating,
-        distribution: distribution.reduce((acc, d) => {
-          acc[d.rating] = d._count.rating;
-          return acc;
-        }, {} as Record<number, number>),
+        distribution: distribution.reduce(
+          (acc, d) => {
+            acc[d.rating] = d._count.rating;
+            return acc;
+          },
+          {} as Record<number, number>,
+        ),
       },
     };
   }
 
-  async createLabReview(userId: string, labId: string, rating: number, comment?: string) {
+  async createLabReview(
+    userId: string,
+    labId: string,
+    rating: number,
+    comment?: string,
+  ) {
     if (rating < 1 || rating > 5) {
       throw new BadRequestException('Rating must be between 1 and 5');
     }

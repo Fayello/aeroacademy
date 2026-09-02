@@ -16,7 +16,11 @@ const IV_LENGTH = 16;
 const ALGORITHM = 'aes-256-cbc';
 
 function normalizeAnswer(answer: string): string {
-  return answer.trim().toLowerCase().replace(/[\s,;]+/g, ' ').trim();
+  return answer
+    .trim()
+    .toLowerCase()
+    .replace(/[\s,;]+/g, ' ')
+    .trim();
 }
 
 export async function hashAnswer(answer: string): Promise<string> {

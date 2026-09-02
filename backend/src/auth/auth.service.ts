@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -85,19 +90,30 @@ export class AuthService {
       });
     });
 
-    await this.progressionService.awardXP(referrer.id, {
-      amount: REFERRAL_XP_REWARD,
-      source: 'REFERRAL_GIVEN',
-      sourceId: userId,
-    }).catch((err) => logger.error('ProgressionService.awardXP failed for referrer', err));
+    await this.progressionService
+      .awardXP(referrer.id, {
+        amount: REFERRAL_XP_REWARD,
+        source: 'REFERRAL_GIVEN',
+        sourceId: userId,
+      })
+      .catch((err) =>
+        logger.error('ProgressionService.awardXP failed for referrer', err),
+      );
 
-    await this.progressionService.awardXP(userId, {
-      amount: REFERRAL_XP_REWARD,
-      source: 'REFERRAL_USED',
-      sourceId: referrer.id,
-    }).catch((err) => logger.error('ProgressionService.awardXP failed for referee', err));
+    await this.progressionService
+      .awardXP(userId, {
+        amount: REFERRAL_XP_REWARD,
+        source: 'REFERRAL_USED',
+        sourceId: referrer.id,
+      })
+      .catch((err) =>
+        logger.error('ProgressionService.awardXP failed for referee', err),
+      );
 
-    return { message: 'Referral applied successfully', xpAwarded: REFERRAL_XP_REWARD };
+    return {
+      message: 'Referral applied successfully',
+      xpAwarded: REFERRAL_XP_REWARD,
+    };
   }
 
   async getReferrals(userId: string) {
@@ -178,7 +194,12 @@ export class AuthService {
     });
   }
 
-  async register(email: string, password: string, name?: string, timezone?: string) {
+  async register(
+    email: string,
+    password: string,
+    name?: string,
+    timezone?: string,
+  ) {
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -200,16 +221,23 @@ export class AuthService {
       },
     });
 
-    this.emailService.sendVerificationEmail(email, name || null, verificationToken).catch(() => {});
+    this.emailService
+      .sendVerificationEmail(email, name || null, verificationToken)
+      .catch(() => {});
 
     return {
-      message: 'Account created. Please check your email for a verification link.',
+      message:
+        'Account created. Please check your email for a verification link.',
       email,
     };
   }
 
   async verifyEmail(email: string, code: string) {
-    const verified = await this.otpService.verify(email, code, 'email_verification');
+    const verified = await this.otpService.verify(
+      email,
+      code,
+      'email_verification',
+    );
     if (!verified) {
       throw new BadRequestException('Invalid or expired verification code');
     }
@@ -240,7 +268,10 @@ export class AuthService {
       data: { emailVerified: new Date(), verificationToken: null },
     });
 
-    this.eventsService.emit('USER_REGISTERED', { email: user.email, name: user.name });
+    this.eventsService.emit('USER_REGISTERED', {
+      email: user.email,
+      name: user.name,
+    });
 
     return this.login(user);
   }
@@ -248,22 +279,29 @@ export class AuthService {
   async resendOtp(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return { message: 'If an account exists, a verification link has been sent.' };
+      return {
+        message: 'If an account exists, a verification link has been sent.',
+      };
     }
     if (user.emailVerified) {
       return { message: 'Email already verified.' };
     }
 
-    const verificationToken = user.verificationToken || crypto.randomBytes(32).toString('hex');
+    const verificationToken =
+      user.verificationToken || crypto.randomBytes(32).toString('hex');
     if (!user.verificationToken) {
       await this.prisma.user.update({
         where: { id: user.id },
         data: { verificationToken },
       });
     }
-    this.emailService.sendVerificationEmail(email, user.name, verificationToken).catch(() => {});
+    this.emailService
+      .sendVerificationEmail(email, user.name, verificationToken)
+      .catch(() => {});
 
-    return { message: 'If an account exists, a verification link has been sent.' };
+    return {
+      message: 'If an account exists, a verification link has been sent.',
+    };
   }
 
   async validateUser(email: string, pass: string) {
@@ -274,7 +312,9 @@ export class AuthService {
       (await bcrypt.compare(pass, user.passwordHash))
     ) {
       if (!user.emailVerified) {
-        throw new UnauthorizedException('Please verify your email before logging in. Check your inbox for the verification code.');
+        throw new UnauthorizedException(
+          'Please verify your email before logging in. Check your inbox for the verification code.',
+        );
       }
       return user;
     }
@@ -392,7 +432,10 @@ export class AuthService {
     return { ...user, level, badges: userBadges };
   }
 
-  async updateEmailPreferences(userId: string, preferences: Record<string, boolean>) {
+  async updateEmailPreferences(
+    userId: string,
+    preferences: Record<string, boolean>,
+  ) {
     return this.prisma.user.update({
       where: { id: userId },
       data: { emailPreferences: preferences },
@@ -509,7 +552,8 @@ export class AuthService {
     if (data.city !== undefined) updateData.city = data.city;
     if (data.timezone !== undefined) updateData.timezone = data.timezone;
     if (data.avatarUrl !== undefined) updateData.avatarUrl = data.avatarUrl;
-    if (data.userExperience !== undefined) updateData.userExperience = data.userExperience;
+    if (data.userExperience !== undefined)
+      updateData.userExperience = data.userExperience;
 
     if (data.organizationId) {
       const org = await this.prisma.organization.findUnique({
@@ -525,12 +569,17 @@ export class AuthService {
         })
       : await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
-    if (data.onboardingCompleted !== undefined || data.onboardingSelections !== undefined) {
+    if (
+      data.onboardingCompleted !== undefined ||
+      data.onboardingSelections !== undefined
+    ) {
       const selections = data.onboardingSelections || {};
       const fieldSelections = selections.field;
       const experienceSelection = selections.experience;
       const interests = Array.isArray(fieldSelections)
-        ? fieldSelections.filter((item): item is string => typeof item === 'string')
+        ? fieldSelections.filter(
+            (item): item is string => typeof item === 'string',
+          )
         : undefined;
       const preferredDifficulty =
         experienceSelection === 'None'
@@ -551,8 +600,12 @@ export class AuthService {
         update: {
           ...(interests ? { interests } : {}),
           ...(preferredDifficulty ? { preferredDifficulty } : {}),
-          ...(data.onboardingCompleted !== undefined ? { onboardingCompleted: data.onboardingCompleted } : {}),
-          ...(data.onboardingSelections !== undefined ? { onboardingSelections: data.onboardingSelections as any } : {}),
+          ...(data.onboardingCompleted !== undefined
+            ? { onboardingCompleted: data.onboardingCompleted }
+            : {}),
+          ...(data.onboardingSelections !== undefined
+            ? { onboardingSelections: data.onboardingSelections as any }
+            : {}),
         },
       });
     }
@@ -588,12 +641,18 @@ export class AuthService {
 
     const code = await this.otpService.create(email, 'password_reset');
     if (code) {
-      this.emailService.sendPasswordResetOtp(email, user.name, code).catch(() => {});
+      this.emailService
+        .sendPasswordResetOtp(email, user.name, code)
+        .catch(() => {});
     }
   }
 
   async resetPasswordWithOtp(email: string, code: string, newPassword: string) {
-    const verified = await this.otpService.verify(email, code, 'password_reset');
+    const verified = await this.otpService.verify(
+      email,
+      code,
+      'password_reset',
+    );
     if (!verified) {
       throw new UnauthorizedException('Invalid or expired verification code');
     }

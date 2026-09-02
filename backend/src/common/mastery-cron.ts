@@ -21,7 +21,9 @@ export class MasteryCron {
     try {
       this.logger.log('Starting mastery decay cycle...');
       const decayedCount = await this.masteryService.applyMasteryDecay();
-      this.logger.log(`Mastery decay complete: ${decayedCount} skills affected`);
+      this.logger.log(
+        `Mastery decay complete: ${decayedCount} skills affected`,
+      );
 
       // Send notifications for skills that dropped below thresholds
       await this.sendDecayNotifications();

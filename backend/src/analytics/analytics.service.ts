@@ -26,14 +26,18 @@ export class AnalyticsService {
 
     const activeUsers = await this.prisma.user.count({
       where: {
-        lastActivityDate: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        lastActivityDate: {
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        },
       },
     });
 
     const inactiveUsers = await this.prisma.user.count({
       where: {
         role: 'STUDENT',
-        lastActivityDate: { lt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) },
+        lastActivityDate: {
+          lt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+        },
       },
     });
 
@@ -57,13 +61,28 @@ export class AnalyticsService {
           where: { id: e.courseId },
           select: { title: true },
         });
-        return { courseId: e.courseId, title: course?.title || 'Unknown', enrollments: e._count };
+        return {
+          courseId: e.courseId,
+          title: course?.title || 'Unknown',
+          enrollments: e._count,
+        };
       }),
     );
 
     return {
-      users: { total: totalUsers, verified: verifiedUsers, active: activeUsers, inactive: inactiveUsers },
-      engagement: { usersWithStreak, totalEnrollments, totalLessons, totalLabSessions, totalFlags },
+      users: {
+        total: totalUsers,
+        verified: verifiedUsers,
+        active: activeUsers,
+        inactive: inactiveUsers,
+      },
+      engagement: {
+        usersWithStreak,
+        totalEnrollments,
+        totalLessons,
+        totalLabSessions,
+        totalFlags,
+      },
       streakDistribution,
       topCourses: courseDetails,
     };
@@ -72,7 +91,14 @@ export class AnalyticsService {
   async getLearningAnalytics(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, xp: true, currentStreak: true, longestStreak: true, createdAt: true },
+      select: {
+        id: true,
+        name: true,
+        xp: true,
+        currentStreak: true,
+        longestStreak: true,
+        createdAt: true,
+      },
     });
     if (!user) return null;
 
@@ -83,9 +109,15 @@ export class AnalyticsService {
 
     const courseProgress = await Promise.all(
       enrollments.map(async (e) => {
-        const total = await this.prisma.lesson.count({ where: { section: { courseId: e.courseId } } });
+        const total = await this.prisma.lesson.count({
+          where: { section: { courseId: e.courseId } },
+        });
         const completed = await this.prisma.progress.count({
-          where: { userId, completed: true, lesson: { section: { courseId: e.courseId } } },
+          where: {
+            userId,
+            completed: true,
+            lesson: { section: { courseId: e.courseId } },
+          },
         });
         return {
           courseId: e.courseId,
@@ -99,11 +131,20 @@ export class AnalyticsService {
       }),
     );
 
-    const totalLessonsCompleted = courseProgress.reduce((sum, c) => sum + c.completed, 0);
-    const totalLabSubmissions = await this.prisma.labSubmission.count({ where: { userId, isCorrect: true } });
+    const totalLessonsCompleted = courseProgress.reduce(
+      (sum, c) => sum + c.completed,
+      0,
+    );
+    const totalLabSubmissions = await this.prisma.labSubmission.count({
+      where: { userId, isCorrect: true },
+    });
 
     const weeklyActivity = await this.prisma.progress.findMany({
-      where: { userId, completed: true, updatedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+      where: {
+        userId,
+        completed: true,
+        updatedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      },
       select: { updatedAt: true },
       orderBy: { updatedAt: 'asc' },
     });

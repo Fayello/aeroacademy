@@ -40,7 +40,10 @@ export class CertificationsService {
       for (const skill of domain.skills) {
         for (const ls of skill.labSkills) {
           if (!labMap.has(ls.labId)) {
-            labMap.set(ls.labId, { id: ls.labId, flagCount: ls.lab.flags.length });
+            labMap.set(ls.labId, {
+              id: ls.labId,
+              flagCount: ls.lab.flags.length,
+            });
           }
         }
       }
@@ -77,7 +80,10 @@ export class CertificationsService {
             },
             orderBy: { createdAt: 'desc' },
           });
-          if (lastSubmission && (!lastCompletedAt || lastSubmission.createdAt > lastCompletedAt)) {
+          if (
+            lastSubmission &&
+            (!lastCompletedAt || lastSubmission.createdAt > lastCompletedAt)
+          ) {
             lastCompletedAt = lastSubmission.createdAt;
           }
         }

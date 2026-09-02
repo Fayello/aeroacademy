@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { AiService } from './ai.service';
 import { AiGatewayFactory } from './ai.gateway';
@@ -29,7 +38,11 @@ export class AiController {
   @Post('coach')
   async learningCoach(
     @Req() req: any,
-    @Body() body: { message: string; history?: Array<{ role: string; content: string }> },
+    @Body()
+    body: {
+      message: string;
+      history?: Array<{ role: string; content: string }>;
+    },
   ) {
     return this.service.learningCoach(req.user.id, body.message, body.history);
   }
@@ -37,7 +50,11 @@ export class AiController {
   @Post('coach/stream')
   async learningCoachStream(
     @Req() req: any,
-    @Body() body: { message: string; history?: Array<{ role: string; content: string }> },
+    @Body()
+    body: {
+      message: string;
+      history?: Array<{ role: string; content: string }>;
+    },
     @Res() res: Response,
   ) {
     res.setHeader('Content-Type', 'text/event-stream');
@@ -46,7 +63,11 @@ export class AiController {
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
 
-    const stream = await this.service.learningCoachStream(req.user.id, body.message, body.history);
+    const stream = await this.service.learningCoachStream(
+      req.user.id,
+      body.message,
+      body.history,
+    );
     const reader = stream.getReader();
     const decoder = new TextDecoder();
 
@@ -108,8 +129,13 @@ export class AiController {
   @Post('generate/questions')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR', 'TA')
-  async generateAssessmentQuestions(@Body() body: { assessmentId: string; count?: number }) {
-    return this.service.generateAssessmentQuestions(body.assessmentId, body.count || 5);
+  async generateAssessmentQuestions(
+    @Body() body: { assessmentId: string; count?: number },
+  ) {
+    return this.service.generateAssessmentQuestions(
+      body.assessmentId,
+      body.count || 5,
+    );
   }
 
   @Post('generate/outline')
@@ -136,16 +162,32 @@ export class AiController {
   // ─── ASSESSMENT INTELLIGENCE ──────────────────
 
   @Post('adaptive/start')
-  async startAdaptiveAssessment(@Req() req: any, @Body() body: { assessmentId: string }) {
-    return this.intelligenceService.createAdaptiveSession(req.user.id, body.assessmentId);
+  async startAdaptiveAssessment(
+    @Req() req: any,
+    @Body() body: { assessmentId: string },
+  ) {
+    return this.intelligenceService.createAdaptiveSession(
+      req.user.id,
+      body.assessmentId,
+    );
   }
 
   @Post('adaptive/answer')
   async submitAdaptiveAnswer(
     @Req() req: any,
-    @Body() body: { sessionId: string; questionIndex: number; answer: string; session: Any },
+    @Body()
+    body: {
+      sessionId: string;
+      questionIndex: number;
+      answer: string;
+      session: Any;
+    },
   ) {
-    return this.intelligenceService.processAdaptiveAnswer(body.session, body.questionIndex, body.answer);
+    return this.intelligenceService.processAdaptiveAnswer(
+      body.session,
+      body.questionIndex,
+      body.answer,
+    );
   }
 
   @Get('skill-gaps')
@@ -170,7 +212,10 @@ export class AiController {
   @Get('predictive/dashboard')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR', 'TA')
-  async getPredictiveDashboard(@Req() req: any, @Param('cohortId') cohortId?: string) {
+  async getPredictiveDashboard(
+    @Req() req: any,
+    @Param('cohortId') cohortId?: string,
+  ) {
     return this.predictiveService.getPredictiveDashboard(cohortId);
   }
 
@@ -200,15 +245,32 @@ export class AiController {
   @Post('tutor/chat')
   async tutorChat(
     @Req() req: any,
-    @Body() body: { message: string; history?: Array<{ role: string; content: string }>; context?: { labId?: string; currentStep?: string; skillDomain?: string } },
+    @Body()
+    body: {
+      message: string;
+      history?: Array<{ role: string; content: string }>;
+      context?: { labId?: string; currentStep?: string; skillDomain?: string };
+    },
   ) {
-    return this.tutoringService.socraticTutor(req.user.id, body.message, body.history, body.context);
+    return this.tutoringService.socraticTutor(
+      req.user.id,
+      body.message,
+      body.history,
+      body.context,
+    );
   }
 
   @Post('tutor/lab-assist')
   async labAssist(
     @Req() req: any,
-    @Body() body: { labId: string; currentStep?: string; errorOutput?: string; flagTitle?: string; hintLevel: number },
+    @Body()
+    body: {
+      labId: string;
+      currentStep?: string;
+      errorOutput?: string;
+      flagTitle?: string;
+      hintLevel: number;
+    },
   ) {
     return this.tutoringService.labAssist(req.user.id, body);
   }
@@ -218,7 +280,11 @@ export class AiController {
     @Req() req: any,
     @Body() body: { labId: string; context: string },
   ) {
-    return this.tutoringService.getAdaptiveHint(req.user.id, body.labId, body.context);
+    return this.tutoringService.getAdaptiveHint(
+      req.user.id,
+      body.labId,
+      body.context,
+    );
   }
 
   @Post('tutor/explain')
@@ -226,7 +292,11 @@ export class AiController {
     @Req() req: any,
     @Body() body: { concept: string; relatedLab?: string },
   ) {
-    return this.tutoringService.explainConcept(req.user.id, body.concept, body.relatedLab);
+    return this.tutoringService.explainConcept(
+      req.user.id,
+      body.concept,
+      body.relatedLab,
+    );
   }
 
   @Get('tutor/analytics')

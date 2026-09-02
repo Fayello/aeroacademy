@@ -66,6 +66,13 @@ export default function CandidateRegistry() {
     { label: "Lab submissions", value: String(profile._count.labSubmissions) },
     { label: "Learning progress", value: String(profile._count.progress) },
   ];
+  const evidenceScore = Math.min(
+    100,
+    (profile._count.labSubmissions >= 10 ? 40 : profile._count.labSubmissions >= 4 ? 28 : 14) +
+      (profile._count.progress >= 20 ? 30 : profile._count.progress >= 10 ? 20 : 10) +
+      (profile.achievements.length >= 5 ? 20 : profile.achievements.length > 0 ? 12 : 0) +
+      (profile.organization ? 10 : 0),
+  );
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
@@ -123,6 +130,13 @@ export default function CandidateRegistry() {
             </div>
             <p className="text-lg font-semibold text-white">{profile.division}</p>
             <p className="text-xs text-slate-500">{profile.clearance}</p>
+            <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Evidence score</p>
+              <p className="mt-2 text-2xl font-bold text-white">{evidenceScore}</p>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-gradient-to-r from-[#7AD62A] to-[#6bc422]" style={{ width: `${evidenceScore}%` }} />
+              </div>
+            </div>
           </div>
 
           <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
@@ -178,6 +192,43 @@ export default function CandidateRegistry() {
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Next move</p>
                 <p className="mt-2 text-sm font-semibold text-white">Review evidence, then initiate contact.</p>
               </div>
+            </div>
+          </div>
+
+          <div className="card p-6">
+            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+              <ClipboardCheck size={16} className="text-[#7AD62A]" />
+              Proof Checklist
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  label: "Practical activity",
+                  value: profile._count.labSubmissions > 0 ? "Visible" : "Limited",
+                  detail: `${profile._count.labSubmissions} lab submission${profile._count.labSubmissions === 1 ? "" : "s"} recorded`,
+                },
+                {
+                  label: "Learning continuity",
+                  value: profile._count.progress > 0 ? "Visible" : "Limited",
+                  detail: `${profile._count.progress} completed lesson record${profile._count.progress === 1 ? "" : "s"}`,
+                },
+                {
+                  label: "Institution context",
+                  value: profile.organization ? "Present" : "Independent",
+                  detail: profile.organization?.name || "No linked institution",
+                },
+                {
+                  label: "Recognition signals",
+                  value: profile.achievements.length > 0 ? "Present" : "Limited",
+                  detail: `${profile.achievements.length} achievement${profile.achievements.length === 1 ? "" : "s"} published`,
+                },
+              ].map((item) => (
+                <div key={item.label} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
+                  <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>
+                  <p className="mt-1 text-xs text-slate-400">{item.detail}</p>
+                </div>
+              ))}
             </div>
           </div>
 

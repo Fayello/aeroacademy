@@ -1,7 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-export type UserExperience = 'INDIVIDUAL' | 'UNIVERSITY' | 'CORPORATE' | 'INSTRUCTOR' | 'ADMIN';
+export type UserExperience =
+  | 'INDIVIDUAL'
+  | 'UNIVERSITY'
+  | 'CORPORATE'
+  | 'INSTRUCTOR'
+  | 'ADMIN';
 
 export interface NavItem {
   href: string;
@@ -59,7 +64,11 @@ export class NavigationService {
 
     if (user.organization) {
       if (user.organization.type === 'UNIVERSITY') return 'UNIVERSITY';
-      if (user.organization.type === 'ENTERPRISE' || user.organization.type === 'GOVERNMENT') return 'CORPORATE';
+      if (
+        user.organization.type === 'ENTERPRISE' ||
+        user.organization.type === 'GOVERNMENT'
+      )
+        return 'CORPORATE';
     }
 
     const cohortMembership = await this.prisma.cohortMember.findFirst({
@@ -114,7 +123,7 @@ export class NavigationService {
         },
       }),
       // Check if user teaches any cohorts (PROFESSOR/TA)
-      (role === 'PROFESSOR' || role === 'TA')
+      role === 'PROFESSOR' || role === 'TA'
         ? this.prisma.cohortMember.findMany({
             where: { userId, role: { in: ['PROFESSOR', 'TA'] } },
             include: {
@@ -135,7 +144,14 @@ export class NavigationService {
     sections.push({
       id: 'dashboard',
       label: 'Command Center',
-      items: [{ href: '/dashboard', tKey: 'nav.dashboard', icon: 'Home', label: 'Dashboard' }],
+      items: [
+        {
+          href: '/dashboard',
+          tKey: 'nav.dashboard',
+          icon: 'Home',
+          label: 'Dashboard',
+        },
+      ],
     });
 
     // Learn
@@ -143,9 +159,24 @@ export class NavigationService {
       id: 'learn',
       label: 'Learn',
       items: [
-        { href: '/dashboard/courses', tKey: 'nav.courses', icon: 'GraduationCap', label: 'Courses' },
-        { href: '/dashboard/learning-paths', tKey: 'nav.paths', icon: 'Route', label: 'Learning Paths' },
-        { href: '/dashboard/training', tKey: 'nav.masterclasses', icon: 'Award', label: 'Master Classes' },
+        {
+          href: '/dashboard/courses',
+          tKey: 'nav.courses',
+          icon: 'GraduationCap',
+          label: 'Courses',
+        },
+        {
+          href: '/dashboard/learning-paths',
+          tKey: 'nav.paths',
+          icon: 'Route',
+          label: 'Learning Paths',
+        },
+        {
+          href: '/dashboard/training',
+          tKey: 'nav.masterclasses',
+          icon: 'Award',
+          label: 'Master Classes',
+        },
       ],
     });
 
@@ -154,9 +185,24 @@ export class NavigationService {
       id: 'labs',
       label: 'Practice',
       items: [
-        { href: '/dashboard/labs', tKey: 'nav.labs', icon: 'FlaskConical', label: 'Labs' },
-        { href: '/dashboard/exams', tKey: 'nav.exams', icon: 'ClipboardCheck', label: 'Practical Exams' },
-        { href: '/dashboard/assessments', tKey: 'nav.assessments', icon: 'Target', label: 'Skill Assessments' },
+        {
+          href: '/dashboard/labs',
+          tKey: 'nav.labs',
+          icon: 'FlaskConical',
+          label: 'Labs',
+        },
+        {
+          href: '/dashboard/exams',
+          tKey: 'nav.exams',
+          icon: 'ClipboardCheck',
+          label: 'Practical Exams',
+        },
+        {
+          href: '/dashboard/assessments',
+          tKey: 'nav.assessments',
+          icon: 'Target',
+          label: 'Skill Assessments',
+        },
       ],
     });
 
@@ -165,14 +211,29 @@ export class NavigationService {
       id: 'compete',
       label: 'Compete',
       items: [
-        { href: '/dashboard/compete', tKey: 'nav.compete', icon: 'Swords', label: 'Compete' },
+        {
+          href: '/dashboard/compete',
+          tKey: 'nav.compete',
+          icon: 'Swords',
+          label: 'Compete',
+        },
       ],
     });
 
     // Community
     const communityItems: NavItem[] = [
-      { href: '/dashboard/teams', tKey: 'nav.teams', icon: 'Users', label: 'Teams' },
-      { href: '/dashboard/events', tKey: 'nav.events', icon: 'ScrollText', label: 'Events' },
+      {
+        href: '/dashboard/teams',
+        tKey: 'nav.teams',
+        icon: 'Users',
+        label: 'Teams',
+      },
+      {
+        href: '/dashboard/events',
+        tKey: 'nav.events',
+        icon: 'ScrollText',
+        label: 'Events',
+      },
     ];
     sections.push({
       id: 'community',
@@ -183,7 +244,12 @@ export class NavigationService {
     // ─── ACADEMIC SECTION (for enrolled students) ───
     if (isEnrolledInCohort) {
       const academicItems: NavItem[] = [
-        { href: '/dashboard/academics', tKey: 'nav.academic.overview', icon: 'BookOpen', label: 'My Academics' },
+        {
+          href: '/dashboard/academics',
+          tKey: 'nav.academic.overview',
+          icon: 'BookOpen',
+          label: 'My Academics',
+        },
       ];
 
       sections.push({
@@ -196,10 +262,30 @@ export class NavigationService {
     // ─── TEACH SECTION (for professors/TAs) ───
     if (isTeaching) {
       const teachItems: NavItem[] = [
-        { href: '/dashboard/curricula', tKey: 'nav.teach.curricula', icon: 'ScrollText', label: 'Curriculum' },
-        { href: '/dashboard/cohorts', tKey: 'nav.teach.cohorts', icon: 'Users', label: 'Classes' },
-        { href: '/dashboard/exams', tKey: 'nav.teach.exams', icon: 'ClipboardCheck', label: 'Assessments' },
-        { href: '/dashboard/gradebook', tKey: 'nav.teach.gradebook', icon: 'ClipboardCheck', label: 'Gradebook' },
+        {
+          href: '/dashboard/curricula',
+          tKey: 'nav.teach.curricula',
+          icon: 'ScrollText',
+          label: 'Curriculum',
+        },
+        {
+          href: '/dashboard/cohorts',
+          tKey: 'nav.teach.cohorts',
+          icon: 'Users',
+          label: 'Classes',
+        },
+        {
+          href: '/dashboard/exams',
+          tKey: 'nav.teach.exams',
+          icon: 'ClipboardCheck',
+          label: 'Assessments',
+        },
+        {
+          href: '/dashboard/gradebook',
+          tKey: 'nav.teach.gradebook',
+          icon: 'ClipboardCheck',
+          label: 'Gradebook',
+        },
       ];
 
       sections.push({
@@ -235,7 +321,11 @@ export class NavigationService {
     };
   }
 
-  private getDefaultContext(experience: UserExperience, level: number, role: string): NavigationContext {
+  private getDefaultContext(
+    experience: UserExperience,
+    level: number,
+    role: string,
+  ): NavigationContext {
     return {
       experience,
       level,
@@ -244,31 +334,73 @@ export class NavigationService {
         {
           id: 'dashboard',
           label: 'Command Center',
-          items: [{ href: '/dashboard', tKey: 'nav.dashboard', icon: 'Home', label: 'Dashboard' }],
+          items: [
+            {
+              href: '/dashboard',
+              tKey: 'nav.dashboard',
+              icon: 'Home',
+              label: 'Dashboard',
+            },
+          ],
         },
         {
           id: 'learn',
           label: 'Learn',
           items: [
-            { href: '/dashboard/courses', tKey: 'nav.courses', icon: 'GraduationCap', label: 'Courses' },
-            { href: '/dashboard/learning-paths', tKey: 'nav.paths', icon: 'Route', label: 'Learning Paths' },
-            { href: '/dashboard/training', tKey: 'nav.masterclasses', icon: 'Award', label: 'Master Classes' },
+            {
+              href: '/dashboard/courses',
+              tKey: 'nav.courses',
+              icon: 'GraduationCap',
+              label: 'Courses',
+            },
+            {
+              href: '/dashboard/learning-paths',
+              tKey: 'nav.paths',
+              icon: 'Route',
+              label: 'Learning Paths',
+            },
+            {
+              href: '/dashboard/training',
+              tKey: 'nav.masterclasses',
+              icon: 'Award',
+              label: 'Master Classes',
+            },
           ],
         },
         {
           id: 'labs',
           label: 'Practice',
           items: [
-            { href: '/dashboard/labs', tKey: 'nav.labs', icon: 'FlaskConical', label: 'Labs' },
-            { href: '/dashboard/exams', tKey: 'nav.exams', icon: 'ClipboardCheck', label: 'Practical Exams' },
-            { href: '/dashboard/assessments', tKey: 'nav.assessments', icon: 'Target', label: 'Skill Assessments' },
+            {
+              href: '/dashboard/labs',
+              tKey: 'nav.labs',
+              icon: 'FlaskConical',
+              label: 'Labs',
+            },
+            {
+              href: '/dashboard/exams',
+              tKey: 'nav.exams',
+              icon: 'ClipboardCheck',
+              label: 'Practical Exams',
+            },
+            {
+              href: '/dashboard/assessments',
+              tKey: 'nav.assessments',
+              icon: 'Target',
+              label: 'Skill Assessments',
+            },
           ],
         },
         {
           id: 'compete',
           label: 'Compete',
           items: [
-            { href: '/dashboard/compete', tKey: 'nav.compete', icon: 'Swords', label: 'Compete' },
+            {
+              href: '/dashboard/compete',
+              tKey: 'nav.compete',
+              icon: 'Swords',
+              label: 'Compete',
+            },
           ],
         },
       ],

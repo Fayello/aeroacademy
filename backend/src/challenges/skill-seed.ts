@@ -83,7 +83,9 @@ async function main() {
 
     for (const skill of domain.skills) {
       const createdSkill = await prisma.skill.upsert({
-        where: { domainId_name: { domainId: createdDomain.id, name: skill.name } },
+        where: {
+          domainId_name: { domainId: createdDomain.id, name: skill.name },
+        },
         update: { displayName: skill.displayName },
         create: {
           domainId: createdDomain.id,

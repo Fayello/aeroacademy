@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AssessmentsService } from './assessments.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -36,7 +44,11 @@ export class AssessmentsController {
     @Param('id') id: string,
     @Body() body: { answers: Record<string, string> },
   ) {
-    return this.assessmentsService.submitAssessment(req.user.id, id, body.answers);
+    return this.assessmentsService.submitAssessment(
+      req.user.id,
+      id,
+      body.answers,
+    );
   }
 
   @Post()
@@ -44,7 +56,8 @@ export class AssessmentsController {
   @Roles('ADMIN', 'PROFESSOR', 'TA')
   @Audit('ASSESSMENT_CREATED')
   async createAssessment(
-    @Body() body: {
+    @Body()
+    body: {
       title: string;
       description: string;
       category: string;

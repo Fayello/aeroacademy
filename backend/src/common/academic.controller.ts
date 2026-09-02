@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Delete, Body, Param, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AcademicService } from './academic.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -14,14 +23,20 @@ export class AcademicController {
   @Post('modules/:moduleId/courses')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async linkCourseToModule(@Param('moduleId') moduleId: string, @Body() body: { courseId: string }) {
+  async linkCourseToModule(
+    @Param('moduleId') moduleId: string,
+    @Body() body: { courseId: string },
+  ) {
     return this.service.linkCourseToModule(moduleId, body.courseId);
   }
 
   @Delete('modules/:moduleId/courses/:courseId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async unlinkCourseFromModule(@Param('moduleId') moduleId: string, @Param('courseId') courseId: string) {
+  async unlinkCourseFromModule(
+    @Param('moduleId') moduleId: string,
+    @Param('courseId') courseId: string,
+  ) {
     return this.service.unlinkCourseFromModule(moduleId, courseId);
   }
 
@@ -39,13 +54,21 @@ export class AcademicController {
     @Param('cohortId') cohortId: string,
     @Body() body: { courseId: string; weight?: number; isRequired?: boolean },
   ) {
-    return this.service.assignCourseToCohort(cohortId, body.courseId, body.weight, body.isRequired);
+    return this.service.assignCourseToCohort(
+      cohortId,
+      body.courseId,
+      body.weight,
+      body.isRequired,
+    );
   }
 
   @Delete('cohorts/:cohortId/courses/:courseId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async unassignCourseFromCohort(@Param('cohortId') cohortId: string, @Param('courseId') courseId: string) {
+  async unassignCourseFromCohort(
+    @Param('cohortId') cohortId: string,
+    @Param('courseId') courseId: string,
+  ) {
     return this.service.unassignCourseFromCohort(cohortId, courseId);
   }
 

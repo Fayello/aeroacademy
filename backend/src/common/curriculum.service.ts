@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -9,7 +13,9 @@ export class CurriculumService {
     return this.prisma.curriculum.findMany({
       where: {
         isActive: true,
-        ...(institution ? { institution: { contains: institution, mode: 'insensitive' } } : {}),
+        ...(institution
+          ? { institution: { contains: institution, mode: 'insensitive' } }
+          : {}),
       },
       include: {
         modules: {
@@ -114,14 +120,17 @@ export class CurriculumService {
     });
   }
 
-  async updateCurriculum(id: string, data: {
-    name?: string;
-    description?: string;
-    institution?: string;
-    degree?: string;
-    year?: number;
-    isActive?: boolean;
-  }) {
+  async updateCurriculum(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+      institution?: string;
+      degree?: string;
+      year?: number;
+      isActive?: boolean;
+    },
+  ) {
     const existing = await this.prisma.curriculum.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException('Curriculum not found');
 
@@ -131,14 +140,19 @@ export class CurriculumService {
     });
   }
 
-  async addModule(curriculumId: string, data: {
-    name: string;
-    code: string;
-    credits: number;
-    theoryHours?: number;
-    practicalHours?: number;
-  }) {
-    const curriculum = await this.prisma.curriculum.findUnique({ where: { id: curriculumId } });
+  async addModule(
+    curriculumId: string,
+    data: {
+      name: string;
+      code: string;
+      credits: number;
+      theoryHours?: number;
+      practicalHours?: number;
+    },
+  ) {
+    const curriculum = await this.prisma.curriculum.findUnique({
+      where: { id: curriculumId },
+    });
     if (!curriculum) throw new NotFoundException('Curriculum not found');
 
     return this.prisma.curriculumModule.create({
@@ -153,14 +167,19 @@ export class CurriculumService {
     });
   }
 
-  async updateModule(moduleId: string, data: {
-    name?: string;
-    code?: string;
-    credits?: number;
-    theoryHours?: number;
-    practicalHours?: number;
-  }) {
-    const existing = await this.prisma.curriculumModule.findUnique({ where: { id: moduleId } });
+  async updateModule(
+    moduleId: string,
+    data: {
+      name?: string;
+      code?: string;
+      credits?: number;
+      theoryHours?: number;
+      practicalHours?: number;
+    },
+  ) {
+    const existing = await this.prisma.curriculumModule.findUnique({
+      where: { id: moduleId },
+    });
     if (!existing) throw new NotFoundException('Module not found');
 
     return this.prisma.curriculumModule.update({
@@ -170,17 +189,27 @@ export class CurriculumService {
   }
 
   async deleteModule(moduleId: string) {
-    const existing = await this.prisma.curriculumModule.findUnique({ where: { id: moduleId } });
+    const existing = await this.prisma.curriculumModule.findUnique({
+      where: { id: moduleId },
+    });
     if (!existing) throw new NotFoundException('Module not found');
 
     return this.prisma.curriculumModule.delete({ where: { id: moduleId } });
   }
 
-  async mapOutcome(moduleId: string, learningOutcomeId: string, weight?: number) {
-    const module = await this.prisma.curriculumModule.findUnique({ where: { id: moduleId } });
+  async mapOutcome(
+    moduleId: string,
+    learningOutcomeId: string,
+    weight?: number,
+  ) {
+    const module = await this.prisma.curriculumModule.findUnique({
+      where: { id: moduleId },
+    });
     if (!module) throw new NotFoundException('Module not found');
 
-    const outcome = await this.prisma.learningOutcome.findUnique({ where: { id: learningOutcomeId } });
+    const outcome = await this.prisma.learningOutcome.findUnique({
+      where: { id: learningOutcomeId },
+    });
     if (!outcome) throw new NotFoundException('Learning outcome not found');
 
     return this.prisma.moduleOutcome.upsert({
@@ -201,7 +230,9 @@ export class CurriculumService {
   }
 
   async mapLab(moduleId: string, labId: string) {
-    const module = await this.prisma.curriculumModule.findUnique({ where: { id: moduleId } });
+    const module = await this.prisma.curriculumModule.findUnique({
+      where: { id: moduleId },
+    });
     if (!module) throw new NotFoundException('Module not found');
 
     const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
@@ -237,16 +268,30 @@ export class CurriculumService {
     });
     if (!curriculum) throw new NotFoundException('Curriculum not found');
 
-    const totalCredits = curriculum.modules.reduce((sum, m) => sum + m.credits, 0);
-    const totalTheoryHours = curriculum.modules.reduce((sum, m) => sum + m.theoryHours, 0);
-    const totalPracticalHours = curriculum.modules.reduce((sum, m) => sum + m.practicalHours, 0);
+    const totalCredits = curriculum.modules.reduce(
+      (sum, m) => sum + m.credits,
+      0,
+    );
+    const totalTheoryHours = curriculum.modules.reduce(
+      (sum, m) => sum + m.theoryHours,
+      0,
+    );
+    const totalPracticalHours = curriculum.modules.reduce(
+      (sum, m) => sum + m.practicalHours,
+      0,
+    );
     const totalOutcomes = new Set(
-      curriculum.modules.flatMap((m) => m.outcomes.map((o) => o.learningOutcomeId)),
+      curriculum.modules.flatMap((m) =>
+        m.outcomes.map((o) => o.learningOutcomeId),
+      ),
     ).size;
     const totalLabs = new Set(
       curriculum.modules.flatMap((m) => m.labs.map((l) => l.labId)),
     ).size;
-    const totalStudents = curriculum.cohorts.reduce((sum, c) => sum + c.members.length, 0);
+    const totalStudents = curriculum.cohorts.reduce(
+      (sum, c) => sum + c.members.length,
+      0,
+    );
 
     return {
       curriculum,

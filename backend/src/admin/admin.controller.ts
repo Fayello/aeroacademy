@@ -17,7 +17,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
-import { IsString, MaxLength, IsOptional, IsNumber, IsDateString, IsIn } from 'class-validator';
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  IsNumber,
+  IsDateString,
+  IsIn,
+} from 'class-validator';
 import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Audit } from '../common/audit.decorator';
 import type { RequestWithUser } from '../common/request-with-user';
@@ -180,7 +187,10 @@ export class AdminController {
   }
 
   @Get('teams/:teamId/progress')
-  async getTeamProgress(@Request() req: RequestWithUser, @Param('teamId', ParseUUIDPipe) teamId: string) {
+  async getTeamProgress(
+    @Request() req: RequestWithUser,
+    @Param('teamId', ParseUUIDPipe) teamId: string,
+  ) {
     return this.adminService.getTeamProgress(teamId, req.user.id);
   }
 
@@ -274,6 +284,10 @@ export class AdminController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateCommunityApplicationDto,
   ) {
-    return this.adminService.updateCommunityProgramApplication(id, req.user.id, body);
+    return this.adminService.updateCommunityProgramApplication(
+      id,
+      req.user.id,
+      body,
+    );
   }
 }

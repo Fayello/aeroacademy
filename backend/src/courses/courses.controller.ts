@@ -52,7 +52,10 @@ export class CoursesController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get(':id/enrollment')
-  async getEnrollment(@Param('id') id: string, @Request() req: RequestWithUser) {
+  async getEnrollment(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ) {
     return this.coursesService.getEnrollment(req.user.id, id);
   }
 
@@ -289,7 +292,12 @@ export class CoursesController {
     @Param('courseId') courseId: string,
     @Body() body: { rating: number; comment?: string },
   ) {
-    return this.coursesService.createReview(req.user.id, courseId, body.rating, body.comment);
+    return this.coursesService.createReview(
+      req.user.id,
+      courseId,
+      body.rating,
+      body.comment,
+    );
   }
 
   // === FAVORITES ===

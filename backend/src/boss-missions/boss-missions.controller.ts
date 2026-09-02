@@ -18,12 +18,18 @@ export class BossMissionsController {
   }
 
   @Get(':bossId/requirements/:userId')
-  checkRequirements(@Param('userId') userId: string, @Param('bossId') bossId: string) {
+  checkRequirements(
+    @Param('userId') userId: string,
+    @Param('bossId') bossId: string,
+  ) {
     return this.bossMissionsService.checkDomainRequirements(userId, bossId);
   }
 
   @Get(':bossId/attempts/:userId')
-  getUserAttempts(@Param('userId') userId: string, @Param('bossId') bossId: string) {
+  getUserAttempts(
+    @Param('userId') userId: string,
+    @Param('bossId') bossId: string,
+  ) {
     return this.bossMissionsService.getUserAttempts(userId, bossId);
   }
 
@@ -33,27 +39,40 @@ export class BossMissionsController {
   }
 
   @Post()
-  createBossMission(@Body() body: {
-    seasonId?: string;
-    title: string;
-    description: string;
-    difficulty?: string;
-    maxAttempts?: number;
-    xpReward: number;
-    ratingReward?: number;
-    prerequisiteLabIds?: string[];
-    requiredDomains?: any[];
-    domainId?: string;
-    theme?: string;
-    labId?: string;
-    startsAt: string;
-    expiresAt: string;
-  }) {
+  createBossMission(
+    @Body()
+    body: {
+      seasonId?: string;
+      title: string;
+      description: string;
+      difficulty?: string;
+      maxAttempts?: number;
+      xpReward: number;
+      ratingReward?: number;
+      prerequisiteLabIds?: string[];
+      requiredDomains?: any[];
+      domainId?: string;
+      theme?: string;
+      labId?: string;
+      startsAt: string;
+      expiresAt: string;
+    },
+  ) {
     return this.bossMissionsService.createBossMission(body);
   }
 
   @Post(':bossId/submit')
-  submitAttempt(@Param('bossId') bossId: string, @Body() body: { userId: string; score: number; maxScore: number; feedback?: any }) {
-    return this.bossMissionsService.submitAttempt(body.userId, bossId, body.score, body.maxScore, body.feedback);
+  submitAttempt(
+    @Param('bossId') bossId: string,
+    @Body()
+    body: { userId: string; score: number; maxScore: number; feedback?: any },
+  ) {
+    return this.bossMissionsService.submitAttempt(
+      body.userId,
+      bossId,
+      body.score,
+      body.maxScore,
+      body.feedback,
+    );
   }
 }

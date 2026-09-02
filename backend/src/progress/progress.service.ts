@@ -46,10 +46,12 @@ export class ProgressService {
     if (!lesson) throw new BadRequestException('Lesson not found');
 
     // Touch enrollment lastActivityAt
-    await this.prisma.courseEnrollment.updateMany({
-      where: { userId, courseId: lesson.section.courseId },
-      data: { lastActivityAt: new Date() },
-    }).catch(() => {});
+    await this.prisma.courseEnrollment
+      .updateMany({
+        where: { userId, courseId: lesson.section.courseId },
+        data: { lastActivityAt: new Date() },
+      })
+      .catch(() => {});
 
     const existing = await this.prisma.progress.findUnique({
       where: { userId_lessonId: { userId, lessonId } },
@@ -64,16 +66,22 @@ export class ProgressService {
   async markAsComplete(userId: string, lessonId: string) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
-      include: { quiz: true, lab: true, section: { include: { course: true } } },
+      include: {
+        quiz: true,
+        lab: true,
+        section: { include: { course: true } },
+      },
     });
 
     if (!lesson) throw new BadRequestException('Lesson not found');
 
     // Touch enrollment lastActivityAt
-    await this.prisma.courseEnrollment.updateMany({
-      where: { userId, courseId: lesson.section.courseId },
-      data: { lastActivityAt: new Date() },
-    }).catch(() => {});
+    await this.prisma.courseEnrollment
+      .updateMany({
+        where: { userId, courseId: lesson.section.courseId },
+        data: { lastActivityAt: new Date() },
+      })
+      .catch(() => {});
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException('User not found');
@@ -152,17 +160,28 @@ export class ProgressService {
     });
 
     if (progress.wasNew) {
-      const xpToAward = this.calculateXpWithMultiplier(userId, BASE_LESSON_XP, { xp: user.xp, currentStreak: user.currentStreak || 0 });
+      const xpToAward = this.calculateXpWithMultiplier(userId, BASE_LESSON_XP, {
+        xp: user.xp,
+        currentStreak: user.currentStreak || 0,
+      });
 
       // Award XP through the progression engine
-      await this.progressionService.awardXP(userId, {
-        amount: xpToAward,
-        source: 'LESSON_COMPLETED',
-        sourceId: lessonId,
-      }).catch((err) => this.logger.error('ProgressionService.awardXP failed', err));
+      await this.progressionService
+        .awardXP(userId, {
+          amount: xpToAward,
+          source: 'LESSON_COMPLETED',
+          sourceId: lessonId,
+        })
+        .catch((err) =>
+          this.logger.error('ProgressionService.awardXP failed', err),
+        );
 
       // Check mission progress
-      await this.missionService.checkProgress(userId, 'LESSON_COMPLETIONS', lessonId).catch((err) => this.logger.error('MissionService.checkProgress failed', err));
+      await this.missionService
+        .checkProgress(userId, 'LESSON_COMPLETIONS', lessonId)
+        .catch((err) =>
+          this.logger.error('MissionService.checkProgress failed', err),
+        );
 
       // Update streak
       await this.updateStreak(userId);
@@ -174,33 +193,44 @@ export class ProgressService {
       await this.badgesService.checkAndAwardBadges(userId).catch(() => {});
 
       // Level up detection
-      const freshUser = await this.prisma.user.findUnique({ where: { id: userId } });
+      const freshUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
       if (freshUser) {
         const newLevel = getLevel(freshUser.xp);
         if (newLevel > oldLevel) {
-          this.emailService.sendLevelUp(freshUser.email, freshUser.name, newLevel).catch(() => {});
+          this.emailService
+            .sendLevelUp(freshUser.email, freshUser.name, newLevel)
+            .catch(() => {});
         }
 
         // Lesson completion confirmation (with progress %)
-        const courseProgress = await this.getCourseProgress(userId, lesson.section.courseId);
-        this.emailService.sendLessonCompleted(
-          freshUser.email,
-          freshUser.name,
-          lesson.title,
-          lesson.section.course.title,
+        const courseProgress = await this.getCourseProgress(
+          userId,
           lesson.section.courseId,
-          courseProgress.percentage,
-        ).catch(() => {});
+        );
+        this.emailService
+          .sendLessonCompleted(
+            freshUser.email,
+            freshUser.name,
+            lesson.title,
+            lesson.section.course.title,
+            lesson.section.courseId,
+            courseProgress.percentage,
+          )
+          .catch(() => {});
 
         // Course completion detection
         if (courseProgress.percentage === 100) {
-          this.emailService.sendCourseCompleted(
-            freshUser.email,
-            freshUser.name,
-            lesson.section.course.title,
-            lesson.section.courseId,
-            courseProgress.completed * 100,
-          ).catch(() => {});
+          this.emailService
+            .sendCourseCompleted(
+              freshUser.email,
+              freshUser.name,
+              lesson.section.course.title,
+              lesson.section.courseId,
+              courseProgress.completed * 100,
+            )
+            .catch(() => {});
         }
       }
     }
@@ -230,14 +260,18 @@ export class ProgressService {
 
     const lastDay = new Date(lastActivity);
     lastDay.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor(
+      (today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24),
+    );
 
     if (diffDays === 0) return; // Already active today
 
     // V2: Streak freeze — protect streak on 1-day gap if user has freezes
     if (diffDays === 2 && user.streakFreezes > 0) {
-      const freezeUsedToday = user.lastStreakFreezeUsedAt &&
-        new Date(user.lastStreakFreezeUsedAt).toDateString() === today.toDateString();
+      const freezeUsedToday =
+        user.lastStreakFreezeUsedAt &&
+        new Date(user.lastStreakFreezeUsedAt).toDateString() ===
+          today.toDateString();
 
       if (!freezeUsedToday) {
         // Use one freeze, keep streak going
@@ -251,7 +285,9 @@ export class ProgressService {
           },
         });
 
-        this.logger.log(`Streak freeze used for user ${userId}. ${user.streakFreezes - 1} remaining.`);
+        this.logger.log(
+          `Streak freeze used for user ${userId}. ${user.streakFreezes - 1} remaining.`,
+        );
         return;
       }
     }
@@ -273,14 +309,23 @@ export class ProgressService {
     });
 
     if (bonusXp > 0) {
-      await this.progressionService.awardXP(userId, {
-        amount: bonusXp,
-        source: 'STREAK_BONUS',
-      }).catch((err) => this.logger.error('ProgressionService.awardXP failed for streak bonus', err));
+      await this.progressionService
+        .awardXP(userId, {
+          amount: bonusXp,
+          source: 'STREAK_BONUS',
+        })
+        .catch((err) =>
+          this.logger.error(
+            'ProgressionService.awardXP failed for streak bonus',
+            err,
+          ),
+        );
     }
 
     if (grantFreeze) {
-      this.logger.log(`Streak freeze awarded to user ${userId} for ${newStreak}-day streak`);
+      this.logger.log(
+        `Streak freeze awarded to user ${userId} for ${newStreak}-day streak`,
+      );
     }
   }
 
@@ -290,7 +335,9 @@ export class ProgressService {
     });
     if (!enrollment) return;
 
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) return;
 
     const totalLessons = await this.prisma.lesson.count({
@@ -308,10 +355,18 @@ export class ProgressService {
     for (const threshold of MILESTONE_THRESHOLDS) {
       if (percentage >= threshold && !sentMilestones.includes(threshold)) {
         // Send milestone email
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
         if (user?.email) {
           this.emailService
-            .sendMilestoneAchieved(user.email, user.name, course.title, courseId, MILESTONE_LABELS[threshold])
+            .sendMilestoneAchieved(
+              user.email,
+              user.name,
+              course.title,
+              courseId,
+              MILESTONE_LABELS[threshold],
+            )
             .catch(() => {});
         }
 
@@ -322,7 +377,9 @@ export class ProgressService {
           data: { milestonesSent: sentMilestones },
         });
 
-        this.logger.log(`Milestone ${threshold}% reached for user ${userId} in course "${course.title}"`);
+        this.logger.log(
+          `Milestone ${threshold}% reached for user ${userId} in course "${course.title}"`,
+        );
       }
     }
   }
@@ -376,7 +433,11 @@ export class ProgressService {
     };
   }
 
-  private calculateXpWithMultiplier(userId: string, baseXp: number, user: { xp: number; currentStreak: number }): number {
+  private calculateXpWithMultiplier(
+    userId: string,
+    baseXp: number,
+    user: { xp: number; currentStreak: number },
+  ): number {
     let multiplier = 1;
 
     // Streak bonus: +10% per 7-day streak, max +50%

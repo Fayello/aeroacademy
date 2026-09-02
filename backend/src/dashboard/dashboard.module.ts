@@ -12,7 +12,13 @@ import { EventsModule } from '../common/events.module';
 import { AiModule } from '../common/ai.module';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => LabsModule), AuthModule, EventsModule, AiModule],
+  imports: [
+    PrismaModule,
+    forwardRef(() => LabsModule),
+    AuthModule,
+    EventsModule,
+    AiModule,
+  ],
   controllers: [DashboardController],
   providers: [
     DashboardService,
@@ -21,6 +27,11 @@ import { AiModule } from '../common/ai.module';
     AchievementService,
     PersonalizationService,
   ],
-  exports: [DashboardService, LeaderboardService, AchievementService, PersonalizationService],
+  exports: [
+    DashboardService,
+    LeaderboardService,
+    AchievementService,
+    PersonalizationService,
+  ],
 })
 export class DashboardModule {}

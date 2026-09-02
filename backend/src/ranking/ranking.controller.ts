@@ -33,7 +33,10 @@ export class RankingController {
   }
 
   @Post(':userId/win-streak')
-  updateWinStreak(@Param('userId') userId: string, @Body() body: { won: boolean }) {
+  updateWinStreak(
+    @Param('userId') userId: string,
+    @Body() body: { won: boolean },
+  ) {
     return this.rankingService.updateWinStreak(userId, body.won);
   }
 }

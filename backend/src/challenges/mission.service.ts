@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
@@ -24,7 +29,10 @@ export class MissionService implements OnModuleInit {
       this.logger.error('Failed to generate weekly missions on startup', err),
     );
     await this.generateTeamWeeklyMissions().catch((err) =>
-      this.logger.error('Failed to generate team weekly missions on startup', err),
+      this.logger.error(
+        'Failed to generate team weekly missions on startup',
+        err,
+      ),
     );
     await this.generateMonthlyMissions().catch((err) =>
       this.logger.error('Failed to generate monthly missions on startup', err),
@@ -37,7 +45,10 @@ export class MissionService implements OnModuleInit {
   async getDailyMissions(userId: string) {
     const now = new Date();
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { xp: true },
+    });
     const userLevel = Math.floor((user?.xp ?? 0) / 1000) + 1;
 
     const challenges = await this.prisma.challenge.findMany({
@@ -110,11 +121,16 @@ export class MissionService implements OnModuleInit {
               userId: { in: teamMemberIds },
             },
             include: {
-              user: { select: { id: true, name: true, username: true, xp: true } },
+              user: {
+                select: { id: true, name: true, username: true, xp: true },
+              },
             },
           });
 
-          const teamProgress = teamUserChallenges.reduce((sum, uc) => sum + uc.progress, 0);
+          const teamProgress = teamUserChallenges.reduce(
+            (sum, uc) => sum + uc.progress,
+            0,
+          );
           const topContributors = teamUserChallenges
             .sort((a, b) => b.progress - a.progress)
             .slice(0, 3)
@@ -202,8 +218,11 @@ export class MissionService implements OnModuleInit {
       include: { challenge: { select: { type: true } } },
     });
 
-    const uniqueDailyTypes = new Set(todayDailies.map((uc) => uc.challenge.type));
-    const allThreeCompleted = uniqueDailyTypes.has('DAILY_WARMUP') &&
+    const uniqueDailyTypes = new Set(
+      todayDailies.map((uc) => uc.challenge.type),
+    );
+    const allThreeCompleted =
+      uniqueDailyTypes.has('DAILY_WARMUP') &&
       uniqueDailyTypes.has('DAILY_SKILL') &&
       uniqueDailyTypes.has('DAILY_BOSS');
 
@@ -214,7 +233,11 @@ export class MissionService implements OnModuleInit {
       const lastComboDate = user.lastDailyComboDate;
       const lastDay = lastComboDate ? new Date(lastComboDate) : null;
       lastDay?.setHours(0, 0, 0, 0);
-      const diffDays = lastDay ? Math.floor((today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+      const diffDays = lastDay
+        ? Math.floor(
+            (today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24),
+          )
+        : 999;
 
       // Increment combo streak if consecutive days, reset to 1 otherwise
       const newCombo = diffDays === 1 ? user.dailyMissionCombo + 1 : 1;
@@ -230,12 +253,21 @@ export class MissionService implements OnModuleInit {
         },
       });
 
-      await this.progressionService.awardXP(userId, {
-        amount: comboBonus,
-        source: 'DAILY_COMBO',
-      }).catch((err) => this.logger.error('ProgressionService.awardXP failed for combo bonus', err));
+      await this.progressionService
+        .awardXP(userId, {
+          amount: comboBonus,
+          source: 'DAILY_COMBO',
+        })
+        .catch((err) =>
+          this.logger.error(
+            'ProgressionService.awardXP failed for combo bonus',
+            err,
+          ),
+        );
 
-      this.logger.log(`Daily combo ${newCombo}x for user ${userId}: +${comboBonus} XP`);
+      this.logger.log(
+        `Daily combo ${newCombo}x for user ${userId}: +${comboBonus} XP`,
+      );
 
       this.eventsService.emit('DAILY_COMBO', {
         userId,
@@ -315,7 +347,11 @@ export class MissionService implements OnModuleInit {
       if (newProgress >= uc.target && !uc.completed) {
         await this.prisma.userChallenge.update({
           where: { id: uc.id },
-          data: { progress: newProgress, completed: true, completedAt: new Date() },
+          data: {
+            progress: newProgress,
+            completed: true,
+            completedAt: new Date(),
+          },
         });
         newlyCompleted.push(uc.challengeId);
         this.logger.log(
@@ -327,12 +363,26 @@ export class MissionService implements OnModuleInit {
           xpReward: uc.challenge.xpReward,
         });
 
-        this.prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } })
+        this.prisma.user
+          .findUnique({
+            where: { id: userId },
+            select: { email: true, name: true },
+          })
           .then((user) => {
             if (user) {
-              this.emailService.sendMissionCompleted(
-                user.email, user.name, uc.challenge.title, uc.challenge.xpReward, uc.challenge.type,
-              ).catch((err) => this.logger.error(`Mission completion email failed: ${err.message}`));
+              this.emailService
+                .sendMissionCompleted(
+                  user.email,
+                  user.name,
+                  uc.challenge.title,
+                  uc.challenge.xpReward,
+                  uc.challenge.type,
+                )
+                .catch((err) =>
+                  this.logger.error(
+                    `Mission completion email failed: ${err.message}`,
+                  ),
+                );
             }
           })
           .catch(() => {});
@@ -421,7 +471,8 @@ export class MissionService implements OnModuleInit {
         domainId: skillSkill?.domainId ?? null,
         skillId: skillSkill?.id ?? null,
         title: `Daily Skill: ${skillLab.title}`,
-        description: 'Solve 3 flags in an intermediate lab to sharpen your skills.',
+        description:
+          'Solve 3 flags in an intermediate lab to sharpen your skills.',
         difficulty: 'MEDIUM',
         objectiveType: 'FLAG_COMPLETIONS',
         objectiveTarget: 3,
@@ -467,7 +518,12 @@ export class MissionService implements OnModuleInit {
     endOfWeek.setHours(23, 59, 59, 999);
 
     const existing = await this.prisma.challenge.findFirst({
-      where: { type: 'WEEKLY', isActive: true, startAt: { lte: now }, endAt: { gte: now } },
+      where: {
+        type: 'WEEKLY',
+        isActive: true,
+        startAt: { lte: now },
+        endAt: { gte: now },
+      },
     });
 
     if (existing) {
@@ -476,7 +532,9 @@ export class MissionService implements OnModuleInit {
     }
 
     const labs = await this.prisma.lab.findMany({
-      include: { labSkills: { include: { skill: { include: { domain: true } } } } },
+      include: {
+        labSkills: { include: { skill: { include: { domain: true } } } },
+      },
     });
 
     if (labs.length === 0) return;
@@ -484,7 +542,9 @@ export class MissionService implements OnModuleInit {
     const pick = <T>(arr: T[]): T | undefined =>
       arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
 
-    const allSkills = await this.prisma.skill.findMany({ include: { domain: true } });
+    const allSkills = await this.prisma.skill.findMany({
+      include: { domain: true },
+    });
     const pickSkill = pick(allSkills);
 
     const targetLab = pick(labs)!;
@@ -527,7 +587,12 @@ export class MissionService implements OnModuleInit {
     endOfWeek.setHours(23, 59, 59, 999);
 
     const existing = await this.prisma.challenge.findFirst({
-      where: { type: 'TEAM_WEEKLY', isActive: true, startAt: { lte: now }, endAt: { gte: now } },
+      where: {
+        type: 'TEAM_WEEKLY',
+        isActive: true,
+        startAt: { lte: now },
+        endAt: { gte: now },
+      },
     });
 
     if (existing) {
@@ -537,11 +602,15 @@ export class MissionService implements OnModuleInit {
 
     const teams = await this.prisma.team.findMany();
     if (teams.length === 0) {
-      this.logger.log('No teams found, skipping team weekly mission generation');
+      this.logger.log(
+        'No teams found, skipping team weekly mission generation',
+      );
       return;
     }
 
-    const allSkills = await this.prisma.skill.findMany({ include: { domain: true } });
+    const allSkills = await this.prisma.skill.findMany({
+      include: { domain: true },
+    });
     const pick = <T>(arr: T[]): T | undefined =>
       arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
     const pickSkill = pick(allSkills);
@@ -572,10 +641,23 @@ export class MissionService implements OnModuleInit {
     this.logger.log('Running monthly mission generation cron...');
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
 
     const existing = await this.prisma.challenge.findFirst({
-      where: { type: 'MONTHLY', isActive: true, startAt: { lte: now }, endAt: { gte: now } },
+      where: {
+        type: 'MONTHLY',
+        isActive: true,
+        startAt: { lte: now },
+        endAt: { gte: now },
+      },
     });
 
     if (existing) {
@@ -584,7 +666,9 @@ export class MissionService implements OnModuleInit {
     }
 
     const labs = await this.prisma.lab.findMany({
-      include: { labSkills: { include: { skill: { include: { domain: true } } } } },
+      include: {
+        labSkills: { include: { skill: { include: { domain: true } } } },
+      },
     });
 
     if (labs.length === 0) return;
@@ -592,7 +676,9 @@ export class MissionService implements OnModuleInit {
     const pick = <T>(arr: T[]): T | undefined =>
       arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
 
-    const allSkills = await this.prisma.skill.findMany({ include: { domain: true } });
+    const allSkills = await this.prisma.skill.findMany({
+      include: { domain: true },
+    });
     const pickSkill = pick(allSkills);
 
     const targetLab = pick(labs)!;
@@ -630,7 +716,12 @@ export class MissionService implements OnModuleInit {
     const year = now.getFullYear();
 
     const existing = await this.prisma.challenge.findFirst({
-      where: { type: 'SEASONAL', isActive: true, startAt: { lte: now }, endAt: { gte: now } },
+      where: {
+        type: 'SEASONAL',
+        isActive: true,
+        startAt: { lte: now },
+        endAt: { gte: now },
+      },
     });
 
     if (existing) {
@@ -639,19 +730,69 @@ export class MissionService implements OnModuleInit {
     }
 
     const themes = [
-      { name: 'Security Sprint', domain: 'SECURITY', desc: 'Capture 20 flags across security labs.', obj: 'FLAG_COMPLETIONS', target: 20, xp: 3000, diff: 'HARD' },
-      { name: 'DevOps Marathon', domain: 'DEVOPS', desc: 'Complete 5 labs in the DevOps domain.', obj: 'LAB_COMPLETIONS', target: 5, xp: 3000, diff: 'MEDIUM' },
-      { name: 'Networking Gauntlet', domain: 'NETWORKING', desc: 'Solve 15 flags in networking labs.', obj: 'FLAG_COMPLETIONS', target: 15, xp: 3000, diff: 'HARD' },
-      { name: 'Database Deep Dive', domain: 'DATABASES', desc: 'Complete 4 database labs.', obj: 'LAB_COMPLETIONS', target: 4, xp: 3000, diff: 'MEDIUM' },
-      { name: 'Systems Challenge', domain: 'SYSTEMS', desc: 'Solve 15 flags across systems labs.', obj: 'FLAG_COMPLETIONS', target: 15, xp: 3000, diff: 'HARD' },
-      { name: 'QA Sprint', domain: 'QA', desc: 'Complete 3 QA labs.', obj: 'LAB_COMPLETIONS', target: 3, xp: 3000, diff: 'MEDIUM' },
+      {
+        name: 'Security Sprint',
+        domain: 'SECURITY',
+        desc: 'Capture 20 flags across security labs.',
+        obj: 'FLAG_COMPLETIONS',
+        target: 20,
+        xp: 3000,
+        diff: 'HARD',
+      },
+      {
+        name: 'DevOps Marathon',
+        domain: 'DEVOPS',
+        desc: 'Complete 5 labs in the DevOps domain.',
+        obj: 'LAB_COMPLETIONS',
+        target: 5,
+        xp: 3000,
+        diff: 'MEDIUM',
+      },
+      {
+        name: 'Networking Gauntlet',
+        domain: 'NETWORKING',
+        desc: 'Solve 15 flags in networking labs.',
+        obj: 'FLAG_COMPLETIONS',
+        target: 15,
+        xp: 3000,
+        diff: 'HARD',
+      },
+      {
+        name: 'Database Deep Dive',
+        domain: 'DATABASES',
+        desc: 'Complete 4 database labs.',
+        obj: 'LAB_COMPLETIONS',
+        target: 4,
+        xp: 3000,
+        diff: 'MEDIUM',
+      },
+      {
+        name: 'Systems Challenge',
+        domain: 'SYSTEMS',
+        desc: 'Solve 15 flags across systems labs.',
+        obj: 'FLAG_COMPLETIONS',
+        target: 15,
+        xp: 3000,
+        diff: 'HARD',
+      },
+      {
+        name: 'QA Sprint',
+        domain: 'QA',
+        desc: 'Complete 3 QA labs.',
+        obj: 'LAB_COMPLETIONS',
+        target: 3,
+        xp: 3000,
+        diff: 'MEDIUM',
+      },
     ];
 
     const theme = themes[month % themes.length];
     const startOfMonth = new Date(year, month, 1);
     const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
-    const domain = await this.prisma.skillDomain.findFirst({ where: { name: theme.domain } });
+    const domain = await this.prisma.skillDomain.findFirst({
+      where: { name: theme.domain },
+    });
 
     const seasonal = await this.prisma.challenge.create({
       data: {
@@ -665,7 +806,10 @@ export class MissionService implements OnModuleInit {
         xpReward: theme.xp,
         startAt: startOfMonth,
         endAt: endOfMonth,
-        metadata: { theme: theme.name, season: `${year}-${String(month + 1).padStart(2, '0')}` },
+        metadata: {
+          theme: theme.name,
+          season: `${year}-${String(month + 1).padStart(2, '0')}`,
+        },
       },
     });
 

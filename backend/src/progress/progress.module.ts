@@ -8,7 +8,13 @@ import { BadgesModule } from '../badges/badges.module';
 import { EventsModule } from '../common/events.module';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => DashboardModule), ChallengesModule, BadgesModule, EventsModule],
+  imports: [
+    PrismaModule,
+    forwardRef(() => DashboardModule),
+    ChallengesModule,
+    BadgesModule,
+    EventsModule,
+  ],
   providers: [ProgressService],
   controllers: [ProgressController],
   exports: [ProgressService],

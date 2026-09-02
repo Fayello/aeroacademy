@@ -28,22 +28,49 @@ export class GlobalEventsController {
   }
 
   @Post()
-  createEvent(@Body() body: { seasonId?: string; title: string; description: string; type: string; targetXp?: number; targetCount?: number; xpReward?: number; metadata?: any; startsAt: string; expiresAt: string }) {
+  createEvent(
+    @Body()
+    body: {
+      seasonId?: string;
+      title: string;
+      description: string;
+      type: string;
+      targetXp?: number;
+      targetCount?: number;
+      xpReward?: number;
+      metadata?: any;
+      startsAt: string;
+      expiresAt: string;
+    },
+  ) {
     return this.globalEventsService.createEvent(body);
   }
 
   @Post(':eventId/join')
-  joinEvent(@Param('eventId') eventId: string, @Body() body: { userId: string }) {
+  joinEvent(
+    @Param('eventId') eventId: string,
+    @Body() body: { userId: string },
+  ) {
     return this.globalEventsService.joinEvent(body.userId, eventId);
   }
 
   @Post(':eventId/progress')
-  updateProgress(@Param('eventId') eventId: string, @Body() body: { userId: string; progress: number }) {
-    return this.globalEventsService.updateProgress(body.userId, eventId, body.progress);
+  updateProgress(
+    @Param('eventId') eventId: string,
+    @Body() body: { userId: string; progress: number },
+  ) {
+    return this.globalEventsService.updateProgress(
+      body.userId,
+      eventId,
+      body.progress,
+    );
   }
 
   @Post(':eventId/claim')
-  claimReward(@Param('eventId') eventId: string, @Body() body: { userId: string }) {
+  claimReward(
+    @Param('eventId') eventId: string,
+    @Body() body: { userId: string },
+  ) {
     return this.globalEventsService.claimReward(body.userId, eventId);
   }
 }

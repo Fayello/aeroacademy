@@ -17,9 +17,14 @@ export class DisplayModeService {
     return (pref?.displayMode as DisplayMode) || 'PROGRESSION';
   }
 
-  async setDisplayMode(userId: string, mode: DisplayMode): Promise<DisplayMode> {
+  async setDisplayMode(
+    userId: string,
+    mode: DisplayMode,
+  ): Promise<DisplayMode> {
     if (!['PROFESSIONAL', 'PROGRESSION', 'COMPETITIVE'].includes(mode)) {
-      throw new Error('Invalid display mode. Must be PROFESSIONAL, PROGRESSION, or COMPETITIVE');
+      throw new Error(
+        'Invalid display mode. Must be PROFESSIONAL, PROGRESSION, or COMPETITIVE',
+      );
     }
 
     await this.prisma.userPreference.upsert({
@@ -33,23 +38,26 @@ export class DisplayModeService {
   }
 
   async getModeConfig(mode: DisplayMode) {
-    const configs: Record<DisplayMode, {
-      showXp: boolean;
-      showLevels: boolean;
-      showRanks: boolean;
-      showBadges: boolean;
-      showStreaks: boolean;
-      showMissions: boolean;
-      showLeaderboard: boolean;
-      showCompete: boolean;
-      showBattlePass: boolean;
-      showBossMissions: boolean;
-      showSeasons: boolean;
-      showGenome: boolean;
-      showMastery: boolean;
-      showCertifications: boolean;
-      showCompetency: boolean;
-    }> = {
+    const configs: Record<
+      DisplayMode,
+      {
+        showXp: boolean;
+        showLevels: boolean;
+        showRanks: boolean;
+        showBadges: boolean;
+        showStreaks: boolean;
+        showMissions: boolean;
+        showLeaderboard: boolean;
+        showCompete: boolean;
+        showBattlePass: boolean;
+        showBossMissions: boolean;
+        showSeasons: boolean;
+        showGenome: boolean;
+        showMastery: boolean;
+        showCertifications: boolean;
+        showCompetency: boolean;
+      }
+    > = {
       PROFESSIONAL: {
         showXp: false,
         showLevels: false,

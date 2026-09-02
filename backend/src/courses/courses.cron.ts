@@ -24,7 +24,11 @@ export class CoursesCron {
     try {
       const tz = timezone || 'UTC';
       const hour = parseInt(
-        new Date().toLocaleString('en-US', { timeZone: tz, hour: 'numeric', hour12: false }),
+        new Date().toLocaleString('en-US', {
+          timeZone: tz,
+          hour: 'numeric',
+          hour12: false,
+        }),
         10,
       );
       return hour >= 9 && hour < 21;
@@ -39,15 +43,19 @@ export class CoursesCron {
       select: { lastEmailSentAt: true },
     });
     if (!user?.lastEmailSentAt) return true;
-    const hoursSince = (Date.now() - new Date(user.lastEmailSentAt).getTime()) / (1000 * 60 * 60);
+    const hoursSince =
+      (Date.now() - new Date(user.lastEmailSentAt).getTime()) /
+      (1000 * 60 * 60);
     return hoursSince >= 4;
   }
 
   private async markEmailSent(userId: string) {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { lastEmailSentAt: new Date() },
-    }).catch(() => {});
+    await this.prisma.user
+      .update({
+        where: { id: userId },
+        data: { lastEmailSentAt: new Date() },
+      })
+      .catch(() => {});
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_9AM)
@@ -63,7 +71,16 @@ export class CoursesCron {
           role: 'STUDENT',
           emailVerified: { not: null },
         },
-        select: { id: true, email: true, name: true, createdAt: true, welcomeDripSent: true, timezone: true, lastEmailSentAt: true, emailPreferences: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          createdAt: true,
+          welcomeDripSent: true,
+          timezone: true,
+          lastEmailSentAt: true,
+          emailPreferences: true,
+        },
       });
 
       const now = new Date();
@@ -78,7 +95,8 @@ export class CoursesCron {
         if (!this.emailService.hasPreference(prefs, 'courseUpdates')) continue;
 
         const daysSinceRegistration = Math.floor(
-          (now.getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24),
+          (now.getTime() - new Date(user.createdAt).getTime()) /
+            (1000 * 60 * 60 * 24),
         );
 
         const sentDays = (user.welcomeDripSent as number[]) || [];
@@ -96,7 +114,11 @@ export class CoursesCron {
             const enrolledCount = await this.prisma.courseEnrollment.count({
               where: { userId: user.id },
             });
-            await this.emailService.sendWelcomeDay7(user.email, user.name, enrolledCount);
+            await this.emailService.sendWelcomeDay7(
+              user.email,
+              user.name,
+              enrolledCount,
+            );
             sentDays.push(7);
             sent++;
           } else {
@@ -109,13 +131,17 @@ export class CoursesCron {
           });
           await this.markEmailSent(user.id);
         } catch (err) {
-          this.logger.error(`Failed to send drip to ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+          this.logger.error(
+            `Failed to send drip to ${user.email}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
       this.logger.log(`Welcome drip complete. Sent ${sent} email(s).`);
     } catch (err) {
-      this.logger.error(`Welcome drip failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Welcome drip failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.welcomeDripRunning = false;
     }
@@ -135,7 +161,16 @@ export class CoursesCron {
           user: { role: 'STUDENT' },
         },
         include: {
-          user: { select: { id: true, email: true, name: true, timezone: true, lastEmailSentAt: true, emailPreferences: true } },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              timezone: true,
+              lastEmailSentAt: true,
+              emailPreferences: true,
+            },
+          },
           course: { select: { id: true, title: true } },
         },
       });
@@ -147,15 +182,20 @@ export class CoursesCron {
         if (!this.isReasonableHour(enrollment.user.timezone)) continue;
         if (!(await this.canSendEmail(enrollment.user.id))) continue;
 
-        const prefs = enrollment.user.emailPreferences as Record<string, boolean> | null;
+        const prefs = enrollment.user.emailPreferences as Record<
+          string,
+          boolean
+        > | null;
         if (!this.emailService.hasPreference(prefs, 'nudges')) continue;
 
         const daysSinceEnrolled = Math.floor(
-          (now.getTime() - new Date(enrollment.enrolledAt).getTime()) / (1000 * 60 * 60 * 24),
+          (now.getTime() - new Date(enrollment.enrolledAt).getTime()) /
+            (1000 * 60 * 60 * 24),
         );
 
         const daysSinceActivity = Math.floor(
-          (now.getTime() - new Date(enrollment.lastActivityAt).getTime()) / (1000 * 60 * 60 * 24),
+          (now.getTime() - new Date(enrollment.lastActivityAt).getTime()) /
+            (1000 * 60 * 60 * 24),
         );
 
         // Get progress
@@ -163,13 +203,23 @@ export class CoursesCron {
           where: { section: { courseId: enrollment.courseId } },
         });
         const startedLessons = await this.prisma.progress.count({
-          where: { userId: enrollment.userId, lesson: { section: { courseId: enrollment.courseId } } },
+          where: {
+            userId: enrollment.userId,
+            lesson: { section: { courseId: enrollment.courseId } },
+          },
         });
         const completedLessons = await this.prisma.progress.count({
-          where: { userId: enrollment.userId, completed: true, lesson: { section: { courseId: enrollment.courseId } } },
+          where: {
+            userId: enrollment.userId,
+            completed: true,
+            lesson: { section: { courseId: enrollment.courseId } },
+          },
         });
 
-        const progressPct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+        const progressPct =
+          totalLessons > 0
+            ? Math.round((completedLessons / totalLessons) * 100)
+            : 0;
 
         try {
           // Nudge 1: Enrolled 48+ hours ago, never started
@@ -184,7 +234,11 @@ export class CoursesCron {
             await this.markEmailSent(enrollment.user.id);
           }
           // Nudge 2: Paused 3+ days, has some progress but not finished
-          else if (daysSinceActivity >= 3 && startedLessons > 0 && completedLessons < totalLessons) {
+          else if (
+            daysSinceActivity >= 3 &&
+            startedLessons > 0 &&
+            completedLessons < totalLessons
+          ) {
             await this.emailService.sendPausedCourseNudge(
               enrollment.user.email,
               enrollment.user.name,
@@ -197,13 +251,17 @@ export class CoursesCron {
             await this.markEmailSent(enrollment.user.id);
           }
         } catch (err) {
-          this.logger.error(`Nudge failed for ${enrollment.user.email}: ${err instanceof Error ? err.message : String(err)}`);
+          this.logger.error(
+            `Nudge failed for ${enrollment.user.email}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
       this.logger.log(`Nudge campaigns complete. Sent ${sent} email(s).`);
     } catch (err) {
-      this.logger.error(`Nudge campaigns failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Nudge campaigns failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.nudgeRunning = false;
     }
@@ -224,14 +282,19 @@ export class CoursesCron {
         return;
       }
 
-      this.logger.log(`Found ${inactive.length} inactive enrollment(s), sending reminders...`);
+      this.logger.log(
+        `Found ${inactive.length} inactive enrollment(s), sending reminders...`,
+      );
 
       for (const enrollment of inactive) {
         if (!enrollment.user.email) continue;
         if (!this.isReasonableHour(enrollment.user.timezone)) continue;
         if (!(await this.canSendEmail(enrollment.userId))) continue;
 
-        const prefs = enrollment.user.emailPreferences as Record<string, boolean> | null;
+        const prefs = enrollment.user.emailPreferences as Record<
+          string,
+          boolean
+        > | null;
         if (!this.emailService.hasPreference(prefs, 'nudges')) continue;
 
         try {
@@ -241,7 +304,8 @@ export class CoursesCron {
           );
 
           const daysInactive = Math.floor(
-            (Date.now() - new Date(enrollment.lastActivityAt).getTime()) / (1000 * 60 * 60 * 24),
+            (Date.now() - new Date(enrollment.lastActivityAt).getTime()) /
+              (1000 * 60 * 60 * 24),
           );
 
           await this.emailService.sendCourseReminder(
@@ -253,17 +317,26 @@ export class CoursesCron {
             daysInactive,
           );
 
-          await this.coursesService.markReminderSent(enrollment.userId, enrollment.courseId);
+          await this.coursesService.markReminderSent(
+            enrollment.userId,
+            enrollment.courseId,
+          );
           await this.markEmailSent(enrollment.userId);
-          this.logger.log(`Reminder sent to ${enrollment.user.email} for "${enrollment.course.title}"`);
+          this.logger.log(
+            `Reminder sent to ${enrollment.user.email} for "${enrollment.course.title}"`,
+          );
         } catch (err) {
-          this.logger.error(`Failed to send reminder to ${enrollment.user.email}: ${err instanceof Error ? err.message : String(err)}`);
+          this.logger.error(
+            `Failed to send reminder to ${enrollment.user.email}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
       this.logger.log('Inactivity reminder cycle complete.');
     } catch (err) {
-      this.logger.error(`Inactivity check failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Inactivity check failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.reminderRunning = false;
     }
@@ -286,7 +359,13 @@ export class CoursesCron {
           emailVerified: { not: null },
           lastActivityDate: { gte: oneWeekAgo },
         },
-        select: { id: true, email: true, name: true, currentStreak: true, rank: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          currentStreak: true,
+          rank: true,
+        },
       });
 
       let sent = 0;
@@ -310,7 +389,8 @@ export class CoursesCron {
 
           const xpEarned = lessonsCompleted * 100;
 
-          const coursesInProgress: { title: string; progressPct: number }[] = [];
+          const coursesInProgress: { title: string; progressPct: number }[] =
+            [];
           for (const enrollment of enrollments) {
             const total = await this.prisma.lesson.count({
               where: { section: { courseId: enrollment.courseId } },
@@ -325,7 +405,8 @@ export class CoursesCron {
             if (completed > 0 && completed < total) {
               coursesInProgress.push({
                 title: enrollment.course.title,
-                progressPct: total > 0 ? Math.round((completed / total) * 100) : 0,
+                progressPct:
+                  total > 0 ? Math.round((completed / total) * 100) : 0,
               });
             }
           }
@@ -341,13 +422,17 @@ export class CoursesCron {
             sent++;
           }
         } catch (err) {
-          this.logger.error(`Failed to send digest to ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+          this.logger.error(
+            `Failed to send digest to ${user.email}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
       this.logger.log(`Weekly digest sent to ${sent} user(s).`);
     } catch (err) {
-      this.logger.error(`Weekly digest failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Weekly digest failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.digestRunning = false;
     }
@@ -370,7 +455,15 @@ export class CoursesCron {
           emailVerified: { not: null },
           lastActivityDate: { lt: fourteenDaysAgo },
         },
-        select: { id: true, email: true, name: true, createdAt: true, lastActivityDate: true, timezone: true, emailPreferences: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          createdAt: true,
+          lastActivityDate: true,
+          timezone: true,
+          emailPreferences: true,
+        },
       });
 
       let sent = 0;
@@ -384,19 +477,29 @@ export class CoursesCron {
 
         try {
           const daysInactive = Math.floor(
-            (Date.now() - new Date(user.lastActivityDate || user.createdAt).getTime()) / (1000 * 60 * 60 * 24),
+            (Date.now() -
+              new Date(user.lastActivityDate || user.createdAt).getTime()) /
+              (1000 * 60 * 60 * 24),
           );
-          await this.emailService.sendReEngagement(user.email, user.name, daysInactive);
+          await this.emailService.sendReEngagement(
+            user.email,
+            user.name,
+            daysInactive,
+          );
           await this.markEmailSent(user.id);
           sent++;
         } catch (err) {
-          this.logger.error(`Re-engagement failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+          this.logger.error(
+            `Re-engagement failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
       this.logger.log(`Re-engagement complete. Sent ${sent} email(s).`);
     } catch (err) {
-      this.logger.error(`Re-engagement failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Re-engagement failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.reEngagementRunning = false;
     }
@@ -420,27 +523,43 @@ export class CoursesCron {
           currentStreak: { gte: 2 },
           lastActivityDate: { lt: today },
         },
-        select: { id: true, email: true, name: true, currentStreak: true, timezone: true, emailPreferences: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          currentStreak: true,
+          timezone: true,
+          emailPreferences: true,
+        },
       });
 
       let sent = 0;
       for (const user of usersWithStreak) {
         if (!user.email) continue;
         if (!(await this.canSendEmail(user.id))) continue;
-        if (user.emailPreferences && user.emailPreferences['streaks'] === false) continue;
+        if (user.emailPreferences && user.emailPreferences['streaks'] === false)
+          continue;
 
         try {
-          await this.emailService.sendStreakReminder(user.email, user.name, user.currentStreak);
+          await this.emailService.sendStreakReminder(
+            user.email,
+            user.name,
+            user.currentStreak,
+          );
           await this.markEmailSent(user.id);
           sent++;
         } catch (err) {
-          this.logger.error(`Streak reminder failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`);
+          this.logger.error(
+            `Streak reminder failed for ${user.email}: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
       this.logger.log(`Streak reminder complete. Sent ${sent} email(s).`);
     } catch (err) {
-      this.logger.error(`Streak reminder failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Streak reminder failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.streakReminderRunning = false;
     }

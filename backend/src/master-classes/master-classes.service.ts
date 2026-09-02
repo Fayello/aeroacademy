@@ -158,16 +158,29 @@ export class MasterClassesService {
     });
   }
 
-  async update(id: string, data: { title?: string; description?: string; category?: string; scheduledAt?: string | Date; maxParticipants?: number | null; imageUrl?: string }) {
+  async update(
+    id: string,
+    data: {
+      title?: string;
+      description?: string;
+      category?: string;
+      scheduledAt?: string | Date;
+      maxParticipants?: number | null;
+      imageUrl?: string;
+    },
+  ) {
     const mc = await this.prisma.masterClass.findUnique({ where: { id } });
     if (!mc) throw new NotFoundException('Master class not found');
 
     const updateData: Record<string, unknown> = {};
     if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined) updateData.description = data.description;
+    if (data.description !== undefined)
+      updateData.description = data.description;
     if (data.category !== undefined) updateData.category = data.category;
-    if (data.scheduledAt !== undefined) updateData.scheduledAt = new Date(data.scheduledAt);
-    if (data.maxParticipants !== undefined) updateData.maxParticipants = data.maxParticipants;
+    if (data.scheduledAt !== undefined)
+      updateData.scheduledAt = new Date(data.scheduledAt);
+    if (data.maxParticipants !== undefined)
+      updateData.maxParticipants = data.maxParticipants;
     if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
 
     return this.prisma.masterClass.update({ where: { id }, data: updateData });

@@ -23,13 +23,76 @@ export class RankingService {
     if (count > 0) return { message: 'Tiers already seeded' };
 
     const tiers = [
-      { name: 'BRONZE', displayName: 'Bronze', icon: 'shield', minXp: 0, maxXp: 4999, kFactor: 40, decayRate: 0, order: 1 },
-      { name: 'SILVER', displayName: 'Silver', icon: 'award', minXp: 5000, maxXp: 14999, kFactor: 36, decayRate: 0, order: 2 },
-      { name: 'GOLD', displayName: 'Gold', icon: 'trophy', minXp: 15000, maxXp: 34999, kFactor: 32, decayRate: 0, order: 3 },
-      { name: 'PLATINUM', displayName: 'Platinum', icon: 'crown', minXp: 35000, maxXp: 69999, kFactor: 28, decayRate: 0, order: 4 },
-      { name: 'DIAMOND', displayName: 'Diamond', icon: 'gem', minXp: 70000, maxXp: 119999, kFactor: 24, decayRate: 0, order: 5 },
-      { name: 'MASTER', displayName: 'Master', icon: 'star', minXp: 120000, maxXp: 199999, kFactor: 20, decayRate: 0, order: 6 },
-      { name: 'GRANDMASTER', displayName: 'Grandmaster', icon: 'flame', minXp: 200000, maxXp: 999999, kFactor: 16, decayRate: 0, order: 7 },
+      {
+        name: 'BRONZE',
+        displayName: 'Bronze',
+        icon: 'shield',
+        minXp: 0,
+        maxXp: 4999,
+        kFactor: 40,
+        decayRate: 0,
+        order: 1,
+      },
+      {
+        name: 'SILVER',
+        displayName: 'Silver',
+        icon: 'award',
+        minXp: 5000,
+        maxXp: 14999,
+        kFactor: 36,
+        decayRate: 0,
+        order: 2,
+      },
+      {
+        name: 'GOLD',
+        displayName: 'Gold',
+        icon: 'trophy',
+        minXp: 15000,
+        maxXp: 34999,
+        kFactor: 32,
+        decayRate: 0,
+        order: 3,
+      },
+      {
+        name: 'PLATINUM',
+        displayName: 'Platinum',
+        icon: 'crown',
+        minXp: 35000,
+        maxXp: 69999,
+        kFactor: 28,
+        decayRate: 0,
+        order: 4,
+      },
+      {
+        name: 'DIAMOND',
+        displayName: 'Diamond',
+        icon: 'gem',
+        minXp: 70000,
+        maxXp: 119999,
+        kFactor: 24,
+        decayRate: 0,
+        order: 5,
+      },
+      {
+        name: 'MASTER',
+        displayName: 'Master',
+        icon: 'star',
+        minXp: 120000,
+        maxXp: 199999,
+        kFactor: 20,
+        decayRate: 0,
+        order: 6,
+      },
+      {
+        name: 'GRANDMASTER',
+        displayName: 'Grandmaster',
+        icon: 'flame',
+        minXp: 200000,
+        maxXp: 999999,
+        kFactor: 16,
+        decayRate: 0,
+        order: 7,
+      },
     ];
 
     for (const tier of tiers) {
@@ -69,7 +132,9 @@ export class RankingService {
         },
       });
 
-      this.logger.log(`User ${userId} promoted from ${user.division} to ${tier.name}`);
+      this.logger.log(
+        `User ${userId} promoted from ${user.division} to ${tier.name}`,
+      );
     }
 
     return {
@@ -98,9 +163,12 @@ export class RankingService {
     const now = new Date();
     const lastWin = streak.lastWinDate;
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const lastWinDay = lastWin ? new Date(lastWin.getFullYear(), lastWin.getMonth(), lastWin.getDate()) : null;
+    const lastWinDay = lastWin
+      ? new Date(lastWin.getFullYear(), lastWin.getMonth(), lastWin.getDate())
+      : null;
 
-    const isConsecutive = lastWinDay && today.getTime() - lastWinDay.getTime() <= 86400000;
+    const isConsecutive =
+      lastWinDay && today.getTime() - lastWinDay.getTime() <= 86400000;
 
     let newStreak: number;
     let newMultiplier: number;
@@ -173,15 +241,30 @@ export class RankingService {
     });
 
     const tier = await this.getTierForXp(user.xp);
-    const streak = await this.prisma.winStreak.findUnique({ where: { userId } });
+    const streak = await this.prisma.winStreak.findUnique({
+      where: { userId },
+    });
 
     return {
       userId,
       position: rank + 1,
       xp: user.xp,
       division: user.division,
-      tier: tier ? { name: tier.name, displayName: tier.displayName, minXp: tier.minXp, maxXp: tier.maxXp } : null,
-      winStreak: streak ? { current: streak.currentStreak, longest: streak.longestStreak, multiplier: streak.streakMultiplier } : null,
+      tier: tier
+        ? {
+            name: tier.name,
+            displayName: tier.displayName,
+            minXp: tier.minXp,
+            maxXp: tier.maxXp,
+          }
+        : null,
+      winStreak: streak
+        ? {
+            current: streak.currentStreak,
+            longest: streak.longestStreak,
+            multiplier: streak.streakMultiplier,
+          }
+        : null,
     };
   }
 }

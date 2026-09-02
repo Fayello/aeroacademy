@@ -112,7 +112,10 @@ export class MasteryService {
         (now.getTime() - userSkill.lastPracticedAt!.getTime()) / 86400000,
       );
 
-      const daysOverThreshold = Math.max(0, daysInactive - DECAY_THRESHOLD_DAYS);
+      const daysOverThreshold = Math.max(
+        0,
+        daysInactive - DECAY_THRESHOLD_DAYS,
+      );
       const decayAmount = Math.min(
         userSkill.mastery,
         userSkill.decayRate * daysOverThreshold,
@@ -204,7 +207,12 @@ export class MasteryService {
 
       if (us.isDecaying) decayingCount++;
 
-      if (us.isDecaying || (daysSincePractice !== null && daysSincePractice > DECAY_THRESHOLD_DAYS && us.mastery > 0)) {
+      if (
+        us.isDecaying ||
+        (daysSincePractice !== null &&
+          daysSincePractice > DECAY_THRESHOLD_DAYS &&
+          us.mastery > 0)
+      ) {
         fadingSkills.push(info);
       }
 

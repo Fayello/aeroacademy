@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 type Any = any;
@@ -10,16 +15,21 @@ export class AcademicService {
   // ─── CURRICULUM ↔ COURSE LINKING ──────────────────────
 
   async linkCourseToModule(moduleId: string, courseId: string): Promise<Any> {
-    const module = await this.prisma.curriculumModule.findUnique({ where: { id: moduleId } });
+    const module = await this.prisma.curriculumModule.findUnique({
+      where: { id: moduleId },
+    });
     if (!module) throw new NotFoundException('Module not found');
 
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) throw new NotFoundException('Course not found');
 
     const existing = await this.prisma.moduleCourse.findUnique({
       where: { moduleId_courseId: { moduleId, courseId } },
     });
-    if (existing) throw new ConflictException('Course already linked to this module');
+    if (existing)
+      throw new ConflictException('Course already linked to this module');
 
     return this.prisma.moduleCourse.create({
       data: { moduleId, courseId },
@@ -27,7 +37,10 @@ export class AcademicService {
     });
   }
 
-  async unlinkCourseFromModule(moduleId: string, courseId: string): Promise<Any> {
+  async unlinkCourseFromModule(
+    moduleId: string,
+    courseId: string,
+  ): Promise<Any> {
     await this.prisma.moduleCourse.delete({
       where: { moduleId_courseId: { moduleId, courseId } },
     });
@@ -37,23 +50,37 @@ export class AcademicService {
   async getModuleCourses(moduleId: string): Promise<Any[]> {
     return this.prisma.moduleCourse.findMany({
       where: { moduleId },
-      include: { course: { select: { id: true, title: true, description: true, imageUrl: true } } },
+      include: {
+        course: {
+          select: { id: true, title: true, description: true, imageUrl: true },
+        },
+      },
     });
   }
 
   // ─── COHORT → COURSE ASSIGNMENTS ──────────────────────
 
-  async assignCourseToCohort(cohortId: string, courseId: string, weight: number = 1.0, isRequired: boolean = true): Promise<Any> {
-    const cohort = await this.prisma.cohort.findUnique({ where: { id: cohortId } });
+  async assignCourseToCohort(
+    cohortId: string,
+    courseId: string,
+    weight: number = 1.0,
+    isRequired: boolean = true,
+  ): Promise<Any> {
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
     if (!cohort) throw new NotFoundException('Cohort not found');
 
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) throw new NotFoundException('Course not found');
 
     const existing = await this.prisma.cohortCourseAssignment.findUnique({
       where: { cohortId_courseId: { cohortId, courseId } },
     });
-    if (existing) throw new ConflictException('Course already assigned to this cohort');
+    if (existing)
+      throw new ConflictException('Course already assigned to this cohort');
 
     return this.prisma.cohortCourseAssignment.create({
       data: { cohortId, courseId, weight, isRequired },
@@ -61,7 +88,10 @@ export class AcademicService {
     });
   }
 
-  async unassignCourseFromCohort(cohortId: string, courseId: string): Promise<Any> {
+  async unassignCourseFromCohort(
+    cohortId: string,
+    courseId: string,
+  ): Promise<Any> {
     await this.prisma.cohortCourseAssignment.delete({
       where: { cohortId_courseId: { cohortId, courseId } },
     });
@@ -71,7 +101,11 @@ export class AcademicService {
   async getCohortCourses(cohortId: string): Promise<Any[]> {
     return this.prisma.cohortCourseAssignment.findMany({
       where: { cohortId },
-      include: { course: { select: { id: true, title: true, description: true, imageUrl: true } } },
+      include: {
+        course: {
+          select: { id: true, title: true, description: true, imageUrl: true },
+        },
+      },
       orderBy: { assignedAt: 'desc' },
     });
   }
@@ -83,7 +117,16 @@ export class AcademicService {
         cohort: {
           include: {
             courseAssignments: {
-              include: { course: { select: { id: true, title: true, description: true, imageUrl: true } } },
+              include: {
+                course: {
+                  select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    imageUrl: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -97,7 +140,7 @@ export class AcademicService {
         cohortName: m.cohort.name,
         weight: ca.weight,
         isRequired: ca.isRequired,
-      }))
+      })),
     );
   }
 
@@ -114,7 +157,9 @@ export class AcademicService {
         gradeCategories: {
           include: {
             entries: {
-              include: { user: { select: { id: true, name: true, email: true } } },
+              include: {
+                user: { select: { id: true, name: true, email: true } },
+              },
             },
           },
         },
@@ -131,17 +176,27 @@ export class AcademicService {
       let totalWeight = 0;
 
       for (const category of cohort.gradeCategories) {
-        const categoryEntries = category.entries.filter((e: Any) => e.user.id === member.user.id);
+        const categoryEntries = category.entries.filter(
+          (e: Any) => e.user.id === member.user.id,
+        );
         if (categoryEntries.length === 0) continue;
 
-        const categoryAvg = categoryEntries.reduce((sum: number, e: Any) => sum + (e.score / e.maxScore) * 100 * e.weight, 0)
-          / categoryEntries.reduce((sum: number, e: Any) => sum + e.weight, 0);
+        const categoryAvg =
+          categoryEntries.reduce(
+            (sum: number, e: Any) =>
+              sum + (e.score / e.maxScore) * 100 * e.weight,
+            0,
+          ) /
+          categoryEntries.reduce((sum: number, e: Any) => sum + e.weight, 0);
 
         weightedScore += categoryAvg * category.weight;
         totalWeight += category.weight;
       }
 
-      const finalGrade = totalWeight > 0 ? Math.round((weightedScore / totalWeight) * 10) / 10 : 0;
+      const finalGrade =
+        totalWeight > 0
+          ? Math.round((weightedScore / totalWeight) * 10) / 10
+          : 0;
 
       return {
         student: member.user,
@@ -151,8 +206,15 @@ export class AcademicService {
     });
 
     return {
-      cohort: { id: cohort.id, name: cohort.name, year: cohort.year, semester: cohort.semester },
-      curriculum: cohort.curriculum ? { id: cohort.curriculum.id, name: cohort.curriculum.name } : null,
+      cohort: {
+        id: cohort.id,
+        name: cohort.name,
+        year: cohort.year,
+        semester: cohort.semester,
+      },
+      curriculum: cohort.curriculum
+        ? { id: cohort.curriculum.id, name: cohort.curriculum.name }
+        : null,
       courses: cohort.courseAssignments.map((ca: Any) => ({
         id: ca.course.id,
         title: ca.course.title,
@@ -165,7 +227,9 @@ export class AcademicService {
         weight: cat.weight,
         entryCount: cat.entries.length,
       })),
-      studentGrades: studentGrades.sort((a: Any, b: Any) => b.finalGrade - a.finalGrade),
+      studentGrades: studentGrades.sort(
+        (a: Any, b: Any) => b.finalGrade - a.finalGrade,
+      ),
     };
   }
 }

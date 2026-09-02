@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 type Any = any;
@@ -9,17 +13,29 @@ export class GradeBookService {
 
   // ─── GRADE CATEGORIES ─────────────────────────────────
 
-  async createCategory(cohortId: string, name: string, weight: number, order?: number) {
-    const cohort = await this.prisma.cohort.findUnique({ where: { id: cohortId } });
+  async createCategory(
+    cohortId: string,
+    name: string,
+    weight: number,
+    order?: number,
+  ) {
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
     if (!cohort) throw new NotFoundException('Cohort not found');
 
     // Validate total weight doesn't exceed 1.0
     const existingCategories = await this.prisma.gradeCategory.findMany({
       where: { cohortId },
     });
-    const currentTotal = existingCategories.reduce((sum: number, c: Any) => sum + c.weight, 0);
+    const currentTotal = existingCategories.reduce(
+      (sum: number, c: Any) => sum + c.weight,
+      0,
+    );
     if (currentTotal + weight > 1.05) {
-      throw new BadRequestException(`Total category weight would exceed 100% (currently ${Math.round(currentTotal * 100)}%)`);
+      throw new BadRequestException(
+        `Total category weight would exceed 100% (currently ${Math.round(currentTotal * 100)}%)`,
+      );
     }
 
     return this.prisma.gradeCategory.create({
@@ -32,7 +48,10 @@ export class GradeBookService {
     });
   }
 
-  async updateCategory(categoryId: string, data: { name?: string; weight?: number; order?: number }) {
+  async updateCategory(
+    categoryId: string,
+    data: { name?: string; weight?: number; order?: number },
+  ) {
     return this.prisma.gradeCategory.update({
       where: { id: categoryId },
       data,
@@ -59,16 +78,21 @@ export class GradeBookService {
 
   // ─── GRADE ENTRIES ────────────────────────────────────
 
-  async addEntry(categoryId: string, data: {
-    userId: string;
-    title: string;
-    score: number;
-    maxScore?: number;
-    weight?: number;
-    comment?: string;
-    gradedById?: string;
-  }) {
-    const category = await this.prisma.gradeCategory.findUnique({ where: { id: categoryId } });
+  async addEntry(
+    categoryId: string,
+    data: {
+      userId: string;
+      title: string;
+      score: number;
+      maxScore?: number;
+      weight?: number;
+      comment?: string;
+      gradedById?: string;
+    },
+  ) {
+    const category = await this.prisma.gradeCategory.findUnique({
+      where: { id: categoryId },
+    });
     if (!category) throw new NotFoundException('Category not found');
 
     if (data.score < 0 || data.score > (data.maxScore ?? 100)) {
@@ -94,27 +118,41 @@ export class GradeBookService {
     });
   }
 
-  async bulkAddEntries(categoryId: string, entries: Array<{
-    userId: string;
-    title: string;
-    score: number;
-    maxScore?: number;
-    weight?: number;
-    comment?: string;
-  }>, gradedById?: string) {
+  async bulkAddEntries(
+    categoryId: string,
+    entries: Array<{
+      userId: string;
+      title: string;
+      score: number;
+      maxScore?: number;
+      weight?: number;
+      comment?: string;
+    }>,
+    gradedById?: string,
+  ) {
     const results: Any[] = [];
     for (const entry of entries) {
       try {
-        const result = await this.addEntry(categoryId, { ...entry, gradedById });
+        const result = await this.addEntry(categoryId, {
+          ...entry,
+          gradedById,
+        });
         results.push({ userId: entry.userId, success: true, entry: result });
       } catch (err: any) {
-        results.push({ userId: entry.userId, success: false, error: err.message });
+        results.push({
+          userId: entry.userId,
+          success: false,
+          error: err.message,
+        });
       }
     }
     return results;
   }
 
-  async updateEntry(entryId: string, data: { score?: number; comment?: string }) {
+  async updateEntry(
+    entryId: string,
+    data: { score?: number; comment?: string },
+  ) {
     return this.prisma.gradeEntry.update({
       where: { id: entryId },
       data: { ...data, gradedAt: new Date() },
@@ -153,10 +191,20 @@ export class GradeBookService {
     let totalWeight = 0;
 
     const categoryGrades = categories.map((cat: Any) => {
-      if (cat.entries.length === 0) return { category: cat.name, weight: cat.weight, average: null, entries: [] };
+      if (cat.entries.length === 0)
+        return {
+          category: cat.name,
+          weight: cat.weight,
+          average: null,
+          entries: [],
+        };
 
-      const categoryAvg = cat.entries.reduce((sum: number, e: Any) => sum + (e.score / e.maxScore) * 100 * e.weight, 0)
-        / cat.entries.reduce((sum: number, e: Any) => sum + e.weight, 0);
+      const categoryAvg =
+        cat.entries.reduce(
+          (sum: number, e: Any) =>
+            sum + (e.score / e.maxScore) * 100 * e.weight,
+          0,
+        ) / cat.entries.reduce((sum: number, e: Any) => sum + e.weight, 0);
 
       weightedScore += categoryAvg * cat.weight;
       totalWeight += cat.weight;
@@ -177,7 +225,8 @@ export class GradeBookService {
       };
     });
 
-    const finalGrade = totalWeight > 0 ? Math.round((weightedScore / totalWeight) * 10) / 10 : 0;
+    const finalGrade =
+      totalWeight > 0 ? Math.round((weightedScore / totalWeight) * 10) / 10 : 0;
 
     return {
       cohortId,
@@ -210,26 +259,46 @@ export class GradeBookService {
       .filter((m: Any) => m.role === 'STUDENT')
       .map((m: Any) => {
         const studentEntries = cohort.gradeCategories.flatMap((cat: Any) =>
-          cat.entries.filter((e: Any) => e.userId === m.user.id)
+          cat.entries.filter((e: Any) => e.userId === m.user.id),
         );
 
         let weightedScore = 0;
         let totalWeight = 0;
 
         const categoryGrades = cohort.gradeCategories.map((cat: Any) => {
-          const catEntries = cat.entries.filter((e: Any) => e.userId === m.user.id);
-          if (catEntries.length === 0) return { categoryId: cat.id, name: cat.name, weight: cat.weight, average: null };
+          const catEntries = cat.entries.filter(
+            (e: Any) => e.userId === m.user.id,
+          );
+          if (catEntries.length === 0)
+            return {
+              categoryId: cat.id,
+              name: cat.name,
+              weight: cat.weight,
+              average: null,
+            };
 
-          const avg = catEntries.reduce((sum: number, e: Any) => sum + (e.score / e.maxScore) * 100 * e.weight, 0)
-            / catEntries.reduce((sum: number, e: Any) => sum + e.weight, 0);
+          const avg =
+            catEntries.reduce(
+              (sum: number, e: Any) =>
+                sum + (e.score / e.maxScore) * 100 * e.weight,
+              0,
+            ) / catEntries.reduce((sum: number, e: Any) => sum + e.weight, 0);
 
           weightedScore += avg * cat.weight;
           totalWeight += cat.weight;
 
-          return { categoryId: cat.id, name: cat.name, weight: cat.weight, average: Math.round(avg * 10) / 10 };
+          return {
+            categoryId: cat.id,
+            name: cat.name,
+            weight: cat.weight,
+            average: Math.round(avg * 10) / 10,
+          };
         });
 
-        const finalGrade = totalWeight > 0 ? Math.round((weightedScore / totalWeight) * 10) / 10 : 0;
+        const finalGrade =
+          totalWeight > 0
+            ? Math.round((weightedScore / totalWeight) * 10) / 10
+            : 0;
 
         return {
           student: m.user,
@@ -283,8 +352,13 @@ export class GradeBookService {
       for (const category of cohort.gradeCategories) {
         if (category.entries.length === 0) continue;
 
-        const categoryAvg = category.entries.reduce((sum: number, e: Any) => sum + (e.score / e.maxScore) * 100 * e.weight, 0)
-          / category.entries.reduce((sum: number, e: Any) => sum + e.weight, 0);
+        const categoryAvg =
+          category.entries.reduce(
+            (sum: number, e: Any) =>
+              sum + (e.score / e.maxScore) * 100 * e.weight,
+            0,
+          ) /
+          category.entries.reduce((sum: number, e: Any) => sum + e.weight, 0);
 
         weightedScore += categoryAvg * category.weight;
         totalWeight += category.weight;
@@ -311,12 +385,20 @@ export class GradeBookService {
       totalCredits = transcript.length; // Each cohort counts as 1 credit unit
     }
 
-    const cumulativeGPA = totalCredits > 0 ? Math.round((totalWeightedGPA / totalCredits) * 100) / 100 : 0;
+    const cumulativeGPA =
+      totalCredits > 0
+        ? Math.round((totalWeightedGPA / totalCredits) * 100) / 100
+        : 0;
 
     // Upsert GPA record
     await this.prisma.studentGPA.upsert({
       where: { userId },
-      create: { userId, cumulativeGPA, totalCredits, lastCalculatedAt: new Date() },
+      create: {
+        userId,
+        cumulativeGPA,
+        totalCredits,
+        lastCalculatedAt: new Date(),
+      },
       update: { cumulativeGPA, totalCredits, lastCalculatedAt: new Date() },
     });
 

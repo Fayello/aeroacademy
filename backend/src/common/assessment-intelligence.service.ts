@@ -70,9 +70,7 @@ export interface PersonalizedPath {
 export class AssessmentIntelligenceService {
   private readonly logger = new Logger(AssessmentIntelligenceService.name);
 
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private get gateway(): AiGateway | undefined {
     // Lazy import to avoid circular dependency
@@ -81,20 +79,32 @@ export class AssessmentIntelligenceService {
 
   // ─── ADAPTIVE ASSESSMENT ENGINE ────────────────────────
 
-  async createAdaptiveSession(userId: string, assessmentId: string): Promise<AdaptiveSession> {
-    const assessment = await this.prisma.skillAssessment.findUnique({ where: { id: assessmentId } });
+  async createAdaptiveSession(
+    userId: string,
+    assessmentId: string,
+  ): Promise<AdaptiveSession> {
+    const assessment = await this.prisma.skillAssessment.findUnique({
+      where: { id: assessmentId },
+    });
     if (!assessment) throw new Error('Assessment not found');
 
     const allQuestions = assessment.questions as unknown as AdaptiveQuestion[];
 
     // Estimate student ability from past results and skill data
-    const abilityEstimate = await this.estimateStudentAbility(userId, assessment.category);
+    const abilityEstimate = await this.estimateStudentAbility(
+      userId,
+      assessment.category,
+    );
 
     // Get category-level ability
     const categoryAbility = await this.getCategoryAbility(userId);
 
     // Select questions adaptively: start near student ability, then adjust
-    const selectedQuestions = this.selectAdaptiveQuestions(allQuestions, abilityEstimate, 10);
+    const selectedQuestions = this.selectAdaptiveQuestions(
+      allQuestions,
+      abilityEstimate,
+      10,
+    );
 
     return {
       sessionId: `adaptive-${userId}-${assessmentId}-${Date.now()}`,
@@ -128,16 +138,23 @@ export class AssessmentIntelligenceService {
     const abilityDelta = correct ? 0.3 : -0.2;
 
     // Update ability estimate
-    session.abilityEstimate = Math.max(1, Math.min(5, session.abilityEstimate + abilityDelta));
+    session.abilityEstimate = Math.max(
+      1,
+      Math.min(5, session.abilityEstimate + abilityDelta),
+    );
     session.currentDifficulty = Math.round(session.abilityEstimate);
 
     // Update category ability
     if (!session.categoryAbility[question.category]) {
       session.categoryAbility[question.category] = 3;
     }
-    session.categoryAbility[question.category] = Math.max(1, Math.min(5,
-      session.categoryAbility[question.category] + (correct ? 0.4 : -0.3)
-    ));
+    session.categoryAbility[question.category] = Math.max(
+      1,
+      Math.min(
+        5,
+        session.categoryAbility[question.category] + (correct ? 0.4 : -0.3),
+      ),
+    );
 
     // Get next question (if not last)
     const nextIndex = questionIndex + 1;
@@ -160,7 +177,10 @@ export class AssessmentIntelligenceService {
     };
   }
 
-  private async estimateStudentAbility(userId: string, category: string): Promise<number> {
+  private async estimateStudentAbility(
+    userId: string,
+    category: string,
+  ): Promise<number> {
     // Check past assessment results
     const results = await this.prisma.assessmentResult.findMany({
       where: { userId, assessment: { category } },
@@ -169,14 +189,22 @@ export class AssessmentIntelligenceService {
     });
 
     if (results.length > 0) {
-      const avgPercentage = results.reduce((sum, r) => sum + (r.score / r.maxScore), 0) / results.length;
+      const avgPercentage =
+        results.reduce((sum, r) => sum + r.score / r.maxScore, 0) /
+        results.length;
       // Map 0-100% to 1-5 scale
-      return Math.max(1, Math.min(5, Math.round(avgPercentage / 20 * 5) / 5 * 5 || 3));
+      return Math.max(
+        1,
+        Math.min(5, (Math.round((avgPercentage / 20) * 5) / 5) * 5 || 3),
+      );
     }
 
     // Fallback: check skill mastery in this domain
     const categoryDomainMap: Record<string, string> = {
-      LINUX: 'Systems', NETWORKING: 'Networking', WEB_SECURITY: 'Security', CRYPTO: 'Security',
+      LINUX: 'Systems',
+      NETWORKING: 'Networking',
+      WEB_SECURITY: 'Security',
+      CRYPTO: 'Security',
     };
     const domainName = categoryDomainMap[category];
 
@@ -187,8 +215,9 @@ export class AssessmentIntelligenceService {
          JOIN "Skill" s ON s.id = us."skillId"
          JOIN "SkillDomain" sd ON sd.id = s."domainId"
          WHERE us."userId" = $1 AND sd."name" = $2`,
-        userId, domainName,
-      ) as unknown as Any[];
+        userId,
+        domainName,
+      );
 
       if (skills[0]?.avgMastery) {
         return Math.max(1, Math.min(5, Math.round(skills[0].avgMastery / 20)));
@@ -198,7 +227,9 @@ export class AssessmentIntelligenceService {
     return 3; // default mid-level
   }
 
-  private async getCategoryAbility(userId: string): Promise<Record<string, number>> {
+  private async getCategoryAbility(
+    userId: string,
+  ): Promise<Record<string, number>> {
     const results = await this.prisma.assessmentResult.findMany({
       where: { userId },
       include: { assessment: { select: { category: true } } },
@@ -222,7 +253,11 @@ export class AssessmentIntelligenceService {
     return result;
   }
 
-  private selectAdaptiveQuestions(questions: AdaptiveQuestion[], ability: number, count: number): AdaptiveQuestion[] {
+  private selectAdaptiveQuestions(
+    questions: AdaptiveQuestion[],
+    ability: number,
+    count: number,
+  ): AdaptiveQuestion[] {
     // Sort by proximity to student ability, then take top N
     const scored = questions.map((q) => ({
       question: q,
@@ -255,7 +290,10 @@ export class AssessmentIntelligenceService {
     return selected;
   }
 
-  private pickBestNext(remaining: AdaptiveQuestion[], ability: number): AdaptiveQuestion {
+  private pickBestNext(
+    remaining: AdaptiveQuestion[],
+    ability: number,
+  ): AdaptiveQuestion {
     // Pick the question closest to current ability
     let best = remaining[0];
     let bestDist = Math.abs((best.difficulty || 3) - ability);
@@ -312,7 +350,7 @@ export class AssessmentIntelligenceService {
        LEFT JOIN "UserSkill" us ON us."skillId" = s.id AND us."userId" = $1
        ORDER BY sd."displayName", us.mastery DESC NULLS LAST`,
       userId,
-    ) as unknown as Any[];
+    );
 
     // Group skills by domain
     const domainSkillMap: Record<string, Any[]> = {};
@@ -336,13 +374,23 @@ export class AssessmentIntelligenceService {
 
     // Map assessment categories to domain names
     const catToDomain: Record<string, string> = {
-      LINUX: 'Systems', NETWORKING: 'Networking', WEB_SECURITY: 'Security', CRYPTO: 'Security',
+      LINUX: 'Systems',
+      NETWORKING: 'Networking',
+      WEB_SECURITY: 'Security',
+      CRYPTO: 'Security',
     };
 
     const domainData = domains.map((d) => {
-      const assessmentCat = Object.entries(catToDomain).find(([, v]) => v === d.domain)?.[0];
-      const scores = assessmentCat ? domainAssessmentScores[assessmentCat] || [] : [];
-      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+      const assessmentCat = Object.entries(catToDomain).find(
+        ([, v]) => v === d.domain,
+      )?.[0];
+      const scores = assessmentCat
+        ? domainAssessmentScores[assessmentCat] || []
+        : [];
+      const avgScore =
+        scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
       const labData = labs.find((l) => l.domain === d.domain);
 
       const mastery = Number(d.mastery) || 0;
@@ -366,12 +414,18 @@ export class AssessmentIntelligenceService {
     const sorted = [...domainData].sort((a, b) => a.mastery - b.mastery);
     const weakest = sorted[0]?.domain || 'None';
     const strongest = sorted[sorted.length - 1]?.domain || 'None';
-    const overallScore = domainData.length > 0
-      ? Math.round(domainData.reduce((s, d) => s + d.mastery, 0) / domainData.length)
-      : 0;
+    const overallScore =
+      domainData.length > 0
+        ? Math.round(
+            domainData.reduce((s, d) => s + d.mastery, 0) / domainData.length,
+          )
+        : 0;
 
     // Generate recommendations
-    const recommendations = await this.generateGapRecommendations(userId, sorted);
+    const recommendations = await this.generateGapRecommendations(
+      userId,
+      sorted,
+    );
 
     return {
       userId,
@@ -386,8 +440,20 @@ export class AssessmentIntelligenceService {
   private async generateGapRecommendations(
     userId: string,
     sortedDomains: Any[],
-  ): Promise<Array<{ type: 'lab' | 'assessment' | 'course'; title: string; reason: string; priority: 'high' | 'medium' | 'low' }>> {
-    const recs: Array<{ type: 'lab' | 'assessment' | 'course'; title: string; reason: string; priority: 'high' | 'medium' | 'low' }> = [];
+  ): Promise<
+    Array<{
+      type: 'lab' | 'assessment' | 'course';
+      title: string;
+      reason: string;
+      priority: 'high' | 'medium' | 'low';
+    }>
+  > {
+    const recs: Array<{
+      type: 'lab' | 'assessment' | 'course';
+      title: string;
+      reason: string;
+      priority: 'high' | 'medium' | 'low';
+    }> = [];
 
     // Get labs for weak domains
     const weakDomains = sortedDomains.filter((d) => d.mastery < 50).slice(0, 3);
@@ -403,7 +469,7 @@ export class AssessmentIntelligenceService {
          ORDER BY l.difficulty ASC
          LIMIT 3`,
         domain.domain,
-      ) as unknown as Any[];
+      );
 
       for (const lab of labs) {
         recs.push({
@@ -437,7 +503,12 @@ export class AssessmentIntelligenceService {
     // Get available courses and labs
     const [courses, allLabs] = await Promise.all([
       this.prisma.course.findMany({
-        select: { id: true, title: true, description: true, estimatedHours: true },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          estimatedHours: true,
+        },
         take: 20,
       }),
       this.prisma.$queryRawUnsafe(
@@ -456,7 +527,9 @@ export class AssessmentIntelligenceService {
     let totalMinutes = 0;
 
     // Start with assessment of weakest domain
-    const weakest = report.domains.find((d) => d.domain === report.weakestDomain);
+    const weakest = report.domains.find(
+      (d) => d.domain === report.weakestDomain,
+    );
     if (weakest) {
       steps.push({
         order: order++,
@@ -470,7 +543,9 @@ export class AssessmentIntelligenceService {
     }
 
     // Add labs for weak domains (sorted by difficulty, easiest first)
-    for (const domain of report.domains.filter((d) => d.mastery < 60).slice(0, 3)) {
+    for (const domain of report.domains
+      .filter((d) => d.mastery < 60)
+      .slice(0, 3)) {
       const domainLabs = allLabs
         .filter((l) => l.domain === domain.domain && l.difficulty <= 1400)
         .slice(0, 2);
@@ -489,10 +564,12 @@ export class AssessmentIntelligenceService {
     }
 
     // Add courses for medium-strength domains
-    const mediumDomains = report.domains.filter((d) => d.mastery >= 30 && d.mastery < 70);
+    const mediumDomains = report.domains.filter(
+      (d) => d.mastery >= 30 && d.mastery < 70,
+    );
     for (const domain of mediumDomains.slice(0, 2)) {
       const matchingCourse = courses.find((c) =>
-        c.title.toLowerCase().includes(domain.domain.toLowerCase())
+        c.title.toLowerCase().includes(domain.domain.toLowerCase()),
       );
       if (matchingCourse) {
         steps.push({
@@ -512,7 +589,8 @@ export class AssessmentIntelligenceService {
       order: order++,
       type: 'assessment',
       title: 'Competency Validation',
-      description: 'Final assessment to validate your progress across all domains',
+      description:
+        'Final assessment to validate your progress across all domains',
       estimatedMinutes: 20,
       skillTargets: report.domains.map((d) => d.domain),
     });
@@ -521,7 +599,7 @@ export class AssessmentIntelligenceService {
     return {
       title: `Personalized Path for ${report.strongestDomain} → ${report.weakestDomain}`,
       description: `Custom learning path targeting your weakest areas while maintaining strengths. Overall score: ${report.overallScore}%`,
-      estimatedHours: Math.round(totalMinutes / 60 * 10) / 10,
+      estimatedHours: Math.round((totalMinutes / 60) * 10) / 10,
       steps,
     };
   }
@@ -529,7 +607,9 @@ export class AssessmentIntelligenceService {
   // ─── COHORT ASSESSMENT INTELLIGENCE ────────────────────
 
   async getCohortIntelligence(cohortId: string): Promise<Any> {
-    const cohort = await this.prisma.cohort.findUnique({ where: { id: cohortId } });
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
     if (!cohort) throw new Error('Cohort not found');
 
     const members = await this.prisma.cohortMember.findMany({
@@ -539,7 +619,11 @@ export class AssessmentIntelligenceService {
     const userIds = members.map((m) => m.userId);
 
     if (userIds.length === 0) {
-      return { cohort: { id: cohortId, name: cohort.name }, students: 0, data: [] };
+      return {
+        cohort: { id: cohortId, name: cohort.name },
+        students: 0,
+        data: [],
+      };
     }
 
     // Get all assessment results for cohort
@@ -558,8 +642,12 @@ export class AssessmentIntelligenceService {
       const uid = r.userId;
       if (!studentMap[uid]) {
         studentMap[uid] = {
-          id: uid, name: r.user.name, email: r.user.email,
-          assessments: [], avgScore: 0, totalAssessments: 0,
+          id: uid,
+          name: r.user.name,
+          email: r.user.email,
+          assessments: [],
+          avgScore: 0,
+          totalAssessments: 0,
         };
       }
       studentMap[uid].assessments.push({
@@ -575,17 +663,34 @@ export class AssessmentIntelligenceService {
     // Calculate averages
     for (const student of Object.values(studentMap)) {
       const scores = student.assessments.map((a: Any) => a.percentage);
-      student.avgScore = scores.length > 0 ? Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length) : 0;
+      student.avgScore =
+        scores.length > 0
+          ? Math.round(
+              scores.reduce((a: number, b: number) => a + b, 0) / scores.length,
+            )
+          : 0;
       student.totalAssessments = scores.length;
     }
 
-    const students = Object.values(studentMap).sort((a: Any, b: Any) => b.avgScore - a.avgScore);
+    const students = Object.values(studentMap).sort(
+      (a: Any, b: Any) => b.avgScore - a.avgScore,
+    );
 
     // Category-level analysis
-    const categoryStats: Record<string, { total: number; sum: number; min: number; max: number; failures: number }> = {};
+    const categoryStats: Record<
+      string,
+      { total: number; sum: number; min: number; max: number; failures: number }
+    > = {};
     for (const r of results) {
       const cat = r.assessment.category;
-      if (!categoryStats[cat]) categoryStats[cat] = { total: 0, sum: 0, min: 100, max: 0, failures: 0 };
+      if (!categoryStats[cat])
+        categoryStats[cat] = {
+          total: 0,
+          sum: 0,
+          min: 100,
+          max: 0,
+          failures: 0,
+        };
       const pct = Math.round((r.score / r.maxScore) * 100);
       categoryStats[cat].total++;
       categoryStats[cat].sum += pct;
@@ -594,18 +699,25 @@ export class AssessmentIntelligenceService {
       if (pct < 60) categoryStats[cat].failures++;
     }
 
-    const categorySummary = Object.entries(categoryStats).map(([cat, stats]) => ({
-      category: cat,
-      avgScore: Math.round(stats.sum / stats.total),
-      attempts: stats.total,
-      minScore: stats.min,
-      maxScore: stats.max,
-      failureRate: Math.round((stats.failures / stats.total) * 100),
-    }));
+    const categorySummary = Object.entries(categoryStats).map(
+      ([cat, stats]) => ({
+        category: cat,
+        avgScore: Math.round(stats.sum / stats.total),
+        attempts: stats.total,
+        minScore: stats.min,
+        maxScore: stats.max,
+        failureRate: Math.round((stats.failures / stats.total) * 100),
+      }),
+    );
 
     // Overall cohort stats
-    const allScores = results.map((r) => Math.round((r.score / r.maxScore) * 100));
-    const overallAvg = allScores.length > 0 ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0;
+    const allScores = results.map((r) =>
+      Math.round((r.score / r.maxScore) * 100),
+    );
+    const overallAvg =
+      allScores.length > 0
+        ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length)
+        : 0;
 
     return {
       cohort: { id: cohortId, name: cohort.name },

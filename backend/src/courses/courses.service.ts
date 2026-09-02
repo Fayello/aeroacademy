@@ -19,7 +19,9 @@ export class CoursesService {
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 50,
       include: {
-        _count: { select: { sections: true, enrollments: true, reviews: true } },
+        _count: {
+          select: { sections: true, enrollments: true, reviews: true },
+        },
         sections: {
           include: {
             _count: { select: { lessons: true } },
@@ -33,10 +35,12 @@ export class CoursesService {
     const ratings = await this.prisma.$queryRawUnsafe(
       `SELECT "courseId", AVG("rating")::float as "avgRating"
        FROM "CourseReview"
-       GROUP BY "courseId"`
-    ) as Array<{ courseId: string; avgRating: number }>;
+       GROUP BY "courseId"`,
+    );
 
-    const ratingMap = new Map(ratings.map((r) => [r.courseId, r.avgRating || 0]));
+    const ratingMap = new Map(
+      ratings.map((r) => [r.courseId, r.avgRating || 0]),
+    );
 
     return courses.map((c) => ({
       ...c,
@@ -141,9 +145,15 @@ export class CoursesService {
     const lessonIds = lessons.map((l) => l.id);
 
     await this.prisma.$transaction([
-      this.prisma.progress.deleteMany({ where: { lessonId: { in: lessonIds } } }),
-      this.prisma.quizSubmission.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
-      this.prisma.question.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
+      this.prisma.progress.deleteMany({
+        where: { lessonId: { in: lessonIds } },
+      }),
+      this.prisma.quizSubmission.deleteMany({
+        where: { quiz: { lessonId: { in: lessonIds } } },
+      }),
+      this.prisma.question.deleteMany({
+        where: { quiz: { lessonId: { in: lessonIds } } },
+      }),
       this.prisma.quiz.deleteMany({ where: { lessonId: { in: lessonIds } } }),
       this.prisma.lesson.deleteMany({ where: { section: { courseId: id } } }),
       this.prisma.section.deleteMany({ where: { courseId: id } }),
@@ -216,9 +226,15 @@ export class CoursesService {
     const lessonIds = lessons.map((l) => l.id);
 
     await this.prisma.$transaction([
-      this.prisma.progress.deleteMany({ where: { lessonId: { in: lessonIds } } }),
-      this.prisma.quizSubmission.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
-      this.prisma.question.deleteMany({ where: { quiz: { lessonId: { in: lessonIds } } } }),
+      this.prisma.progress.deleteMany({
+        where: { lessonId: { in: lessonIds } },
+      }),
+      this.prisma.quizSubmission.deleteMany({
+        where: { quiz: { lessonId: { in: lessonIds } } },
+      }),
+      this.prisma.question.deleteMany({
+        where: { quiz: { lessonId: { in: lessonIds } } },
+      }),
       this.prisma.quiz.deleteMany({ where: { lessonId: { in: lessonIds } } }),
       this.prisma.lesson.deleteMany({ where: { sectionId } }),
     ]);
@@ -339,7 +355,9 @@ export class CoursesService {
 
     for (const q of data.questions) {
       if (!q.answers.some((a) => a.isCorrect)) {
-        throw new BadRequestException('Each question must have at least one correct answer');
+        throw new BadRequestException(
+          'Each question must have at least one correct answer',
+        );
       }
     }
 
@@ -374,7 +392,9 @@ export class CoursesService {
 
     for (const q of data.questions) {
       if (!q.answers.some((a) => a.isCorrect)) {
-        throw new BadRequestException('Each question must have at least one correct answer');
+        throw new BadRequestException(
+          'Each question must have at least one correct answer',
+        );
       }
     }
 
@@ -415,7 +435,9 @@ export class CoursesService {
   // === ENROLLMENTS ===
 
   async enroll(userId: string, courseId: string) {
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) throw new NotFoundException('Course not found');
 
     const existing = await this.prisma.courseEnrollment.findUnique({
@@ -429,7 +451,9 @@ export class CoursesService {
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user?.email) {
-      this.emailService.sendCourseStarted(user.email, user.name, course.title, courseId).catch(() => {});
+      this.emailService
+        .sendCourseStarted(user.email, user.name, course.title, courseId)
+        .catch(() => {});
     }
 
     return enrollment;
@@ -468,7 +492,15 @@ export class CoursesService {
         ],
       },
       include: {
-        user: { select: { id: true, email: true, name: true, timezone: true, emailPreferences: true } },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            timezone: true,
+            emailPreferences: true,
+          },
+        },
         course: { select: { id: true, title: true } },
       },
     });
@@ -489,19 +521,31 @@ export class CoursesService {
       return { eligible: false, reason: 'Not enrolled' };
     }
 
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) return { eligible: false, reason: 'Course not found' };
 
-    const totalLessons = await this.prisma.lesson.count({ where: { section: { courseId } } });
+    const totalLessons = await this.prisma.lesson.count({
+      where: { section: { courseId } },
+    });
     const completedLessons = await this.prisma.progress.count({
       where: { userId, completed: true, lesson: { section: { courseId } } },
     });
 
     if (completedLessons < totalLessons) {
-      return { eligible: false, reason: 'Course not complete', completed: completedLessons, total: totalLessons };
+      return {
+        eligible: false,
+        reason: 'Course not complete',
+        completed: completedLessons,
+        total: totalLessons,
+      };
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    });
     const issuedAt = new Date();
 
     return {
@@ -522,19 +566,31 @@ export class CoursesService {
     });
     if (!enrollment) return { valid: false, reason: 'No enrollment found' };
 
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) return { valid: false, reason: 'Course not found' };
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    });
     if (!user) return { valid: false, reason: 'User not found' };
 
-    const totalLessons = await this.prisma.lesson.count({ where: { section: { courseId } } });
+    const totalLessons = await this.prisma.lesson.count({
+      where: { section: { courseId } },
+    });
     const completedLessons = await this.prisma.progress.count({
       where: { userId, completed: true, lesson: { section: { courseId } } },
     });
 
     if (completedLessons < totalLessons) {
-      return { valid: false, reason: 'Course not complete', completed: completedLessons, total: totalLessons };
+      return {
+        valid: false,
+        reason: 'Course not complete',
+        completed: completedLessons,
+        total: totalLessons,
+      };
     }
 
     return {
@@ -575,10 +631,13 @@ export class CoursesService {
          WHERE ce."userId" = $1
          GROUP BY s."courseId"`,
         userId,
-      ) as Array<{ courseId: string; totalLessons: bigint; completedLessons: bigint }>;
+      );
 
       for (const row of completionData) {
-        if (Number(row.totalLessons) > 0 && Number(row.completedLessons) === Number(row.totalLessons)) {
+        if (
+          Number(row.totalLessons) > 0 &&
+          Number(row.completedLessons) === Number(row.totalLessons)
+        ) {
           completedCourses.push(row.courseId);
         }
       }
@@ -596,11 +655,16 @@ export class CoursesService {
         imageUrl: c.imageUrl,
         estimatedHours: c.estimatedHours,
         enrollmentCount: c._count.enrollments,
-        reason: completedCourses.length > 0 ? 'Popular with other students' : 'Recommended for you',
+        reason:
+          completedCourses.length > 0
+            ? 'Popular with other students'
+            : 'Recommended for you',
       }));
 
     const inProgress = allCourses
-      .filter((c) => enrolledIds.includes(c.id) && !completedCourses.includes(c.id))
+      .filter(
+        (c) => enrolledIds.includes(c.id) && !completedCourses.includes(c.id),
+      )
       .slice(0, 2)
       .map((c) => ({
         id: c.id,
@@ -614,7 +678,9 @@ export class CoursesService {
   async getCourseReviews(courseId: string) {
     const reviews = await this.prisma.courseReview.findMany({
       where: { courseId },
-      include: { user: { select: { id: true, name: true, email: true, division: true } } },
+      include: {
+        user: { select: { id: true, name: true, email: true, division: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -635,15 +701,23 @@ export class CoursesService {
       stats: {
         average: stats._avg.rating || 0,
         total: stats._count.rating,
-        distribution: distribution.reduce((acc, d) => {
-          acc[d.rating] = d._count.rating;
-          return acc;
-        }, {} as Record<number, number>),
+        distribution: distribution.reduce(
+          (acc, d) => {
+            acc[d.rating] = d._count.rating;
+            return acc;
+          },
+          {} as Record<number, number>,
+        ),
       },
     };
   }
 
-  async createReview(userId: string, courseId: string, rating: number, comment?: string) {
+  async createReview(
+    userId: string,
+    courseId: string,
+    rating: number,
+    comment?: string,
+  ) {
     if (rating < 1 || rating > 5) {
       throw new BadRequestException('Rating must be between 1 and 5');
     }
@@ -652,7 +726,9 @@ export class CoursesService {
       where: { userId_courseId: { userId, courseId } },
     });
     if (!enrollment) {
-      throw new ForbiddenException('You must be enrolled to review this course');
+      throw new ForbiddenException(
+        'You must be enrolled to review this course',
+      );
     }
 
     return this.prisma.courseReview.upsert({
@@ -683,7 +759,9 @@ export class CoursesService {
   }
 
   async toggleFavorite(userId: string, courseId: string) {
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
     if (!course) throw new NotFoundException('Course not found');
 
     const existing = await this.prisma.courseFavorite.findUnique({

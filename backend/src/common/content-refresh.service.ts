@@ -10,7 +10,7 @@ export interface ContentRelevanceScore {
   title: string;
   relevanceScore: number; // 0-100
   freshnessScore: number; // 0-100
-  overallScore: number;   // weighted average
+  overallScore: number; // weighted average
   issues: string[];
   suggestions: string[];
   lastUpdated: Date;
@@ -31,17 +31,31 @@ export interface ContentUpdateSuggestion {
 export interface ContentFreshnessReport {
   totalLabs: number;
   totalCourses: number;
-  staleLabs: number;        // >90 days since update
-  staleCourses: number;     // >90 days since update
-  outdatedLabs: number;     // relevance <50
-  outdatedCourses: number;  // relevance <50
+  staleLabs: number; // >90 days since update
+  staleCourses: number; // >90 days since update
+  outdatedLabs: number; // relevance <50
+  outdatedCourses: number; // relevance <50
   avgLabRelevance: number;
   avgCourseRelevance: number;
   avgLabFreshness: number;
   avgCourseFreshness: number;
-  labsNeedingRefresh: Array<{ id: string; title: string; score: number; daysSinceUpdate: number }>;
-  coursesNeedingRefresh: Array<{ id: string; title: string; score: number; daysSinceUpdate: number }>;
-  domainBreakdown: Array<{ domain: string; avgRelevance: number; count: number }>;
+  labsNeedingRefresh: Array<{
+    id: string;
+    title: string;
+    score: number;
+    daysSinceUpdate: number;
+  }>;
+  coursesNeedingRefresh: Array<{
+    id: string;
+    title: string;
+    score: number;
+    daysSinceUpdate: number;
+  }>;
+  domainBreakdown: Array<{
+    domain: string;
+    avgRelevance: number;
+    count: number;
+  }>;
 }
 
 export interface RefreshHistoryEntry {
@@ -67,22 +81,43 @@ export class ContentRefreshService {
   // ─── CONTENT RELEVANCE SCORING ─────────────────────────
 
   async scoreLabRelevance(labId: string): Promise<ContentRelevanceScore> {
-    const lab = await this.prisma.lab.findUnique({
+    const lab = (await this.prisma.lab.findUnique({
       where: { id: labId },
       select: {
-        id: true, title: true, description: true, briefing: true,
-        difficulty: true, estimatedMinutes: true,
+        id: true,
+        title: true,
+        description: true,
+        briefing: true,
+        difficulty: true,
+        estimatedMinutes: true,
         flags: { select: { title: true, description: true } },
-        labSkills: { select: { skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
+        labSkills: {
+          select: {
+            skill: {
+              select: {
+                displayName: true,
+                domain: { select: { displayName: true } },
+              },
+            },
+          },
+        },
         analytics: true,
       },
-    }) as unknown as Any;
+    })) as unknown as Any;
 
     if (!lab) throw new Error('Lab not found');
 
-    const domains = [...new Set(lab.labSkills.map((ls: Any) => ls.skill.domain?.displayName).filter(Boolean))];
+    const domains = [
+      ...new Set(
+        lab.labSkills
+          .map((ls: Any) => ls.skill.domain?.displayName)
+          .filter(Boolean),
+      ),
+    ];
     const lastUpdated = lab.analytics?.updatedAt || new Date(0);
-    const daysSinceUpdate = Math.floor((Date.now() - new Date(lastUpdated).getTime()) / 86400000);
+    const daysSinceUpdate = Math.floor(
+      (Date.now() - new Date(lastUpdated).getTime()) / 86400000,
+    );
 
     // Rule-based initial score
     let relevanceScore = 70; // baseline
@@ -94,7 +129,9 @@ export class ContentRefreshService {
     if (daysSinceUpdate > 180) {
       freshnessScore = 20;
       issues.push('Content is over 6 months old');
-      suggestions.push('Consider updating briefing and flags to reflect current threats');
+      suggestions.push(
+        'Consider updating briefing and flags to reflect current threats',
+      );
     } else if (daysSinceUpdate > 90) {
       freshnessScore = 50;
       issues.push('Content is over 3 months old');
@@ -106,11 +143,15 @@ export class ContentRefreshService {
     if (lab.analytics) {
       if (lab.analytics.completionRate < 20) {
         relevanceScore -= 15;
-        issues.push(`Very low completion rate: ${lab.analytics.completionRate}%`);
+        issues.push(
+          `Very low completion rate: ${lab.analytics.completionRate}%`,
+        );
         suggestions.push('Briefing may be unclear or difficulty too high');
       } else if (lab.analytics.completionRate > 80) {
         relevanceScore -= 5;
-        issues.push(`Very high completion rate: ${lab.analytics.completionRate}% — may be too easy`);
+        issues.push(
+          `Very high completion rate: ${lab.analytics.completionRate}% — may be too easy`,
+        );
         suggestions.push('Consider adding more challenging flags');
       }
 
@@ -125,7 +166,9 @@ export class ContentRefreshService {
     if (!lab.briefing || lab.briefing.length < 50) {
       relevanceScore -= 10;
       issues.push('Briefing is missing or too short');
-      suggestions.push('Add a detailed scenario briefing for better learning outcomes');
+      suggestions.push(
+        'Add a detailed scenario briefing for better learning outcomes',
+      );
     }
 
     if (lab.flags.length < 2) {
@@ -157,7 +200,8 @@ Respond with just the number.`;
 
         const response = await this.gateway.generate({
           prompt,
-          system: 'You are a cybersecurity education content evaluator. Rate content relevance 0-100.',
+          system:
+            'You are a cybersecurity education content evaluator. Rate content relevance 0-100.',
           temperature: 0.3,
         });
 
@@ -168,11 +212,14 @@ Respond with just the number.`;
       } catch {}
     }
 
-    const finalRelevance = aiScore !== null
-      ? Math.round((relevanceScore * 0.5 + aiScore * 0.5))
-      : Math.max(0, Math.min(100, relevanceScore));
+    const finalRelevance =
+      aiScore !== null
+        ? Math.round(relevanceScore * 0.5 + aiScore * 0.5)
+        : Math.max(0, Math.min(100, relevanceScore));
 
-    const overallScore = Math.round(finalRelevance * 0.6 + freshnessScore * 0.4);
+    const overallScore = Math.round(
+      finalRelevance * 0.6 + freshnessScore * 0.4,
+    );
 
     return {
       id: lab.id,
@@ -189,10 +236,14 @@ Respond with just the number.`;
   }
 
   async scoreCourseRelevance(courseId: string): Promise<ContentRelevanceScore> {
-    const course = await this.prisma.course.findUnique({
+    const course = (await this.prisma.course.findUnique({
       where: { id: courseId },
       select: {
-        id: true, title: true, description: true, estimatedHours: true, createdAt: true,
+        id: true,
+        title: true,
+        description: true,
+        estimatedHours: true,
+        createdAt: true,
         sections: {
           select: {
             title: true,
@@ -202,18 +253,26 @@ Respond with just the number.`;
         enrollments: true,
         reviews: true,
       },
-    }) as unknown as Any;
+    })) as unknown as Any;
 
     if (!course) throw new Error('Course not found');
 
-    const daysSinceUpdate = Math.floor((Date.now() - new Date(course.createdAt).getTime()) / 86400000);
-    const totalLessons = course.sections.reduce((sum, s) => sum + s.lessons.length, 0);
-    const lessonsWithLabs = course.sections.reduce(
-      (sum, s) => sum + s.lessons.filter((l) => l.labId).length, 0
+    const daysSinceUpdate = Math.floor(
+      (Date.now() - new Date(course.createdAt).getTime()) / 86400000,
     );
-    const avgRating = course.reviews.length > 0
-      ? course.reviews.reduce((sum, r) => sum + r.rating, 0) / course.reviews.length
-      : null;
+    const totalLessons = course.sections.reduce(
+      (sum, s) => sum + s.lessons.length,
+      0,
+    );
+    const lessonsWithLabs = course.sections.reduce(
+      (sum, s) => sum + s.lessons.filter((l) => l.labId).length,
+      0,
+    );
+    const avgRating =
+      course.reviews.length > 0
+        ? course.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          course.reviews.length
+        : null;
 
     let relevanceScore = 70;
     let freshnessScore = 100;
@@ -260,13 +319,15 @@ Respond with just the number.`;
     }
 
     // Content quality
-    const emptyLessons = course.sections.flatMap((s) => s.lessons).filter(
-      (l) => !l.content || l.content.length < 50
-    );
+    const emptyLessons = course.sections
+      .flatMap((s) => s.lessons)
+      .filter((l) => !l.content || l.content.length < 50);
     if (emptyLessons.length > 0) {
       relevanceScore -= 5;
       issues.push(`${emptyLessons.length} lesson(s) have minimal content`);
-      suggestions.push('Flesh out lesson content with explanations and examples');
+      suggestions.push(
+        'Flesh out lesson content with explanations and examples',
+      );
     }
 
     // AI scoring
@@ -287,7 +348,8 @@ Respond with just the number.`;
 
         const response = await this.gateway.generate({
           prompt,
-          system: 'You are a technology education content evaluator. Rate course relevance 0-100.',
+          system:
+            'You are a technology education content evaluator. Rate course relevance 0-100.',
           temperature: 0.3,
         });
 
@@ -298,11 +360,14 @@ Respond with just the number.`;
       } catch {}
     }
 
-    const finalRelevance = aiScore !== null
-      ? Math.round((relevanceScore * 0.5 + aiScore * 0.5))
-      : Math.max(0, Math.min(100, relevanceScore));
+    const finalRelevance =
+      aiScore !== null
+        ? Math.round(relevanceScore * 0.5 + aiScore * 0.5)
+        : Math.max(0, Math.min(100, relevanceScore));
 
-    const overallScore = Math.round(finalRelevance * 0.6 + freshnessScore * 0.4);
+    const overallScore = Math.round(
+      finalRelevance * 0.6 + freshnessScore * 0.4,
+    );
 
     return {
       id: course.id,
@@ -321,20 +386,45 @@ Respond with just the number.`;
   // ─── CONTENT UPDATE SUGGESTIONS ────────────────────────
 
   async suggestLabUpdates(labId: string): Promise<ContentUpdateSuggestion[]> {
-    const lab = await this.prisma.lab.findUnique({
+    const lab = (await this.prisma.lab.findUnique({
       where: { id: labId },
       select: {
-        id: true, title: true, description: true, briefing: true,
-        difficulty: true, estimatedMinutes: true,
+        id: true,
+        title: true,
+        description: true,
+        briefing: true,
+        difficulty: true,
+        estimatedMinutes: true,
         flags: { select: { title: true, description: true } },
-        labSkills: { select: { skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
-        analytics: { select: { completionRate: true, failureRate: true, avgTimeMinutes: true } },
+        labSkills: {
+          select: {
+            skill: {
+              select: {
+                displayName: true,
+                domain: { select: { displayName: true } },
+              },
+            },
+          },
+        },
+        analytics: {
+          select: {
+            completionRate: true,
+            failureRate: true,
+            avgTimeMinutes: true,
+          },
+        },
       },
-    }) as unknown as Any;
+    })) as unknown as Any;
 
     if (!lab) throw new Error('Lab not found');
 
-    const domains = [...new Set(lab.labSkills.map((ls: Any) => ls.skill.domain?.displayName).filter(Boolean))];
+    const domains = [
+      ...new Set(
+        lab.labSkills
+          .map((ls: Any) => ls.skill.domain?.displayName)
+          .filter(Boolean),
+      ),
+    ];
 
     if (!this.gateway) {
       return this.getRuleBasedLabSuggestions(lab);
@@ -358,7 +448,8 @@ Respond in JSON format:
     try {
       const response = await this.gateway.generate({
         prompt,
-        system: 'You are a cybersecurity lab content specialist. Suggest specific, actionable improvements.',
+        system:
+          'You are a cybersecurity lab content specialist. Suggest specific, actionable improvements.',
         format: 'json',
         temperature: 0.5,
       });
@@ -387,28 +478,41 @@ Respond in JSON format:
 
     if (!lab.briefing || lab.briefing.length < 50) {
       suggestions.push({
-        id: lab.id, type: 'lab', title: lab.title,
-        field: 'briefing', currentValue: lab.briefing || '',
+        id: lab.id,
+        type: 'lab',
+        title: lab.title,
+        field: 'briefing',
+        currentValue: lab.briefing || '',
         suggestedValue: `Scenario: You are a security analyst investigating a potential breach. Your objective is to identify and exploit vulnerabilities in the target system to capture all flags. Use standard penetration testing methodologies.`,
-        reason: 'Briefing is missing or too short — a good briefing sets context and learning objectives',
+        reason:
+          'Briefing is missing or too short — a good briefing sets context and learning objectives',
         confidence: 0.9,
       });
     }
 
     if (lab.analytics?.completionRate && lab.analytics.completionRate < 20) {
       suggestions.push({
-        id: lab.id, type: 'lab', title: lab.title,
-        field: 'difficulty', currentValue: String(lab.difficulty),
+        id: lab.id,
+        type: 'lab',
+        title: lab.title,
+        field: 'difficulty',
+        currentValue: String(lab.difficulty),
         suggestedValue: String(Math.max(800, lab.difficulty - 200)),
         reason: `Very low completion rate (${lab.analytics.completionRate}%) suggests difficulty may be too high`,
         confidence: 0.8,
       });
     }
 
-    if (lab.analytics?.avgTimeMinutes && lab.analytics.avgTimeMinutes > (lab.estimatedMinutes || 60) * 1.5) {
+    if (
+      lab.analytics?.avgTimeMinutes &&
+      lab.analytics.avgTimeMinutes > (lab.estimatedMinutes || 60) * 1.5
+    ) {
       suggestions.push({
-        id: lab.id, type: 'lab', title: lab.title,
-        field: 'estimatedMinutes', currentValue: String(lab.estimatedMinutes),
+        id: lab.id,
+        type: 'lab',
+        title: lab.title,
+        field: 'estimatedMinutes',
+        currentValue: String(lab.estimatedMinutes),
         suggestedValue: String(Math.ceil(lab.analytics.avgTimeMinutes * 1.1)),
         reason: `Average time (${lab.analytics.avgTimeMinutes} min) exceeds estimate (${lab.estimatedMinutes} min)`,
         confidence: 0.85,
@@ -424,14 +528,21 @@ Respond in JSON format:
     const [labs, courses] = await Promise.all([
       this.prisma.lab.findMany({
         select: {
-          id: true, title: true,
+          id: true,
+          title: true,
           analytics: { select: { completionRate: true } },
-          labSkills: { select: { skill: { select: { domain: { select: { displayName: true } } } } } },
+          labSkills: {
+            select: {
+              skill: { select: { domain: { select: { displayName: true } } } },
+            },
+          },
         },
       }) as unknown as Any[],
       this.prisma.course.findMany({
         select: {
-          id: true, title: true, createdAt: true,
+          id: true,
+          title: true,
+          createdAt: true,
           sections: { select: { lessons: { select: { id: true } } } },
           reviews: { select: { rating: true } },
         },
@@ -444,20 +555,31 @@ Respond in JSON format:
     const labScores = labs.map((lab: Any) => {
       const isOutdated = (lab.analytics?.completionRate || 50) < 30;
       return {
-        id: lab.id, title: lab.title,
-        daysSinceUpdate: 0, isStale: false, isOutdated,
+        id: lab.id,
+        title: lab.title,
+        daysSinceUpdate: 0,
+        isStale: false,
+        isOutdated,
         score: isOutdated ? 30 : 80,
       };
     });
 
     const courseScores = courses.map((course: Any) => {
-      const daysSinceUpdate = Math.floor((now - new Date(course.createdAt).getTime()) / 86400000);
+      const daysSinceUpdate = Math.floor(
+        (now - new Date(course.createdAt).getTime()) / 86400000,
+      );
       const isStale = daysSinceUpdate > staleThreshold;
-      const totalLessons = (course.sections || []).reduce((sum: number, s: Any) => sum + s.lessons.length, 0);
+      const totalLessons = (course.sections || []).reduce(
+        (sum: number, s: Any) => sum + s.lessons.length,
+        0,
+      );
       const isOutdated = totalLessons < 3;
       return {
-        id: course.id, title: course.title,
-        daysSinceUpdate, isStale, isOutdated,
+        id: course.id,
+        title: course.title,
+        daysSinceUpdate,
+        isStale,
+        isOutdated,
         score: isOutdated ? 30 : isStale ? 50 : 80,
       };
     });
@@ -467,26 +589,46 @@ Respond in JSON format:
     const outdatedLabs = labScores.filter((l) => l.isOutdated).length;
     const outdatedCourses = courseScores.filter((c) => c.isOutdated).length;
 
-    const avgLabRelevance = labScores.length > 0
-      ? Math.round(labScores.reduce((s, l) => s + l.score, 0) / labScores.length)
-      : 0;
-    const avgCourseRelevance = courseScores.length > 0
-      ? Math.round(courseScores.reduce((s, c) => s + c.score, 0) / courseScores.length)
-      : 0;
+    const avgLabRelevance =
+      labScores.length > 0
+        ? Math.round(
+            labScores.reduce((s, l) => s + l.score, 0) / labScores.length,
+          )
+        : 0;
+    const avgCourseRelevance =
+      courseScores.length > 0
+        ? Math.round(
+            courseScores.reduce((s, c) => s + c.score, 0) / courseScores.length,
+          )
+        : 0;
 
-    const avgLabFreshness = labScores.length > 0
-      ? Math.round(labScores.reduce((s, l) => s + Math.max(0, 100 - l.daysSinceUpdate), 0) / labScores.length)
-      : 0;
-    const avgCourseFreshness = courseScores.length > 0
-      ? Math.round(courseScores.reduce((s, c) => s + Math.max(0, 100 - c.daysSinceUpdate), 0) / courseScores.length)
-      : 0;
+    const avgLabFreshness =
+      labScores.length > 0
+        ? Math.round(
+            labScores.reduce(
+              (s, l) => s + Math.max(0, 100 - l.daysSinceUpdate),
+              0,
+            ) / labScores.length,
+          )
+        : 0;
+    const avgCourseFreshness =
+      courseScores.length > 0
+        ? Math.round(
+            courseScores.reduce(
+              (s, c) => s + Math.max(0, 100 - c.daysSinceUpdate),
+              0,
+            ) / courseScores.length,
+          )
+        : 0;
 
     // Domain breakdown
-    const domainMap: Record<string, { totalRelevance: number; count: number }> = {};
+    const domainMap: Record<string, { totalRelevance: number; count: number }> =
+      {};
     for (const lab of labs) {
-      for (const ls of (lab.labSkills || [])) {
+      for (const ls of lab.labSkills || []) {
         const domain = ls.skill?.domain?.displayName || 'Unknown';
-        if (!domainMap[domain]) domainMap[domain] = { totalRelevance: 0, count: 0 };
+        if (!domainMap[domain])
+          domainMap[domain] = { totalRelevance: 0, count: 0 };
         const score = labScores.find((l: Any) => l.id === lab.id)?.score || 50;
         domainMap[domain].totalRelevance += score;
         domainMap[domain].count += 1;
@@ -516,24 +658,44 @@ Respond in JSON format:
         .filter((l) => l.score < 60)
         .sort((a, b) => a.score - b.score)
         .slice(0, 10)
-        .map((l) => ({ id: l.id, title: l.title, score: l.score, daysSinceUpdate: l.daysSinceUpdate })),
+        .map((l) => ({
+          id: l.id,
+          title: l.title,
+          score: l.score,
+          daysSinceUpdate: l.daysSinceUpdate,
+        })),
       coursesNeedingRefresh: courseScores
         .filter((c) => c.score < 60)
         .sort((a, b) => a.score - b.score)
         .slice(0, 10)
-        .map((c) => ({ id: c.id, title: c.title, score: c.score, daysSinceUpdate: c.daysSinceUpdate })),
+        .map((c) => ({
+          id: c.id,
+          title: c.title,
+          score: c.score,
+          daysSinceUpdate: c.daysSinceUpdate,
+        })),
       domainBreakdown,
     };
   }
 
   // ─── REFRESH HISTORY ───────────────────────────────────
 
-  async logRefresh(contentType: string, contentId: string, contentTitle: string, action: string, details: string): Promise<void> {
+  async logRefresh(
+    contentType: string,
+    contentId: string,
+    contentTitle: string,
+    action: string,
+    details: string,
+  ): Promise<void> {
     try {
       await this.prisma.$queryRawUnsafe(
         `INSERT INTO "ContentRefreshHistory" ("id", "contentType", "contentId", "contentTitle", "action", "details", "createdAt")
          VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, NOW())`,
-        contentType, contentId, contentTitle, action, details,
+        contentType,
+        contentId,
+        contentTitle,
+        action,
+        details,
       );
     } catch (err) {
       this.logger.warn(`Failed to log refresh: ${err}`);
@@ -545,7 +707,7 @@ Respond in JSON format:
       const rows = await this.prisma.$queryRawUnsafe(
         `SELECT * FROM "ContentRefreshHistory" ORDER BY "createdAt" DESC LIMIT $1`,
         limit,
-      ) as Any[];
+      );
       return rows.map((r: Any) => ({
         id: r.id,
         contentType: r.contentType,
@@ -562,14 +724,21 @@ Respond in JSON format:
 
   // ─── BULK SCORE ALL ────────────────────────────────────
 
-  async scoreAllContent(): Promise<{ labs: ContentRelevanceScore[]; courses: ContentRelevanceScore[] }> {
+  async scoreAllContent(): Promise<{
+    labs: ContentRelevanceScore[];
+    courses: ContentRelevanceScore[];
+  }> {
     const [labIds, courseIds] = await Promise.all([
       this.prisma.lab.findMany({ select: { id: true } }),
       this.prisma.course.findMany({ select: { id: true } }),
     ]);
 
-    const labScores = await Promise.all(labIds.map((l) => this.scoreLabRelevance(l.id)));
-    const courseScores = await Promise.all(courseIds.map((c) => this.scoreCourseRelevance(c.id)));
+    const labScores = await Promise.all(
+      labIds.map((l) => this.scoreLabRelevance(l.id)),
+    );
+    const courseScores = await Promise.all(
+      courseIds.map((c) => this.scoreCourseRelevance(c.id)),
+    );
 
     return { labs: labScores, courses: courseScores };
   }

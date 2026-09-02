@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MasteryService, TechnologyGenome } from './mastery.service';
 
@@ -37,8 +42,8 @@ export class PersonalizedMissionService {
     // 1. Maintenance missions for fading skills
     for (const skill of genome.fadingSkills) {
       if (skill.mastery < 70 && skill.mastery > 30) {
-        const domain = genome.domains.find(d =>
-          d.skills.some(s => s.skillId === skill.skillId)
+        const domain = genome.domains.find((d) =>
+          d.skills.some((s) => s.skillId === skill.skillId),
         );
         missions.push({
           title: `${skill.displayName} Maintenance`,
@@ -59,8 +64,8 @@ export class PersonalizedMissionService {
     // 2. Weakness improvement missions
     for (const weakness of genome.weaknesses) {
       if (weakness.mastery < 40) {
-        const domain = genome.domains.find(d =>
-          d.skills.some(s => s.skillId === weakness.skillId)
+        const domain = genome.domains.find((d) =>
+          d.skills.some((s) => s.skillId === weakness.skillId),
         );
         missions.push({
           title: `Strengthen ${weakness.displayName}`,
@@ -82,8 +87,8 @@ export class PersonalizedMissionService {
     if (genome.strengths.length > 0 && genome.weaknesses.length > 0) {
       const strength = genome.strengths[0];
       const weakness = genome.weaknesses[0];
-      const weaknessDomain = genome.domains.find(d =>
-        d.skills.some(s => s.skillId === weakness.skillId)
+      const weaknessDomain = genome.domains.find((d) =>
+        d.skills.some((s) => s.skillId === weakness.skillId),
       );
 
       missions.push({
@@ -128,7 +133,7 @@ export class PersonalizedMissionService {
       where: { userId, status: { in: ['AVAILABLE', 'ACTIVE', 'COMPLETED'] } },
       select: { title: true },
     });
-    const existingSet = new Set(existingTitles.map(e => e.title));
+    const existingSet = new Set(existingTitles.map((e) => e.title));
 
     for (const mission of generated) {
       if (existingSet.has(mission.title)) continue;
@@ -165,10 +170,7 @@ export class PersonalizedMissionService {
         skill: { select: { id: true, name: true, displayName: true } },
         domain: { select: { id: true, name: true, displayName: true } },
       },
-      orderBy: [
-        { status: 'asc' },
-        { difficulty: 'asc' },
-      ],
+      orderBy: [{ status: 'asc' }, { difficulty: 'asc' }],
     });
   }
 
@@ -178,8 +180,10 @@ export class PersonalizedMissionService {
     });
 
     if (!mission) throw new NotFoundException('Mission not found');
-    if (mission.userId !== userId) throw new BadRequestException('Not your mission');
-    if (mission.status !== 'AVAILABLE') throw new BadRequestException('Mission is not available');
+    if (mission.userId !== userId)
+      throw new BadRequestException('Not your mission');
+    if (mission.status !== 'AVAILABLE')
+      throw new BadRequestException('Mission is not available');
     if (mission.expiresAt && mission.expiresAt < new Date()) {
       throw new BadRequestException('Mission has expired');
     }
@@ -196,8 +200,10 @@ export class PersonalizedMissionService {
     });
 
     if (!mission) throw new NotFoundException('Mission not found');
-    if (mission.userId !== userId) throw new BadRequestException('Not your mission');
-    if (mission.status !== 'ACTIVE') throw new BadRequestException('Mission is not active');
+    if (mission.userId !== userId)
+      throw new BadRequestException('Not your mission');
+    if (mission.status !== 'ACTIVE')
+      throw new BadRequestException('Mission is not active');
 
     return this.prisma.personalizedMission.update({
       where: { id: missionId },

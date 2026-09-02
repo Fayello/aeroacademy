@@ -1,4 +1,12 @@
-import { IsArray, IsEmail, IsIn, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SubmitCommunityApplicationDto {
   @IsIn(['ambassador', 'volunteer'])

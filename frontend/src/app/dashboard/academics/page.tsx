@@ -131,6 +131,7 @@ export default function AcademicsPage() {
         ? "Good academic standing"
         : "Needs improvement attention"
     : "Awaiting enough records";
+  const transcriptCoverage = enrolledCohorts.length > 0 ? Math.round((transcriptRows.length / enrolledCohorts.length) * 100) : 0;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -251,6 +252,32 @@ export default function AcademicsPage() {
           </div>
           <p className="mt-4 text-sm leading-relaxed text-slate-300">
             Institutional trust improves when learners can see exactly how coursework, categories, and graded entries contribute to the final outcome.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Transcript coverage</p>
+          <p className="mt-2 text-2xl font-bold text-white">{transcriptCoverage}%</p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-400">
+            of your enrolled cohorts already have transcript-grade evidence attached to them.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Best standing signal</p>
+          <p className="mt-2 text-sm font-semibold text-white">{strongestTranscript ? strongestTranscript.cohortName : "Awaiting grading"}</p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-400">
+            {strongestTranscript
+              ? `${strongestTranscript.finalGrade}% in ${strongestTranscript.curriculum} is currently your strongest posted academic result.`
+              : "Once grades are posted, this page will show your clearest academic proof surface."}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Why it matters</p>
+          <p className="mt-2 text-sm font-semibold text-white">Academic delivery should be auditable</p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-400">
+            Universities need records that show weighting, categories, and final outcomes clearly enough for students, faculty, and partners to trust.
           </p>
         </div>
       </div>

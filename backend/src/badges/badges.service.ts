@@ -36,12 +36,13 @@ export class BadgesService {
     const earnedBadgeIds = new Set(user.badges.map((b) => b.badgeId));
     const allBadges = await this.prisma.badge.findMany();
 
-    const [lessonsCompleted, flagsCaptured, courseEnrollments, longestStreak] = await Promise.all([
-      this.prisma.progress.count({ where: { userId, completed: true } }),
-      this.prisma.labSubmission.count({ where: { userId, isCorrect: true } }),
-      this.prisma.courseEnrollment.count({ where: { userId } }),
-      user.longestStreak,
-    ]);
+    const [lessonsCompleted, flagsCaptured, courseEnrollments, longestStreak] =
+      await Promise.all([
+        this.prisma.progress.count({ where: { userId, completed: true } }),
+        this.prisma.labSubmission.count({ where: { userId, isCorrect: true } }),
+        this.prisma.courseEnrollment.count({ where: { userId } }),
+        user.longestStreak,
+      ]);
 
     for (const badge of allBadges) {
       if (earnedBadgeIds.has(badge.id)) continue;
@@ -102,11 +103,18 @@ export class BadgesService {
         });
 
         if (badge.xpReward > 0) {
-          await this.progressionService.awardXP(userId, {
-            amount: badge.xpReward,
-            source: 'BADGE_EARNED',
-            sourceId: badge.id,
-          }).catch((err) => this.logger.error('ProgressionService.awardXP failed for badge', err));
+          await this.progressionService
+            .awardXP(userId, {
+              amount: badge.xpReward,
+              source: 'BADGE_EARNED',
+              sourceId: badge.id,
+            })
+            .catch((err) =>
+              this.logger.error(
+                'ProgressionService.awardXP failed for badge',
+                err,
+              ),
+            );
         }
 
         this.logger.log(`Awarded badge "${badge.name}" to user ${userId}`);

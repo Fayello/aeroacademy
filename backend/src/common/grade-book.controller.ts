@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { GradeBookService } from './grade-book.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -18,7 +28,12 @@ export class GradeBookController {
     @Param('cohortId') cohortId: string,
     @Body() body: { name: string; weight: number; order?: number },
   ) {
-    return this.service.createCategory(cohortId, body.name, body.weight, body.order);
+    return this.service.createCategory(
+      cohortId,
+      body.name,
+      body.weight,
+      body.order,
+    );
   }
 
   @Put('categories/:categoryId')
@@ -51,7 +66,8 @@ export class GradeBookController {
   async addEntry(
     @Param('categoryId') categoryId: string,
     @Req() req: any,
-    @Body() body: {
+    @Body()
+    body: {
       userId: string;
       title: string;
       score: number;
@@ -60,7 +76,10 @@ export class GradeBookController {
       comment?: string;
     },
   ) {
-    return this.service.addEntry(categoryId, { ...body, gradedById: req.user.id });
+    return this.service.addEntry(categoryId, {
+      ...body,
+      gradedById: req.user.id,
+    });
   }
 
   @Post('categories/:categoryId/entries/bulk')
@@ -69,7 +88,8 @@ export class GradeBookController {
   async bulkAddEntries(
     @Param('categoryId') categoryId: string,
     @Req() req: any,
-    @Body() body: {
+    @Body()
+    body: {
       entries: Array<{
         userId: string;
         title: string;

@@ -77,8 +77,12 @@ export class TutoringService {
     const studentCtx = await this.getStudentContext(userId);
 
     // Determine if this is a conceptual question or a help request
-    const isHelpRequest = /\b(help|hint|stuck|don't understand|confused|how do|what is|explain|why|error|fail)\b/i.test(message);
-    const isConceptual = /\b(what|why|how|explain|difference|compare|meaning)\b/i.test(message);
+    const isHelpRequest =
+      /\b(help|hint|stuck|don't understand|confused|how do|what is|explain|why|error|fail)\b/i.test(
+        message,
+      );
+    const isConceptual =
+      /\b(what|why|how|explain|difference|compare|meaning)\b/i.test(message);
 
     let method: TutorResponse['method'] = 'direct';
     let systemPrompt = '';
@@ -140,19 +144,27 @@ Rules:
 
     const messages: TutorMessage[] = [
       { role: 'system', content: systemPrompt },
-      ...history.slice(-8).map((h) => ({ role: h.role as 'user' | 'assistant', content: h.content })),
+      ...history.slice(-8).map((h) => ({
+        role: h.role as 'user' | 'assistant',
+        content: h.content,
+      })),
       { role: 'user', content: message },
     ];
 
     // For Socratic mode, also ask follow-up questions
-    const followUpPrompt = method === 'socratic'
-      ? `\n\nAfter your response, add a JSON block with follow-up questions:
+    const followUpPrompt =
+      method === 'socratic'
+        ? `\n\nAfter your response, add a JSON block with follow-up questions:
 {"followUp":["question1","question2"],"concepts":["concept1","concept2"]}`
-      : '';
+        : '';
 
-    const response = await this.gateway?.chat({
-      messages: messages.map((m) => ({ role: m.role, content: m.content + (m.role === 'system' ? followUpPrompt : '') })),
-    }) || 'AI tutor is currently unavailable.';
+    const response =
+      (await this.gateway?.chat({
+        messages: messages.map((m) => ({
+          role: m.role,
+          content: m.content + (m.role === 'system' ? followUpPrompt : ''),
+        })),
+      })) || 'AI tutor is currently unavailable.';
 
     let followUpQuestions: string[] = [];
     let conceptTags: string[] = [];
@@ -168,10 +180,20 @@ Rules:
     }
 
     // Clean response (remove JSON block if present)
-    const cleanResponse = response.replace(/\n*\{[\s\S]*"followUp"[\s\S]*\}\s*$/, '').trim();
+    const cleanResponse = response
+      .replace(/\n*\{[\s\S]*"followUp"[\s\S]*\}\s*$/, '')
+      .trim();
 
     // Log interaction
-    await this.logInteraction(userId, 'chat', message, cleanResponse, method, context?.labId, conceptTags);
+    await this.logInteraction(
+      userId,
+      'chat',
+      message,
+      cleanResponse,
+      method,
+      context?.labId,
+      conceptTags,
+    );
 
     return {
       response: cleanResponse,
@@ -183,14 +205,29 @@ Rules:
 
   // ─── LAB ASSIST ────────────────────────────────────────
 
-  async labAssist(userId: string, request: LabAssistRequest): Promise<LabAssistResponse> {
+  async labAssist(
+    userId: string,
+    request: LabAssistRequest,
+  ): Promise<LabAssistResponse> {
     const [lab, studentCtx] = await Promise.all([
       this.prisma.lab.findUnique({
         where: { id: request.labId },
         select: {
-          title: true, description: true, briefing: true, difficulty: true,
+          title: true,
+          description: true,
+          briefing: true,
+          difficulty: true,
           flags: { select: { title: true, description: true, points: true } },
-          labSkills: { select: { skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
+          labSkills: {
+            select: {
+              skill: {
+                select: {
+                  displayName: true,
+                  domain: { select: { displayName: true } },
+                },
+              },
+            },
+          },
         },
       }),
       this.getStudentContext(userId),
@@ -198,8 +235,19 @@ Rules:
 
     if (!lab) throw new Error('Lab not found');
 
-    const domains = [...new Set(lab.labSkills.map((ls) => ls.skill.domain?.displayName).filter(Boolean))];
-    const diffLabel = lab.difficulty < 1000 ? 'beginner' : lab.difficulty < 1300 ? 'intermediate' : lab.difficulty < 1600 ? 'advanced' : 'expert';
+    const domains = [
+      ...new Set(
+        lab.labSkills.map((ls) => ls.skill.domain?.displayName).filter(Boolean),
+      ),
+    ];
+    const diffLabel =
+      lab.difficulty < 1000
+        ? 'beginner'
+        : lab.difficulty < 1300
+          ? 'intermediate'
+          : lab.difficulty < 1600
+            ? 'advanced'
+            : 'expert';
 
     const hintLevels = ['vague', 'moderate', 'explicit'];
     const hintLevel = hintLevels[Math.min(request.hintLevel - 1, 2)];
@@ -222,9 +270,10 @@ Hint level: ${hintLevel} (${request.hintLevel}/3)
 Respond in JSON format:
 {"hint":"...","approach":"...","nextSteps":["step1","step2"],"relatedConcepts":["concept1"],"difficulty":"easy|medium|hard"}`;
 
-    const response = await this.gateway?.generate({
-      prompt,
-      system: `You are a lab assistant for XpertClass. Provide helpful hints without giving away the answer.
+    const response =
+      (await this.gateway?.generate({
+        prompt,
+        system: `You are a lab assistant for XpertClass. Provide helpful hints without giving away the answer.
 
 Hint levels:
 - vague (1): Point them in the right direction without specifics
@@ -232,16 +281,20 @@ Hint levels:
 - explicit (3): Tell them exactly what to do
 
 Be encouraging. Reference the student's skill level.`,
-      format: 'json',
-      temperature: 0.6,
-    }) || '{}';
+        format: 'json',
+        temperature: 0.6,
+      })) || '{}';
 
     let result: LabAssistResponse;
     try {
       const parsed = JSON.parse(response);
       result = {
-        hint: parsed.hint || 'Try exploring the lab environment and looking for clues.',
-        approach: parsed.approach || 'Start with reconnaissance and work systematically.',
+        hint:
+          parsed.hint ||
+          'Try exploring the lab environment and looking for clues.',
+        approach:
+          parsed.approach ||
+          'Start with reconnaissance and work systematically.',
         nextSteps: parsed.nextSteps || [],
         relatedConcepts: parsed.relatedConcepts || [],
         difficulty: parsed.difficulty || 'medium',
@@ -249,28 +302,45 @@ Be encouraging. Reference the student's skill level.`,
     } catch {
       result = {
         hint: 'Try exploring the lab environment. What services are running? What versions are they?',
-        approach: 'Start with reconnaissance — identify services, versions, and potential attack vectors.',
-        nextSteps: ['Run nmap or similar scanning tools', 'Check for known vulnerabilities'],
+        approach:
+          'Start with reconnaissance — identify services, versions, and potential attack vectors.',
+        nextSteps: [
+          'Run nmap or similar scanning tools',
+          'Check for known vulnerabilities',
+        ],
         relatedConcepts: ['Reconnaissance', 'Service Enumeration'],
         difficulty: 'medium',
       };
     }
 
     // Log interaction
-    await this.logInteraction(userId, 'lab_assist', request.currentStep || 'general', result.hint, `hint_level_${request.hintLevel}`, request.labId, result.relatedConcepts);
+    await this.logInteraction(
+      userId,
+      'lab_assist',
+      request.currentStep || 'general',
+      result.hint,
+      `hint_level_${request.hintLevel}`,
+      request.labId,
+      result.relatedConcepts,
+    );
 
     return result;
   }
 
   // ─── ADAPTIVE HINTS ────────────────────────────────────
 
-  async getAdaptiveHint(userId: string, labId: string, context: string): Promise<{ hint: string; level: number; totalLevels: number }> {
+  async getAdaptiveHint(
+    userId: string,
+    labId: string,
+    context: string,
+  ): Promise<{ hint: string; level: number; totalLevels: number }> {
     // Check how many hints the student has already requested for this lab
     const previousHints = await this.prisma.$queryRawUnsafe(
       `SELECT COUNT(*) as count FROM "TutoringInteraction"
        WHERE "userId" = $1 AND "labId" = $2 AND "type" = 'hint'`,
-      userId, labId,
-    ) as Any[];
+      userId,
+      labId,
+    );
 
     const hintCount = Number(previousHints[0]?.count || 0);
     const level = Math.min(hintCount + 1, 3);
@@ -288,20 +358,38 @@ Previous hints given: ${hintCount}
 
 Provide a ${levels[level - 1].split('—')[0].trim()} hint.`;
 
-    const response = await this.gateway?.generate({
-      prompt,
-      system: 'You are a helpful lab tutor. Give concise, encouraging hints. Never give the full answer on level 1.',
-      temperature: 0.5,
-    }) || 'Try exploring the environment more carefully.';
+    const response =
+      (await this.gateway?.generate({
+        prompt,
+        system:
+          'You are a helpful lab tutor. Give concise, encouraging hints. Never give the full answer on level 1.',
+        temperature: 0.5,
+      })) || 'Try exploring the environment more carefully.';
 
-    await this.logInteraction(userId, 'hint', context, response, `level_${level}`, labId, []);
+    await this.logInteraction(
+      userId,
+      'hint',
+      context,
+      response,
+      `level_${level}`,
+      labId,
+      [],
+    );
 
     return { hint: response, level, totalLevels: 3 };
   }
 
   // ─── CONCEPT EXPLAINER ─────────────────────────────────
 
-  async explainConcept(userId: string, concept: string, relatedLab?: string): Promise<{ explanation: string; examples: string[]; practiceSuggestions: string[] }> {
+  async explainConcept(
+    userId: string,
+    concept: string,
+    relatedLab?: string,
+  ): Promise<{
+    explanation: string;
+    examples: string[];
+    practiceSuggestions: string[];
+  }> {
     const studentCtx = await this.getStudentContext(userId);
 
     const prompt = `Explain the concept "${concept}" to a Level ${studentCtx.level} student.
@@ -313,24 +401,48 @@ Provide:
 2. 2 real-world examples
 3. 1-2 practice suggestions (specific labs or exercises)`;
 
-    const response = await this.gateway?.generate({
-      prompt,
-      system: 'You are a technology education expert. Explain concepts clearly with practical examples. Be concise.',
-      temperature: 0.6,
-    }) || 'Concept explanation unavailable.';
+    const response =
+      (await this.gateway?.generate({
+        prompt,
+        system:
+          'You are a technology education expert. Explain concepts clearly with practical examples. Be concise.',
+        temperature: 0.6,
+      })) || 'Concept explanation unavailable.';
 
     // Parse response
     const lines = response.split('\n').filter(Boolean);
     const explanation = lines.slice(0, 4).join(' ');
-    const examples = lines.filter((l) => l.startsWith('-') || l.startsWith('*')).slice(0, 2).map((l) => l.replace(/^[-*]\s*/, ''));
-    const practiceSuggestions = lines.filter((l) => /practice|try|exercise|lab/i.test(l)).slice(0, 2);
+    const examples = lines
+      .filter((l) => l.startsWith('-') || l.startsWith('*'))
+      .slice(0, 2)
+      .map((l) => l.replace(/^[-*]\s*/, ''));
+    const practiceSuggestions = lines
+      .filter((l) => /practice|try|exercise|lab/i.test(l))
+      .slice(0, 2);
 
-    await this.logInteraction(userId, 'chat', `Explain: ${concept}`, explanation, 'direct', relatedLab, [concept]);
+    await this.logInteraction(
+      userId,
+      'chat',
+      `Explain: ${concept}`,
+      explanation,
+      'direct',
+      relatedLab,
+      [concept],
+    );
 
     return {
       explanation,
-      examples: examples.length > 0 ? examples : [`Using ${concept} in a real scenario`, `Practical application of ${concept}`],
-      practiceSuggestions: practiceSuggestions.length > 0 ? practiceSuggestions : ['Try a lab that uses this concept'],
+      examples:
+        examples.length > 0
+          ? examples
+          : [
+              `Using ${concept} in a real scenario`,
+              `Practical application of ${concept}`,
+            ],
+      practiceSuggestions:
+        practiceSuggestions.length > 0
+          ? practiceSuggestions
+          : ['Try a lab that uses this concept'],
     };
   }
 
@@ -344,26 +456,41 @@ Provide:
       const cohortUserIds = await this.prisma.$queryRawUnsafe(
         `SELECT "userId" FROM "CohortMember" WHERE "cohortId" = $1`,
         cohortId,
-      ) as Any[];
+      );
       const userIds = cohortUserIds.map((u: Any) => u.userId);
-      interactions = userIds.length > 0
-        ? await this.prisma.tutoringInteraction.findMany({
-            where: { userId: { in: userIds } },
-            select: {
-              id: true, userId: true, type: true, method: true, message: true, response: true,
-              labId: true, conceptTags: true, createdAt: true,
-            },
-            orderBy: { createdAt: 'desc' },
-          }) as Any[]
-        : [];
+      interactions =
+        userIds.length > 0
+          ? ((await this.prisma.tutoringInteraction.findMany({
+              where: { userId: { in: userIds } },
+              select: {
+                id: true,
+                userId: true,
+                type: true,
+                method: true,
+                message: true,
+                response: true,
+                labId: true,
+                conceptTags: true,
+                createdAt: true,
+              },
+              orderBy: { createdAt: 'desc' },
+            })) as Any[])
+          : [];
     } else {
-      interactions = await this.prisma.tutoringInteraction.findMany({
+      interactions = (await this.prisma.tutoringInteraction.findMany({
         select: {
-          id: true, userId: true, type: true, method: true, message: true, response: true,
-          labId: true, conceptTags: true, createdAt: true,
+          id: true,
+          userId: true,
+          type: true,
+          method: true,
+          message: true,
+          response: true,
+          labId: true,
+          conceptTags: true,
+          createdAt: true,
         },
         orderBy: { createdAt: 'desc' },
-      }) as Any[];
+      })) as Any[];
     }
 
     const byType: Record<string, number> = {};
@@ -403,7 +530,10 @@ Provide:
       byType,
       byMethod,
       topConcepts,
-      avgInteractionsPerUser: uniqueUsers.size > 0 ? Math.round(interactions.length / uniqueUsers.size * 10) / 10 : 0,
+      avgInteractionsPerUser:
+        uniqueUsers.size > 0
+          ? Math.round((interactions.length / uniqueUsers.size) * 10) / 10
+          : 0,
       uniqueUsers: uniqueUsers.size,
       labAssistCount: byType['lab_assist'] || 0,
       socraticCount: byMethod['socratic'] || 0,
@@ -445,7 +575,10 @@ Provide:
       ) as unknown as Any[],
     ]);
 
-    const domains = skillData.map((d) => ({ domain: d.domain, mastery: Math.round(d.mastery) }));
+    const domains = skillData.map((d) => ({
+      domain: d.domain,
+      mastery: Math.round(d.mastery),
+    }));
     const skillGaps = domains.filter((d) => d.mastery < 60);
 
     return {
@@ -453,15 +586,24 @@ Provide:
       level,
       xp: user?.xp || 0,
       domains,
-      recentLabs: labInstances.map((l) => ({ title: l.title, difficulty: l.difficulty, status: l.status })),
+      recentLabs: labInstances.map((l) => ({
+        title: l.title,
+        difficulty: l.difficulty,
+        status: l.status,
+      })),
       badges: badges.map((b) => b.name),
       skillGaps,
     };
   }
 
   private async logInteraction(
-    userId: string, type: string, message: string, response: string,
-    method: string, labId?: string, conceptTags?: string[],
+    userId: string,
+    type: string,
+    message: string,
+    response: string,
+    method: string,
+    labId?: string,
+    conceptTags?: string[],
   ): Promise<void> {
     try {
       await this.prisma.tutoringInteraction.create({

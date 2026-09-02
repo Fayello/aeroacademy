@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PracticalAssessmentService } from './practical-assessment.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -32,26 +41,29 @@ export class PracticalAssessmentController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR', 'TA')
-  async createAssessment(@Body() body: {
-    title: string;
-    description: string;
-    domainId?: string;
-    timeLimit: number;
-    maxScore?: number;
-    passingScore?: number;
-    maxAttempts?: number;
-    isProctored?: boolean;
-    scenarios: Array<{
+  async createAssessment(
+    @Body()
+    body: {
       title: string;
       description: string;
-      order?: number;
+      domainId?: string;
+      timeLimit: number;
       maxScore?: number;
-      expectedSteps?: unknown;
-      expectedState?: unknown;
-      hints?: unknown;
-    }>;
-    outcomeIds?: string[];
-  }) {
+      passingScore?: number;
+      maxAttempts?: number;
+      isProctored?: boolean;
+      scenarios: Array<{
+        title: string;
+        description: string;
+        order?: number;
+        maxScore?: number;
+        expectedSteps?: unknown;
+        expectedState?: unknown;
+        hints?: unknown;
+      }>;
+      outcomeIds?: string[];
+    },
+  ) {
     return this.service.createAssessment(body);
   }
 
@@ -64,7 +76,8 @@ export class PracticalAssessmentController {
   async submitAttempt(
     @Req() req: any,
     @Param('id') assessmentId: string,
-    @Body() body: {
+    @Body()
+    body: {
       scenarioResults: Array<{
         scenarioId: string;
         score: number;

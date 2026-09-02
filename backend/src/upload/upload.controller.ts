@@ -1,4 +1,12 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Req, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -27,7 +35,12 @@ export class UploadController {
       limits: { fileSize: 2 * 1024 * 1024 },
       fileFilter: (_req, file, cb) => {
         if (!file.mimetype.match(/^image\/(jpeg|png|gif|webp|svg\+xml)$/)) {
-          return cb(new BadRequestException('Only JPEG, PNG, GIF, WebP, SVG images allowed'), false);
+          return cb(
+            new BadRequestException(
+              'Only JPEG, PNG, GIF, WebP, SVG images allowed',
+            ),
+            false,
+          );
         }
         cb(null, true);
       },

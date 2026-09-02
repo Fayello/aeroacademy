@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Delete, Patch, Param, Body, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Patch,
+  Param,
+  Body,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DiscussionsService } from './discussions.service';
 
@@ -80,7 +91,10 @@ export class DiscussionsController {
     @Param('courseId') courseId: string,
     @Body() body: { title: string; body: string; tags?: string[] },
   ) {
-    return this.discussionsService.createPost(req.user.id, { ...body, courseId });
+    return this.discussionsService.createPost(req.user.id, {
+      ...body,
+      courseId,
+    });
   }
 
   @Post('lab/:labId')
@@ -96,7 +110,13 @@ export class DiscussionsController {
   updatePost(
     @Req() req: any,
     @Param('postId') postId: string,
-    @Body() body: { title?: string; body?: string; tags?: string[]; isResolved?: boolean },
+    @Body()
+    body: {
+      title?: string;
+      body?: string;
+      tags?: string[];
+      isResolved?: boolean;
+    },
   ) {
     return this.discussionsService.updatePost(req.user.id, postId, body);
   }
@@ -121,12 +141,26 @@ export class DiscussionsController {
   }
 
   @Post(':postId/vote')
-  votePost(@Req() req: any, @Param('postId') postId: string, @Body() body: { value: 1 | -1 }) {
-    return this.discussionsService.vote(req.user.id, { postId, value: body.value });
+  votePost(
+    @Req() req: any,
+    @Param('postId') postId: string,
+    @Body() body: { value: 1 | -1 },
+  ) {
+    return this.discussionsService.vote(req.user.id, {
+      postId,
+      value: body.value,
+    });
   }
 
   @Post('comments/:commentId/vote')
-  voteComment(@Req() req: any, @Param('commentId') commentId: string, @Body() body: { value: 1 | -1 }) {
-    return this.discussionsService.vote(req.user.id, { commentId, value: body.value });
+  voteComment(
+    @Req() req: any,
+    @Param('commentId') commentId: string,
+    @Body() body: { value: 1 | -1 },
+  ) {
+    return this.discussionsService.vote(req.user.id, {
+      commentId,
+      value: body.value,
+    });
   }
 }

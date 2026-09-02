@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { DisplayModeService } from './display-mode.service';
 import { MetricsService } from './metrics.service';
-import { DisplayModeController, MetricsController } from './display-mode.controller';
+import {
+  DisplayModeController,
+  MetricsController,
+} from './display-mode.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({

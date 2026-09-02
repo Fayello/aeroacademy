@@ -34,8 +34,17 @@ export interface PerformanceForecast {
   xpVelocity: number; // xp per week
   projectedLevel30d: number;
   projectedLevel90d: number;
-  masteryTrajectory: Array<{ domain: string; current: number; projected30d: number; projected90d: number }>;
-  assessmentReadiness: Array<{ category: string; readiness: number; estimate: string }>;
+  masteryTrajectory: Array<{
+    domain: string;
+    current: number;
+    projected30d: number;
+    projected90d: number;
+  }>;
+  assessmentReadiness: Array<{
+    category: string;
+    readiness: number;
+    estimate: string;
+  }>;
   confidenceScore: number; // how confident we are in the forecast
 }
 
@@ -67,7 +76,11 @@ export interface PredictiveDashboard {
     stable: number;
     declining: number;
   };
-  topInterventions: Array<{ action: string; frequency: number; successRate: number }>;
+  topInterventions: Array<{
+    action: string;
+    frequency: number;
+    successRate: number;
+  }>;
   riskDistribution: Array<{ range: string; count: number }>;
 }
 
@@ -87,10 +100,20 @@ export class PredictiveAnalyticsService {
     const users = await this.prisma.user.findMany({
       where: { role: 'STUDENT', ...whereClause },
       select: {
-        id: true, name: true, email: true, xp: true,
-        lastActivityDate: true, createdAt: true,
-        userSkills: { select: { mastery: true, lastPracticedAt: true, isDecaying: true } },
-        assessmentResults: { select: { score: true, maxScore: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 10 },
+        id: true,
+        name: true,
+        email: true,
+        xp: true,
+        lastActivityDate: true,
+        createdAt: true,
+        userSkills: {
+          select: { mastery: true, lastPracticedAt: true, isDecaying: true },
+        },
+        assessmentResults: {
+          select: { score: true, maxScore: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+        },
       },
     });
 
@@ -99,21 +122,35 @@ export class PredictiveAnalyticsService {
 
     for (const user of users) {
       const daysSinceActive = user.lastActivityDate
-        ? Math.floor((now.getTime() - new Date(user.lastActivityDate).getTime()) / (1000 * 60 * 60 * 24))
+        ? Math.floor(
+            (now.getTime() - new Date(user.lastActivityDate).getTime()) /
+              (1000 * 60 * 60 * 24),
+          )
         : 999;
 
       // Calculate mastery metrics
       const masteries = user.userSkills.map((s) => s.mastery);
-      const overallMastery = masteries.length > 0 ? masteries.reduce((a, b) => a + b, 0) / masteries.length : 0;
+      const overallMastery =
+        masteries.length > 0
+          ? masteries.reduce((a, b) => a + b, 0) / masteries.length
+          : 0;
       const decayingSkills = user.userSkills.filter((s) => s.isDecaying).length;
 
       // Calculate assessment metrics
-      const scores = user.assessmentResults.map((r) => (r.score / r.maxScore) * 100);
-      const avgAssessmentScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+      const scores = user.assessmentResults.map(
+        (r) => (r.score / r.maxScore) * 100,
+      );
+      const avgAssessmentScore =
+        scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
 
       // Trend analysis
       const activityTrend = this.calculateActivityTrend(daysSinceActive);
-      const masteryTrend = this.calculateMasteryTrend(masteries, decayingSkills);
+      const masteryTrend = this.calculateMasteryTrend(
+        masteries,
+        decayingSkills,
+      );
       const assessmentTrend = this.calculateAssessmentTrend(scores);
 
       // Risk score calculation (weighted)
@@ -130,13 +167,16 @@ export class PredictiveAnalyticsService {
       else if (overallMastery < 60) riskScore += 10;
 
       // Assessment performance (20% weight)
-      if (scores.length === 0) riskScore += 10; // no data is mild risk
+      if (scores.length === 0)
+        riskScore += 10; // no data is mild risk
       else if (avgAssessmentScore < 40) riskScore += 20;
       else if (avgAssessmentScore < 60) riskScore += 12;
 
       // Trends (20% weight)
-      if (activityTrend === 'declining' && masteryTrend === 'declining') riskScore += 20;
-      else if (activityTrend === 'declining' || masteryTrend === 'declining') riskScore += 12;
+      if (activityTrend === 'declining' && masteryTrend === 'declining')
+        riskScore += 20;
+      else if (activityTrend === 'declining' || masteryTrend === 'declining')
+        riskScore += 12;
       if (assessmentTrend === 'declining') riskScore += 8;
 
       // Decaying skills penalty
@@ -146,16 +186,27 @@ export class PredictiveAnalyticsService {
       riskScore = Math.min(100, Math.max(0, riskScore));
 
       const riskLevel: AtRiskStudent['riskLevel'] =
-        riskScore >= 70 ? 'critical' :
-        riskScore >= 50 ? 'high' :
-        riskScore >= 30 ? 'medium' : 'low';
+        riskScore >= 70
+          ? 'critical'
+          : riskScore >= 50
+            ? 'high'
+            : riskScore >= 30
+              ? 'medium'
+              : 'low';
 
       const riskFactors: string[] = [];
-      if (daysSinceActive > 7) riskFactors.push(`Inactive for ${daysSinceActive} days`);
-      if (overallMastery < 30) riskFactors.push(`Low mastery (${overallMastery.toFixed(0)}%)`);
-      if (avgAssessmentScore < 50 && scores.length > 0) riskFactors.push(`Poor assessment scores (${avgAssessmentScore.toFixed(0)}%)`);
-      if (decayingSkills > 2) riskFactors.push(`${decayingSkills} skills decaying`);
-      if (assessmentTrend === 'declining') riskFactors.push('Assessment scores declining');
+      if (daysSinceActive > 7)
+        riskFactors.push(`Inactive for ${daysSinceActive} days`);
+      if (overallMastery < 30)
+        riskFactors.push(`Low mastery (${overallMastery.toFixed(0)}%)`);
+      if (avgAssessmentScore < 50 && scores.length > 0)
+        riskFactors.push(
+          `Poor assessment scores (${avgAssessmentScore.toFixed(0)}%)`,
+        );
+      if (decayingSkills > 2)
+        riskFactors.push(`${decayingSkills} skills decaying`);
+      if (assessmentTrend === 'declining')
+        riskFactors.push('Assessment scores declining');
       if (masteryTrend === 'declining') riskFactors.push('Mastery declining');
 
       const level = Math.floor(user.xp / 1000) + 1;
@@ -183,13 +234,18 @@ export class PredictiveAnalyticsService {
     return results.sort((a, b) => b.riskScore - a.riskScore);
   }
 
-  private calculateActivityTrend(daysSinceActive: number): 'improving' | 'stable' | 'declining' {
+  private calculateActivityTrend(
+    daysSinceActive: number,
+  ): 'improving' | 'stable' | 'declining' {
     if (daysSinceActive <= 1) return 'improving';
     if (daysSinceActive <= 3) return 'stable';
     return 'declining';
   }
 
-  private calculateMasteryTrend(masteries: number[], decayingCount: number): 'improving' | 'stable' | 'declining' {
+  private calculateMasteryTrend(
+    masteries: number[],
+    decayingCount: number,
+  ): 'improving' | 'stable' | 'declining' {
     if (masteries.length === 0) return 'stable';
     if (decayingCount > masteries.length * 0.3) return 'declining';
     const avg = masteries.reduce((a, b) => a + b, 0) / masteries.length;
@@ -198,7 +254,9 @@ export class PredictiveAnalyticsService {
     return 'stable';
   }
 
-  private calculateAssessmentTrend(scores: number[]): 'improving' | 'stable' | 'declining' {
+  private calculateAssessmentTrend(
+    scores: number[],
+  ): 'improving' | 'stable' | 'declining' {
     if (scores.length < 2) return 'stable';
     const recent = scores.slice(0, 3);
     const older = scores.slice(3, 6);
@@ -216,9 +274,25 @@ export class PredictiveAnalyticsService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
-        id: true, name: true, xp: true,
-        userSkills: { select: { mastery: true, skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
-        assessmentResults: { select: { score: true, maxScore: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 20 },
+        id: true,
+        name: true,
+        xp: true,
+        userSkills: {
+          select: {
+            mastery: true,
+            skill: {
+              select: {
+                displayName: true,
+                domain: { select: { displayName: true } },
+              },
+            },
+          },
+        },
+        assessmentResults: {
+          select: { score: true, maxScore: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+        },
       },
     });
     if (!user) throw new Error('User not found');
@@ -232,13 +306,18 @@ export class PredictiveAnalyticsService {
        WHERE "userId" = $1 AND "eventType" = 'MASTERY_GAIN'
        GROUP BY week ORDER BY week DESC LIMIT 8`,
       userId,
-    ) as Any[];
+    );
 
-    const xpVelocity = xpHistory.length > 0
-      ? xpHistory.reduce((sum: number, h: Any) => sum + Number(h.xp_gained), 0) / Math.min(xpHistory.length, 8)
-      : 100; // default estimate
+    const xpVelocity =
+      xpHistory.length > 0
+        ? xpHistory.reduce(
+            (sum: number, h: Any) => sum + Number(h.xp_gained),
+            0,
+          ) / Math.min(xpHistory.length, 8)
+        : 100; // default estimate
 
-    const weeksToLevel = (xp: number, velocity: number) => velocity > 0 ? xp / velocity : 999;
+    const weeksToLevel = (xp: number, velocity: number) =>
+      velocity > 0 ? xp / velocity : 999;
 
     // Domain mastery trajectory
     const domainMap: Record<string, number[]> = {};
@@ -248,17 +327,19 @@ export class PredictiveAnalyticsService {
       domainMap[domain].push(us.mastery);
     }
 
-    const masteryTrajectory = Object.entries(domainMap).map(([domain, masteries]) => {
-      const current = masteries.reduce((a, b) => a + b, 0) / masteries.length;
-      // Simple linear projection based on velocity
-      const weeklyGain = xpVelocity > 0 ? Math.min(5, xpVelocity / 200) : 0;
-      return {
-        domain,
-        current: Math.round(current),
-        projected30d: Math.min(100, Math.round(current + weeklyGain * 4)),
-        projected90d: Math.min(100, Math.round(current + weeklyGain * 12)),
-      };
-    });
+    const masteryTrajectory = Object.entries(domainMap).map(
+      ([domain, masteries]) => {
+        const current = masteries.reduce((a, b) => a + b, 0) / masteries.length;
+        // Simple linear projection based on velocity
+        const weeklyGain = xpVelocity > 0 ? Math.min(5, xpVelocity / 200) : 0;
+        return {
+          domain,
+          current: Math.round(current),
+          projected30d: Math.min(100, Math.round(current + weeklyGain * 4)),
+          projected90d: Math.min(100, Math.round(current + weeklyGain * 12)),
+        };
+      },
+    );
 
     // Assessment readiness
     const categoryScores: Record<string, number[]> = {};
@@ -270,18 +351,26 @@ export class PredictiveAnalyticsService {
       categoryScores[key].push(pct);
     }
 
-    const assessmentReadiness = Object.entries(categoryScores).map(([cat, scores]) => {
-      const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-      const readiness = Math.min(100, Math.round(avg + (xpVelocity / 50)));
-      return {
-        category: cat,
-        readiness,
-        estimate: readiness >= 80 ? 'Ready' : readiness >= 60 ? 'Almost ready' : 'Needs preparation',
-      };
-    });
+    const assessmentReadiness = Object.entries(categoryScores).map(
+      ([cat, scores]) => {
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+        const readiness = Math.min(100, Math.round(avg + xpVelocity / 50));
+        return {
+          category: cat,
+          readiness,
+          estimate:
+            readiness >= 80
+              ? 'Ready'
+              : readiness >= 60
+                ? 'Almost ready'
+                : 'Needs preparation',
+        };
+      },
+    );
 
     // Confidence based on data richness
-    const dataPoints = user.userSkills.length + user.assessmentResults.length + xpHistory.length;
+    const dataPoints =
+      user.userSkills.length + user.assessmentResults.length + xpHistory.length;
     const confidenceScore = Math.min(95, Math.max(20, dataPoints * 5));
 
     return {
@@ -300,11 +389,15 @@ export class PredictiveAnalyticsService {
 
   // ─── INTERVENTION RECOMMENDATIONS ──────────────────────
 
-  async generateInterventions(cohortId: string): Promise<InterventionRecommendation[]> {
+  async generateInterventions(
+    cohortId: string,
+  ): Promise<InterventionRecommendation[]> {
     const atRisk = await this.predictAtRiskStudents(cohortId);
     const interventions: InterventionRecommendation[] = [];
 
-    for (const student of atRisk.filter((s) => s.riskLevel === 'critical' || s.riskLevel === 'high')) {
+    for (const student of atRisk.filter(
+      (s) => s.riskLevel === 'critical' || s.riskLevel === 'high',
+    )) {
       const actions: InterventionRecommendation['actions'] = [];
 
       // Activity-based interventions
@@ -321,7 +414,8 @@ export class PredictiveAnalyticsService {
         actions.push({
           type: 'meeting',
           title: 'Schedule 1-on-1 Meeting',
-          description: 'Book a 15-minute office hours slot to discuss barriers and goals.',
+          description:
+            'Book a 15-minute office hours slot to discuss barriers and goals.',
           expectedImpact: 'High — personal touch often reverses disengagement',
         });
       }
@@ -331,7 +425,8 @@ export class PredictiveAnalyticsService {
         actions.push({
           type: 'resource',
           title: 'Assign Foundational Labs',
-          description: 'Recommend beginner-level labs to build confidence and基础 skills.',
+          description:
+            'Recommend beginner-level labs to build confidence and基础 skills.',
           expectedImpact: 'High — structured practice addresses root cause',
         });
       }
@@ -341,7 +436,8 @@ export class PredictiveAnalyticsService {
         actions.push({
           type: 'assignment',
           title: 'Provide Extra Practice',
-          description: 'Create a supplemental assessment targeting weak categories.',
+          description:
+            'Create a supplemental assessment targeting weak categories.',
           expectedImpact: 'Medium — focused practice improves specific gaps',
         });
       }
@@ -351,15 +447,19 @@ export class PredictiveAnalyticsService {
         actions.push({
           type: 'peer',
           title: 'Pair with Study Partner',
-          description: 'Connect with a high-performing peer for collaborative learning.',
+          description:
+            'Connect with a high-performing peer for collaborative learning.',
           expectedImpact: 'Medium — social learning improves retention',
         });
       }
 
       if (actions.length > 0) {
         const urgency: InterventionRecommendation['urgency'] =
-          student.riskLevel === 'critical' ? 'immediate' :
-          student.metrics.daysSinceActive > 14 ? 'this_week' : 'this_month';
+          student.riskLevel === 'critical'
+            ? 'immediate'
+            : student.metrics.daysSinceActive > 14
+              ? 'this_week'
+              : 'this_month';
 
         interventions.push({
           userId: student.userId,
@@ -379,30 +479,50 @@ export class PredictiveAnalyticsService {
 
   // ─── PREDICTIVE DASHBOARD ──────────────────────────────
 
-  async getPredictiveDashboard(cohortId?: string): Promise<PredictiveDashboard> {
+  async getPredictiveDashboard(
+    cohortId?: string,
+  ): Promise<PredictiveDashboard> {
     const atRisk = await this.predictAtRiskStudents(cohortId);
 
-    const criticalRisk = atRisk.filter((s) => s.riskLevel === 'critical').length;
+    const criticalRisk = atRisk.filter(
+      (s) => s.riskLevel === 'critical',
+    ).length;
     const highRisk = atRisk.filter((s) => s.riskLevel === 'high').length;
     const mediumRisk = atRisk.filter((s) => s.riskLevel === 'medium').length;
     const lowRisk = atRisk.filter((s) => s.riskLevel === 'low').length;
 
-    const avgMastery = atRisk.length > 0
-      ? atRisk.reduce((sum, s) => sum + s.metrics.overallMastery, 0) / atRisk.length
-      : 0;
-    const avgAssessmentScore = atRisk.length > 0
-      ? atRisk.reduce((sum, s) => sum + s.metrics.avgAssessmentScore, 0) / atRisk.length
-      : 0;
+    const avgMastery =
+      atRisk.length > 0
+        ? atRisk.reduce((sum, s) => sum + s.metrics.overallMastery, 0) /
+          atRisk.length
+        : 0;
+    const avgAssessmentScore =
+      atRisk.length > 0
+        ? atRisk.reduce((sum, s) => sum + s.metrics.avgAssessmentScore, 0) /
+          atRisk.length
+        : 0;
 
-    const improving = atRisk.filter((s) => s.trends.masteryTrend === 'improving' || s.trends.activityTrend === 'improving').length;
-    const declining = atRisk.filter((s) => s.trends.masteryTrend === 'declining' && s.trends.activityTrend === 'declining').length;
+    const improving = atRisk.filter(
+      (s) =>
+        s.trends.masteryTrend === 'improving' ||
+        s.trends.activityTrend === 'improving',
+    ).length;
+    const declining = atRisk.filter(
+      (s) =>
+        s.trends.masteryTrend === 'declining' &&
+        s.trends.activityTrend === 'declining',
+    ).length;
     const stable = atRisk.length - improving - declining;
 
     // Top interventions
-    const interventionCounts: Record<string, { frequency: number; successes: number }> = {};
+    const interventionCounts: Record<
+      string,
+      { frequency: number; successes: number }
+    > = {};
     for (const student of atRisk) {
       for (const factor of student.riskFactors) {
-        if (!interventionCounts[factor]) interventionCounts[factor] = { frequency: 0, successes: 0 };
+        if (!interventionCounts[factor])
+          interventionCounts[factor] = { frequency: 0, successes: 0 };
         interventionCounts[factor].frequency++;
       }
     }
@@ -419,10 +539,25 @@ export class PredictiveAnalyticsService {
     // Risk distribution buckets
     const riskDistribution = [
       { range: '0-20', count: atRisk.filter((s) => s.riskScore < 20).length },
-      { range: '20-40', count: atRisk.filter((s) => s.riskScore >= 20 && s.riskScore < 40).length },
-      { range: '40-60', count: atRisk.filter((s) => s.riskScore >= 40 && s.riskScore < 60).length },
-      { range: '60-80', count: atRisk.filter((s) => s.riskScore >= 60 && s.riskScore < 80).length },
-      { range: '80-100', count: atRisk.filter((s) => s.riskScore >= 80).length },
+      {
+        range: '20-40',
+        count: atRisk.filter((s) => s.riskScore >= 20 && s.riskScore < 40)
+          .length,
+      },
+      {
+        range: '40-60',
+        count: atRisk.filter((s) => s.riskScore >= 40 && s.riskScore < 60)
+          .length,
+      },
+      {
+        range: '60-80',
+        count: atRisk.filter((s) => s.riskScore >= 60 && s.riskScore < 80)
+          .length,
+      },
+      {
+        range: '80-100',
+        count: atRisk.filter((s) => s.riskScore >= 80).length,
+      },
     ];
 
     return {

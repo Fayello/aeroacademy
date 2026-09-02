@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Request, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  Request,
+  Param,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LeaderboardService } from './leaderboard.service';
 import type { TimeFilter, DomainFilter } from './leaderboard.service';
@@ -31,7 +40,19 @@ export class DashboardController {
   @UseGuards(AuthGuard('jwt'))
   @Get('leaderboard')
   @ApiQuery({ name: 'time', required: false, enum: ['all', 'month', 'week'] })
-  @ApiQuery({ name: 'domain', required: false, enum: ['all', 'SECURITY', 'NETWORKING', 'DEVOPS', 'DATABASES', 'SYSTEMS', 'QA'] })
+  @ApiQuery({
+    name: 'domain',
+    required: false,
+    enum: [
+      'all',
+      'SECURITY',
+      'NETWORKING',
+      'DEVOPS',
+      'DATABASES',
+      'SYSTEMS',
+      'QA',
+    ],
+  })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   async getLeaderboard(
     @Query('time') time?: TimeFilter,
@@ -121,7 +142,9 @@ export class DashboardController {
   @UseGuards(AuthGuard('jwt'))
   @Get('team-leaderboard')
   async getTeamLeaderboard(@Query('limit') limit?: string) {
-    return this.leaderboardService.getTeamLeaderboard(limit ? parseInt(limit, 10) : 50);
+    return this.leaderboardService.getTeamLeaderboard(
+      limit ? parseInt(limit, 10) : 50,
+    );
   }
 
   // V2: Head-to-head comparison
@@ -143,7 +166,10 @@ export class DashboardController {
     @Query('period') period?: string,
     @Query('limit') limit?: string,
   ) {
-    return this.leaderboardService.getSnapshotHistory(period || 'WEEKLY', limit ? parseInt(limit, 10) : 10);
+    return this.leaderboardService.getSnapshotHistory(
+      period || 'WEEKLY',
+      limit ? parseInt(limit, 10) : 10,
+    );
   }
 
   // V2: Streak data
@@ -182,8 +208,14 @@ export class DashboardController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
   @Get('recommendations')
-  async getRecommendations(@Request() req: RequestWithUser, @Query('limit') limit?: string) {
-    return this.personalizationService.getRecommendations(req.user.id, limit ? parseInt(limit, 10) : 5);
+  async getRecommendations(
+    @Request() req: RequestWithUser,
+    @Query('limit') limit?: string,
+  ) {
+    return this.personalizationService.getRecommendations(
+      req.user.id,
+      limit ? parseInt(limit, 10) : 5,
+    );
   }
 
   // V2: User preferences
@@ -199,7 +231,14 @@ export class DashboardController {
   @Post('preferences')
   async updatePreferences(
     @Request() req: RequestWithUser,
-    @Body() body: { interests?: string[]; weakSkills?: string[]; preferredDifficulty?: string; notificationsEnabled?: boolean; weeklyDigestEnabled?: boolean },
+    @Body()
+    body: {
+      interests?: string[];
+      weakSkills?: string[];
+      preferredDifficulty?: string;
+      notificationsEnabled?: boolean;
+      weeklyDigestEnabled?: boolean;
+    },
   ) {
     return this.personalizationService.updatePreferences(req.user.id, body);
   }

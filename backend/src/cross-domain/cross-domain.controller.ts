@@ -23,22 +23,47 @@ export class CrossDomainController {
   }
 
   @Post()
-  createMission(@Body() body: { title: string; description: string; requiredDomains: Array<{ domainId: string; minSkillXp: number }>; xpReward: number; badgeRewardId?: string; startsAt: string; expiresAt: string }) {
+  createMission(
+    @Body()
+    body: {
+      title: string;
+      description: string;
+      requiredDomains: Array<{ domainId: string; minSkillXp: number }>;
+      xpReward: number;
+      badgeRewardId?: string;
+      startsAt: string;
+      expiresAt: string;
+    },
+  ) {
     return this.crossDomainService.createMission(body);
   }
 
   @Post(':missionId/join')
-  joinMission(@Param('missionId') missionId: string, @Body() body: { userId: string }) {
+  joinMission(
+    @Param('missionId') missionId: string,
+    @Body() body: { userId: string },
+  ) {
     return this.crossDomainService.joinMission(body.userId, missionId);
   }
 
   @Post(':missionId/progress')
-  updateProgress(@Param('missionId') missionId: string, @Body() body: { userId: string; domainId: string; xp: number }) {
-    return this.crossDomainService.updateDomainProgress(body.userId, missionId, body.domainId, body.xp);
+  updateProgress(
+    @Param('missionId') missionId: string,
+    @Body() body: { userId: string; domainId: string; xp: number },
+  ) {
+    return this.crossDomainService.updateDomainProgress(
+      body.userId,
+      missionId,
+      body.domainId,
+      body.xp,
+    );
   }
 
   @Post(':missionId/claim')
-  claimReward(@Param('missionId') missionId: string, @Body() body: { userId: string }) {
+  claimReward(
+    @Param('missionId') missionId: string,
+    @Body() body: { userId: string },
+  ) {
     return this.crossDomainService.claimReward(body.userId, missionId);
   }
 }

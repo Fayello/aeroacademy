@@ -45,7 +45,9 @@ export class NotificationsService implements OnModuleInit {
             message: `You unlocked "${p.title ?? 'a new achievement'}" and earned +${p.xpReward ?? 0} XP`,
             type: 'ACHIEVEMENT',
             link: '/dashboard/profile',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
         case 'FLAG_CAPTURED':
           this.create({
@@ -54,7 +56,9 @@ export class NotificationsService implements OnModuleInit {
             message: `You solved "${p.flagTitle ?? 'a flag'}" and earned +${p.points ?? 0} XP`,
             type: 'SUCCESS',
             link: '/dashboard/labs',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
         case 'BOOKING_CONFIRMED':
           this.create({
@@ -63,7 +67,9 @@ export class NotificationsService implements OnModuleInit {
             message: p.message ?? 'Your training session has been confirmed.',
             type: 'BOOKING',
             link: '/dashboard/training/bookings',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
         case 'BOOKING_CANCELLED':
           this.create({
@@ -72,7 +78,9 @@ export class NotificationsService implements OnModuleInit {
             message: p.message ?? 'A training booking has been cancelled.',
             type: 'WARNING',
             link: '/dashboard/training/bookings',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
         case 'MASTERCLASS_REGISTERED':
           this.create({
@@ -83,7 +91,9 @@ export class NotificationsService implements OnModuleInit {
               `You registered for "${p.title ?? 'a master class'}".`,
             type: 'MASTERCLASS',
             link: p.link ?? '/dashboard/master-classes',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
         case 'MASTERCLASS_UNREGISTERED':
           this.create({
@@ -94,7 +104,9 @@ export class NotificationsService implements OnModuleInit {
               `You unregistered from "${p.title ?? 'a master class'}".`,
             type: 'INFO',
             link: p.link ?? '/dashboard/master-classes',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
         case 'MISSION_COMPLETED':
           this.create({
@@ -103,7 +115,9 @@ export class NotificationsService implements OnModuleInit {
             message: `You completed "${p.title ?? 'a mission'}" and earned +${p.xpReward ?? 0} XP. Claim your reward!`,
             type: 'SUCCESS',
             link: '/dashboard',
-          }).catch((err) => logger.error(`Failed to create notification: ${err.message}`));
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
           break;
       }
     });
@@ -125,7 +139,12 @@ export class NotificationsService implements OnModuleInit {
 
   async findAll(
     userId: string,
-    opts: { limit?: number; offset?: number; cursor?: string; unreadOnly?: boolean },
+    opts: {
+      limit?: number;
+      offset?: number;
+      cursor?: string;
+      unreadOnly?: boolean;
+    },
   ) {
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
     const offset = Math.max(opts.offset ?? 0, 0);
@@ -142,11 +161,16 @@ export class NotificationsService implements OnModuleInit {
         take: limit,
         ...(opts.cursor ? {} : { skip: offset }),
       }),
-      this.prisma.notification.count({ where: { userId, ...(opts.unreadOnly ? { read: false } : {}) } }),
+      this.prisma.notification.count({
+        where: { userId, ...(opts.unreadOnly ? { read: false } : {}) },
+      }),
       this.prisma.notification.count({ where: { userId, read: false } }),
     ]);
 
-    const nextCursor = items.length === limit ? items[items.length - 1].createdAt.toISOString() : null;
+    const nextCursor =
+      items.length === limit
+        ? items[items.length - 1].createdAt.toISOString()
+        : null;
     return { items, total, unread, limit, offset, nextCursor };
   }
 

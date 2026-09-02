@@ -49,7 +49,9 @@ export class ProgressionService {
   async awardXP(userId: string, params: AwardXPParams): Promise<AwardXPResult> {
     const { amount, source, sourceId, domain, skillName } = params;
 
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
     const oldXp = user.xp;
     const oldLevel = Math.floor(oldXp / 1000) + 1;
 
@@ -89,18 +91,24 @@ export class ProgressionService {
             skillXp = amount;
             skillLevel = Math.floor(amount / 500) + 1;
             await this.prisma.userSkill.create({
-              data: { userId, skillId: skill.id, xp: skillXp, level: skillLevel },
+              data: {
+                userId,
+                skillId: skill.id,
+                xp: skillXp,
+                level: skillLevel,
+              },
             });
           }
 
           // Compute mastery
-          const masteryResult = await this.masteryService.computeMasteryOnXpGain(
-            userId,
-            skill.id,
-            amount,
-            source,
-            sourceId,
-          );
+          const masteryResult =
+            await this.masteryService.computeMasteryOnXpGain(
+              userId,
+              skill.id,
+              amount,
+              source,
+              sourceId,
+            );
           masteryBefore = masteryResult.masteryBefore;
           masteryAfter = masteryResult.masteryAfter;
 
@@ -207,13 +215,21 @@ export class ProgressionService {
   }
 
   async getOverallLevel(userId: string): Promise<number> {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
     return Math.floor(user.xp / 1000) + 1;
   }
 
-  async awardPassXp(userId: string, amount: number, source: string): Promise<void> {
+  async awardPassXp(
+    userId: string,
+    amount: number,
+    source: string,
+  ): Promise<void> {
     try {
-      const activeSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+      const activeSeason = await this.prisma.season.findFirst({
+        where: { isActive: true },
+      });
       if (!activeSeason) return;
 
       const battlePass = await this.prisma.battlePass.findFirst({
@@ -222,7 +238,7 @@ export class ProgressionService {
       });
       if (!battlePass) return;
 
-      let totalXpNeeded = 0;
+      const totalXpNeeded = 0;
       let unlockedTierCount = 0;
 
       for (const tier of battlePass.tiers) {
@@ -244,11 +260,21 @@ export class ProgressionService {
           if (existing) {
             await this.prisma.battlePassProgress.update({
               where: { id: existing.id },
-              data: { currentXp: tier.xpRequired, unlocked: true, unlockedAt: new Date() },
+              data: {
+                currentXp: tier.xpRequired,
+                unlocked: true,
+                unlockedAt: new Date(),
+              },
             });
           } else {
             await this.prisma.battlePassProgress.create({
-              data: { userId, tierId: tier.id, currentXp: tier.xpRequired, unlocked: true, unlockedAt: new Date() },
+              data: {
+                userId,
+                tierId: tier.id,
+                currentXp: tier.xpRequired,
+                unlocked: true,
+                unlockedAt: new Date(),
+              },
             });
           }
           unlockedTierCount++;

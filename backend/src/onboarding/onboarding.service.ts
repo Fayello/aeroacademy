@@ -14,7 +14,10 @@ export class OnboardingService implements OnModuleInit {
   onModuleInit() {
     this.eventsService.events$.subscribe((event) => {
       if (event.type === 'USER_REGISTERED') {
-        const { email, name } = event.payload as { email: string; name: string | null };
+        const { email, name } = event.payload as {
+          email: string;
+          name: string | null;
+        };
         this.logger.log(`USER_REGISTERED event received for ${email}`);
         this.emailService.sendWelcome(email, name).catch(() => {});
       }

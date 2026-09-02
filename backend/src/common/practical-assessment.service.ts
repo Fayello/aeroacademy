@@ -1,13 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LearningOutcomeService } from './learning-outcome.service';
 
 export interface ScoreBreakdown {
-  correctness: number;    // 0-100: did they solve it?
-  methodology: number;    // 0-100: did they follow proper approach?
+  correctness: number; // 0-100: did they solve it?
+  methodology: number; // 0-100: did they follow proper approach?
   timeEfficiency: number; // 0-100: how fast relative to time limit?
-  independence: number;   // 0-100: did they need hints?
-  finalState: number;     // 0-100: is the system in a good state?
+  independence: number; // 0-100: did they need hints?
+  finalState: number; // 0-100: is the system in a good state?
 }
 
 @Injectable()
@@ -118,7 +122,8 @@ export class PracticalAssessmentService {
       include: { scenarios: true },
     });
     if (!assessment) throw new NotFoundException('Assessment not found');
-    if (!assessment.isActive) throw new BadRequestException('Assessment is not active');
+    if (!assessment.isActive)
+      throw new BadRequestException('Assessment is not active');
 
     const existing = await this.prisma.studentAssessment.findUnique({
       where: { userId_assessmentId: { userId, assessmentId } },
@@ -133,7 +138,9 @@ export class PracticalAssessmentService {
         where: { userId, assessmentId, status: 'COMPLETED' },
       });
       if (completedCount >= assessment.maxAttempts) {
-        throw new BadRequestException(`Maximum attempts (${assessment.maxAttempts}) reached`);
+        throw new BadRequestException(
+          `Maximum attempts (${assessment.maxAttempts}) reached`,
+        );
       }
     }
 
@@ -175,12 +182,16 @@ export class PracticalAssessmentService {
     });
 
     if (!attempt) throw new NotFoundException('Attempt not found');
-    if (attempt.status !== 'IN_PROGRESS') throw new BadRequestException('Attempt not in progress');
+    if (attempt.status !== 'IN_PROGRESS')
+      throw new BadRequestException('Attempt not in progress');
 
     const assessment = attempt.assessment;
     const timeLimitMs = assessment.timeLimit * 60 * 1000;
     const elapsed = Date.now() - attempt.startedAt.getTime();
-    const timeEfficiency = Math.max(0, Math.min(100, 100 - (elapsed / timeLimitMs) * 100));
+    const timeEfficiency = Math.max(
+      0,
+      Math.min(100, 100 - (elapsed / timeLimitMs) * 100),
+    );
 
     // Compute multi-dimensional scores
     let totalCorrectness = 0;
@@ -189,10 +200,15 @@ export class PracticalAssessmentService {
     let totalMaxScore = 0;
 
     for (const result of submission.scenarioResults) {
-      const scenario = assessment.scenarios.find((s) => s.id === result.scenarioId);
+      const scenario = assessment.scenarios.find(
+        (s) => s.id === result.scenarioId,
+      );
       if (!scenario) continue;
 
-      const correctness = Math.min(100, (result.score / scenario.maxScore) * 100);
+      const correctness = Math.min(
+        100,
+        (result.score / scenario.maxScore) * 100,
+      );
       const methodology = result.methodology ?? correctness;
       const hintsUsed = result.hintsUsed ?? 0;
       const independence = Math.max(0, 100 - hintsUsed * 20);
@@ -203,9 +219,12 @@ export class PracticalAssessmentService {
       totalMaxScore += scenario.maxScore;
     }
 
-    const avgCorrectness = totalMaxScore > 0 ? totalCorrectness / totalMaxScore : 0;
-    const avgMethodology = totalMaxScore > 0 ? totalMethodology / totalMaxScore : 0;
-    const avgIndependence = totalMaxScore > 0 ? totalIndependence / totalMaxScore : 0;
+    const avgCorrectness =
+      totalMaxScore > 0 ? totalCorrectness / totalMaxScore : 0;
+    const avgMethodology =
+      totalMaxScore > 0 ? totalMethodology / totalMaxScore : 0;
+    const avgIndependence =
+      totalMaxScore > 0 ? totalIndependence / totalMaxScore : 0;
 
     // Final state: average of all scenario scores (proxy for system state)
     const avgFinalState = avgCorrectness;
@@ -213,10 +232,10 @@ export class PracticalAssessmentService {
     // Overall score using weighted formula
     const overallScore = Math.round(
       avgCorrectness * 0.35 +
-      avgMethodology * 0.25 +
-      timeEfficiency * 0.20 +
-      avgIndependence * 0.10 +
-      avgFinalState * 0.10
+        avgMethodology * 0.25 +
+        timeEfficiency * 0.2 +
+        avgIndependence * 0.1 +
+        avgFinalState * 0.1,
     );
 
     const breakdown: ScoreBreakdown = {
@@ -283,7 +302,9 @@ export class PracticalAssessmentService {
 
     const scores = attempts.map((a) => a.score ?? 0);
     const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const passRate = attempts.filter((a) => (a.score ?? 0) >= 70).length / attempts.length * 100;
+    const passRate =
+      (attempts.filter((a) => (a.score ?? 0) >= 70).length / attempts.length) *
+      100;
 
     return {
       totalAttempts: attempts.length,

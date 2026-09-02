@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LabsService } from '../labs/labs.service';
 import { TeamEnrollmentsService } from '../team-enrollments/team-enrollments.service';
@@ -12,7 +16,12 @@ export class AdminService {
   ) {}
 
   async createTeam(ownerId: string, name: string, description?: string) {
-    return this.teamEnrollmentsService.createTeam(ownerId, name, description, 'PUBLIC');
+    return this.teamEnrollmentsService.createTeam(
+      ownerId,
+      name,
+      description,
+      'PUBLIC',
+    );
   }
 
   async getMyTeams(ownerId: string) {
@@ -25,9 +34,13 @@ export class AdminService {
   }
 
   async addMemberToTeam(teamId: string, userId: string, requesterId: string) {
-    const team = await this.prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      select: { ownerId: true },
+    });
     if (!team) throw new NotFoundException('Team not found');
-    if (team.ownerId !== requesterId) throw new ForbiddenException('You do not own this team');
+    if (team.ownerId !== requesterId)
+      throw new ForbiddenException('You do not own this team');
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
@@ -41,13 +54,20 @@ export class AdminService {
       data: { teamId },
     });
 
-    return this.prisma.team.findUnique({ where: { id: teamId }, include: { teamMembers: true } });
+    return this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: { teamMembers: true },
+    });
   }
 
   async getTeamProgress(teamId: string, requesterId: string) {
-    const team = await this.prisma.team.findUnique({ where: { id: teamId }, select: { ownerId: true } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      select: { ownerId: true },
+    });
     if (!team) throw new NotFoundException('Team not found');
-    if (team.ownerId !== requesterId) throw new ForbiddenException('You do not own this team');
+    if (team.ownerId !== requesterId)
+      throw new ForbiddenException('You do not own this team');
     return this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -81,14 +101,22 @@ export class AdminService {
     const results = await Promise.allSettled(
       team.members.map(async (member) => {
         const instance = await this.labsService.startLab(member.id, labId);
-        return { userId: member.id, status: 'SUCCESS' as const, instanceId: instance.id };
+        return {
+          userId: member.id,
+          status: 'SUCCESS' as const,
+          instanceId: instance.id,
+        };
       }),
     );
 
     return results.map((r, i) =>
       r.status === 'fulfilled'
         ? r.value
-        : { userId: team.members[i].id, status: 'FAILED' as const, error: r.reason?.message || String(r.reason) },
+        : {
+            userId: team.members[i].id,
+            status: 'FAILED' as const,
+            error: r.reason?.message || String(r.reason),
+          },
     );
   }
 
@@ -167,10 +195,16 @@ export class AdminService {
       data: {
         ...(data.type !== undefined && { type: data.type }),
         ...(data.title !== undefined && { title: data.title }),
-        ...(data.description !== undefined && { description: data.description }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
         ...(data.difficulty !== undefined && { difficulty: data.difficulty }),
-        ...(data.objectiveType !== undefined && { objectiveType: data.objectiveType }),
-        ...(data.objectiveTarget !== undefined && { objectiveTarget: data.objectiveTarget }),
+        ...(data.objectiveType !== undefined && {
+          objectiveType: data.objectiveType,
+        }),
+        ...(data.objectiveTarget !== undefined && {
+          objectiveTarget: data.objectiveTarget,
+        }),
         ...(data.xpReward !== undefined && { xpReward: data.xpReward }),
         ...(data.startAt !== undefined && { startAt: new Date(data.startAt) }),
         ...(data.endAt !== undefined && { endAt: new Date(data.endAt) }),
@@ -236,7 +270,9 @@ export class AdminService {
       this.prisma.progress.count({ where: { completed: true } }),
       this.prisma.quizSubmission.count(),
       this.prisma.labSubmission.count({ where: { isCorrect: true } }),
-      this.prisma.user.count({ where: { lastActivityDate: { gte: thirtyDaysAgo } } }),
+      this.prisma.user.count({
+        where: { lastActivityDate: { gte: thirtyDaysAgo } },
+      }),
     ]);
 
     const userGrowthRaw = await this.prisma.user.groupBy({
@@ -250,17 +286,24 @@ export class AdminService {
       const date = row.createdAt.toISOString().split('T')[0];
       userGrowthMap[date] = (userGrowthMap[date] || 0) + row._count;
     }
-    const userGrowth = Object.entries(userGrowthMap).map(([date, count]) => ({ date, count }));
+    const userGrowth = Object.entries(userGrowthMap).map(([date, count]) => ({
+      date,
+      count,
+    }));
 
-    const roleDistribution = (await this.prisma.user.groupBy({
-      by: ['role'],
-      _count: true,
-    })).map((r) => ({ role: r.role, count: r._count }));
+    const roleDistribution = (
+      await this.prisma.user.groupBy({
+        by: ['role'],
+        _count: true,
+      })
+    ).map((r) => ({ role: r.role, count: r._count }));
 
-    const divisionDistribution = (await this.prisma.user.groupBy({
-      by: ['division'],
-      _count: true,
-    })).map((d) => ({ division: d.division || 'UNRANKED', count: d._count }));
+    const divisionDistribution = (
+      await this.prisma.user.groupBy({
+        by: ['division'],
+        _count: true,
+      })
+    ).map((d) => ({ division: d.division || 'UNRANKED', count: d._count }));
 
     const levelDistributionRaw = await this.prisma.user.findMany({
       select: { xp: true },
@@ -284,11 +327,12 @@ export class AdminService {
       courses.slice(0, 20).map(async (c) => {
         const lessonIds = c.sections.flatMap((s) => s.lessons.map((l) => l.id));
         const total = lessonIds.length;
-        const completed = total > 0
-          ? await this.prisma.progress.count({
-              where: { completed: true, lessonId: { in: lessonIds } },
-            })
-          : 0;
+        const completed =
+          total > 0
+            ? await this.prisma.progress.count({
+                where: { completed: true, lessonId: { in: lessonIds } },
+              })
+            : 0;
         return {
           courseId: c.id,
           courseTitle: c.title,
@@ -303,12 +347,18 @@ export class AdminService {
     const labs = await this.prisma.lab.findMany({
       include: {
         instances: { select: { id: true, userId: true } },
-        flags: { include: { submissions: { select: { isCorrect: true, userId: true } } } },
+        flags: {
+          include: {
+            submissions: { select: { isCorrect: true, userId: true } },
+          },
+        },
       },
     });
     const labStats = labs.slice(0, 20).map((l) => {
       const allSubmissions = l.flags.flatMap((f) => f.submissions);
-      const solvers = new Set(allSubmissions.filter((s) => s.isCorrect).map((s) => s.userId));
+      const solvers = new Set(
+        allSubmissions.filter((s) => s.isCorrect).map((s) => s.userId),
+      );
       return {
         labId: l.id,
         labTitle: l.title,
@@ -344,7 +394,13 @@ export class AdminService {
         division: true,
         city: true,
         organization: { select: { name: true } },
-        _count: { select: { achievements: true, labSubmissions: { where: { isCorrect: true } }, progress: { where: { completed: true } } } },
+        _count: {
+          select: {
+            achievements: true,
+            labSubmissions: { where: { isCorrect: true } },
+            progress: { where: { completed: true } },
+          },
+        },
       },
     });
 
@@ -370,7 +426,12 @@ export class AdminService {
       levelDistribution,
       courseStats,
       labStats,
-      quizStats: { submissions: quizSubs, passed: quizPassed, failed: quizSubs - quizPassed, passRate: quizSubs > 0 ? Math.round((quizPassed / quizSubs) * 100) : 0 },
+      quizStats: {
+        submissions: quizSubs,
+        passed: quizPassed,
+        failed: quizSubs - quizPassed,
+        passRate: quizSubs > 0 ? Math.round((quizPassed / quizSubs) * 100) : 0,
+      },
       flagStats: { correct: flagCorrect, incorrect: flagIncorrect },
       activity: [],
       topPerformers: topPerformers.map((u) => ({
@@ -391,8 +452,19 @@ export class AdminService {
 
   async getInstitutionalInquiries(filters: { status?: string; type?: string }) {
     const where = {
-      ...(filters.status ? { status: filters.status as 'NEW' | 'REVIEWING' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED' } : {}),
-      ...(filters.type ? { inquiryType: filters.type as 'UNIVERSITY' | 'ENTERPRISE' } : {}),
+      ...(filters.status
+        ? {
+            status: filters.status as
+              | 'NEW'
+              | 'REVIEWING'
+              | 'CONTACTED'
+              | 'QUALIFIED'
+              | 'CLOSED',
+          }
+        : {}),
+      ...(filters.type
+        ? { inquiryType: filters.type as 'UNIVERSITY' | 'ENTERPRISE' }
+        : {}),
     };
 
     const [items, totals] = await Promise.all([
@@ -423,9 +495,14 @@ export class AdminService {
   async updateInstitutionalInquiry(
     id: string,
     actorId: string,
-    data: { status?: 'NEW' | 'REVIEWING' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED'; notes?: string },
+    data: {
+      status?: 'NEW' | 'REVIEWING' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED';
+      notes?: string;
+    },
   ) {
-    const existing = await this.prisma.institutionalInquiry.findUnique({ where: { id } });
+    const existing = await this.prisma.institutionalInquiry.findUnique({
+      where: { id },
+    });
     if (!existing) throw new NotFoundException('Inquiry not found');
 
     return this.prisma.institutionalInquiry.update({
@@ -443,10 +520,20 @@ export class AdminService {
     });
   }
 
-  async getCommunityProgramApplications(filters: { status?: string; type?: string }) {
+  async getCommunityProgramApplications(filters: {
+    status?: string;
+    type?: string;
+  }) {
     const where = {
       ...(filters.status
-        ? { status: filters.status as 'NEW' | 'REVIEWING' | 'INTERVIEW' | 'ACCEPTED' | 'CLOSED' }
+        ? {
+            status: filters.status as
+              | 'NEW'
+              | 'REVIEWING'
+              | 'INTERVIEW'
+              | 'ACCEPTED'
+              | 'CLOSED',
+          }
         : {}),
       ...(filters.type
         ? { programType: filters.type as 'AMBASSADOR' | 'VOLUNTEER' }
@@ -481,10 +568,16 @@ export class AdminService {
   async updateCommunityProgramApplication(
     id: string,
     actorId: string,
-    data: { status?: 'NEW' | 'REVIEWING' | 'INTERVIEW' | 'ACCEPTED' | 'CLOSED'; notes?: string },
+    data: {
+      status?: 'NEW' | 'REVIEWING' | 'INTERVIEW' | 'ACCEPTED' | 'CLOSED';
+      notes?: string;
+    },
   ) {
-    const existing = await this.prisma.communityProgramApplication.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Community application not found');
+    const existing = await this.prisma.communityProgramApplication.findUnique({
+      where: { id },
+    });
+    if (!existing)
+      throw new NotFoundException('Community application not found');
 
     return this.prisma.communityProgramApplication.update({
       where: { id },

@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Param, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PersonalizedMissionService } from '../common/personalized-mission.service';
 
@@ -13,12 +20,18 @@ export class MissionsController {
   }
 
   @Post(':missionId/accept')
-  async acceptMission(@Request() req: any, @Param('missionId') missionId: string) {
+  async acceptMission(
+    @Request() req: any,
+    @Param('missionId') missionId: string,
+  ) {
     return this.missionsService.acceptMission(req.user.id, missionId);
   }
 
   @Post(':missionId/complete')
-  async completeMission(@Request() req: any, @Param('missionId') missionId: string) {
+  async completeMission(
+    @Request() req: any,
+    @Param('missionId') missionId: string,
+  ) {
     return this.missionsService.completeMission(req.user.id, missionId);
   }
 

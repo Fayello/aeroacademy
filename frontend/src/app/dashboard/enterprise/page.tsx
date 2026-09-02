@@ -130,6 +130,8 @@ export default function EnterprisePortal() {
     filteredTalent.length > 0
       ? Math.round(filteredTalent.reduce((sum, entry) => sum + entry._count.labSubmissions, 0) / filteredTalent.length)
       : 0;
+  const universityLinked = filteredTalent.filter((entry) => entry.organization?.type === "UNIVERSITY").length;
+  const highProofCandidates = filteredTalent.filter((entry) => entry._count.labSubmissions >= 10).length;
 
   if (loading) {
     return (
@@ -242,6 +244,14 @@ export default function EnterprisePortal() {
                     : "Rating data becomes more useful as the talent pool grows.",
               },
               {
+                icon: ClipboardCheck,
+                title: "Verified practical proof",
+                text:
+                  highProofCandidates > 0
+                    ? `${highProofCandidates} filtered candidate${highProofCandidates === 1 ? "" : "s"} already show a deeper practical record with 10 or more lab submissions.`
+                    : "As candidates complete more labs, this view becomes stronger for high-confidence screening.",
+              },
+              {
                 icon: Target,
                 title: "What to do next",
                 text: "Filter the pool, open a candidate record, and compare practical proof before starting outreach.",
@@ -253,6 +263,30 @@ export default function EnterprisePortal() {
                 <p className="mt-2 text-sm leading-relaxed text-slate-400">{item.text}</p>
               </div>
             ))}
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Institution mix</p>
+              <p className="mt-2 text-2xl font-bold text-white">{universityLinked}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                candidates in the current view are linked to universities, which helps when you want graduate-pipeline sourcing instead of fully independent profiles.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Practical threshold</p>
+              <p className="mt-2 text-2xl font-bold text-white">{highProofCandidates}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                candidate{highProofCandidates === 1 ? "" : "s"} in this filtered set already cross a stronger practical-proof threshold for serious review.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Best next action</p>
+              <p className="mt-2 text-sm font-semibold text-white">Open registry records before outreach</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                Use the registry detail view to compare evidence, readiness, and organization context before you contact a candidate or start a cohort discussion.
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">

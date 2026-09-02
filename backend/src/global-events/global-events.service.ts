@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
 
@@ -14,7 +19,11 @@ export class GlobalEventsService {
   async getActiveEvents() {
     const now = new Date();
     return this.prisma.globalEvent.findMany({
-      where: { isActive: true, startsAt: { lte: now }, expiresAt: { gte: now } },
+      where: {
+        isActive: true,
+        startsAt: { lte: now },
+        expiresAt: { gte: now },
+      },
       include: { _count: { select: { participants: true } } },
       orderBy: { expiresAt: 'asc' },
     });
@@ -52,12 +61,16 @@ export class GlobalEventsService {
   }
 
   async joinEvent(userId: string, eventId: string) {
-    const event = await this.prisma.globalEvent.findUnique({ where: { id: eventId } });
+    const event = await this.prisma.globalEvent.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new NotFoundException('Event not found');
 
     const now = new Date();
-    if (now > event.expiresAt) throw new BadRequestException('Event has expired');
-    if (now < event.startsAt) throw new BadRequestException('Event has not started yet');
+    if (now > event.expiresAt)
+      throw new BadRequestException('Event has expired');
+    if (now < event.startsAt)
+      throw new BadRequestException('Event has not started yet');
 
     const existing = await this.prisma.globalEventParticipant.findUnique({
       where: { userId_eventId: { userId, eventId } },
@@ -73,9 +86,12 @@ export class GlobalEventsService {
     const participant = await this.prisma.globalEventParticipant.findUnique({
       where: { userId_eventId: { userId, eventId } },
     });
-    if (!participant) throw new NotFoundException('Not participating in this event');
+    if (!participant)
+      throw new NotFoundException('Not participating in this event');
 
-    const event = await this.prisma.globalEvent.findUnique({ where: { id: eventId } });
+    const event = await this.prisma.globalEvent.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new NotFoundException('Event not found');
 
     const completed = event.targetXp
@@ -88,7 +104,9 @@ export class GlobalEventsService {
       where: { id: participant.id },
       data: {
         progress,
-        ...(completed && !participant.completed ? { completed: true, completedAt: new Date() } : {}),
+        ...(completed && !participant.completed
+          ? { completed: true, completedAt: new Date() }
+          : {}),
       },
     });
 
@@ -98,7 +116,9 @@ export class GlobalEventsService {
         source: 'GLOBAL_EVENT',
         sourceId: eventId,
       });
-      this.logger.log(`User ${userId} completed event "${event.title}" for ${event.xpReward} XP`);
+      this.logger.log(
+        `User ${userId} completed event "${event.title}" for ${event.xpReward} XP`,
+      );
     }
 
     return updated;
@@ -109,10 +129,14 @@ export class GlobalEventsService {
       where: { userId_eventId: { userId, eventId } },
     });
     if (!participant) throw new NotFoundException('Not participating');
-    if (!participant.completed) throw new BadRequestException('Event not yet completed');
-    if (participant.rewardClaimed) throw new BadRequestException('Reward already claimed');
+    if (!participant.completed)
+      throw new BadRequestException('Event not yet completed');
+    if (participant.rewardClaimed)
+      throw new BadRequestException('Reward already claimed');
 
-    const event = await this.prisma.globalEvent.findUnique({ where: { id: eventId } });
+    const event = await this.prisma.globalEvent.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new NotFoundException('Event not found');
 
     if (event.xpReward > 0) {
@@ -132,7 +156,11 @@ export class GlobalEventsService {
   async getEventLeaderboard(eventId: string) {
     const participants = await this.prisma.globalEventParticipant.findMany({
       where: { eventId },
-      include: { user: { select: { id: true, name: true, username: true, avatarUrl: true } } },
+      include: {
+        user: {
+          select: { id: true, name: true, username: true, avatarUrl: true },
+        },
+      },
       orderBy: [{ progress: 'desc' }, { createdAt: 'asc' }],
       take: 100,
     });

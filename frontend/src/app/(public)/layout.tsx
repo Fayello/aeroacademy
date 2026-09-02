@@ -13,6 +13,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <div className="flex items-center gap-6 text-sm">
             <Link href="/courses" className="text-white/60 hover:text-white transition-colors">Courses</Link>
             <Link href="/labs" className="text-white/60 hover:text-white transition-colors">Labs</Link>
+            <Link href="/community" className="text-white/60 hover:text-white transition-colors">Programs</Link>
             <Link href="/dashboard" className="text-white/60 hover:text-white transition-colors">Dashboard</Link>
             <Link href="/get-started" className="px-4 py-1.5 bg-[#7AD62A] text-white rounded-lg font-medium hover:bg-[#229C62] transition-colors">Get Started</Link>
           </div>

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -27,62 +38,77 @@ export class CurriculumController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async createCurriculum(@Body() body: {
-    name: string;
-    description: string;
-    institution: string;
-    degree: string;
-    year: number;
-    modules?: Array<{
+  async createCurriculum(
+    @Body()
+    body: {
       name: string;
-      code: string;
-      credits: number;
-      theoryHours?: number;
-      practicalHours?: number;
-      outcomeIds?: string[];
-      labIds?: string[];
-    }>;
-  }) {
+      description: string;
+      institution: string;
+      degree: string;
+      year: number;
+      modules?: Array<{
+        name: string;
+        code: string;
+        credits: number;
+        theoryHours?: number;
+        practicalHours?: number;
+        outcomeIds?: string[];
+        labIds?: string[];
+      }>;
+    },
+  ) {
     return this.service.createCurriculum(body);
   }
 
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async updateCurriculum(@Param('id') id: string, @Body() body: {
-    name?: string;
-    description?: string;
-    institution?: string;
-    degree?: string;
-    year?: number;
-    isActive?: boolean;
-  }) {
+  async updateCurriculum(
+    @Param('id') id: string,
+    @Body()
+    body: {
+      name?: string;
+      description?: string;
+      institution?: string;
+      degree?: string;
+      year?: number;
+      isActive?: boolean;
+    },
+  ) {
     return this.service.updateCurriculum(id, body);
   }
 
   @Post(':curriculumId/modules')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async addModule(@Param('curriculumId') curriculumId: string, @Body() body: {
-    name: string;
-    code: string;
-    credits: number;
-    theoryHours?: number;
-    practicalHours?: number;
-  }) {
+  async addModule(
+    @Param('curriculumId') curriculumId: string,
+    @Body()
+    body: {
+      name: string;
+      code: string;
+      credits: number;
+      theoryHours?: number;
+      practicalHours?: number;
+    },
+  ) {
     return this.service.addModule(curriculumId, body);
   }
 
   @Put('modules/:moduleId')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async updateModule(@Param('moduleId') moduleId: string, @Body() body: {
-    name?: string;
-    code?: string;
-    credits?: number;
-    theoryHours?: number;
-    practicalHours?: number;
-  }) {
+  async updateModule(
+    @Param('moduleId') moduleId: string,
+    @Body()
+    body: {
+      name?: string;
+      code?: string;
+      credits?: number;
+      theoryHours?: number;
+      practicalHours?: number;
+    },
+  ) {
     return this.service.updateModule(moduleId, body);
   }
 
@@ -96,11 +122,19 @@ export class CurriculumController {
   @Post('modules/:moduleId/outcomes')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async mapOutcome(@Param('moduleId') moduleId: string, @Body() body: {
-    learningOutcomeId: string;
-    weight?: number;
-  }) {
-    return this.service.mapOutcome(moduleId, body.learningOutcomeId, body.weight);
+  async mapOutcome(
+    @Param('moduleId') moduleId: string,
+    @Body()
+    body: {
+      learningOutcomeId: string;
+      weight?: number;
+    },
+  ) {
+    return this.service.mapOutcome(
+      moduleId,
+      body.learningOutcomeId,
+      body.weight,
+    );
   }
 
   @Delete('modules/:moduleId/outcomes/:outcomeId')
@@ -116,9 +150,13 @@ export class CurriculumController {
   @Post('modules/:moduleId/labs')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async mapLab(@Param('moduleId') moduleId: string, @Body() body: {
-    labId: string;
-  }) {
+  async mapLab(
+    @Param('moduleId') moduleId: string,
+    @Body()
+    body: {
+      labId: string;
+    },
+  ) {
     return this.service.mapLab(moduleId, body.labId);
   }
 

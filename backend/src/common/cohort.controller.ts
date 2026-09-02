@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CohortService } from './cohort.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -27,30 +37,40 @@ export class CohortController {
   }
 
   @Get(':id/students/:userId')
-  async getStudentProgress(@Param('id') id: string, @Param('userId') userId: string) {
+  async getStudentProgress(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ) {
     return this.service.getStudentProgress(id, userId);
   }
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR')
-  async createCohort(@Body() body: {
-    curriculumId: string;
-    name: string;
-    semester?: string;
-    year: number;
-    maxStudents?: number;
-  }) {
+  async createCohort(
+    @Body()
+    body: {
+      curriculumId: string;
+      name: string;
+      semester?: string;
+      year: number;
+      maxStudents?: number;
+    },
+  ) {
     return this.service.createCohort(body);
   }
 
   @Post(':id/members')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'PROFESSOR', 'TA')
-  async addMember(@Param('id') id: string, @Body() body: {
-    userId: string;
-    role?: string;
-  }) {
+  async addMember(
+    @Param('id') id: string,
+    @Body()
+    body: {
+      userId: string;
+      role?: string;
+    },
+  ) {
     return this.service.addMember(id, body.userId, body.role);
   }
 

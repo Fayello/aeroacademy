@@ -17,7 +17,10 @@ export class OtpService {
     return crypto.randomInt(100000, 999999).toString();
   }
 
-  async create(email: string, purpose: string = 'email_verification'): Promise<string> {
+  async create(
+    email: string,
+    purpose: string = 'email_verification',
+  ): Promise<string> {
     const now = Date.now();
     const lastRequest = this.rateLimitMap.get(`${email}:${purpose}`);
     if (lastRequest && now - lastRequest < RATE_LIMIT_WINDOW_MS) {
@@ -41,7 +44,11 @@ export class OtpService {
     return code;
   }
 
-  async verify(email: string, code: string, purpose: string = 'email_verification'): Promise<boolean> {
+  async verify(
+    email: string,
+    code: string,
+    purpose: string = 'email_verification',
+  ): Promise<boolean> {
     const record = await this.prisma.otpVerification.findFirst({
       where: { email, purpose },
       orderBy: { createdAt: 'desc' },
@@ -55,7 +62,9 @@ export class OtpService {
     }
 
     if (record.attempts >= MAX_ATTEMPTS) {
-      await this.prisma.otpVerification.deleteMany({ where: { email, purpose } });
+      await this.prisma.otpVerification.deleteMany({
+        where: { email, purpose },
+      });
       return false;
     }
 

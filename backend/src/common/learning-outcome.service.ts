@@ -53,7 +53,9 @@ export class LearningOutcomeService {
 
   async linkSkill(outcomeId: string, skillId: string, weight = 1.0) {
     return this.prisma.skillOutcome.upsert({
-      where: { skillId_learningOutcomeId: { skillId, learningOutcomeId: outcomeId } },
+      where: {
+        skillId_learningOutcomeId: { skillId, learningOutcomeId: outcomeId },
+      },
       update: { weight },
       create: { skillId, learningOutcomeId: outcomeId, weight },
     });
@@ -69,7 +71,9 @@ export class LearningOutcomeService {
 
   async linkLab(outcomeId: string, labId: string, weight = 1.0) {
     return this.prisma.labOutcome.upsert({
-      where: { labId_learningOutcomeId: { labId, learningOutcomeId: outcomeId } },
+      where: {
+        labId_learningOutcomeId: { labId, learningOutcomeId: outcomeId },
+      },
       update: { weight },
       create: { labId, learningOutcomeId: outcomeId, weight },
     });
@@ -98,7 +102,7 @@ export class LearningOutcomeService {
         activityType: params.activityType,
         activityId: params.activityId,
         score: params.score,
-        metadata: params.metadata as any ?? {},
+        metadata: (params.metadata as any) ?? {},
       },
     });
   }
@@ -131,13 +135,18 @@ export class LearningOutcomeService {
     const outcomeSummaries = domains.flatMap((d) =>
       d.learningOutcomes.map((lo) => {
         const scores = lo.evidence.map((e) => e.score);
-        const avgScore = scores.length > 0
-          ? scores.reduce((a, b) => a + b, 0) / scores.length
-          : 0;
+        const avgScore =
+          scores.length > 0
+            ? scores.reduce((a, b) => a + b, 0) / scores.length
+            : 0;
         const attemptCount = scores.length;
-        const lastDemonstrated = scores.length > 0
-          ? lo.evidence.sort((a, b) => b.demonstratedAt.getTime() - a.demonstratedAt.getTime())[0].demonstratedAt
-          : null;
+        const lastDemonstrated =
+          scores.length > 0
+            ? lo.evidence.sort(
+                (a, b) =>
+                  b.demonstratedAt.getTime() - a.demonstratedAt.getTime(),
+              )[0].demonstratedAt
+            : null;
         const coveredSkills = lo.skillOutcomes.map((so) => so.skillId);
         return {
           id: lo.id,
@@ -157,7 +166,10 @@ export class LearningOutcomeService {
     const domainSummaries = domains.map((d) => {
       const outcomes = outcomeSummaries.filter((o) => o.domainId === d.id);
       const totalWeight = outcomes.reduce((s, o) => s + o.weight, 0);
-      const weightedScore = outcomes.reduce((s, o) => s + o.avgScore * o.weight, 0);
+      const weightedScore = outcomes.reduce(
+        (s, o) => s + o.avgScore * o.weight,
+        0,
+      );
       const avgMastery = totalWeight > 0 ? weightedScore / totalWeight : 0;
       const completedOutcomes = outcomes.filter((o) => o.avgScore >= 70).length;
       return {
@@ -165,19 +177,27 @@ export class LearningOutcomeService {
         domainName: d.displayName,
         totalOutcomes: outcomes.length,
         completedOutcomes,
-        completionPct: outcomes.length > 0 ? Math.round((completedOutcomes / outcomes.length) * 100) : 0,
+        completionPct:
+          outcomes.length > 0
+            ? Math.round((completedOutcomes / outcomes.length) * 100)
+            : 0,
         avgMastery: Math.round(avgMastery * 10) / 10,
         outcomes,
       };
     });
 
     const totalOutcomes = outcomeSummaries.length;
-    const completedOutcomes = outcomeSummaries.filter((o) => o.avgScore >= 70).length;
+    const completedOutcomes = outcomeSummaries.filter(
+      (o) => o.avgScore >= 70,
+    ).length;
     return {
       userId,
       totalOutcomes,
       completedOutcomes,
-      overallPct: totalOutcomes > 0 ? Math.round((completedOutcomes / totalOutcomes) * 100) : 0,
+      overallPct:
+        totalOutcomes > 0
+          ? Math.round((completedOutcomes / totalOutcomes) * 100)
+          : 0,
       domains: domainSummaries,
     };
   }
@@ -228,16 +248,24 @@ export class LearningOutcomeService {
     const outcomeSummaries = domains.flatMap((d) =>
       d.learningOutcomes.map((lo) => {
         const scores = lo.evidence.map((e) => e.score);
-        const avgScore = scores.length > 0
-          ? scores.reduce((a, b) => a + b, 0) / scores.length
-          : 0;
-        const lastEvidence = lo.evidence.length > 0
-          ? lo.evidence.sort((a, b) => b.demonstratedAt.getTime() - a.demonstratedAt.getTime())[0]
-          : null;
+        const avgScore =
+          scores.length > 0
+            ? scores.reduce((a, b) => a + b, 0) / scores.length
+            : 0;
+        const lastEvidence =
+          lo.evidence.length > 0
+            ? lo.evidence.sort(
+                (a, b) =>
+                  b.demonstratedAt.getTime() - a.demonstratedAt.getTime(),
+              )[0]
+            : null;
         const daysSinceLastPractice = lastEvidence
-          ? Math.floor((Date.now() - lastEvidence.demonstratedAt.getTime()) / 86400000)
+          ? Math.floor(
+              (Date.now() - lastEvidence.demonstratedAt.getTime()) / 86400000,
+            )
           : null;
-        const isFading = daysSinceLastPractice !== null && daysSinceLastPractice > 7;
+        const isFading =
+          daysSinceLastPractice !== null && daysSinceLastPractice > 7;
         const linkedLabs = lo.labOutcomes.map((lo) => ({
           id: lo.lab.id,
           title: lo.lab.title,
@@ -261,9 +289,10 @@ export class LearningOutcomeService {
           coveredSkills: lo.skillOutcomes.map((so) => so.skill.name),
           linkedLabs,
           completedLabIds: completedLabs,
-          labCompletionPct: linkedLabs.length > 0
-            ? Math.round((completedLabs.length / linkedLabs.length) * 100)
-            : 0,
+          labCompletionPct:
+            linkedLabs.length > 0
+              ? Math.round((completedLabs.length / linkedLabs.length) * 100)
+              : 0,
         };
       }),
     );
@@ -272,16 +301,25 @@ export class LearningOutcomeService {
     const domainSummaries = domains.map((d) => {
       const outcomes = outcomeSummaries.filter((o) => o.domainId === d.id);
       const totalWeight = outcomes.reduce((s, o) => s + o.weight, 0);
-      const weightedScore = outcomes.reduce((s, o) => s + o.avgScore * o.weight, 0);
+      const weightedScore = outcomes.reduce(
+        (s, o) => s + o.avgScore * o.weight,
+        0,
+      );
       const avgMastery = totalWeight > 0 ? weightedScore / totalWeight : 0;
       const completedOutcomes = outcomes.filter((o) => o.avgScore >= 70).length;
       const fadingOutcomes = outcomes.filter((o) => o.isFading).length;
-      const domainSkills = userSkills.filter((us) => us.skill.domainId === d.id);
+      const domainSkills = userSkills.filter(
+        (us) => us.skill.domainId === d.id,
+      );
       const totalSkillXp = domainSkills.reduce((s, us) => s + us.xp, 0);
-      const domainAssessments = assessments.filter((a) => a.assessment.domainId === d.id);
-      const avgAssessmentScore = domainAssessments.length > 0
-        ? domainAssessments.reduce((s, a) => s + (a.score ?? 0), 0) / domainAssessments.length
-        : 0;
+      const domainAssessments = assessments.filter(
+        (a) => a.assessment.domainId === d.id,
+      );
+      const avgAssessmentScore =
+        domainAssessments.length > 0
+          ? domainAssessments.reduce((s, a) => s + (a.score ?? 0), 0) /
+            domainAssessments.length
+          : 0;
 
       return {
         domainId: d.id,
@@ -289,7 +327,10 @@ export class LearningOutcomeService {
         icon: d.icon,
         totalOutcomes: outcomes.length,
         completedOutcomes,
-        completionPct: outcomes.length > 0 ? Math.round((completedOutcomes / outcomes.length) * 100) : 0,
+        completionPct:
+          outcomes.length > 0
+            ? Math.round((completedOutcomes / outcomes.length) * 100)
+            : 0,
         avgMastery: Math.round(avgMastery * 10) / 10,
         fadingOutcomes,
         totalSkillXp,
@@ -301,13 +342,19 @@ export class LearningOutcomeService {
 
     // Compute overall stats
     const totalOutcomes = outcomeSummaries.length;
-    const completedOutcomes = outcomeSummaries.filter((o) => o.avgScore >= 70).length;
+    const completedOutcomes = outcomeSummaries.filter(
+      (o) => o.avgScore >= 70,
+    ).length;
     const fadingCount = outcomeSummaries.filter((o) => o.isFading).length;
     const totalLabsCompleted = new Set(userLabs.map((ul) => ul.labId)).size;
     const totalAssessmentsCompleted = assessments.length;
-    const overallAssessmentScore = assessments.length > 0
-      ? Math.round(assessments.reduce((s, a) => s + (a.score ?? 0), 0) / assessments.length)
-      : 0;
+    const overallAssessmentScore =
+      assessments.length > 0
+        ? Math.round(
+            assessments.reduce((s, a) => s + (a.score ?? 0), 0) /
+              assessments.length,
+          )
+        : 0;
 
     // Recommendations: what to do next
     const recommendations: Array<{
@@ -322,7 +369,10 @@ export class LearningOutcomeService {
     // 1. Fading skills need maintenance
     const fadingOutcomes = outcomeSummaries
       .filter((o) => o.isFading && o.avgScore >= 50)
-      .sort((a, b) => (b.daysSinceLastPractice ?? 0) - (a.daysSinceLastPractice ?? 0))
+      .sort(
+        (a, b) =>
+          (b.daysSinceLastPractice ?? 0) - (a.daysSinceLastPractice ?? 0),
+      )
       .slice(0, 3);
     for (const fo of fadingOutcomes) {
       recommendations.push({
@@ -336,11 +386,15 @@ export class LearningOutcomeService {
 
     // 2. Weak outcomes (avgScore < 70) that have linked labs
     const weakOutcomes = outcomeSummaries
-      .filter((o) => o.avgScore < 70 && o.avgScore > 0 && o.linkedLabs.length > 0)
+      .filter(
+        (o) => o.avgScore < 70 && o.avgScore > 0 && o.linkedLabs.length > 0,
+      )
       .sort((a, b) => a.avgScore - b.avgScore)
       .slice(0, 3);
     for (const wo of weakOutcomes) {
-      const incompleteLab = wo.linkedLabs.find((l) => !wo.completedLabIds.includes(l.id));
+      const incompleteLab = wo.linkedLabs.find(
+        (l) => !wo.completedLabIds.includes(l.id),
+      );
       if (incompleteLab) {
         recommendations.push({
           type: 'LAB',
@@ -372,7 +426,10 @@ export class LearningOutcomeService {
       summary: {
         totalOutcomes,
         completedOutcomes,
-        overallPct: totalOutcomes > 0 ? Math.round((completedOutcomes / totalOutcomes) * 100) : 0,
+        overallPct:
+          totalOutcomes > 0
+            ? Math.round((completedOutcomes / totalOutcomes) * 100)
+            : 0,
         fadingCount,
         totalLabsCompleted,
         totalAssessmentsCompleted,
@@ -393,13 +450,15 @@ export class LearningOutcomeService {
   }
   // ─── BULK SEED ────────────────────────────────────────────────
 
-  async seedOutcomes(outcomes: Array<{
-    code: string;
-    title: string;
-    description: string;
-    domainId: string;
-    weight?: number;
-  }>) {
+  async seedOutcomes(
+    outcomes: Array<{
+      code: string;
+      title: string;
+      description: string;
+      domainId: string;
+      weight?: number;
+    }>,
+  ) {
     const results: { code: string; id: string }[] = [];
     for (const o of outcomes) {
       const existing = await this.prisma.learningOutcome.findFirst({

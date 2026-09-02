@@ -11,19 +11,33 @@ export class AssessmentsService {
 
   async getAllAssessments() {
     return this.prisma.skillAssessment.findMany({
-      select: { id: true, title: true, description: true, category: true, createdAt: true },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        category: true,
+        createdAt: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async getAssessment(id: string) {
-    const assessment = await this.prisma.skillAssessment.findUnique({ where: { id } });
+    const assessment = await this.prisma.skillAssessment.findUnique({
+      where: { id },
+    });
     if (!assessment) throw new NotFoundException('Assessment not found');
     return assessment;
   }
 
-  async submitAssessment(userId: string, assessmentId: string, answers: Record<string, string>) {
-    const assessment = await this.prisma.skillAssessment.findUnique({ where: { id: assessmentId } });
+  async submitAssessment(
+    userId: string,
+    assessmentId: string,
+    answers: Record<string, string>,
+  ) {
+    const assessment = await this.prisma.skillAssessment.findUnique({
+      where: { id: assessmentId },
+    });
     if (!assessment) throw new NotFoundException('Assessment not found');
 
     const questions = assessment.questions as Array<{
@@ -35,20 +49,31 @@ export class AssessmentsService {
     }>;
 
     let score = 0;
-    const results: Array<{ questionId: string; correct: boolean; correctAnswer: string }> = [];
+    const results: Array<{
+      questionId: string;
+      correct: boolean;
+      correctAnswer: string;
+    }> = [];
 
     for (const q of questions) {
       const userAnswer = answers[q.id];
       const isCorrect = userAnswer === q.correctAnswer;
       if (isCorrect) score++;
-      results.push({ questionId: q.id, correct: isCorrect, correctAnswer: q.correctAnswer });
+      results.push({
+        questionId: q.id,
+        correct: isCorrect,
+        correctAnswer: q.correctAnswer,
+      });
     }
 
-    const categoryScores: Record<string, { correct: number; total: number }> = {};
+    const categoryScores: Record<string, { correct: number; total: number }> =
+      {};
     for (const q of questions) {
-      if (!categoryScores[q.category]) categoryScores[q.category] = { correct: 0, total: 0 };
+      if (!categoryScores[q.category])
+        categoryScores[q.category] = { correct: 0, total: 0 };
       categoryScores[q.category].total++;
-      if (answers[q.id] === q.correctAnswer) categoryScores[q.category].correct++;
+      if (answers[q.id] === q.correctAnswer)
+        categoryScores[q.category].correct++;
     }
 
     const weakCategories = Object.entries(categoryScores)
@@ -82,7 +107,11 @@ export class AssessmentsService {
     if (weakCategories.length === 0) return [];
 
     const allCourses = await this.coursesService.findAll();
-    const recommendations: Array<{ courseId: string; title: string; reason: string }> = [];
+    const recommendations: Array<{
+      courseId: string;
+      title: string;
+      reason: string;
+    }> = [];
 
     const categoryMap: Record<string, string[]> = {
       LINUX: ['Linux Fundamentals', 'Linux'],

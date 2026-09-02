@@ -33,30 +33,37 @@ export class CompetencyAnalyticsService {
           ? scores.reduce((a, b) => a + b, 0) / scores.length
           : 0;
       });
-      const avgOutcomeScore = outcomeScores.length > 0
-        ? outcomeScores.reduce((a, b) => a + b, 0) / outcomeScores.length
-        : 0;
+      const avgOutcomeScore =
+        outcomeScores.length > 0
+          ? outcomeScores.reduce((a, b) => a + b, 0) / outcomeScores.length
+          : 0;
 
       // Skill-based mastery
       const userSkills = d.skills
         .flatMap((s) => s.userSkills)
         .filter((us) => us.xp > 0);
-      const avgMastery = userSkills.length > 0
-        ? userSkills.reduce((s, us) => s + us.mastery, 0) / userSkills.length
-        : 0;
+      const avgMastery =
+        userSkills.length > 0
+          ? userSkills.reduce((s, us) => s + us.mastery, 0) / userSkills.length
+          : 0;
 
       // Lab completion rate
-      const totalLabs = outcomes.flatMap((lo) => lo.evidence.filter((e) => e.activityType === 'LAB_COMPLETED')).length;
+      const totalLabs = outcomes.flatMap((lo) =>
+        lo.evidence.filter((e) => e.activityType === 'LAB_COMPLETED'),
+      ).length;
       const completedLabs = new Set(
         outcomes.flatMap((lo) =>
-          lo.evidence.filter((e) => e.activityType === 'LAB_COMPLETED').map((e) => e.activityId)
-        )
+          lo.evidence
+            .filter((e) => e.activityType === 'LAB_COMPLETED')
+            .map((e) => e.activityId),
+        ),
       ).size;
 
       // Combined score: 50% outcome + 30% mastery + 20% lab completion
-      const labPct = d.learningOutcomes.length > 0
-        ? (completedLabs / d.learningOutcomes.length) * 100
-        : 0;
+      const labPct =
+        d.learningOutcomes.length > 0
+          ? (completedLabs / d.learningOutcomes.length) * 100
+          : 0;
       const combined = avgOutcomeScore * 0.5 + avgMastery * 0.3 + labPct * 0.2;
 
       return {
@@ -111,18 +118,19 @@ export class CompetencyAnalyticsService {
     const domains = await this.prisma.skillDomain.findMany();
     const domainNames = domains.map((d) => d.name);
     const cumulativeScores: Record<string, number[]> = {};
-    domainNames.forEach((dn) => { cumulativeScores[dn] = []; });
+    domainNames.forEach((dn) => {
+      cumulativeScores[dn] = [];
+    });
 
     const chartData = Object.entries(dailyData).map(([date, domainScores]) => {
       const entry: Record<string, any> = { date };
       for (const dn of domainNames) {
         const dayScore = domainScores[dn] || 0;
-        const prevAvg = cumulativeScores[dn].length > 0
-          ? cumulativeScores[dn][cumulativeScores[dn].length - 1]
-          : 0;
-        const newAvg = dayScore > 0
-          ? (prevAvg + dayScore) / 2
-          : prevAvg;
+        const prevAvg =
+          cumulativeScores[dn].length > 0
+            ? cumulativeScores[dn][cumulativeScores[dn].length - 1]
+            : 0;
+        const newAvg = dayScore > 0 ? (prevAvg + dayScore) / 2 : prevAvg;
         cumulativeScores[dn].push(newAvg);
         entry[dn] = Math.round(newAvg * 10) / 10;
       }
@@ -149,10 +157,16 @@ export class CompetencyAnalyticsService {
     const domainScores = domains.map((d) => {
       const outcomes = d.learningOutcomes;
       const scores = outcomes.flatMap((lo) => lo.evidence.map((e) => e.score));
-      const avg = scores.length > 0
-        ? scores.reduce((a, b) => a + b, 0) / scores.length
-        : 0;
-      return { domain: d.name, displayName: d.displayName, score: avg, evidenceCount: scores.length };
+      const avg =
+        scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
+      return {
+        domain: d.name,
+        displayName: d.displayName,
+        score: avg,
+        evidenceCount: scores.length,
+      };
     });
 
     // Compute correlation matrix
@@ -247,17 +261,22 @@ export class CompetencyAnalyticsService {
         .filter((e) => e.outcome.domainId === d.id)
         .map((e) => e.score);
 
-      const thisWeekAvg = thisWeekScores.length > 0
-        ? thisWeekScores.reduce((a, b) => a + b, 0) / thisWeekScores.length
-        : 0;
-      const lastWeekAvg = lastWeekScores.length > 0
-        ? lastWeekScores.reduce((a, b) => a + b, 0) / lastWeekScores.length
-        : 0;
+      const thisWeekAvg =
+        thisWeekScores.length > 0
+          ? thisWeekScores.reduce((a, b) => a + b, 0) / thisWeekScores.length
+          : 0;
+      const lastWeekAvg =
+        lastWeekScores.length > 0
+          ? lastWeekScores.reduce((a, b) => a + b, 0) / lastWeekScores.length
+          : 0;
 
       const change = thisWeekAvg - lastWeekAvg;
-      const changePct = lastWeekAvg > 0
-        ? (change / lastWeekAvg) * 100
-        : thisWeekAvg > 0 ? 100 : 0;
+      const changePct =
+        lastWeekAvg > 0
+          ? (change / lastWeekAvg) * 100
+          : thisWeekAvg > 0
+            ? 100
+            : 0;
 
       return {
         domainId: d.id,
@@ -275,8 +294,12 @@ export class CompetencyAnalyticsService {
     // Overall trend
     const totalThisWeek = thisWeekEvidence.length;
     const totalLastWeek = lastWeekEvidence.length;
-    const overallTrend = totalThisWeek > totalLastWeek ? 'UP'
-      : totalThisWeek < totalLastWeek ? 'DOWN' : 'STABLE';
+    const overallTrend =
+      totalThisWeek > totalLastWeek
+        ? 'UP'
+        : totalThisWeek < totalLastWeek
+          ? 'DOWN'
+          : 'STABLE';
 
     return {
       trends,

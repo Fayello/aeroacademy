@@ -73,19 +73,36 @@ export class MetricsService {
       select: { displayMode: true, userId: true },
     });
 
-    const retention: Record<string, { total: number; active7Day: number; active30Day: number; retention7Day: number; retention30Day: number }> = {};
+    const retention: Record<
+      string,
+      {
+        total: number;
+        active7Day: number;
+        active30Day: number;
+        retention7Day: number;
+        retention30Day: number;
+      }
+    > = {};
 
     for (const mode of ['PROFESSIONAL', 'PROGRESSION', 'COMPETITIVE']) {
-      const totalUsers = new Set(allSessions.filter(s => s.displayMode === mode).map(s => s.userId)).size;
-      const active7Users = new Set(recent7.filter(s => s.displayMode === mode).map(s => s.userId)).size;
-      const active30Users = new Set(recent30.filter(s => s.displayMode === mode).map(s => s.userId)).size;
+      const totalUsers = new Set(
+        allSessions.filter((s) => s.displayMode === mode).map((s) => s.userId),
+      ).size;
+      const active7Users = new Set(
+        recent7.filter((s) => s.displayMode === mode).map((s) => s.userId),
+      ).size;
+      const active30Users = new Set(
+        recent30.filter((s) => s.displayMode === mode).map((s) => s.userId),
+      ).size;
 
       retention[mode] = {
         total: totalUsers,
         active7Day: active7Users,
         active30Day: active30Users,
-        retention7Day: totalUsers > 0 ? Math.round((active7Users / totalUsers) * 100) : 0,
-        retention30Day: totalUsers > 0 ? Math.round((active30Users / totalUsers) * 100) : 0,
+        retention7Day:
+          totalUsers > 0 ? Math.round((active7Users / totalUsers) * 100) : 0,
+        retention30Day:
+          totalUsers > 0 ? Math.round((active30Users / totalUsers) * 100) : 0,
       };
     }
 

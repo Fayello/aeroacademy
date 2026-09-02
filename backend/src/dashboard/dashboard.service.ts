@@ -6,7 +6,18 @@ import * as os from 'os';
 @Injectable()
 export class DashboardService implements OnModuleInit {
   private docker: Docker;
-  private dockerStatsCache: { data: { containerId: string; labId: string | null; labName: string; cpu: number; memory: number; network: number; status: string }[]; timestamp: number } | null = null;
+  private dockerStatsCache: {
+    data: {
+      containerId: string;
+      labId: string | null;
+      labName: string;
+      cpu: number;
+      memory: number;
+      network: number;
+      status: string;
+    }[];
+    timestamp: number;
+  } | null = null;
   private readonly DOCKER_STATS_TTL_MS = 8000;
 
   constructor(private prisma: PrismaService) {
@@ -182,7 +193,10 @@ export class DashboardService implements OnModuleInit {
   }
 
   async getLabTelemetry() {
-    if (this.dockerStatsCache && Date.now() - this.dockerStatsCache.timestamp < this.DOCKER_STATS_TTL_MS) {
+    if (
+      this.dockerStatsCache &&
+      Date.now() - this.dockerStatsCache.timestamp < this.DOCKER_STATS_TTL_MS
+    ) {
       return this.dockerStatsCache.data;
     }
 
@@ -238,7 +252,8 @@ export class DashboardService implements OnModuleInit {
             return {
               containerId: container.Id,
               labId: instanceMeta?.labId || null,
-              labName: instanceMeta?.labTitle || container.Names[0].replace(/^\//, ''),
+              labName:
+                instanceMeta?.labTitle || container.Names[0].replace(/^\//, ''),
               cpu: Math.min(Math.round(cpuPercent || 0), 100),
               memory: Math.round(memPercent || 0),
               network:
@@ -249,7 +264,8 @@ export class DashboardService implements OnModuleInit {
             return {
               containerId: container.Id,
               labId: instanceMeta?.labId || null,
-              labName: instanceMeta?.labTitle || container.Names[0].replace(/^\//, ''),
+              labName:
+                instanceMeta?.labTitle || container.Names[0].replace(/^\//, ''),
               cpu: 0,
               memory: 0,
               network: 0,
@@ -339,7 +355,12 @@ export class DashboardService implements OnModuleInit {
       streak,
       division: user?.division || 'BRONZE',
       rank: user?.rank || 1200,
-      clearance: level > 10 ? 'EXPERT_STUDENT' : level > 5 ? 'CERTIFIED_L2' : 'STUDENT_L1',
+      clearance:
+        level > 10
+          ? 'EXPERT_STUDENT'
+          : level > 5
+            ? 'CERTIFIED_L2'
+            : 'STUDENT_L1',
       latestProgress,
       courseProgress:
         totalLessonsInCourse > 0

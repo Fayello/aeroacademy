@@ -7,7 +7,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import {
   Shield, Target, Microscope, ArrowRight, CheckCircle2, Play,
   Terminal, Users, BookOpen, Award, Server, Code, Network, Layers, BarChart3,
-  Calendar, Clock, Video, ChevronRight, Menu, X
+  Calendar, Clock, Video, ChevronRight, Menu, X, Megaphone, HandHeart
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import SkillFusionLab from "@/components/SkillFusionLab";
@@ -145,6 +145,7 @@ const NAV_ITEMS = [
   { label: "Platform", href: "#platform" },
   { label: "Courses", href: "#courses" },
   { label: "Labs", href: "#labs" },
+  { label: "Programs", href: "/community" },
   { label: "University", href: "#enterprise" },
   { label: "Master Classes", href: "#master-classes" },
   { label: "Training", href: "#training" },
@@ -275,9 +276,15 @@ export default function LandingPage() {
             </Link>
             <div className="hidden lg:flex items-center gap-1">
               {NAV_ITEMS.map((item) => (
-                <a key={item.label} href={item.href} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-600 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/75 hover:text-white hover:bg-white/10"}`}>
-                  {item.label}
-                </a>
+                item.href.startsWith("#") ? (
+                  <a key={item.label} href={item.href} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-600 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/75 hover:text-white hover:bg-white/10"}`}>
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link key={item.label} href={item.href} className={`px-3 py-2 text-sm font-medium transition-all ${scrolled ? "text-slate-600 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10/50" : "text-white/75 hover:text-white hover:bg-white/10"}`}>
+                    {item.label}
+                  </Link>
+                )
               ))}
             </div>
           </div>
@@ -315,14 +322,25 @@ export default function LandingPage() {
                 <CurrencySwitcher />
               </div>
               {NAV_ITEMS.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setMobileNavOpen(false)}
-                  className="px-3 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  {item.label}
-                </a>
+                item.href.startsWith("#") ? (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMobileNavOpen(false)}
+                    className="px-3 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMobileNavOpen(false)}
+                    className="px-3 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                )
               ))}
               <div className="flex gap-3 pt-2">
                 <Link
@@ -359,7 +377,7 @@ export default function LandingPage() {
                 1 year free for early learners
               </div>
               <h1 className="text-6xl sm:text-7xl lg:text-[80px] font-extrabold text-white tracking-tight leading-[1.02] glitch-hover">
-                XpertClass <span className="text-gradient-brand">Academy</span>
+                XpertClass <span className="text-gradient-brand">Platform</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
                 An African-rooted, globally benchmarked training and certification system for security, Linux, DevOps, and cloud capability. Start free for 12 months, then prove what you can do.
@@ -461,6 +479,49 @@ export default function LandingPage() {
             <span className="transition-colors hover:text-white">Cameroon Tech Hub</span>
             <span className="text-white/20">|</span>
             <span className="transition-colors hover:text-white">Garoua Innovation Hub</span>
+          </div>
+        </div>
+      </section>
+
+      <AngularDivider />
+
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-10">
+            <div>
+              <SectionLabel>Community</SectionLabel>
+              <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">Build the movement with us</h2>
+              <p className="text-lg text-slate-400 mt-4 max-w-2xl">
+                XpertClass grows best when credible people help learners start well, support local communities, and represent the platform with clarity.
+              </p>
+            </div>
+            <Link href="/community" className="btn-ghost text-sm text-[#7AD62A] hover:text-[#6bc422]">
+              Explore community programs <ChevronRight size={14} />
+            </Link>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            {[
+              {
+                icon: Megaphone,
+                title: "Brand ambassadors",
+                text: "For students, alumni, and community builders who can introduce XpertClass in universities and local tech circles.",
+              },
+              {
+                icon: HandHeart,
+                title: "Volunteers",
+                text: "For mentors and contributors who want to help with learner support, community sessions, and program momentum.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="angular-card bg-[#0f172a] border border-white/10/80 p-8">
+                <item.icon size={20} className="text-[#7AD62A]" />
+                <h3 className="mt-4 text-xl font-semibold text-white">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">{item.text}</p>
+                <Link href={item.title === "Brand ambassadors" ? "/community/ambassador-program" : "/community/volunteer-program"} className="inline-flex items-center gap-2 mt-5 text-sm font-medium text-[#7AD62A] hover:text-[#6bc422]">
+                  Apply now
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1062,6 +1123,9 @@ export default function LandingPage() {
               ],
               Company: [
                 { label: "Mission", href: "/get-started" },
+                { label: "Community Programs", href: "/community" },
+                { label: "Ambassador Program", href: "/community/ambassador-program" },
+                { label: "Volunteer Program", href: "/community/volunteer-program" },
                 { label: "Contact", href: "mailto:contact@xpertclass.academy" },
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "Terms of Service", href: "/terms" },

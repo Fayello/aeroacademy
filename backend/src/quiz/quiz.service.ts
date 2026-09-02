@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
 import { MissionService } from '../challenges/mission.service';
@@ -65,8 +71,14 @@ export class QuizService {
     if (!quiz) throw new NotFoundException('Quiz not found');
 
     const lastSubmission = this.recentSubmissions.get(`${userId}:${quizId}`);
-    if (lastSubmission && Date.now() - lastSubmission < this.QUIZ_SUBMISSION_COOLDOWN_MS) {
-      throw new HttpException('Please wait before submitting again', HttpStatus.TOO_MANY_REQUESTS);
+    if (
+      lastSubmission &&
+      Date.now() - lastSubmission < this.QUIZ_SUBMISSION_COOLDOWN_MS
+    ) {
+      throw new HttpException(
+        'Please wait before submitting again',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
 
     const existingPassed = await this.prisma.quizSubmission.findFirst({
@@ -99,7 +111,8 @@ export class QuizService {
       };
     });
 
-    const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+    const score =
+      totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
     const passed = score >= 80;
 
     const submission = await this.prisma.quizSubmission.create({
@@ -114,13 +127,24 @@ export class QuizService {
     this.recentSubmissions.set(`${userId}:${quizId}`, Date.now());
 
     if (passed && !existingPassed) {
-      await this.progressionService.awardXP(userId, {
-        amount: QUIZ_XP_REWARD,
-        source: 'QUIZ_PASSED',
-        sourceId: quizId,
-      }).catch((err) => this.logger.error('ProgressionService.awardXP failed for quiz', err));
+      await this.progressionService
+        .awardXP(userId, {
+          amount: QUIZ_XP_REWARD,
+          source: 'QUIZ_PASSED',
+          sourceId: quizId,
+        })
+        .catch((err) =>
+          this.logger.error('ProgressionService.awardXP failed for quiz', err),
+        );
 
-      await this.missionService.checkProgress(userId, 'QUIZ_COMPLETIONS', quizId).catch((err) => this.logger.error('MissionService.checkProgress failed for quiz', err));
+      await this.missionService
+        .checkProgress(userId, 'QUIZ_COMPLETIONS', quizId)
+        .catch((err) =>
+          this.logger.error(
+            'MissionService.checkProgress failed for quiz',
+            err,
+          ),
+        );
     }
 
     return {

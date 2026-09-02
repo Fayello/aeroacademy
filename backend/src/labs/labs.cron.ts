@@ -24,7 +24,9 @@ export class LabsCron {
     try {
       await this.labsService.healthCheckAll();
     } catch (err) {
-      this.logger.error(`Health check failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Health check failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.healthCheckRunning = false;
     }
@@ -39,7 +41,9 @@ export class LabsCron {
       await this.labsService.cleanupExpiredLabs();
       this.logger.log('Lab cleanup cycle complete.');
     } catch (err) {
-      this.logger.error(`Cleanup failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Cleanup failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       this.cleanupRunning = false;
     }
@@ -66,9 +70,17 @@ export class LabsCron {
         if (this.expiringNotified.has(instance.id)) continue;
         this.expiringNotified.add(instance.id);
 
-        const minutesLeft = Math.max(1, Math.round((instance.expiresAt.getTime() - now.getTime()) / 60000));
+        const minutesLeft = Math.max(
+          1,
+          Math.round((instance.expiresAt.getTime() - now.getTime()) / 60000),
+        );
         this.emailService
-          .sendLabExpiring(instance.user.email, instance.user.name, instance.lab.title, minutesLeft)
+          .sendLabExpiring(
+            instance.user.email,
+            instance.user.name,
+            instance.lab.title,
+            minutesLeft,
+          )
           .catch(() => {});
       }
 
@@ -77,7 +89,9 @@ export class LabsCron {
         if (!runningIds.includes(id)) this.expiringNotified.delete(id);
       }
     } catch (err) {
-      this.logger.error(`Expiring check failed: ${err instanceof Error ? err.message : String(err)}`);
+      this.logger.error(
+        `Expiring check failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 }

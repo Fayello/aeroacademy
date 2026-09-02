@@ -9,10 +9,21 @@ interface StudentContext {
   level: number;
   xp: number;
   domains: Array<{ domain: string; mastery: number }>;
-  recentLabs: Array<{ title: string; difficulty: number; status: string; completions: number; avgTime: number }>;
+  recentLabs: Array<{
+    title: string;
+    difficulty: number;
+    status: string;
+    completions: number;
+    avgTime: number;
+  }>;
   enrolledCohorts: string[];
   badges: string[];
-  skillGaps: Array<{ domain: string; mastery: number; labCount: number; failureRate: number }>;
+  skillGaps: Array<{
+    domain: string;
+    mastery: number;
+    labCount: number;
+    failureRate: number;
+  }>;
 }
 
 interface LabCatalogEntry {
@@ -60,22 +71,59 @@ export class AiService implements OnModuleInit {
         description: true,
         difficulty: true,
         estimatedMinutes: true,
-        labSkills: { select: { skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
+        labSkills: {
+          select: {
+            skill: {
+              select: {
+                displayName: true,
+                domain: { select: { displayName: true } },
+              },
+            },
+          },
+        },
         instances: { select: { id: true, status: true, createdAt: true } },
-        flags: { select: { id: true, submissions: { select: { id: true, isCorrect: true } } } },
+        flags: {
+          select: {
+            id: true,
+            submissions: { select: { id: true, isCorrect: true } },
+          },
+        },
       },
     });
 
     return labs.map((lab): LabCatalogEntry => {
       const totalAttempts = lab.instances.length;
-      const completedInstances = lab.instances.filter((i) => (i.status as string) === 'COMPLETED').length;
-      const completionRate = totalAttempts > 0 ? Math.round((completedInstances / totalAttempts) * 100) : 0;
+      const completedInstances = lab.instances.filter(
+        (i) => (i.status as string) === 'COMPLETED',
+      ).length;
+      const completionRate =
+        totalAttempts > 0
+          ? Math.round((completedInstances / totalAttempts) * 100)
+          : 0;
 
-      const totalSubmissions = lab.flags.reduce((sum, f) => sum + f.submissions.length, 0);
-      const correctSubmissions = lab.flags.reduce((sum, f) => sum + f.submissions.filter((s) => s.isCorrect).length, 0);
-      const failureRate = totalSubmissions > 0 ? Math.round(((totalSubmissions - correctSubmissions) / totalSubmissions) * 100) : 0;
+      const totalSubmissions = lab.flags.reduce(
+        (sum, f) => sum + f.submissions.length,
+        0,
+      );
+      const correctSubmissions = lab.flags.reduce(
+        (sum, f) => sum + f.submissions.filter((s) => s.isCorrect).length,
+        0,
+      );
+      const failureRate =
+        totalSubmissions > 0
+          ? Math.round(
+              ((totalSubmissions - correctSubmissions) / totalSubmissions) *
+                100,
+            )
+          : 0;
 
-      const domains = [...new Set(lab.labSkills.map((ls) => ls.skill.domain?.displayName).filter(Boolean))];
+      const domains = [
+        ...new Set(
+          lab.labSkills
+            .map((ls) => ls.skill.domain?.displayName)
+            .filter(Boolean),
+        ),
+      ];
       const skills = lab.labSkills.map((ls) => ls.skill.displayName);
 
       return {
@@ -102,43 +150,47 @@ export class AiService implements OnModuleInit {
 
     const level = Math.floor((user?.xp || 0) / 1000) + 1;
 
-    const [skillData, labInstances, enrollments, badges, analytics] = await Promise.all([
-      this.prisma.$queryRawUnsafe(
-        `SELECT sd."displayName" as "domain", AVG(us.mastery) as "mastery"
+    const [skillData, labInstances, enrollments, badges, analytics] =
+      await Promise.all([
+        this.prisma.$queryRawUnsafe(
+          `SELECT sd."displayName" as "domain", AVG(us.mastery) as "mastery"
          FROM "UserSkill" us
          JOIN "Skill" s ON s.id = us."skillId"
          JOIN "SkillDomain" sd ON sd.id = s."domainId"
          WHERE us."userId" = $1
          GROUP BY sd."displayName"
          ORDER BY mastery DESC`,
-        userId,
-      ) as Promise<Any[]>,
-      this.prisma.$queryRawUnsafe(
-        `SELECT l.title, l.difficulty, li.status, li."createdAt"
+          userId,
+        ) as Promise<Any[]>,
+        this.prisma.$queryRawUnsafe(
+          `SELECT l.title, l.difficulty, li.status, li."createdAt"
          FROM "LabInstance" li
          JOIN "Lab" l ON l.id = li."labId"
          WHERE li."userId" = $1
          ORDER BY li."createdAt" DESC LIMIT 10`,
-        userId,
-      ) as Promise<Any[]>,
-      this.prisma.cohortMember.findMany({
-        where: { userId },
-        include: { cohort: { select: { name: true } } },
-      }),
-      this.prisma.$queryRawUnsafe(
-        'SELECT b.name FROM "UserBadge" ub JOIN "Badge" b ON b.id = ub."badgeId" WHERE ub."userId" = $1 ORDER BY ub."earnedAt" DESC LIMIT 5',
-        userId,
-      ) as Promise<Any[]>,
-      this.prisma.$queryRawUnsafe(
-        `SELECT l.title, la."completionRate", la."avgTimeMinutes", la."hintUsageRate"
+          userId,
+        ) as Promise<Any[]>,
+        this.prisma.cohortMember.findMany({
+          where: { userId },
+          include: { cohort: { select: { name: true } } },
+        }),
+        this.prisma.$queryRawUnsafe(
+          'SELECT b.name FROM "UserBadge" ub JOIN "Badge" b ON b.id = ub."badgeId" WHERE ub."userId" = $1 ORDER BY ub."earnedAt" DESC LIMIT 5',
+          userId,
+        ) as Promise<Any[]>,
+        this.prisma.$queryRawUnsafe(
+          `SELECT l.title, la."completionRate", la."avgTimeMinutes", la."hintUsageRate"
          FROM "LabAnalytics" la
          JOIN "Lab" l ON l.id = la."labId"
          ORDER BY la."lastUpdated" DESC LIMIT 5`,
-        userId,
-      ) as Promise<Any[]>,
-    ]);
+          userId,
+        ) as Promise<Any[]>,
+      ]);
 
-    const domains = skillData.map((d) => ({ domain: d.domain, mastery: Math.round(d.mastery) }));
+    const domains = skillData.map((d) => ({
+      domain: d.domain,
+      mastery: Math.round(d.mastery),
+    }));
     const recentLabs = labInstances.map((l) => ({
       title: l.title,
       difficulty: l.difficulty,
@@ -174,9 +226,10 @@ export class AiService implements OnModuleInit {
     const sections = Object.entries(byDomain).map(([domain, entries]) => {
       const lines = entries.map((l) => {
         const skills = l.skills.length > 0 ? ` [${l.skills.join(', ')}]` : '';
-        const stats = l.totalAttempts > 0
-          ? ` (${l.completionRate}% completion, ${l.totalAttempts} attempts)`
-          : '';
+        const stats =
+          l.totalAttempts > 0
+            ? ` (${l.completionRate}% completion, ${l.totalAttempts} attempts)`
+            : '';
         return `  - "${l.title}" — difficulty ${l.difficulty}, ~${l.estimatedMinutes}min${skills}${stats}`;
       });
       return `${domain.toUpperCase()} LABS:\n${lines.join('\n')}`;
@@ -192,13 +245,17 @@ export class AiService implements OnModuleInit {
     ];
 
     if (ctx.domains.length > 0) {
-      parts.push(`Domain mastery: ${ctx.domains.map((d) => `${d.domain} ${d.mastery}%`).join(', ')}`);
+      parts.push(
+        `Domain mastery: ${ctx.domains.map((d) => `${d.domain} ${d.mastery}%`).join(', ')}`,
+      );
     } else {
       parts.push('Domain mastery: No skill data yet');
     }
 
     if (ctx.recentLabs.length > 0) {
-      parts.push(`Recent labs: ${ctx.recentLabs.map((l) => `${l.title} (${l.status})`).join(', ')}`);
+      parts.push(
+        `Recent labs: ${ctx.recentLabs.map((l) => `${l.title} (${l.status})`).join(', ')}`,
+      );
     } else {
       parts.push('Recent labs: None started');
     }
@@ -212,7 +269,9 @@ export class AiService implements OnModuleInit {
     }
 
     if (ctx.skillGaps.length > 0) {
-      parts.push(`Weak areas: ${ctx.skillGaps.map((g) => `${g.domain} (${g.mastery}%)`).join(', ')}`);
+      parts.push(
+        `Weak areas: ${ctx.skillGaps.map((g) => `${g.domain} (${g.mastery}%)`).join(', ')}`,
+      );
     }
 
     return parts.join('\n');
@@ -259,14 +318,21 @@ ${studentSection}`;
 
   // ─── LEARNING COACH ────────────────────────────────────
 
-  async learningCoach(userId: string, message: string, history: Array<{ role: string; content: string }> = []): Promise<{ response: string }> {
+  async learningCoach(
+    userId: string,
+    message: string,
+    history: Array<{ role: string; content: string }> = [],
+  ): Promise<{ response: string }> {
     if (!this.gateway) throw new Error('AI service unavailable');
 
     const systemPrompt = await this.buildSystemPrompt(userId);
 
     const messages = [
       { role: 'system' as const, content: systemPrompt },
-      ...history.slice(-6).map((h) => ({ role: h.role as 'user' | 'assistant', content: h.content })),
+      ...history.slice(-6).map((h) => ({
+        role: h.role as 'user' | 'assistant',
+        content: h.content,
+      })),
       { role: 'user' as const, content: message },
     ];
 
@@ -274,14 +340,21 @@ ${studentSection}`;
     return { response };
   }
 
-  async learningCoachStream(userId: string, message: string, history: Array<{ role: string; content: string }> = []): Promise<ReadableStream<Uint8Array>> {
+  async learningCoachStream(
+    userId: string,
+    message: string,
+    history: Array<{ role: string; content: string }> = [],
+  ): Promise<ReadableStream<Uint8Array>> {
     if (!this.gateway) throw new Error('AI service unavailable');
 
     const systemPrompt = await this.buildSystemPrompt(userId);
 
     const messages = [
       { role: 'system' as const, content: systemPrompt },
-      ...history.slice(-6).map((h) => ({ role: h.role as 'user' | 'assistant', content: h.content })),
+      ...history.slice(-6).map((h) => ({
+        role: h.role as 'user' | 'assistant',
+        content: h.content,
+      })),
       { role: 'user' as const, content: message },
     ];
 
@@ -308,7 +381,13 @@ Recent labs: ${studentCtx.recentLabs.map((l) => l.title).join(', ') || 'None'}
 Weak areas: ${studentCtx.skillGaps.map((g) => `${g.domain} (${g.mastery}%)`).join(', ') || 'None'}
 
 Available labs (with analytics):
-${labs.slice(0, 15).map((l) => `- ${l.title} (${l.difficulty}) [${l.completionRate}% completion, ${l.totalAttempts} attempts]`).join('\n')}`;
+${labs
+  .slice(0, 15)
+  .map(
+    (l) =>
+      `- ${l.title} (${l.difficulty}) [${l.completionRate}% completion, ${l.totalAttempts} attempts]`,
+  )
+  .join('\n')}`;
 
     const prompt = `Based on this student profile and available labs with real analytics data, recommend exactly 3 specific next actions.
 Prioritize labs where the student has weak domains. Consider completion rates — suggest popular labs (high completion) for encouragement, or challenging labs (low completion) for growth.
@@ -321,7 +400,8 @@ Respond in JSON format only:
     try {
       const response = await this.gateway.generate({
         prompt,
-        system: 'You are an AI education advisor. Respond only in valid JSON. Use real lab titles from the available list.',
+        system:
+          'You are an AI education advisor. Respond only in valid JSON. Use real lab titles from the available list.',
         format: 'json',
       });
 
@@ -330,14 +410,21 @@ Respond in JSON format only:
         return { recommendations: JSON.parse(jsonMatch[0]), source: 'ai' };
       }
     } catch {
-      this.logger.warn('Failed to parse AI recommendations, falling back to rules');
+      this.logger.warn(
+        'Failed to parse AI recommendations, falling back to rules',
+      );
     }
 
     return this.getRuleBasedRecommendations(userId);
   }
 
   private async getRuleBasedRecommendations(userId: string): Promise<Any> {
-    const recs: Array<{ title: string; description: string; priority: string; type: string }> = [];
+    const recs: Array<{
+      title: string;
+      description: string;
+      priority: string;
+      type: string;
+    }> = [];
 
     const domains = await this.prisma.$queryRawUnsafe(
       `SELECT sd."displayName" as "domain", AVG(us.mastery) as "mastery"
@@ -347,20 +434,38 @@ Respond in JSON format only:
        WHERE us."userId" = $1
        GROUP BY sd."displayName" ORDER BY mastery ASC`,
       userId,
-    ) as Any[];
+    );
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { xp: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { xp: true },
+    });
     const level = Math.floor((user?.xp || 0) / 1000) + 1;
 
     if (domains.length === 0) {
-      recs.push({ title: 'Start a Linux Fundamentals Lab', description: 'Build your foundation with hands-on Linux practice', priority: 'high', type: 'lab' });
+      recs.push({
+        title: 'Start a Linux Fundamentals Lab',
+        description: 'Build your foundation with hands-on Linux practice',
+        priority: 'high',
+        type: 'lab',
+      });
     } else {
       const weakest = domains[0];
-      recs.push({ title: `Improve ${weakest.domain} skills`, description: `Your ${weakest.domain} score is ${Math.round(weakest.mastery)}%. Focus on labs in this domain.`, priority: 'high', type: 'practice' });
+      recs.push({
+        title: `Improve ${weakest.domain} skills`,
+        description: `Your ${weakest.domain} score is ${Math.round(weakest.mastery)}%. Focus on labs in this domain.`,
+        priority: 'high',
+        type: 'practice',
+      });
     }
 
     if (level < 5) {
-      recs.push({ title: 'Take a skill assessment', description: 'Discover your strengths and weaknesses across domains', priority: 'medium', type: 'assessment' });
+      recs.push({
+        title: 'Take a skill assessment',
+        description: 'Discover your strengths and weaknesses across domains',
+        priority: 'medium',
+        type: 'assessment',
+      });
     }
 
     return { recommendations: recs.slice(0, 3), source: 'rules' };
@@ -369,34 +474,58 @@ Respond in JSON format only:
   // ─── AT-RISK ANALYSIS ──────────────────────────────────
 
   async getAtRiskStudents(cohortId: string): Promise<Any> {
-    const cohort = await this.prisma.cohort.findUnique({ where: { id: cohortId } });
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
     if (!cohort) return { students: [] };
 
     const members = await this.prisma.cohortMember.findMany({
       where: { cohortId, role: 'STUDENT' },
-      include: { user: { select: { id: true, name: true, email: true, xp: true, lastActivityDate: true } } },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            xp: true,
+            lastActivityDate: true,
+          },
+        },
+      },
     });
 
     const now = new Date();
     const students = members.map((m) => {
       const user = m.user;
       const daysSinceActive = user.lastActivityDate
-        ? Math.floor((now.getTime() - new Date(user.lastActivityDate).getTime()) / (1000 * 60 * 60 * 24))
+        ? Math.floor(
+            (now.getTime() - new Date(user.lastActivityDate).getTime()) /
+              (1000 * 60 * 60 * 24),
+          )
         : 999;
 
       let riskScore = 0;
       const riskFactors: string[] = [];
 
-      if (daysSinceActive > 7) { riskScore += 40; riskFactors.push(`Inactive for ${daysSinceActive} days`); }
-      else if (daysSinceActive > 3) { riskScore += 20; riskFactors.push(`Low activity (${daysSinceActive} days)`); }
+      if (daysSinceActive > 7) {
+        riskScore += 40;
+        riskFactors.push(`Inactive for ${daysSinceActive} days`);
+      } else if (daysSinceActive > 3) {
+        riskScore += 20;
+        riskFactors.push(`Low activity (${daysSinceActive} days)`);
+      }
 
       const level = Math.floor(user.xp / 1000) + 1;
-      if (level < 3) { riskScore += 30; riskFactors.push(`Low engagement (Level ${level})`); }
+      if (level < 3) {
+        riskScore += 30;
+        riskFactors.push(`Low engagement (Level ${level})`);
+      }
 
       return {
         student: { id: user.id, name: user.name, email: user.email },
         riskScore,
-        riskLevel: riskScore >= 60 ? 'high' : riskScore >= 30 ? 'medium' : 'low',
+        riskLevel:
+          riskScore >= 60 ? 'high' : riskScore >= 30 ? 'medium' : 'low',
         riskFactors,
         daysSinceActive,
         level,
@@ -414,9 +543,14 @@ Respond in JSON format only:
 ${highRisk.map((s) => `- ${s.student.name}: ${s.riskFactors.join(', ')}`).join('\n')}
 
 Provide 2-3 brief, actionable intervention suggestions for the professor.`;
-        aiSummary = await this.gateway.generate({ prompt, system: 'You are an education analytics advisor. Be brief and actionable.' });
+        aiSummary = await this.gateway.generate({
+          prompt,
+          system:
+            'You are an education analytics advisor. Be brief and actionable.',
+        });
       } catch {
-        aiSummary = 'AI summary unavailable. Review high-risk students individually.';
+        aiSummary =
+          'AI summary unavailable. Review high-risk students individually.';
       }
     }
 
@@ -435,21 +569,48 @@ Provide 2-3 brief, actionable intervention suggestions for the professor.`;
 
   // ─── AI CONTENT GENERATORS ───────────────────────────────
 
-  async generateLabBriefing(labId: string): Promise<{ briefing: string; objectives: string[]; prerequisites: string[] }> {
+  async generateLabBriefing(labId: string): Promise<{
+    briefing: string;
+    objectives: string[];
+    prerequisites: string[];
+  }> {
     if (!this.gateway) throw new Error('AI service unavailable');
 
     const lab = await this.prisma.lab.findUnique({
       where: { id: labId },
       select: {
-        title: true, description: true, dockerImage: true, difficulty: true,
-        labSkills: { select: { skill: { select: { displayName: true, domain: { select: { displayName: true } } } } } },
+        title: true,
+        description: true,
+        dockerImage: true,
+        difficulty: true,
+        labSkills: {
+          select: {
+            skill: {
+              select: {
+                displayName: true,
+                domain: { select: { displayName: true } },
+              },
+            },
+          },
+        },
       },
     });
     if (!lab) throw new Error('Lab not found');
 
-    const domains = [...new Set(lab.labSkills.map((ls) => ls.skill.domain?.displayName).filter(Boolean))];
+    const domains = [
+      ...new Set(
+        lab.labSkills.map((ls) => ls.skill.domain?.displayName).filter(Boolean),
+      ),
+    ];
     const skills = lab.labSkills.map((ls) => ls.skill.displayName);
-    const diffLabel = lab.difficulty < 1000 ? 'beginner' : lab.difficulty < 1300 ? 'intermediate' : lab.difficulty < 1600 ? 'advanced' : 'expert';
+    const diffLabel =
+      lab.difficulty < 1000
+        ? 'beginner'
+        : lab.difficulty < 1300
+          ? 'intermediate'
+          : lab.difficulty < 1600
+            ? 'advanced'
+            : 'expert';
 
     const prompt = `Generate a professional lab briefing for this hands-on lab:
 
@@ -470,7 +631,8 @@ Respond in JSON format only:
 
     const response = await this.gateway.generate({
       prompt,
-      system: 'You are a cybersecurity/technology education content writer. Create professional, concise lab briefings. Respond only in valid JSON.',
+      system:
+        'You are a cybersecurity/technology education content writer. Create professional, concise lab briefings. Respond only in valid JSON.',
       format: 'json',
       temperature: 0.7,
     });
@@ -482,7 +644,9 @@ Respond in JSON format only:
         return {
           briefing: parsed.briefing || lab.description,
           objectives: Array.isArray(parsed.objectives) ? parsed.objectives : [],
-          prerequisites: Array.isArray(parsed.prerequisites) ? parsed.prerequisites : [],
+          prerequisites: Array.isArray(parsed.prerequisites)
+            ? parsed.prerequisites
+            : [],
         };
       } catch {}
     }
@@ -490,16 +654,33 @@ Respond in JSON format only:
     return { briefing: lab.description, objectives: [], prerequisites: [] };
   }
 
-  async generateAssessmentQuestions(assessmentId: string, count: number = 5): Promise<{ questions: Array<{ text: string; options: Array<{ key: string; text: string }>; correctAnswer: string; category: string }> }> {
+  async generateAssessmentQuestions(
+    assessmentId: string,
+    count: number = 5,
+  ): Promise<{
+    questions: Array<{
+      text: string;
+      options: Array<{ key: string; text: string }>;
+      correctAnswer: string;
+      category: string;
+    }>;
+  }> {
     if (!this.gateway) throw new Error('AI service unavailable');
 
     const assessment = await this.prisma.skillAssessment.findUnique({
       where: { id: assessmentId },
-      select: { title: true, description: true, category: true, questions: true },
+      select: {
+        title: true,
+        description: true,
+        category: true,
+        questions: true,
+      },
     });
     if (!assessment) throw new Error('Assessment not found');
 
-    const existingQuestions = (assessment.questions as Any[] || []).map((q) => q.text).slice(0, 5);
+    const existingQuestions = ((assessment.questions as Any[]) || [])
+      .map((q) => q.text)
+      .slice(0, 5);
 
     const prompt = `Generate ${count} multiple-choice questions for this assessment:
 
@@ -520,7 +701,8 @@ Respond in JSON format only:
 
     const response = await this.gateway.generate({
       prompt,
-      system: 'You are a technology education assessment expert. Create accurate, well-crafted MCQ questions. Respond only in valid JSON.',
+      system:
+        'You are a technology education assessment expert. Create accurate, well-crafted MCQ questions. Respond only in valid JSON.',
       format: 'json',
       temperature: 0.8,
     });
@@ -538,14 +720,23 @@ Respond in JSON format only:
     return { questions: [] };
   }
 
-  async generateCourseOutline(courseId: string): Promise<{ modules: Array<{ title: string; description: string; lessons: Array<{ title: string; type: string }> }> }> {
+  async generateCourseOutline(courseId: string): Promise<{
+    modules: Array<{
+      title: string;
+      description: string;
+      lessons: Array<{ title: string; type: string }>;
+    }>;
+  }> {
     if (!this.gateway) throw new Error('AI service unavailable');
 
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
       select: {
-        title: true, description: true,
-        sections: { select: { title: true, lessons: { select: { title: true } } } },
+        title: true,
+        description: true,
+        sections: {
+          select: { title: true, lessons: { select: { title: true } } },
+        },
       },
     });
     if (!course) throw new Error('Course not found');
@@ -575,7 +766,8 @@ Respond in JSON format only:
 
     const response = await this.gateway.generate({
       prompt,
-      system: 'You are a curriculum design expert for technology education. Create well-structured course outlines. Respond only in valid JSON.',
+      system:
+        'You are a curriculum design expert for technology education. Create well-structured course outlines. Respond only in valid JSON.',
       format: 'json',
       temperature: 0.7,
     });
@@ -594,14 +786,22 @@ Respond in JSON format only:
   }
 
   async calibrateLabDifficulty(labId: string): Promise<Any> {
-    const analytics = await this.prisma.labAnalytics.findUnique({ where: { labId } });
-    const lab = await this.prisma.lab.findUnique({ where: { id: labId }, select: { difficulty: true, title: true } });
+    const analytics = await this.prisma.labAnalytics.findUnique({
+      where: { labId },
+    });
+    const lab = await this.prisma.lab.findUnique({
+      where: { id: labId },
+      select: { difficulty: true, title: true },
+    });
     if (!lab) throw new Error('Lab not found');
 
     if (!analytics || analytics.totalAttempts < 5) {
       return {
-        labId, title: lab.title, currentDifficulty: lab.difficulty,
-        suggestion: 'insufficient_data', message: 'Need at least 5 attempts to calibrate difficulty.',
+        labId,
+        title: lab.title,
+        currentDifficulty: lab.difficulty,
+        suggestion: 'insufficient_data',
+        message: 'Need at least 5 attempts to calibrate difficulty.',
         newDifficulty: lab.difficulty,
       };
     }
@@ -614,28 +814,71 @@ Respond in JSON format only:
     let adjustment = 0;
     const reasons: string[] = [];
 
-    if (completionRate > 85) { adjustment -= 50; reasons.push(`Very high completion rate (${completionRate}%) — lab is too easy`); }
-    else if (completionRate > 70) { adjustment -= 20; reasons.push(`High completion rate (${completionRate}%) — slightly too easy`); }
-    else if (completionRate < 15) { adjustment += 80; reasons.push(`Very low completion rate (${completionRate}%) — lab is too hard`); }
-    else if (completionRate < 30) { adjustment += 40; reasons.push(`Low completion rate (${completionRate}%) — slightly too hard`); }
+    if (completionRate > 85) {
+      adjustment -= 50;
+      reasons.push(
+        `Very high completion rate (${completionRate}%) — lab is too easy`,
+      );
+    } else if (completionRate > 70) {
+      adjustment -= 20;
+      reasons.push(
+        `High completion rate (${completionRate}%) — slightly too easy`,
+      );
+    } else if (completionRate < 15) {
+      adjustment += 80;
+      reasons.push(
+        `Very low completion rate (${completionRate}%) — lab is too hard`,
+      );
+    } else if (completionRate < 30) {
+      adjustment += 40;
+      reasons.push(
+        `Low completion rate (${completionRate}%) — slightly too hard`,
+      );
+    }
 
-    if (failureRate > 80) { adjustment += 30; reasons.push(`Very high failure rate (${failureRate}%) — questions may be unclear`); }
-    if (avgTime > estimatedMinutes * 1.5) { adjustment += 20; reasons.push(`Avg time (${avgTime.toFixed(0)}m) exceeds estimate (${estimatedMinutes}m)`); }
-    else if (avgTime < estimatedMinutes * 0.4) { adjustment -= 20; reasons.push(`Avg time (${avgTime.toFixed(0)}m) much faster than estimate (${estimatedMinutes}m)`); }
+    if (failureRate > 80) {
+      adjustment += 30;
+      reasons.push(
+        `Very high failure rate (${failureRate}%) — questions may be unclear`,
+      );
+    }
+    if (avgTime > estimatedMinutes * 1.5) {
+      adjustment += 20;
+      reasons.push(
+        `Avg time (${avgTime.toFixed(0)}m) exceeds estimate (${estimatedMinutes}m)`,
+      );
+    } else if (avgTime < estimatedMinutes * 0.4) {
+      adjustment -= 20;
+      reasons.push(
+        `Avg time (${avgTime.toFixed(0)}m) much faster than estimate (${estimatedMinutes}m)`,
+      );
+    }
 
-    const newDifficulty = Math.max(800, Math.min(2000, lab.difficulty + adjustment));
+    const newDifficulty = Math.max(
+      800,
+      Math.min(2000, lab.difficulty + adjustment),
+    );
 
     if (newDifficulty !== lab.difficulty) {
-      await this.prisma.lab.update({ where: { id: labId }, data: { difficulty: newDifficulty } });
+      await this.prisma.lab.update({
+        where: { id: labId },
+        data: { difficulty: newDifficulty },
+      });
     }
 
     return {
-      labId, title: lab.title,
+      labId,
+      title: lab.title,
       currentDifficulty: lab.difficulty,
       newDifficulty,
       adjustment,
       reasons,
-      metrics: { completionRate, failureRate, avgTimeMinutes: avgTime, totalAttempts: analytics.totalAttempts },
+      metrics: {
+        completionRate,
+        failureRate,
+        avgTimeMinutes: avgTime,
+        totalAttempts: analytics.totalAttempts,
+      },
       changed: newDifficulty !== lab.difficulty,
     };
   }

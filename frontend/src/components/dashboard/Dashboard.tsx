@@ -473,6 +473,10 @@ export default function Dashboard() {
                 <BookOpen size={14} />
               </Link>
             )}
+            <Link href="/dashboard/recommendations" className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 sm:w-auto">
+              Adjust journey
+              <Pencil size={14} />
+            </Link>
             <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-slate-200 sm:w-auto">
               <Clock size={13} className="text-[#7AD62A]" />
               {personalizationMode === "ai" ? `AI-guided · ${primaryAction.meta}` : primaryAction.meta}

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -30,9 +34,17 @@ export class CourseAdminService {
     return course;
   }
 
-  async reorderSection(courseId: string, sectionId: string, newOrder: number, actorId: string) {
-    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
-    if (!section || section.courseId !== courseId) throw new NotFoundException('Section not found');
+  async reorderSection(
+    courseId: string,
+    sectionId: string,
+    newOrder: number,
+    actorId: string,
+  ) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+    });
+    if (!section || section.courseId !== courseId)
+      throw new NotFoundException('Section not found');
 
     const sections = await this.prisma.section.findMany({
       where: { courseId },
@@ -46,44 +58,69 @@ export class CourseAdminService {
       for (const s of sections) {
         if (s.id === sectionId) continue;
         if (s.order > oldOrder && s.order <= newOrder) {
-          updates.push(this.prisma.section.update({
-            where: { id: s.id },
-            data: { order: s.order - 1 },
-          }));
+          updates.push(
+            this.prisma.section.update({
+              where: { id: s.id },
+              data: { order: s.order - 1 },
+            }),
+          );
         }
       }
     } else {
       for (const s of sections) {
         if (s.id === sectionId) continue;
         if (s.order >= newOrder && s.order < oldOrder) {
-          updates.push(this.prisma.section.update({
-            where: { id: s.id },
-            data: { order: s.order + 1 },
-          }));
+          updates.push(
+            this.prisma.section.update({
+              where: { id: s.id },
+              data: { order: s.order + 1 },
+            }),
+          );
         }
       }
     }
 
-    updates.push(this.prisma.section.update({
-      where: { id: sectionId },
-      data: { order: newOrder },
-    }));
+    updates.push(
+      this.prisma.section.update({
+        where: { id: sectionId },
+        data: { order: newOrder },
+      }),
+    );
 
     await Promise.all(updates);
 
     await this.prisma.courseReorderHistory.create({
-      data: { courseId, entityType: 'SECTION', entityId: sectionId, oldOrder, newOrder, actorId },
+      data: {
+        courseId,
+        entityType: 'SECTION',
+        entityId: sectionId,
+        oldOrder,
+        newOrder,
+        actorId,
+      },
     });
 
     return this.getCourseStructure(courseId);
   }
 
-  async reorderLesson(courseId: string, sectionId: string, lessonId: string, newOrder: number, actorId: string) {
-    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
-    if (!section || section.courseId !== courseId) throw new NotFoundException('Section not found');
+  async reorderLesson(
+    courseId: string,
+    sectionId: string,
+    lessonId: string,
+    newOrder: number,
+    actorId: string,
+  ) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+    });
+    if (!section || section.courseId !== courseId)
+      throw new NotFoundException('Section not found');
 
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
-    if (!lesson || lesson.sectionId !== sectionId) throw new NotFoundException('Lesson not found');
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
+    if (!lesson || lesson.sectionId !== sectionId)
+      throw new NotFoundException('Lesson not found');
 
     const lessons = await this.prisma.lesson.findMany({
       where: { sectionId },
@@ -97,46 +134,64 @@ export class CourseAdminService {
       for (const l of lessons) {
         if (l.id === lessonId) continue;
         if (l.order > oldOrder && l.order <= newOrder) {
-          updates.push(this.prisma.lesson.update({
-            where: { id: l.id },
-            data: { order: l.order - 1 },
-          }));
+          updates.push(
+            this.prisma.lesson.update({
+              where: { id: l.id },
+              data: { order: l.order - 1 },
+            }),
+          );
         }
       }
     } else {
       for (const l of lessons) {
         if (l.id === lessonId) continue;
         if (l.order >= newOrder && l.order < oldOrder) {
-          updates.push(this.prisma.lesson.update({
-            where: { id: l.id },
-            data: { order: l.order + 1 },
-          }));
+          updates.push(
+            this.prisma.lesson.update({
+              where: { id: l.id },
+              data: { order: l.order + 1 },
+            }),
+          );
         }
       }
     }
 
-    updates.push(this.prisma.lesson.update({
-      where: { id: lessonId },
-      data: { order: newOrder },
-    }));
+    updates.push(
+      this.prisma.lesson.update({
+        where: { id: lessonId },
+        data: { order: newOrder },
+      }),
+    );
 
     await Promise.all(updates);
 
     await this.prisma.courseReorderHistory.create({
-      data: { courseId, entityType: 'LESSON', entityId: lessonId, oldOrder, newOrder, actorId },
+      data: {
+        courseId,
+        entityType: 'LESSON',
+        entityId: lessonId,
+        oldOrder,
+        newOrder,
+        actorId,
+      },
     });
 
     return this.getCourseStructure(courseId);
   }
 
-  async createSection(courseId: string, data: { title: string; order?: number }) {
+  async createSection(
+    courseId: string,
+    data: { title: string; order?: number },
+  ) {
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
       include: { sections: { orderBy: { order: 'desc' }, take: 1 } },
     });
     if (!course) throw new NotFoundException('Course not found');
 
-    const order = data.order ?? (course.sections.length > 0 ? course.sections[0].order + 1 : 0);
+    const order =
+      data.order ??
+      (course.sections.length > 0 ? course.sections[0].order + 1 : 0);
 
     return this.prisma.section.create({
       data: { courseId, title: data.title, order },
@@ -144,35 +199,49 @@ export class CourseAdminService {
   }
 
   async updateSection(sectionId: string, data: { title?: string }) {
-    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+    });
     if (!section) throw new NotFoundException('Section not found');
 
     return this.prisma.section.update({ where: { id: sectionId }, data });
   }
 
   async deleteSection(sectionId: string) {
-    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+    });
     if (!section) throw new NotFoundException('Section not found');
 
     await this.prisma.section.delete({ where: { id: sectionId } });
     return { success: true };
   }
 
-  async createLesson(sectionId: string, data: {
-    title: string;
-    videoUrl?: string;
-    content?: string;
-    labId?: string;
-    order?: number;
-    quiz?: { questions: { text: string; answers: { text: string; isCorrect: boolean }[] }[] };
-  }) {
+  async createLesson(
+    sectionId: string,
+    data: {
+      title: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+      order?: number;
+      quiz?: {
+        questions: {
+          text: string;
+          answers: { text: string; isCorrect: boolean }[];
+        }[];
+      };
+    },
+  ) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
       include: { lessons: { orderBy: { order: 'desc' }, take: 1 } },
     });
     if (!section) throw new NotFoundException('Section not found');
 
-    const order = data.order ?? (section.lessons.length > 0 ? section.lessons[0].order + 1 : 0);
+    const order =
+      data.order ??
+      (section.lessons.length > 0 ? section.lessons[0].order + 1 : 0);
 
     const lesson = await this.prisma.lesson.create({
       data: {
@@ -190,7 +259,7 @@ export class CourseAdminService {
         data: {
           lessonId: lesson.id,
           questions: {
-            create: data.quiz.questions.map(q => ({
+            create: data.quiz.questions.map((q) => ({
               text: q.text,
               answers: { create: q.answers },
             })),
@@ -202,20 +271,27 @@ export class CourseAdminService {
     return lesson;
   }
 
-  async updateLesson(lessonId: string, data: {
-    title?: string;
-    videoUrl?: string;
-    content?: string;
-    labId?: string;
-  }) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+  async updateLesson(
+    lessonId: string,
+    data: {
+      title?: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+    },
+  ) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     return this.prisma.lesson.update({ where: { id: lessonId }, data });
   }
 
   async deleteLesson(lessonId: string) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     await this.prisma.lesson.delete({ where: { id: lessonId } });
@@ -223,7 +299,9 @@ export class CourseAdminService {
   }
 
   async moveLessonToSection(lessonId: string, targetSectionId: string) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     const targetSection = await this.prisma.section.findUnique({
@@ -232,7 +310,8 @@ export class CourseAdminService {
     });
     if (!targetSection) throw new NotFoundException('Target section not found');
 
-    const newOrder = targetSection.lessons.length > 0 ? targetSection.lessons[0].order + 1 : 0;
+    const newOrder =
+      targetSection.lessons.length > 0 ? targetSection.lessons[0].order + 1 : 0;
 
     return this.prisma.lesson.update({
       where: { id: lessonId },
@@ -240,14 +319,23 @@ export class CourseAdminService {
     });
   }
 
-  async bulkCreateLessons(sectionId: string, lessons: { title: string; videoUrl?: string; content?: string; labId?: string }[]) {
+  async bulkCreateLessons(
+    sectionId: string,
+    lessons: {
+      title: string;
+      videoUrl?: string;
+      content?: string;
+      labId?: string;
+    }[],
+  ) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
       include: { lessons: { orderBy: { order: 'desc' }, take: 1 } },
     });
     if (!section) throw new NotFoundException('Section not found');
 
-    let startOrder = section.lessons.length > 0 ? section.lessons[0].order + 1 : 0;
+    let startOrder =
+      section.lessons.length > 0 ? section.lessons[0].order + 1 : 0;
 
     const created: any[] = [];
     for (const l of lessons) {

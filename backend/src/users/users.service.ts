@@ -83,7 +83,9 @@ export class UsersService {
 
     await this.prisma.$transaction([
       this.prisma.activityEvent.deleteMany({ where: { userId: id } }),
-      this.prisma.shortlist.deleteMany({ where: { OR: [{ recruiterId: id }, { studentId: id }] } }),
+      this.prisma.shortlist.deleteMany({
+        where: { OR: [{ recruiterId: id }, { studentId: id }] },
+      }),
       this.prisma.labSubmission.deleteMany({ where: { userId: id } }),
       this.prisma.labInstance.deleteMany({ where: { userId: id } }),
       this.prisma.quizSubmission.deleteMany({ where: { userId: id } }),
@@ -101,16 +103,39 @@ export class UsersService {
     const targetIds = actorId ? ids.filter((id) => id !== actorId) : ids;
 
     await this.prisma.$transaction([
-      this.prisma.activityEvent.deleteMany({ where: { userId: { in: targetIds } } }),
-      this.prisma.shortlist.deleteMany({ where: { OR: [{ recruiterId: { in: targetIds } }, { studentId: { in: targetIds } }] } }),
-      this.prisma.labSubmission.deleteMany({ where: { userId: { in: targetIds } } }),
-      this.prisma.labInstance.deleteMany({ where: { userId: { in: targetIds } } }),
-      this.prisma.quizSubmission.deleteMany({ where: { userId: { in: targetIds } } }),
-      this.prisma.userAchievement.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.activityEvent.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
+      this.prisma.shortlist.deleteMany({
+        where: {
+          OR: [
+            { recruiterId: { in: targetIds } },
+            { studentId: { in: targetIds } },
+          ],
+        },
+      }),
+      this.prisma.labSubmission.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
+      this.prisma.labInstance.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
+      this.prisma.quizSubmission.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
+      this.prisma.userAchievement.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
       this.prisma.progress.deleteMany({ where: { userId: { in: targetIds } } }),
-      this.prisma.notification.deleteMany({ where: { userId: { in: targetIds } } }),
-      this.prisma.booking.deleteMany({ where: { studentId: { in: targetIds } } }),
-      this.prisma.refreshToken.deleteMany({ where: { userId: { in: targetIds } } }),
+      this.prisma.notification.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
+      this.prisma.booking.deleteMany({
+        where: { studentId: { in: targetIds } },
+      }),
+      this.prisma.refreshToken.deleteMany({
+        where: { userId: { in: targetIds } },
+      }),
     ]);
 
     const result = await this.prisma.user.deleteMany({
