@@ -377,7 +377,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [load]);
+  }, [hydrated, load]);
 
   const setViewMode = useCallback((mode: ViewMode) => {
     const nextMode = nav.canAccessAdminView ? mode : "LEARNER";
