@@ -9,7 +9,7 @@ import {
   Terminal, Users, BookOpen, Award, Server, Code, Network, Layers, BarChart3,
   Calendar, Clock, Video, ChevronRight, Menu, X, Megaphone, HandHeart
 } from "lucide-react";
-import { fetchApi } from "@/lib/api";
+import { fetchPublicApi } from "@/lib/publicApi";
 import SkillFusionLab from "@/components/SkillFusionLab";
 import HeroParticles from "@/components/HeroParticles";
 import FloatingShapes from "@/components/FloatingShapes";
@@ -233,6 +233,10 @@ function formatStat(value: number, suffix = "") {
   return `${value.toLocaleString()}${suffix}`;
 }
 
+function hasVisibleStats(stats: PublicStats) {
+  return stats.totalStudents + stats.totalCourses + stats.totalLabs + stats.totalLessons > 0;
+}
+
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -242,6 +246,16 @@ export default function LandingPage() {
   const [masterClasses, setMasterClasses] = useState<MasterClass[]>([]);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const { convert } = useCurrency();
+  const showStats = statsLoading || hasVisibleStats(stats);
+  const heroTrustItems = [
+    "No credit card required",
+    statsLoading
+      ? "Loading lab catalog"
+      : stats.totalLabs > 0
+        ? `${formatStat(stats.totalLabs)} hands-on labs`
+        : "Hands-on lab catalog",
+    "12 months of free access",
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -261,7 +275,7 @@ export default function LandingPage() {
   }, [mobileNavOpen]);
 
   useEffect(() => {
-    fetchApi("/dashboard/public-stats")
+    fetchPublicApi<Partial<PublicStats>>("/dashboard/public-stats")
       .then((data) => {
         if (data && typeof data === "object" && !Array.isArray(data)) {
           const nextStats = data as Partial<PublicStats>;
@@ -275,10 +289,10 @@ export default function LandingPage() {
       })
       .catch(() => setStats(EMPTY_STATS))
       .finally(() => setStatsLoading(false));
-    fetchApi("/master-classes?status=UPCOMING&limit=3")
+    fetchPublicApi<MasterClass[] | { data?: MasterClass[] }>("/master-classes?status=UPCOMING&limit=3")
       .then((data) => setMasterClasses(Array.isArray(data) ? data : data.data || []))
       .catch(() => {});
-    fetchApi("/training/trainers")
+    fetchPublicApi<Trainer[] | { data?: Trainer[] }>("/training/trainers")
       .then((data) => setTrainers(Array.isArray(data) ? data.slice(0, 3) : data.data?.slice(0, 3) || []))
       .catch(() => {});
   }, []);
@@ -438,11 +452,7 @@ export default function LandingPage() {
                 <span>Build toward certification</span>
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
-                {[
-                  "No credit card required",
-                  `${statsLoading ? "Loading" : formatStat(stats.totalLabs)} hands-on labs`,
-                  "12 months of free access",
-                ].map((item) => (
+                {heroTrustItems.map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
                     <CheckCircle2 size={14} className="text-[#7AD62A]" /> {item}
                   </div>
@@ -477,25 +487,27 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className="py-10 px-6 bg-[#0a1628] border-y border-white/5 relative overflow-hidden">
-        <div className="absolute inset-0 angular-grid-bg opacity-[0.03]" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { value: statsLoading ? "..." : formatStat(stats.totalStudents), label: "Engineers Training", icon: Users },
-              { value: statsLoading ? "..." : formatStat(stats.totalLabs), label: "Hands-on Labs", icon: Terminal },
-              { value: statsLoading ? "..." : formatStat(stats.totalCourses), label: "Expert Courses", icon: BookOpen },
-              { value: statsLoading ? "..." : formatStat(stats.totalLessons), label: "Video Lessons", icon: Award },
-            ].map((s, i) => (
-              <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
-                <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />
-                <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">{s.value}</div>
-                <div className="mt-2 text-xs text-slate-300 label-tracking">{s.label}</div>
-              </div>
-            ))}
+      {showStats && (
+        <section className="py-10 px-6 bg-[#0a1628] border-y border-white/5 relative overflow-hidden">
+          <div className="absolute inset-0 angular-grid-bg opacity-[0.03]" />
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                { value: statsLoading ? "..." : formatStat(stats.totalStudents), label: "Engineers Training", icon: Users },
+                { value: statsLoading ? "..." : formatStat(stats.totalLabs), label: "Hands-on Labs", icon: Terminal },
+                { value: statsLoading ? "..." : formatStat(stats.totalCourses), label: "Expert Courses", icon: BookOpen },
+                { value: statsLoading ? "..." : formatStat(stats.totalLessons), label: "Video Lessons", icon: Award },
+              ].map((s, i) => (
+                <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
+                  <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />
+                  <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">{s.value}</div>
+                  <div className="mt-2 text-xs text-slate-300 label-tracking">{s.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ═══════════ TRUSTED BY ═══════════ */}
       <section className="py-8 px-6 bg-[#0a1628] border-b border-white/5 relative">
@@ -1075,26 +1087,28 @@ export default function LandingPage() {
       <AngularDivider />
 
       {/* BIG STATS */}
-      <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden scanline-overlay">
-        <div className="absolute inset-0 angular-grid-bg" />
-        <NoiseOverlay opacity={0.025} />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { value: statsLoading ? "..." : formatStat(stats.totalCourses), label: "Courses", icon: BookOpen },
-              { value: statsLoading ? "..." : formatStat(stats.totalLabs), label: "Labs", icon: Microscope },
-              { value: statsLoading ? "..." : formatStat(stats.totalLessons), label: "Lessons", icon: Code },
-              { value: statsLoading ? "..." : formatStat(stats.totalStudents), label: "Engineers", icon: Users },
-            ].map((s, i) => (
-              <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
-                <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover-rotate" />
-                <div className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">{s.value}</div>
-                <div className="mt-2 text-sm text-slate-200 label-tracking">{s.label}</div>
-              </div>
-            ))}
+      {showStats && (
+        <section className="py-24 px-6 bg-[#0F203A] relative overflow-hidden scanline-overlay">
+          <div className="absolute inset-0 angular-grid-bg" />
+          <NoiseOverlay opacity={0.025} />
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              {[
+                { value: statsLoading ? "..." : formatStat(stats.totalCourses), label: "Courses", icon: BookOpen },
+                { value: statsLoading ? "..." : formatStat(stats.totalLabs), label: "Labs", icon: Microscope },
+                { value: statsLoading ? "..." : formatStat(stats.totalLessons), label: "Lessons", icon: Code },
+                { value: statsLoading ? "..." : formatStat(stats.totalStudents), label: "Engineers", icon: Users },
+              ].map((s, i) => (
+                <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
+                  <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover-rotate" />
+                  <div className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">{s.value}</div>
+                  <div className="mt-2 text-sm text-slate-200 label-tracking">{s.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <AngularDivider color="#7AD62A" />
 

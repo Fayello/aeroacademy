@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
     ],
   },
+  async rewrites() {
+    return [
+      { source: "/api/v2/:path*", destination: "http://backend:4000/api/v2/:path*" },
+      { source: "/api/v1/:path*", destination: "http://backend:4000/api/v1/:path*" },
+      { source: "/api/:path*", destination: "http://backend:4000/api/:path*" },
+    ];
+  },
   async headers() {
     return [
       {

@@ -1,4 +1,4 @@
-import { API_URL, API_VERSION } from "@/lib/api";
+import { API_VERSION, getApiUrl } from "@/lib/api";
 
 export async function fetchPublicApi<T = unknown>(
   endpoint: string,
@@ -15,7 +15,7 @@ export async function fetchPublicApi<T = unknown>(
     headers["Content-Type"] = "application/json";
   }
 
-  const response = await fetch(`${API_URL}${API_VERSION}${endpoint}`, {
+  const response = await fetch(`${getApiUrl()}${API_VERSION}${endpoint}`, {
     ...options,
     headers,
   });

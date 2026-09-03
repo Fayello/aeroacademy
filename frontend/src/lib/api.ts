@@ -2,6 +2,27 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL !== undefined ? process.e
 export const API_VERSION = '/api/v1';
 export const API_VERSION_V2 = '/api/v2';
 
+const LOCAL_API_HOSTS = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+
+export function getApiUrl() {
+  if (typeof window === 'undefined') return API_URL;
+  if (!API_URL) return '';
+
+  try {
+    const configuredUrl = new URL(API_URL);
+    const pageIsLocal = LOCAL_API_HOSTS.has(window.location.hostname);
+    const apiIsLocal = LOCAL_API_HOSTS.has(configuredUrl.hostname);
+
+    if (apiIsLocal && !pageIsLocal) {
+      return '';
+    }
+  } catch {
+    return API_URL;
+  }
+
+  return API_URL;
+}
+
 function sanitizeErrorMessage(raw: string): string {
   if (!raw) return 'Something went wrong. Please try again.';
   if (raw.includes('Cannot ') && (raw.includes(' /api/') || raw.includes(' /v1/') || raw.includes(' /v2/'))) {
@@ -26,7 +47,7 @@ async function redirectToLogin() {
   document.cookie = 'token=; path=/; max-age=0';
   document.cookie = 'refresh_token=; path=/; max-age=0';
   try {
-    await fetch(`${API_URL}${API_VERSION}/auth/logout`, {
+    await fetch(`${getApiUrl()}${API_VERSION}/auth/logout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -58,12 +79,13 @@ function scheduleTokenRefresh(token: string) {
 async function refreshAccessToken(): Promise<string> {
   const refreshToken = localStorage.getItem('refresh_token');
   const hadLocalRefreshToken = Boolean(refreshToken);
+  const apiBaseUrl = getApiUrl();
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   let res;
   try {
-    res = await fetch(`${API_URL}${API_VERSION}/auth/refresh`, {
+    res = await fetch(`${apiBaseUrl}${API_VERSION}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -97,6 +119,7 @@ async function refreshAccessToken(): Promise<string> {
 export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}, apiVersion?: string): Promise<T> {
   const version = apiVersion || API_VERSION;
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const apiBaseUrl = getApiUrl();
 
   const isFormData = typeof window !== 'undefined' && options.body instanceof FormData;
   const headers: Record<string, string> = {
@@ -112,7 +135,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
 
   let response;
   try {
-    response = await fetch(`${API_URL}${version}${endpoint}`, {
+    response = await fetch(`${apiBaseUrl}${version}${endpoint}`, {
       ...options,
       headers,
       credentials: 'include',
@@ -149,7 +172,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
         const retryController = new AbortController();
         const retryTimeout = setTimeout(() => retryController.abort(), 15000);
         try {
-          response = await fetch(`${API_URL}${version}${endpoint}`, {
+          response = await fetch(`${apiBaseUrl}${version}${endpoint}`, {
             ...options,
             headers,
             credentials: 'include',
