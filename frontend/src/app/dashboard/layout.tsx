@@ -293,7 +293,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         )}
 
         {/* Edit Profile CTA */}
-        <Link
+        <Link prefetch={false}
           href="/dashboard/profile/edit"
           className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-bold transition-colors shadow-sm shadow-[#7AD62A]/20"
         >
@@ -382,7 +382,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
                 )}
               </div>
 
-              <Link
+              <Link prefetch={false}
                 href="/dashboard/notifications"
                 onClick={() => setNotifOpen(false)}
                 className="block text-center px-4 py-3 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 border-t border-white/6"
@@ -410,7 +410,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
 
           {userMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#0f172a] border border-white/10 rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-150">
-              <Link
+              <Link prefetch={false}
                 href="/dashboard/profile"
                 onClick={() => setUserMenuOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-200 hover:bg-white/5 transition-colors"
@@ -418,7 +418,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
                 <UserIcon size={16} className="text-slate-400" />
                 Profile
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/dashboard/settings"
                 onClick={() => setUserMenuOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-200 hover:bg-white/5 transition-colors"
@@ -496,7 +496,7 @@ function DashboardModeBanner() {
           </div>
         </div>
 
-        <Link
+        <Link prefetch={false}
           href={destinationHref}
           className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-slate-100 transition-colors hover:bg-white/8"
         >

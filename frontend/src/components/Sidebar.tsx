@@ -265,7 +265,7 @@ export default function Sidebar() {
           {nav.alerts.slice(0, 1).map((alert, i) => {
             const AlertIcon = alert.type === "EXAM_AVAILABLE" ? ClipboardCheck : Users;
             return (
-              <Link
+              <Link prefetch={false}
                 key={i}
                 href={alert.href || "#"}
                 className="flex items-start gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-200 hover:bg-amber-100 transition-colors"
@@ -298,7 +298,7 @@ export default function Sidebar() {
             const isActive = pathname === item.href;
 
             return (
-              <Link
+              <Link prefetch={false}
                 key={section.id}
                 href={item.href}
                 title={collapsed ? section.label : undefined}
@@ -328,7 +328,7 @@ export default function Sidebar() {
             const item = section.items[0];
             const ItemIcon = ICON_MAP[item.icon] || Target;
             return (
-              <Link
+              <Link prefetch={false}
                 key={section.id}
                 href={item.href}
                 title={collapsed ? item.label : undefined}
@@ -380,7 +380,7 @@ export default function Sidebar() {
                       (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
                     return (
-                      <Link
+                      <Link prefetch={false}
                         key={item.href}
                         href={item.href}
                         aria-current={isItemActive ? "page" : undefined}
@@ -411,7 +411,7 @@ export default function Sidebar() {
                 </p>
               </div>
             )}
-            <Link
+            <Link prefetch={false}
               href={adminHomePath}
               title={collapsed ? adminWorkspaceLabel : undefined}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7AD62A]/30 text-slate-300 hover:bg-white/5 hover:text-white ${collapsed ? "justify-center" : ""}`}
@@ -425,7 +425,7 @@ export default function Sidebar() {
 
       {/* Bottom */}
       <div className={`px-3 pb-3 shrink-0 space-y-1.5 ${collapsed ? "px-2" : ""}`}>
-        <Link
+        <Link prefetch={false}
           href="/dashboard/notifications"
           title={collapsed ? "Notifications" : undefined}
           aria-current={pathname === "/dashboard/notifications" ? "page" : undefined}
@@ -445,7 +445,7 @@ export default function Sidebar() {
           {collapsed && <NotificationBadge className="absolute -top-1 -right-1" />}
         </Link>
         {adminMode ? (
-          <Link
+          <Link prefetch={false}
             href={adminHomePath}
             title={collapsed ? adminWorkspaceLabel : undefined}
             aria-current={pathname === adminHomePath ? "page" : undefined}
@@ -459,7 +459,7 @@ export default function Sidebar() {
             {!collapsed && adminWorkspaceLabel}
           </Link>
         ) : (
-          <Link
+          <Link prefetch={false}
             href="/dashboard/profile"
             title={collapsed ? "Profile" : undefined}
             aria-current={pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/") ? "page" : undefined}
@@ -473,7 +473,7 @@ export default function Sidebar() {
             {!collapsed && "Profile"}
           </Link>
         )}
-        <Link
+        <Link prefetch={false}
           href="/dashboard/settings"
           title={collapsed ? "Settings" : undefined}
           aria-current={pathname === "/dashboard/settings" ? "page" : undefined}

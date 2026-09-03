@@ -47,7 +47,7 @@ export default function BottomNav() {
         {links.map(({ href, label, icon: Icon, isNotifications }) => {
           const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
           return (
-            <Link
+            <Link prefetch={false}
               key={href}
               href={href}
               aria-current={isActive ? "page" : undefined}
