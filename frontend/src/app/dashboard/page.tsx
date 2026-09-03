@@ -18,45 +18,21 @@ interface User {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(() => {
-    try {
-      const s = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-      return s ? JSON.parse(s) : null;
-    } catch { return null; }
-  });
-  const [hydrated, setHydrated] = useState(() => {
-    try {
-      return typeof window !== "undefined" && !!localStorage.getItem("user");
-    } catch { return false; }
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const { userMetrics } = useDashboard();
 
   useEffect(() => {
-    if (hydrated) return;
-    let cancelled = false;
-    async function loadUser() {
-      try {
-        const me = await fetchApi<User>("/auth/me");
-        if (!cancelled && me) {
-          syncOnboardingFromProfile(me);
-          localStorage.setItem("user", JSON.stringify(me));
-          setUser(me);
-        }
-      } catch {
-        if (!cancelled) setUser(null);
-      } finally {
-        if (!cancelled) setHydrated(true);
+    try {
+      const s = localStorage.getItem("user");
+      if (s) {
+        const parsed = JSON.parse(s) as User;
+        setUser(parsed);
+        syncOnboardingFromProfile(parsed);
       }
-    }
-    loadUser();
-    return () => { cancelled = true; };
-  }, [hydrated]);
-
-  useEffect(() => {
-    if (userMetrics?.xp != null) {
-      localStorage.setItem("xp", String(userMetrics.xp));
-    }
-  }, [userMetrics?.xp]);
+    } catch {}
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (hydrated && !user) {

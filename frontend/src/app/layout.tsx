@@ -62,6 +62,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo-icon.svg" />
       </head>
       <body className={inter.className}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`,
+          }}
+        />
         <RootErrorBoundary>
           <CurrencyProvider>
             <Providers>

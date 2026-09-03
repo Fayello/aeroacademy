@@ -82,7 +82,8 @@ interface CompetencyData {
   }[];
 }
 
-function getTimeGreeting(): string {
+function getStoredGreeting(): string {
+  if (typeof window === "undefined") return "Good day";
   const hour = new Date().getHours();
   if (hour < 12) return "Good morning";
   if (hour < 17) return "Good afternoon";
@@ -182,18 +183,22 @@ function getReadinessBand(score: number) {
 }
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(() => {
-    try {
-      const s = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-      return s ? JSON.parse(s) : null;
-    } catch { return null; }
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [activeLabs, setActiveLabs] = useState<ActiveLab[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
   const [competency, setCompetency] = useState<CompetencyData | null>(null);
   const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
   const [loading, setLoading] = useState(true);
+  const [greeting, setGreeting] = useState("Good day");
   const { userMetrics } = useDashboard();
+
+  useEffect(() => {
+    setGreeting(getStoredGreeting());
+    try {
+      const s = localStorage.getItem("user");
+      if (s) setUser(JSON.parse(s));
+    } catch {}
+  }, []);
 
   const xp = userMetrics?.xp || 0;
 
@@ -381,7 +386,7 @@ export default function Dashboard() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A] mb-2">Dashboard</p>
             <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">Welcome, {firstName}</h1>
-            <p className="text-sm text-white/50 mb-2">{getTimeGreeting()}</p>
+            <p className="text-sm text-white/50 mb-2">{greeting}</p>
             <p className="text-sm text-white/60 leading-relaxed">
               <span className="text-[#7AD62A] font-semibold">{roleLabel}</span>
               {focusLabel && (

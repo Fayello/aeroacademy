@@ -107,32 +107,29 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const router = useRouter();
   const { nav } = useNavigation();
-  const [user] = useState<{ name?: string; avatarUrl?: string } | null>(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-  const [shortcutKey] = useState(() => {
-    if (typeof navigator === "undefined") return "Ctrl";
-    return /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘" : "Ctrl";
-  });
+  const [user, setUser] = useState<{ name?: string; avatarUrl?: string } | null>(null);
+  const [shortcutKey, setShortcutKey] = useState("Ctrl");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [xp] = useState(() => {
-    try {
-      return parseInt(localStorage.getItem("xp") || "0", 10);
-    } catch {
-      return 0;
-    }
-  });
+  const [xp, setXp] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState("");
   const { notifications, unread, loading, markRead, markAllRead } = useNotifications();
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) setUser(JSON.parse(stored));
+    } catch {}
+    try {
+      setXp(parseInt(localStorage.getItem("xp") || "0", 10));
+    } catch {}
+    if (typeof navigator !== "undefined") {
+      setShortcutKey(/Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘" : "Ctrl");
+    }
+  }, []);
 
   // Ctrl+/ keyboard shortcut for search
   useEffect(() => {

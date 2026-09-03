@@ -335,28 +335,18 @@ interface NavigationContextValue {
 const NavigationContext = createContext<NavigationContextValue | null>(null);
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
-  const [viewMode, setViewModeState] = useState<ViewMode>(() => {
-    try {
-      return (localStorage.getItem("viewMode") as ViewMode) || "LEARNER";
-    } catch {
-      return "LEARNER";
-    }
-  });
-
-  const [nav, setNav] = useState<NavigationContext>(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      const experience = (user.userExperience || user.experience || DEFAULT_CONTEXT.experience) as UserExperience;
-      const role = user.role || DEFAULT_CONTEXT.role;
-      const xp = Number(localStorage.getItem("xp") || user.xp || 0);
-      const level = Math.floor(xp / 1000) + 1;
-      const safeViewMode = canAccessAdminView(role) ? viewMode : "LEARNER";
-      return getFallbackContext(experience, role, level, safeViewMode);
-    } catch {
-      return DEFAULT_CONTEXT;
-    }
-  });
+  const [viewMode, setViewModeState] = useState<ViewMode>("LEARNER");
+  const [nav, setNav] = useState<NavigationContext>(DEFAULT_CONTEXT);
   const [loading, setLoading] = useState(true);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("viewMode") as ViewMode | null;
+      if (stored) setViewModeState(stored);
+    } catch {}
+    setHydrated(true);
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -381,6 +371,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   }, [viewMode]);
 
   useEffect(() => {
+    if (!hydrated) return;
     const timeoutId = window.setTimeout(() => {
       void load();
     }, 0);

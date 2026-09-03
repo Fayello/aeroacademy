@@ -74,26 +74,18 @@ export default function Sidebar() {
   const [division, setDivision] = useState("Bronze");
   const [collapsed, setCollapsed] = useState(false);
   const [streak, setStreak] = useState(0);
-
-  useEffect(() => {
-    setCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
-  }, []);
   const { nav, loading } = useNavigation();
 
-  const level = getLevel(xp);
-  const progress = getLevelProgress(xp);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        setXp(parseInt(localStorage.getItem("xp") || "0", 10));
-        setDivision(localStorage.getItem("division") || "Bronze");
-      } catch {
-        // Ignore local hydration errors for non-critical sidebar stats.
-      }
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [pathname]);
+    try {
+      setCollapsed(localStorage.getItem("sidebar-collapsed") === "true");
+      setXp(parseInt(localStorage.getItem("xp") || "0", 10));
+      setDivision(localStorage.getItem("division") || "Bronze");
+    } catch {}
+    fetchApi<{ streak: { currentStreak: number } }>("/dashboard/home")
+      .then((data) => setStreak(data?.streak?.currentStreak || 0))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     try {
@@ -102,11 +94,8 @@ export default function Sidebar() {
     } catch {}
   }, [pathname]);
 
-  useEffect(() => {
-    fetchApi<{ streak: { currentStreak: number } }>("/dashboard/home")
-      .then((data) => setStreak(data?.streak?.currentStreak || 0))
-      .catch(() => {});
-  }, []);
+  const level = getLevel(xp);
+  const progress = getLevelProgress(xp);
 
   // Build sections from navigation context
   const sections = useMemo(() => {
