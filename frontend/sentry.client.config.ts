@@ -6,7 +6,7 @@ Sentry.init({
   tracesSampleRate: 0.1,
   replaysSessionSampleRate: 0,
   replaysOnErrorSampleRate: 1.0,
-  ignoredErrors: [
+  ignoreErrors: [
     "NEXT_NOT_FOUND",
     "ChunkLoadError",
     "Loading chunk",
