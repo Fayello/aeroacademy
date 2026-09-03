@@ -51,6 +51,7 @@ export default function LabAssistPanel({
     try {
       const result = await fetchApi("/ai/tutor/lab-assist", {
         method: "POST",
+        timeout: 60000,
         body: JSON.stringify({
           labId,
           currentStep: currentStep || context || undefined,

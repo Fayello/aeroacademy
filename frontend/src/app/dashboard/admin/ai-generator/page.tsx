@@ -227,21 +227,21 @@ export default function AIGeneratorPage() {
     try {
       if (activeTab === "briefing") {
         if (!selectedLab) { toast.error("Select a lab"); return; }
-        const data = await fetchApi("/ai/generate/briefing", { method: "POST", body: JSON.stringify({ labId: selectedLab }) });
+        const data = await fetchApi("/ai/generate/briefing", { method: "POST", body: JSON.stringify({ labId: selectedLab }), timeout: 120000 });
         setBriefingResult(data);
         toast.success("Briefing generated");
       } else if (activeTab === "questions") {
         if (!selectedAssessment) { toast.error("Select an assessment"); return; }
-        const data = await fetchApi("/ai/generate/questions", { method: "POST", body: JSON.stringify({ assessmentId: selectedAssessment, count: questionCount }) });
+        const data = await fetchApi("/ai/generate/questions", { method: "POST", body: JSON.stringify({ assessmentId: selectedAssessment, count: questionCount }), timeout: 120000 });
         setQuestionsResult(data);
         toast.success(`${data.questions.length} questions generated`);
       } else if (activeTab === "outline") {
         if (!selectedCourse) { toast.error("Select a course"); return; }
-        const data = await fetchApi("/ai/generate/outline", { method: "POST", body: JSON.stringify({ courseId: selectedCourse }) });
+        const data = await fetchApi("/ai/generate/outline", { method: "POST", body: JSON.stringify({ courseId: selectedCourse }), timeout: 120000 });
         setOutlineResult(data);
         toast.success(`${data.modules.length} modules generated`);
       } else if (activeTab === "calibrate") {
-        const data = await fetchApi("/ai/calibrate-all", { method: "POST" });
+        const data = await fetchApi("/ai/calibrate-all", { method: "POST", timeout: 120000 });
         setCalibrationAll(data);
         toast.success(`Calibrated ${data.length} labs`);
       }

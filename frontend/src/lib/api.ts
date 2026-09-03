@@ -117,12 +117,17 @@ async function refreshAccessToken(): Promise<string> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const inflightCache = new Map<string, { promise: Promise<unknown>; expiry: number }>();
 
+export interface FetchApiOptions extends RequestInit {
+  timeout?: number;
+}
+
 // Many existing call sites still rely on the historical implicit response shape.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}, apiVersion?: string): Promise<T> {
+export async function fetchApi<T = any>(endpoint: string, options: FetchApiOptions = {}, apiVersion?: string): Promise<T> {
   const version = apiVersion || API_VERSION;
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const apiBaseUrl = getApiUrl();
+  const requestTimeout = options.timeout ?? 15000;
 
   const isFormData = typeof window !== 'undefined' && options.body instanceof FormData;
   const isGetLike = !options.method || options.method === 'GET';
@@ -143,7 +148,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+  const timeout = setTimeout(() => controller.abort(), requestTimeout);
 
   let response;
   try {
@@ -182,7 +187,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
           delete headers['Authorization'];
         }
         const retryController = new AbortController();
-        const retryTimeout = setTimeout(() => retryController.abort(), 15000);
+        const retryTimeout = setTimeout(() => retryController.abort(), requestTimeout);
         try {
           response = await fetch(`${apiBaseUrl}${version}${endpoint}`, {
             ...options,

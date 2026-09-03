@@ -80,6 +80,7 @@ export default function TutorChat({
 
       const response = await fetchApi("/ai/tutor/chat", {
         method: "POST",
+        timeout: 60000,
         body: JSON.stringify({
           message: msg,
           history,
