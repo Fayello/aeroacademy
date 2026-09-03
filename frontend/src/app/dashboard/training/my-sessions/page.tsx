@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -12,6 +12,7 @@ import {
   Trash2,
   Save,
   BookOpen,
+  X,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import { getErrorMessage } from "@/lib/format";
