@@ -92,11 +92,6 @@ export class AuthController {
       ...common,
       maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE_MS,
     });
-    res.cookie('token', accessToken, {
-      ...common,
-      httpOnly: false,
-      maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE_MS,
-    });
   }
 
   private clearAuthCookies(res: Response) {

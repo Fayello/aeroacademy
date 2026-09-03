@@ -6,7 +6,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Request, Response, NextFunction } from 'express';
 import { API_PREFIX_V1 } from './common/api-version';
 import { GlobalExceptionFilter } from './common/global-exception.filter';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
 async function bootstrap() {
@@ -43,15 +43,31 @@ async function bootstrap() {
     maxAge: 86400,
   });
 
-  // Static file serving for uploads
-  const uploadsDir = join(process.cwd(), 'uploads');
+  // Request body size limit
+  expressApp.use((req: Request, _res: Response, next: NextFunction) => {
+    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+      const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+      if (contentLength > 1048576) { // 1MB
+        _res.status(413).json({ statusCode: 413, message: 'Request entity too large' });
+        return;
+      }
+    }
+    next();
+  });
+
+  // Static file serving for uploads (with path traversal protection)
+  const uploadsDir = resolve(join(process.cwd(), 'uploads'));
   if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
   expressApp.use(
     '/api/v1/upload/files',
     (req: Request, res: Response, next: NextFunction) => {
-      const filePath = join(uploadsDir, req.url);
-      if (existsSync(filePath)) {
-        res.sendFile(filePath);
+      const safePath = resolve(join(uploadsDir, req.url));
+      if (!safePath.startsWith(uploadsDir)) {
+        res.status(403).json({ statusCode: 403, message: 'Forbidden' });
+        return;
+      }
+      if (existsSync(safePath)) {
+        res.sendFile(safePath);
       } else {
         next();
       }

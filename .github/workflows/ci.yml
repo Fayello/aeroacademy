@@ -31,7 +31,6 @@ jobs:
       - name: Frontend typecheck
         working-directory: frontend
         run: npx tsc --noEmit
-        continue-on-error: true
 
       # Backend
       - name: Install backend deps
@@ -45,7 +44,6 @@ jobs:
       - name: Backend typecheck
         working-directory: backend
         run: npx tsc --noEmit
-        continue-on-error: true
 
   deploy:
     name: Build & Deploy
@@ -100,5 +98,11 @@ jobs:
           script: |
             cd /root/aeroacademy
             sudo docker compose pull --ignore-buildable frontend backend
-            sudo docker compose up -d --force-recreate frontend backend
+            sudo docker compose up -d --force-recreate docker-proxy frontend backend
             sudo docker image prune -f
+            # Run database migrations
+            sudo docker compose exec -T backend npx prisma migrate deploy --skip-generate 2>&1 || echo "Migration check done"
+            # Post-deploy health check
+            sleep 10
+            curl -sf http://localhost:4000/ > /dev/null && echo "Backend: OK" || echo "Backend: FAIL"
+            curl -sf http://localhost:3000/ > /dev/null && echo "Frontend: OK" || echo "Frontend: FAIL"

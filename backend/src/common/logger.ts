@@ -1,27 +1,30 @@
-type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+import pino from 'pino';
 
-function formatMessage(
-  level: LogLevel,
-  context: string,
-  message: string,
-): string {
-  const timestamp = new Date().toISOString();
-  return `[${timestamp}] [${level.toUpperCase()}] [${context}] ${message}`;
-}
+const level = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug');
+
+const baseLogger = pino({
+  level,
+  transport: process.env.NODE_ENV !== 'production'
+    ? { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard' } }
+    : undefined,
+  formatters: {
+    level: (label) => ({ level: label }),
+  },
+  timestamp: pino.stdTimeFunctions.isoTime,
+});
+
+type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 function createLogger(context: string) {
   return {
     info: (message: string, ...args: unknown[]) =>
-      console.log(formatMessage('info', context, message), ...args),
+      baseLogger.info({ context }, message, ...args),
     warn: (message: string, ...args: unknown[]) =>
-      console.warn(formatMessage('warn', context, message), ...args),
+      baseLogger.warn({ context }, message, ...args),
     error: (message: string, ...args: unknown[]) =>
-      console.error(formatMessage('error', context, message), ...args),
-    debug: (message: string, ...args: unknown[]) => {
-      if (process.env.LOG_LEVEL === 'debug') {
-        console.log(formatMessage('debug', context, message), ...args);
-      }
-    },
+      baseLogger.error({ context }, message, ...args),
+    debug: (message: string, ...args: unknown[]) =>
+      baseLogger.debug({ context }, message, ...args),
   };
 }
 

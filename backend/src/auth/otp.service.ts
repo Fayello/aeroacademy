@@ -73,7 +73,8 @@ export class OtpService {
       data: { attempts: { increment: 1 } },
     });
 
-    if (record.code !== code) return false;
+    if (record.code.length !== code.length ||
+        !crypto.timingSafeEqual(Buffer.from(record.code), Buffer.from(code))) return false;
 
     await this.prisma.otpVerification.deleteMany({ where: { email, purpose } });
     return true;

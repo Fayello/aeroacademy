@@ -3,18 +3,59 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${POSTGRES_USER:-aeroacademy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD on server}
       POSTGRES_DB: aeroacademy
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d aeroacademy"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aeroacademy} -d aeroacademy"]
       interval: 5s
       timeout: 5s
       retries: 5
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_READ_SEARCH
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    restart: unless-stopped
+    environment:
+      CONTAINERS: 1
+      NETWORKS: 0
+      VOLUMES: 0
+      INFO: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - backend
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   backend:
     image: ghcr.io/fayello/aeroacademy-backend:latest
@@ -24,33 +65,48 @@ services:
     restart: unless-stopped
     env_file: ./backend/.env
     environment:
-      DATABASE_URL: postgresql://user:password@db:5432/aeroacademy?schema=public
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aeroacademy}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD on server}@db:5432/aeroacademy?schema=public&connection_limit=10&pool_timeout=10
       FRONTEND_URL: https://xpertclass.academy
       BACKEND_URL: https://xpertclass.academy
-      SMTP_HOST: smtp.hostinger.com
-      SMTP_PORT: "465"
-      SMTP_USER: contact@xpertclass.academy
-      SMTP_PASS: "Welcome@2027@+"
-      REMOTE_DOCKER_HOST: 5.189.182.196
-      REMOTE_DOCKER_USER: fayell
+      SMTP_HOST: ${SMTP_HOST:-smtp.hostinger.com}
+      SMTP_PORT: "${SMTP_PORT:-465}"
+      SMTP_USER: ${SMTP_USER:-contact@xpertclass.academy}
+      SMTP_PASS: ${SMTP_PASS:?Set SMTP_PASS on server}
+      REMOTE_DOCKER_HOST: ${REMOTE_DOCKER_HOST:-5.189.182.196}
+      REMOTE_DOCKER_USER: ${REMOTE_DOCKER_USER:-fayell}
       REMOTE_DOCKER_KEY: /app/.ssh_key
-      OLLAMA_HOST: http://5.189.182.196:11434
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://5.189.182.196:11434}
     ports:
       - "4000:4000"
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - uploads_data:/app/uploads
       - /root/.ssh/aeroacademy_deploy:/app/.ssh_key:ro
     networks:
       - backend
       - labs
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"const h=require('http');h.get('http://localhost:4000/',r=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     image: ghcr.io/fayello/aeroacademy-frontend:latest
@@ -59,16 +115,40 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ""
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+        SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN:-}
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: ""
+      NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
       BACKEND_INTERNAL_URL: "http://backend:4000"
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   backend:
