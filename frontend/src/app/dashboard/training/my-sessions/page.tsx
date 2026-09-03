@@ -166,13 +166,11 @@ export default function MySessionsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-white/10">
-        {(
-          [
-            { id: "bookings", label: "Bookings", count: upcoming.length },
-            { id: "slots", label: "Availability", count: profile.slots.length },
-            { id: "profile", label: "Profile" },
-          ] as const
-        ).map((tab) => (
+        {[
+          { id: "bookings" as const, label: "Bookings", count: upcoming.length },
+          { id: "slots" as const, label: "Availability", count: profile.slots.length },
+          { id: "profile" as const, label: "Profile", count: 0 },
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -183,7 +181,7 @@ export default function MySessionsPage() {
             }`}
           >
             {tab.label}
-            {tab.count !== undefined && (
+            {tab.id !== "profile" && (
               <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/10 text-[10px]">
                 {tab.count}
               </span>
