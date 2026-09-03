@@ -114,6 +114,9 @@ async function refreshAccessToken(): Promise<string> {
   return data.access_token || '';
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const inflightCache = new Map<string, { promise: Promise<unknown>; expiry: number }>();
+
 // Many existing call sites still rely on the historical implicit response shape.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}, apiVersion?: string): Promise<T> {
@@ -122,6 +125,15 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   const apiBaseUrl = getApiUrl();
 
   const isFormData = typeof window !== 'undefined' && options.body instanceof FormData;
+  const isGetLike = !options.method || options.method === 'GET';
+  const dedupeKey = isGetLike ? `${version}${endpoint}` : '';
+
+  if (dedupeKey) {
+    const cached = inflightCache.get(dedupeKey);
+    if (cached && cached.expiry > Date.now()) {
+      return cached.promise;
+    }
+  }
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...((options.headers as Record<string, string>) || {}),
@@ -225,12 +237,11 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   }
 
   const text = await response.text();
-  if (!text) return undefined as T;
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    return text as unknown as T;
+  const result = !text ? undefined as T : (() => { try { return JSON.parse(text) as T; } catch { return text as unknown as T; } })();
+  if (dedupeKey) {
+    inflightCache.set(dedupeKey, { promise: Promise.resolve(result), expiry: Date.now() + 500 });
   }
+  return result;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
