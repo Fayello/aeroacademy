@@ -131,7 +131,7 @@ export async function fetchApi<T = any>(endpoint: string, options: RequestInit =
   if (dedupeKey) {
     const cached = inflightCache.get(dedupeKey);
     if (cached && cached.expiry > Date.now()) {
-      return cached.promise;
+      return cached.promise as Promise<T>;
     }
   }
   const headers: Record<string, string> = {
