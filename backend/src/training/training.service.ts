@@ -130,8 +130,8 @@ export class TrainingService {
           status: 'CONFIRMED',
         },
         include: {
-          trainer: { include: { user: { select: { name: true, email: true } } } },
-          student: { select: { name: true, email: true } },
+          trainer: { include: { user: { select: { id: true, name: true, email: true } } } },
+          student: { select: { id: true, name: true, email: true } },
         },
       });
 
@@ -234,8 +234,8 @@ export class TrainingService {
     const booking = await this.prisma.booking.findUnique({
       where: { id: bookingId },
       include: {
-        trainer: { include: { user: { select: { name: true, email: true } } } },
-        student: { select: { name: true, email: true } },
+        trainer: { include: { user: { select: { id: true, name: true, email: true } } } },
+        student: { select: { id: true, name: true, email: true } },
       },
     });
     if (!booking) throw new NotFoundException('Booking not found');
@@ -424,7 +424,6 @@ export class TrainingService {
       where: { trainerId: trainer.id },
       include: {
         student: { select: { id: true, name: true, email: true, avatarUrl: true } },
-        slot: true,
       },
       orderBy: { date: 'asc' },
     });
