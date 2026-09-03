@@ -52,7 +52,7 @@ export class DashboardService implements OnModuleInit {
       }).catch(() => []),
       this.prisma.courseEnrollment.findMany({
         where: { userId },
-        include: { course: { select: { id: true, title: true, description: true, imageUrl: true, category: true, difficulty: true } } },
+        include: { course: { select: { id: true, title: true, description: true, imageUrl: true } } },
         orderBy: { enrolledAt: 'desc' },
         take: 5,
       }).catch(() => []),
