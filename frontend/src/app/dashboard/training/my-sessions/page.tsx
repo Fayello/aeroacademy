@@ -398,7 +398,7 @@ function SlotsTab({
   };
 
   const grouped = DAYS.map((day, i) => ({
-    day,
+    dayLabel: day,
     dayNum: i,
     slots: slots.filter((s) => s.dayOfWeek === i),
   })).filter((g) => g.slots.length > 0);
@@ -414,19 +414,7 @@ function SlotsTab({
               className="bg-[#0f172a] rounded-xl border border-white/10 p-4"
             >
               <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                {g.day === 0
-                  ? "Sunday"
-                  : g.day === 1
-                  ? "Monday"
-                  : g.day === 2
-                  ? "Tuesday"
-                  : g.day === 3
-                  ? "Wednesday"
-                  : g.day === 4
-                  ? "Thursday"
-                  : g.day === 5
-                  ? "Friday"
-                  : "Saturday"}
+                {["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][g.dayNum]}
               </h4>
               <div className="space-y-1.5">
                 {g.slots.map((s) => (
