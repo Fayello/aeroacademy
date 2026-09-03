@@ -71,6 +71,7 @@ const DEFAULT_CONTEXT: NavigationContext = {
         { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
         { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
         { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
+        { href: "/dashboard/training/my-sessions", tKey: "nav.trainerDashboard", icon: "BookOpen", label: "Trainer Dashboard" },
       ],
     },
     {
