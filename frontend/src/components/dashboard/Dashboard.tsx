@@ -229,23 +229,14 @@ export default function Dashboard() {
         return;
       }
 
-      fetchApi<ActiveLab[]>("/dashboard/active-labs")
-        .then((data) => { if (!cancelled && Array.isArray(data)) setActiveLabs(data); })
-        .catch(() => {});
-
-      fetchApi<EnrolledCourse[]>("/courses/enrolled")
+      fetchApi<{ streak: { currentStreak: number }; activeLabs: ActiveLab[]; enrolledCourses: EnrolledCourse[]; recommendations: DashboardRecommendations }>(
+        "/dashboard/home"
+      )
         .then((data) => {
-          if (!cancelled && Array.isArray(data)) {
-            setEnrolledCourses(data.slice(0, 5));
-          }
-        })
-        .catch(() => {});
-
-      fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
-        .then((data) => {
-          if (!cancelled && data) {
-            setRecommendations(data);
-          }
+          if (cancelled || !data) return;
+          if (data.activeLabs) setActiveLabs(data.activeLabs);
+          if (data.enrolledCourses) setEnrolledCourses(data.enrolledCourses.slice(0, 5));
+          if (data.recommendations) setRecommendations(data.recommendations);
         })
         .catch(() => {});
 

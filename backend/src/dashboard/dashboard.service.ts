@@ -38,6 +38,46 @@ export class DashboardService implements OnModuleInit {
     return { totalStudents, totalCourses, totalLabs, totalLessons };
   }
 
+  async getDashboardHome(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { currentStreak: true, xp: true, rank: true, division: true },
+    });
+
+    const [activeLabs, enrolledCourses, notifications, unreadCount] = await Promise.all([
+      this.prisma.labInstance.findMany({
+        where: { userId, status: 'RUNNING' },
+        include: { lab: { select: { id: true, title: true, difficulty: true, imageUrl: true, dockerImage: true } } },
+        orderBy: { createdAt: 'desc' },
+      }).catch(() => []),
+      this.prisma.courseEnrollment.findMany({
+        where: { userId },
+        include: { course: { select: { id: true, title: true, description: true, imageUrl: true, category: true, difficulty: true } } },
+        orderBy: { enrolledAt: 'desc' },
+        take: 5,
+      }).catch(() => []),
+      this.prisma.notification.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+      }).catch(() => []),
+      this.prisma.notification.count({
+        where: { userId, read: false },
+      }).catch(() => 0),
+    ]);
+
+    return {
+      streak: user?.currentStreak || 0,
+      xp: user?.xp || 0,
+      rank: user?.rank || 0,
+      division: user?.division || 'BRONZE',
+      activeLabs,
+      enrolledCourses,
+      notifications,
+      unreadCount,
+    };
+  }
+
   async getSystemIntelligence(userId?: string) {
     // 1. Fetch latest activities (Logs)
     const latestProgress = await this.prisma.progress.findMany({

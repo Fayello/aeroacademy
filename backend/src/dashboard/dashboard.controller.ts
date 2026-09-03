@@ -242,4 +242,11 @@ export class DashboardController {
   ) {
     return this.personalizationService.updatePreferences(req.user.id, body);
   }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('home')
+  async getDashboardHome(@Request() req: RequestWithUser) {
+    return this.dashboardService.getDashboardHome(req.user.id);
+  }
 }

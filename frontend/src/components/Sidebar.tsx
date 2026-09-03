@@ -103,8 +103,8 @@ export default function Sidebar() {
   }, [pathname]);
 
   useEffect(() => {
-    fetchApi<{ currentStreak: number }>("/dashboard/streak")
-      .then((data) => setStreak(data.currentStreak || 0))
+    fetchApi<{ streak: { currentStreak: number } }>("/dashboard/home")
+      .then((data) => setStreak(data?.streak?.currentStreak || 0))
       .catch(() => {});
   }, []);
 
