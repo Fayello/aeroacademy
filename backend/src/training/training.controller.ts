@@ -159,4 +159,48 @@ export class TrainingController {
   async removeSlot(@Param('id') id: string) {
     return this.trainingService.removeSlot(id);
   }
+
+  @ApiBearerAuth('JWT-auth')
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  async getMyTrainerProfile(@Request() req: RequestWithUser) {
+    return this.trainingService.getTrainerByUserId(req.user.id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Get('me/bookings')
+  @UseGuards(AuthGuard('jwt'))
+  async getMyTrainerBookings(@Request() req: RequestWithUser) {
+    return this.trainingService.getTrainerBookings(req.user.id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Patch('me')
+  @UseGuards(AuthGuard('jwt'))
+  @Audit('TRAINER_UPDATED')
+  async updateMyTrainerProfile(
+    @Request() req: RequestWithUser,
+    @Body() body: { bio?: string; specialties?: string[]; hourlyRate?: number },
+  ) {
+    return this.trainingService.updateTrainerProfile(req.user.id, body);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post('me/slots')
+  @UseGuards(AuthGuard('jwt'))
+  @Audit('TRAINER_SLOTS_ADDED')
+  async addMySlots(
+    @Request() req: RequestWithUser,
+    @Body() body: { slots: { dayOfWeek: number; startTime: string; endTime: string }[] },
+  ) {
+    return this.trainingService.addTrainerSlots(req.user.id, body.slots);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Delete('me/slots/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @Audit('TRAINER_SLOT_REMOVED')
+  async removeMySlot(@Param('id') id: string, @Request() req: RequestWithUser) {
+    return this.trainingService.removeTrainerSlot(req.user.id, id);
+  }
 }

@@ -77,7 +77,18 @@ export class NotificationsService implements OnModuleInit {
             title: 'Booking Cancelled',
             message: p.message ?? 'A training booking has been cancelled.',
             type: 'WARNING',
-            link: '/dashboard/training/bookings',
+            link: p.link ?? '/dashboard/training/bookings',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'TRAINER_BOOKING_RECEIVED':
+          this.create({
+            userId: p.userId,
+            title: 'New Booking',
+            message: p.message ?? 'A student has booked a training session.',
+            type: 'BOOKING',
+            link: p.link ?? '/dashboard/training/bookings',
           }).catch((err) =>
             logger.error(`Failed to create notification: ${err.message}`),
           );
