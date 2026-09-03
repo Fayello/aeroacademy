@@ -23,8 +23,8 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 const FEATURES = [
   { icon: Terminal, title: "Real-Time Terminal", description: "Full SSH access to lab environments" },
-  { icon: Microscope, title: "37+ Hands-on Labs", description: "Deploy Docker sandboxes in seconds" },
-  { icon: BookOpen, title: "9 Structured Courses", description: "50+ lessons with quizzes and projects" },
+  { icon: Microscope, title: "Hands-on Labs", description: "Deploy Docker sandboxes in seconds" },
+  { icon: BookOpen, title: "Structured Courses", description: "Lessons with quizzes and projects" },
   { icon: Award, title: "Earn Certifications", description: "Prove your skills to employers" },
 ];
 

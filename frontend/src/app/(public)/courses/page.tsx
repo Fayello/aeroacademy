@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Courses | XpertClass",
-  description: "Browse hands-on courses in security, Linux, DevOps and cloud. 9 courses, 50+ lessons with linked labs.",
+  description: "Browse hands-on courses in security, Linux, DevOps and cloud with linked labs, quizzes, and practical projects.",
   alternates: { canonical: "/courses" },
   openGraph: { title: "Courses | XpertClass", description: "Structured learning paths with real labs.", type: "website" },
 };

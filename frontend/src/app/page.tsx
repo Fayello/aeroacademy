@@ -94,14 +94,14 @@ const LEARNING_PATHS = [
     tab: "All Courses",
     icon: Layers,
     title: "Browse the Full Catalog",
-    description: "9 structured courses with 50+ lessons, quizzes, and linked hands-on labs.",
+    description: "Browse structured courses with lessons, quizzes, and linked hands-on labs.",
     courses: [
       { name: "Product Security Architecture & SDL", lessons: 3, level: "Advanced" },
       { name: "Advanced Web Vulnerabilities", lessons: 5, level: "Intermediate" },
       { name: "Linux Fundamentals: Zero to CLI Hero", lessons: 5, level: "Beginner" },
       { name: "Containerization & DevOps", lessons: 8, level: "Intermediate" },
     ],
-    labHighlight: "37 Hands-on Labs across all disciplines",
+    labHighlight: "Hands-on labs across multiple disciplines",
   },
 ];
 
@@ -131,7 +131,7 @@ const FEATURES = [
   { icon: Server, title: "Docker Sandboxes", description: "Each lab runs in an isolated container. Spin up vulnerable apps, break them, learn from them safely." },
   { icon: BarChart3, title: "Progress Analytics", description: "Track your learning with XP, rankings, and division tiers. See exactly where you stand." },
   { icon: Users, title: "Team Collaboration", description: "Form squads, compete on leaderboards, and tackle challenges together. Security is a team sport." },
-  { icon: Code, title: "Structured Curriculum", description: "50+ lessons with deep technical content, quizzes, and lab-linked practice. No fluff, just skills." },
+  { icon: Code, title: "Structured Curriculum", description: "Deep technical content, quizzes, and lab-linked practice. No fluff, just skills." },
   { icon: Award, title: "Skill Certifications", description: "Earn verified certifications for completing skill paths. Prove your expertise to employers." },
 ];
 
@@ -215,11 +215,30 @@ const LEVEL_COLORS: Record<string, string> = {
   Advanced: "bg-red-500/10 text-red-700 border-red-200",
 };
 
+type PublicStats = {
+  totalStudents: number;
+  totalCourses: number;
+  totalLabs: number;
+  totalLessons: number;
+};
+
+const EMPTY_STATS: PublicStats = {
+  totalStudents: 0,
+  totalCourses: 0,
+  totalLabs: 0,
+  totalLessons: 0,
+};
+
+function formatStat(value: number, suffix = "") {
+  return `${value.toLocaleString()}${suffix}`;
+}
+
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalLabs: 0, totalLessons: 0 });
+  const [stats, setStats] = useState<PublicStats>(EMPTY_STATS);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [masterClasses, setMasterClasses] = useState<MasterClass[]>([]);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const { convert } = useCurrency();
@@ -244,9 +263,18 @@ export default function LandingPage() {
   useEffect(() => {
     fetchApi("/dashboard/public-stats")
       .then((data) => {
-        if (data && typeof data === "object" && !Array.isArray(data)) setStats(data);
+        if (data && typeof data === "object" && !Array.isArray(data)) {
+          const nextStats = data as Partial<PublicStats>;
+          setStats({
+            totalStudents: Number(nextStats.totalStudents) || 0,
+            totalCourses: Number(nextStats.totalCourses) || 0,
+            totalLabs: Number(nextStats.totalLabs) || 0,
+            totalLessons: Number(nextStats.totalLessons) || 0,
+          });
+        }
       })
-      .catch(() => {});
+      .catch(() => setStats(EMPTY_STATS))
+      .finally(() => setStatsLoading(false));
     fetchApi("/master-classes?status=UPCOMING&limit=3")
       .then((data) => setMasterClasses(Array.isArray(data) ? data : data.data || []))
       .catch(() => {});
@@ -410,7 +438,11 @@ export default function LandingPage() {
                 <span>Build toward certification</span>
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
-                {["No credit card required", `${stats.totalLabs || 35}+ hands-on labs`, "12 months of free access"].map((item) => (
+                {[
+                  "No credit card required",
+                  `${statsLoading ? "Loading" : formatStat(stats.totalLabs)} hands-on labs`,
+                  "12 months of free access",
+                ].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
                     <CheckCircle2 size={14} className="text-[#7AD62A]" /> {item}
                   </div>
@@ -450,10 +482,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers Training", icon: Users },
-              { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Hands-on Labs", icon: Terminal },
-              { value: stats.totalCourses || "7", label: "Expert Courses", icon: BookOpen },
-              { value: stats.totalLessons || "50+", label: "Video Lessons", icon: Award },
+              { value: statsLoading ? "..." : formatStat(stats.totalStudents), label: "Engineers Training", icon: Users },
+              { value: statsLoading ? "..." : formatStat(stats.totalLabs), label: "Hands-on Labs", icon: Terminal },
+              { value: statsLoading ? "..." : formatStat(stats.totalCourses), label: "Expert Courses", icon: BookOpen },
+              { value: statsLoading ? "..." : formatStat(stats.totalLessons), label: "Video Lessons", icon: Award },
             ].map((s, i) => (
               <div key={s.label} className={`text-center animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={22} className="text-[#7AD62A] mx-auto mb-3" />
@@ -1049,10 +1081,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: stats.totalCourses || "7", label: "Courses", icon: BookOpen },
-              { value: stats.totalLabs ? `${stats.totalLabs}+` : "35+", label: "Labs", icon: Microscope },
-              { value: stats.totalLessons || "55+", label: "Lessons", icon: Code },
-              { value: stats.totalStudents ? `${stats.totalStudents}+` : "7+", label: "Engineers", icon: Users },
+              { value: statsLoading ? "..." : formatStat(stats.totalCourses), label: "Courses", icon: BookOpen },
+              { value: statsLoading ? "..." : formatStat(stats.totalLabs), label: "Labs", icon: Microscope },
+              { value: statsLoading ? "..." : formatStat(stats.totalLessons), label: "Lessons", icon: Code },
+              { value: statsLoading ? "..." : formatStat(stats.totalStudents), label: "Engineers", icon: Users },
             ].map((s, i) => (
               <div key={s.label} className={`angular-card bg-white/[0.04] backdrop-blur-sm p-6 border border-white/[0.06] hover:bg-white/[0.07] transition-all duration-300 group hover-lift animate-fade-in-up animate-delay-${i + 1}`}>
                 <s.icon size={24} className="text-[#7AD62A] mx-auto mb-3 group-hover-rotate" />
@@ -1075,7 +1107,7 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight text-stroke-white">Ready to master the tech stack?</h2>
           <p className="mt-5 max-w-xl mx-auto text-lg leading-relaxed text-slate-200">
-            Join hundreds of engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
+            Join engineers learning security, Linux, DevOps, and cloud infrastructure through hands-on practice.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <Link href="/register" className="angular-btn btn-primary text-base px-10 py-4 font-semibold shadow-lg shadow-[#7AD62A]/25 hover:shadow-[#7AD62A]/40 magnetic-btn">

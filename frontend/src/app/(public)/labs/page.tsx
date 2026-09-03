@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Labs | XpertClass",
-  description: "35+ hands-on labs: DVWA, Juice Shop, WebGoat, Linux, Docker, Kubernetes, networking and more. Deploy isolated sandboxes in 30 seconds.",
+  description: "Hands-on labs for security, Linux, Docker, Kubernetes, networking, and more. Deploy isolated sandboxes for practical training.",
   alternates: { canonical: "/labs" },
   openGraph: { title: "Labs | XpertClass", description: "Real Docker sandboxes with terminal access.", type: "website" },
 };
