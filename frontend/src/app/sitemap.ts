@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Best-effort: if backend is unreachable or requires auth, fall back to static only.
   // This keeps build resilient (no hard failure) while enabling indexation when public endpoint exists.
   try {
-    const api = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+    const api = process.env.BACKEND_INTERNAL_URL || "http://backend:4000";
     const [coursesRes, labsRes] = await Promise.all([
       fetch(`${api}/api/v1/courses`, { next: { revalidate: 3600 } }).catch(() => null),
       fetch(`${api}/api/v1/labs`, { next: { revalidate: 3600 } }).catch(() => null),

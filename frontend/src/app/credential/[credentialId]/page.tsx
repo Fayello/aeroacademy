@@ -47,7 +47,7 @@ export default function VerifyPage() {
     async function load() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/api/v1/verify/credential/${credentialId}`
+          `${process.env.BACKEND_INTERNAL_URL || "http://backend:4000"}/api/v1/verify/credential/${credentialId}`
         );
         const data = await res.json();
         if (!cancelled) setResult(data);

@@ -15,7 +15,7 @@ type LabDetail = {
   tasks?: string[] | null;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+const API_URL = process.env.BACKEND_INTERNAL_URL || "http://backend:4000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://xpertclass.academy";
 
 async function fetchLab(id: string): Promise<LabDetail | null> {

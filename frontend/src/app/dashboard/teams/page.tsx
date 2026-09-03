@@ -111,7 +111,7 @@ export default function TeamsPage() {
     formData.append("file", file);
     setUploading(type);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/v1/upload/team`, {
+      const res = await fetch(`${process.env.BACKEND_INTERNAL_URL || "http://backend:4000"}/api/v1/upload/team`, {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: formData,
