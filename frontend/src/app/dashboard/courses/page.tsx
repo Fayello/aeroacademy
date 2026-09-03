@@ -380,14 +380,12 @@ export default function CoursesPage() {
     let cancelled = false;
     async function loadCourses() {
       try {
-        const [data, enrollmentsData, recommendationData] = await Promise.all([
+        const [data, enrollmentsData] = await Promise.all([
           fetchApi<CourseListItem[]>("/courses"),
           fetchApi("/courses/my-enrollments").catch(() => []),
-          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
         if (!cancelled) {
           setCourses(data);
-          setRecommendations(recommendationData);
           const enrollMap: Record<string, { enrolledAt: string; lastActivityAt: string }> = {};
           if (Array.isArray(enrollmentsData)) {
             for (const e of enrollmentsData) {
@@ -396,6 +394,9 @@ export default function CoursesPage() {
           }
           setEnrollments(enrollMap);
         }
+        fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
+          .then((data) => { if (!cancelled) setRecommendations(data); })
+          .catch(() => {});
       } catch {
         if (!cancelled) toast.error("Failed to load courses");
       } finally {

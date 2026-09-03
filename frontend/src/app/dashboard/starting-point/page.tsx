@@ -105,20 +105,19 @@ export default function StartingPointPage() {
     let cancelled = false;
     async function load() {
       try {
-        const [allLabs, activeLabs, recommendationData] = await Promise.all([
+        const [allLabs, activeLabs] = await Promise.all([
           fetchApi<Lab[]>("/labs?take=200"),
           fetchApi<ActiveLabInstance[]>("/dashboard/active-labs").catch(() => []),
-          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
-        if (!cancelled && recommendationData) {
-          setRecommendations(recommendationData);
-        }
+        fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
+          .then((data) => { if (!cancelled && data) setRecommendations(data); })
+          .catch(() => {});
         const activeLabIds = new Set(
           (activeLabs || [])
             .map((item) => item.labId || item.lab?.id)
             .filter((value): value is string => !!value),
         );
-        const chosenLabs = rankStarterLabs(allLabs, recommendationData?.labs?.map((lab) => lab.id) || []);
+        const chosenLabs = rankStarterLabs(allLabs, []);
         const beginnerLabs: StartingLab[] = [];
         chosenLabs.forEach((lab, idx) => {
           const progressStatus = getProgressStatus(lab.flags);

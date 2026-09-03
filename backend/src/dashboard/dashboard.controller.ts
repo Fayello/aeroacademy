@@ -212,10 +212,14 @@ export class DashboardController {
     @Request() req: RequestWithUser,
     @Query('limit') limit?: string,
   ) {
-    return this.personalizationService.getRecommendations(
-      req.user.id,
-      limit ? parseInt(limit, 10) : 5,
-    );
+    const result = await Promise.race([
+      this.personalizationService.getRecommendations(
+        req.user.id,
+        limit ? parseInt(limit, 10) : 5,
+      ),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+    ]);
+    return result ?? { courses: [], labs: [], paths: [], insights: { journeySummary: '', personalizationMode: 'rules' } };
   }
 
   // V2: User preferences

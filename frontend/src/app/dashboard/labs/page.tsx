@@ -124,16 +124,17 @@ export default function LabsCatalog() {
     let cancelled = false;
     async function loadData() {
       try {
-        const [labsData, stats, recommendationData] = await Promise.all([
+        const [labsData, stats] = await Promise.all([
           fetchApi("/labs?take=200"),
           fetchApi("/labs/stats"),
-          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
         if (!cancelled) {
           setLabs(labsData);
           setSystemStats(stats);
-          setRecommendations(recommendationData);
         }
+        fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
+          .then((data) => { if (!cancelled) setRecommendations(data); })
+          .catch(() => {});
       } catch {
         if (!cancelled) toast.error("Failed to load labs");
       } finally {
