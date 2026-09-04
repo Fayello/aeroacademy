@@ -1,0 +1,69 @@
+%YAML 1.1
+---
+
+runmode: autofp
+
+address-groups:
+  HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,169.58.128.0/17]"
+  EXTERNAL_NET: "!$HOME_NET"
+
+nfqueue:
+  mode: accept
+  fail-open: yes
+
+stream:
+  memcap: 1gb
+  max-sessions: 262144
+  prealloc-sessions: 131072
+  checksum-validation: no
+  midstream: true
+  async-oneside: true
+  midstream-policy: accept
+
+stream-reassembly:
+  memcap: 256mb
+  depth: 1mb
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: /var/log/suricata/eve.json
+      rotate-interval: day
+      community-id: true
+      types:
+        - alert:
+            tagged-packets: yes
+        - anomaly:
+            enabled: yes
+            types:
+              decode: yes
+              stream: yes
+              http: yes
+        - http:
+            extended: yes
+        - dns
+        - tls:
+            extended: yes
+        - ssh
+        - flow
+        - stats:
+            threads: no
+
+default-log-dir: /var/log/suricata/
+
+logging:
+  default-log-format: "[%i] %t - %m"
+  outputs:
+    - file:
+        enabled: yes
+        level: Info
+        filename: /var/log/suricata/suricata.log
+        append: yes
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules
+
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
