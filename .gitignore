@@ -2,6 +2,7 @@ node_modules/
 dist/
 .next/
 backend/dist/
+backend/email-previews/
 backend/node_modules/
 frontend/tsconfig.tsbuildinfo
 *.log

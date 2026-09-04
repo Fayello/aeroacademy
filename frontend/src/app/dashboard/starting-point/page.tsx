@@ -9,6 +9,18 @@ import PageHeader from "@/components/ui/PageHeader";
 import { getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreLabAgainstOnboarding } from "@/lib/onboarding";
 import type { DashboardRecommendations, Lab } from "@/types/api";
 
+const FIELD_PATH_TITLES: Record<string, string> = {
+  cybersecurity: "Cybersecurity Foundation Path",
+  ai: "AI & Machine Learning Foundation Path",
+  design: "UX/UI Design Foundation Path",
+  cloud: "Cloud Computing Foundation Path",
+  devops: "DevOps Foundation Path",
+  software: "Software Engineering Foundation Path",
+  web: "Web Development Foundation Path",
+  networking: "Networking Foundation Path",
+  data: "Data Science Foundation Path",
+};
+
 interface StartingLab {
   id: string;
   title: string;
@@ -105,19 +117,19 @@ export default function StartingPointPage() {
     let cancelled = false;
     async function load() {
       try {
-        const [allLabs, activeLabs] = await Promise.all([
+        const [allLabs, activeLabs, recs] = await Promise.all([
           fetchApi<Lab[]>("/labs?take=200"),
           fetchApi<ActiveLabInstance[]>("/dashboard/active-labs").catch(() => []),
+          fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
-        fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
-          .then((data) => { if (!cancelled && data) setRecommendations(data); })
-          .catch(() => {});
+        if (recs && !cancelled) setRecommendations(recs);
         const activeLabIds = new Set(
           (activeLabs || [])
             .map((item) => item.labId || item.lab?.id)
             .filter((value): value is string => !!value),
         );
-        const chosenLabs = rankStarterLabs(allLabs, []);
+        const recommendedLabIds = recs?.labs?.map((lab) => lab.id) || [];
+        const chosenLabs = rankStarterLabs(allLabs, recommendedLabIds);
         const beginnerLabs: StartingLab[] = [];
         chosenLabs.forEach((lab, idx) => {
           const progressStatus = getProgressStatus(lab.flags);
@@ -167,8 +179,10 @@ export default function StartingPointPage() {
 
   const completedCount = labs.filter((l) => l.completed).length;
   const pct = labs.length > 0 ? Math.round((completedCount / labs.length) * 100) : 0;
+  const onboarding = readOnboardingSelections();
   const journeySummary = recommendations?.insights?.journeySummary;
   const journeyMode = recommendations?.insights?.personalizationMode || recommendations?.source || "rules";
+  const pathTitle = FIELD_PATH_TITLES[onboarding?.field?.[0] || ""] || "Foundation Path";
   const nextLab = labs.find((lab, idx) => {
     const previousCompleted = idx === 0 || labs[idx - 1]?.completed;
     return lab.available && (lab.inProgress || (!lab.completed && previousCompleted));
@@ -198,7 +212,7 @@ export default function StartingPointPage() {
   return (
     <div className="p-6 space-y-6">
       <PageHeader
-        title="Foundation Path"
+        title={pathTitle}
         description={journeySummary || "Follow this guided sequence to build your first practical proof and move toward certification readiness"}
         action={
           <Link

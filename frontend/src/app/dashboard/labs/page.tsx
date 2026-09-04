@@ -55,7 +55,9 @@ export default function LabsCatalog() {
     if (/(aws|azure|gcp|cloud|terraform|s3|iam)/.test(t)) return "Cloud";
     if (/(postgres|mysql|mariadb|galera|mongo|redis|elasticsearch|clickhouse|citus|vitess)/.test(t)) return "Databases";
     if (/(docker|kubernetes|k8s|helm|argo|flagger|jenkins|gitlab|ansible|prometheus|grafana|elk|zabbix|wazuh)/.test(t)) return "DevOps";
-    if (/(qdrant|vllm|kubeflow|feast|llm|vector|mlops|gpu|kali|parrot|exploit|rop|crypto|side-channel|firmware|apt|fuzz)/.test(t)) return t.includes("qdrant") || t.includes("vllm") || t.includes("kubeflow") || t.includes("feast") || t.includes("gpu") ? "AI & MLOps" : "Security";
+    if (/(machine learning|deep learning|neural network|llm|nlp|computer vision|ai |artificial intelligence|data science|mlops|model training|inference|transformer|gpt|bert|generative ai|prediction|classification)/.test(t)) return "AI & MLOps";
+    if (/(ux|ui|figma|wireframe|prototype|usability|accessibility|user experience|user interface|design system|visual design|interaction design)/.test(t)) return "Design";
+    if (/(qdrant|vllm|kubeflow|feast|vector|gpu|kali|parrot|exploit|rop|crypto|side-channel|firmware|apt|fuzz)/.test(t)) return "Security";
     if (/(snipe|cockpit|nextcloud|mail|postfix|rsyslog|vault|finops|beyondcorp|tinkerbell|k3s|ceph|trino)/.test(t)) return "IT Ops";
     return "Systems";
   }
@@ -201,7 +203,7 @@ export default function LabsCatalog() {
         <span className="text-xs text-white/40 transition-colors group-hover:text-[#7AD62A] sm:shrink-0">Begin →</span>
       </Link>
 
-      {focusLabel && (
+      {focusLabel && recommendedLabIds.length > 0 && (
         <div className="angular-card bg-[#0f172a] border border-white/10 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-[#7AD62A]">Personalized ranking</p>

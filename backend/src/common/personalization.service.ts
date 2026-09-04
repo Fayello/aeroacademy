@@ -22,12 +22,24 @@ const TERM_ALIASES: Record<string, string[]> = {
     'threat',
     'blue team',
     'defense',
+    'defensive',
+    'siem',
+    'incident',
+    'forensic',
+    'malware',
+    'vulnerability',
+    'penetration',
+    'pentest',
+    'red team',
+    'attack',
   ],
   cybersecurity: [
     'cybersecurity',
     'security',
     'defensive security',
     'offensive security',
+    'infosec',
+    'information security',
   ],
   appsec: [
     'appsec',
@@ -38,10 +50,12 @@ const TERM_ALIASES: Record<string, string[]> = {
     'xss',
     'ssrf',
     'sql injection',
+    'code review',
+    'secure coding',
   ],
-  devops: ['devops', 'platform', 'automation', 'infrastructure', 'sre'],
-  devsecops: ['devsecops', 'secure pipeline', 'sast', 'dast', 'supply chain'],
-  cloud: ['cloud', 'aws', 'azure', 'gcp', 'terraform', 'iam', 'serverless'],
+  devops: ['devops', 'platform', 'automation', 'infrastructure', 'sre', 'reliability', 'monitoring', 'observability'],
+  devsecops: ['devsecops', 'secure pipeline', 'sast', 'dast', 'supply chain', 'security scanning', 'shift left'],
+  cloud: ['cloud', 'aws', 'azure', 'gcp', 'terraform', 'iam', 'serverless', 'lambda', 'ec2', 's3', 'kubernetes', 'infrastructure as code'],
   containers: [
     'containers',
     'container',
@@ -49,14 +63,16 @@ const TERM_ALIASES: Record<string, string[]> = {
     'kubernetes',
     'k8s',
     'helm',
+    'podman',
+    'containerization',
   ],
-  cicd: ['cicd', 'ci/cd', 'pipeline', 'github actions', 'gitlab', 'jenkins'],
-  networking: ['networking', 'network', 'routing', 'firewall', 'dns', 'vpn'],
-  systems: ['systems', 'linux', 'sysadmin', 'infrastructure'],
-  software: ['software', 'engineering', 'backend', 'frontend', 'api'],
-  web: ['web', 'frontend', 'backend', 'browser', 'react', 'node'],
-  mobile: ['mobile', 'android', 'ios', 'apk'],
-  data: ['data', 'analytics', 'sql', 'warehouse', 'etl'],
+  cicd: ['cicd', 'ci/cd', 'pipeline', 'github actions', 'gitlab', 'jenkins', 'automation', 'deployment'],
+  networking: ['networking', 'network', 'routing', 'firewall', 'dns', 'vpn', 'tcp', 'http', 'load balancer', 'proxy', 'switch', 'router'],
+  systems: ['systems', 'linux', 'sysadmin', 'infrastructure', 'kernel', 'systemd', 'bash', 'shell'],
+  software: ['software', 'engineering', 'backend', 'frontend', 'api', 'architecture', 'microservices', 'database'],
+  web: ['web', 'frontend', 'backend', 'browser', 'react', 'node', 'javascript', 'typescript', 'html', 'css', 'http', 'rest', 'graphql'],
+  mobile: ['mobile', 'android', 'ios', 'apk', 'react native', 'flutter', 'swift', 'kotlin'],
+  data: ['data', 'analytics', 'sql', 'warehouse', 'etl', 'business intelligence', 'reporting', 'visualization'],
   'data-eng': [
     'data engineering',
     'etl',
@@ -65,8 +81,37 @@ const TERM_ALIASES: Record<string, string[]> = {
     'postgres',
     'mongo',
     'redis',
+    'elasticsearch',
+    'kafka',
+    'spark',
   ],
-  ai: ['ai', 'machine learning', 'ml', 'llm', 'nlp', 'vision'],
+  ai: [
+    'ai',
+    'artificial intelligence',
+    'machine learning',
+    'ml',
+    'deep learning',
+    'neural network',
+    'llm',
+    'large language model',
+    'nlp',
+    'natural language processing',
+    'computer vision',
+    'vision',
+    'generative ai',
+    'gen ai',
+    'transformer',
+    'gpt',
+    'bert',
+    'training',
+    'inference',
+    'model',
+    'prediction',
+    'classification',
+    'regression',
+    'reinforcement learning',
+    'data science',
+  ],
   'ml-ops': [
     'mlops',
     'ml ops',
@@ -75,8 +120,32 @@ const TERM_ALIASES: Record<string, string[]> = {
     'qdrant',
     'kubeflow',
     'feast',
+    'feature store',
+    'model deployment',
+    'model monitoring',
+    'ml pipeline',
   ],
-  design: ['design', 'ux', 'ui', 'figma', 'research'],
+  design: [
+    'design',
+    'ux',
+    'ui',
+    'figma',
+    'research',
+    'user experience',
+    'user interface',
+    'wireframe',
+    'prototype',
+    'usability',
+    'accessibility',
+    'interaction design',
+    'visual design',
+    'design system',
+  ],
+  databases: ['database', 'sql', 'postgres', 'postgresql', 'mysql', 'mariadb', 'mongo', 'mongodb', 'redis', 'elasticsearch', 'cassandra', 'oracle', 'database design', 'query optimization'],
+  penetration: ['penetration testing', 'pentest', 'ethical hacking', 'exploit', 'vulnerability scanning', 'reconnaissance', 'privilege escalation', 'lateral movement'],
+  forensics: ['forensic', 'digital forensic', 'incident response', 'malware analysis', 'reverse engineering', 'memory forensic', 'disk forensic', 'log analysis'],
+  cloudsecurity: ['cloud security', 'cloud posture', 'cspm', 'cwpp', 'cloud compliance', 'identity management', 'access control'],
+  cryptography: ['cryptography', 'encryption', 'certificate', 'pki', 'hashing', 'tls', 'ssl', 'key management'],
 };
 
 type RecommendationCourse = {
@@ -116,6 +185,231 @@ export class PersonalizationService {
     private prisma: PrismaService,
     private readonly gatewayFactory: AiGatewayFactory,
   ) {}
+
+  private buildLabInterestWhere(
+    tokens: string[],
+  ): Prisma.LabWhereInput | undefined {
+    if (!tokens.length) return undefined;
+    const meaningful = tokens.filter((t) => t.length > 2);
+    if (!meaningful.length) return undefined;
+    const conditions = meaningful.flatMap((token) => [
+      { title: { contains: token, mode: 'insensitive' as const } },
+      { description: { contains: token, mode: 'insensitive' as const } },
+    ]);
+    return { OR: conditions };
+  }
+
+  private buildCourseInterestWhere(
+    tokens: string[],
+  ): Prisma.CourseWhereInput | undefined {
+    if (!tokens.length) return undefined;
+    const meaningful = tokens.filter((t) => t.length > 2);
+    if (!meaningful.length) return undefined;
+    const conditions = meaningful.flatMap((token) => [
+      { title: { contains: token, mode: 'insensitive' as const } },
+      { description: { contains: token, mode: 'insensitive' as const } },
+    ]);
+    return { OR: conditions };
+  }
+
+  private buildPathInterestWhere(
+    tokens: string[],
+  ): Prisma.LearningPathWhereInput | undefined {
+    if (!tokens.length) return undefined;
+    const meaningful = tokens.filter((t) => t.length > 2);
+    if (!meaningful.length) return undefined;
+    const conditions = meaningful.flatMap((token) => [
+      { title: { contains: token, mode: 'insensitive' as const } },
+      { description: { contains: token, mode: 'insensitive' as const } },
+      { careerRole: { contains: token, mode: 'insensitive' as const } },
+    ]);
+    return { OR: conditions };
+  }
+
+  private async fetchLabCandidates(
+    interestTokens: string[],
+    preferredDifficulty: string | null,
+    limit: number,
+  ) {
+    const targetCount = Math.max(limit * 8, 24);
+    const interestWhere = this.buildLabInterestWhere(interestTokens);
+
+    let candidates: Awaited<ReturnType<typeof this.fetchLabPool>> = [];
+
+    if (interestWhere) {
+      candidates = await this.fetchLabPool(interestWhere, targetCount);
+    }
+
+    if (candidates.length < targetCount) {
+      const remaining = targetCount - candidates.length;
+      const existingIds = new Set(candidates.map((c) => c.id));
+      const filler = await this.fetchLabPool({}, remaining);
+      for (const lab of filler) {
+        if (!existingIds.has(lab.id)) {
+          candidates.push(lab);
+          existingIds.add(lab.id);
+        }
+      }
+    }
+
+    return candidates;
+  }
+
+  private async fetchLabPool(
+    where: Prisma.LabWhereInput,
+    take: number,
+  ) {
+    return this.prisma.lab.findMany({
+      where,
+      take,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        difficulty: true,
+        labSkills: {
+          select: {
+            skill: {
+              select: {
+                name: true,
+                domain: { select: { name: true, displayName: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  private async fetchCourseCandidates(
+    interestTokens: string[],
+    enrolledCourseIds: Set<string>,
+    preferredDifficulty: string | null,
+    limit: number,
+  ) {
+    const targetCount = Math.max(limit * 8, 24);
+    const interestWhere = this.buildCourseInterestWhere(interestTokens);
+
+    let candidates: Awaited<ReturnType<typeof this.fetchCoursePool>> = [];
+
+    if (interestWhere) {
+      candidates = await this.fetchCoursePool(
+        { ...interestWhere, id: { notIn: [...enrolledCourseIds] } },
+        targetCount,
+      );
+    }
+
+    if (candidates.length < targetCount) {
+      const remaining = targetCount - candidates.length;
+      const existingIds = new Set(candidates.map((c) => c.id));
+      const filler = await this.fetchCoursePool(
+        { id: { notIn: [...enrolledCourseIds] } },
+        remaining,
+      );
+      for (const course of filler) {
+        if (!existingIds.has(course.id)) {
+          candidates.push(course);
+          existingIds.add(course.id);
+        }
+      }
+    }
+
+    return candidates;
+  }
+
+  private async fetchCoursePool(
+    where: Prisma.CourseWhereInput,
+    take: number,
+  ) {
+    return this.prisma.course.findMany({
+      where,
+      take,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        imageUrl: true,
+        sections: {
+          select: {
+            title: true,
+            lessons: {
+              select: {
+                title: true,
+                lab: {
+                  select: {
+                    title: true,
+                    description: true,
+                    difficulty: true,
+                    labSkills: {
+                      select: {
+                        skill: {
+                          select: {
+                            name: true,
+                            domain: {
+                              select: { name: true, displayName: true },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  private async fetchPathCandidates(
+    interestTokens: string[],
+    difficulty: string,
+    limit: number,
+  ) {
+    const targetCount = Math.max(limit * 4, 12);
+    const interestWhere = this.buildPathInterestWhere(interestTokens);
+
+    let candidates: Awaited<ReturnType<typeof this.fetchPathPool>> = [];
+
+    if (interestWhere) {
+      candidates = await this.fetchPathPool(
+        { ...interestWhere, difficulty },
+        targetCount,
+      );
+    }
+
+    if (candidates.length < targetCount) {
+      const remaining = targetCount - candidates.length;
+      const existingIds = new Set(candidates.map((c) => c.id));
+      const filler = await this.fetchPathPool({ difficulty }, remaining);
+      for (const path of filler) {
+        if (!existingIds.has(path.id)) {
+          candidates.push(path);
+          existingIds.add(path.id);
+        }
+      }
+    }
+
+    return candidates;
+  }
+
+  private async fetchPathPool(
+    where: Prisma.LearningPathWhereInput,
+    take: number,
+  ) {
+    return this.prisma.learningPath.findMany({
+      where,
+      take,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        imageUrl: true,
+        careerRole: true,
+      },
+    });
+  }
 
   async getRecommendations(userId: string, limit = 5) {
     const [user, userSkills, enrollments, recentProgress] = await Promise.all([
@@ -175,45 +469,12 @@ export class PersonalizationService {
 
     const level = user ? Math.floor(user.xp / 1000) + 1 : 1;
 
-    const courseCandidates = await this.prisma.course.findMany({
-      where: { id: { notIn: [...enrolledCourseIds] } },
-      take: Math.max(limit * 8, 24),
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        imageUrl: true,
-        sections: {
-          select: {
-            title: true,
-            lessons: {
-              select: {
-                title: true,
-                lab: {
-                  select: {
-                    title: true,
-                    description: true,
-                    difficulty: true,
-                    labSkills: {
-                      select: {
-                        skill: {
-                          select: {
-                            name: true,
-                            domain: {
-                              select: { name: true, displayName: true },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+    const courseCandidates = await this.fetchCourseCandidates(
+      interestTokens,
+      enrolledCourseIds,
+      user?.preference?.preferredDifficulty || null,
+      limit,
+    );
 
     const skillBasedCourses = courseCandidates
       .map((course) => {
@@ -262,17 +523,11 @@ export class PersonalizationService {
     // 2. Recommended learning paths based on level
     const difficulty =
       level < 5 ? 'BEGINNER' : level < 15 ? 'INTERMEDIATE' : 'ADVANCED';
-    const pathCandidates = await this.prisma.learningPath.findMany({
-      where: { difficulty },
-      take: 12,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        imageUrl: true,
-        careerRole: true,
-      },
-    });
+    const pathCandidates = await this.fetchPathCandidates(
+      interestTokens,
+      difficulty,
+      limit,
+    );
     const recommendedPaths = pathCandidates
       .map((path) => ({
         ...path,
@@ -285,25 +540,11 @@ export class PersonalizationService {
       .slice(0, 3)
       .map(({ score, ...path }) => path);
 
-    const labCandidates = await this.prisma.lab.findMany({
-      take: Math.max(limit * 8, 24),
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        difficulty: true,
-        labSkills: {
-          select: {
-            skill: {
-              select: {
-                name: true,
-                domain: { select: { name: true, displayName: true } },
-              },
-            },
-          },
-        },
-      },
-    });
+    const labCandidates = await this.fetchLabCandidates(
+      interestTokens,
+      user?.preference?.preferredDifficulty || null,
+      limit,
+    );
     const suggestedLabs = labCandidates
       .map((lab) => {
         const relatedSkills = lab.labSkills.flatMap((labSkill) => [
@@ -531,43 +772,45 @@ export class PersonalizationService {
     focusAreas: string[];
   } | null> {
     const prompt = [
-      'Personalize a learning journey for one XpertClass user.',
+      'You are a learning recommendation engine for XpertClass, a hands-on certification platform.',
+      'Given the user profile and candidate items, produce a personalized ranked journey.',
       '',
-      `Level: ${args.profile.level}`,
-      `Streak: ${args.profile.streak}`,
-      `Focus areas: ${args.profile.focusAreas.join(', ') || 'none'}`,
-      `Weak domains: ${args.profile.weakDomains.join(', ') || 'none'}`,
-      `Purpose: ${args.profile.onboarding.purpose.join(', ') || 'none'}`,
-      `Field: ${args.profile.onboarding.field.join(', ') || 'none'}`,
-      `Skills: ${args.profile.onboarding.skills.join(', ') || 'none'}`,
+      'USER PROFILE:',
+      `Level: ${args.profile.level} | Streak: ${args.profile.streak} days`,
+      `Focus areas: ${args.profile.focusAreas.join(', ') || 'none declared'}`,
+      `Weak domains: ${args.profile.weakDomains.join(', ') || 'none identified'}`,
+      `Purpose: ${args.profile.onboarding.purpose.join(', ') || 'general learning'}`,
+      `Field: ${args.profile.onboarding.field.join(', ') || 'general'}`,
+      `Skills: ${args.profile.onboarding.skills.join(', ') || 'none specified'}`,
       `Experience: ${args.profile.onboarding.experience || 'unknown'}`,
-      `Role: ${args.profile.onboarding.role || 'unknown'}`,
-      `Recent lessons: ${args.profile.recentLessonTitles.join(', ') || 'none'}`,
+      `Role: ${args.profile.onboarding.role || 'learner'}`,
+      `Recent lessons studied: ${args.profile.recentLessonTitles.join(', ') || 'none'}`,
+      `Already enrolled in: ${args.profile.enrolledCourseIds.length} courses`,
       '',
-      'Candidate courses:',
+      'CANDIDATE COURSES (rank by relevance to focus areas and weak domains):',
       ...args.candidates.courses.map(
-        (course) => `- ${course.id} | ${course.title} | ${course.description}`,
+        (course, i) => `${i + 1}. [${course.id}] "${course.title}" — ${course.description.substring(0, 120)}`,
       ),
       '',
-      'Candidate learning paths:',
+      'CANDIDATE LEARNING PATHS (rank by career alignment):',
       ...args.candidates.learningPaths.map(
-        (path) =>
-          `- ${path.id} | ${path.title} | ${path.description} | ${path.careerRole || 'general'}`,
+        (path, i) => `${i + 1}. [${path.id}] "${path.title}" → ${path.careerRole || 'general'} — ${path.description.substring(0, 100)}`,
       ),
       '',
-      'Candidate labs:',
+      'CANDIDATE LABS (rank by skill-building value and interest match):',
       ...args.candidates.labs.map(
-        (lab) =>
-          `- ${lab.id} | ${lab.title} | difficulty ${lab.difficulty} | ${lab.description}`,
+        (lab, i) => `${i + 1}. [${lab.id}] "${lab.title}" (difficulty ${lab.difficulty}) — ${lab.description.substring(0, 100)}`,
       ),
       '',
-      'Return JSON only with this shape:',
-      '{"journeySummary":"...", "focusAreas":["..."], "courseIds":["..."], "pathIds":["..."], "labIds":["..."]}',
-      'Rules:',
-      '- Choose only ids from the candidate lists.',
-      '- Prefer different sequences for users with different level, streak, weak areas, and recent work even if they share the same broad interest.',
-      '- Keep journeySummary to 1-2 sentences.',
-      '- Do not invent ids.',
+      'INSTRUCTIONS:',
+      '- Prioritize items that directly match the user\'s declared focus areas and field.',
+      '- If focus is "ai" or "machine learning", strongly prefer AI/ML-related items even if they\'re labeled as security (e.g., AI-powered security tools, ML for threat detection).',
+      '- If focus is "design", prefer items related to UI/UX, accessibility, visual design, or design systems.',
+      '- Weave in foundational items that support the declared interests.',
+      '- Avoid repeating the same topic area. Diversify across the user\'s interests.',
+      '- The journeySummary should be 1-2 sentences that feel personal, not generic.',
+      '',
+      'Return ONLY valid JSON: {"journeySummary":"...", "focusAreas":["..."], "courseIds":["..."], "pathIds":["..."], "labIds":["..."]}',
     ].join('\n');
 
     const response = await args.gateway.generate({

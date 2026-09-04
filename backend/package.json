@@ -12,6 +12,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "email:previews": "ts-node -r dotenv/config scripts/generate-email-previews.ts",
+    "email:test-send": "ts-node -r dotenv/config scripts/send-test-email.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

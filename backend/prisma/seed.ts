@@ -74,6 +74,29 @@ const SKILL_DOMAINS = [
       { name: 'uat', displayName: 'UAT' },
     ],
   },
+  {
+    name: 'AI_ML',
+    displayName: 'AI & Machine Learning',
+    skills: [
+      { name: 'machine-learning', displayName: 'Machine Learning' },
+      { name: 'deep-learning', displayName: 'Deep Learning' },
+      { name: 'nlp', displayName: 'Natural Language Processing' },
+      { name: 'computer-vision', displayName: 'Computer Vision' },
+      { name: 'mlops', displayName: 'MLOps' },
+      { name: 'data-science', displayName: 'Data Science' },
+    ],
+  },
+  {
+    name: 'DESIGN',
+    displayName: 'Design',
+    skills: [
+      { name: 'ux', displayName: 'UX Design' },
+      { name: 'ui', displayName: 'UI Design' },
+      { name: 'figma', displayName: 'Figma' },
+      { name: 'accessibility', displayName: 'Accessibility' },
+      { name: 'design-systems', displayName: 'Design Systems' },
+    ],
+  },
 ];
 
 const LAB_SKILL_MAP: Record<string, string[]> = {
@@ -128,6 +151,21 @@ const LAB_SKILL_MAP: Record<string, string[]> = {
   'Linux Automation': ['SYSTEMS', 'automation'],
   'Server Administration': ['SYSTEMS', 'sysadmin'],
   'Centralized Logging': ['SYSTEMS', 'sysadmin'],
+  'Machine Learning': ['AI_ML', 'machine-learning'],
+  'Deep Learning': ['AI_ML', 'deep-learning'],
+  'NLP': ['AI_ML', 'nlp'],
+  'Computer Vision': ['AI_ML', 'computer-vision'],
+  'MLOps': ['AI_ML', 'mlops'],
+  'Data Science': ['AI_ML', 'data-science'],
+  'AI': ['AI_ML', 'machine-learning'],
+  'LLM': ['AI_ML', 'nlp'],
+  'UX': ['DESIGN', 'ux'],
+  'UI': ['DESIGN', 'ui'],
+  'Figma': ['DESIGN', 'figma'],
+  'Accessibility': ['DESIGN', 'accessibility'],
+  'Design System': ['DESIGN', 'design-systems'],
+  'Wireframe': ['DESIGN', 'ux'],
+  'Prototype': ['DESIGN', 'ux'],
 };
 
 const FEATURE_UNLOCKS = [
