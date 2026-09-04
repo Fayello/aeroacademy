@@ -34,7 +34,8 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
   private nextTunnelPort = 23760;
 
   constructor() {
-    this.localDocker = new Docker();
+    const dockerHost = process.env.DOCKER_HOST || 'http://docker-proxy:2375';
+    this.localDocker = new Docker({ protocol: 'http', host: dockerHost.replace('http://', '').split(':')[0], port: parseInt(dockerHost.split(':')[1] || '2375') });
   }
 
   async onModuleInit() {
