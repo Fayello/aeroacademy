@@ -3,6 +3,7 @@ import * as nodemailer from 'nodemailer';
 import { SubmitInquiryDto } from './dto/submit-inquiry.dto';
 import { SubmitCommunityApplicationDto } from './dto/submit-community-application.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailTemplateService } from './email-template.service';
 
 export type EmailSender = 'auth' | 'labs' | 'noreply' | 'info';
 
@@ -10,6 +11,7 @@ interface SendEmailOptions {
   to: string;
   subject: string;
   html: string;
+  text?: string;
   from?: EmailSender;
 }
 
@@ -26,7 +28,10 @@ export class EmailService implements OnModuleInit {
   private transporter: nodemailer.Transporter;
   private enabled = false;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly templates: EmailTemplateService,
+  ) {}
 
   async onModuleInit() {
     const host = process.env.SMTP_HOST;
@@ -73,6 +78,7 @@ export class EmailService implements OnModuleInit {
         to: options.to,
         subject: options.subject,
         html: options.html,
+        text: options.text,
       });
       this.logger.log(`Email sent to ${options.to}: ${options.subject}`);
       return true;
@@ -91,66 +97,32 @@ export class EmailService implements OnModuleInit {
       dateStyle: 'medium',
       timeStyle: 'short',
     });
+    const email = this.templates.render({
+      eyebrow: 'New institutional inquiry',
+      title: `${inquiryLabel} contact request`,
+      subtitle:
+        'A visitor requested a conversation with XpertClass from the get-started page.',
+      fields: [
+        { label: 'Inquiry type', value: inquiryLabel },
+        { label: 'Name', value: inquiry.name },
+        { label: 'Email', value: inquiry.email },
+        { label: 'Organization', value: inquiry.organization },
+        { label: 'Role', value: inquiry.role },
+        { label: 'Team size', value: inquiry.teamSize },
+        { label: 'Phone', value: inquiry.phone },
+        { label: 'Submitted', value: submittedAt },
+      ],
+      panels: [{ title: 'Message', body: inquiry.message }],
+      action: { label: 'Reply by email', href: `mailto:${inquiry.email}` },
+      footerNote:
+        'This inquiry was captured from the public XpertClass institutional intake flow.',
+    });
 
     return this.send({
       to: 'contact@xpertclass.academy',
       from: 'info',
       subject: `${inquiryLabel} inquiry from ${inquiry.organization}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-  <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
-    <div style="background:#0F203A;padding:28px 32px;">
-      <p style="margin:0;color:#7AD62A;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">New inquiry</p>
-      <h1 style="margin:12px 0 0;color:#ffffff;font-size:24px;">${inquiryLabel} contact request</h1>
-      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">A visitor submitted an institutional inquiry through the XpertClass get-started page.</p>
-    </div>
-    <div style="padding:28px 32px;">
-      <table style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;width:180px;">Inquiry type</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;font-weight:600;">${inquiryLabel}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Name</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.name)}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Email</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.email)}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Organization</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.organization)}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Role</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.role || 'Not provided')}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Team size</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.teamSize || 'Not provided')}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Phone</td>
-          <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(inquiry.phone || 'Not provided')}</td>
-        </tr>
-        <tr>
-          <td style="padding:10px 0;color:#64748b;font-size:13px;">Submitted</td>
-          <td style="padding:10px 0;color:#0f172a;font-size:14px;">${submittedAt}</td>
-        </tr>
-      </table>
-
-      <div style="margin-top:24px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;padding:20px;">
-        <p style="margin:0 0 10px;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Message</p>
-        <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.7;white-space:pre-wrap;">${escapeHtml(inquiry.message)}</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`,
+      ...email,
     });
   }
 
@@ -185,29 +157,34 @@ export class EmailService implements OnModuleInit {
     const displayName = name || 'there';
     const inquiryLabel =
       inquiryType === 'university' ? 'university' : 'enterprise';
+    const email = this.templates.render({
+      eyebrow: 'Inquiry received',
+      title: 'We received your request',
+      subtitle: 'Your message is now with the XpertClass team.',
+      intro: `Hi ${displayName},`,
+      body: [
+        `We received your ${inquiryLabel} inquiry and shared it with the right team.`,
+        'We will review your goals, context, and timeline before replying to this email address.',
+      ],
+      panels: [
+        {
+          title: 'What happens next',
+          body:
+            'A team member will follow up with the most relevant next step for your institution or organization.',
+          tone: 'success',
+        },
+      ],
+      action: {
+        label: 'Visit XpertClass',
+        href: process.env.FRONTEND_URL || 'https://xpertclass.academy',
+      },
+    });
 
     return this.send({
       to: email,
       from: 'info',
       subject: 'We received your XpertClass inquiry',
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-  <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
-    <div style="background:#0F203A;padding:28px 32px;text-align:center;">
-      <h1 style="margin:0;color:#ffffff;font-size:24px;">Inquiry received</h1>
-      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">Thanks for contacting XpertClass.</p>
-    </div>
-    <div style="padding:28px 32px;">
-      <p style="margin:0 0 14px;color:#0f172a;font-size:15px;line-height:1.7;">Hi ${escapeHtml(displayName)},</p>
-      <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.7;">We received your ${inquiryLabel} inquiry and shared it with our team.</p>
-      <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;">We’ll review your message and get back to you using this email address.</p>
-    </div>
-  </div>
-</body>
-</html>`,
+      ...email,
     });
   }
 
@@ -251,48 +228,42 @@ export class EmailService implements OnModuleInit {
       dateStyle: 'medium',
       timeStyle: 'short',
     });
+    const email = this.templates.render({
+      eyebrow: 'Community program application',
+      title: `${programLabel} application`,
+      subtitle:
+        'A new applicant wants to support the XpertClass community program.',
+      fields: [
+        { label: 'Program', value: programLabel },
+        { label: 'Name', value: application.name },
+        { label: 'Email', value: application.email },
+        { label: 'City', value: application.city },
+        { label: 'Organization', value: application.organization },
+        { label: 'Role', value: application.role },
+        { label: 'Experience', value: application.experience },
+        { label: 'Availability', value: application.availability },
+        { label: 'LinkedIn', value: application.linkedinUrl },
+        { label: 'Portfolio', value: application.portfolioUrl },
+        { label: 'Source page', value: application.sourcePage || '/community' },
+        { label: 'Submitted', value: submittedAt },
+      ],
+      panels: [
+        {
+          title: 'Interests',
+          body: (application.interests || []).join(', ') || 'Not provided',
+        },
+        { title: 'Contribution plan', body: application.contribution },
+      ],
+      action: { label: 'Reply to applicant', href: `mailto:${application.email}` },
+      footerNote:
+        'Review this applicant from the admin community programs dashboard before making a decision.',
+    });
 
     return this.send({
       to: 'contact@xpertclass.academy',
       from: 'info',
       subject: `${programLabel} application from ${application.name}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-  <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
-    <div style="background:#0F203A;padding:28px 32px;">
-      <p style="margin:0;color:#7AD62A;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">Community application</p>
-      <h1 style="margin:12px 0 0;color:#ffffff;font-size:24px;">${programLabel} application</h1>
-      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">A new community-program application was submitted through XpertClass.</p>
-    </div>
-    <div style="padding:28px 32px;">
-      <table style="width:100%;border-collapse:collapse;">
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;width:180px;">Program</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;font-weight:600;">${programLabel}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Name</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.name)}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Email</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.email)}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">City</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.city || 'Not provided')}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Organization</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.organization || 'Not provided')}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Role</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.role || 'Not provided')}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Experience</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.experience || 'Not provided')}</td></tr>
-        <tr><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:13px;">Availability</td><td style="padding:10px 0;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;">${escapeHtml(application.availability || 'Not provided')}</td></tr>
-        <tr><td style="padding:10px 0;color:#64748b;font-size:13px;">Submitted</td><td style="padding:10px 0;color:#0f172a;font-size:14px;">${submittedAt}</td></tr>
-      </table>
-
-      <div style="margin-top:24px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;padding:20px;">
-        <p style="margin:0 0 10px;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Interests</p>
-        <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.7;">${escapeHtml((application.interests || []).join(', ') || 'Not provided')}</p>
-      </div>
-
-      <div style="margin-top:16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;padding:20px;">
-        <p style="margin:0 0 10px;color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Contribution</p>
-        <p style="margin:0;color:#0f172a;font-size:14px;line-height:1.7;white-space:pre-wrap;">${escapeHtml(application.contribution)}</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`,
+      ...email,
     });
   }
 
@@ -304,29 +275,34 @@ export class EmailService implements OnModuleInit {
     const displayName = name || 'there';
     const programLabel =
       programType === 'ambassador' ? 'brand ambassador' : 'volunteer';
+    const email = this.templates.render({
+      eyebrow: 'Application received',
+      title: 'Your community application is in review',
+      subtitle: 'Thank you for offering to help grow XpertClass with us.',
+      intro: `Hi ${displayName},`,
+      body: [
+        `We received your ${programLabel} application and shared it with our community team.`,
+        'We will review your experience, availability, and contribution plan before replying to this email address.',
+      ],
+      panels: [
+        {
+          title: 'Selection focus',
+          body:
+            'We look for reliable contributors who can support learners clearly, represent the platform well, and help communities move from interest to practice.',
+          tone: 'success',
+        },
+      ],
+      action: {
+        label: 'Explore community programs',
+        href: `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/community`,
+      },
+    });
 
     return this.send({
       to: email,
       from: 'info',
       subject: 'We received your XpertClass community application',
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:24px;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-  <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
-    <div style="background:#0F203A;padding:28px 32px;text-align:center;">
-      <h1 style="margin:0;color:#ffffff;font-size:24px;">Application received</h1>
-      <p style="margin:10px 0 0;color:#cbd5e1;font-size:14px;line-height:1.6;">Thanks for applying to support XpertClass.</p>
-    </div>
-    <div style="padding:28px 32px;">
-      <p style="margin:0 0 14px;color:#0f172a;font-size:15px;line-height:1.7;">Hi ${escapeHtml(displayName)},</p>
-      <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.7;">We received your ${programLabel} application and shared it with our team.</p>
-      <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;">We’ll review your interest, experience, and proposed contribution and reply using this email address.</p>
-    </div>
-  </div>
-</body>
-</html>`,
+      ...email,
     });
   }
 
@@ -334,78 +310,64 @@ export class EmailService implements OnModuleInit {
 
   async sendWelcome(email: string, name: string | null) {
     const displayName = name || 'there';
+    const loginUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/login`;
+    const email = this.templates.render({
+      eyebrow: 'Welcome to XpertClass',
+      title: `Welcome, ${displayName}`,
+      subtitle: 'Your account is ready. Your practical training record starts now.',
+      body: [
+        'Start with a structured path, launch hands-on labs, and build evidence you can show to instructors, recruiters, and employers.',
+        'Your dashboard keeps your progress, XP, certificates, and readiness signals in one place.',
+      ],
+      panels: [
+        {
+          title: 'Recommended first step',
+          body:
+            'Complete onboarding so the platform can guide you toward the right courses and labs.',
+          tone: 'success',
+        },
+      ],
+      action: { label: 'Log in to XpertClass', href: loginUrl },
+      footerNote:
+        'If you did not create this account, you can ignore this email.',
+    });
+
     return this.send({
       to: email,
       from: 'info',
-      subject: 'Welcome to XpertClass — Your Training Journey Begins',
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd">
-        <path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/>
-      </g>
-      <g fill="#7AD62A" fill-rule="evenodd">
-        <path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/>
-      </g>
-    </svg>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Your account is ready. Start exploring hands-on labs, earn XP, and climb the leaderboard.</p>
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/login" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Log In to XpertClass</a>
-    </div>
-    <p style="color:#64748b;font-size:14px;line-height:1.6;">If you didn't create this account, please ignore this email.</p>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: 'Welcome to XpertClass - Your training journey begins',
+      ...email,
     });
   }
 
   async sendOtpVerification(email: string, name: string | null, code: string) {
     const displayName = name || 'there';
+    const email = this.templates.render({
+      eyebrow: 'Account verification',
+      title: 'Verify your XpertClass account',
+      subtitle: 'Use this code to activate your account.',
+      intro: `Hi ${displayName},`,
+      body: [
+        'Enter the verification code below to confirm your email address and continue setting up your account.',
+      ],
+      code,
+      panels: [
+        {
+          title: 'Expires in 10 minutes',
+          body:
+            'For your security, this verification code can only be used for a short time.',
+          tone: 'security',
+        },
+      ],
+      footerNote:
+        'If you did not create this account, you can ignore this email.',
+    });
+
     return this.send({
       to: email,
       from: 'auth',
-      subject: `Verify Your XpertClass Account — Code: ${code}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Verify Your Account</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Use the code below to verify your email address and activate your XpertClass account.</p>
-    <div style="text-align:center;margin:28px 0;">
-      <div style="background:#f1f5f9;border-radius:12px;padding:20px 40px;display:inline-block;">
-        <span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#229C62;font-family:monospace;">${code}</span>
-      </div>
-    </div>
-    <p style="color:#64748b;font-size:14px;line-height:1.6;">This code expires in 10 minutes. If you didn't create this account, please ignore this email.</p>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: `Verify your XpertClass account - Code: ${code}`,
+      ...email,
     });
   }
 
@@ -416,110 +378,86 @@ export class EmailService implements OnModuleInit {
   ) {
     const displayName = name || 'there';
     const verifyUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/verify?token=${token}`;
+    const email = this.templates.render({
+      eyebrow: 'Email verification',
+      title: 'Verify your email address',
+      subtitle: 'Confirm this address to activate your XpertClass account.',
+      intro: `Hi ${displayName},`,
+      body: [
+        'Click the button below to verify your email address and continue into your learner dashboard.',
+      ],
+      action: { label: 'Verify email address', href: verifyUrl },
+      panels: [
+        {
+          title: 'Link expiry',
+          body: 'This verification link expires in 24 hours.',
+          tone: 'security',
+        },
+      ],
+      footerNote:
+        'If you did not create this account, you can ignore this email.',
+    });
+
     return this.send({
       to: email,
       from: 'auth',
-      subject: 'Verify Your XpertClass Email Address',
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Verify Your Email</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Click the button below to verify your email address and activate your XpertClass account.</p>
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${verifyUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Verify Email Address</a>
-    </div>
-    <p style="color:#64748b;font-size:14px;line-height:1.6;">This link will expire in 24 hours. If you didn't create this account, please ignore this email.</p>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: 'Verify your XpertClass email address',
+      ...email,
     });
   }
 
   async sendPasswordResetOtp(email: string, name: string | null, code: string) {
     const displayName = name || 'there';
+    const email = this.templates.render({
+      eyebrow: 'Password reset',
+      title: 'Reset your XpertClass password',
+      subtitle: 'Use this code to continue your password reset.',
+      intro: `Hi ${displayName},`,
+      body: ['Enter the code below to reset your XpertClass password.'],
+      code,
+      panels: [
+        {
+          title: 'Expires in 10 minutes',
+          body:
+            'If you did not request a password reset, you can ignore this email and your password will stay unchanged.',
+          tone: 'warning',
+        },
+      ],
+    });
+
     return this.send({
       to: email,
       from: 'auth',
-      subject: `Reset Your XpertClass Password — Code: ${code}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Reset Password</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Use the code below to reset your XpertClass password.</p>
-    <div style="text-align:center;margin:28px 0;">
-      <div style="background:#E9F8EE;border-radius:12px;padding:20px 40px;display:inline-block;">
-        <span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#229C62;font-family:monospace;">${code}</span>
-      </div>
-    </div>
-    <p style="color:#64748b;font-size:14px;line-height:1.6;">This code expires in 10 minutes. If you didn't request this, please ignore this email.</p>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: `Reset your XpertClass password - Code: ${code}`,
+      ...email,
     });
   }
 
   async sendPasswordReset(email: string, resetToken: string) {
     const resetUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/reset-password?token=${resetToken}`;
+    const email = this.templates.render({
+      eyebrow: 'Password reset',
+      title: 'Reset your password',
+      subtitle: 'We received a request to reset your XpertClass password.',
+      body: [
+        'Use the secure link below to choose a new password and regain access to your account.',
+      ],
+      action: { label: 'Reset password', href: resetUrl },
+      panels: [
+        {
+          title: 'Expires in 30 minutes',
+          body:
+            'If you did not request this reset, ignore this email and consider changing your password from settings.',
+          tone: 'warning',
+        },
+      ],
+    });
+
     return this.send({
       to: email,
       from: 'auth',
-      subject: 'Reset Your XpertClass Password',
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Password Reset</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">We received a request to reset your password.</p>
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${resetUrl}" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Reset Password</a>
-    </div>
-    <p style="color:#64748b;font-size:14px;line-height:1.6;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email.</p>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: 'Reset your XpertClass password',
+      ...email,
     });
   }
 
@@ -533,44 +471,38 @@ export class EmailService implements OnModuleInit {
   ) {
     const displayName = name || 'there';
     const expiry = expiresAt.toLocaleString('en-US', {
-      timeZone: 'UTC',
       dateStyle: 'medium',
       timeStyle: 'short',
     });
+    const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
+    const email = this.templates.render({
+      eyebrow: 'Lab environment ready',
+      title: 'Your lab is running',
+      subtitle: labTitle,
+      intro: `Hi ${displayName},`,
+      body: [
+        'Your isolated lab environment is ready. Open the lab, complete the objectives, and save any notes before the session ends.',
+      ],
+      fields: [
+        { label: 'Lab', value: labTitle },
+        { label: 'Expires', value: `${expiry} UTC` },
+      ],
+      panels: [
+        {
+          title: 'Resource note',
+          body:
+            'Stopping the lab when you are done frees capacity for other learners.',
+          tone: 'success',
+        },
+      ],
+      action: { label: 'Open lab', href: labsUrl },
+    });
+
     return this.send({
       to: email,
       from: 'labs',
-      subject: `Lab Ready: ${labTitle}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:linear-gradient(135deg,#229C62,#229C62);padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Lab Environment Ready</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Your lab <strong>${labTitle}</strong> is now running.</p>
-    <div style="background:#f0fdf4;border-left:4px solid #229C62;padding:16px;margin:20px 0;border-radius:4px;">
-      <p style="color:#334155;margin:0;font-size:14px;"><strong>Expires:</strong> ${expiry} (UTC)</p>
-    </div>
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Open Lab</a>
-    </div>
-    <p style="color:#64748b;font-size:14px;line-height:1.6;">Save your work before the lab expires. Stopping the lab early frees resources for other students.</p>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: `Lab ready: ${labTitle}`,
+      ...email,
     });
   }
 
@@ -581,75 +513,54 @@ export class EmailService implements OnModuleInit {
     minutesLeft: number,
   ) {
     const displayName = name || 'there';
+    const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
+    const email = this.templates.render({
+      eyebrow: 'Lab session expiring',
+      title: 'Your lab will expire soon',
+      subtitle: labTitle,
+      intro: `Hi ${displayName},`,
+      body: [
+        `Your lab session will expire in ${minutesLeft} minutes. Save your progress, notes, and any commands you still need.`,
+      ],
+      panels: [
+        {
+          title: 'Before it stops',
+          body:
+            'Submit pending flags and capture anything you need from the terminal before the environment shuts down.',
+          tone: 'warning',
+        },
+      ],
+      action: { label: 'Return to labs', href: labsUrl },
+    });
+
     return this.send({
       to: email,
       from: 'labs',
-      subject: `Lab Expiring Soon: ${labTitle} (${minutesLeft} min)`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Lab Expiring Soon</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Your lab <strong>${labTitle}</strong> will expire in <strong>${minutesLeft} minutes</strong>.</p>
-    <div style="background:#fefce8;border-left:4px solid #f59e0b;padding:16px;margin:20px 0;border-radius:4px;">
-      <p style="color:#334155;margin:0;font-size:14px;">Save your progress and notes before the environment is stopped.</p>
-    </div>
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Back to Labs</a>
-    </div>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: `Lab expiring soon: ${labTitle} (${minutesLeft} min)`,
+      ...email,
     });
   }
 
   async sendLabExpired(email: string, name: string | null, labTitle: string) {
     const displayName = name || 'there';
+    const labsUrl = `${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs`;
+    const email = this.templates.render({
+      eyebrow: 'Lab session ended',
+      title: 'Your lab has ended',
+      subtitle: labTitle,
+      intro: `Hi ${displayName},`,
+      body: [
+        'Your lab environment has expired and the session has been stopped.',
+        'Any work that was not saved outside the lab environment may no longer be available.',
+      ],
+      action: { label: 'Start another lab', href: labsUrl },
+    });
+
     return this.send({
       to: email,
       from: 'labs',
-      subject: `Lab Ended: ${labTitle}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#0F203A;padding:32px;text-align:center;">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 305 260" width="56" height="48" role="img" aria-label="XpertClass">
-      <g fill="#FFFFFF" fill-rule="evenodd"><path d="M 19.00 35.00 L 19.00 36.00 L 23.00 40.00 L 23.00 41.00 L 31.00 49.00 L 31.00 50.00 L 37.00 56.00 L 37.00 57.00 L 45.00 65.00 L 45.00 66.00 L 52.00 73.00 L 52.00 74.00 L 59.00 81.00 L 59.00 82.00 L 68.00 91.00 L 68.00 92.00 L 76.00 100.00 L 76.00 101.00 L 83.00 108.00 L 83.00 109.00 L 91.00 117.00 L 91.00 118.00 L 99.00 126.00 L 100.00 126.00 L 104.00 130.00 L 105.00 130.00 L 107.00 132.00 L 108.00 132.00 L 109.00 133.00 L 112.00 134.00 L 114.00 136.00 L 115.00 136.00 L 116.00 137.00 L 116.00 139.00 L 114.00 141.00 L 113.00 141.00 L 108.00 145.00 L 105.00 146.00 L 103.00 148.00 L 102.00 148.00 L 101.00 149.00 L 100.00 149.00 L 99.00 150.00 L 96.00 151.00 L 90.00 157.00 L 90.00 158.00 L 81.00 167.00 L 81.00 168.00 L 70.00 179.00 L 70.00 180.00 L 60.00 190.00 L 120.00 190.00 L 121.00 191.00 L 121.00 192.00 L 115.00 198.00 L 115.00 199.00 L 111.00 203.00 L 110.00 203.00 L 110.00 204.00 L 91.00 223.00 L 91.00 224.00 L 82.00 233.00 L 92.00 233.00 L 105.00 220.00 L 105.00 219.00 L 106.00 218.00 L 107.00 218.00 L 108.00 217.00 L 108.00 216.00 L 109.00 215.00 L 110.00 215.00 L 120.00 205.00 L 120.00 204.00 L 144.00 180.00 L 144.00 179.00 L 159.00 164.00 L 159.00 163.00 L 161.00 161.00 L 162.00 161.00 L 162.00 160.00 L 175.00 147.00 L 175.00 146.00 L 183.00 138.00 L 183.00 137.00 L 181.00 135.00 L 181.00 134.00 L 180.00 134.00 L 179.00 133.00 L 179.00 132.00 L 171.00 124.00 L 171.00 123.00 L 164.00 116.00 L 164.00 115.00 L 156.00 107.00 L 156.00 106.00 L 146.00 96.00 L 146.00 95.00 L 137.00 86.00 L 137.00 85.00 L 129.00 77.00 L 129.00 76.00 L 120.00 67.00 L 120.00 66.00 L 112.00 58.00 L 112.00 57.00 L 101.00 46.00 L 101.00 45.00 L 94.00 38.00 L 94.00 37.00 L 93.00 36.00 L 91.00 36.00 L 90.00 35.00 Z"/></g>
-      <g fill="#7AD62A" fill-rule="evenodd"><path d="M 94.00 202.00 L 93.00 201.00 L 50.00 201.00 L 42.00 209.00 L 42.00 210.00 L 29.00 223.00 L 29.00 224.00 L 19.00 234.00 L 19.00 235.00 L 63.00 235.00 L 79.00 219.00 L 79.00 218.00 L 84.00 213.00 L 85.00 213.00 L 85.00 212.00 L 93.00 204.00 L 93.00 203.00 Z"/></g>
-    </svg>
-    <h1 style="color:#fff;margin:12px 0 0;font-size:24px;">Lab Session Ended</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Hi ${displayName},</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Your lab <strong>${labTitle}</strong> has expired and the environment has been stopped.</p>
-    <p style="color:#334155;font-size:16px;line-height:1.6;">Any unsaved work in the lab has been lost.</p>
-    <div style="text-align:center;margin:28px 0;">
-      <a href="${process.env.FRONTEND_URL || 'https://xpertclass.academy'}/dashboard/labs" style="background:#229C62;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Start Another Lab</a>
-    </div>
-  </div>
-  <div style="background:#f8fafc;padding:16px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">XpertClass — Training Platform</p>
-  </div>
-</div>
-</body>
-</html>`,
+      subject: `Lab ended: ${labTitle}`,
+      ...email,
     });
   }
 
