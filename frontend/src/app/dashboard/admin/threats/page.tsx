@@ -7,10 +7,6 @@ import {
   AlertTriangle,
   Loader2,
   RefreshCw,
-  Search,
-  ChevronDown,
-  ChevronUp,
-  MapPin,
   Clock,
   Zap,
   X,
@@ -53,6 +49,29 @@ interface ThreatSummary {
     uniqueIps: number;
     topBlockedEndpoint: string;
   };
+}
+
+interface IpDetail {
+  ip: string;
+  country: string;
+  countryCode: string;
+  totalAttacks: number;
+  typeBreakdown: { type: string; count: number }[];
+  recentAttacks: ThreatRecord[];
+  geo?: { country: string; countryCode: string; city?: string };
+}
+
+interface Fail2banJail {
+  currentlyBanned: number;
+  currentlyFailed?: number;
+  totalBanned: number;
+  failed: number;
+  bannedIps?: string[];
+}
+
+interface Fail2banStatus {
+  active: boolean;
+  jails: Record<string, Fail2banJail>;
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
@@ -104,17 +123,17 @@ export default function ThreatsPage() {
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [selectedIp, setSelectedIp] = useState<string | null>(null);
-  const [ipDetail, setIpDetail] = useState<any>(null);
+  const [ipDetail, setIpDetail] = useState<IpDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [typeFilter, setTypeFilter] = useState("");
   const [severityFilter, setSeverityFilter] = useState("");
-  const [fail2ban, setFail2ban] = useState<any>(null);
+  const [fail2ban, setFail2ban] = useState<Fail2banStatus | null>(null);
 
   const loadData = useCallback(async () => {
     try {
       const [snapshot, f2b] = await Promise.allSettled([
         fetchApi<ThreatSummary>("/admin/threats/summary"),
-        fetchApi<any>("/admin/threats/fail2ban").catch(() => null),
+        fetchApi<Fail2banStatus>("/admin/threats/fail2ban").catch(() => null),
       ]);
       if (snapshot.status === "fulfilled") setData(snapshot.value);
       if (f2b.status === "fulfilled" && f2b.value) setFail2ban(f2b.value);
@@ -139,7 +158,7 @@ export default function ThreatsPage() {
     setSelectedIp(ip);
     setLoadingDetail(true);
     try {
-      const detail = await fetchApi<any>(`/admin/threats/ip/${ip}`);
+      const detail = await fetchApi<IpDetail>(`/admin/threats/ip/${ip}`);
       setIpDetail(detail);
     } catch {
       toast.error("Failed to load IP details");
@@ -269,7 +288,7 @@ export default function ThreatsPage() {
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                 {Object.entries(fail2ban.jails).map(
-                  ([name, jail]: [string, any]) => (
+                  ([name, jail]: [string, Fail2banJail]) => (
                     <div
                       key={name}
                       className="bg-white/[0.03] rounded-lg p-3 border border-white/5"
@@ -295,7 +314,7 @@ export default function ThreatsPage() {
                             {jail.currentlyFailed || 0}
                           </span>
                         </div>
-                        {jail.bannedIps?.length > 0 && (
+                        {jail.bannedIps && jail.bannedIps.length > 0 && (
                           <div className="pt-1 border-t border-white/5">
                             <p className="text-slate-400 mb-1">Banned IPs:</p>
                             <div className="flex flex-wrap gap-1">
@@ -578,8 +597,8 @@ export default function ThreatsPage() {
                           Country
                         </p>
                         <p className="text-sm text-white mt-1 flex items-center gap-2">
-                          <Flag code={ipDetail.geo.countryCode} />
-                          {ipDetail.geo.country}
+                           <Flag code={ipDetail.geo?.countryCode || ipDetail.countryCode || "??"} />
+                           {ipDetail.geo?.country || ipDetail.country}
                         </p>
                       </div>
                       <div className="bg-white/[0.03] rounded-lg p-3 border border-white/5">
@@ -587,7 +606,7 @@ export default function ThreatsPage() {
                           City
                         </p>
                         <p className="text-sm text-white mt-1">
-                          {ipDetail.geo.city}
+                          {ipDetail.geo?.city || "-"}
                         </p>
                       </div>
                       <div className="bg-white/[0.03] rounded-lg p-3 border border-white/5">
@@ -605,7 +624,7 @@ export default function ThreatsPage() {
                         Attack Types
                       </p>
                       <div className="space-y-1">
-                        {ipDetail.typeBreakdown.map((t: any) => (
+                        {ipDetail.typeBreakdown.map((t: { type: string; count: number }) => (
                           <div
                             key={t.type}
                             className="flex items-center justify-between py-1.5 text-xs"
@@ -622,7 +641,7 @@ export default function ThreatsPage() {
                         Recent Attacks
                       </p>
                       <div className="space-y-1 max-h-48 overflow-y-auto">
-                        {ipDetail.recentAttacks.map((a: any, i: number) => (
+                        {ipDetail.recentAttacks.map((a: ThreatRecord, i: number) => (
                           <div
                             key={i}
                             className="flex items-center gap-2 py-1.5 text-[10px] font-mono border-b border-white/5"

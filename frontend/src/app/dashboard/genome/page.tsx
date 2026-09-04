@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
 import { fetchApi } from "@/lib/api";
 import {
@@ -110,7 +110,7 @@ export default function GenomePage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
-  const fetchGenome = async () => {
+  const fetchGenome = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -121,11 +121,11 @@ export default function GenomePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     fetchGenome();
-  }, []);
+  }, [fetchGenome]);
 
   if (loading) {
     return (

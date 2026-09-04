@@ -113,7 +113,7 @@ async function refreshAccessToken(): Promise<string> {
   return data.access_token || '';
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 const inflightCache = new Map<string, { promise: Promise<unknown>; expiry: number }>();
 
 export interface FetchApiOptions extends RequestInit {

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import Dashboard from "@/components/dashboard/Dashboard";
@@ -20,7 +19,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
-  const { userMetrics } = useDashboard();
+  useDashboard();
 
   useEffect(() => {
     try {

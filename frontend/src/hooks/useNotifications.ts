@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { io, Socket } from "socket.io-client";
-import { API_URL, fetchApi } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import type { NotificationItem, NotificationResponse } from "@/types/api";
 
 let globalSocket: Socket | null = null;

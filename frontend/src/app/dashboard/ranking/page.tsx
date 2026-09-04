@@ -224,7 +224,7 @@ export default function RankingPage() {
     }
     load();
     return () => { cancelled = true; };
-  }, [activeTab, userId]);
+  }, [activeTab, userId, ratingHistory.length]);
 
   useEffect(() => {
     if (activeTab !== "history" || !userId || careerHistory.length > 0) return;
@@ -242,7 +242,7 @@ export default function RankingPage() {
     }
     load();
     return () => { cancelled = true; };
-  }, [activeTab, userId]);
+  }, [activeTab, userId, careerHistory.length]);
 
   useEffect(() => {
     if (!selectedDomain) return;

@@ -8,7 +8,6 @@ import {
   Lightbulb,
   ChevronDown,
   ChevronUp,
-  Zap,
   Terminal,
   Flag,
   ListChecks,

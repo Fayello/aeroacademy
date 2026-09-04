@@ -49,7 +49,17 @@ interface SecurityOverview {
     banned: boolean;
   }[];
   hourlyTimeline24h: { hour: string; count: number }[];
-  recentCritical: any[];
+  recentCritical: {
+    id?: string;
+    timestamp: string;
+    severity: string;
+    message: string;
+    src: string;
+    countryCode?: string;
+    ip?: string;
+    type?: string;
+    source?: string;
+  }[];
 }
 
 const LAYER_ICONS: Record<string, typeof Shield> = {

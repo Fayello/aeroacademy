@@ -89,7 +89,6 @@ export default function TrafficAnalyticsPage() {
   const [data, setData] = useState<TrafficSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(false);
-  const [selectedIp, setSelectedIp] = useState<string | null>(null);
   const [ipFilter, setIpFilter] = useState("");
   const [expandedIps, setExpandedIps] = useState<Set<string>>(new Set());
 
