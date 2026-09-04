@@ -11,7 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { DomainRankingService } from './domain-ranking.service';
 import { PrismaService } from '../prisma/prisma.service';
 
-@Controller('v2/domain-ranking')
+@Controller('v1/domain-ranking')
 @UseGuards(AuthGuard('jwt'))
 export class DomainRankingController {
   constructor(

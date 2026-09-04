@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import {
   Loader2, Shield, Trophy, TrendingUp, Crown, Target,
@@ -196,7 +196,7 @@ export default function RankingPage() {
     let cancelled = false;
     async function load() {
       try {
-        const data = await fetchApiV2<RankedProfile>(`/domain-ranking/profile/${userId}`);
+        const data = await fetchApi<RankedProfile>(`/domain-ranking/profile/${userId}`);
         if (!cancelled) setProfile(data);
       } catch (err: unknown) {
         if (!cancelled) toast.error(err instanceof Error ? err.message : "Failed to load ranking profile");
@@ -214,7 +214,7 @@ export default function RankingPage() {
     async function load() {
       setHistoryLoading(true);
       try {
-        const data = await fetchApiV2<RatingHistoryEntry[]>(`/domain-ranking/history/${userId}/all`);
+        const data = await fetchApi<RatingHistoryEntry[]>(`/domain-ranking/history/${userId}/all`);
         if (!cancelled) setRatingHistory(data);
       } catch {
         if (!cancelled) toast.error("Failed to load rating history");
@@ -232,7 +232,7 @@ export default function RankingPage() {
     async function load() {
       setCareerLoading(true);
       try {
-        const data = await fetchApiV2<SeasonHistoryEntry[]>(`/domain-ranking/career/${userId}`);
+        const data = await fetchApi<SeasonHistoryEntry[]>(`/domain-ranking/career/${userId}`);
         if (!cancelled) setCareerHistory(data);
       } catch {
         if (!cancelled) toast.error("Failed to load career history");
@@ -250,7 +250,7 @@ export default function RankingPage() {
     async function load() {
       setLbLoading(true);
       try {
-        const data = await fetchApiV2<LeaderboardEntry[]>(`/domain-ranking/domain/${selectedDomain}/leaderboard`);
+        const data = await fetchApi<LeaderboardEntry[]>(`/domain-ranking/domain/${selectedDomain}/leaderboard`);
         if (!cancelled) setLeaderboard(data.slice(0, 20));
       } catch {
         if (!cancelled) toast.error("Failed to load domain leaderboard");

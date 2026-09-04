@@ -2,7 +2,7 @@ import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MasteryService, TechnologyGenome } from '../common/mastery.service';
 
-@Controller('v2/genome')
+@Controller('v1/genome')
 export class GenomeController {
   constructor(private readonly masteryService: MasteryService) {}
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import {
   Loader2, Shield, Trophy, Target, Clock, Zap, Award, Medal,
 } from "lucide-react";
@@ -70,8 +70,8 @@ export default function CapabilityRankingPage() {
         }
 
         const [lb, cap] = await Promise.allSettled([
-          fetchApiV2<CapabilityEntry[]>("/domain-ranking/capability-leaderboard?limit=50"),
-          fetchApiV2<MyCapability>(`/domain-ranking/capability/${user.id}`),
+          fetchApi<CapabilityEntry[]>("/domain-ranking/capability-leaderboard?limit=50"),
+          fetchApi<MyCapability>(`/domain-ranking/capability/${user.id}`),
         ]);
 
         if (!cancelled) {

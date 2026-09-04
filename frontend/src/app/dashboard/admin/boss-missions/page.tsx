@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import { Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, Skull } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
@@ -77,8 +77,8 @@ export default function AdminBossMissionsPage() {
   const load = useCallback(async () => {
     try {
       const [missionData, seasonData] = await Promise.all([
-        fetchApiV2<BossMission[]>("/boss-missions"),
-        fetchApiV2<Season[]>("/seasons"),
+        fetchApi<BossMission[]>("/boss-missions"),
+        fetchApi<Season[]>("/seasons"),
       ]);
       setMissions(missionData);
       setSeasons(seasonData);
@@ -138,9 +138,9 @@ export default function AdminBossMissionsPage() {
         expiresAt: new Date(form.expiresAt).toISOString(),
       };
       if (modal.editing) {
-        await fetchApiV2(`/boss-missions/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
+        await fetchApi(`/boss-missions/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
       } else {
-        await fetchApiV2("/boss-missions", { method: "POST", body: JSON.stringify(body) });
+        await fetchApi("/boss-missions", { method: "POST", body: JSON.stringify(body) });
       }
       toast.success(modal.editing ? "Mission updated" : "Mission created");
       setModal({ open: false, editing: null });
@@ -154,7 +154,7 @@ export default function AdminBossMissionsPage() {
 
   const handleDeactivate = async (id: string) => {
     try {
-      await fetchApiV2(`/boss-missions/${id}`, { method: "DELETE" });
+      await fetchApi(`/boss-missions/${id}`, { method: "DELETE" });
       toast.success("Mission deactivated");
       setDeleteDialog({ open: false, item: null });
       load();

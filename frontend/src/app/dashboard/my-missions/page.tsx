@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import {
   Swords,
@@ -64,8 +64,8 @@ export default function MyMissionsPage() {
     setError(null);
     try {
       const [available, historyData] = await Promise.all([
-        fetchApiV2<Mission[]>("/missions/available"),
-        fetchApiV2<Mission[]>("/missions/history"),
+        fetchApi<Mission[]>("/missions/available"),
+        fetchApi<Mission[]>("/missions/history"),
       ]);
       setMissions(available);
       setHistory(historyData);
@@ -85,7 +85,7 @@ export default function MyMissionsPage() {
 
   const handleAccept = async (missionId: string) => {
     try {
-      await fetchApiV2(`/missions/${missionId}/accept`, { method: "POST" });
+      await fetchApi(`/missions/${missionId}/accept`, { method: "POST" });
       fetchData();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to accept mission");
@@ -94,7 +94,7 @@ export default function MyMissionsPage() {
 
   const handleComplete = async (missionId: string) => {
     try {
-      await fetchApiV2(`/missions/${missionId}/complete`, { method: "POST" });
+      await fetchApi(`/missions/${missionId}/complete`, { method: "POST" });
       fetchData();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to complete mission");

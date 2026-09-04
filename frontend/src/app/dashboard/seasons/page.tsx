@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { Loader2, Calendar, Zap, Trophy, Clock, Star, Crown } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
@@ -95,8 +95,8 @@ export default function SeasonsPage() {
     async function load() {
       try {
         const [active, all] = await Promise.allSettled([
-          fetchApiV2<Season>("/seasons/active"),
-          fetchApiV2<Season[]>("/seasons"),
+          fetchApi<Season>("/seasons/active"),
+          fetchApi<Season[]>("/seasons"),
         ]);
         if (!cancelled) {
           if (active.status === "fulfilled") setActiveSeason(active.value);
@@ -116,7 +116,7 @@ export default function SeasonsPage() {
     let cancelled = false;
     async function loadLeaderboard() {
       try {
-        const data = await fetchApiV2<LeaderboardEntry[]>("/ranking/leaderboard");
+        const data = await fetchApi<LeaderboardEntry[]>("/ranking/leaderboard");
         if (!cancelled) setLeaderboard(data.slice(0, 10));
       } catch {
         if (!cancelled) toast.error("Failed to load leaderboard");

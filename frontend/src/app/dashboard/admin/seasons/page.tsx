@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import { Calendar, Plus, Pencil, ArrowLeft, Loader2, Search, RotateCcw, StopCircle } from "lucide-react";
 import toast from "@/lib/toast";
 import Link from "next/link";
@@ -45,7 +45,7 @@ export default function AdminSeasonsPage() {
 
   const load = useCallback(async () => {
     try {
-      const data = await fetchApiV2<Season[]>("/seasons");
+      const data = await fetchApi<Season[]>("/seasons");
       setSeasons(data);
     } catch {
       toast.error("Failed to load seasons");
@@ -91,9 +91,9 @@ export default function AdminSeasonsPage() {
         endDate: new Date(form.endDate).toISOString(),
       };
       if (modal.editing) {
-        await fetchApiV2(`/seasons/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
+        await fetchApi(`/seasons/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
       } else {
-        await fetchApiV2("/seasons", { method: "POST", body: JSON.stringify(body) });
+        await fetchApi("/seasons", { method: "POST", body: JSON.stringify(body) });
       }
       toast.success(modal.editing ? "Season updated" : "Season created");
       setModal({ open: false, editing: null });
@@ -107,7 +107,7 @@ export default function AdminSeasonsPage() {
 
   const handleEnd = async (id: string) => {
     try {
-      await fetchApiV2(`/seasons/${id}/end`, { method: "POST" });
+      await fetchApi(`/seasons/${id}/end`, { method: "POST" });
       toast.success("Season ended");
       load();
     } catch {
@@ -117,7 +117,7 @@ export default function AdminSeasonsPage() {
 
   const handleRotate = async () => {
     try {
-      await fetchApiV2("/seasons/rotate", { method: "POST" });
+      await fetchApi("/seasons/rotate", { method: "POST" });
       toast.success("Season rotated — new season created");
       load();
     } catch {

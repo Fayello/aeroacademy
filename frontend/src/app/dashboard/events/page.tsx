@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import {
   Loader2,
   Calendar,
@@ -120,7 +120,7 @@ export default function EventsPage() {
     let cancelled = false;
     async function loadEvents() {
       try {
-        const data = await fetchApiV2<GlobalEvent[]>("/global-events/active");
+        const data = await fetchApi<GlobalEvent[]>("/global-events/active");
         if (!cancelled) setEvents(data);
       } catch {
         toast.error("Failed to load events");
@@ -145,11 +145,11 @@ export default function EventsPage() {
       const results = await Promise.allSettled(
         events.map(async (event) => {
           const [progress, userProg] = await Promise.allSettled([
-            fetchApiV2<EventProgress>(
+            fetchApi<EventProgress>(
               `/global-events/${event.id}/progress`
             ),
             userId
-              ? fetchApiV2<{ joined: boolean; progress: number; completed: boolean; eligibleToClaim: boolean }>(
+              ? fetchApi<{ joined: boolean; progress: number; completed: boolean; eligibleToClaim: boolean }>(
                   `/global-events/${event.id}/progress?userId=${userId}`
                 )
               : Promise.resolve(null),
@@ -189,7 +189,7 @@ export default function EventsPage() {
     }
     setJoinLoading(eventId);
     try {
-      await fetchApiV2(`/global-events/${eventId}/join`, {
+      await fetchApi(`/global-events/${eventId}/join`, {
         method: "POST",
         body: JSON.stringify({ userId }),
       });
@@ -221,7 +221,7 @@ export default function EventsPage() {
     if (!userId) return;
     setClaimLoading(eventId);
     try {
-      await fetchApiV2(`/global-events/${eventId}/claim`, {
+      await fetchApi(`/global-events/${eventId}/claim`, {
         method: "POST",
         body: JSON.stringify({ userId }),
       });
@@ -245,7 +245,7 @@ export default function EventsPage() {
     if (!userId) return;
     setProgressLoading(eventId);
     try {
-      await fetchApiV2(`/global-events/${eventId}/progress`, {
+      await fetchApi(`/global-events/${eventId}/progress`, {
         method: "POST",
         body: JSON.stringify({ userId, progress: 1 }),
       });

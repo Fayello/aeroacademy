@@ -3,7 +3,7 @@
 import { useDashboard } from "@/hooks/useDashboard";
 import { Trophy, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network, Users, Medal, Award } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import { fetchApi, fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import Badge from "@/components/ui/Badge";
 import { DIVISION_COLORS } from "@/lib/constants";
@@ -112,7 +112,7 @@ export default function LeaderboardPage() {
     let cancelled = false;
     async function load() {
       try {
-        const data = await fetchApiV2<GlobalRankProfile>(`/domain-ranking/profile/${currentUserId}`);
+        const data = await fetchApi<GlobalRankProfile>(`/domain-ranking/profile/${currentUserId}`);
         if (!cancelled) setGlobalProfile(data);
       } catch {
         // silent

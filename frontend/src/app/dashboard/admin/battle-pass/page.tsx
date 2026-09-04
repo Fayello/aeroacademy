@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import { Plus, Pencil, Trash2, ArrowLeft, Loader2, Search, ChevronDown, ChevronUp, Swords } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import toast from "@/lib/toast";
@@ -62,8 +62,8 @@ export default function AdminBattlePassPage() {
   const load = useCallback(async () => {
     try {
       const [bpData, seasonData] = await Promise.all([
-        fetchApiV2<BattlePass[]>("/battle-pass"),
-        fetchApiV2<Season[]>("/seasons"),
+        fetchApi<BattlePass[]>("/battle-pass"),
+        fetchApi<Season[]>("/seasons"),
       ]);
       setBattlePasses(Array.isArray(bpData) ? bpData : bpData ? [bpData] : []);
       setSeasons(Array.isArray(seasonData) ? seasonData : seasonData ? [seasonData] : []);
@@ -128,9 +128,9 @@ export default function AdminBattlePassPage() {
         })),
       };
       if (modal.editing) {
-        await fetchApiV2(`/battle-pass/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
+        await fetchApi(`/battle-pass/${modal.editing.id}`, { method: "PATCH", body: JSON.stringify(body) });
       } else {
-        await fetchApiV2("/battle-pass", { method: "POST", body: JSON.stringify(body) });
+        await fetchApi("/battle-pass", { method: "POST", body: JSON.stringify(body) });
       }
       toast.success(modal.editing ? "Battle Pass updated" : "Battle Pass created");
       setModal({ open: false, editing: null });
@@ -144,7 +144,7 @@ export default function AdminBattlePassPage() {
 
   const handleDeactivate = async (id: string) => {
     try {
-      await fetchApiV2(`/battle-pass/${id}`, { method: "DELETE" });
+      await fetchApi(`/battle-pass/${id}`, { method: "DELETE" });
       toast.success("Battle Pass deactivated");
       setDeleteDialog({ open: false, item: null });
       load();

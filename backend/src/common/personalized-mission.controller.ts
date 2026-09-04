@@ -9,7 +9,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { PersonalizedMissionService } from '../common/personalized-mission.service';
 
-@Controller('v2/missions')
+@Controller('v1/missions')
 @UseGuards(AuthGuard('jwt'))
 export class MissionsController {
   constructor(private readonly missionsService: PersonalizedMissionService) {}

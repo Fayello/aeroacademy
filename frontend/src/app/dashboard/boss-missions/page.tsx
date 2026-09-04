@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import Image from "next/image";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
@@ -135,7 +135,7 @@ export default function BossMissionsPage() {
     let cancelled = false;
     async function load() {
       try {
-        const data = await fetchApiV2<BossMission[]>("/boss-missions/active");
+        const data = await fetchApi<BossMission[]>("/boss-missions/active");
         if (!cancelled) setBosses(data);
       } catch {
         if (!cancelled) toast.error("Failed to load boss missions");
@@ -152,7 +152,7 @@ export default function BossMissionsPage() {
     setSelectedBoss(null);
     setLeaderboard([]);
     try {
-      const detail = await fetchApiV2<BossDetail>(`/boss-missions/${bossId}/attempts/${userId}`);
+      const detail = await fetchApi<BossDetail>(`/boss-missions/${bossId}/attempts/${userId}`);
       setSelectedBoss(detail);
     } catch {
       toast.error("Failed to load boss details");
@@ -161,7 +161,7 @@ export default function BossMissionsPage() {
     }
     setLeaderboardLoading(true);
     try {
-      const lb = await fetchApiV2<LeaderboardEntry[]>(`/boss-missions/${bossId}/leaderboard`);
+      const lb = await fetchApi<LeaderboardEntry[]>(`/boss-missions/${bossId}/leaderboard`);
       setLeaderboard(lb);
     } catch {
       toast.error("Failed to load leaderboard");

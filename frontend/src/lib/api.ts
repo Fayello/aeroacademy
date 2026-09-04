@@ -1,6 +1,5 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 export const API_VERSION = '/api/v1';
-export const API_VERSION_V2 = '/api/v2';
 
 const LOCAL_API_HOSTS = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 
@@ -247,11 +246,6 @@ export async function fetchApi<T = any>(endpoint: string, options: FetchApiOptio
     inflightCache.set(dedupeKey, { promise: Promise.resolve(result), expiry: Date.now() + 500 });
   }
   return result;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function fetchApiV2<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  return fetchApi<T>(endpoint, options, API_VERSION_V2);
 }
 
 export function initTokenRefresh() {

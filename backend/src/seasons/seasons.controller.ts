@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SeasonsService } from './seasons.service';
 
-@Controller('v2/seasons')
+@Controller('v1/seasons')
 @UseGuards(AuthGuard('jwt'))
 export class SeasonsController {
   constructor(private readonly seasonsService: SeasonsService) {}

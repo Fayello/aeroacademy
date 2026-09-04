@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import {
   Dna,
   AlertTriangle,
@@ -114,7 +114,7 @@ export default function GenomePage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchApiV2<TechnologyGenome>("/genome/profile");
+      const data = await fetchApi<TechnologyGenome>("/genome/profile");
       setGenome(data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t("common.error"));

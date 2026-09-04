@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchApiV2 } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { Loader2, Crown, Lock, CheckCircle2, Star, Zap, Gift, Shield, Trophy, Sparkles, Medal, Award } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
@@ -100,9 +100,9 @@ export default function BattlePassPage() {
       setLoading(true);
       try {
         const [bp, prog, lb] = await Promise.allSettled([
-          fetchApiV2<BattlePassData>("/battle-pass"),
-          fetchApiV2<BattlePassProgress>(`/battle-pass/progress/${userId}`),
-          fetchApiV2<LeaderboardEntry[]>("/battle-pass/leaderboard"),
+          fetchApi<BattlePassData>("/battle-pass"),
+          fetchApi<BattlePassProgress>(`/battle-pass/progress/${userId}`),
+          fetchApi<LeaderboardEntry[]>("/battle-pass/leaderboard"),
         ]);
         if (!cancelled) {
           if (bp.status === "fulfilled") setBattlePass(bp.value);

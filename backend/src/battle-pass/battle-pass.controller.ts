@@ -13,7 +13,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { BattlePassService } from './battle-pass.service';
 
-@Controller('v2/battle-pass')
+@Controller('v1/battle-pass')
 @UseGuards(AuthGuard('jwt'))
 export class BattlePassController {
   constructor(private readonly battlePassService: BattlePassService) {}
