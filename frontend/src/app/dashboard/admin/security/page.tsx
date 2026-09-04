@@ -57,6 +57,7 @@ const LAYER_ICONS: Record<string, typeof Shield> = {
   fail2ban: Shield,
   "ModSecurity WAF": Eye,
   "Nginx Rate Limits": Zap,
+  "Suricata IDS/IPS": Activity,
   "Docker Sandboxing": Server,
 };
 

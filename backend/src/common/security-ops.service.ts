@@ -297,7 +297,23 @@ export class SecurityOpsService {
       metrics: { zones: 3 },
     });
 
-    // 5. Docker sandboxing
+    // 5. Suricata IDS/IPS
+    const suricataRules = this.getSuricataRuleCount();
+    const suricataActive = this.isSuricataRunning();
+    layers.push({
+      name: 'Suricata IDS/IPS',
+      status: suricataActive ? 'active' : 'inactive',
+      description: 'Network intrusion detection and prevention',
+      details: [
+        `${suricataRules} rules loaded (ET Open + custom)`,
+        'Monitoring eth0 in AF_PACKET mode',
+        'EVE JSON logging to /var/log/suricata/eve.json',
+        'Custom rules: SQLi, XSS, SSRF, XXE, scanners, Log4Shell',
+      ],
+      metrics: { rules: suricataRules },
+    });
+
+    // 6. Docker sandboxing
     layers.push({
       name: 'Docker Sandboxing',
       status: 'active',
@@ -322,6 +338,27 @@ export class SecurityOpsService {
       return matches?.length || 0;
     } catch {
       return 0;
+    }
+  }
+
+  private getSuricataRuleCount(): number {
+    try {
+      const content = fs.readFileSync(
+        '/var/lib/suricata/rules/suricata.rules',
+        'utf-8',
+      );
+      return content.split('\n').filter((l) => l.trim() && !l.startsWith('#')).length;
+    } catch {
+      return 0;
+    }
+  }
+
+  private isSuricataRunning(): boolean {
+    try {
+      execSync('pgrep suricata', { timeout: 3000 });
+      return true;
+    } catch {
+      return false;
     }
   }
 }

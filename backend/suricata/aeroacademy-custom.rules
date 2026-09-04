@@ -1,0 +1,19 @@
+alert http any any -> $HOME_NET any (msg:"XpertClass - SQL Injection on auth"; flow:to_server,established; http.uri; pcre:"/auth/.*union.*select|or.*1.*=.*1/i"; sid:9000001; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"XpertClass - Command Injection"; flow:to_server,established; http.request_body; pcre:"/(cat|ls|id|whoami|curl|wget|bash|nc)\s/i"; sid:9000002; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"XpertClass - Path Traversal"; flow:to_server,established; http.uri; pcre:"/\.\.\//"; sid:9000003; rev:1;)
+
+alert ssh any any -> any [22] (msg:"XpertClass - SSH Brute Force"; flow:to_server,established; threshold:type both, track by_src, count 5, seconds 60; sid:9000004; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"XpertClass - CMS Scanner"; flow:to_server,established; http.uri; pcre:"/wp-admin|wp-login|xmlrpc\.php|wp-content/i"; sid:9000005; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"XpertClass - Vuln Scanner UA"; flow:to_server,established; http.user_agent; pcre:"/nikto|nmap|sqlmap|burpsuite|acunetix|nessus|openvas|masscan/i"; sid:9000006; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"XpertClass - XXE Injection"; flow:to_server,established; http.request_body; pcre:"/DOCTYPE.*\[|ENTITY/i"; sid:9000008; rev:1;)
+
+alert http any any -> $HOME_NET any (msg:"XpertClass - SSRF Attempt"; flow:to_server,established; http.request_body; pcre:"/169\.254\.169\.254|127\.0\.0\.1|metadata\.google/i"; sid:9000009; rev:1;)
+
+alert tcp any any -> any any (msg:"XpertClass - TCP SYN Scan"; flags:S; threshold:type both, track by_src, count 20, seconds 60; sid:9000010; rev:1;)
+
+alert tcp any any -> any [6379] (msg:"XpertClass - Redis Access"; flow:to_server,established; sid:9000012; rev:1;)

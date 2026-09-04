@@ -89,6 +89,8 @@ services:
       - /root/.ssh/aeroacademy_deploy:/app/.ssh_key:ro
       - /var/log/modsecurity:/var/log/modsecurity:ro
       - /var/log/nginx:/var/log/nginx:ro
+      - /var/log/suricata:/var/log/suricata:ro
+      - /var/lib/suricata/rules:/var/lib/suricata/rules:ro
     networks:
       - backend
       - labs

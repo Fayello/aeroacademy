@@ -20,7 +20,7 @@ export interface ThreatRecord {
   uri: string;
   method: string;
   data: string;
-  source: 'modsecurity' | 'nginx-block' | 'nginx-rate-limit';
+  source: 'modsecurity' | 'nginx-block' | 'nginx-rate-limit' | 'suricata';
 }
 
 export interface ThreatSummary {
@@ -52,10 +52,12 @@ export class ThreatIntelService {
   private readonly maxRecords = 100000;
   private lastModsecurityPos = 0;
   private lastNginxPos = 0;
+  private lastSuricataPos = 0;
 
   private modsecurityLog =
     '/var/log/modsecurity/modsec_audit.log';
   private nginxErrorLog = '/var/log/nginx/error.log';
+  private suricataEve = '/var/log/suricata/eve.json';
 
   constructor() {
     // Initial parse on startup
@@ -70,6 +72,7 @@ export class ThreatIntelService {
   private parseLogs() {
     this.parseModsecurityLog();
     this.parseNginxErrorLog();
+    this.parseSuricataEve();
   }
 
   private parseModsecurityLog() {
@@ -177,6 +180,73 @@ export class ThreatIntelService {
     } catch (err) {
       this.logger.error('Failed to parse nginx error log', err);
     }
+  }
+
+  private parseSuricataEve() {
+    try {
+      if (!fs.existsSync(this.suricataEve)) return;
+      const stat = fs.statSync(this.suricataEve);
+      if (stat.size <= this.lastSuricataPos) return;
+
+      const fd = fs.openSync(this.suricataEve, 'r');
+      const bufferSize = stat.size - this.lastSuricataPos;
+      const buffer = Buffer.alloc(Math.min(bufferSize, 10 * 1024 * 1024));
+      fs.readSync(fd, buffer, 0, buffer.length, this.lastSuricataPos);
+      fs.closeSync(fd);
+      this.lastSuricataPos = stat.size;
+
+      const lines = buffer.toString('utf-8').split('\n').filter(Boolean);
+      for (const line of lines) {
+        try {
+          const event = JSON.parse(line);
+          if (event.event_type !== 'alert') continue;
+
+          const ip = event.src_ip || event.dest_ip || 'unknown';
+          const geo = geoip.lookup(ip);
+          const alert = event.alert || {};
+
+          const type = this.classifyAttack(
+            String(alert.signature_id || ''),
+            alert.signature || '',
+            JSON.stringify(alert),
+          );
+
+          this.threats.push({
+            timestamp: event.timestamp
+              ? new Date(event.timestamp).getTime()
+              : Date.now(),
+            ip,
+            country: geo?.country || 'Unknown',
+            countryCode: geo?.country || '??',
+            city: geo?.city || 'Unknown',
+            type,
+            severity: this.getSuricataSeverity(alert.severity || 3),
+            ruleId: String(alert.signature_id || ''),
+            msg: alert.signature || 'Suricata alert',
+            uri: event.http?.url || '',
+            method: event.http?.http_method || '',
+            data: JSON.stringify({
+              category: alert.category || '',
+              action: alert.action || '',
+              protocol: event.proto || '',
+              srcPort: event.src_port,
+              destPort: event.dest_port,
+              communityId: event.community_id || '',
+            }),
+            source: 'suricata',
+          });
+        } catch {}
+      }
+    } catch (err) {
+      this.logger.error('Failed to parse Suricata EVE log', err);
+    }
+  }
+
+  private getSuricataSeverity(severity: number): string {
+    if (severity <= 1) return 'CRITICAL';
+    if (severity <= 2) return 'HIGH';
+    if (severity <= 3) return 'MEDIUM';
+    return 'LOW';
   }
 
   private classifyAttack(
