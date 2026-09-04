@@ -13,6 +13,7 @@ export interface User {
   organizationId: string | null;
   teamId: string | null;
   createdAt: string;
+  emailPreferences?: Record<string, boolean>;
   preference?: UserPreference | null;
 }
 
@@ -58,6 +59,36 @@ export interface Section {
   _count?: { lessons?: number };
 }
 
+export interface InlinePractice {
+  id: string;
+  title: string;
+  type: string;
+  prompt: string;
+  instructions: string | null;
+  validationMode: string;
+  hints: string[];
+  maxAttempts: number;
+  xpReward: number;
+  required: boolean;
+  order: number;
+}
+
+export interface InlinePracticeSubmission {
+  id: string;
+  isCorrect: boolean;
+  score: number;
+  feedback: string | null;
+  attemptNumber: number;
+  xpAwarded?: number;
+  createdAt: string;
+}
+
+export interface InlinePracticeProgress extends InlinePractice {
+  attemptCount: number;
+  passed: boolean;
+  latestSubmission: InlinePracticeSubmission | null;
+}
+
 export interface Lesson {
   id: string;
   sectionId: string;
@@ -66,9 +97,15 @@ export interface Lesson {
   videoUrl: string | null;
   content: string | null;
   labId: string | null;
-  lab?: { id: string; title: string; description: string; difficulty: number } | null;
+  lab?: {
+    id: string;
+    title: string;
+    description: string;
+    difficulty: number;
+  } | null;
   quiz?: Quiz | null;
   section?: { courseId: string; title: string };
+  inlinePractices?: InlinePractice[];
 }
 
 export interface QuizSubmissionResult {
@@ -295,7 +332,16 @@ export interface TalentPoolCandidate {
   division: string;
   bio: string | null;
   organization: { name: string; type: string } | null;
-  achievements: { achievement: { id: string; title: string; description: string; icon: string; category: string; xpReward: number } }[];
+  achievements: {
+    achievement: {
+      id: string;
+      title: string;
+      description: string;
+      icon: string;
+      category: string;
+      xpReward: number;
+    };
+  }[];
   _count: { labSubmissions: number; progress: number };
   evidence: TalentEvidenceSummary;
 }
@@ -335,10 +381,31 @@ export interface LabStats {
 }
 
 export interface DashboardRecommendations {
-  courses: { id: string; title: string; description: string; imageUrl: string | null }[];
-  learningPaths: { id: string; title: string; description: string; imageUrl: string | null; careerRole: string | null }[];
-  labs: { id: string; title: string; description: string; difficulty: number }[];
-  similarUsers: { id: string; name: string | null; username: string | null; xp: number }[];
+  courses: {
+    id: string;
+    title: string;
+    description: string;
+    imageUrl: string | null;
+  }[];
+  learningPaths: {
+    id: string;
+    title: string;
+    description: string;
+    imageUrl: string | null;
+    careerRole: string | null;
+  }[];
+  labs: {
+    id: string;
+    title: string;
+    description: string;
+    difficulty: number;
+  }[];
+  similarUsers: {
+    id: string;
+    name: string | null;
+    username: string | null;
+    xp: number;
+  }[];
   source?: "ai" | "rules";
   insights?: {
     weakDomains: string[];
@@ -490,9 +557,20 @@ export interface AnalyticsOverview {
     flagsSolved: number;
     solvers: number;
   }[];
-  quizStats: { submissions: number; passed: number; failed: number; passRate: number };
+  quizStats: {
+    submissions: number;
+    passed: number;
+    failed: number;
+    passRate: number;
+  };
   flagStats: { correct: number; incorrect: number };
-  activity: { date: string; lessons: number; flags: number; quizzes: number; registrations: number }[];
+  activity: {
+    date: string;
+    lessons: number;
+    flags: number;
+    quizzes: number;
+    registrations: number;
+  }[];
   topPerformers: {
     id: string;
     name: string;
@@ -544,11 +622,7 @@ export interface UserStats {
   byRole: { role: UserRole; _count: number }[];
 }
 
-export type MasterClassStatus =
-  | "UPCOMING"
-  | "LIVE"
-  | "COMPLETED"
-  | "CANCELLED";
+export type MasterClassStatus = "UPCOMING" | "LIVE" | "COMPLETED" | "CANCELLED";
 
 export interface MasterClass {
   id: string;

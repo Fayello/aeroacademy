@@ -60,6 +60,22 @@ export class CoursesService {
               include: {
                 quiz: true,
                 lab: { select: { id: true, title: true, difficulty: true } },
+                inlinePractices: {
+                  orderBy: { order: 'asc' },
+                  select: {
+                    id: true,
+                    title: true,
+                    type: true,
+                    prompt: true,
+                    instructions: true,
+                    validationMode: true,
+                    hints: true,
+                    maxAttempts: true,
+                    xpReward: true,
+                    required: true,
+                    order: true,
+                  },
+                },
               },
             },
           },
@@ -94,6 +110,22 @@ export class CoursesService {
             title: true,
             description: true,
             difficulty: true,
+          },
+        },
+        inlinePractices: {
+          orderBy: { order: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            type: true,
+            prompt: true,
+            instructions: true,
+            validationMode: true,
+            hints: true,
+            maxAttempts: true,
+            xpReward: true,
+            required: true,
+            order: true,
           },
         },
         quiz: {
@@ -250,6 +282,22 @@ export class CoursesService {
       include: {
         quiz: true,
         lab: { select: { id: true, title: true, difficulty: true } },
+        inlinePractices: {
+          orderBy: { order: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            type: true,
+            prompt: true,
+            instructions: true,
+            validationMode: true,
+            hints: true,
+            maxAttempts: true,
+            xpReward: true,
+            required: true,
+            order: true,
+          },
+        },
       },
       orderBy: { order: 'asc' },
     });
@@ -309,6 +357,10 @@ export class CoursesService {
 
     await this.prisma.$transaction([
       this.prisma.progress.deleteMany({ where: { lessonId } }),
+      this.prisma.inlinePracticeSubmission.deleteMany({
+        where: { practice: { lessonId } },
+      }),
+      this.prisma.inlinePractice.deleteMany({ where: { lessonId } }),
       this.prisma.quizSubmission.deleteMany({ where: { quiz: { lessonId } } }),
       this.prisma.question.deleteMany({ where: { quiz: { lessonId } } }),
       this.prisma.quiz.deleteMany({ where: { lessonId } }),

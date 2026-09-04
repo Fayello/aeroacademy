@@ -9,8 +9,20 @@ import { getErrorMessage } from "@/lib/format";
 import type { Organization } from "@/types/api";
 import { useRouter } from "next/navigation";
 import {
-  User, Save, ArrowLeft, Loader2, AtSign, MapPin, Building2,
-  Mail, Bell, Globe, Info, Monitor, Trophy, Briefcase,
+  User,
+  Save,
+  ArrowLeft,
+  Loader2,
+  AtSign,
+  MapPin,
+  Building2,
+  Mail,
+  Bell,
+  Globe,
+  Info,
+  Monitor,
+  Trophy,
+  Briefcase,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "@/lib/toast";
@@ -37,23 +49,81 @@ const TIMEZONES = [
 ];
 
 const EMAIL_PREFS = [
-  { key: "achievements", label: "Achievements", desc: "When you unlock an achievement" },
-  { key: "milestones", label: "Milestones", desc: "Level ups and XP milestones" },
+  {
+    key: "achievements",
+    label: "Achievements",
+    desc: "When you unlock an achievement",
+  },
+  {
+    key: "milestones",
+    label: "Milestones",
+    desc: "Level ups and XP milestones",
+  },
   { key: "streaks", label: "Streaks", desc: "Streak reminders and milestones" },
-  { key: "labCompletions", label: "Lab Completions", desc: "When you complete a lab" },
-  { key: "courseUpdates", label: "Course Updates", desc: "New lessons and course changes" },
-  { key: "weeklyDigest", label: "Weekly Digest", desc: "Weekly progress summary" },
+  {
+    key: "labCompletions",
+    label: "Lab Completions",
+    desc: "When you complete a lab",
+  },
+  {
+    key: "courseUpdates",
+    label: "Course Updates",
+    desc: "New lessons and course changes",
+  },
+  {
+    key: "nudges",
+    label: "Learning Nudges",
+    desc: "Helpful reminders when progress is waiting",
+  },
+  {
+    key: "reengagement",
+    label: "Re-engagement",
+    desc: "Occasional reminders after inactivity",
+  },
+  {
+    key: "weeklyDigest",
+    label: "Weekly Digest",
+    desc: "Weekly progress summary",
+  },
 ];
+
+const DEFAULT_EMAIL_PREFS = EMAIL_PREFS.reduce<Record<string, boolean>>(
+  (acc, pref) => {
+    acc[pref.key] = true;
+    return acc;
+  },
+  {},
+);
+
+function normalizeEmailPrefs(prefs?: Record<string, boolean>) {
+  return { ...DEFAULT_EMAIL_PREFS, ...(prefs || {}) };
+}
 
 const AVATAR_GRADIENTS = [
   { id: "green-lime", classes: "from-[#7AD62A] to-[#7AD62A]", label: "Green" },
   { id: "navy-teal", classes: "from-[#0F203A] to-teal-600", label: "Navy" },
-  { id: "purple-pink", classes: "from-purple-500 to-pink-500", label: "Purple" },
+  {
+    id: "purple-pink",
+    classes: "from-purple-500 to-pink-500",
+    label: "Purple",
+  },
   { id: "orange-red", classes: "from-orange-400 to-red-500", label: "Orange" },
   { id: "blue-cyan", classes: "from-blue-500 to-cyan-400", label: "Blue" },
-  { id: "indigo-purple", classes: "from-indigo-500 to-purple-500", label: "Indigo" },
-  { id: "emerald-teal", classes: "from-emerald-500 to-teal-400", label: "Emerald" },
-  { id: "amber-yellow", classes: "from-amber-500 to-yellow-400", label: "Amber" },
+  {
+    id: "indigo-purple",
+    classes: "from-indigo-500 to-purple-500",
+    label: "Indigo",
+  },
+  {
+    id: "emerald-teal",
+    classes: "from-emerald-500 to-teal-400",
+    label: "Emerald",
+  },
+  {
+    id: "amber-yellow",
+    classes: "from-amber-500 to-yellow-400",
+    label: "Amber",
+  },
 ];
 
 const profileSchema = z.object({
@@ -89,16 +159,24 @@ export default function ProfileEditPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [emailPrefs, setEmailPrefs] = useState<Record<string, boolean>>({});
+  const [emailPrefs, setEmailPrefs] =
+    useState<Record<string, boolean>>(DEFAULT_EMAIL_PREFS);
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [showEmailPrefs, setShowEmailPrefs] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState("from-[#7AD62A] to-[#7AD62A]");
+  const [selectedAvatar, setSelectedAvatar] = useState(
+    "from-[#7AD62A] to-[#7AD62A]",
+  );
   const { mode, setMode } = useDisplayMode();
 
-  const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting, isDirty } } =
-    useForm<ProfileValues>({
-      resolver: zodResolver(profileSchema),
-    });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<ProfileValues>({
+    resolver: zodResolver(profileSchema),
+  });
 
   const watchUsername = watch("username");
 
@@ -122,15 +200,20 @@ export default function ProfileEditPage() {
           timezone: u.timezone || "UTC",
           organizationId: u.organizationId || "",
         });
-        if (u.emailPreferences && typeof u.emailPreferences === "object") {
-          setEmailPrefs(u.emailPreferences as Record<string, boolean>);
-        }
+        setEmailPrefs(normalizeEmailPrefs(u.emailPreferences));
       } else {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const u = JSON.parse(storedUser);
           if (u.avatarUrl) setSelectedAvatar(u.avatarUrl);
-          reset({ name: u.name || "", username: u.username || "", bio: u.bio || "", city: u.city || "", timezone: u.timezone || "UTC", organizationId: u.organizationId || "" });
+          reset({
+            name: u.name || "",
+            username: u.username || "",
+            bio: u.bio || "",
+            city: u.city || "",
+            timezone: u.timezone || "UTC",
+            organizationId: u.organizationId || "",
+          });
         }
       }
     } catch {
@@ -163,10 +246,14 @@ export default function ProfileEditPage() {
       if (values.bio !== undefined) payload.bio = values.bio;
       if (values.city !== undefined) payload.city = values.city;
       if (values.timezone !== undefined) payload.timezone = values.timezone;
-      if (values.organizationId !== undefined) payload.organizationId = values.organizationId;
+      if (values.organizationId !== undefined)
+        payload.organizationId = values.organizationId;
       payload.avatarUrl = selectedAvatar;
 
-      const updatedUser = await fetchApi("/auth/profile", { method: "PATCH", body: JSON.stringify(payload) });
+      const updatedUser = await fetchApi("/auth/profile", {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
       localStorage.setItem("user", JSON.stringify(updatedUser));
       toast.success("Profile updated successfully!");
       router.push("/dashboard/profile");
@@ -178,11 +265,11 @@ export default function ProfileEditPage() {
   const saveEmailPrefs = async (newPrefs: Record<string, boolean>) => {
     setSavingPrefs(true);
     try {
-      await fetchApi("/auth/email-preferences", {
+      const saved = await fetchApi<UserProfile>("/auth/email-preferences", {
         method: "PATCH",
         body: JSON.stringify({ preferences: newPrefs }),
       });
-      setEmailPrefs(newPrefs);
+      setEmailPrefs(normalizeEmailPrefs(saved.emailPreferences || newPrefs));
       toast.success("Email preferences saved");
     } catch {
       toast.error("Failed to save preferences");
@@ -202,42 +289,64 @@ export default function ProfileEditPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-500">
       {/* Hero Header */}
-      <div className="angular-card relative overflow-hidden p-8 text-white" style={{ background: "linear-gradient(135deg, #0F203A, #229C62, #7AD62A)" }}>
+      <div
+        className="angular-card relative overflow-hidden p-8 text-white"
+        style={{
+          background: "linear-gradient(135deg, #0F203A, #229C62, #7AD62A)",
+        }}
+      >
         <div className="absolute inset-0 angular-grid-bg opacity-[0.06] pointer-events-none" />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-4 right-4 w-32 h-32 rounded-full bg-white/20 blur-2xl" />
           <div className="absolute bottom-4 left-4 w-24 h-24 rounded-full bg-white/10 blur-xl" />
         </div>
         <div className="relative z-10">
-          <Link href="/dashboard/profile" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors mb-4">
+          <Link
+            href="/dashboard/profile"
+            className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors mb-4"
+          >
             <ArrowLeft size={16} />
             Back to profile
           </Link>
           <h1 className="text-2xl font-bold">Edit Profile</h1>
-          <p className="text-white/80 text-sm mt-1">Manage your public identity and preferences</p>
+          <p className="text-white/80 text-sm mt-1">
+            Manage your public identity and preferences
+          </p>
         </div>
       </div>
 
       {/* Profile Form */}
       <div className="angular-card bg-[#0f172a] overflow-hidden">
         <div className="p-6 border-b border-white/10">
-          <h2 className="text-lg font-semibold text-white">Personal Information</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Your public profile details</p>
+          <h2 className="text-lg font-semibold text-white">
+            Personal Information
+          </h2>
+          <p className="text-sm text-slate-500 mt-0.5">
+            Your public profile details
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
           {/* Avatar */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Avatar</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Avatar
+            </label>
             <div className="flex items-center gap-4">
-              <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${selectedAvatar} flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg transition-all duration-200`}>
+              <div
+                className={`w-16 h-16 rounded-full bg-gradient-to-br ${selectedAvatar} flex items-center justify-center shrink-0 ring-4 ring-white shadow-lg transition-all duration-200`}
+              >
                 <span className="text-xl font-bold text-white">
                   {(watch("name") || "U").charAt(0).toUpperCase()}
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-white">{watch("name") || "Your Name"}</p>
-                <p className="text-xs text-slate-500">{watchUsername ? `@${watchUsername}` : "No username set"}</p>
+                <p className="text-sm font-medium text-white">
+                  {watch("name") || "Your Name"}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {watchUsername ? `@${watchUsername}` : "No username set"}
+                </p>
               </div>
             </div>
             <div className="flex gap-2 mt-3">
@@ -259,9 +368,17 @@ export default function ProfileEditPage() {
 
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1.5">Display Name</label>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-slate-300 mb-1.5"
+            >
+              Display Name
+            </label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <User
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                size={16}
+              />
               <input
                 id="name"
                 {...register("name")}
@@ -269,16 +386,25 @@ export default function ProfileEditPage() {
                 placeholder="Your display name"
               />
             </div>
-            {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
+            {errors.name && (
+              <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Username */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-1.5">
-              Username <span className="text-slate-400 font-normal">(pseudonym)</span>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-slate-300 mb-1.5"
+            >
+              Username{" "}
+              <span className="text-slate-400 font-normal">(pseudonym)</span>
             </label>
             <div className="relative">
-              <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <AtSign
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                size={16}
+              />
               <input
                 id="username"
                 {...register("username")}
@@ -286,7 +412,11 @@ export default function ProfileEditPage() {
                 placeholder="your_pseudonym"
               />
             </div>
-            {errors.username && <p className="text-xs text-red-600 mt-1">{errors.username.message}</p>}
+            {errors.username && (
+              <p className="text-xs text-red-600 mt-1">
+                {errors.username.message}
+              </p>
+            )}
             <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
               <Info size={11} />
               Your unique pseudonym. Letters, numbers, _ and - only.
@@ -295,7 +425,12 @@ export default function ProfileEditPage() {
 
           {/* Bio */}
           <div>
-            <label htmlFor="bio" className="block text-sm font-medium text-slate-300 mb-1.5">Bio</label>
+            <label
+              htmlFor="bio"
+              className="block text-sm font-medium text-slate-300 mb-1.5"
+            >
+              Bio
+            </label>
             <textarea
               {...register("bio")}
               rows={3}
@@ -303,7 +438,9 @@ export default function ProfileEditPage() {
               placeholder="Tell us about yourself..."
             />
             <div className="flex justify-between items-center mt-1">
-              {errors.bio && <p className="text-xs text-red-600">{errors.bio.message}</p>}
+              {errors.bio && (
+                <p className="text-xs text-red-600">{errors.bio.message}</p>
+              )}
               <span className="text-xs text-slate-400 ml-auto">
                 {(watch("bio") || "").length}/250
               </span>
@@ -313,8 +450,12 @@ export default function ProfileEditPage() {
           {/* City + Timezone Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="city" className="block text-sm font-medium text-slate-300 mb-1.5">
-                <MapPin size={13} className="inline mr-1" />City
+              <label
+                htmlFor="city"
+                className="block text-sm font-medium text-slate-300 mb-1.5"
+              >
+                <MapPin size={13} className="inline mr-1" />
+                City
               </label>
               <input
                 {...register("city")}
@@ -325,15 +466,21 @@ export default function ProfileEditPage() {
             </div>
 
             <div>
-              <label htmlFor="timezone" className="block text-sm font-medium text-slate-300 mb-1.5">
-                <Globe size={13} className="inline mr-1" />Timezone
+              <label
+                htmlFor="timezone"
+                className="block text-sm font-medium text-slate-300 mb-1.5"
+              >
+                <Globe size={13} className="inline mr-1" />
+                Timezone
               </label>
               <select
                 {...register("timezone")}
                 className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-[#0f172a] text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A] transition-all"
               >
                 {TIMEZONES.map((tz) => (
-                  <option key={tz} value={tz}>{tz}</option>
+                  <option key={tz} value={tz}>
+                    {tz}
+                  </option>
                 ))}
               </select>
             </div>
@@ -341,8 +488,12 @@ export default function ProfileEditPage() {
 
           {/* Organization */}
           <div>
-            <label htmlFor="org" className="block text-sm font-medium text-slate-300 mb-1.5">
-              <Building2 size={13} className="inline mr-1" />Organization
+            <label
+              htmlFor="org"
+              className="block text-sm font-medium text-slate-300 mb-1.5"
+            >
+              <Building2 size={13} className="inline mr-1" />
+              Organization
             </label>
             <select
               {...register("organizationId")}
@@ -350,7 +501,9 @@ export default function ProfileEditPage() {
             >
               <option value="">Independent Learner</option>
               {organizations.map((org) => (
-                <option key={org.id} value={org.id}>{org.name}</option>
+                <option key={org.id} value={org.id}>
+                  {org.name}
+                </option>
               ))}
             </select>
           </div>
@@ -361,7 +514,11 @@ export default function ProfileEditPage() {
               disabled={isSubmitting || !isDirty}
               className="flex-1 flex items-center justify-center gap-2 bg-[#7AD62A] hover:bg-[#1a7a4d] text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <Save size={16} />
+              )}
               Save changes
             </button>
             <Link
@@ -386,13 +543,29 @@ export default function ProfileEditPage() {
               <Bell size={18} className="text-amber-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">Email Notifications</h2>
-              <p className="text-sm text-slate-500">Choose what emails you receive</p>
+              <h2 className="text-lg font-semibold text-white">
+                Email Notifications
+              </h2>
+              <p className="text-sm text-slate-500">
+                Choose what emails you receive
+              </p>
             </div>
           </div>
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-transform ${showEmailPrefs ? "rotate-180" : ""}`}>
-            <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <div
+            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-transform ${showEmailPrefs ? "rotate-180" : ""}`}
+          >
+            <svg
+              className="w-5 h-5 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </button>
@@ -411,7 +584,9 @@ export default function ProfileEditPage() {
                     <Mail size={16} className="text-slate-300" />
                   )}
                   <div>
-                    <p className="text-sm font-medium text-slate-300">{pref.label}</p>
+                    <p className="text-sm font-medium text-slate-300">
+                      {pref.label}
+                    </p>
                     <p className="text-xs text-slate-400">{pref.desc}</p>
                   </div>
                 </div>
@@ -419,17 +594,25 @@ export default function ProfileEditPage() {
                   type="button"
                   disabled={savingPrefs}
                   onClick={() => {
-                    const newPrefs = { ...emailPrefs, [pref.key]: !emailPrefs[pref.key] };
+                    const currentPrefs = normalizeEmailPrefs(emailPrefs);
+                    const newPrefs = {
+                      ...currentPrefs,
+                      [pref.key]: currentPrefs[pref.key] === false,
+                    };
                     setEmailPrefs(newPrefs);
                     saveEmailPrefs(newPrefs);
                   }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    emailPrefs[pref.key] ? "bg-[#7AD62A]" : "bg-white/10"
+                    emailPrefs[pref.key] !== false
+                      ? "bg-[#7AD62A]"
+                      : "bg-white/10"
                   }`}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-[#0f172a] transition-transform shadow-sm ${
-                      emailPrefs[pref.key] ? "translate-x-6" : "translate-x-1"
+                      emailPrefs[pref.key] !== false
+                        ? "translate-x-6"
+                        : "translate-x-1"
                     }`}
                   />
                 </button>
@@ -448,7 +631,9 @@ export default function ProfileEditPage() {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-white">Display Mode</h2>
-              <p className="text-sm text-slate-500">Choose how the platform appears to you</p>
+              <p className="text-sm text-slate-500">
+                Choose how the platform appears to you
+              </p>
             </div>
           </div>
 
@@ -463,10 +648,21 @@ export default function ProfileEditPage() {
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Briefcase size={16} className={mode === "PROFESSIONAL" ? "text-[#7AD62A]" : "text-slate-400"} />
-                <span className="text-sm font-semibold text-white">Professional</span>
+                <Briefcase
+                  size={16}
+                  className={
+                    mode === "PROFESSIONAL"
+                      ? "text-[#7AD62A]"
+                      : "text-slate-400"
+                  }
+                />
+                <span className="text-sm font-semibold text-white">
+                  Professional
+                </span>
               </div>
-              <p className="text-xs text-slate-500">Genome, mastery, missions, labs. No XP fire, no rank badges.</p>
+              <p className="text-xs text-slate-500">
+                Genome, mastery, missions, labs. No XP fire, no rank badges.
+              </p>
             </button>
 
             <button
@@ -479,10 +675,19 @@ export default function ProfileEditPage() {
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Trophy size={16} className={mode === "PROGRESSION" ? "text-[#7AD62A]" : "text-slate-400"} />
-                <span className="text-sm font-semibold text-white">Progression</span>
+                <Trophy
+                  size={16}
+                  className={
+                    mode === "PROGRESSION" ? "text-[#7AD62A]" : "text-slate-400"
+                  }
+                />
+                <span className="text-sm font-semibold text-white">
+                  Progression
+                </span>
               </div>
-              <p className="text-xs text-slate-500">XP, levels, missions, mastery, unlocks. Default experience.</p>
+              <p className="text-xs text-slate-500">
+                XP, levels, missions, mastery, unlocks. Default experience.
+              </p>
             </button>
 
             <button
@@ -495,10 +700,19 @@ export default function ProfileEditPage() {
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Trophy size={16} className={mode === "COMPETITIVE" ? "text-[#7AD62A]" : "text-slate-400"} />
-                <span className="text-sm font-semibold text-white">Competitive</span>
+                <Trophy
+                  size={16}
+                  className={
+                    mode === "COMPETITIVE" ? "text-[#7AD62A]" : "text-slate-400"
+                  }
+                />
+                <span className="text-sm font-semibold text-white">
+                  Competitive
+                </span>
               </div>
-              <p className="text-xs text-slate-500">Everything: ranks, leaderboards, boss missions, seasons.</p>
+              <p className="text-xs text-slate-500">
+                Everything: ranks, leaderboards, boss missions, seasons.
+              </p>
             </button>
           </div>
         </div>

@@ -50,6 +50,7 @@ model User {
   ownedTeams               Team[]                    @relation("TeamOwner")
   labInstances             LabInstance[]
   labSubmissions           LabSubmission[]
+  inlinePracticeSubmissions InlinePracticeSubmission[]
   progress                 Progress[]
   quizSubmissions          QuizSubmission[]
   achievements             UserAchievement[]
@@ -285,6 +286,50 @@ model Lesson {
   section   Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   progress  Progress[]
   quiz      Quiz?
+  inlinePractices InlinePractice[]
+}
+
+model InlinePractice {
+  id              String   @id @default(uuid())
+  lessonId        String
+  title           String
+  type            String   @default("COMMAND_ANSWER")
+  prompt          String
+  instructions    String?
+  expectedAnswer  String?
+  validationMode  String   @default("EXACT") // EXACT, CONTAINS, REGEX, MANUAL
+  hints           String[] @default([])
+  maxAttempts     Int      @default(0) // 0 = unlimited
+  xpReward        Int      @default(25)
+  required        Boolean  @default(true)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  lesson      Lesson                     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  submissions InlinePracticeSubmission[]
+
+  @@index([lessonId, order])
+  @@index([required])
+}
+
+model InlinePracticeSubmission {
+  id            String   @id @default(uuid())
+  practiceId    String
+  userId        String
+  answer        String
+  isCorrect     Boolean
+  score         Int      @default(0)
+  feedback      String?
+  attemptNumber Int      @default(1)
+  createdAt     DateTime @default(now())
+
+  practice InlinePractice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([practiceId, userId])
+  @@index([userId, isCorrect])
+  @@index([createdAt])
 }
 
 model Quiz {

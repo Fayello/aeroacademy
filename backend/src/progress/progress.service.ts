@@ -23,6 +23,7 @@ const MILESTONE_LABELS: Record<number, string> = {
 };
 
 const BASE_LESSON_XP = 100;
+const INLINE_PRACTICE_SOURCE = 'INLINE_PRACTICE_COMPLETED';
 
 @Injectable()
 export class ProgressService {
@@ -69,6 +70,10 @@ export class ProgressService {
       include: {
         quiz: true,
         lab: true,
+        inlinePractices: {
+          where: { required: true },
+          select: { id: true, title: true },
+        },
         section: { include: { course: true } },
       },
     });
@@ -137,6 +142,31 @@ export class ProgressService {
       if (!labCompletion) {
         throw new BadRequestException(
           'Lab Completion Required: You must complete at least one lab objective for this module before progress can be recorded.',
+        );
+      }
+    }
+
+    if (lesson.inlinePractices.length > 0) {
+      const completedPracticeIds =
+        await this.prisma.inlinePracticeSubmission.findMany({
+          where: {
+            userId,
+            isCorrect: true,
+            practiceId: { in: lesson.inlinePractices.map((p) => p.id) },
+          },
+          select: { practiceId: true },
+          distinct: ['practiceId'],
+        });
+      const completedSet = new Set(
+        completedPracticeIds.map((submission) => submission.practiceId),
+      );
+      const missingPractices = lesson.inlinePractices.filter(
+        (practice) => !completedSet.has(practice.id),
+      );
+
+      if (missingPractices.length > 0) {
+        throw new BadRequestException(
+          `Inline Practice Required: Complete ${missingPractices.map((practice) => practice.title).join(', ')} before this lesson can be recorded.`,
         );
       }
     }
@@ -327,6 +357,193 @@ export class ProgressService {
         `Streak freeze awarded to user ${userId} for ${newStreak}-day streak`,
       );
     }
+  }
+
+  async getLessonInlinePracticeProgress(userId: string, lessonId: string) {
+    const practices = await this.prisma.inlinePractice.findMany({
+      where: { lessonId },
+      orderBy: { order: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        prompt: true,
+        instructions: true,
+        validationMode: true,
+        hints: true,
+        maxAttempts: true,
+        xpReward: true,
+        required: true,
+        order: true,
+        submissions: {
+          where: { userId },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            isCorrect: true,
+            score: true,
+            feedback: true,
+            attemptNumber: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    return practices.map((practice) => {
+      const latestSubmission = practice.submissions[0] || null;
+      const passed = practice.submissions.some(
+        (submission) => submission.isCorrect,
+      );
+      return {
+        ...practice,
+        submissions: undefined,
+        attemptCount: practice.submissions.length,
+        passed,
+        latestSubmission,
+      };
+    });
+  }
+
+  async submitInlinePractice(
+    userId: string,
+    practiceId: string,
+    answer: string,
+  ) {
+    const practice = await this.prisma.inlinePractice.findUnique({
+      where: { id: practiceId },
+      include: {
+        lesson: {
+          include: {
+            section: { select: { courseId: true, title: true } },
+          },
+        },
+      },
+    });
+    if (!practice) throw new BadRequestException('Inline practice not found');
+
+    const trimmedAnswer = (answer || '').trim();
+    if (!trimmedAnswer) {
+      throw new BadRequestException('Answer is required');
+    }
+
+    const priorSubmissions = await this.prisma.inlinePracticeSubmission.findMany(
+      {
+        where: { userId, practiceId },
+        select: { isCorrect: true },
+      },
+    );
+    const alreadyPassed = priorSubmissions.some(
+      (submission) => submission.isCorrect,
+    );
+
+    if (
+      !alreadyPassed &&
+      practice.maxAttempts > 0 &&
+      priorSubmissions.length >= practice.maxAttempts
+    ) {
+      throw new BadRequestException(
+        'Maximum attempts reached for this inline practice.',
+      );
+    }
+
+    const result = this.validateInlinePracticeAnswer(
+      practice.validationMode,
+      practice.expectedAnswer,
+      trimmedAnswer,
+    );
+
+    const submission = await this.prisma.inlinePracticeSubmission.create({
+      data: {
+        practiceId,
+        userId,
+        answer: trimmedAnswer,
+        isCorrect: result.isCorrect,
+        score: result.score,
+        feedback: result.feedback,
+        attemptNumber: priorSubmissions.length + 1,
+      },
+    });
+
+    await this.prisma.courseEnrollment
+      .updateMany({
+        where: { userId, courseId: practice.lesson.section.courseId },
+        data: { lastActivityAt: new Date() },
+      })
+      .catch(() => {});
+
+    if (result.isCorrect && !alreadyPassed && practice.xpReward > 0) {
+      await this.progressionService
+        .awardXP(userId, {
+          amount: practice.xpReward,
+          source: INLINE_PRACTICE_SOURCE,
+          sourceId: practice.id,
+        })
+        .catch((err) =>
+          this.logger.error('ProgressionService.awardXP failed', err),
+        );
+      await this.updateStreak(userId);
+    }
+
+    return {
+      id: submission.id,
+      isCorrect: submission.isCorrect,
+      score: submission.score,
+      feedback: submission.feedback,
+      attemptNumber: submission.attemptNumber,
+      xpAwarded: result.isCorrect && !alreadyPassed ? practice.xpReward : 0,
+    };
+  }
+
+  private validateInlinePracticeAnswer(
+    validationMode: string,
+    expectedAnswer: string | null,
+    answer: string,
+  ) {
+    if (validationMode === 'MANUAL') {
+      return {
+        isCorrect: false,
+        score: 0,
+        feedback: 'Submitted for review.',
+      };
+    }
+
+    if (!expectedAnswer || !expectedAnswer.trim()) {
+      return {
+        isCorrect: false,
+        score: 0,
+        feedback: 'This practice is missing a validation answer.',
+      };
+    }
+
+    const expected = expectedAnswer.trim();
+    const normalizedAnswer = answer.trim().toLowerCase();
+    const normalizedExpected = expected.toLowerCase();
+    let isCorrect = false;
+
+    if (validationMode === 'CONTAINS') {
+      isCorrect = normalizedAnswer.includes(normalizedExpected);
+    } else if (validationMode === 'REGEX') {
+      try {
+        isCorrect = new RegExp(expected, 'i').test(answer);
+      } catch {
+        return {
+          isCorrect: false,
+          score: 0,
+          feedback: 'This practice has an invalid validation pattern.',
+        };
+      }
+    } else {
+      isCorrect = normalizedAnswer === normalizedExpected;
+    }
+
+    return {
+      isCorrect,
+      score: isCorrect ? 100 : 0,
+      feedback: isCorrect
+        ? 'Correct. Practical evidence recorded.'
+        : 'Not yet. Review the lesson, use a hint if available, and try again.',
+    };
   }
 
   private async checkMilestones(userId: string, courseId: string) {

@@ -110,6 +110,56 @@ export class CourseAdminController {
     );
   }
 
+  @Get('lessons/:lessonId/inline-practices')
+  getLessonInlinePractices(@Param('lessonId') lessonId: string) {
+    return this.courseAdminService.getLessonInlinePractices(lessonId);
+  }
+
+  @Post('lessons/:lessonId/inline-practices')
+  createInlinePractice(
+    @Param('lessonId') lessonId: string,
+    @Body() body: {
+      title: string;
+      type?: string;
+      prompt: string;
+      instructions?: string;
+      expectedAnswer?: string;
+      validationMode?: string;
+      hints?: string[];
+      maxAttempts?: number;
+      xpReward?: number;
+      required?: boolean;
+      order?: number;
+    },
+  ) {
+    return this.courseAdminService.createInlinePractice(lessonId, body);
+  }
+
+  @Patch('inline-practices/:practiceId')
+  updateInlinePractice(
+    @Param('practiceId') practiceId: string,
+    @Body() body: {
+      title?: string;
+      type?: string;
+      prompt?: string;
+      instructions?: string;
+      expectedAnswer?: string;
+      validationMode?: string;
+      hints?: string[];
+      maxAttempts?: number;
+      xpReward?: number;
+      required?: boolean;
+      order?: number;
+    },
+  ) {
+    return this.courseAdminService.updateInlinePractice(practiceId, body);
+  }
+
+  @Delete('inline-practices/:practiceId')
+  deleteInlinePractice(@Param('practiceId') practiceId: string) {
+    return this.courseAdminService.deleteInlinePractice(practiceId);
+  }
+
   @Get(':courseId/reorder-history')
   getReorderHistory(@Param('courseId') courseId: string) {
     return this.courseAdminService.getReorderHistory(courseId);

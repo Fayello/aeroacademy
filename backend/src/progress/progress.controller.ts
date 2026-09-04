@@ -60,4 +60,31 @@ export class ProgressController {
   ) {
     return this.progressService.getCourseProgress(req.user.id, courseId);
   }
+
+  @Get('lessons/:lessonId/inline-practice')
+  @Throttle({ default: { limit: 200, ttl: 60000 } })
+  async getLessonInlinePracticeProgress(
+    @Request() req: RequestWithUser,
+    @Param('lessonId') lessonId: string,
+  ) {
+    return this.progressService.getLessonInlinePracticeProgress(
+      req.user.id,
+      lessonId,
+    );
+  }
+
+  @Post('inline-practice/:practiceId/submit')
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Audit('INLINE_PRACTICE_SUBMITTED')
+  async submitInlinePractice(
+    @Request() req: RequestWithUser,
+    @Param('practiceId') practiceId: string,
+    @Body() body: { answer: string },
+  ) {
+    return this.progressService.submitInlinePractice(
+      req.user.id,
+      practiceId,
+      body.answer,
+    );
+  }
 }

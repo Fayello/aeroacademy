@@ -22,7 +22,8 @@ import toast from "@/lib/toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
-import type { Lesson, QuizQuestion, QuizAnswer, QuizSubmissionResult } from "@/types/api";
+import InlinePracticeRenderer from "@/components/InlinePracticeRenderer";
+import type { Lesson, QuizQuestion, QuizAnswer, QuizSubmissionResult, InlinePracticeProgress } from "@/types/api";
 
 const HIGHLIGHT_TERMS = [
   "module", "modules", "path", "paths", "section", "sections",
@@ -172,6 +173,7 @@ export default function LessonPage() {
     onConfirm?: () => void;
     confirmText?: string;
   }>({ isOpen: false, title: "", message: "", type: "info" });
+  const [inlinePractices, setInlinePractices] = useState<InlinePracticeProgress[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -190,13 +192,15 @@ export default function LessonPage() {
           const courseId = data.section?.courseId;
           if (courseId) {
             localStorage.setItem(`lastViewedLesson:${courseId}`, id as string);
-            const [sectionsData, progressData] = await Promise.allSettled([
+            const [sectionsData, progressData, inlineData] = await Promise.allSettled([
               fetchApi<SectionWithLessons[]>(`/courses/${courseId}/sections`),
               fetchApi<CourseProgress>(`/progress/course/${courseId}`).catch(() => null),
+              fetchApi<InlinePracticeProgress[]>(`/progress/lessons/${id}/inline-practice`).catch(() => []),
             ]);
             if (!cancelled) {
               if (sectionsData.status === "fulfilled") setSections(sectionsData.value);
               if (progressData.status === "fulfilled" && progressData.value) setCourseProgress(progressData.value);
+              if (inlineData.status === "fulfilled") setInlinePractices(inlineData.value);
             }
           }
         }
@@ -216,6 +220,19 @@ export default function LessonPage() {
         isOpen: true,
         title: "Knowledge check required",
         message: "Complete and pass the lesson knowledge check before this lesson can be recorded as complete.",
+        type: "warning",
+        confirmText: "Understood",
+      });
+      return;
+    }
+
+    const requiredPractices = inlinePractices.filter((p) => p.required);
+    const allRequiredPassed = requiredPractices.every((p) => p.passed);
+    if (requiredPractices.length > 0 && !allRequiredPassed) {
+      setModalConfig({
+        isOpen: true,
+        title: "Complete practice exercises",
+        message: "Finish all required hands-on exercises before marking this lesson complete.",
         type: "warning",
         confirmText: "Understood",
       });
@@ -532,6 +549,16 @@ export default function LessonPage() {
                 {lesson.content || "No content available for this lesson."}
               </ReactMarkdown>
             </div>
+
+            {/* Inline Practice */}
+            {inlinePractices.length > 0 && (
+              <InlinePracticeRenderer
+                practices={inlinePractices}
+                onAllPassed={() => {
+                  if (!completed) handleMarkComplete();
+                }}
+              />
+            )}
 
             {/* Quiz Section */}
             {lesson.quiz && (

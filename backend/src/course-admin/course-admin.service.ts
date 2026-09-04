@@ -21,6 +21,23 @@ export class CourseAdminService {
               include: {
                 lab: { select: { id: true, title: true } },
                 quiz: { select: { id: true } },
+                inlinePractices: {
+                  orderBy: { order: 'asc' },
+                  select: {
+                    id: true,
+                    title: true,
+                    type: true,
+                    prompt: true,
+                    instructions: true,
+                    expectedAnswer: true,
+                    validationMode: true,
+                    hints: true,
+                    maxAttempts: true,
+                    xpReward: true,
+                    required: true,
+                    order: true,
+                  },
+                },
                 _count: { select: { progress: true } },
               },
             },
@@ -286,6 +303,166 @@ export class CourseAdminService {
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     return this.prisma.lesson.update({ where: { id: lessonId }, data });
+  }
+
+  async getLessonInlinePractices(lessonId: string) {
+    return this.prisma.inlinePractice.findMany({
+      where: { lessonId },
+      orderBy: { order: 'asc' },
+      include: {
+        _count: { select: { submissions: true } },
+      },
+    });
+  }
+
+  async createInlinePractice(
+    lessonId: string,
+    data: {
+      title: string;
+      type?: string;
+      prompt: string;
+      instructions?: string | null;
+      expectedAnswer?: string | null;
+      validationMode?: string;
+      hints?: string[];
+      maxAttempts?: number;
+      xpReward?: number;
+      required?: boolean;
+      order?: number;
+    },
+  ) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: {
+        inlinePractices: { orderBy: { order: 'desc' }, take: 1 },
+      },
+    });
+    if (!lesson) throw new NotFoundException('Lesson not found');
+
+    const order =
+      data.order ??
+      (lesson.inlinePractices.length > 0
+        ? lesson.inlinePractices[0].order + 1
+        : 0);
+
+    return this.prisma.inlinePractice.create({
+      data: this.buildInlinePracticeData(lessonId, { ...data, order }),
+    });
+  }
+
+  async updateInlinePractice(
+    practiceId: string,
+    data: {
+      title?: string;
+      type?: string;
+      prompt?: string;
+      instructions?: string | null;
+      expectedAnswer?: string | null;
+      validationMode?: string;
+      hints?: string[];
+      maxAttempts?: number;
+      xpReward?: number;
+      required?: boolean;
+      order?: number;
+    },
+  ) {
+    const practice = await this.prisma.inlinePractice.findUnique({
+      where: { id: practiceId },
+    });
+    if (!practice) throw new NotFoundException('Inline practice not found');
+
+    return this.prisma.inlinePractice.update({
+      where: { id: practiceId },
+      data: this.buildInlinePracticeUpdateData(data),
+    });
+  }
+
+  async deleteInlinePractice(practiceId: string) {
+    const practice = await this.prisma.inlinePractice.findUnique({
+      where: { id: practiceId },
+    });
+    if (!practice) throw new NotFoundException('Inline practice not found');
+
+    await this.prisma.inlinePractice.delete({ where: { id: practiceId } });
+    return { success: true };
+  }
+
+  private buildInlinePracticeData(
+    lessonId: string,
+    data: {
+      title: string;
+      type?: string;
+      prompt: string;
+      instructions?: string | null;
+      expectedAnswer?: string | null;
+      validationMode?: string;
+      hints?: string[];
+      maxAttempts?: number;
+      xpReward?: number;
+      required?: boolean;
+      order?: number;
+    },
+  ) {
+    return {
+      lessonId,
+      title: data.title.trim(),
+      type: data.type || 'COMMAND_ANSWER',
+      prompt: data.prompt.trim(),
+      instructions: data.instructions?.trim() || null,
+      expectedAnswer: data.expectedAnswer?.trim() || null,
+      validationMode: data.validationMode || 'EXACT',
+      hints: Array.isArray(data.hints)
+        ? data.hints.map((hint) => hint.trim()).filter(Boolean)
+        : [],
+      maxAttempts: Math.max(0, Number(data.maxAttempts ?? 0)),
+      xpReward: Math.max(0, Number(data.xpReward ?? 25)),
+      required: data.required ?? true,
+      order: data.order ?? 0,
+    };
+  }
+
+  private buildInlinePracticeUpdateData(data: {
+    title?: string;
+    type?: string;
+    prompt?: string;
+    instructions?: string | null;
+    expectedAnswer?: string | null;
+    validationMode?: string;
+    hints?: string[];
+    maxAttempts?: number;
+    xpReward?: number;
+    required?: boolean;
+    order?: number;
+  }) {
+    return {
+      ...(data.title !== undefined ? { title: data.title.trim() } : {}),
+      ...(data.type !== undefined ? { type: data.type } : {}),
+      ...(data.prompt !== undefined ? { prompt: data.prompt.trim() } : {}),
+      ...(data.instructions !== undefined
+        ? { instructions: data.instructions?.trim() || null }
+        : {}),
+      ...(data.expectedAnswer !== undefined
+        ? { expectedAnswer: data.expectedAnswer?.trim() || null }
+        : {}),
+      ...(data.validationMode !== undefined
+        ? { validationMode: data.validationMode }
+        : {}),
+      ...(data.hints !== undefined
+        ? {
+            hints: Array.isArray(data.hints)
+              ? data.hints.map((hint) => hint.trim()).filter(Boolean)
+              : [],
+          }
+        : {}),
+      ...(data.maxAttempts !== undefined
+        ? { maxAttempts: Math.max(0, Number(data.maxAttempts)) }
+        : {}),
+      ...(data.xpReward !== undefined
+        ? { xpReward: Math.max(0, Number(data.xpReward)) }
+        : {}),
+      ...(data.required !== undefined ? { required: data.required } : {}),
+      ...(data.order !== undefined ? { order: data.order } : {}),
+    };
   }
 
   async deleteLesson(lessonId: string) {

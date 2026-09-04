@@ -22,6 +22,16 @@ const RESET_TOKEN_EXPIRY_MINUTES = 30;
 const REFERRAL_XP_REWARD = 500;
 const REFERRAL_CODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const REFERRAL_CODE_LENGTH = 8;
+const DEFAULT_EMAIL_PREFERENCES: Record<string, boolean> = {
+  milestones: true,
+  weeklyDigest: true,
+  nudges: true,
+  reengagement: true,
+  achievements: true,
+  courseUpdates: true,
+  streaks: true,
+  labCompletions: true,
+};
 
 interface LoginUser {
   id: string;
@@ -64,6 +74,28 @@ export class AuthService {
       attempts++;
     }
     return code;
+  }
+
+  private normalizeEmailPreferences(
+    current: Prisma.JsonValue | null | undefined,
+    incoming: Record<string, boolean>,
+  ): Record<string, boolean> {
+    const existing =
+      current && typeof current === 'object' && !Array.isArray(current)
+        ? (current as Record<string, unknown>)
+        : {};
+
+    const normalized = { ...DEFAULT_EMAIL_PREFERENCES };
+    for (const key of Object.keys(DEFAULT_EMAIL_PREFERENCES)) {
+      if (typeof existing[key] === 'boolean') {
+        normalized[key] = existing[key];
+      }
+      if (typeof incoming[key] === 'boolean') {
+        normalized[key] = incoming[key];
+      }
+    }
+
+    return normalized;
   }
 
   async applyReferral(userId: string, code: string) {
@@ -436,9 +468,20 @@ export class AuthService {
     userId: string,
     preferences: Record<string, boolean>,
   ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { emailPreferences: true },
+    });
+    if (!user) throw new UnauthorizedException('User not found');
+
     return this.prisma.user.update({
       where: { id: userId },
-      data: { emailPreferences: preferences },
+      data: {
+        emailPreferences: this.normalizeEmailPreferences(
+          user.emailPreferences,
+          preferences || {},
+        ),
+      },
     });
   }
 

@@ -13,6 +13,7 @@ import {
   Key,
   AlertTriangle,
   Loader2,
+  Mail,
 } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import toast from "@/lib/toast";
@@ -23,6 +24,72 @@ interface SettingsSection {
   label: string;
   icon: React.ElementType;
   description: string;
+}
+
+interface SettingsUser {
+  name?: string;
+  email?: string;
+  role?: string;
+  emailPreferences?: Record<string, boolean>;
+}
+
+const EMAIL_PREFS = [
+  {
+    key: "weeklyDigest",
+    label: "Weekly digest",
+    description: "Weekly progress, ranking movement, and next-step summaries.",
+  },
+  {
+    key: "courseUpdates",
+    label: "Course updates",
+    description:
+      "Enrollment, course starts, new lessons, and course completion emails.",
+  },
+  {
+    key: "nudges",
+    label: "Learning nudges",
+    description:
+      "Helpful reminders when a course or lab is waiting for action.",
+  },
+  {
+    key: "reengagement",
+    label: "Re-engagement",
+    description:
+      "Occasional reminders when you have been inactive for a while.",
+  },
+  {
+    key: "achievements",
+    label: "Achievements",
+    description:
+      "Achievement and recognition emails when you unlock something meaningful.",
+  },
+  {
+    key: "milestones",
+    label: "Milestones",
+    description: "Progress milestones, XP checkpoints, and readiness movement.",
+  },
+  {
+    key: "streaks",
+    label: "Streaks",
+    description: "Training streak reminders and streak milestone messages.",
+  },
+  {
+    key: "labCompletions",
+    label: "Lab completions",
+    description: "Lab completion and practical progress confirmations.",
+  },
+];
+
+const DEFAULT_EMAIL_PREFS = EMAIL_PREFS.reduce<Record<string, boolean>>(
+  (acc, pref) => {
+    acc[pref.key] = true;
+    return acc;
+  },
+  {},
+);
+
+function normalizeEmailPrefs(prefs?: Record<string, boolean>) {
+  return { ...DEFAULT_EMAIL_PREFS, ...(prefs || {}) };
 }
 
 function PreferenceRow({
@@ -58,7 +125,9 @@ function PreferenceRow({
             enabled ? "translate-x-6" : "translate-x-1"
           }`}
         >
-          {busy ? <Loader2 size={10} className="animate-spin text-slate-500" /> : null}
+          {busy ? (
+            <Loader2 size={10} className="animate-spin text-slate-500" />
+          ) : null}
         </span>
       </button>
     </div>
@@ -66,35 +135,72 @@ function PreferenceRow({
 }
 
 const sections: SettingsSection[] = [
-  { id: "account", label: "Account", icon: User, description: "Manage your profile and personal information" },
-  { id: "notifications", label: "Notifications", icon: Bell, description: "Configure how you receive notifications" },
-  { id: "security", label: "Security", icon: Shield, description: "Password, 2FA, and session management" },
-  { id: "appearance", label: "Appearance", icon: Palette, description: "Customize the look and feel" },
+  {
+    id: "account",
+    label: "Account",
+    icon: User,
+    description: "Manage your profile and personal information",
+  },
+  {
+    id: "notifications",
+    label: "Notifications",
+    icon: Bell,
+    description: "Configure how you receive notifications",
+  },
+  {
+    id: "security",
+    label: "Security",
+    icon: Shield,
+    description: "Password, 2FA, and session management",
+  },
+  {
+    id: "appearance",
+    label: "Appearance",
+    icon: Palette,
+    description: "Customize the look and feel",
+  },
 ];
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("account");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(() => {
+  const [user, setUser] = useState<SettingsUser | null>(() => {
     try {
-      const stored = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      const stored =
+        typeof window !== "undefined" ? localStorage.getItem("user") : null;
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
     }
   });
   const [preferences, setPreferences] = useState<UserPreference | null>(null);
-  const [savingPreference, setSavingPreference] = useState<"notificationsEnabled" | "weeklyDigestEnabled" | null>(null);
+  const [savingPreference, setSavingPreference] = useState<
+    "notificationsEnabled" | "weeklyDigestEnabled" | null
+  >(null);
+  const [emailPrefs, setEmailPrefs] =
+    useState<Record<string, boolean>>(DEFAULT_EMAIL_PREFS);
+  const [savingEmailPreference, setSavingEmailPreference] = useState<
+    string | null
+  >(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   const updatePreference = useCallback(
-    async (key: "notificationsEnabled" | "weeklyDigestEnabled", value: boolean) => {
+    async (
+      key: "notificationsEnabled" | "weeklyDigestEnabled",
+      value: boolean,
+    ) => {
       const nextPreferences = {
         interests: preferences?.interests || [],
         weakSkills: preferences?.weakSkills || [],
         preferredDifficulty: preferences?.preferredDifficulty || "MEDIUM",
-        notificationsEnabled: key === "notificationsEnabled" ? value : preferences?.notificationsEnabled ?? true,
-        weeklyDigestEnabled: key === "weeklyDigestEnabled" ? value : preferences?.weeklyDigestEnabled ?? true,
+        notificationsEnabled:
+          key === "notificationsEnabled"
+            ? value
+            : (preferences?.notificationsEnabled ?? true),
+        weeklyDigestEnabled:
+          key === "weeklyDigestEnabled"
+            ? value
+            : (preferences?.weeklyDigestEnabled ?? true),
       };
 
       const previous = preferences;
@@ -105,7 +211,8 @@ export default function SettingsPage() {
               interests: [],
               weakSkills: [],
               preferredDifficulty: "MEDIUM",
-              notificationsEnabled: key === "notificationsEnabled" ? value : true,
+              notificationsEnabled:
+                key === "notificationsEnabled" ? value : true,
               weeklyDigestEnabled: key === "weeklyDigestEnabled" ? value : true,
               displayMode: "SYSTEM",
               onboardingCompleted: false,
@@ -122,9 +229,14 @@ export default function SettingsPage() {
         setPreferences((current) => ({
           interests: saved?.interests || current?.interests || [],
           weakSkills: saved?.weakSkills || current?.weakSkills || [],
-          preferredDifficulty: saved?.preferredDifficulty || current?.preferredDifficulty || "MEDIUM",
-          notificationsEnabled: saved?.notificationsEnabled ?? nextPreferences.notificationsEnabled,
-          weeklyDigestEnabled: saved?.weeklyDigestEnabled ?? nextPreferences.weeklyDigestEnabled,
+          preferredDifficulty:
+            saved?.preferredDifficulty ||
+            current?.preferredDifficulty ||
+            "MEDIUM",
+          notificationsEnabled:
+            saved?.notificationsEnabled ?? nextPreferences.notificationsEnabled,
+          weeklyDigestEnabled:
+            saved?.weeklyDigestEnabled ?? nextPreferences.weeklyDigestEnabled,
           displayMode: current?.displayMode || "SYSTEM",
           onboardingCompleted: current?.onboardingCompleted || false,
           onboardingSelections: current?.onboardingSelections || {},
@@ -140,6 +252,36 @@ export default function SettingsPage() {
     [preferences],
   );
 
+  const updateEmailPreference = useCallback(
+    async (key: string, value: boolean) => {
+      const previous = emailPrefs;
+      const next = { ...normalizeEmailPrefs(emailPrefs), [key]: value };
+
+      setEmailPrefs(next);
+      setSavingEmailPreference(key);
+
+      try {
+        const saved = await fetchApi<SettingsUser>("/auth/email-preferences", {
+          method: "PATCH",
+          body: JSON.stringify({ preferences: next }),
+        });
+        setEmailPrefs(normalizeEmailPrefs(saved.emailPreferences || next));
+        setUser((current) =>
+          current
+            ? { ...current, emailPreferences: saved.emailPreferences || next }
+            : current,
+        );
+        toast.success("Email preference updated");
+      } catch {
+        setEmailPrefs(previous);
+        toast.error("Failed to update email preference");
+      } finally {
+        setSavingEmailPreference(null);
+      }
+    },
+    [emailPrefs],
+  );
+
   // Close modal on Escape
   useEffect(() => {
     if (!showDeleteConfirm) return;
@@ -152,10 +294,13 @@ export default function SettingsPage() {
   }, [showDeleteConfirm]);
 
   useEffect(() => {
-    fetchApi<{ name?: string; email?: string; role?: string }>("/auth/me").then((u) => {
-      setUser(u);
-      localStorage.setItem("user", JSON.stringify(u));
-    }).catch(() => {});
+    fetchApi<SettingsUser>("/auth/me")
+      .then((u) => {
+        setUser(u);
+        setEmailPrefs(normalizeEmailPrefs(u.emailPreferences));
+        localStorage.setItem("user", JSON.stringify(u));
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -198,7 +343,10 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-      <PageHeader title="Settings" description="Manage your account preferences" />
+      <PageHeader
+        title="Settings"
+        description="Manage your account preferences"
+      />
 
       <div className="flex flex-col sm:flex-row gap-6">
         <nav className="sm:w-56 flex-shrink-0">
@@ -227,14 +375,21 @@ export default function SettingsPage() {
           {activeSection === "account" && (
             <div className="space-y-6">
               <div className="angular-card bg-[#0f172a] p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Profile</h2>
+                <h2 className="text-lg font-semibold text-white mb-4">
+                  Profile
+                </h2>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-3 border-b border-white/10">
                     <div>
                       <p className="text-sm font-medium text-white">Name</p>
-                      <p className="text-sm text-slate-500">{user?.name || "Not set"}</p>
+                      <p className="text-sm text-slate-500">
+                        {user?.name || "Not set"}
+                      </p>
                     </div>
-                    <Link href="/dashboard/profile/edit" className="text-sm text-[#7AD62A] hover:underline">
+                    <Link
+                      href="/dashboard/profile/edit"
+                      className="text-sm text-[#7AD62A] hover:underline"
+                    >
                       Edit
                     </Link>
                   </div>
@@ -255,11 +410,17 @@ export default function SettingsPage() {
               </div>
 
               <div className="angular-card bg-[#0f172a] p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Danger Zone</h2>
+                <h2 className="text-lg font-semibold text-white mb-4">
+                  Danger Zone
+                </h2>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white">Delete account</p>
-                    <p className="text-sm text-slate-500">Permanently delete your account and all data</p>
+                    <p className="text-sm font-medium text-white">
+                      Delete account
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      Permanently delete your account and all data
+                    </p>
                   </div>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
@@ -275,41 +436,98 @@ export default function SettingsPage() {
           {activeSection === "notifications" && (
             <div className="space-y-6">
               <div className="angular-card bg-[#0f172a] p-6">
-                <h2 className="text-lg font-semibold text-white mb-2">Notification Preferences</h2>
+                <h2 className="text-lg font-semibold text-white mb-2">
+                  Notification Preferences
+                </h2>
                 <p className="text-sm text-slate-400 mb-6">
-                  Control whether AeroAcademy sends progress and summary updates beyond the in-app notification center.
+                  Control whether AeroAcademy sends progress and summary updates
+                  beyond the in-app notification center.
                 </p>
                 <div className="space-y-4">
                   <PreferenceRow
                     label="Progress alerts"
-                    description="Receive email and product alerts for labs, achievements, and important account activity."
+                    description="Receive product alerts for labs, achievements, and important account activity."
                     enabled={preferences?.notificationsEnabled ?? true}
-                    busy={savingPreference === "notificationsEnabled" || !preferences}
-                    onToggle={(value) => updatePreference("notificationsEnabled", value)}
+                    busy={
+                      savingPreference === "notificationsEnabled" ||
+                      !preferences
+                    }
+                    onToggle={(value) =>
+                      updatePreference("notificationsEnabled", value)
+                    }
                   />
                   <PreferenceRow
                     label="Weekly digest"
                     description="Get a weekly summary of your progress, ranking movement, and newly released learning opportunities."
                     enabled={preferences?.weeklyDigestEnabled ?? true}
-                    busy={savingPreference === "weeklyDigestEnabled" || !preferences}
-                    onToggle={(value) => updatePreference("weeklyDigestEnabled", value)}
+                    busy={
+                      savingPreference === "weeklyDigestEnabled" || !preferences
+                    }
+                    onToggle={(value) =>
+                      updatePreference("weeklyDigestEnabled", value)
+                    }
                   />
                 </div>
               </div>
 
               <div className="angular-card bg-[#0f172a] p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Always Available In-App</h2>
+                <h2 className="text-lg font-semibold text-white mb-2">
+                  Email Categories
+                </h2>
+                <p className="text-sm text-slate-400 mb-6">
+                  Choose the non-security emails you want to receive.
+                  Verification, password reset, and account security emails are
+                  always sent when needed.
+                </p>
+                <div className="space-y-4">
+                  {EMAIL_PREFS.map((pref) => (
+                    <PreferenceRow
+                      key={pref.key}
+                      label={pref.label}
+                      description={pref.description}
+                      enabled={emailPrefs[pref.key] !== false}
+                      busy={savingEmailPreference === pref.key}
+                      onToggle={(value) =>
+                        updateEmailPreference(pref.key, value)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="angular-card bg-[#0f172a] p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">
+                  Always Available In-App
+                </h2>
                 <div className="space-y-4">
                   {[
-                    { label: "Platform notifications", description: "Unread alerts, exam updates, and platform events remain available in your notification center." },
-                    { label: "Security events", description: "Critical account and verification notices remain visible even if email digests are disabled." },
+                    {
+                      label: "Platform notifications",
+                      description:
+                        "Unread alerts, exam updates, and platform events remain available in your notification center.",
+                    },
+                    {
+                      label: "Security events",
+                      description:
+                        "Critical account and verification notices remain available even if optional email categories are disabled.",
+                    },
                   ].map((item) => (
-                    <div key={item.label} className="flex items-center justify-between gap-4 py-3 border-b border-white/10 last:border-0">
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between gap-4 py-3 border-b border-white/10 last:border-0"
+                    >
                       <div>
-                        <p className="text-sm font-medium text-white">{item.label}</p>
-                        <p className="text-sm text-slate-500">{item.description}</p>
+                        <p className="text-sm font-medium text-white">
+                          {item.label}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          {item.description}
+                        </p>
                       </div>
-                      <span className="text-xs text-[#7AD62A] bg-[#7AD62A]/10 px-3 py-1 rounded-full">Active</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs text-[#7AD62A] bg-[#7AD62A]/10 px-3 py-1 rounded-full">
+                        <Mail size={12} />
+                        Active
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -320,7 +538,9 @@ export default function SettingsPage() {
           {activeSection === "security" && (
             <div className="space-y-6">
               <div className="angular-card bg-[#0f172a] p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Password</h2>
+                <h2 className="text-lg font-semibold text-white mb-4">
+                  Password
+                </h2>
                 <Link
                   href="/dashboard/profile/change-password"
                   className="angular-btn inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#7AD62A] border border-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
@@ -331,10 +551,16 @@ export default function SettingsPage() {
               </div>
 
               <div className="angular-card bg-[#0f172a] p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Sessions</h2>
-                <p className="text-sm text-slate-500 mb-4">You are currently signed in on this device.</p>
+                <h2 className="text-lg font-semibold text-white mb-4">
+                  Sessions
+                </h2>
+                <p className="text-sm text-slate-500 mb-4">
+                  You are currently signed in on this device.
+                </p>
                 <button
-                  onClick={() => { logout(); }}
+                  onClick={() => {
+                    logout();
+                  }}
                   className="px-4 py-2.5 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-500/10 transition-colors"
                 >
                   Sign out
@@ -349,7 +575,9 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between py-3 border-b border-white/10">
                 <div>
                   <p className="text-sm font-medium text-white">Dark mode</p>
-                  <p className="text-sm text-slate-500">Toggle between light and dark themes</p>
+                  <p className="text-sm text-slate-500">
+                    Toggle between light and dark themes
+                  </p>
                 </div>
                 <ThemeToggle />
               </div>
@@ -359,19 +587,32 @@ export default function SettingsPage() {
       </div>
 
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+        >
           <div className="bg-[#0f172a] rounded-2xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
                 <AlertTriangle size={20} className="text-red-500" />
               </div>
               <div>
-                <h3 id="delete-modal-title" className="font-semibold text-white">Delete account</h3>
-                <p className="text-sm text-slate-500">This action cannot be undone</p>
+                <h3
+                  id="delete-modal-title"
+                  className="font-semibold text-white"
+                >
+                  Delete account
+                </h3>
+                <p className="text-sm text-slate-500">
+                  This action cannot be undone
+                </p>
               </div>
             </div>
             <p className="text-sm text-slate-400 mb-6">
-              All your data including progress, certificates, and lab history will be permanently deleted.
+              All your data including progress, certificates, and lab history
+              will be permanently deleted.
             </p>
             <div className="flex gap-3 justify-end">
               <button
