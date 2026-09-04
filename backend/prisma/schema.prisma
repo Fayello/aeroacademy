@@ -8,96 +8,96 @@ datasource db {
 }
 
 model User {
-  id                       String                    @id @default(uuid())
-  email                    String                    @unique
-  passwordHash             String?
-  googleId                 String?                   @unique
-  role                     Role                      @default(STUDENT)
-  userExperience           String                    @default("INDIVIDUAL") // INDIVIDUAL, UNIVERSITY, CORPORATE, INSTRUCTOR, ADMIN
-  emailVerified            DateTime?
-  verificationToken        String?                   @unique
-  createdAt                DateTime                  @default(now())
-  username                 String?                   @unique
-  avatarUrl                String?
-  pinnedBadges             Json                      @default("[]")
-  bio                      String?
-  name                     String?
-  city                     String?                   @default("Yaoundé")
-  organizationId           String?
-  organization             Organization?             @relation(fields: [organizationId], references: [id])
-  xp                       Int                       @default(0)
-  rank                     Int                       @default(0)
-  division                 String                    @default("BRONZE")
-  clearanceLevel           Int                       @default(1)
-  currentStreak            Int                       @default(0)
-  longestStreak            Int                       @default(0)
-  lastActivityDate         DateTime?
-  streakFreezes            Int                       @default(0)
-  lastStreakFreezeUsedAt   DateTime?
-  dailyMissionCombo        Int                       @default(0)
-  lastDailyComboDate       DateTime?
-  welcomeDripSent          Json                      @default("[]")
-  lastEmailSentAt          DateTime?
-  emailPreferences         Json                      @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true,\"streaks\":true,\"labCompletions\":true}")
-  timezone                 String?                   @default("UTC")
-  referralCode             String?                   @unique
-  referredBy               String?
-  teamId                   String?
-  team                     Team?                     @relation(fields: [teamId], references: [id])
-  bossAttempts             BossMissionAttempt[]
-  globalEventParticipation GlobalEventParticipant[]
-  crossDomainProgress      CrossDomainProgress[]
-  ownedTeams               Team[]                    @relation("TeamOwner")
-  labInstances             LabInstance[]
-  labSubmissions           LabSubmission[]
-  inlinePracticeSubmissions InlinePracticeSubmission[]
-  progress                 Progress[]
-  quizSubmissions          QuizSubmission[]
-  achievements             UserAchievement[]
-  shortlistedBy            Shortlist[]               @relation("StudentShortlisted")
-  shortlistedUsers         Shortlist[]               @relation("RecruiterShortlist")
-  refreshTokens            RefreshToken[]
-  passwordResetTokens      PasswordResetToken[]
-  masterClassRegistrations MasterClassRegistration[]
-  trainer                  Trainer?
-  bookings                 Booking[]
-  activityEvents           ActivityEvent[]
-  auditLogs                AuditLog[]
-  assignedInquiries        InstitutionalInquiry[]
+  id                            String                        @id @default(uuid())
+  email                         String                        @unique
+  passwordHash                  String?
+  googleId                      String?                       @unique
+  role                          Role                          @default(STUDENT)
+  userExperience                String                        @default("INDIVIDUAL") // INDIVIDUAL, UNIVERSITY, CORPORATE, INSTRUCTOR, ADMIN
+  emailVerified                 DateTime?
+  verificationToken             String?                       @unique
+  createdAt                     DateTime                      @default(now())
+  username                      String?                       @unique
+  avatarUrl                     String?
+  pinnedBadges                  Json                          @default("[]")
+  bio                           String?
+  name                          String?
+  city                          String?                       @default("Yaoundé")
+  organizationId                String?
+  organization                  Organization?                 @relation(fields: [organizationId], references: [id])
+  xp                            Int                           @default(0)
+  rank                          Int                           @default(0)
+  division                      String                        @default("BRONZE")
+  clearanceLevel                Int                           @default(1)
+  currentStreak                 Int                           @default(0)
+  longestStreak                 Int                           @default(0)
+  lastActivityDate              DateTime?
+  streakFreezes                 Int                           @default(0)
+  lastStreakFreezeUsedAt        DateTime?
+  dailyMissionCombo             Int                           @default(0)
+  lastDailyComboDate            DateTime?
+  welcomeDripSent               Json                          @default("[]")
+  lastEmailSentAt               DateTime?
+  emailPreferences              Json                          @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true,\"streaks\":true,\"labCompletions\":true}")
+  timezone                      String?                       @default("UTC")
+  referralCode                  String?                       @unique
+  referredBy                    String?
+  teamId                        String?
+  team                          Team?                         @relation(fields: [teamId], references: [id])
+  bossAttempts                  BossMissionAttempt[]
+  globalEventParticipation      GlobalEventParticipant[]
+  crossDomainProgress           CrossDomainProgress[]
+  ownedTeams                    Team[]                        @relation("TeamOwner")
+  labInstances                  LabInstance[]
+  labSubmissions                LabSubmission[]
+  inlinePracticeSubmissions     InlinePracticeSubmission[]
+  progress                      Progress[]
+  quizSubmissions               QuizSubmission[]
+  achievements                  UserAchievement[]
+  shortlistedBy                 Shortlist[]                   @relation("StudentShortlisted")
+  shortlistedUsers              Shortlist[]                   @relation("RecruiterShortlist")
+  refreshTokens                 RefreshToken[]
+  passwordResetTokens           PasswordResetToken[]
+  masterClassRegistrations      MasterClassRegistration[]
+  trainer                       Trainer?
+  bookings                      Booking[]
+  activityEvents                ActivityEvent[]
+  auditLogs                     AuditLog[]
+  assignedInquiries             InstitutionalInquiry[]
   assignedCommunityApplications CommunityProgramApplication[]
-  communityProgramMembers  CommunityProgramMember[]
-  notifications            Notification[]
-  enrollments              CourseEnrollment[]
-  badges                   UserBadge[]
-  userSkills               UserSkill[]
-  userChallenges           UserChallenge[]
-  progressionEvents        ProgressionEvent[]
-  assessmentResults        AssessmentResult[]
-  reviews                  CourseReview[]
-  labReviews               LabReview[]
-  courseFavorites          CourseFavorite[]
-  learningPathEnrollments  LearningPathEnrollment[]
-  discussionPosts          DiscussionPost[]
-  discussionComments       DiscussionComment[]
-  discussionVotes          DiscussionVote[]
-  preference               UserPreference?
-  domainRanks              DomainRank[]
-  rankSnapshots            SeasonRankSnapshot[]
-  globalRankSnapshots      GlobalRankSnapshot[]
-  placementMatches         PlacementMatch[]
-  ratingEvents             DomainRatingEvent[]
-  masteryEvents            SkillMasteryEvent[]
-  personalizedMissions     PersonalizedMission[]
-  outcomeEvidence          OutcomeEvidence[]
-  cohortMemberships        CohortMember[]
-  studentAssessments       StudentAssessment[]
-  certificationAwards      CertificationAward[]
-  professionalRecord       ProfessionalRecord?
-  metricEvents             MetricEvent[]
-  teamMembers              TeamMember[]
-  gradeEntries             GradeEntry[]
-  studentGPA               StudentGPA?
-  tutoringInteractions     TutoringInteraction[]
+  communityProgramMembers       CommunityProgramMember[]
+  notifications                 Notification[]
+  enrollments                   CourseEnrollment[]
+  badges                        UserBadge[]
+  userSkills                    UserSkill[]
+  userChallenges                UserChallenge[]
+  progressionEvents             ProgressionEvent[]
+  assessmentResults             AssessmentResult[]
+  reviews                       CourseReview[]
+  labReviews                    LabReview[]
+  courseFavorites               CourseFavorite[]
+  learningPathEnrollments       LearningPathEnrollment[]
+  discussionPosts               DiscussionPost[]
+  discussionComments            DiscussionComment[]
+  discussionVotes               DiscussionVote[]
+  preference                    UserPreference?
+  domainRanks                   DomainRank[]
+  rankSnapshots                 SeasonRankSnapshot[]
+  globalRankSnapshots           GlobalRankSnapshot[]
+  placementMatches              PlacementMatch[]
+  ratingEvents                  DomainRatingEvent[]
+  masteryEvents                 SkillMasteryEvent[]
+  personalizedMissions          PersonalizedMission[]
+  outcomeEvidence               OutcomeEvidence[]
+  cohortMemberships             CohortMember[]
+  studentAssessments            StudentAssessment[]
+  certificationAwards           CertificationAward[]
+  professionalRecord            ProfessionalRecord?
+  metricEvents                  MetricEvent[]
+  teamMembers                   TeamMember[]
+  gradeEntries                  GradeEntry[]
+  studentGPA                    StudentGPA?
+  tutoringInteractions          TutoringInteraction[]
 
   @@index([googleId])
   @@index([role])
@@ -105,53 +105,53 @@ model User {
 }
 
 model Team {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  inviteCode  String?  @unique
-  visibility  String   @default("PUBLIC") // PUBLIC, PRIVATE
-  maxMembers  Int      @default(20)
-  ownerId     String
-  owner       User?    @relation("TeamOwner", fields: [ownerId], references: [id])
-  members     User[]
-  createdAt   DateTime @default(now())
+  id                String                 @id @default(uuid())
+  name              String                 @unique
+  description       String?
+  inviteCode        String?                @unique
+  visibility        String                 @default("PUBLIC") // PUBLIC, PRIVATE
+  maxMembers        Int                    @default(20)
+  ownerId           String
+  owner             User?                  @relation("TeamOwner", fields: [ownerId], references: [id])
+  members           User[]
+  createdAt         DateTime               @default(now())
   courseEnrollments TeamCourseEnrollment[]
-  teamMembers TeamMember[]
+  teamMembers       TeamMember[]
 
   // Team customization
-  avatarUrl      String?
-  bannerUrl      String?
-  primaryColor   String?  @default("#229C62")
-  accentColor    String?  @default("#7AD62A")
-  motto          String?
-  tagline        String?
+  avatarUrl    String?
+  bannerUrl    String?
+  primaryColor String? @default("#229C62")
+  accentColor  String? @default("#7AD62A")
+  motto        String?
+  tagline      String?
 
   @@index([ownerId])
   @@index([inviteCode])
 }
 
 model Season {
-  id                   String   @id @default(uuid())
-  name                 String
-  theme                String?
-  domainTheme          String?
-  seasonNumber         Int      @default(1)
-  xpMultiplier         Float    @default(1.0)
-  startDate            DateTime
-  endDate              DateTime
-  isActive             Boolean  @default(false)
-  softResetCompleted   Boolean  @default(false)
-  createdAt            DateTime @default(now())
+  id                 String   @id @default(uuid())
+  name               String
+  theme              String?
+  domainTheme        String?
+  seasonNumber       Int      @default(1)
+  xpMultiplier       Float    @default(1.0)
+  startDate          DateTime
+  endDate            DateTime
+  isActive           Boolean  @default(false)
+  softResetCompleted Boolean  @default(false)
+  createdAt          DateTime @default(now())
 
-  battlePass    BattlePass?
-  bossMissions  BossMission[]
-  globalEvents  GlobalEvent[]
-  snapshots     LeaderboardSnapshot[]
-  domainRanks   DomainRank[]
-  rankSnapshots SeasonRankSnapshot[]
+  battlePass          BattlePass?
+  bossMissions        BossMission[]
+  globalEvents        GlobalEvent[]
+  snapshots           LeaderboardSnapshot[]
+  domainRanks         DomainRank[]
+  rankSnapshots       SeasonRankSnapshot[]
   globalRankSnapshots GlobalRankSnapshot[]
-  placementMatches PlacementMatch[]
-  ratingEvents  DomainRatingEvent[]
+  placementMatches    PlacementMatch[]
+  ratingEvents        DomainRatingEvent[]
 }
 
 model Organization {
@@ -164,7 +164,7 @@ model Organization {
 }
 
 model InstitutionalInquiry {
-  id           String                    @id @default(uuid())
+  id           String                     @id @default(uuid())
   inquiryType  InstitutionalInquiryType
   status       InstitutionalInquiryStatus @default(NEW)
   name         String
@@ -174,11 +174,11 @@ model InstitutionalInquiry {
   teamSize     String?
   phone        String?
   message      String
-  sourcePage   String?                   @default("/get-started")
+  sourcePage   String?                    @default("/get-started")
   notes        String?
   assignedToId String?
-  createdAt    DateTime                  @default(now())
-  updatedAt    DateTime                  @updatedAt
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
 
   assignedTo User? @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
 
@@ -188,27 +188,27 @@ model InstitutionalInquiry {
 }
 
 model CommunityProgramApplication {
-  id            String                         @id @default(uuid())
-  programType   CommunityProgramType
-  status        CommunityProgramApplicationStatus @default(NEW)
-  name          String
-  email         String
-  city          String?
-  organization  String?
-  role          String?
-  experience    String?
-  interests     String[]                       @default([])
-  contribution  String
-  availability  String?
-  linkedinUrl   String?
-  portfolioUrl  String?
-  sourcePage    String?                        @default("/community")
-  notes         String?
-  assignedToId  String?
-  createdAt     DateTime                       @default(now())
-  updatedAt     DateTime                       @updatedAt
+  id           String                            @id @default(uuid())
+  programType  CommunityProgramType
+  status       CommunityProgramApplicationStatus @default(NEW)
+  name         String
+  email        String
+  city         String?
+  organization String?
+  role         String?
+  experience   String?
+  interests    String[]                          @default([])
+  contribution String
+  availability String?
+  linkedinUrl  String?
+  portfolioUrl String?
+  sourcePage   String?                           @default("/community")
+  notes        String?
+  assignedToId String?
+  createdAt    DateTime                          @default(now())
+  updatedAt    DateTime                          @updatedAt
 
-  assignedTo User? @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedTo User?                   @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
   member     CommunityProgramMember?
 
   @@index([status, createdAt(sort: Desc)])
@@ -217,27 +217,27 @@ model CommunityProgramApplication {
 }
 
 model CommunityProgramMember {
-  id               String                     @id @default(uuid())
-  applicationId    String                     @unique
-  programType      CommunityProgramType
-  status           CommunityProgramMemberStatus @default(ONBOARDING)
-  name             String
-  email            String
-  city             String?
-  organization     String?
-  role             String?
-  interests        String[]                   @default([])
-  contribution     String
-  availability     String?
-  linkedinUrl      String?
-  portfolioUrl     String?
-  onboardingStage  String                     @default("WELCOME")
-  onboardingNotes  String?
-  ownerId          String?
-  joinedAt         DateTime                   @default(now())
-  activatedAt      DateTime?
-  createdAt        DateTime                   @default(now())
-  updatedAt        DateTime                   @updatedAt
+  id              String                       @id @default(uuid())
+  applicationId   String                       @unique
+  programType     CommunityProgramType
+  status          CommunityProgramMemberStatus @default(ONBOARDING)
+  name            String
+  email           String
+  city            String?
+  organization    String?
+  role            String?
+  interests       String[]                     @default([])
+  contribution    String
+  availability    String?
+  linkedinUrl     String?
+  portfolioUrl    String?
+  onboardingStage String                       @default("WELCOME")
+  onboardingNotes String?
+  ownerId         String?
+  joinedAt        DateTime                     @default(now())
+  activatedAt     DateTime?
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
 
   application CommunityProgramApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   owner       User?                       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
@@ -248,19 +248,19 @@ model CommunityProgramMember {
 }
 
 model Course {
-  id             String               @id @default(uuid())
-  title          String
-  description    String
-  imageUrl       String?
-  estimatedHours Int?
-  createdAt      DateTime             @default(now())
-  sections       Section[]
-  enrollments    CourseEnrollment[]
-  reviews        CourseReview[]
-  learningPaths  LearningPathCourse[]
-  discussions    DiscussionPost[]
-  teamEnrollments TeamCourseEnrollment[]
-  moduleCourses  ModuleCourse[]
+  id                String                   @id @default(uuid())
+  title             String
+  description       String
+  imageUrl          String?
+  estimatedHours    Int?
+  createdAt         DateTime                 @default(now())
+  sections          Section[]
+  enrollments       CourseEnrollment[]
+  reviews           CourseReview[]
+  learningPaths     LearningPathCourse[]
+  discussions       DiscussionPost[]
+  teamEnrollments   TeamCourseEnrollment[]
+  moduleCourses     ModuleCourse[]
   cohortAssignments CohortCourseAssignment[]
   favorites         CourseFavorite[]
 }
@@ -275,36 +275,36 @@ model Section {
 }
 
 model Lesson {
-  id        String     @id @default(uuid())
-  sectionId String
-  title     String
-  order     Int        @default(0)
-  videoUrl  String?
-  content   String?
-  labId     String?    @unique
-  lab       Lab?       @relation(fields: [labId], references: [id], onDelete: SetNull)
-  section   Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  progress  Progress[]
-  quiz      Quiz?
+  id              String           @id @default(uuid())
+  sectionId       String
+  title           String
+  order           Int              @default(0)
+  videoUrl        String?
+  content         String?
+  labId           String?          @unique
+  lab             Lab?             @relation(fields: [labId], references: [id], onDelete: SetNull)
+  section         Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  progress        Progress[]
+  quiz            Quiz?
   inlinePractices InlinePractice[]
 }
 
 model InlinePractice {
-  id              String   @id @default(uuid())
-  lessonId        String
-  title           String
-  type            String   @default("COMMAND_ANSWER")
-  prompt          String
-  instructions    String?
-  expectedAnswer  String?
-  validationMode  String   @default("EXACT") // EXACT, CONTAINS, REGEX, MANUAL
-  hints           String[] @default([])
-  maxAttempts     Int      @default(0) // 0 = unlimited
-  xpReward        Int      @default(25)
-  required        Boolean  @default(true)
-  order           Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(uuid())
+  lessonId       String
+  title          String
+  type           String   @default("COMMAND_ANSWER")
+  prompt         String
+  instructions   String?
+  expectedAnswer String?
+  validationMode String   @default("EXACT") // EXACT, CONTAINS, REGEX, MANUAL
+  hints          String[] @default([])
+  maxAttempts    Int      @default(0) // 0 = unlimited
+  xpReward       Int      @default(25)
+  required       Boolean  @default(true)
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   lesson      Lesson                     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   submissions InlinePracticeSubmission[]
@@ -370,21 +370,21 @@ model Answer {
 }
 
 model Lab {
-  id               String        @id @default(uuid())
+  id               String           @id @default(uuid())
   title            String
   description      String
   dockerImage      String
   briefing         String?
   credentials      Json?
   tasks            Json?
-  basePath         String?       @default("")
+  basePath         String?          @default("")
   imageUrl         String?
-  difficulty       Int           @default(1200)
-  estimatedMinutes Int?          @default(60)
+  difficulty       Int              @default(1200)
+  estimatedMinutes Int?             @default(60)
   flags            LabFlag[]
   instances        LabInstance[]
   lesson           Lesson?
-  discussions     DiscussionPost[]
+  discussions      DiscussionPost[]
   labSkills        LabSkill[]
   labOutcomes      LabOutcome[]
   moduleLabs       ModuleLab[]
@@ -447,21 +447,21 @@ model LabInstance {
 }
 
 model Achievement {
-  id              String            @id @default(uuid())
-  title           String            @unique
-  description     String
-  icon            String
-  category        String            // MILESTONE, MASTERY, STREAK, SOCIAL, CHALLENGE
-  xpReward        Int               @default(0)
-  rarity          String            @default("COMMON") // COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
-  requirementType String            // FLAGS_CAPTURED, LABS_COMPLETED, STREAK_DAYS, LEVEL_REACHED, etc.
-  requirementTarget Int             @default(1)
-  chainParentId   String?
-  chainOrder      Int               @default(0)
-  isActive        Boolean           @default(true)
-  users           UserAchievement[]
+  id                String            @id @default(uuid())
+  title             String            @unique
+  description       String
+  icon              String
+  category          String // MILESTONE, MASTERY, STREAK, SOCIAL, CHALLENGE
+  xpReward          Int               @default(0)
+  rarity            String            @default("COMMON") // COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
+  requirementType   String // FLAGS_CAPTURED, LABS_COMPLETED, STREAK_DAYS, LEVEL_REACHED, etc.
+  requirementTarget Int               @default(1)
+  chainParentId     String?
+  chainOrder        Int               @default(0)
+  isActive          Boolean           @default(true)
+  users             UserAchievement[]
 
-  chainParent Achievement? @relation("AchievementChain", fields: [chainParentId], references: [id])
+  chainParent   Achievement?  @relation("AchievementChain", fields: [chainParentId], references: [id])
   chainChildren Achievement[] @relation("AchievementChain")
 }
 
@@ -715,14 +715,14 @@ model Notification {
 }
 
 model CourseEnrollment {
-  userId           String
-  courseId         String
-  enrolledAt      DateTime @default(now())
-  lastActivityAt  DateTime @default(now())
+  userId             String
+  courseId           String
+  enrolledAt         DateTime  @default(now())
+  lastActivityAt     DateTime  @default(now())
   lastReminderSentAt DateTime?
-  milestonesSent  Json     @default("[]")
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  milestonesSent     Json      @default("[]")
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course             Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@id([userId, courseId])
   @@index([userId])
@@ -775,31 +775,31 @@ model CourseFavorite {
 }
 
 model LearningPath {
-  id              String              @id @default(uuid())
-  title           String
-  description     String
-  imageUrl        String?
-  difficulty      String              @default("BEGINNER")
+  id                 String                   @id @default(uuid())
+  title              String
+  description        String
+  imageUrl           String?
+  difficulty         String                   @default("BEGINNER")
   prerequisitePathId String?
-  careerRole      String?             // "SOC Analyst", "DevOps Engineer", etc.
-  certificationName String?
-  estimatedHours  Int?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  courses         LearningPathCourse[]
-  enrollments     LearningPathEnrollment[]
+  careerRole         String? // "SOC Analyst", "DevOps Engineer", etc.
+  certificationName  String?
+  estimatedHours     Int?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  courses            LearningPathCourse[]
+  enrollments        LearningPathEnrollment[]
 
-  prerequisitePath LearningPath? @relation("PathPrerequisite", fields: [prerequisitePathId], references: [id])
+  prerequisitePath LearningPath?  @relation("PathPrerequisite", fields: [prerequisitePathId], references: [id])
   prerequisiteFor  LearningPath[] @relation("PathPrerequisite")
 }
 
 model LearningPathCourse {
-  id             String         @id @default(uuid())
+  id             String       @id @default(uuid())
   learningPathId String
-  courseId        String
-  order          Int            @default(0)
-  learningPath   LearningPath   @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
-  course         Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId       String
+  order          Int          @default(0)
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  course         Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([learningPathId, courseId])
   @@index([learningPathId])
@@ -807,12 +807,12 @@ model LearningPathCourse {
 }
 
 model LearningPathEnrollment {
-  id             String      @id @default(uuid())
+  id             String       @id @default(uuid())
   userId         String
   learningPathId String
-  enrolledAt     DateTime    @default(now())
+  enrolledAt     DateTime     @default(now())
   completedAt    DateTime?
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
 
   @@unique([userId, learningPathId])
@@ -828,42 +828,42 @@ model Badge {
   category    String      @default("SKILL") // SKILL, MILESTONE, SPECIAL
   tier        String      @default("BRONZE") // BRONZE, SILVER, GOLD, PLATINUM
   xpReward    Int         @default(0)
-  requirement String      // e.g. "complete_linux_basics", "capture_10_flags"
+  requirement String // e.g. "complete_linux_basics", "capture_10_flags"
   users       UserBadge[]
 }
 
 model UserBadge {
-  userId    String
-  badgeId   String
-  earnedAt  DateTime @default(now())
-  badge     Badge    @relation(fields: [badgeId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
 
   @@id([userId, badgeId])
   @@index([userId])
 }
 
 model SkillAssessment {
-  id          String   @id @default(uuid())
+  id          String             @id @default(uuid())
   title       String
   description String
-  category    String   // LINUX, NETWORKING, WEB_SECURITY, CRYPTO
-  questions   Json     // Array of assessment questions
-  createdAt   DateTime @default(now())
+  category    String // LINUX, NETWORKING, WEB_SECURITY, CRYPTO
+  questions   Json // Array of assessment questions
+  createdAt   DateTime           @default(now())
   results     AssessmentResult[]
 }
 
 model AssessmentResult {
-  id           String          @id @default(uuid())
-  assessmentId String
-  userId       String
-  score        Int
-  maxScore     Int
-  answers      Json
-  recommendedPath Json?       // Recommended courses based on score
-  createdAt    DateTime       @default(now())
-  assessment   SkillAssessment @relation(fields: [assessmentId], references: [id])
-  user         User            @relation(fields: [userId], references: [id])
+  id              String          @id @default(uuid())
+  assessmentId    String
+  userId          String
+  score           Int
+  maxScore        Int
+  answers         Json
+  recommendedPath Json? // Recommended courses based on score
+  createdAt       DateTime        @default(now())
+  assessment      SkillAssessment @relation(fields: [assessmentId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
 
   @@unique([assessmentId, userId])
   @@index([userId])
@@ -897,17 +897,17 @@ model DiscussionPost {
 }
 
 model DiscussionComment {
-  id        String           @id @default(uuid())
+  id        String              @id @default(uuid())
   postId    String
   userId    String
   body      String
   parentId  String?
-  upvotes   Int              @default(0)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  post      DiscussionPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent    DiscussionComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  upvotes   Int                 @default(0)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  post      DiscussionPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    DiscussionComment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies   DiscussionComment[] @relation("CommentReplies")
   votes     DiscussionVote[]
 
@@ -916,14 +916,14 @@ model DiscussionComment {
 }
 
 model DiscussionVote {
-  id        String           @id @default(uuid())
+  id        String             @id @default(uuid())
   userId    String
   postId    String?
   commentId String?
-  value     Int              @default(1) // 1 = upvote, -1 = downvote
-  createdAt DateTime         @default(now())
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      DiscussionPost?  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  value     Int                @default(1) // 1 = upvote, -1 = downvote
+  createdAt DateTime           @default(now())
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      DiscussionPost?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   comment   DiscussionComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
@@ -933,9 +933,9 @@ model DiscussionVote {
 }
 
 model CourseReorderHistory {
-  id        String   @id @default(uuid())
+  id         String   @id @default(uuid())
   courseId   String
-  entityType String  // SECTION, LESSON
+  entityType String // SECTION, LESSON
   entityId   String
   oldOrder   Int
   newOrder   Int
@@ -946,12 +946,12 @@ model CourseReorderHistory {
 }
 
 model TeamCourseEnrollment {
-  id        String   @id @default(uuid())
-  teamId    String
-  courseId  String
+  id         String   @id @default(uuid())
+  teamId     String
+  courseId   String
   enrolledAt DateTime @default(now())
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, courseId])
   @@index([teamId])
@@ -977,36 +977,36 @@ model TeamMember {
 model SkillDomain {
   id          String   @id @default(uuid())
   name        String   @unique // SYSTEMS, NETWORKING, DEVOPS, DATABASES, SECURITY, QA
-  displayName String   // "Systems", "Networking", etc.
-  icon        String?  // lucide icon name
+  displayName String // "Systems", "Networking", etc.
+  icon        String? // lucide icon name
   createdAt   DateTime @default(now())
 
-  skills                Skill[]
-  challenges            Challenge[]
-  domainRanks           DomainRank[]
-  personalizedMissions  PersonalizedMission[]
-  learningOutcomes      LearningOutcome[]
-  practicalAssessments  PracticalAssessment[]
+  skills               Skill[]
+  challenges           Challenge[]
+  domainRanks          DomainRank[]
+  personalizedMissions PersonalizedMission[]
+  learningOutcomes     LearningOutcome[]
+  practicalAssessments PracticalAssessment[]
 }
 
 model Skill {
   id          String   @id @default(uuid())
   domainId    String
-  name        String   // "Linux", "Docker", "SQL", etc.
+  name        String // "Linux", "Docker", "SQL", etc.
   displayName String
   description String?
   icon        String?
   createdAt   DateTime @default(now())
 
-  domain         SkillDomain           @relation(fields: [domainId], references: [id])
-  userSkills     UserSkill[]
-  labSkills      LabSkill[]
-  challenges     Challenge[]
-  masteryEvents  SkillMasteryEvent[]
-  prerequisites  SkillPrerequisite[]   @relation("SkillRequires")
-  requiredBy     SkillPrerequisite[]   @relation("SkillNeeded")
+  domain               SkillDomain           @relation(fields: [domainId], references: [id])
+  userSkills           UserSkill[]
+  labSkills            LabSkill[]
+  challenges           Challenge[]
+  masteryEvents        SkillMasteryEvent[]
+  prerequisites        SkillPrerequisite[]   @relation("SkillRequires")
+  requiredBy           SkillPrerequisite[]   @relation("SkillNeeded")
   personalizedMissions PersonalizedMission[]
-  skillOutcomes  SkillOutcome[]
+  skillOutcomes        SkillOutcome[]
 
   @@unique([domainId, name])
   @@index([domainId])
@@ -1018,15 +1018,15 @@ model UserSkill {
   skillId         String
   xp              Int       @default(0)
   level           Int       @default(1)
-  mastery         Float     @default(0)     // 0-100, demonstrated ability
-  lastPracticedAt DateTime?                 // last time skill was demonstrated
-  decayRate       Float     @default(0.5)   // % mastery lost per day of inactivity
-  isDecaying      Boolean   @default(false)  // whether decay is currently active
+  mastery         Float     @default(0) // 0-100, demonstrated ability
+  lastPracticedAt DateTime? // last time skill was demonstrated
+  decayRate       Float     @default(0.5) // % mastery lost per day of inactivity
+  isDecaying      Boolean   @default(false) // whether decay is currently active
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@unique([userId, skillId])
   @@index([userId])
@@ -1053,11 +1053,11 @@ model SkillMasteryEvent {
   id            String   @id @default(uuid())
   userId        String
   skillId       String
-  eventType     String   // MASTERY_GAIN, MASTERY_DECAY, MASTERY_RECOVERY, MASTERY_SET
-  amount        Float    // change in mastery percentage
+  eventType     String // MASTERY_GAIN, MASTERY_DECAY, MASTERY_RECOVERY, MASTERY_SET
+  amount        Float // change in mastery percentage
   masteryBefore Float
   masteryAfter  Float
-  source        String   // FLAG_SOLVED, LAB_COMPLETED, DECAY_CRON, RECOVERY_MISSION
+  source        String // FLAG_SOLVED, LAB_COMPLETED, DECAY_CRON, RECOVERY_MISSION
   sourceId      String?
   metadata      Json?
   createdAt     DateTime @default(now())
@@ -1083,26 +1083,26 @@ model SkillPrerequisite {
 }
 
 model PersonalizedMission {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String
   title            String
   description      String
-  difficulty       Int      // 1-10
+  difficulty       Int // 1-10
   estimatedMinutes Int
   targetSkillId    String?
   targetDomainId   String?
   xpReward         Int
-  masteryReward    Float    // mastery boost on completion
-  missionType      String   // SKILL_MAINTENANCE, WEAKNESS_IMPROVEMENT, CROSS_DOMAIN, RANKED
-  status           String   @default("AVAILABLE") // AVAILABLE, ACTIVE, COMPLETED, EXPIRED
+  masteryReward    Float // mastery boost on completion
+  missionType      String // SKILL_MAINTENANCE, WEAKNESS_IMPROVEMENT, CROSS_DOMAIN, RANKED
+  status           String    @default("AVAILABLE") // AVAILABLE, ACTIVE, COMPLETED, EXPIRED
   expiresAt        DateTime?
   completedAt      DateTime?
   metadata         Json?
-  createdAt        DateTime @default(now())
+  createdAt        DateTime  @default(now())
 
-  user   User          @relation(fields: [userId], references: [id])
-  skill  Skill?        @relation(fields: [targetSkillId], references: [id])
-  domain SkillDomain?  @relation(fields: [targetDomainId], references: [id])
+  user   User         @relation(fields: [userId], references: [id])
+  skill  Skill?       @relation(fields: [targetSkillId], references: [id])
+  domain SkillDomain? @relation(fields: [targetDomainId], references: [id])
 
   @@index([userId, status])
   @@index([userId, createdAt])
@@ -1112,13 +1112,13 @@ model PersonalizedMission {
 
 model Challenge {
   id              String   @id @default(uuid())
-  type            String   // DAILY_WARMUP, DAILY_SKILL, DAILY_BOSS, WEEKLY, MONTHLY, TEAM_WEEKLY
+  type            String // DAILY_WARMUP, DAILY_SKILL, DAILY_BOSS, WEEKLY, MONTHLY, TEAM_WEEKLY
   domainId        String?
   skillId         String?
   title           String
   description     String
-  difficulty      String   // EASY, MEDIUM, HARD, BOSS
-  objectiveType   String   // FLAG_COMPLETIONS, LAB_COMPLETIONS, LESSON_COMPLETIONS, QUIZ_COMPLETIONS, XP_EARNED, SKILL_XP_EARNED
+  difficulty      String // EASY, MEDIUM, HARD, BOSS
+  objectiveType   String // FLAG_COMPLETIONS, LAB_COMPLETIONS, LESSON_COMPLETIONS, QUIZ_COMPLETIONS, XP_EARNED, SKILL_XP_EARNED
   objectiveTarget Int
   xpReward        Int
   badgeRewardId   String?
@@ -1128,8 +1128,8 @@ model Challenge {
   metadata        Json?
   createdAt       DateTime @default(now())
 
-  domain      SkillDomain?  @relation(fields: [domainId], references: [id])
-  skill       Skill?         @relation(fields: [skillId], references: [id])
+  domain         SkillDomain?    @relation(fields: [domainId], references: [id])
+  skill          Skill?          @relation(fields: [skillId], references: [id])
   userChallenges UserChallenge[]
 
   @@index([type, isActive])
@@ -1160,8 +1160,8 @@ model UserChallenge {
 // ─── V1: FEATURE UNLOCKING ──────────────────────────────────────
 
 model FeatureUnlock {
-  id            String @id @default(uuid())
-  feature       String @unique // DAILY_MISSIONS, SKILL_PROFILE, LEADERBOARD, etc.
+  id            String  @id @default(uuid())
+  feature       String  @unique // DAILY_MISSIONS, SKILL_PROFILE, LEADERBOARD, etc.
   requiredLevel Int
   description   String?
 }
@@ -1171,9 +1171,9 @@ model FeatureUnlock {
 model ProgressionEvent {
   id        String   @id @default(uuid())
   userId    String
-  type      String   // XP_AWARDED, SKILL_XP_AWARDED, LEVEL_UP, SKILL_LEVEL_UP, MISSION_COMPLETED
+  type      String // XP_AWARDED, SKILL_XP_AWARDED, LEVEL_UP, SKILL_LEVEL_UP, MISSION_COMPLETED
   amount    Int?
-  source    String   // FLAG_SOLVED, LAB_COMPLETED, LESSON_COMPLETED, QUIZ_PASSED, MISSION_REWARD
+  source    String // FLAG_SOLVED, LAB_COMPLETED, LESSON_COMPLETED, QUIZ_PASSED, MISSION_REWARD
   sourceId  String?
   metadata  Json?
   createdAt DateTime @default(now())
@@ -1187,16 +1187,16 @@ model ProgressionEvent {
 // ─── V2: PERSONALIZATION ────────────────────────────────────────
 
 model UserPreference {
-  id       String @id @default(uuid())
-  userId   String @unique
-  interests String[] @default([]) // ["security", "devops", "networking"]
-  weakSkills String[] @default([]) // Skills the user struggles with
-  preferredDifficulty String @default("MEDIUM")
-  notificationsEnabled Boolean @default(true)
-  weeklyDigestEnabled  Boolean @default(true)
-  displayMode  String @default("PROGRESSION") // PROFESSIONAL, PROGRESSION, COMPETITIVE
-  onboardingCompleted Boolean @default(false)
-  onboardingSelections Json @default("{}")
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  interests            String[] @default([]) // ["security", "devops", "networking"]
+  weakSkills           String[] @default([]) // Skills the user struggles with
+  preferredDifficulty  String   @default("MEDIUM")
+  notificationsEnabled Boolean  @default(true)
+  weeklyDigestEnabled  Boolean  @default(true)
+  displayMode          String   @default("PROGRESSION") // PROFESSIONAL, PROGRESSION, COMPETITIVE
+  onboardingCompleted  Boolean  @default(false)
+  onboardingSelections Json     @default("{}")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1206,11 +1206,11 @@ model UserPreference {
 // ─── V2: LEADERBOARD SNAPSHOTS ──────────────────────────────────
 
 model LeaderboardSnapshot {
-  id        String   @id @default(uuid())
-  seasonId  String?
-  period    String   // WEEKLY, MONTHLY, SEASONAL
+  id         String   @id @default(uuid())
+  seasonId   String?
+  period     String // WEEKLY, MONTHLY, SEASONAL
   snapshotAt DateTime @default(now())
-  data      Json     // Array of { userId, xp, rank, division, position }
+  data       Json // Array of { userId, xp, rank, division, position }
 
   season Season? @relation(fields: [seasonId], references: [id])
 
@@ -1227,22 +1227,22 @@ model BattlePass {
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
 
-  season Season @relation(fields: [seasonId], references: [id])
+  season Season           @relation(fields: [seasonId], references: [id])
   tiers  BattlePassTier[]
 }
 
 model BattlePassTier {
-  id          String   @id @default(uuid())
+  id           String   @id @default(uuid())
   battlePassId String
-  tierNumber  Int
-  title       String
-  description String?
-  xpRequired  Int
-  rewards     Json     // [{ type: 'BADGE', id, name }, { type: 'TITLE', title: 'X' }]
-  isPremium   Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  tierNumber   Int
+  title        String
+  description  String?
+  xpRequired   Int
+  rewards      Json // [{ type: 'BADGE', id, name }, { type: 'TITLE', title: 'X' }]
+  isPremium    Boolean  @default(false)
+  createdAt    DateTime @default(now())
 
-  battlePass BattlePass    @relation(fields: [battlePassId], references: [id])
+  battlePass BattlePass           @relation(fields: [battlePassId], references: [id])
   progress   BattlePassProgress[]
 
   @@unique([battlePassId, tierNumber])
@@ -1258,7 +1258,7 @@ model BattlePassProgress {
   unlockedAt DateTime?
   createdAt  DateTime  @default(now())
 
-  tier BattlePassTier   @relation(fields: [tierId], references: [id], onDelete: Cascade)
+  tier BattlePassTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
 
   @@unique([userId, tierId])
   @@index([userId])
@@ -1268,24 +1268,24 @@ model BattlePassProgress {
 // ─── V3: BOSS MISSIONS ──────────────────────────────────────────
 
 model BossMission {
-  id              String   @id @default(uuid())
-  seasonId        String?
-  title           String
-  description     String
-  difficulty      String   // EASY, MEDIUM, HARD, BOSS
-  maxAttempts     Int      @default(3)
-  xpReward        Int
-  ratingReward    Int      @default(200) // domain rating awarded on completion
-  badgeRewardId   String?
-  prerequisiteLabIds Json  @default("[]") // lab IDs required before attempting
-  requiredDomains Json     @default("[]") // [{ domainId, minRating }], cross-domain requirements
-  domainId        String?  // Primary domain for this boss
-  theme           String?  // Seasonal theme tag (e.g. "zero-day", "ransomware")
-  labId           String?  // The lab the boss mission runs against
-  isActive        Boolean  @default(true)
-  startsAt        DateTime
-  expiresAt       DateTime
-  createdAt       DateTime @default(now())
+  id                 String   @id @default(uuid())
+  seasonId           String?
+  title              String
+  description        String
+  difficulty         String // EASY, MEDIUM, HARD, BOSS
+  maxAttempts        Int      @default(3)
+  xpReward           Int
+  ratingReward       Int      @default(200) // domain rating awarded on completion
+  badgeRewardId      String?
+  prerequisiteLabIds Json     @default("[]") // lab IDs required before attempting
+  requiredDomains    Json     @default("[]") // [{ domainId, minRating }], cross-domain requirements
+  domainId           String? // Primary domain for this boss
+  theme              String? // Seasonal theme tag (e.g. "zero-day", "ransomware")
+  labId              String? // The lab the boss mission runs against
+  isActive           Boolean  @default(true)
+  startsAt           DateTime
+  expiresAt          DateTime
+  createdAt          DateTime @default(now())
 
   season   Season?              @relation(fields: [seasonId], references: [id])
   attempts BossMissionAttempt[]
@@ -1295,18 +1295,18 @@ model BossMission {
 }
 
 model BossMissionAttempt {
-  id           String   @id @default(uuid())
-  userId       String
-  bossId       String
-  score        Int      @default(0)
-  maxScore     Int      @default(100)
-  isCompleted  Boolean  @default(false)
-  completedAt  DateTime?
-  feedback     Json?
-  createdAt    DateTime @default(now())
+  id          String    @id @default(uuid())
+  userId      String
+  bossId      String
+  score       Int       @default(0)
+  maxScore    Int       @default(100)
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  feedback    Json?
+  createdAt   DateTime  @default(now())
 
-  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  boss BossMission  @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  boss BossMission @relation(fields: [bossId], references: [id], onDelete: Cascade)
 
   @@unique([userId, bossId])
   @@index([userId])
@@ -1319,7 +1319,7 @@ model CrossDomainMission {
   id              String   @id @default(uuid())
   title           String
   description     String
-  requiredDomains Json     // [{ domainId: 'xxx', minSkillXp: 500 }, ...]
+  requiredDomains Json // [{ domainId: 'xxx', minSkillXp: 500 }, ...]
   xpReward        Int
   badgeRewardId   String?
   isActive        Boolean  @default(true)
@@ -1333,15 +1333,15 @@ model CrossDomainMission {
 }
 
 model CrossDomainProgress {
-  id        String   @id @default(uuid())
-  userId    String
-  missionId String
-  progress  Json     // { domainId: currentXp, ... }
-  completed Boolean  @default(false)
+  id          String    @id @default(uuid())
+  userId      String
+  missionId   String
+  progress    Json // { domainId: currentXp, ... }
+  completed   Boolean   @default(false)
   completedAt DateTime?
-  createdAt DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
-  user   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   mission CrossDomainMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, missionId])
@@ -1355,17 +1355,17 @@ model GlobalEvent {
   seasonId    String?
   title       String
   description String
-  type        String   // COMMUNITY_XP, TEAM_COMPETITION, SPEEDRUN, COLLABORATIVE
-  targetXp    Int?     // Target XP for community events
-  targetCount Int?     // Target count for collaborative events
+  type        String // COMMUNITY_XP, TEAM_COMPETITION, SPEEDRUN, COLLABORATIVE
+  targetXp    Int? // Target XP for community events
+  targetCount Int? // Target count for collaborative events
   xpReward    Int      @default(0)
-  metadata    Json?    // { labId, speedrunTargetMinutes, ... }
+  metadata    Json? // { labId, speedrunTargetMinutes, ... }
   startsAt    DateTime
   expiresAt   DateTime
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
 
-  season       Season?                @relation(fields: [seasonId], references: [id])
+  season       Season?                  @relation(fields: [seasonId], references: [id])
   participants GlobalEventParticipant[]
 
   @@index([seasonId, isActive])
@@ -1373,14 +1373,14 @@ model GlobalEvent {
 }
 
 model GlobalEventParticipant {
-  id        String   @id @default(uuid())
-  userId    String
-  eventId   String
-  progress  Int      @default(0)
-  completed Boolean  @default(false)
-  completedAt DateTime?
-  rewardClaimed Boolean @default(false)
-  createdAt DateTime @default(now())
+  id            String    @id @default(uuid())
+  userId        String
+  eventId       String
+  progress      Int       @default(0)
+  completed     Boolean   @default(false)
+  completedAt   DateTime?
+  rewardClaimed Boolean   @default(false)
+  createdAt     DateTime  @default(now())
 
   user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   event GlobalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -1393,15 +1393,15 @@ model GlobalEventParticipant {
 // ─── V3: ADVANCED RANKING ───────────────────────────────────────
 
 model RankingTier {
-  id          String @id @default(uuid())
-  name        String @unique // BRONZE, SILVER, GOLD, PLATINUM, DIAMOND, MASTER, GRANDMASTER
+  id          String  @id @default(uuid())
+  name        String  @unique // BRONZE, SILVER, GOLD, PLATINUM, DIAMOND, MASTER, GRANDMASTER
   displayName String
   icon        String?
   minXp       Int
   maxXp       Int
-  kFactor     Float  @default(32.0)  // ELO sensitivity
-  decayRate   Float  @default(0.0)   // Daily XP decay percentage
-  order       Int    @default(0)
+  kFactor     Float   @default(32.0) // ELO sensitivity
+  decayRate   Float   @default(0.0) // Daily XP decay percentage
+  order       Int     @default(0)
   isActive    Boolean @default(true)
 
   @@index([minXp, maxXp])
@@ -1413,48 +1413,48 @@ model RankingHistory {
   userId    String
   fromTier  String
   toTier    String
-  reason    String   // XP_REACH, DECAY, SEASON_RESET
+  reason    String // XP_REACH, DECAY, SEASON_RESET
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
 }
 
 model WinStreak {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  currentStreak  Int      @default(0)
-  longestStreak  Int      @default(0)
-  lastWinDate    DateTime?
-  streakMultiplier Float @default(1.0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastWinDate      DateTime?
+  streakMultiplier Float     @default(1.0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([userId])
 }
 
 model DomainRank {
-  id                  String   @id @default(uuid())
-  userId              String
-  domainId            String
-  seasonId            String
-  rating              Int      @default(1000)
-  division            String   @default("BRONZE")
-  divisionTier        Int      @default(1)
-  gamesPlayed         Int      @default(0)
-  wins                Int      @default(0)
-  losses              Int      @default(0)
-  draws               Int      @default(0)
-  isProvisional       Boolean  @default(true)
-  placementMatchesLeft Int     @default(5)
-  careerHighRating    Int      @default(1000)
-  careerHighDivision  String   @default("BRONZE")
-  careerHighTier      Int      @default(1)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                   String   @id @default(uuid())
+  userId               String
+  domainId             String
+  seasonId             String
+  rating               Int      @default(1000)
+  division             String   @default("BRONZE")
+  divisionTier         Int      @default(1)
+  gamesPlayed          Int      @default(0)
+  wins                 Int      @default(0)
+  losses               Int      @default(0)
+  draws                Int      @default(0)
+  isProvisional        Boolean  @default(true)
+  placementMatchesLeft Int      @default(5)
+  careerHighRating     Int      @default(1000)
+  careerHighDivision   String   @default("BRONZE")
+  careerHighTier       Int      @default(1)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  user     User        @relation(fields: [userId], references: [id])
-  domain   SkillDomain @relation(fields: [domainId], references: [id])
-  season   Season      @relation(fields: [seasonId], references: [id])
+  user   User        @relation(fields: [userId], references: [id])
+  domain SkillDomain @relation(fields: [domainId], references: [id])
+  season Season      @relation(fields: [seasonId], references: [id])
 
   @@unique([userId, domainId, seasonId])
   @@index([domainId, seasonId, rating(sort: Desc)])
@@ -1477,8 +1477,8 @@ model SeasonRankSnapshot {
   placementRating Int?
   createdAt       DateTime @default(now())
 
-  user   User        @relation(fields: [userId], references: [id])
-  season Season      @relation(fields: [seasonId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  season Season @relation(fields: [seasonId], references: [id])
 
   @@unique([userId, domainId, seasonId])
   @@index([userId, seasonNumber])
@@ -1559,18 +1559,18 @@ model DomainRatingEvent {
 
 model LearningOutcome {
   id          String   @id @default(uuid())
-  code        String   // LO1, LO2, etc.
+  code        String // LO1, LO2, etc.
   title       String
   description String
   domainId    String
   weight      Float    @default(1.0) // importance weight for competency calc
   createdAt   DateTime @default(now())
 
-  domain       SkillDomain          @relation(fields: [domainId], references: [id])
-  skillOutcomes SkillOutcome[]
-  labOutcomes  LabOutcome[]
-  assessments  AssessmentOutcome[]
-  evidence     OutcomeEvidence[]
+  domain         SkillDomain         @relation(fields: [domainId], references: [id])
+  skillOutcomes  SkillOutcome[]
+  labOutcomes    LabOutcome[]
+  assessments    AssessmentOutcome[]
+  evidence       OutcomeEvidence[]
   moduleOutcomes ModuleOutcome[]
 
   @@unique([domainId, code])
@@ -1578,10 +1578,10 @@ model LearningOutcome {
 }
 
 model SkillOutcome {
-  id              String @id @default(uuid())
-  skillId         String
+  id                String @id @default(uuid())
+  skillId           String
   learningOutcomeId String
-  weight          Float  @default(1.0)
+  weight            Float  @default(1.0)
 
   skill   Skill           @relation(fields: [skillId], references: [id], onDelete: Cascade)
   outcome LearningOutcome @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
@@ -1592,12 +1592,12 @@ model SkillOutcome {
 }
 
 model LabOutcome {
-  id              String @id @default(uuid())
-  labId           String
+  id                String @id @default(uuid())
+  labId             String
   learningOutcomeId String
-  weight          Float  @default(1.0)
+  weight            Float  @default(1.0)
 
-  lab    Lab             @relation(fields: [labId], references: [id], onDelete: Cascade)
+  lab     Lab             @relation(fields: [labId], references: [id], onDelete: Cascade)
   outcome LearningOutcome @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
 
   @@unique([labId, learningOutcomeId])
@@ -1609,13 +1609,13 @@ model OutcomeEvidence {
   id                String   @id @default(uuid())
   userId            String
   learningOutcomeId String
-  activityType      String   // LAB_COMPLETED, FLAG_SOLVED, ASSESSMENT_PASSED, BOSS_COMPLETED
+  activityType      String // LAB_COMPLETED, FLAG_SOLVED, ASSESSMENT_PASSED, BOSS_COMPLETED
   activityId        String
-  score             Float    // 0-100, how well the outcome was demonstrated
+  score             Float // 0-100, how well the outcome was demonstrated
   metadata          Json?
   demonstratedAt    DateTime @default(now())
 
-  user   User            @relation(fields: [userId], references: [id])
+  user    User            @relation(fields: [userId], references: [id])
   outcome LearningOutcome @relation(fields: [learningOutcomeId], references: [id])
 
   @@index([userId, learningOutcomeId])
@@ -1631,7 +1631,7 @@ model Curriculum {
   name        String
   description String
   institution String
-  degree      String   // BSc, MSc, Diploma
+  degree      String // BSc, MSc, Diploma
   year        Int
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -1644,13 +1644,13 @@ model CurriculumModule {
   id             String   @id @default(uuid())
   curriculumId   String
   name           String
-  code           String   // CS301, NET201
+  code           String // CS301, NET201
   credits        Int
   theoryHours    Int      @default(0)
   practicalHours Int      @default(0)
   createdAt      DateTime @default(now())
 
-  curriculum Curriculum         @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+  curriculum Curriculum      @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
   outcomes   ModuleOutcome[]
   labs       ModuleLab[]
   courses    ModuleCourse[]
@@ -1659,10 +1659,10 @@ model CurriculumModule {
 }
 
 model ModuleOutcome {
-  id                 String @id @default(uuid())
-  moduleId           String
-  learningOutcomeId  String
-  weight             Float  @default(1.0)
+  id                String @id @default(uuid())
+  moduleId          String
+  learningOutcomeId String
+  weight            Float  @default(1.0)
 
   module  CurriculumModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   outcome LearningOutcome  @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
@@ -1704,19 +1704,19 @@ model Cohort {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  curriculum Curriculum              @relation(fields: [curriculumId], references: [id])
-  members    CohortMember[]
+  curriculum        Curriculum               @relation(fields: [curriculumId], references: [id])
+  members           CohortMember[]
   courseAssignments CohortCourseAssignment[]
-  gradeCategories  GradeCategory[]
+  gradeCategories   GradeCategory[]
 
   @@index([curriculumId])
 }
 
 model CohortMember {
-  id       String @id @default(uuid())
+  id       String   @id @default(uuid())
   cohortId String
   userId   String
-  role     String @default("STUDENT") // STUDENT, TA, PROFESSOR
+  role     String   @default("STUDENT") // STUDENT, TA, PROFESSOR
   joinedAt DateTime @default(now())
 
   cohort Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
@@ -1728,12 +1728,12 @@ model CohortMember {
 }
 
 model CohortCourseAssignment {
-  id           String   @id @default(uuid())
-  cohortId     String
-  courseId      String
-  weight       Float    @default(1.0)
-  isRequired   Boolean  @default(true)
-  assignedAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  cohortId   String
+  courseId   String
+  weight     Float    @default(1.0)
+  isRequired Boolean  @default(true)
+  assignedAt DateTime @default(now())
 
   cohort Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -1744,31 +1744,31 @@ model CohortCourseAssignment {
 }
 
 model GradeCategory {
-  id          String   @id @default(uuid())
-  cohortId    String
-  name        String
-  weight      Float
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  cohortId  String
+  name      String
+  weight    Float
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
 
-  cohort  Cohort      @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  cohort  Cohort       @relation(fields: [cohortId], references: [id], onDelete: Cascade)
   entries GradeEntry[]
 
   @@index([cohortId])
 }
 
 model GradeEntry {
-  id           String   @id @default(uuid())
-  categoryId   String
-  userId       String
-  title        String
-  score        Float
-  maxScore     Float    @default(100)
-  weight       Float    @default(1.0)
-  comment      String?
-  gradedById   String?
-  gradedAt     DateTime?
-  createdAt    DateTime @default(now())
+  id         String    @id @default(uuid())
+  categoryId String
+  userId     String
+  title      String
+  score      Float
+  maxScore   Float     @default(100)
+  weight     Float     @default(1.0)
+  comment    String?
+  gradedById String?
+  gradedAt   DateTime?
+  createdAt  DateTime  @default(now())
 
   category GradeCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1779,10 +1779,10 @@ model GradeEntry {
 }
 
 model StudentGPA {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  cumulativeGPA   Float    @default(0)
-  totalCredits    Int      @default(0)
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  cumulativeGPA    Float    @default(0)
+  totalCredits     Int      @default(0)
   lastCalculatedAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1791,36 +1791,36 @@ model StudentGPA {
 // ─── V5: PRACTICAL ASSESSMENTS ─────────────────────────────────
 
 model PracticalAssessment {
-  id            String   @id @default(uuid())
-  title         String
-  description   String
-  domainId      String?
-  timeLimit     Int      // minutes
-  maxScore      Int      @default(100)
-  passingScore  Int      @default(70) // minimum % to pass
-  maxAttempts   Int      @default(3) // max attempts per student (0 = unlimited)
-  isProctored   Boolean  @default(false)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  domainId     String?
+  timeLimit    Int // minutes
+  maxScore     Int      @default(100)
+  passingScore Int      @default(70) // minimum % to pass
+  maxAttempts  Int      @default(3) // max attempts per student (0 = unlimited)
+  isProctored  Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
 
-  domain   SkillDomain?        @relation(fields: [domainId], references: [id])
-  outcomes AssessmentOutcome[]
-  attempts StudentAssessment[]
+  domain    SkillDomain?         @relation(fields: [domainId], references: [id])
+  outcomes  AssessmentOutcome[]
+  attempts  StudentAssessment[]
   scenarios AssessmentScenario[]
 
   @@index([domainId])
 }
 
 model AssessmentScenario {
-  id             String   @id @default(uuid())
-  assessmentId   String
-  title          String
-  description    String
-  order          Int      @default(0)
-  maxScore       Int      @default(100)
-  expectedSteps  Json?    // expected methodology
-  expectedState  Json?    // expected final state
-  hints          Json?
+  id            String @id @default(uuid())
+  assessmentId  String
+  title         String
+  description   String
+  order         Int    @default(0)
+  maxScore      Int    @default(100)
+  expectedSteps Json? // expected methodology
+  expectedState Json? // expected final state
+  hints         Json?
 
   assessment PracticalAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
@@ -1828,10 +1828,10 @@ model AssessmentScenario {
 }
 
 model AssessmentOutcome {
-  id              String @id @default(uuid())
-  assessmentId    String
+  id                String @id @default(uuid())
+  assessmentId      String
   learningOutcomeId String
-  weight          Float  @default(1.0)
+  weight            Float  @default(1.0)
 
   assessment PracticalAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   outcome    LearningOutcome     @relation(fields: [learningOutcomeId], references: [id], onDelete: Cascade)
@@ -1840,19 +1840,19 @@ model AssessmentOutcome {
 }
 
 model StudentAssessment {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
   assessmentId String
-  startedAt    DateTime @default(now())
+  startedAt    DateTime  @default(now())
   completedAt  DateTime?
   score        Int?
-  maxScore     Int      @default(100)
-  breakdown    Json?    // { correctness, methodology, time, independence, finalState }
+  maxScore     Int       @default(100)
+  breakdown    Json? // { correctness, methodology, time, independence, finalState }
   feedback     Json?
-  status       String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, EXPIRED
+  status       String    @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, EXPIRED
 
-  user       User                 @relation(fields: [userId], references: [id])
-  assessment PracticalAssessment  @relation(fields: [assessmentId], references: [id])
+  user       User                @relation(fields: [userId], references: [id])
+  assessment PracticalAssessment @relation(fields: [assessmentId], references: [id])
 
   @@unique([userId, assessmentId])
   @@index([userId])
@@ -1862,29 +1862,29 @@ model StudentAssessment {
 // ─── V5: CERTIFICATIONS ────────────────────────────────────────
 
 model Certification {
-  id          String   @id @default(uuid())
-  name        String
-  code        String   @unique // XCA, XCP, XCE
-  description String
-  requirements Json    // { domains: [{ domainId, minMastery, minLabs }], assessments: N, crossDomain: bool }
-  xpRequired  Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  id           String   @id @default(uuid())
+  name         String
+  code         String   @unique // XCA, XCP, XCE
+  description  String
+  requirements Json // { domains: [{ domainId, minMastery, minLabs }], assessments: N, crossDomain: bool }
+  xpRequired   Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
 
   awards CertificationAward[]
 }
 
 model CertificationAward {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   userId          String
   certificationId String
-  awardedAt       DateTime @default(now())
+  awardedAt       DateTime  @default(now())
   expiresAt       DateTime?
-  credentialId    String   @unique // public verification ID
-  evidenceSummary Json     // snapshot of competency at award time
+  credentialId    String    @unique // public verification ID
+  evidenceSummary Json // snapshot of competency at award time
 
-  user          User          @relation(fields: [userId], references: [id])
-  certification Certification @relation(fields: [certificationId], references: [id])
+  user          User                   @relation(fields: [userId], references: [id])
+  certification Certification          @relation(fields: [certificationId], references: [id])
   renewals      CertificationRenewal[]
 
   @@unique([userId, certificationId])
@@ -1893,12 +1893,12 @@ model CertificationAward {
 }
 
 model CertificationRenewal {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   awardId         String
-  renewedAt       DateTime @default(now())
+  renewedAt       DateTime  @default(now())
   expiresAt       DateTime?
-  evidenceSummary Json     // snapshot at renewal time
-  method          String   // AUTO, MANUAL, ASSESSMENT
+  evidenceSummary Json // snapshot at renewal time
+  method          String // AUTO, MANUAL, ASSESSMENT
 
   award CertificationAward @relation(fields: [awardId], references: [id], onDelete: Cascade)
 
@@ -1906,12 +1906,12 @@ model CertificationRenewal {
 }
 
 model ProfessionalRecord {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  shareToken String? @unique // public shareable link token
-  data      Json     // full competency snapshot
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  shareToken String?  @unique // public shareable link token
+  data       Json // full competency snapshot
 
   user User @relation(fields: [userId], references: [id])
 
@@ -1922,12 +1922,12 @@ model ProfessionalRecord {
 // ─── PHASE 5: COMPETITION VALIDATION ────────────────────────────
 
 model MetricEvent {
-  id        String   @id @default(uuid())
-  userId    String?
+  id          String   @id @default(uuid())
+  userId      String?
   displayMode String? // PROFESSIONAL, PROGRESSION, COMPETITIVE
-  type      String   // SESSION_START, LAB_COMPLETED, MISSION_COMPLETED, RETURN_VISIT, FEATURE_USED
-  metadata  Json?
-  createdAt DateTime @default(now())
+  type        String // SESSION_START, LAB_COMPLETED, MISSION_COMPLETED, RETURN_VISIT, FEATURE_USED
+  metadata    Json?
+  createdAt   DateTime @default(now())
 
   user User? @relation(fields: [userId], references: [id])
 
@@ -1939,37 +1939,37 @@ model MetricEvent {
 // ─── AI CONTENT ENGINE: LAB ANALYTICS ─────────────────────────────
 
 model LabAnalytics {
-  id              String   @id @default(uuid())
-  labId           String
-  domainName      String?
+  id         String  @id @default(uuid())
+  labId      String
+  domainName String?
 
   // Aggregate metrics (nightly batch)
-  totalAttempts   Int      @default(0)
-  completions     Int      @default(0)
-  completionRate  Float    @default(0)
-  avgTimeMinutes  Float    @default(0)
-  medianTimeMinutes Float?
-  totalSubmissions Int     @default(0)
-  correctSubmissions Int  @default(0)
-  failureRate     Float    @default(0)
-  hintUsageRate   Float    @default(0)
+  totalAttempts      Int    @default(0)
+  completions        Int    @default(0)
+  completionRate     Float  @default(0)
+  avgTimeMinutes     Float  @default(0)
+  medianTimeMinutes  Float?
+  totalSubmissions   Int    @default(0)
+  correctSubmissions Int    @default(0)
+  failureRate        Float  @default(0)
+  hintUsageRate      Float  @default(0)
 
   // Difficulty calibration
-  difficultyELO   Float?   // computed difficulty based on actual performance
-  tooEasy         Boolean  @default(false)  // completionRate > 85%
-  tooHard         Boolean  @default(false)  // completionRate < 15%
+  difficultyELO Float? // computed difficulty based on actual performance
+  tooEasy       Boolean @default(false) // completionRate > 85%
+  tooHard       Boolean @default(false) // completionRate < 15%
 
   // Step-level analytics (JSON)
-  stepAnalytics   Json?    // [{step, attempts, completions, avgTime, failureRate}]
+  stepAnalytics Json? // [{step, attempts, completions, avgTime, failureRate}]
 
   // Trend data
-  weeklyCompletions Json?  // [{week, count}]
-  weeklyAttempts    Json?  // [{week, count}]
+  weeklyCompletions Json? // [{week, count}]
+  weeklyAttempts    Json? // [{week, count}]
 
-  lastUpdated     DateTime @default(now())
-  createdAt       DateTime @default(now())
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
 
-  lab   Lab  @relation(fields: [labId], references: [id], onDelete: Cascade)
+  lab Lab @relation(fields: [labId], references: [id], onDelete: Cascade)
 
   @@unique([labId])
   @@index([labId])
@@ -1980,10 +1980,10 @@ model LabAnalytics {
 model TutoringInteraction {
   id          String   @id @default(uuid())
   userId      String
-  type        String   // chat, lab_assist, hint, socratic
+  type        String // chat, lab_assist, hint, socratic
   message     String
   response    String
-  method      String   // socratic, direct, hint, encouragement
+  method      String // socratic, direct, hint, encouragement
   labId       String?
   conceptTags String[] @default([])
   createdAt   DateTime @default(now())

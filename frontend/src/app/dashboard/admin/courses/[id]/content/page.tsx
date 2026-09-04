@@ -23,10 +23,6 @@ import {
   FileText,
   FlaskConical,
   Terminal,
-  Flag,
-  ListChecks,
-  ScrollText,
-  Code,
 } from "lucide-react";
 
 interface Lesson {

@@ -427,12 +427,11 @@ export class ProgressService {
       throw new BadRequestException('Answer is required');
     }
 
-    const priorSubmissions = await this.prisma.inlinePracticeSubmission.findMany(
-      {
+    const priorSubmissions =
+      await this.prisma.inlinePracticeSubmission.findMany({
         where: { userId, practiceId },
         select: { isCorrect: true },
-      },
-    );
+      });
     const alreadyPassed = priorSubmissions.some(
       (submission) => submission.isCorrect,
     );

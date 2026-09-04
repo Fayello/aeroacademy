@@ -118,7 +118,8 @@ export class CourseAdminController {
   @Post('lessons/:lessonId/inline-practices')
   createInlinePractice(
     @Param('lessonId') lessonId: string,
-    @Body() body: {
+    @Body()
+    body: {
       title: string;
       type?: string;
       prompt: string;
@@ -138,7 +139,8 @@ export class CourseAdminController {
   @Patch('inline-practices/:practiceId')
   updateInlinePractice(
     @Param('practiceId') practiceId: string,
-    @Body() body: {
+    @Body()
+    body: {
       title?: string;
       type?: string;
       prompt?: string;
