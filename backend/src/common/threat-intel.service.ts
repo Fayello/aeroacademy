@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import * as fs from 'fs';
+import { execSync } from 'child_process';
 import * as path from 'path';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -374,5 +375,54 @@ export class ThreatIntelService {
       ),
       recentAttacks: attacks.slice(0, 20),
     };
+  }
+
+  getFail2banStatus() {
+    try {
+      const statusRaw = execSync('fail2ban-client status 2>/dev/null', {
+        encoding: 'utf-8',
+        timeout: 5000,
+      });
+
+      const jails: Record<string, any> = {};
+      const jailMatch = statusRaw.match(/Jail list:\s+(.+)/);
+      const jailNames = jailMatch
+        ? jailMatch[1].split(',').map((j) => j.trim())
+        : [];
+
+      for (const jail of jailNames) {
+        try {
+          const jailStatus = execSync(
+            `fail2ban-client status ${jail} 2>/dev/null`,
+            { encoding: 'utf-8', timeout: 5000 },
+          );
+          const bannedMatch = jailStatus.match(
+            /Currently banned:\s+(\d+)/,
+          );
+          const totalMatch = jailStatus.match(/Total banned:\s+(\d+)/);
+          const failedMatch = jailStatus.match(
+            /Currently failed:\s+(\d+)/,
+          );
+          const bannedIpMatch = jailStatus.match(
+            /Banned IP list:\s*(.*)/,
+          );
+
+          jails[jail] = {
+            currentlyBanned: parseInt(bannedMatch?.[1] || '0'),
+            totalBanned: parseInt(totalMatch?.[1] || '0'),
+            currentlyFailed: parseInt(failedMatch?.[1] || '0'),
+            bannedIps: bannedIpMatch?.[1]
+              ? bannedIpMatch[1].trim().split(/\s+/).filter(Boolean)
+              : [],
+          };
+        } catch {
+          jails[jail] = { error: 'Failed to get status' };
+        }
+      }
+
+      return { active: true, jails };
+    } catch {
+      return { active: false, jails: {} };
+    }
   }
 }

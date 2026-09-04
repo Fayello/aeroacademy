@@ -108,11 +108,16 @@ export default function ThreatsPage() {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [typeFilter, setTypeFilter] = useState("");
   const [severityFilter, setSeverityFilter] = useState("");
+  const [fail2ban, setFail2ban] = useState<any>(null);
 
   const loadData = useCallback(async () => {
     try {
-      const snapshot = await fetchApi<ThreatSummary>("/admin/threats/summary");
-      setData(snapshot);
+      const [snapshot, f2b] = await Promise.allSettled([
+        fetchApi<ThreatSummary>("/admin/threats/summary"),
+        fetchApi<any>("/admin/threats/fail2ban").catch(() => null),
+      ]);
+      if (snapshot.status === "fulfilled") setData(snapshot.value);
+      if (f2b.status === "fulfilled" && f2b.value) setFail2ban(f2b.value);
     } catch {
       toast.error("Failed to load threat data");
     } finally {
@@ -243,6 +248,80 @@ export default function ThreatsPage() {
               Refresh
             </button>
           </div>
+
+          {/* fail2ban Status */}
+          {fail2ban && (
+            <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                  <Shield size={16} className="text-[#7AD62A]" />
+                  fail2ban Status
+                  <span
+                    className={`text-[10px] px-2 py-0.5 rounded-full ${
+                      fail2ban.active
+                        ? "bg-[#7AD62A]/10 text-[#7AD62A]"
+                        : "bg-red-500/10 text-red-400"
+                    }`}
+                  >
+                    {fail2ban.active ? "Active" : "Inactive"}
+                  </span>
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                {Object.entries(fail2ban.jails).map(
+                  ([name, jail]: [string, any]) => (
+                    <div
+                      key={name}
+                      className="bg-white/[0.03] rounded-lg p-3 border border-white/5"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-white">{name}</p>
+                        {jail.currentlyBanned > 0 && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 font-medium">
+                            {jail.currentlyBanned} banned
+                          </span>
+                        )}
+                      </div>
+                      <div className="space-y-1 text-[10px] text-slate-500">
+                        <div className="flex justify-between">
+                          <span>Total banned</span>
+                          <span className="text-white">
+                            {jail.totalBanned || 0}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Currently failed</span>
+                          <span className="text-white">
+                            {jail.currentlyFailed || 0}
+                          </span>
+                        </div>
+                        {jail.bannedIps?.length > 0 && (
+                          <div className="pt-1 border-t border-white/5">
+                            <p className="text-slate-400 mb-1">Banned IPs:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {jail.bannedIps.slice(0, 5).map((ip: string) => (
+                                <span
+                                  key={ip}
+                                  className="text-[9px] px-1 py-0.5 rounded bg-white/5 text-slate-400 font-mono"
+                                >
+                                  {ip}
+                                </span>
+                              ))}
+                              {jail.bannedIps.length > 5 && (
+                                <span className="text-[9px] text-slate-500">
+                                  +{jail.bannedIps.length - 5} more
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Attack Timeline */}
           <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6">

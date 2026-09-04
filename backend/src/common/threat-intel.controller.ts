@@ -17,4 +17,9 @@ export class ThreatIntelController {
   getIpDetail(@Param('ip') ip: string) {
     return this.threatIntel.getIpDetail(ip);
   }
+
+  @Get('fail2ban')
+  getFail2banStatus() {
+    return this.threatIntel.getFail2banStatus();
+  }
 }
