@@ -150,6 +150,206 @@ type LessonResponse = Lesson & {
   completed?: boolean;
 };
 
+function InlinePracticeRenderer({
+  practices,
+  onPracticeUpdate,
+}: {
+  practices: InlinePracticeProgress[];
+  onPracticeUpdate: (practice: InlinePracticeProgress) => void;
+}) {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [expandedHints, setExpandedHints] = useState<Record<string, number>>({});
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const requiredCount = practices.filter((practice) => practice.required).length;
+  const passedRequiredCount = practices.filter((practice) => practice.required && practice.passed).length;
+
+  const submitPractice = async (practice: InlinePracticeProgress) => {
+    const answer = answers[practice.id]?.trim();
+    if (!answer) {
+      toast.error("Enter an answer before submitting.");
+      return;
+    }
+
+    setSubmittingId(practice.id);
+    try {
+      const result = await fetchApi<{
+        id: string;
+        isCorrect: boolean;
+        score: number;
+        feedback: string | null;
+        attemptNumber: number;
+        xpAwarded: number;
+      }>(`/progress/inline-practice/${practice.id}/submit`, {
+        method: "POST",
+        body: JSON.stringify({ answer }),
+      });
+
+      onPracticeUpdate({
+        ...practice,
+        passed: practice.passed || result.isCorrect,
+        attemptCount: result.attemptNumber,
+        latestSubmission: {
+          id: result.id,
+          isCorrect: result.isCorrect,
+          score: result.score,
+          feedback: result.feedback,
+          attemptNumber: result.attemptNumber,
+          xpAwarded: result.xpAwarded,
+          createdAt: new Date().toISOString(),
+        },
+      });
+
+      if (result.isCorrect) {
+        setAnswers((current) => ({ ...current, [practice.id]: "" }));
+        toast.success(result.xpAwarded > 0 ? `Practice passed. +${result.xpAwarded} XP` : "Practice passed.");
+      } else {
+        toast.error(result.feedback || "Not yet. Review the lesson and try again.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Practice submission failed.");
+    } finally {
+      setSubmittingId(null);
+    }
+  };
+
+  return (
+    <div className="mt-12 pt-8 border-t border-white/10">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7AD62A]">Inline Practice</p>
+          <h3 className="mt-2 text-lg font-semibold text-white">Prove the concept before the lab gets harder</h3>
+          <p className="mt-2 text-sm text-slate-400">
+            These checks create the bridge between course theory and standalone lab difficulty.
+          </p>
+        </div>
+        {requiredCount > 0 && (
+          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <p className="text-[10px] uppercase tracking-wide text-slate-500">Required proof</p>
+            <p className="mt-1 text-sm font-semibold text-white">
+              {passedRequiredCount} / {requiredCount} passed
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        {practices.map((practice, index) => {
+          const latest = practice.latestSubmission;
+          const maxReached =
+            !practice.passed &&
+            practice.maxAttempts > 0 &&
+            practice.attemptCount >= practice.maxAttempts;
+          const visibleHintCount = expandedHints[practice.id] || 0;
+
+          return (
+            <div
+              key={practice.id}
+              className={`rounded-xl border p-5 ${
+                practice.passed
+                  ? "border-[#7AD62A]/25 bg-[#7AD62A]/10"
+                  : "border-white/10 bg-white/[0.03]"
+              }`}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-slate-500">Task {index + 1}</span>
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-300">
+                      {practice.type.replace(/_/g, " ")}
+                    </span>
+                    {practice.required && (
+                      <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300">
+                        Required
+                      </span>
+                    )}
+                    {practice.passed && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[#7AD62A]/15 px-2 py-0.5 text-[10px] font-medium text-[#7AD62A]">
+                        <CheckCircle size={11} />
+                        Passed
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="mt-2 text-base font-semibold text-white">{practice.title}</h4>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-300">{practice.prompt}</p>
+                  {practice.instructions && (
+                    <p className="mt-2 text-sm leading-relaxed text-slate-400">{practice.instructions}</p>
+                  )}
+                </div>
+                <div className="shrink-0 rounded-lg border border-white/10 bg-[#0b1220] px-3 py-2 text-right">
+                  <p className="text-[10px] uppercase tracking-wide text-slate-500">Reward</p>
+                  <p className="text-sm font-semibold text-[#7AD62A]">+{practice.xpReward} XP</p>
+                </div>
+              </div>
+
+              {practice.hints.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  {practice.hints.slice(0, visibleHintCount).map((hint, hintIndex) => (
+                    <div key={`${practice.id}-hint-${hintIndex}`} className="rounded-lg border border-amber-400/15 bg-amber-500/10 px-3 py-2">
+                      <p className="text-xs font-medium text-amber-300">Hint {hintIndex + 1}</p>
+                      <p className="mt-1 text-sm text-amber-100/75">{hint}</p>
+                    </div>
+                  ))}
+                  {visibleHintCount < practice.hints.length && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedHints((current) => ({
+                          ...current,
+                          [practice.id]: visibleHintCount + 1,
+                        }))
+                      }
+                      className="text-xs font-medium text-amber-300 hover:text-amber-200"
+                    >
+                      Reveal hint
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-4 flex flex-col gap-3">
+                <textarea
+                  value={answers[practice.id] || ""}
+                  onChange={(event) => setAnswers((current) => ({ ...current, [practice.id]: event.target.value }))}
+                  disabled={practice.passed || maxReached || practice.validationMode === "MANUAL"}
+                  rows={3}
+                  placeholder={
+                    practice.validationMode === "REGEX"
+                      ? "Paste the command output or captured value..."
+                      : "Enter the command, flag, answer, or observation..."
+                  }
+                  className="w-full rounded-lg border border-white/10 bg-[#0b1220] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                />
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    {latest?.feedback && (
+                      <p className={`text-sm ${latest.isCorrect ? "text-[#7AD62A]" : "text-slate-400"}`}>
+                        {latest.feedback}
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-slate-500">
+                      Attempts: {practice.attemptCount}
+                      {practice.maxAttempts > 0 ? ` / ${practice.maxAttempts}` : " / unlimited"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => submitPractice(practice)}
+                    disabled={submittingId === practice.id || practice.passed || maxReached || practice.validationMode === "MANUAL"}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7AD62A] px-4 py-2.5 text-sm font-semibold text-[#0F203A] transition-colors hover:bg-[#6bc424] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {submittingId === practice.id ? <Loader2 className="animate-spin" size={15} /> : <Target size={15} />}
+                    {practice.passed ? "Passed" : maxReached ? "Attempts used" : "Submit proof"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function LessonPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -330,9 +530,15 @@ export default function LessonPage() {
   const estimatedReadMinutes = Math.max(1, Math.ceil((lesson.content?.split(/\s+/).length || 200) / 200));
   const knowledgeCheckCount = lesson.quiz?.questions?.length || 0;
   const knowledgeCheckRequired = knowledgeCheckCount > 0;
-  const canRecordCompletion = !knowledgeCheckRequired || quizCorrect;
+  const requiredInlinePracticeCount = inlinePractices.filter((practice) => practice.required).length;
+  const passedInlinePracticeCount = inlinePractices.filter((practice) => practice.required && practice.passed).length;
+  const inlinePracticeRequired = requiredInlinePracticeCount > 0;
+  const inlinePracticeComplete = !inlinePracticeRequired || passedInlinePracticeCount === requiredInlinePracticeCount;
+  const canRecordCompletion = (!knowledgeCheckRequired || quizCorrect) && inlinePracticeComplete;
   const nextMilestoneLabel = lesson.labId
     ? "Apply this lesson in the linked practice lab"
+    : inlinePracticeRequired
+    ? "Complete the inline practice to unlock harder labs"
     : lesson.quiz
     ? "Finish the knowledge check to validate understanding"
     : nav.next
@@ -418,6 +624,16 @@ export default function LessonPage() {
               <p className="text-sm font-medium text-amber-300">Completion is locked until the knowledge check is passed.</p>
               <p className="text-xs text-amber-100/70 mt-1">
                 This lesson only enters your training record after the required validation step is completed.
+              </p>
+            </div>
+          )}
+          {inlinePracticeRequired && !inlinePracticeComplete && (
+            <div className="mt-4 rounded-xl border border-[#7AD62A]/20 bg-[#7AD62A]/10 px-4 py-3">
+              <p className="text-sm font-medium text-[#7AD62A]">
+                Practical proof required: {passedInlinePracticeCount} of {requiredInlinePracticeCount} passed.
+              </p>
+              <p className="text-xs text-slate-300 mt-1">
+                These inline tasks prepare you for harder standalone labs instead of throwing you straight into them.
               </p>
             </div>
           )}
@@ -554,8 +770,14 @@ export default function LessonPage() {
             {inlinePractices.length > 0 && (
               <InlinePracticeRenderer
                 practices={inlinePractices}
-                onAllPassed={() => {
-                  if (!completed) handleMarkComplete();
+                onPracticeUpdate={(updatedPractice) => {
+                  setInlinePractices((current) =>
+                    current.map((practice) =>
+                      practice.id === updatedPractice.id
+                        ? updatedPractice
+                        : practice
+                    )
+                  );
                 }}
               />
             )}
@@ -747,6 +969,18 @@ export default function LessonPage() {
                       ? quizCorrect
                         ? "Passed"
                         : `${knowledgeCheckCount} question${knowledgeCheckCount !== 1 ? "s" : ""} required`
+                      : "Not included"}
+                  </span>
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400">Inline practice</span>
+                  <span className={`font-medium ${inlinePracticeRequired && !inlinePracticeComplete ? "text-amber-300" : "text-slate-200"}`}>
+                    {inlinePracticeRequired
+                      ? inlinePracticeComplete
+                        ? "Passed"
+                        : `${passedInlinePracticeCount} of ${requiredInlinePracticeCount} passed`
                       : "Not included"}
                   </span>
                 </div>

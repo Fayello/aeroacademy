@@ -56,6 +56,7 @@ import { AiModule } from './common/ai.module';
 import { UploadModule } from './upload/upload.module';
 import { TrafficTrackerModule } from './common/traffic-tracker.module';
 import { ThreatIntelModule } from './common/threat-intel.module';
+import { SecurityOpsModule } from './common/security-ops.module';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { ThreatIntelModule } from './common/threat-intel.module';
     UploadModule,
     TrafficTrackerModule,
     ThreatIntelModule,
+    SecurityOpsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

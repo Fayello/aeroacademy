@@ -1995,3 +1995,30 @@ model TutoringInteraction {
   @@index([labId])
   @@index([createdAt])
 }
+
+model SecurityEvent {
+  id        String   @id @default(uuid())
+  timestamp DateTime @default(now())
+  ip        String
+  country   String?
+  city      String?
+  type      String
+  severity  String   @default("INFO")
+  source    String
+  ruleId    String?
+  message   String
+  uri       String?
+  method    String?
+  status    Int?
+  data      String?
+  banned    Boolean  @default(false)
+
+  @@index([timestamp])
+  @@index([ip])
+  @@index([type])
+  @@index([severity])
+  @@index([source])
+  @@index([banned])
+  @@index([timestamp, type])
+  @@index([ip, timestamp])
+}

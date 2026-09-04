@@ -37,6 +37,22 @@ interface Lesson {
   content: string | null;
   sectionId: string;
   sectionTitle?: string;
+  inlinePractices?: InlinePractice[];
+}
+
+interface InlinePractice {
+  id: string;
+  title: string;
+  type: string;
+  prompt: string;
+  instructions: string | null;
+  expectedAnswer: string | null;
+  validationMode: string;
+  hints: string[];
+  maxAttempts: number;
+  xpReward: number;
+  required: boolean;
+  order: number;
 }
 
 interface Section {
@@ -89,6 +105,23 @@ export default function CourseContentAdminPage() {
     content: "",
   });
   const [activeSectionId, setActiveSectionId] = useState("");
+  const [practiceModal, setPracticeModal] = useState<{
+    open: boolean;
+    lesson: Lesson | null;
+    editing: InlinePractice | null;
+  }>({ open: false, lesson: null, editing: null });
+  const [practiceForm, setPracticeForm] = useState({
+    title: "",
+    type: "COMMAND_ANSWER",
+    prompt: "",
+    instructions: "",
+    expectedAnswer: "",
+    validationMode: "EXACT",
+    hints: "",
+    maxAttempts: 0,
+    xpReward: 25,
+    required: true,
+  });
 
   // Move lesson
   const [moveModal, setMoveModal] = useState<{
@@ -103,31 +136,6 @@ export default function CourseContentAdminPage() {
     sectionId: "",
   });
   const [bulkJson, setBulkJson] = useState("");
-
-  // Inline practice management
-  const [practiceModal, setPracticeModal] = useState<{
-    open: boolean;
-    lessonId: string;
-    lessonTitle: string;
-  }>({ open: false, lessonId: "", lessonTitle: "" });
-  const [practices, setPractices] = useState<any[]>([]);
-  const [loadingPractices, setLoadingPractices] = useState(false);
-  const [practiceForm, setPracticeForm] = useState<{
-    open: boolean;
-    editing: any | null;
-  }>({ open: false, editing: null });
-  const [practiceFormFields, setPracticeFormFields] = useState({
-    title: "",
-    type: "COMMAND_ANSWER",
-    prompt: "",
-    instructions: "",
-    expectedAnswer: "",
-    validationMode: "EXACT",
-    hints: "",
-    maxAttempts: 0,
-    xpReward: 25,
-    required: true,
-  });
 
   // Delete confirm
   const [deleteDialog, setDeleteDialog] = useState<{
@@ -288,6 +296,103 @@ export default function CourseContentAdminPage() {
     }
   };
 
+  const openPracticeModal = (lesson: Lesson, practice?: InlinePractice) => {
+    setPracticeForm(
+      practice
+        ? {
+            title: practice.title,
+            type: practice.type,
+            prompt: practice.prompt,
+            instructions: practice.instructions || "",
+            expectedAnswer: practice.expectedAnswer || "",
+            validationMode: practice.validationMode,
+            hints: (practice.hints || []).join("\n"),
+            maxAttempts: practice.maxAttempts,
+            xpReward: practice.xpReward,
+            required: practice.required,
+          }
+        : {
+            title: "",
+            type: "COMMAND_ANSWER",
+            prompt: "",
+            instructions: "",
+            expectedAnswer: "",
+            validationMode: "EXACT",
+            hints: "",
+            maxAttempts: 0,
+            xpReward: 25,
+            required: true,
+          }
+    );
+    setPracticeModal({ open: true, lesson, editing: practice || null });
+  };
+
+  const handleSavePractice = async () => {
+    if (!practiceModal.lesson) return;
+    if (!practiceForm.title.trim() || !practiceForm.prompt.trim()) {
+      toast.error("Practice title and prompt are required");
+      return;
+    }
+    if (practiceForm.validationMode !== "MANUAL" && !practiceForm.expectedAnswer.trim()) {
+      toast.error("Expected answer is required unless validation is manual");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload = {
+        ...practiceForm,
+        hints: practiceForm.hints
+          .split("\n")
+          .map((hint) => hint.trim())
+          .filter(Boolean),
+        maxAttempts: Number(practiceForm.maxAttempts) || 0,
+        xpReward: Number(practiceForm.xpReward) || 0,
+        order:
+          practiceModal.editing?.order ??
+          practiceModal.lesson.inlinePractices?.length ??
+          0,
+      };
+
+      if (practiceModal.editing) {
+        await fetchApi(`/admin/courses/inline-practices/${practiceModal.editing.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(payload),
+        });
+        toast.success("Inline practice updated");
+      } else {
+        await fetchApi(`/admin/courses/lessons/${practiceModal.lesson.id}/inline-practices`, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        toast.success("Inline practice added");
+      }
+      setPracticeModal({ open: false, lesson: null, editing: null });
+      loadStructure();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeletePractice = async () => {
+    if (!practiceModal.editing) return;
+    setSaving(true);
+    try {
+      await fetchApi(`/admin/courses/inline-practices/${practiceModal.editing.id}`, {
+        method: "DELETE",
+      });
+      toast.success("Inline practice deleted");
+      setPracticeModal({ open: false, lesson: null, editing: null });
+      loadStructure();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // === Move Lesson ===
   const handleMoveLesson = async () => {
     if (!moveModal.lesson || !moveModal.targetSectionId) return;
@@ -336,117 +441,6 @@ export default function CourseContentAdminPage() {
     } finally {
       setSaving(false);
     }
-  };
-
-  // === Inline Practice Management ===
-  const loadPractices = async (lessonId: string) => {
-    setLoadingPractices(true);
-    try {
-      const data = await fetchApi<any[]>(
-        `/admin/courses/lessons/${lessonId}/inline-practices`,
-      );
-      setPractices(data);
-    } catch {
-      setPractices([]);
-    } finally {
-      setLoadingPractices(false);
-    }
-  };
-
-  const openPracticeModal = async (lessonId: string, lessonTitle: string) => {
-    setPracticeModal({ open: true, lessonId, lessonTitle });
-    await loadPractices(lessonId);
-  };
-
-  const savePractice = async () => {
-    const { lessonId } = practiceModal;
-    const fields = practiceFormFields;
-    if (!fields.title.trim() || !fields.prompt.trim()) {
-      toast.error("Title and prompt are required.");
-      return;
-    }
-    setSaving(true);
-    try {
-      const payload = {
-        title: fields.title.trim(),
-        type: fields.type,
-        prompt: fields.prompt.trim(),
-        instructions: fields.instructions.trim() || null,
-        expectedAnswer: fields.expectedAnswer.trim() || null,
-        validationMode: fields.validationMode,
-        hints: fields.hints
-          .split("\n")
-          .map((h) => h.trim())
-          .filter(Boolean),
-        maxAttempts: fields.maxAttempts,
-        xpReward: fields.xpReward,
-        required: fields.required,
-      };
-      if (practiceForm.editing) {
-        await fetchApi(
-          `/admin/courses/inline-practices/${practiceForm.editing.id}`,
-          { method: "PATCH", body: JSON.stringify(payload) },
-        );
-        toast.success("Practice updated");
-      } else {
-        await fetchApi(
-          `/admin/courses/lessons/${lessonId}/inline-practices`,
-          { method: "POST", body: JSON.stringify(payload) },
-        );
-        toast.success("Practice created");
-      }
-      setPracticeForm({ open: false, editing: null });
-      resetPracticeForm();
-      await loadPractices(lessonId);
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const deletePractice = async (practiceId: string) => {
-    if (!confirm("Delete this practice exercise?")) return;
-    try {
-      await fetchApi(`/admin/courses/inline-practices/${practiceId}`, {
-        method: "DELETE",
-      });
-      toast.success("Deleted");
-      await loadPractices(practiceModal.lessonId);
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
-  };
-
-  const resetPracticeForm = () => {
-    setPracticeFormFields({
-      title: "",
-      type: "COMMAND_ANSWER",
-      prompt: "",
-      instructions: "",
-      expectedAnswer: "",
-      validationMode: "EXACT",
-      hints: "",
-      maxAttempts: 0,
-      xpReward: 25,
-      required: true,
-    });
-  };
-
-  const openEditPractice = (practice: any) => {
-    setPracticeFormFields({
-      title: practice.title,
-      type: practice.type,
-      prompt: practice.prompt,
-      instructions: practice.instructions || "",
-      expectedAnswer: practice.expectedAnswer || "",
-      validationMode: practice.validationMode,
-      hints: (practice.hints || []).join("\n"),
-      maxAttempts: practice.maxAttempts,
-      xpReward: practice.xpReward,
-      required: practice.required,
-    });
-    setPracticeForm({ open: true, editing: practice });
   };
 
   // === Reorder ===
@@ -775,12 +769,36 @@ export default function CourseContentAdminPage() {
                                   Content
                                 </span>
                               )}
+                              {lesson.inlinePractices &&
+                                lesson.inlinePractices.length > 0 && (
+                                  <span className="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded">
+                                    {lesson.inlinePractices.length} practice
+                                  </span>
+                                )}
                             </div>
+                            {lesson.inlinePractices &&
+                              lesson.inlinePractices.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                  {lesson.inlinePractices.map((practice) => (
+                                    <button
+                                      key={practice.id}
+                                      type="button"
+                                      onClick={() =>
+                                        openPracticeModal(lesson, practice)
+                                      }
+                                      className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] text-slate-300 hover:border-[#7AD62A]/30 hover:text-[#7AD62A]"
+                                    >
+                                      <FlaskConical size={10} />
+                                      {practice.title}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
                           <button
-                            onClick={() => openPracticeModal(lesson.id, lesson.title)}
+                            onClick={() => openPracticeModal(lesson)}
                             className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg transition-all"
                             title="Manage practice exercises"
                           >
@@ -1175,352 +1193,251 @@ export default function CourseContentAdminPage() {
       )}
 
       {/* Practice Management Modal */}
-      {practiceModal.open && (
+      {practiceModal.open && practiceModal.lesson && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => {
-              setPracticeModal({ open: false, lessonId: "", lessonTitle: "" });
-              setPracticeForm({ open: false, editing: null });
-            }}
+            onClick={() =>
+              setPracticeModal({ open: false, lesson: null, editing: null })
+            }
           />
-          <div className="relative bg-[#0f172a] rounded-2xl border border-white/10 shadow-xl w-full max-w-2xl p-6 animate-in fade-in zoom-in-95 duration-200 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
+          <div className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0f172a] p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-white">
-                  Practice Exercises
+                  {practiceModal.editing
+                    ? "Edit Inline Practice"
+                    : "Add Inline Practice"}
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  {practiceModal.lessonTitle}
+                <p className="mt-1 text-xs text-slate-400">
+                  {practiceModal.lesson.title}
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setPracticeModal({ open: false, lessonId: "", lessonTitle: "" });
-                  setPracticeForm({ open: false, editing: null });
-                }}
-                className="p-1.5 text-slate-400 hover:text-slate-300 rounded-lg hover:bg-white/5 transition-all"
+                onClick={() =>
+                  setPracticeModal({ open: false, lesson: null, editing: null })
+                }
+                className="rounded-lg p-1.5 text-slate-400 transition-all hover:bg-white/5 hover:text-slate-300"
               >
                 <X size={18} />
               </button>
             </div>
 
-            {!practiceForm.open ? (
-              <>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide">
-                    {practices.length} exercise{practices.length !== 1 ? "s" : ""}
-                  </p>
-                  <button
-                    onClick={() => {
-                      resetPracticeForm();
-                      setPracticeForm({ open: true, editing: null });
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A]/10 text-[#7AD62A] text-xs font-medium hover:bg-[#7AD62A]/20 transition-colors"
-                  >
-                    <Plus size={14} />
-                    Add Exercise
-                  </button>
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                  Title
+                </label>
+                <input
+                  value={practiceForm.title}
+                  onChange={(event) =>
+                    setPracticeForm({ ...practiceForm, title: event.target.value })
+                  }
+                  placeholder="Run a focused scan"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
+                />
+              </div>
 
-                {loadingPractices ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="animate-spin text-slate-400" size={24} />
-                  </div>
-                ) : practices.length === 0 ? (
-                  <div className="text-center py-12 text-slate-500">
-                    <Terminal size={32} className="mx-auto mb-3 text-slate-400" />
-                    <p className="text-sm">
-                      No exercises yet. Add one to make this lesson interactive.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {practices.map((p: any) => (
-                      <div
-                        key={p.id}
-                        className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/10"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                            <Terminal size={14} className="text-slate-400" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-white">
-                              {p.title}
-                            </p>
-                            <p className="text-[10px] text-slate-500 uppercase tracking-wide mt-0.5">
-                              {p.type.replace(/_/g, " ")} &middot; {p.xpReward} XP
-                              {p.required && (
-                                <span className="ml-2 text-amber-400">
-                                  Required
-                                </span>
-                              )}
-                              {p._count?.submissions > 0 && (
-                                <span className="ml-2 text-slate-400">
-                                  {p._count.submissions} submission
-                                  {p._count.submissions !== 1 ? "s" : ""}
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => openEditPractice(p)}
-                            className="p-1.5 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"
-                          >
-                            <Edit3 size={13} />
-                          </button>
-                          <button
-                            onClick={() => deletePractice(p.id)}
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              /* Practice Form */
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide">
-                    {practiceForm.editing ? "Edit Exercise" : "New Exercise"}
-                  </p>
-                  <button
-                    onClick={() => setPracticeForm({ open: false, editing: null })}
-                    className="text-xs text-slate-400 hover:text-white transition-colors"
-                  >
-                    Back to list
-                  </button>
-                </div>
-
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">
-                    Title *
+                  <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                    Exercise type
+                  </label>
+                  <select
+                    value={practiceForm.type}
+                    onChange={(event) =>
+                      setPracticeForm({ ...practiceForm, type: event.target.value })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none"
+                  >
+                    <option value="COMMAND_ANSWER">Command answer</option>
+                    <option value="FLAG_CAPTURE">Flag capture</option>
+                    <option value="LOG_ANALYSIS">Log analysis</option>
+                    <option value="CODE_FIX">Code fix</option>
+                    <option value="SHORT_RESPONSE">Short response</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                    Validation
+                  </label>
+                  <select
+                    value={practiceForm.validationMode}
+                    onChange={(event) =>
+                      setPracticeForm({
+                        ...practiceForm,
+                        validationMode: event.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none"
+                  >
+                    <option value="EXACT">Exact match</option>
+                    <option value="CONTAINS">Contains</option>
+                    <option value="REGEX">Regex</option>
+                    <option value="MANUAL">Manual review</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                  Learner prompt
+                </label>
+                <textarea
+                  value={practiceForm.prompt}
+                  onChange={(event) =>
+                    setPracticeForm({ ...practiceForm, prompt: event.target.value })
+                  }
+                  rows={4}
+                  placeholder="Tell the learner what to do immediately after this lesson."
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                  Instructions
+                </label>
+                <input
+                  value={practiceForm.instructions}
+                  onChange={(event) =>
+                    setPracticeForm({
+                      ...practiceForm,
+                      instructions: event.target.value,
+                    })
+                  }
+                  placeholder="Optional guidance shown below the prompt"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                  Expected answer
+                </label>
+                <input
+                  value={practiceForm.expectedAnswer}
+                  onChange={(event) =>
+                    setPracticeForm({
+                      ...practiceForm,
+                      expectedAnswer: event.target.value,
+                    })
+                  }
+                  placeholder="Correct value, flag, output fragment, or regex"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-mono text-sm text-white focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                  Hints
+                </label>
+                <textarea
+                  value={practiceForm.hints}
+                  onChange={(event) =>
+                    setPracticeForm({ ...practiceForm, hints: event.target.value })
+                  }
+                  rows={3}
+                  placeholder="One hint per line"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20"
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                    Max attempts
                   </label>
                   <input
-                    value={practiceFormFields.title}
-                    onChange={(e) =>
-                      setPracticeFormFields({
-                        ...practiceFormFields,
-                        title: e.target.value,
+                    type="number"
+                    min={0}
+                    value={practiceForm.maxAttempts}
+                    onChange={(event) =>
+                      setPracticeForm({
+                        ...practiceForm,
+                        maxAttempts: Number(event.target.value) || 0,
                       })
                     }
-                    placeholder="e.g., Run an nmap scan"
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none"
                   />
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1.5">
-                      Type
-                    </label>
-                    <select
-                      value={practiceFormFields.type}
-                      onChange={(e) =>
-                        setPracticeFormFields({
-                          ...practiceFormFields,
-                          type: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50"
-                    >
-                      <option value="COMMAND_ANSWER">Command Answer</option>
-                      <option value="FLAG_CAPTURE">Flag Capture</option>
-                      <option value="CHECKLIST">Checklist</option>
-                      <option value="LOG_ANALYSIS">Log Analysis</option>
-                      <option value="CODE_FIX">Code Fix</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1.5">
-                      Validation
-                    </label>
-                    <select
-                      value={practiceFormFields.validationMode}
-                      onChange={(e) =>
-                        setPracticeFormFields({
-                          ...practiceFormFields,
-                          validationMode: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50"
-                    >
-                      <option value="EXACT">Exact Match</option>
-                      <option value="CONTAINS">Contains</option>
-                      <option value="REGEX">Regex</option>
-                      <option value="MANUAL">Manual Review</option>
-                    </select>
-                  </div>
-                </div>
-
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">
-                    Prompt *{" "}
-                    <span className="text-slate-600">
-                      (What the learner sees)
-                    </span>
-                  </label>
-                  <textarea
-                    value={practiceFormFields.prompt}
-                    onChange={(e) =>
-                      setPracticeFormFields({
-                        ...practiceFormFields,
-                        prompt: e.target.value,
-                      })
-                    }
-                    rows={4}
-                    placeholder="Describe the exercise or paste the content to analyze..."
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm font-mono focus:outline-none focus:border-[#7AD62A]/50 resize-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">
-                    Instructions{" "}
-                    <span className="text-slate-600">(optional helper text)</span>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                    XP reward
                   </label>
                   <input
-                    value={practiceFormFields.instructions}
-                    onChange={(e) =>
-                      setPracticeFormFields({
-                        ...practiceFormFields,
-                        instructions: e.target.value,
+                    type="number"
+                    min={0}
+                    value={practiceForm.xpReward}
+                    onChange={(event) =>
+                      setPracticeForm({
+                        ...practiceForm,
+                        xpReward: Number(event.target.value) || 0,
                       })
                     }
-                    placeholder="e.g., Submit the full command including arguments"
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">
-                    Expected Answer{" "}
-                    <span className="text-slate-600">
-                      (for auto-validation)
-                    </span>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                    Required
                   </label>
-                  <input
-                    value={practiceFormFields.expectedAnswer}
-                    onChange={(e) =>
-                      setPracticeFormFields({
-                        ...practiceFormFields,
-                        expectedAnswer: e.target.value,
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPracticeForm({
+                        ...practiceForm,
+                        required: !practiceForm.required,
                       })
                     }
-                    placeholder="The correct answer, flag, or regex pattern"
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm font-mono focus:outline-none focus:border-[#7AD62A]/50"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">
-                    Hints{" "}
-                    <span className="text-slate-600">(one per line)</span>
-                  </label>
-                  <textarea
-                    value={practiceFormFields.hints}
-                    onChange={(e) =>
-                      setPracticeFormFields({
-                        ...practiceFormFields,
-                        hints: e.target.value,
-                      })
-                    }
-                    rows={3}
-                    placeholder="First hint on line 1&#10;Second hint on line 2"
-                    className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50 resize-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1.5">
-                      Max Attempts
-                    </label>
-                    <input
-                      type="number"
-                      value={practiceFormFields.maxAttempts}
-                      onChange={(e) =>
-                        setPracticeFormFields({
-                          ...practiceFormFields,
-                          maxAttempts: parseInt(e.target.value) || 0,
-                        })
-                      }
-                      min={0}
-                      className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50"
-                    />
-                    <p className="text-[10px] text-slate-600 mt-1">
-                      0 = unlimited
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1.5">
-                      XP Reward
-                    </label>
-                    <input
-                      type="number"
-                      value={practiceFormFields.xpReward}
-                      onChange={(e) =>
-                        setPracticeFormFields({
-                          ...practiceFormFields,
-                          xpReward: parseInt(e.target.value) || 0,
-                        })
-                      }
-                      min={0}
-                      className="w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:border-[#7AD62A]/50"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1.5">
-                      Required
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPracticeFormFields({
-                          ...practiceFormFields,
-                          required: !practiceFormFields.required,
-                        })
-                      }
-                      className={`w-full px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                        practiceFormFields.required
-                          ? "bg-[#7AD62A]/10 border-[#7AD62A]/30 text-[#7AD62A]"
-                          : "bg-white/5 border-white/10 text-slate-400"
-                      }`}
-                    >
-                      {practiceFormFields.required ? "Yes" : "No"}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 justify-end pt-2">
-                  <button
-                    onClick={() => setPracticeForm({ open: false, editing: null })}
-                    className="px-4 py-2 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 text-sm"
+                    className={`w-full rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${
+                      practiceForm.required
+                        ? "border-[#7AD62A]/30 bg-[#7AD62A]/10 text-[#7AD62A]"
+                        : "border-white/10 bg-white/5 text-slate-400"
+                    }`}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={savePractice}
-                    disabled={saving}
-                    className="btn-primary flex items-center gap-2"
-                  >
-                    {saving ? (
-                      <Loader2 className="animate-spin" size={14} />
-                    ) : (
-                      <Save size={14} />
-                    )}
-                    {practiceForm.editing ? "Update" : "Create"}
+                    {practiceForm.required ? "Yes" : "No"}
                   </button>
                 </div>
               </div>
-            )}
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+              <div>
+                {practiceModal.editing && (
+                  <button
+                    onClick={handleDeletePractice}
+                    disabled={saving}
+                    className="inline-flex items-center gap-2 rounded-xl border border-red-500/20 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                  >
+                    <Trash2 size={14} />
+                    Delete
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() =>
+                    setPracticeModal({ open: false, lesson: null, editing: null })
+                  }
+                  className="rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSavePractice}
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#7AD62A] px-4 py-2.5 text-sm font-medium text-[#0F203A] hover:bg-[#6bc424] disabled:opacity-50"
+                >
+                  {saving ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Save size={14} />
+                  )}
+                  {practiceModal.editing ? "Update practice" : "Create practice"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
