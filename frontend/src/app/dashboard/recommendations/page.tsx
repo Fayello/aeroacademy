@@ -333,7 +333,7 @@ export default function RecommendationsPage() {
           <RecommendationSection
             title="Recommended paths"
             icon={BookOpen}
-            items={data.learningPaths.map((path) => ({
+            items={(data.learningPaths || []).map((path) => ({
               id: path.id,
               href: `/dashboard/learning-paths/${path.id}`,
               title: path.title,
@@ -344,7 +344,7 @@ export default function RecommendationsPage() {
           <RecommendationSection
             title="Suggested courses"
             icon={BookOpen}
-            items={data.courses.map((course) => ({
+            items={(data.courses || []).map((course) => ({
               id: course.id,
               href: `/dashboard/courses/${course.id}`,
               title: course.title,
@@ -355,7 +355,7 @@ export default function RecommendationsPage() {
           <RecommendationSection
             title="Suggested labs"
             icon={FlaskConical}
-            items={data.labs.map((lab) => ({
+            items={(data.labs || []).map((lab) => ({
               id: lab.id,
               href: `/dashboard/labs/${lab.id}`,
               title: lab.title,
@@ -366,14 +366,14 @@ export default function RecommendationsPage() {
         </div>
       </div>
 
-      {data.similarUsers.length > 0 && (
+      {(data.similarUsers || []).length > 0 && (
         <div className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">
           <div className="flex items-center gap-2">
             <Users size={16} className="text-[#7AD62A]" />
             <h2 className="text-sm font-semibold text-white">Learners with similar momentum</h2>
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {data.similarUsers.map((user) => (
+            {(data.similarUsers || []).map((user) => (
               <div key={user.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 <p className="text-sm font-semibold text-white">{user.username || user.name || "Learner"}</p>
                 <p className="mt-1 text-xs text-slate-400">{user.xp.toLocaleString()} XP</p>
