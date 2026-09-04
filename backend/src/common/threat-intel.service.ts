@@ -449,6 +449,12 @@ export class ThreatIntelService {
 
   getFail2banStatus() {
     try {
+      const statusFile = '/var/log/fail2ban-status.json';
+      if (fs.existsSync(statusFile)) {
+        const content = fs.readFileSync(statusFile, 'utf-8');
+        return JSON.parse(content);
+      }
+
       const statusRaw = execSync('fail2ban-client status 2>/dev/null', {
         encoding: 'utf-8',
         timeout: 5000,

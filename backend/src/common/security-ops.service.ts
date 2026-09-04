@@ -252,7 +252,7 @@ export class SecurityOpsService {
 
     // 2. fail2ban
     const f2b = this.threatIntel.getFail2banStatus();
-    const totalBanned = Object.values(f2b.jails).reduce(
+    const totalBanned = Object.values(f2b.jails as Record<string, any>).reduce(
       (sum: number, j: any) => sum + (j.currentlyBanned || 0),
       0,
     );
@@ -261,8 +261,11 @@ export class SecurityOpsService {
       status: f2b.active ? 'active' : 'inactive',
       description: 'Automated IP banning based on attack patterns',
       details: Object.entries(f2b.jails).map(
-        ([name, j]: [string, any]) =>
-          `${name}: ${j.currentlyBanned || 0} banned, ${j.currentlyFailed || 0} tracking`,
+        ([name, j]: [string, any]) => {
+          const bannedCount = j.currentlyBanned || 0;
+          const tracking = j.currentlyFailed || 0;
+          return `${name}: ${bannedCount} banned, ${tracking} tracking`;
+        },
       ),
       metrics: {
         totalBanned,
@@ -355,8 +358,11 @@ export class SecurityOpsService {
 
   private isSuricataRunning(): boolean {
     try {
-      execSync('pgrep suricata', { timeout: 3000 });
-      return true;
+      const logPath = '/var/log/suricata/eve.json';
+      if (!fs.existsSync(logPath)) return false;
+      const stat = fs.statSync(logPath);
+      // Check if log was written in the last 5 minutes
+      return Date.now() - stat.mtimeMs < 5 * 60 * 1000;
     } catch {
       return false;
     }

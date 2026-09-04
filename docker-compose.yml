@@ -91,6 +91,7 @@ services:
       - /var/log/nginx:/var/log/nginx:ro
       - /var/log/suricata:/var/log/suricata:ro
       - /var/lib/suricata/rules:/var/lib/suricata/rules:ro
+      - /var/log/fail2ban-status.json:/var/log/fail2ban-status.json:ro
     networks:
       - backend
       - labs
