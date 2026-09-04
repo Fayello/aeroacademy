@@ -1,0 +1,2 @@
+-- This migration was applied manually via seed.sql
+-- See seed.sql in this directory for the actual data
