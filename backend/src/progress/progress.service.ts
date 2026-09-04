@@ -482,6 +482,27 @@ export class ProgressService {
           this.logger.error('ProgressionService.awardXP failed', err),
         );
       await this.updateStreak(userId);
+
+      await this.prisma.activityEvent
+        .create({
+          data: {
+            userId,
+            type: 'INLINE_PRACTICE_COMPLETED',
+            metadata: {
+              practiceId: practice.id,
+              practiceTitle: practice.title,
+              lessonId: practice.lessonId,
+              courseId: practice.lesson.section.courseId,
+              courseTitle: practice.lesson.section.title,
+              type: practice.type,
+              xpAwarded: practice.xpReward,
+              attemptNumber: submission.attemptNumber,
+            },
+          },
+        })
+        .catch((err) =>
+          this.logger.error('Failed to log INLINE_PRACTICE_COMPLETED event', err),
+        );
     }
 
     return {

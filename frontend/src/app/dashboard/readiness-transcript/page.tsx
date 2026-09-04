@@ -29,6 +29,9 @@ interface CompetencyProfile {
     totalLabsCompleted: number;
     totalAssessmentsCompleted: number;
     overallAssessmentScore: number;
+    totalInlinePracticesCompleted: number;
+    uniqueCoursesWithPractices: number;
+    inlinePracticeCompletionRate: number;
   };
   domains: Array<{
     domainId: string;
@@ -130,6 +133,12 @@ export default function ReadinessTranscriptPage() {
   const [competency, setCompetency] = useState<CompetencyProfile | null>(null);
   const [rankedProfile, setRankedProfile] = useState<RankedProfile | null>(null);
   const [capability, setCapability] = useState<CapabilityRanking | null>(null);
+  const [inlinePracticeStats, setInlinePracticeStats] = useState<{
+    totalCompleted: number;
+    coursesWithPractices: number;
+    completionRate: number;
+    practicesScore: number;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -138,6 +147,7 @@ export default function ReadinessTranscriptPage() {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
         const fallbackUserId = storedUser?.id as string | undefined;
+
         const targetUserId = requestedUserId || fallbackUserId;
         setViewerRole(storedUser?.role || null);
 
@@ -150,12 +160,19 @@ export default function ReadinessTranscriptPage() {
           competency: CompetencyProfile;
           rankedProfile: RankedProfile;
           capability: CapabilityRanking | null;
+          inlinePracticeStats?: {
+            totalCompleted: number;
+            coursesWithPractices: number;
+            completionRate: number;
+            practicesScore: number;
+          };
         }>(`/learning-outcomes/readiness-transcript/${targetUserId}`);
 
         if (cancelled) return;
         setCompetency(transcript.competency);
         setRankedProfile(transcript.rankedProfile);
         setCapability(transcript.capability);
+        setInlinePracticeStats(transcript.inlinePracticeStats || null);
       } catch (err: unknown) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load readiness transcript");
       } finally {
@@ -168,7 +185,6 @@ export default function ReadinessTranscriptPage() {
       cancelled = true;
     };
   }, [requestedUserId]);
-
   const transcriptScore = useMemo(() => {
     const competencyScore = competency?.summary.overallPct || 0;
     const capabilityScore = capability?.capabilityScore || 0;
@@ -332,6 +348,9 @@ export default function ReadinessTranscriptPage() {
               {[
                 `${competency.summary.completedOutcomes} of ${competency.summary.totalOutcomes} outcomes already demonstrated`,
                 `${competency.summary.totalLabsCompleted} labs completed with ${competency.summary.totalAssessmentsCompleted} assessments on record`,
+                ...(inlinePracticeStats && inlinePracticeStats.totalCompleted > 0
+                  ? [`${inlinePracticeStats.totalCompleted} inline exercises passed across ${inlinePracticeStats.coursesWithPractices} course(s) (bridge to harder labs)`]
+                  : []),
                 `${rankedProfile.globalRank.gamesPlayed} ranked domain events and ${rankedProfile.stats.bossMissionsCompleted} boss missions completed`,
               ].map((item) => (
                 <div key={item} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-sm text-slate-200">
@@ -343,11 +362,14 @@ export default function ReadinessTranscriptPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className={`grid gap-4 ${inlinePracticeStats && inlinePracticeStats.totalCompleted > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}>
         {[
           { label: "Outcome completion", value: `${competency.summary.overallPct}%`, icon: Target, detail: `${competency.summary.completedOutcomes}/${competency.summary.totalOutcomes}` },
           { label: "Assessment average", value: `${competency.summary.overallAssessmentScore}%`, icon: Award, detail: `${competency.summary.totalAssessmentsCompleted} completed` },
           { label: "Labs completed", value: `${competency.summary.totalLabsCompleted}`, icon: ClipboardCheck, detail: "Practical evidence" },
+          ...(inlinePracticeStats && inlinePracticeStats.totalCompleted > 0
+            ? [{ label: "Inline exercises", value: `${inlinePracticeStats.totalCompleted}`, icon: FileCheck, detail: `${inlinePracticeStats.completionRate}% completion rate` }]
+            : []),
           { label: "XP level", value: `Level ${rankedProfile.level}`, icon: GraduationCap, detail: `${rankedProfile.user.xp.toLocaleString()} XP` },
         ].map((item) => (
           <div key={item.label} className="rounded-2xl border border-white/10 bg-[#0f172a] p-5">

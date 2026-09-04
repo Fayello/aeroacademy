@@ -215,7 +215,7 @@ export class LearningOutcomeService {
   // ─── ENHANCED COMPETENCY PROFILE ─────────────────────────────
 
   async getEnhancedCompetencyProfile(userId: string) {
-    const [domains, assessments, userLabs, userSkills] = await Promise.all([
+    const [domains, assessments, userLabs, userSkills, inlineSubmissions] = await Promise.all([
       this.prisma.skillDomain.findMany({
         include: {
           learningOutcomes: {
@@ -251,6 +251,21 @@ export class LearningOutcomeService {
       this.prisma.userSkill.findMany({
         where: { userId },
         include: { skill: { include: { domain: true } } },
+      }),
+      this.prisma.inlinePracticeSubmission.findMany({
+        where: { userId, isCorrect: true },
+        include: {
+          practice: {
+            include: {
+              lesson: {
+                include: {
+                  section: { select: { courseId: true } },
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
       }),
     ]);
 
@@ -366,6 +381,16 @@ export class LearningOutcomeService {
           )
         : 0;
 
+    // Inline practice stats
+    const totalInlinePracticesCompleted = inlineSubmissions.length;
+    const uniqueCoursesWithPractices = new Set(
+      inlineSubmissions.map((s) => s.practice.lesson.section.courseId),
+    ).size;
+    const inlinePracticeCompletionRate =
+      totalOutcomes > 0
+        ? Math.min(100, Math.round((totalInlinePracticesCompleted / Math.max(totalOutcomes, 1)) * 100))
+        : 0;
+
     // Recommendations: what to do next
     const recommendations: Array<{
       type: 'OUTCOME' | 'ASSESSMENT' | 'LAB' | 'MAINTAIN';
@@ -444,6 +469,9 @@ export class LearningOutcomeService {
         totalLabsCompleted,
         totalAssessmentsCompleted,
         overallAssessmentScore,
+        totalInlinePracticesCompleted,
+        uniqueCoursesWithPractices,
+        inlinePracticeCompletionRate,
       },
       domains: domainSummaries,
       recentAssessments: assessments.slice(0, 5).map((a) => ({
@@ -490,11 +518,13 @@ export class LearningOutcomeService {
     const capabilityScore = capability?.capabilityScore || 0;
     const assessmentScore = competency.summary.overallAssessmentScore || 0;
     const labsScore = Math.min(100, competency.summary.totalLabsCompleted * 8);
+    const practicesScore = Math.min(100, competency.summary.totalInlinePracticesCompleted * 10);
     const transcriptScore = Math.round(
-      competencyScore * 0.35 +
-        capabilityScore * 0.3 +
-        assessmentScore * 0.2 +
-        labsScore * 0.15,
+      competencyScore * 0.30 +
+        capabilityScore * 0.25 +
+        assessmentScore * 0.15 +
+        labsScore * 0.15 +
+        practicesScore * 0.15,
     );
 
     const readiness =
@@ -523,6 +553,12 @@ export class LearningOutcomeService {
       competency,
       rankedProfile,
       capability,
+      inlinePracticeStats: {
+        totalCompleted: competency.summary.totalInlinePracticesCompleted,
+        coursesWithPractices: competency.summary.uniqueCoursesWithPractices,
+        completionRate: competency.summary.inlinePracticeCompletionRate,
+        practicesScore,
+      },
       generatedAt: new Date().toISOString(),
     };
   }
