@@ -89,37 +89,38 @@ export class ThreatIntelService {
       this.lastModsecurityPos = stat.size;
 
       const content = buffer.toString('utf-8');
-      const blocks = content.split('--');
+      const lines = content.split('\n');
 
-      for (const block of blocks) {
-        const match = block.match(
-          /(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})\s+(\S+)\s+(\d{3})/,
-        );
-        if (!match) continue;
+      for (const line of lines) {
+        if (!line.includes('[id "') && !line.includes('ModSecurity:')) continue;
 
-        const [, timestamp, ip, status] = match;
-        const ruleMatch = block.match(/\[id "(\d+)"\]/);
-        const msgMatch = block.match(/\[msg "([^"]+)"\]/);
-        const dataMatch = block.match(/\[data "([^"]*)"\]/);
-        const uriMatch = block.match(/\[uri "([^"]+)"\]/);
+        const ruleMatch = line.match(/\[id "(\d+)"\]/);
+        const msgMatch = line.match(/\[msg "([^"]+)"\]/);
+        const uriMatch = line.match(/\[uri "([^"]+)"\]/);
+        const dataMatch = line.match(/\[data "([^"]*)"\]/);
+        const hostnameMatch = line.match(/\[hostname "([^"]+)"\]/);
+        const codeMatch = line.match(/code (\d{3})/);
 
+        if (!ruleMatch && !msgMatch) continue;
+
+        let ip = hostnameMatch?.[1] || 'unknown';
+        if (ip === 'localhost' || ip === '::1') ip = '127.0.0.1';
+
+        const status = Number(codeMatch?.[1] || 403);
+        const msg = msgMatch?.[1] || '';
+        const type = this.classifyAttack(ruleMatch?.[1] || '', msg, line);
         const geo = geoip.lookup(ip);
-        const type = this.classifyAttack(
-          ruleMatch?.[1] || '',
-          msgMatch?.[1] || '',
-          block,
-        );
 
         this.threats.push({
-          timestamp: new Date(timestamp).getTime(),
+          timestamp: Date.now(),
           ip,
           country: geo?.country || 'Unknown',
           countryCode: geo?.country || '??',
           city: geo?.city || 'Unknown',
           type,
-          severity: this.getSeverity(type, Number(status)),
+          severity: this.getSeverity(type, status),
           ruleId: ruleMatch?.[1] || '',
-          msg: msgMatch?.[1] || 'Unknown',
+          msg,
           uri: uriMatch?.[1] || '',
           method: '',
           data: dataMatch?.[1] || '',
