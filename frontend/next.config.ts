@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -38,11 +37,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  org: "fayello",
-  project: "xpertclass",
-  silent: true,
-  widenClientFileUpload: true,
-  disableLogger: true,
-  tunnelRoute: "/api/sentry",
-});
+export default nextConfig;
