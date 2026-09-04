@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ThreatIntelService } from './threat-intel.service';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
+import * as nodemailer from 'nodemailer';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const geoip = require('geoip-lite');
@@ -13,7 +14,7 @@ export interface DefenseLayer {
   status: 'active' | 'inactive' | 'degraded';
   description: string;
   details: string[];
-  metrics?: Record<string, number>;
+  metrics?: Record<string, string | number>;
 }
 
 export interface SecurityOverview {
@@ -43,11 +44,24 @@ export interface SecurityOverview {
 @Injectable()
 export class SecurityOpsService {
   private readonly logger = new Logger(SecurityOpsService.name);
+  private lastAlertTime = 0;
+  private readonly ALERT_COOLDOWN = 5 * 60 * 1000;
+  private transporter: nodemailer.Transporter;
 
   constructor(
     private prisma: PrismaService,
     private threatIntel: ThreatIntelService,
-  ) {}
+  ) {
+    this.transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+      port: Number(process.env.SMTP_PORT) || 465,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER || 'contact@xpertclass.academy',
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  }
 
   @Interval(60000)
   async persistThreats() {
@@ -77,8 +91,62 @@ export class SecurityOpsService {
           skipDuplicates: true,
         });
       }
+      this.checkAndAlert(summary.recentAttacks);
     } catch (err) {
       this.logger.error('Failed to persist security events', err);
+    }
+  }
+
+  private async checkAndAlert(attacks: any[]) {
+    const now = Date.now();
+    if (now - this.lastAlertTime < this.ALERT_COOLDOWN) return;
+
+    const critical = attacks.filter(
+      (a) => a.severity === 'CRITICAL' || a.severity === 'HIGH',
+    );
+    if (critical.length === 0) return;
+
+    this.lastAlertTime = now;
+
+    const topIps = [...new Set(critical.map((a) => a.ip))].slice(0, 10);
+    const types = [...new Set(critical.map((a) => a.type))];
+
+    const html = `
+      <div style="font-family:monospace;background:#0f172a;color:#e2e8f0;padding:20px;border-radius:8px;">
+        <h2 style="color:#dc2626;">⚠️ Security Alert — ${critical.length} critical/high events</h2>
+        <p style="color:#94a3b8;">Time: ${new Date().toISOString()}</p>
+        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+          <tr style="border-bottom:1px solid #334155;">
+            <td style="padding:8px;color:#94a3b8;">Attack Types</td>
+            <td style="padding:8px;color:#f8fafc;">${types.join(', ')}</td>
+          </tr>
+          <tr style="border-bottom:1px solid #334155;">
+            <td style="padding:8px;color:#94a3b8;">Unique IPs</td>
+            <td style="padding:8px;color:#f8fafc;">${topIps.length}</td>
+          </tr>
+          <tr style="border-bottom:1px solid #334155;">
+            <td style="padding:8px;color:#94a3b8;">Top Attackers</td>
+            <td style="padding:8px;color:#f8fafc;">${topIps.join(', ')}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;color:#94a3b8;">Mode</td>
+            <td style="padding:8px;color:#7AD62A;">IPS (actively blocking)</td>
+          </tr>
+        </table>
+        <p style="color:#94a3b8;font-size:12px;">Review at <a href="https://xpertclass.academy/dashboard/admin/security" style="color:#7AD62A;">SOC Dashboard</a></p>
+      </div>
+    `;
+
+    try {
+      await this.transporter.sendMail({
+        from: '"XpertClass Security" <labs@xpertclass.academy>',
+        to: 'fayellnouh@gmail.com',
+        subject: `[SECURITY] ${critical.length} critical events from ${topIps.length} IPs`,
+        html,
+      });
+      this.logger.log(`Security alert sent: ${critical.length} events`);
+    } catch (err) {
+      this.logger.error('Failed to send security alert', err);
     }
   }
 
@@ -303,17 +371,22 @@ export class SecurityOpsService {
     // 5. Suricata IDS/IPS
     const suricataRules = this.getSuricataRuleCount();
     const suricataActive = this.isSuricataRunning();
+    const suricataIps = this.isSuricataIps();
     layers.push({
       name: 'Suricata IDS/IPS',
       status: suricataActive ? 'active' : 'inactive',
-      description: 'Network intrusion detection and prevention',
+      description: suricataIps
+        ? 'Network intrusion PREVENTION (active packet dropping)'
+        : 'Network intrusion detection (passive monitoring)',
       details: [
         `${suricataRules} rules loaded (ET Open + custom)`,
-        'Monitoring eth0 in AF_PACKET mode',
+        suricataIps
+          ? 'Mode: IPS (NFQ) - actively dropping malicious packets'
+          : 'Mode: IDS (AF_PACKET) - monitoring only',
         'EVE JSON logging to /var/log/suricata/eve.json',
         'Custom rules: SQLi, XSS, SSRF, XXE, scanners, Log4Shell',
       ],
-      metrics: { rules: suricataRules },
+      metrics: { rules: suricataRules, mode: suricataIps ? 'IPS' : 'IDS' },
     });
 
     // 6. Docker sandboxing
@@ -361,8 +434,19 @@ export class SecurityOpsService {
       const logPath = '/var/log/suricata/eve.json';
       if (!fs.existsSync(logPath)) return false;
       const stat = fs.statSync(logPath);
-      // Check if log was written in the last 5 minutes
       return Date.now() - stat.mtimeMs < 5 * 60 * 1000;
+    } catch {
+      return false;
+    }
+  }
+
+  private isSuricataIps(): boolean {
+    try {
+      const output = execSync('iptables -L INPUT -n 2>/dev/null', {
+        encoding: 'utf-8',
+        timeout: 3000,
+      });
+      return output.includes('NFQUEUE');
     } catch {
       return false;
     }
