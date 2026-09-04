@@ -87,6 +87,8 @@ services:
     volumes:
       - uploads_data:/app/uploads
       - /root/.ssh/aeroacademy_deploy:/app/.ssh_key:ro
+      - /var/log/modsecurity:/var/log/modsecurity:ro
+      - /var/log/nginx:/var/log/nginx:ro
     networks:
       - backend
       - labs

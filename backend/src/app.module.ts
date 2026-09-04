@@ -55,6 +55,7 @@ import { GradeBookModule } from './common/grade-book.module';
 import { AiModule } from './common/ai.module';
 import { UploadModule } from './upload/upload.module';
 import { TrafficTrackerModule } from './common/traffic-tracker.module';
+import { ThreatIntelModule } from './common/threat-intel.module';
 
 @Module({
   imports: [
@@ -117,6 +118,7 @@ import { TrafficTrackerModule } from './common/traffic-tracker.module';
     AiModule,
     UploadModule,
     TrafficTrackerModule,
+    ThreatIntelModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

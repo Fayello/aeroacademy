@@ -275,6 +275,7 @@ function getAdminFallbackContext(role: string, level: number): NavigationContext
           { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community Programs" },
           { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Lab Monitoring" },
           { href: "/dashboard/admin/traffic", tKey: "nav.traffic", icon: "Globe", label: "Traffic Analytics" },
+          { href: "/dashboard/admin/threats", tKey: "nav.threats", icon: "Shield", label: "Threat Intelligence" },
           { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
         ],
       },
