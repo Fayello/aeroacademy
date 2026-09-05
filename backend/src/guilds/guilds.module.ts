@@ -3,14 +3,12 @@ import { GuildsService } from './guilds.service';
 import { GuildsController } from './guilds.controller';
 import { GuildChatGateway } from './guild-chat.gateway';
 import { PrismaModule } from '../prisma/prisma.module';
-import { AuthModule } from '../auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     PrismaModule,
-    AuthModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
