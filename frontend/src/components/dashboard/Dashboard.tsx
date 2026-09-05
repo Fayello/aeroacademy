@@ -476,12 +476,17 @@ export default function Dashboard() {
               {primaryAction.cta}
               <ArrowRight size={14} />
             </Link>
-            {(recommendedOpenCourse || personalizedCourse) && (
-              <Link href={`/dashboard/courses/${(recommendedOpenCourse || personalizedCourse)?.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 sm:w-auto">
-                {recommendedOpenCourse ? "AI-ranked course" : "Recommended course"}
-                <BookOpen size={14} />
-              </Link>
-            )}
+            {(() => {
+              const linkCourse = recommendedOpenCourse || personalizedCourse;
+              const linkId = linkCourse?.id;
+              if (!linkId) return null;
+              return (
+                <Link href={`/dashboard/courses/${linkId}`} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 sm:w-auto">
+                  {recommendedOpenCourse ? "AI-ranked course" : "Recommended course"}
+                  <BookOpen size={14} />
+                </Link>
+              );
+            })()}
             <Link href="/dashboard/recommendations" className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 sm:w-auto">
               Adjust journey
               <Pencil size={14} />
