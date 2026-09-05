@@ -113,6 +113,7 @@ const DIFFICULTY_MAP: Record<number, { label: string; color: string; bg: string 
 export default function CourseBriefingPage() {
   const { id } = useParams();
   const router = useRouter();
+  const isValidId = id && typeof id === "string" && id !== "undefined" && /^[0-9a-f-]{36}$/i.test(id);
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [progress, setProgress] = useState<CourseProgress | null>(null);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
@@ -147,6 +148,10 @@ export default function CourseBriefingPage() {
   };
 
   useEffect(() => {
+    if (!isValidId) {
+      router.replace("/dashboard/courses");
+      return;
+    }
     let cancelled = false;
     async function loadCourse() {
       try {
@@ -189,7 +194,7 @@ export default function CourseBriefingPage() {
     }
     loadCourse();
     return () => { cancelled = true; };
-  }, [id]);
+  }, [id, isValidId, router]);
 
   const handleStartCourse = useCallback(async () => {
     setEnrolling(true);
