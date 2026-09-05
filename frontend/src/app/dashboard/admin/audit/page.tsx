@@ -197,7 +197,7 @@ export default function AdminAuditPage() {
 
       {/* Table */}
       <div className="angular-card bg-[#0f172a] overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
@@ -266,6 +266,44 @@ export default function AdminAuditPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile card view */}
+        {!loading && logs.length > 0 && (
+          <div className="md:hidden divide-y divide-white/5">
+            {logs.map((log) => (
+              <div key={log.id} className="p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-slate-500">{new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString()}</span>
+                  <StatusBadge code={log.statusCode} />
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded bg-white/5 flex items-center justify-center shrink-0">
+                    <Users size={10} className="text-slate-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-white truncate">{log.actor?.name || "System"}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{log.actorEmail || log.actor?.email || "unauthenticated"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400">
+                    <span className={`px-1 py-0.5 rounded font-bold ${log.method === "GET" ? "bg-blue-500/10 text-blue-400" : log.method === "POST" ? "bg-[#7AD62A]/10 text-[#0F203A]" : log.method === "DELETE" ? "bg-red-500/10 text-red-700" : "bg-amber-500/10 text-amber-400"}`}>
+                      {log.method}
+                    </span>
+                    <span className="truncate max-w-[200px]">{log.path}</span>
+                  </div>
+                  <button
+                    onClick={() => setSelected(log)}
+                    className="p-1.5 text-slate-400 hover:text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-all"
+                  >
+                    <Eye size={14} />
+                  </button>
+                </div>
+                <div className="text-[10px] font-mono text-slate-500">IP: {log.ip || "—"}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Pagination */}
         {!loading && logs.length > 0 && (

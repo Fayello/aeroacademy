@@ -91,4 +91,119 @@ export class ChallengesService {
       take: 20,
     });
   }
+
+  async sendLabChallenge(challengerId: string, opponentId: string, labId: string) {
+    if (challengerId === opponentId) {
+      throw new BadRequestException('Cannot challenge yourself');
+    }
+
+    const existing = await this.prisma.labChallenge.findFirst({
+      where: {
+        challengerId,
+        opponentId,
+        labId,
+        status: { in: ['PENDING', 'ACCEPTED'] },
+      },
+    });
+    if (existing) {
+      throw new BadRequestException('Challenge already pending or active');
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 48);
+
+    return this.prisma.labChallenge.create({
+      data: {
+        challengerId,
+        opponentId,
+        labId,
+        expiresAt,
+      },
+      include: {
+        challenger: { select: { id: true, name: true, username: true } },
+        opponent: { select: { id: true, name: true, username: true } },
+        lab: { select: { id: true, title: true, difficulty: true } },
+      },
+    });
+  }
+
+  async getMyLabChallenges(userId: string) {
+    return this.prisma.labChallenge.findMany({
+      where: {
+        OR: [{ challengerId: userId }, { opponentId: userId }],
+      },
+      include: {
+        challenger: { select: { id: true, name: true, username: true, xp: true } },
+        opponent: { select: { id: true, name: true, username: true, xp: true } },
+        lab: { select: { id: true, title: true, difficulty: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+  }
+
+  async acceptLabChallenge(userId: string, challengeId: string) {
+    const challenge = await this.prisma.labChallenge.findUnique({ where: { id: challengeId } });
+    if (!challenge) throw new NotFoundException('Challenge not found');
+    if (challenge.opponentId !== userId) throw new BadRequestException('Not your challenge');
+    if (challenge.status !== 'PENDING') throw new BadRequestException('Challenge is not pending');
+    if (new Date() > challenge.expiresAt) throw new BadRequestException('Challenge expired');
+
+    return this.prisma.labChallenge.update({
+      where: { id: challengeId },
+      data: { status: 'ACCEPTED' },
+      include: {
+        challenger: { select: { id: true, name: true, username: true } },
+        opponent: { select: { id: true, name: true, username: true } },
+        lab: { select: { id: true, title: true } },
+      },
+    });
+  }
+
+  async declineLabChallenge(userId: string, challengeId: string) {
+    const challenge = await this.prisma.labChallenge.findUnique({ where: { id: challengeId } });
+    if (!challenge) throw new NotFoundException('Challenge not found');
+    if (challenge.opponentId !== userId) throw new BadRequestException('Not your challenge');
+
+    return this.prisma.labChallenge.update({
+      where: { id: challengeId },
+      data: { status: 'DECLINED' },
+    });
+  }
+
+  async completeLabChallenge(userId: string, challengeId: string) {
+    const challenge = await this.prisma.labChallenge.findUnique({ where: { id: challengeId } });
+    if (!challenge) throw new NotFoundException('Challenge not found');
+    if (challenge.challengerId !== userId && challenge.opponentId !== userId) {
+      throw new BadRequestException('Not part of this challenge');
+    }
+    if (challenge.status !== 'ACCEPTED') throw new BadRequestException('Challenge not active');
+
+    const isChallenger = challenge.challengerId === userId;
+    const timeField = isChallenger ? 'challengerTime' : 'opponentTime';
+
+    const startTime = challenge.createdAt;
+    const elapsed = Math.floor((Date.now() - startTime.getTime()) / 1000);
+
+    const updateData: Record<string, unknown> = {
+      [timeField]: elapsed,
+    };
+
+    const otherTime = isChallenger ? challenge.opponentTime : challenge.challengerTime;
+    if (otherTime !== null) {
+      const myTime = elapsed;
+      updateData.winnerId = myTime < otherTime ? userId : myTime > otherTime ? (isChallenger ? challenge.opponentId : challenge.challengerId) : null;
+      updateData.status = 'COMPLETED';
+    }
+
+    return this.prisma.labChallenge.update({
+      where: { id: challengeId },
+      data: updateData,
+      include: {
+        challenger: { select: { id: true, name: true, username: true } },
+        opponent: { select: { id: true, name: true, username: true } },
+        lab: { select: { id: true, title: true } },
+      },
+    });
+  }
 }

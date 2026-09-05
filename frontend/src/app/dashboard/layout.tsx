@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Search, Bell, ChevronRight, CheckCheck, Loader2, LogOut, Settings, User as UserIcon, Zap } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import { PwaInstallBanner } from "@/components/PwaInstallBanner";
 import Sidebar from "@/components/Sidebar";
 import LearningCoach from "@/components/ai/LearningCoach";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
@@ -193,7 +194,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
       : "Search course catalog";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-64 md:py-0 relative overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-64 md:py-0 relative overflow-hidden safe-area-pt">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.02] pointer-events-none" />
       <div className="relative flex flex-col gap-2.5 md:flex-row md:items-center md:gap-2">
         <div className="flex items-center gap-2 md:hidden">
@@ -570,7 +571,7 @@ export default function DashboardLayout({
             </a>
             <DashboardHeader onToggleSidebar={toggleSidebar} />
             <Sidebar />
-            <main id="main-content" className="pt-32 pb-20 sm:pt-28 md:pt-12 md:pb-0 md:pl-64 min-h-screen" role="main">
+            <main id="main-content" className="pt-32 pb-20 sm:pt-28 md:pt-12 md:pb-0 md:pl-64 min-h-screen safe-area-pb" role="main">
               <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
                 <DashboardModeBanner />
                 <div className="hidden md:block">
@@ -582,6 +583,7 @@ export default function DashboardLayout({
               </div>
             </main>
             <BottomNav />
+            <PwaInstallBanner />
             <LearningCoach />
           </div>
         </DashboardSocketProvider>

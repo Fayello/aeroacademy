@@ -164,7 +164,7 @@ export default function AdminSeasonsPage() {
       </div>
 
       <div className="angular-card bg-[#0f172a] overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
@@ -224,6 +224,49 @@ export default function AdminSeasonsPage() {
             title="No seasons found"
             description="Create a season to get started."
           />
+        )}
+        {/* Mobile card view */}
+        {filtered.length > 0 && (
+          <div className="md:hidden divide-y divide-white/5">
+            {filtered.map((s) => {
+              const now = new Date();
+              const start = new Date(s.startDate);
+              const end = new Date(s.endDate);
+              const status = !s.isActive ? "Ended" : now < start ? "Upcoming" : now > end ? "Ended" : "Active";
+              const statusColor =
+                status === "Active" ? "text-[#7AD62A]" :
+                status === "Upcoming" ? "text-blue-600" : "text-slate-400";
+              return (
+                <div key={s.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono text-slate-500">#{s.seasonNumber}</span>
+                        <p className="text-sm font-medium text-white truncate">{s.name}</p>
+                      </div>
+                      <p className="text-[11px] text-slate-400">{s.theme || "No theme"}</p>
+                    </div>
+                    <span className={`text-[11px] font-medium shrink-0 ${statusColor}`}>{status}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-[11px]">
+                    <div><span className="text-slate-500">XP Multi:</span> <span className="text-white">{s.xpMultiplier}x</span></div>
+                    <div><span className="text-slate-500">Start:</span> <span className="text-white">{formatDate(s.startDate)}</span></div>
+                    <div><span className="text-slate-500">End:</span> <span className="text-white">{formatDate(s.endDate)}</span></div>
+                  </div>
+                  <div className="flex items-center gap-1 pt-1">
+                    <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
+                      <Pencil size={14} />
+                    </button>
+                    {s.isActive && (
+                      <button onClick={() => handleEnd(s.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+                        <StopCircle size={14} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 

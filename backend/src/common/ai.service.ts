@@ -900,18 +900,23 @@ Respond in JSON format only:
   // ─── LAB ANALYTICS ─────────────────────────────────────
 
   async getLabAnalytics(): Promise<Any[]> {
-    return this.prisma.$queryRawUnsafe(`
+    const rows = await this.prisma.$queryRawUnsafe<Record<string, unknown>[]>(`
       SELECT
         l.id as "labId",
         l.title,
         l.difficulty,
-        sd."displayName" as "domain",
+        sd."displayName" as "domainName",
         COUNT(DISTINCT li.id) as "totalAttempts",
-        COUNT(DISTINCT CASE WHEN (li.status::text) = 'COMPLETED' THEN li.id END) as "completions",
-        ROUND(COUNT(DISTINCT CASE WHEN (li.status::text) = 'COMPLETED' THEN li.id END)::numeric / NULLIF(COUNT(DISTINCT li.id), 0) * 100, 1) as "completionRate",
+        COUNT(DISTINCT CASE WHEN (li.status::text) = 'RUNNING' THEN li.id END) as "completions",
+        ROUND(COUNT(DISTINCT CASE WHEN (li.status::text) = 'RUNNING' THEN li.id END)::numeric / NULLIF(COUNT(DISTINCT li.id), 0) * 100, 1) as "completionRate",
         COUNT(DISTINCT ls.id) as "totalSubmissions",
         COUNT(DISTINCT CASE WHEN ls."isCorrect" = true THEN ls.id END) as "correctSubmissions",
-        ROUND(COUNT(DISTINCT CASE WHEN ls."isCorrect" = false THEN ls.id END)::numeric / NULLIF(COUNT(DISTINCT ls.id), 0) * 100, 1) as "failureRate"
+        ROUND(COUNT(DISTINCT CASE WHEN ls."isCorrect" = false THEN ls.id END)::numeric / NULLIF(COUNT(DISTINCT ls.id), 0) * 100, 1) as "failureRate",
+        COALESCE(la."avgTimeMinutes", 0) as "avgTimeMinutes",
+        COALESCE(la."hintUsageRate", 0) as "hintUsageRate",
+        la."difficultyELO",
+        COALESCE(la."tooEasy", false) as "tooEasy",
+        COALESCE(la."tooHard", false) as "tooHard"
       FROM "Lab" l
       LEFT JOIN "LabInstance" li ON li."labId" = l.id
       LEFT JOIN "LabFlag" lf ON lf."labId" = l.id
@@ -919,8 +924,23 @@ Respond in JSON format only:
       LEFT JOIN "LabSkill" lsk ON lsk."labId" = l.id
       LEFT JOIN "Skill" s ON s.id = lsk."skillId"
       LEFT JOIN "SkillDomain" sd ON sd.id = s."domainId"
-      GROUP BY l.id, l.title, l.difficulty, sd."displayName"
+      LEFT JOIN "LabAnalytics" la ON la."labId" = l.id
+      GROUP BY l.id, l.title, l.difficulty, sd."displayName", la."avgTimeMinutes", la."hintUsageRate", la."difficultyELO", la."tooEasy", la."tooHard"
       ORDER BY "totalAttempts" DESC
     `);
+    return rows.map((r: any) => ({
+      ...r,
+      totalAttempts: Number(r.totalAttempts) || 0,
+      completions: Number(r.completions) || 0,
+      completionRate: Number(r.completionRate) || 0,
+      totalSubmissions: Number(r.totalSubmissions) || 0,
+      correctSubmissions: Number(r.correctSubmissions) || 0,
+      failureRate: Number(r.failureRate) || 0,
+      avgTimeMinutes: Number(r.avgTimeMinutes) || 0,
+      hintUsageRate: Number(r.hintUsageRate) || 0,
+      stepAnalytics: null,
+      weeklyCompletions: null,
+      weeklyAttempts: null,
+    }));
   }
 }

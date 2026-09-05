@@ -39,6 +39,7 @@ model User {
   welcomeDripSent               Json                          @default("[]")
   lastEmailSentAt               DateTime?
   emailPreferences              Json                          @default("{\"milestones\":true,\"weeklyDigest\":true,\"nudges\":true,\"reengagement\":true,\"achievements\":true,\"courseUpdates\":true,\"streaks\":true,\"labCompletions\":true}")
+  seekingTeam                   Boolean                       @default(false)
   timezone                      String?                       @default("UTC")
   referralCode                  String?                       @unique
   referredBy                    String?
@@ -97,9 +98,15 @@ model User {
   teamMembers                   TeamMember[]
   gradeEntries                  GradeEntry[]
   studentGPA                    StudentGPA?
-  tutoringInteractions          TutoringInteraction[]
+   tutoringInteractions          TutoringInteraction[]
+   challengesIssued             LabChallenge[] @relation("Challenger")
+   challengesReceived           LabChallenge[] @relation("Opponent")
+   ownedGuild                   Guild?                   @relation("GuildMaster")
+   guildMemberships             GuildMember[]
+   guildChatMessages            GuildChatMessage[]
+   guildApplications            GuildApplication[]
 
-  @@index([googleId])
+   @@index([googleId])
   @@index([role])
   @@index([xp])
 }
@@ -381,6 +388,7 @@ model Lab {
   imageUrl         String?
   difficulty       Int              @default(1200)
   estimatedMinutes Int?             @default(60)
+  resourceProfile  ResourceProfile  @default(STANDARD)
   flags            LabFlag[]
   instances        LabInstance[]
   lesson           Lesson?
@@ -390,6 +398,7 @@ model Lab {
   moduleLabs       ModuleLab[]
   analytics        LabAnalytics?
   reviews          LabReview[]
+  challenges       LabChallenge[]
 }
 
 model LabFlag {
@@ -402,6 +411,20 @@ model LabFlag {
   lab           Lab             @relation(fields: [labId], references: [id])
   submissions   LabSubmission[]
 
+  @@index([labId])
+}
+
+model LabCheckpoint {
+  id              String   @id @default(uuid())
+  userId          String
+  labId           String
+  walkthroughState Json    @default("[]")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, labId])
+  @@index([userId])
   @@index([labId])
 }
 
@@ -632,6 +655,12 @@ enum LabStatus {
   STOPPED
   EXPIRED
   PROVISIONING
+}
+
+enum ResourceProfile {
+  LIGHTWEIGHT
+  STANDARD
+  HEAVY
 }
 
 enum InstitutionalInquiryType {
@@ -2021,4 +2050,107 @@ model SecurityEvent {
   @@index([banned])
   @@index([timestamp, type])
   @@index([ip, timestamp])
+}
+
+model LabChallenge {
+  id          String   @id @default(uuid())
+  challengerId String
+  opponentId   String
+  labId        String
+  status       String   @default("PENDING") // PENDING, ACCEPTED, COMPLETED, DECLINED, EXPIRED
+  challengerTime Int?   // seconds to complete
+  opponentTime   Int?   // seconds to complete
+  winnerId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  expiresAt    DateTime
+
+  challenger  User     @relation("Challenger", fields: [challengerId], references: [id])
+  opponent    User     @relation("Opponent", fields: [opponentId], references: [id])
+  lab         Lab      @relation(fields: [labId], references: [id])
+
+  @@index([challengerId])
+  @@index([opponentId])
+  @@index([labId])
+  @@index([status])
+}
+
+model Guild {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  description   String?
+  bannerUrl     String?
+  iconUrl       String?
+  primaryColor  String   @default("#229C62")
+  accentColor   String   @default("#7AD62A")
+  motto         String?
+  focusDomain   String?
+  visibility    String   @default("PUBLIC") // PUBLIC, PRIVATE, INVITE_ONLY
+  inviteCode    String   @unique @default(uuid())
+  maxMembers    Int      @default(50)
+  masterId      String   @unique
+  level         Int      @default(1)
+   xp            BigInt   @default(0)
+   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  master        User     @relation("GuildMaster", fields: [masterId], references: [id])
+  members       GuildMember[]
+  chatMessages  GuildChatMessage[]
+  applications  GuildApplication[]
+
+  @@index([masterId])
+  @@index([visibility])
+  @@index([xp(sort: Desc)])
+}
+
+model GuildMember {
+  id             String   @id @default(uuid())
+  guildId        String
+  userId         String
+  role           String   @default("MEMBER") // MASTER, OFFICER, MEMBER
+  contributionXp BigInt   @default(0)
+  lastActiveAt   DateTime @default(now())
+  joinedAt       DateTime @default(now())
+
+  guild          Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([guildId])
+  @@index([userId])
+  @@index([contributionXp(sort: Desc)])
+}
+
+model GuildChatMessage {
+  id        String   @id @default(uuid())
+  guildId   String
+  userId    String
+  content   String
+  pinned    Boolean  @default(false)
+  system    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  guild     Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guildId, createdAt])
+  @@index([guildId, pinned])
+}
+
+model GuildApplication {
+  id          String   @id @default(uuid())
+  guildId     String
+  userId      String
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  message     String?
+  reviewedBy  String?
+  createdAt   DateTime @default(now())
+  reviewedAt  DateTime?
+
+  guild       Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([guildId, status])
 }

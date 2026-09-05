@@ -783,6 +783,8 @@ cd backend && npx prisma generate
 
 ## 15. Current State (What's Built)
 
+> **For navigation structure, module wiring, and API routes, see `ARCHITECTURE.md`** — this is the single source of truth for integration details.
+
 ### Completed
 - Full landing page with hero, features, stats, CTA sections (animated HeroParticles)
 - Login/Register with Google OAuth
@@ -812,14 +814,22 @@ cd backend && npx prisma generate
 - Onboarding wizard
 - **Swagger API docs** at `/api/docs`
 - **Zero TypeScript `any` debt and zero ESLint problems** across frontend and backend
+- **Guild system** — CRUD, membership (MASTER/OFFICER/MEMBER), real-time WebSocket chat, XP contribution, applications for private guilds, invite codes, guild leaderboard
+- **Community features** — Social feed, head-to-head comparison, lab challenges, community directory, team-seekers with skill matching
+- **Gamification visibility** — AchievementToast, LevelUpModal, XpGain animation, dashboard hero strip, XP badges on course/lab cards
+- **Navigation overhaul** — 5-item flat sections per role (INDIVIDUAL, UNIVERSITY, CORPORATE, RECRUITER, ADMIN), EN/FR i18n
+- **Email system** — Branded templates (welcome, OTP, password reset, lab started/completed), SMTP via hostinger
+- **Localization / i18n** — Full EN/FR translations for navigation and key UI elements
+- **Inline practice exercises** — 542 exercises across 205 lessons
 
 ### Not Yet Built
-- Email notifications (reset/verification emails are logged only)
 - Lab detail page terminal polish
 - Advanced analytics exports / PDF reports
-- Localization / i18n
+
+### See Also
+- `ARCHITECTURE.md` — Navigation source-of-truth, module wiring, API routes, feature status
 
 ---
 
-*Last updated: August 2026*
+*Last updated: September 2026*
 *Git repo: https://github.com/Fayello/aeroacademy.git*

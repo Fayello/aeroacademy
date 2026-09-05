@@ -21,6 +21,7 @@ import {
   Heart,
   ShieldCheck,
   FileBadge2,
+  Zap,
 } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import toast from "@/lib/toast";
@@ -156,6 +157,9 @@ function CourseCard({ course, index, isLocked, isEnrolled, sectionCount, categor
                 Staff Pick
               </span>
             )}
+            <span className="text-[10px] font-semibold px-2 py-1 bg-[#7AD62A]/10 text-[#7AD62A] border border-[#7AD62A]/20 flex items-center gap-1">
+              <Zap size={9} /> {((course.difficulty || 1) * 50)} XP
+            </span>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1.5">
             <button

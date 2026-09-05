@@ -242,7 +242,7 @@ export default function LabAnalyticsPage() {
           <div className="px-6 py-4 border-b border-white/10 bg-white/5">
             <h3 className="font-semibold text-white">All Labs ({filtered.length})</h3>
           </div>
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10">
@@ -296,6 +296,35 @@ export default function LabAnalyticsPage() {
               </tbody>
             </table>
           </div>
+          {/* Mobile card view */}
+          {filtered.length > 0 && (
+            <div className="md:hidden divide-y divide-white/5">
+              {filtered.map((lab) => (
+                <div
+                  key={lab.labId}
+                  onClick={() => loadInsights(lab)}
+                  className={`p-4 space-y-2 cursor-pointer transition-colors ${
+                    selectedLab?.labId === lab.labId ? "bg-[#7AD62A]/10/50" : ""
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-medium text-white truncate">{lab.title}</p>
+                    <CalibrationBadge tooEasy={lab.tooEasy} tooHard={lab.tooHard} />
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px]">
+                    <span className="text-slate-400">{lab.domainName || "—"}</span>
+                    <DifficultyBadge difficulty={lab.difficulty} />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-[11px]">
+                    <div><span className="text-slate-500">Attempts:</span> <span className="text-white">{lab.totalAttempts}</span></div>
+                    <div><span className="text-slate-500">Pass:</span> <span className="text-white">{lab.completionRate.toFixed(0)}%</span></div>
+                    <div><span className="text-slate-500">Fail:</span> <span className="text-white">{lab.failureRate.toFixed(0)}%</span></div>
+                    <div><span className="text-slate-500">Avg Time:</span> <span className="text-white">{lab.avgTimeMinutes.toFixed(0)}m</span></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Detail Panel */}

@@ -209,7 +209,7 @@ export default function AdminBossMissionsPage() {
       </div>
 
       <div className="angular-card bg-[#0f172a] overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
@@ -269,6 +269,40 @@ export default function AdminBossMissionsPage() {
             title="No boss missions found"
             description="Create a boss mission to get started."
           />
+        )}
+        {/* Mobile card view */}
+        {filtered.length > 0 && (
+          <div className="md:hidden divide-y divide-white/5">
+            {filtered.map((m) => (
+              <div key={m.id} className="p-4 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{m.title}</p>
+                    <p className="text-[11px] text-slate-400 truncate">{m.description}</p>
+                  </div>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${DIFFICULTY_COLORS[m.difficulty] || "bg-slate-100 text-slate-600"}`}>
+                    {m.difficulty}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-[11px]">
+                  <div><span className="text-slate-500">Season:</span> <span className="text-white">{m.season ? `S${m.season.seasonNumber}` : "—"}</span></div>
+                  <div><span className="text-slate-500">Attempts:</span> <span className="text-white">{m._count.attempts}/{m.maxAttempts}</span></div>
+                  <div><span className="text-slate-500">XP:</span> <span className="text-white">{m.xpReward}</span></div>
+                  <div><span className="text-slate-500">Rating:</span> <span className="text-white">{m.ratingReward}</span></div>
+                  <div><span className="text-slate-500">Start:</span> <span className="text-white">{formatDate(m.startsAt)}</span></div>
+                  <div><span className="text-slate-500">Expires:</span> <span className="text-white">{formatDate(m.expiresAt)}</span></div>
+                </div>
+                <div className="flex items-center gap-1 pt-1">
+                  <button onClick={() => openEdit(m)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
+                    <Pencil size={14} />
+                  </button>
+                  <button onClick={() => setDeleteDialog({ open: true, item: m })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 

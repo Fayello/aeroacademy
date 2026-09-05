@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body, Req, UseGuards } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CertificationsService } from './certifications.service';
 import { CertificationEngineService } from './certification-engine.service';
 import type { RequestWithUser } from '../common/request-with-user';
@@ -53,5 +56,26 @@ export class CertificationsController {
     const record = await this.engineService.getShareableRecord(token);
     if (!record) return { error: 'Record not found' };
     return record;
+  }
+
+  @Get('admin/all')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async getAllCertifications() {
+    return this.engineService.getAllCertifications();
+  }
+
+  @Put('admin/:id')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async updateCertification(@Param('id') id: string, @Body() body: { name?: string; description?: string; xpRequired?: number; isActive?: boolean; requirements?: Prisma.InputJsonValue }) {
+    return this.engineService.updateCertification(id, body);
+  }
+
+  @Get('admin/stats')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async getCertificationStats() {
+    return this.engineService.getCertificationStats();
   }
 }

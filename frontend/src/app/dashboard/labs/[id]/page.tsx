@@ -4,14 +4,16 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { fetchApi, API_URL } from "@/lib/api";
 import { getDifficultyStyle } from "@/lib/labs";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { io, Socket } from "socket.io-client";
 import { useDashboard } from "@/hooks/useDashboard";
-import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, Home, ChevronRight } from "lucide-react";
+import { Loader2, Play, Square, RefreshCcw, Shield, Terminal as TerminalIcon, ExternalLink, ChevronLeft, Clock, Lock, Copy, PlugZap, Eraser, Wifi, WifiOff, Zap, Maximize2, Minimize2, ZoomIn, ZoomOut, ClipboardPaste, MessageSquare, Star, Users, Home, ChevronRight, Monitor, SplitSquareHorizontal, CheckCircle2, Circle, AlertTriangle } from "lucide-react";
 import LabAvatar from "@/components/ui/LabAvatar";
 import toast from "@/lib/toast";
+import { showXpGain } from "@/components/gamification/XpGain";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import Modal from "@/components/Modal";
@@ -67,6 +69,7 @@ interface LabDefinition {
   briefing?: string | null;
   basePath?: string;
   difficulty: number;
+  dockerImage?: string;
   isLocked?: boolean;
   tasks?: string[];
   credentials?: LabCredential[];
@@ -112,6 +115,36 @@ function getEstimatedTime(flags: number) {
   if (flags <= 4) return "1-2h";
   if (flags <= 6) return "2-4h";
   return "4h+";
+}
+
+const WEB_LAB_IMAGES = ["juice-shop", "webgoat", "nodegoat", "vapi", "dvwa", "hackazon", "web-dvwa", "railsgoat", "juice"];
+function isWebLab(dockerImage?: string): boolean {
+  if (!dockerImage) return false;
+  const lower = dockerImage.toLowerCase();
+  return WEB_LAB_IMAGES.some((keyword) => lower.includes(keyword));
+}
+
+interface WalkthroughStep {
+  id: number;
+  title: string;
+  hint: string;
+  completed: boolean;
+}
+
+function getWalkthroughSteps(lab: LabDefinition | null): WalkthroughStep[] {
+  if (!lab) return [];
+  const steps: WalkthroughStep[] = [];
+  if (lab.tasks && Array.isArray(lab.tasks)) {
+    lab.tasks.forEach((task: string, i: number) => {
+      steps.push({ id: i, title: task, hint: "", completed: false });
+    });
+  }
+  if (steps.length === 0 && lab.flags && Array.isArray(lab.flags)) {
+    lab.flags.forEach((flag: LabFlag, i: number) => {
+      steps.push({ id: i, title: flag.title, hint: flag.description, completed: (flag.submissions?.length ?? 0) > 0 });
+    });
+  }
+  return steps;
 }
 
 function buildLabAccessUrl(instance: LabInstance | null, basePath?: string) {
@@ -167,6 +200,14 @@ export default function LabWorkspace() {
   const [myComment, setMyComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hoverRating, setHoverRating] = useState(0);
+  const [workspaceView, setWorkspaceView] = useState<"terminal" | "web" | "split">("terminal");
+  const [walkthroughSteps, setWalkthroughSteps] = useState<WalkthroughStep[]>([]);
+  const [showHints, setShowHints] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const [iframeError, setIframeError] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const isMobile = useIsMobile();
+  const [mobileCommand, setMobileCommand] = useState("");
 
   // Load lab reviews
   useEffect(() => {
@@ -222,6 +263,21 @@ export default function LabWorkspace() {
       reconnectTimerRef.current = null;
     }
   }, []);
+
+  const toggleWalkthroughStep = useCallback((stepId: number) => {
+    setWalkthroughSteps((prev) => {
+      const next = prev.map((s) => s.id === stepId ? { ...s, completed: !s.completed } : s);
+      try {
+        const completedIds = next.filter((s) => s.completed).map((s) => s.id);
+        localStorage.setItem(`walkthrough:${String(id)}`, JSON.stringify(completedIds));
+        fetchApi(`/labs/${String(id)}/checkpoint`, {
+          method: "POST",
+          body: JSON.stringify({ walkthroughState: completedIds }),
+        }).catch(() => {});
+      } catch {}
+      return next;
+    });
+  }, [id]);
 
   const handleReconnect = useCallback(() => {
     clearReconnectTimer();
@@ -372,7 +428,12 @@ export default function LabWorkspace() {
     async function loadLab() {
       try {
         const labData = await fetchApi(`/labs/definition/${id}`);
-        if (!cancelled) setLab(labData);
+        if (!cancelled) {
+          setLab(labData);
+          if (isMobile && isWebLab(labData.dockerImage || undefined)) {
+            setWorkspaceView("web");
+          }
+        }
         const status = await fetchApi(`/labs/status/${id}`);
         if (!cancelled) setInstance(status);
       } catch {
@@ -404,6 +465,37 @@ export default function LabWorkspace() {
     };
   }, [id]);
 
+  // Load walkthrough state from server checkpoint
+  useEffect(() => {
+    if (!lab) return;
+    const currentLab = lab;
+    const steps = getWalkthroughSteps(currentLab);
+    async function loadCheckpoint() {
+      try {
+        const checkpoint = await fetchApi<{ walkthroughState: number[] } | null>(`/labs/${String(id)}/checkpoint`);
+        if (checkpoint?.walkthroughState) {
+          const completed = checkpoint.walkthroughState as number[];
+          steps.forEach((s) => { s.completed = completed.includes(s.id); });
+        } else {
+          try {
+            const saved = JSON.parse(localStorage.getItem(`walkthrough:${String(id)}`) || "[]") as number[];
+            steps.forEach((s) => { s.completed = saved.includes(s.id); });
+          } catch {}
+        }
+      } catch {
+        try {
+          const saved = JSON.parse(localStorage.getItem(`walkthrough:${String(id)}`) || "[]") as number[];
+          steps.forEach((s) => { s.completed = saved.includes(s.id); });
+        } catch {}
+      }
+      setWalkthroughSteps(steps);
+      if (isWebLab(currentLab.dockerImage || undefined)) {
+        setWorkspaceView("web");
+      }
+    }
+    loadCheckpoint();
+  }, [lab, id]);
+
   useEffect(() => {
     return () => {
       if (socketRef.current) socketRef.current.disconnect();
@@ -415,7 +507,7 @@ export default function LabWorkspace() {
   const initTerminal = useCallback(() => {
     if (!terminalRef.current) return;
 
-    let savedFontSize = 14;
+    let savedFontSize = isMobile ? 18 : 14;
     try {
       const parsed = parseInt(localStorage.getItem("xterm:fontSize") || "", 10);
       if (parsed >= MIN_FONT_SIZE && parsed <= MAX_FONT_SIZE) savedFontSize = parsed;
@@ -1098,6 +1190,50 @@ export default function LabWorkspace() {
               </div>
             )}
 
+            {/* Walkthrough Steps */}
+            {walkthroughSteps.length > 0 && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Walkthrough</h4>
+                  <button
+                    onClick={() => setShowHints((v) => !v)}
+                    className="text-[10px] text-slate-400 hover:text-[#7AD62A] transition-colors"
+                  >
+                    {showHints ? "Hide hints" : "Show hints"}
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  {walkthroughSteps.map((step) => (
+                    <div key={step.id} className={`p-2.5 rounded-lg border transition-colors ${
+                      step.completed
+                        ? "bg-[#7AD62A]/5 border-[#7AD62A]/20"
+                        : "bg-white/5 border-white/10"
+                    }`}>
+                      <button
+                        onClick={() => toggleWalkthroughStep(step.id)}
+                        className="flex items-start gap-2 w-full text-left"
+                      >
+                        {step.completed ? (
+                          <CheckCircle2 size={14} className="text-[#7AD62A] mt-0.5 shrink-0" />
+                        ) : (
+                          <Circle size={14} className="text-slate-500 mt-0.5 shrink-0" />
+                        )}
+                        <span className={`text-xs font-medium ${step.completed ? "text-[#7AD62A]" : "text-slate-300"}`}>
+                          {step.title}
+                        </span>
+                      </button>
+                      {showHints && step.hint && (
+                        <p className="text-[11px] text-slate-400 mt-1.5 ml-5">{step.hint}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 text-[10px] text-slate-500">
+                  {walkthroughSteps.filter((s) => s.completed).length} / {walkthroughSteps.length} steps completed
+                </div>
+              </div>
+            )}
+
             {lab?.credentials && Array.isArray(lab.credentials) && (
               <div className="mt-4">
                 <div className="flex items-center justify-between mb-2">
@@ -1159,7 +1295,12 @@ export default function LabWorkspace() {
                       {flag.submissions && flag.submissions.length > 0 ? (
                         <span className="text-xs text-[#7AD62A] font-medium">Solved</span>
                       ) : (
-                        <FlagInput flagId={flag.id} labId={String(id)} setLab={setLab} />
+                        <FlagInput
+                          flagId={flag.id}
+                          labId={String(id)}
+                          setLab={setLab}
+                          walkthroughComplete={walkthroughSteps.length === 0 || walkthroughSteps.filter((s) => s.completed).length >= Math.ceil(walkthroughSteps.length * 0.5)}
+                        />
                       )}
                     </div>
                   ))}
@@ -1170,143 +1311,339 @@ export default function LabWorkspace() {
         </div>
         )}
 
-        {/* Terminal */}
+        {/* Workspace (Terminal + Web UI) */}
         <div className="flex-1 flex flex-col min-w-0 angular-card bg-[#0f172a] shadow-sm overflow-hidden">
-          <div className="border-b border-white/10 px-3 sm:px-4 py-2 flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-2">
-              <TerminalIcon size={14} className="text-slate-400" />
-              <span className="text-xs font-medium text-slate-400">Terminal</span>
+          {/* Workspace tabs */}
+          <div className="border-b border-white/10 px-3 sm:px-4 py-2 shrink-0">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setWorkspaceView("terminal")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  workspaceView === "terminal"
+                    ? "bg-white/10 text-white"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                }`}
+              >
+                <TerminalIcon size={13} />
+                Terminal
+              </button>
+              {isWebLab(lab?.dockerImage || undefined) && (
+                <>
+                  <button
+                    onClick={() => setWorkspaceView("web")}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      workspaceView === "web"
+                        ? "bg-white/10 text-white"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    }`}
+                  >
+                    <Monitor size={13} />
+                    Web UI
+                  </button>
+                  <button
+                    onClick={() => setWorkspaceView("split")}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      workspaceView === "split"
+                        ? "bg-white/10 text-white"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    }`}
+                  >
+                    <SplitSquareHorizontal size={13} />
+                    Split
+                  </button>
+                </>
+              )}
+
+              {/* Quick commands + controls (terminal view only) */}
+              {isRunning && connected && workspaceView !== "web" && (
+                <div className="sm:ml-auto flex items-center gap-1 overflow-x-auto">
+                  <span className="text-[10px] text-slate-400 mr-1 hidden sm:block">Quick:</span>
+                  {QUICK_COMMANDS.map((cmd) => (
+                    <button
+                      key={cmd}
+                      onClick={() => sendCommand(cmd)}
+                      title={`Run: ${cmd}`}
+                      className="px-2 py-1 rounded-md bg-white/5 hover:bg-[#7AD62A]/10 text-[11px] font-mono text-slate-400 hover:text-white transition-colors"
+                    >
+                      {cmd}
+                    </button>
+                  ))}
+                  <div className="hidden sm:block w-px h-4 bg-white/10 mx-1 shrink-0" />
+                  <div className="flex items-center gap-0.5 sm:gap-1">
+                    <button
+                      onClick={handleCopy}
+                      disabled={!selection}
+                      title="Copy selection"
+                      className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                    >
+                      <Copy size={13} />
+                    </button>
+                    <button
+                      onClick={handlePaste}
+                      title="Paste from clipboard"
+                      className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+                    >
+                      <ClipboardPaste size={13} />
+                    </button>
+                    <button
+                      onClick={() => updateFontSize(fontSize - 1)}
+                      disabled={fontSize <= MIN_FONT_SIZE}
+                      title="Decrease font size"
+                      className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                    >
+                      <ZoomOut size={13} />
+                    </button>
+                    <button
+                      onClick={() => updateFontSize(fontSize + 1)}
+                      disabled={fontSize >= MAX_FONT_SIZE}
+                      title="Increase font size"
+                      className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                    >
+                      <ZoomIn size={13} />
+                    </button>
+                    <button
+                      onClick={handleClear}
+                      title="Clear terminal"
+                      className="ml-0.5 sm:ml-1 p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+                    >
+                      <Eraser size={13} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isRunning && !connected && (
+                <div className="sm:ml-auto flex items-center gap-2">
+                  <span className="flex items-center gap-1.5 text-xs text-amber-600">
+                    <Loader2 className="animate-spin" size={12} />
+                    Connecting...
+                  </span>
+                  <button
+                    onClick={handleManualReconnect}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
+                  >
+                    <PlugZap size={12} />
+                    Reconnect
+                  </button>
+                </div>
+              )}
+
+              <button
+                onClick={() => setIsFullscreen((v) => !v)}
+                title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+              >
+                {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+              </button>
             </div>
-
-            {isRunning && connected && (
-              <div className="sm:ml-auto flex items-center gap-1 overflow-x-auto">
-                <span className="text-[10px] text-slate-400 mr-1 hidden sm:block">Quick:</span>
-                {QUICK_COMMANDS.map((cmd) => (
-                  <button
-                    key={cmd}
-                    onClick={() => sendCommand(cmd)}
-                    title={`Run: ${cmd}`}
-                    className="px-2 py-1 rounded-md bg-white/5 hover:bg-[#7AD62A]/10 text-[11px] font-mono text-slate-400 hover:text-white transition-colors"
-                  >
-                    {cmd}
-                  </button>
-                ))}
-                <div className="hidden sm:block w-px h-4 bg-white/10 mx-1 shrink-0" />
-                <div className="flex items-center gap-0.5 sm:gap-1">
-                  <button
-                    onClick={handleCopy}
-                    disabled={!selection}
-                    title="Copy selection"
-                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                  >
-                    <Copy size={13} />
-                  </button>
-                  <button
-                    onClick={handlePaste}
-                    title="Paste from clipboard"
-                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
-                  >
-                    <ClipboardPaste size={13} />
-                  </button>
-                  <button
-                    onClick={() => updateFontSize(fontSize - 1)}
-                    disabled={fontSize <= MIN_FONT_SIZE}
-                    title="Decrease font size"
-                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                  >
-                    <ZoomOut size={13} />
-                  </button>
-                  <button
-                    onClick={() => updateFontSize(fontSize + 1)}
-                    disabled={fontSize >= MAX_FONT_SIZE}
-                    title="Increase font size"
-                    className="p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                  >
-                    <ZoomIn size={13} />
-                  </button>
-                  <button
-                    onClick={handleClear}
-                    title="Clear terminal"
-                    className="ml-0.5 sm:ml-1 p-1 sm:p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
-                  >
-                    <Eraser size={13} />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {isRunning && !connected && (
-              <div className="sm:ml-auto flex items-center gap-2">
-                <span className="flex items-center gap-1.5 text-xs text-amber-600">
-                  <Loader2 className="animate-spin" size={12} />
-                  Connecting...
-                </span>
-                <button
-                  onClick={handleManualReconnect}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
-                >
-                  <PlugZap size={12} />
-                  Reconnect
-                </button>
-              </div>
-            )}
-
-            <button
-              onClick={() => setIsFullscreen((v) => !v)}
-              title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              className="p-1.5 rounded-md text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
-            >
-              {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
-            </button>
           </div>
-          <div className="flex-1 min-h-[360px] lg:min-h-0 relative">
-            {isRunning ? (
-              <div ref={terminalRef} className="w-full h-full" />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-slate-400 gap-3">
-                <TerminalIcon size={28} className="text-slate-300" />
-                <div className="text-center">
-                  <p className="text-sm font-medium">
-                    {isExpired ? "Lab instance expired" : isProvisioning ? "Lab is provisioning" : isStopped ? "Lab stopped" : "Terminal offline"}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {isExpired
-                      ? "Start a fresh instance to continue"
-                      : isProvisioning
-                        ? "Your environment is being prepared. The terminal will connect when the lab becomes ready."
-                        : isStopped
-                          ? "The last attempt has ended. Start a fresh instance to continue."
-                          : "Start a lab instance to connect"}
-                  </p>
-                </div>
-                {!isRunning && !isProvisioning && (
-                  <button onClick={handleLaunch} className="btn-primary text-sm">
-                    <Play size={14} />
-                    {isStopped || isExpired ? "Start Fresh Instance" : "Start Lab"}
-                  </button>
+
+          {/* Workspace content */}
+          <div className={`flex-1 min-h-[360px] lg:min-h-0 relative ${workspaceView === "split" ? "flex" : ""}`}>
+            {/* Terminal pane */}
+            {(workspaceView === "terminal" || workspaceView === "split") && (
+              <div className={`${workspaceView === "split" ? "w-1/2 border-r border-white/10" : "w-full"} h-full flex flex-col`}>
+                {isRunning ? (
+                  <>
+                    <div ref={terminalRef} className="w-full flex-1 min-h-0" />
+                    {isMobile && (
+                      <div className="shrink-0 border-t border-white/10 bg-[#0a0f1a] p-2 safe-area-pb">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="flex gap-1 overflow-x-auto scrollbar-hide flex-1">
+                            {QUICK_COMMANDS.map((cmd) => (
+                              <button
+                                key={cmd}
+                                onClick={() => sendCommand(cmd)}
+                                className="px-2.5 py-1.5 rounded-md bg-white/5 hover:bg-[#7AD62A]/10 text-[11px] font-mono text-slate-400 hover:text-white transition-colors shrink-0"
+                              >
+                                {cmd}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (mobileCommand.trim()) {
+                              sendCommand(mobileCommand.trim());
+                              setMobileCommand("");
+                            }
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <input
+                            type="text"
+                            value={mobileCommand}
+                            onChange={(e) => setMobileCommand(e.target.value)}
+                            placeholder="Type command..."
+                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 font-mono focus:outline-none focus:border-[#7AD62A]/50"
+                            autoComplete="off"
+                            autoCapitalize="off"
+                            spellCheck={false}
+                          />
+                          <button
+                            type="submit"
+                            disabled={!mobileCommand.trim()}
+                            className="px-3 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] disabled:opacity-30 text-[#0F203A] text-xs font-medium transition-colors shrink-0"
+                          >
+                            Run
+                          </button>
+                        </form>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-slate-400 gap-3">
+                    <TerminalIcon size={28} className="text-slate-300" />
+                    <div className="text-center">
+                      <p className="text-sm font-medium">
+                        {isExpired ? "Lab instance expired" : isProvisioning ? "Lab is provisioning" : isStopped ? "Lab stopped" : "Terminal offline"}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {isExpired
+                          ? "Start a fresh instance to continue"
+                          : isProvisioning
+                            ? "Your environment is being prepared. The terminal will connect when the lab becomes ready."
+                            : isStopped
+                              ? "The last attempt has ended. Start a fresh instance to continue."
+                              : "Start a lab instance to connect"}
+                      </p>
+                    </div>
+                    {!isRunning && !isProvisioning && (
+                      <button onClick={handleLaunch} className="btn-primary text-sm">
+                        <Play size={14} />
+                        {isStopped || isExpired ? "Start Fresh Instance" : "Start Lab"}
+                      </button>
+                    )}
+                  </div>
+                )}
+                {isRunning && !connected && hasConnected && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/5">
+                    <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center">
+                      <WifiOff size={20} className="text-amber-500" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-white">Connection lost</p>
+                      <p className="text-xs text-slate-400 mt-1 max-w-xs">
+                        {autoReconnecting
+                          ? "Attempting to reconnect automatically..."
+                          : "The connection to your terminal was lost. Click below to re-establish the session."}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleManualReconnect}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-medium transition-colors"
+                    >
+                      <PlugZap size={12} />
+                      Reconnect
+                    </button>
+                  </div>
                 )}
               </div>
             )}
-            {isRunning && !connected && hasConnected && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/5">
-                <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center">
-                  <WifiOff size={20} className="text-amber-500" />
+
+            {/* Web UI iframe */}
+            {(workspaceView === "web" || workspaceView === "split") && isWebLab(lab?.dockerImage || undefined) && (
+              <div className={`${workspaceView === "split" ? "w-1/2" : "w-full"} h-full flex flex-col`}>
+                {/* URL bar */}
+                {isRunning && accessUrl && (
+                  <div className="border-b border-white/10 px-3 py-1.5 flex items-center gap-2 shrink-0 bg-[#0f172a]">
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${iframeLoading ? "bg-amber-400 animate-pulse" : iframeError ? "bg-red-400" : "bg-[#7AD62A]"}`} />
+                      <span className="text-[11px] font-mono text-slate-400 truncate">{accessUrl}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIframeLoading(true);
+                        setIframeError(false);
+                        if (iframeRef.current) iframeRef.current.src = accessUrl;
+                      }}
+                      title="Refresh"
+                      className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <RefreshCcw size={12} />
+                    </button>
+                    <a
+                      href={accessUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Open in new tab"
+                      className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
+                {/* Iframe content */}
+                <div className="flex-1 relative min-h-0">
+                  {isRunning && accessUrl ? (
+                    <>
+                      {iframeLoading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#0f172a] z-10">
+                          <div className="flex flex-col items-center gap-3">
+                            <Loader2 className="animate-spin text-[#7AD62A]" size={24} />
+                            <p className="text-xs text-slate-400">Loading web interface...</p>
+                          </div>
+                        </div>
+                      )}
+                      {iframeError && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#0f172a] z-10">
+                          <div className="flex flex-col items-center gap-3 text-center">
+                            <Monitor size={28} className="text-red-400" />
+                            <div>
+                              <p className="text-sm font-medium text-white">Failed to load web interface</p>
+                              <p className="text-xs text-slate-400 mt-1">The lab service may not be responding yet</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setIframeLoading(true);
+                                setIframeError(false);
+                                if (iframeRef.current) iframeRef.current.src = accessUrl;
+                              }}
+                              className="btn-primary text-xs"
+                            >
+                              <RefreshCcw size={12} />
+                              Retry
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <iframe
+                        ref={iframeRef}
+                        src={accessUrl}
+                        className="w-full h-full border-0 bg-white"
+                        title="Web Lab UI"
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                        onLoad={() => setIframeLoading(false)}
+                        onError={() => { setIframeLoading(false); setIframeError(true); }}
+                      />
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-slate-400 gap-3">
+                      <Monitor size={28} className="text-slate-300" />
+                      <div className="text-center">
+                        <p className="text-sm font-medium">
+                          {isExpired ? "Lab instance expired" : isProvisioning ? "Lab is provisioning" : isStopped ? "Lab stopped" : "Web UI offline"}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {isExpired
+                            ? "Start a fresh instance to continue"
+                            : isProvisioning
+                              ? "The web interface will be available once the lab is ready."
+                              : isStopped
+                                ? "The last attempt has ended. Start a fresh instance to continue."
+                                : "Start a lab instance to access the web interface"}
+                        </p>
+                      </div>
+                      {!isRunning && !isProvisioning && (
+                        <button onClick={handleLaunch} className="btn-primary text-sm">
+                          <Play size={14} />
+                          {isStopped || isExpired ? "Start Fresh Instance" : "Start Lab"}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-white">Connection lost</p>
-                  <p className="text-xs text-slate-400 mt-1 max-w-xs">
-                    {autoReconnecting
-                      ? "Attempting to reconnect automatically..."
-                      : "The connection to your terminal was lost. Click below to re-establish the session."}
-                  </p>
-                </div>
-                <button
-                  onClick={handleManualReconnect}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-medium transition-colors"
-                >
-                  <PlugZap size={12} />
-                  Reconnect
-                </button>
               </div>
             )}
           </div>
@@ -1326,7 +1663,7 @@ export default function LabWorkspace() {
   );
 }
 
-function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; setLab: (lab: LabDefinition) => void }) {
+function FlagInput({ flagId, labId, setLab, walkthroughComplete }: { flagId: string; labId: string; setLab: (lab: LabDefinition) => void; walkthroughComplete?: boolean }) {
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -1340,6 +1677,7 @@ function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; s
       });
       if (res.isCorrect) {
         toast.success(res.message);
+        showXpGain(res.xpAwarded || 10);
         const labData = await fetchApi(`/labs/definition/${labId}`);
         setLab(labData);
       } else {
@@ -1353,22 +1691,30 @@ function FlagInput({ flagId, labId, setLab }: { flagId: string; labId: string; s
   };
 
   return (
-    <div className="flex gap-2">
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="AERO{...}"
-        className="flex-1 text-xs border border-white/10 bg-[#0f172a] text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-      />
-              <button
-        onClick={handleSubmit}
-        disabled={submitting}
-        className="px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-medium transition-colors disabled:opacity-50"
-      >
-        {submitting ? <Loader2 className="animate-spin" size={12} /> : "Submit"}
-      </button>
+    <div className="space-y-2">
+      {walkthroughComplete === false && (
+        <p className="text-[10px] text-amber-400 flex items-center gap-1">
+          <AlertTriangle size={10} />
+          Complete walkthrough steps first for best results
+        </p>
+      )}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="AERO{...}"
+          className="flex-1 text-xs border border-white/10 bg-[#0f172a] text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#7AD62A]/20 focus:border-[#7AD62A]"
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={submitting}
+          className="px-3 py-1.5 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-xs font-medium transition-colors disabled:opacity-50"
+        >
+          {submitting ? <Loader2 className="animate-spin" size={12} /> : "Submit"}
+        </button>
+      </div>
     </div>
   );
 }

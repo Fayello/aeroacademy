@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { EventsService } from '../common/events.service';
 import { randomBytes } from 'crypto';
 
 type Any = any;
@@ -38,7 +41,13 @@ export interface CertificationEvaluation {
 
 @Injectable()
 export class CertificationEngineService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(CertificationEngineService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+    private readonly eventsService: EventsService,
+  ) {}
 
   private generateCredentialId(): string {
     return `XCA-${Date.now().toString(36).toUpperCase()}-${randomBytes(4).toString('hex').toUpperCase()}`;
@@ -211,7 +220,7 @@ export class CertificationEngineService {
     const expiresAt = new Date();
     expiresAt.setFullYear(expiresAt.getFullYear() + 2); // 2-year validity
 
-    return this.prisma.certificationAward.create({
+    const award = await this.prisma.certificationAward.create({
       data: {
         userId,
         certificationId: cert.id,
@@ -221,6 +230,42 @@ export class CertificationEngineService {
       },
       include: { certification: true },
     });
+
+    this.notificationsService.create({
+      userId,
+      title: 'Certification Awarded',
+      message: `Congratulations! You have been awarded ${cert.name} (${cert.code}).`,
+      type: 'ACHIEVEMENT',
+      link: `/dashboard/certifications`,
+    }).catch(() => {});
+
+    this.eventsService.emit('CERTIFICATION_AWARDED', {
+      userId,
+      certificationCode: cert.code,
+      certificationName: cert.name,
+      credentialId,
+    });
+
+    return award;
+  }
+
+  async autoAwardForUser(userId: string): Promise<string[]> {
+    const evaluations = await this.evaluateUser(userId);
+    const awarded: string[] = [];
+
+    for (const evaluation of evaluations) {
+      if (!evaluation.eligible) continue;
+
+      const existing = await this.prisma.certificationAward.findUnique({
+        where: { userId_certificationId: { userId, certificationId: evaluation.certificationId } },
+      });
+      if (existing) continue;
+
+      await this.awardCertification(userId, evaluation.code);
+      awarded.push(evaluation.code);
+    }
+
+    return awarded;
   }
 
   async getMyAwards(userId: string) {
@@ -375,5 +420,37 @@ export class CertificationEngineService {
       create: { userId, shareToken: token, data: {} },
     });
     return token;
+  }
+
+  async getAllCertifications() {
+    return this.prisma.certification.findMany({
+      orderBy: { xpRequired: 'asc' },
+      include: {
+        _count: { select: { awards: true } },
+      },
+    });
+  }
+
+  async updateCertification(id: string, data: { name?: string; description?: string; xpRequired?: number; isActive?: boolean; requirements?: Prisma.InputJsonValue }) {
+    return this.prisma.certification.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async getCertificationStats() {
+    const certs = await this.prisma.certification.findMany({
+      include: { awards: true },
+    });
+    return certs.map((c) => ({
+      id: c.id,
+      code: c.code,
+      name: c.name,
+      isActive: c.isActive,
+      xpRequired: c.xpRequired,
+      totalAwards: c.awards.length,
+      activeAwards: c.awards.filter((a) => !a.expiresAt || a.expiresAt > new Date()).length,
+      expiredAwards: c.awards.filter((a) => a.expiresAt && a.expiresAt <= new Date()).length,
+    }));
   }
 }

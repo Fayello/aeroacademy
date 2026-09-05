@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
-import { Microscope, Play, Clock, Shield, Lock, Search, X, LayoutGrid, List, Rocket } from "lucide-react";
+import { Microscope, Play, Clock, Shield, Lock, Search, X, LayoutGrid, List, Rocket, Zap } from "lucide-react";
 import LabAvatar from "@/components/ui/LabAvatar";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
@@ -426,6 +426,9 @@ export default function LabsCatalog() {
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
                       <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 bg-[#7AD62A]/10 text-[#7AD62A] rounded flex items-center gap-0.5">
+                        <Zap size={8} /> {flags * 10} XP
+                      </span>
                     </div>
                     {/* Status badge */}
                     {progressStatus === "COMPLETED" && (

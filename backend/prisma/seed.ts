@@ -8,6 +8,7 @@ import { seedLinuxCoursesPart2 } from './seed-linux-courses-part2';
 import { seedLinuxCoursesPart3 } from './seed-linux-courses-part3';
 import { seedMasterClasses } from './seed-master-classes';
 import { seedTrainers } from './seed-trainers';
+import { seedCertifications } from './seed-certifications';
 
 const SALT_ROUNDS = 10;
 const ENCRYPTION_KEY = process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!';
@@ -1209,6 +1210,10 @@ Applications on AWS/GCP can often access a local metadata service at \`169.254.1
   console.log('Seeding feature unlock defaults...');
   await seedFeatureUnlocks(prisma);
   console.log('Feature unlock seeding complete!');
+
+  console.log('Seeding certifications...');
+  await seedCertifications(prisma);
+  console.log('Certification seeding complete!');
 }
 
 main()

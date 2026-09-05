@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   CheckCircle,
   XCircle,
@@ -25,6 +25,7 @@ import type {
 
 interface InlinePracticeRendererProps {
   practices: InlinePracticeProgress[];
+  onPracticeUpdate?: (practice: InlinePracticeProgress) => void;
   onAllPassed?: () => void;
 }
 
@@ -37,7 +38,7 @@ const TYPE_CONFIG: Record<
     label: "Command Exercise",
     color: "text-[#7AD62A]",
   },
-  FLAG_CAPTURE: { icon: Flag, label: "Flag Capture", color: "text-amber-400" },
+  FLAG_CAPTURE: { icon: Flag, label: "Proof Capture", color: "text-amber-400" },
   CHECKLIST: {
     icon: ListChecks,
     label: "Checklist",
@@ -49,10 +50,20 @@ const TYPE_CONFIG: Record<
     color: "text-purple-400",
   },
   CODE_FIX: { icon: Code, label: "Code Fix", color: "text-cyan-400" },
+  SHORT_RESPONSE: {
+    icon: ScrollText,
+    label: "Short Response",
+    color: "text-slate-300",
+  },
 };
+
+function normalizeDisplayText(value?: string | null) {
+  return (value || "").replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n");
+}
 
 export default function InlinePracticeRenderer({
   practices,
+  onPracticeUpdate,
   onAllPassed,
 }: InlinePracticeRendererProps) {
   const [localPractices, setLocalPractices] =
@@ -69,6 +80,14 @@ export default function InlinePracticeRenderer({
     Record<string, Record<number, boolean>>
   >({});
 
+  useEffect(() => {
+    setLocalPractices(practices);
+    setAnswers({});
+    setResults({});
+    setExpandedHints({});
+    setChecklistStates({});
+  }, [practices]);
+
   const allPassed = localPractices.every((p) => p.passed);
   const passedCount = localPractices.filter((p) => p.passed).length;
 
@@ -81,8 +100,11 @@ export default function InlinePracticeRenderer({
     [onAllPassed],
   );
 
-  const handleSubmit = async (practice: InlinePracticeProgress) => {
-    const answer = answers[practice.id];
+  const handleSubmit = async (
+    practice: InlinePracticeProgress,
+    overrideAnswer?: string,
+  ) => {
+    const answer = overrideAnswer ?? answers[practice.id];
     if (!answer?.trim()) {
       toast.error("Enter an answer before submitting.");
       return;
@@ -109,16 +131,20 @@ export default function InlinePracticeRenderer({
 
       setResults((prev) => ({ ...prev, [practice.id]: result }));
       setLocalPractices((prev) => {
+        let updatedPractice: InlinePracticeProgress | null = null;
         const updated = prev.map((p) =>
           p.id === practice.id
-            ? {
+            ? (updatedPractice = {
                 ...p,
                 passed: p.passed || result.isCorrect,
                 attemptCount: p.attemptCount + 1,
                 latestSubmission: result,
-              }
+              })
             : p,
         );
+        if (updatedPractice) {
+          onPracticeUpdate?.(updatedPractice);
+        }
         checkAllPassed(updated);
         return updated;
       });
@@ -147,8 +173,9 @@ export default function InlinePracticeRenderer({
       toast.error("Complete all checklist items before submitting.");
       return;
     }
-    setAnswers((prev) => ({ ...prev, [practice.id]: "CHECKLIST_COMPLETE" }));
-    await handleSubmit({ ...practice, id: practice.id });
+    const checklistAnswer = "CHECKLIST_COMPLETE";
+    setAnswers((prev) => ({ ...prev, [practice.id]: checklistAnswer }));
+    await handleSubmit(practice, checklistAnswer);
   };
 
   const toggleChecklistItem = (practiceId: string, index: number) => {
@@ -216,6 +243,10 @@ export default function InlinePracticeRenderer({
             practice.maxAttempts > 0
               ? practice.maxAttempts - practice.attemptCount
               : Infinity;
+          const maxReached =
+            !isPassed &&
+            practice.maxAttempts > 0 &&
+            practice.attemptCount >= practice.maxAttempts;
 
           return (
             <div
@@ -256,21 +287,31 @@ export default function InlinePracticeRenderer({
                   </div>
                 </div>
                 {practice.maxAttempts > 0 && (
-                  <span className="text-xs text-slate-500 whitespace-nowrap">
-                    {attemptsLeft === Infinity
-                      ? "Unlimited"
-                      : `${attemptsLeft} attempts left`}
+                  <span
+                    className={`text-xs whitespace-nowrap ${
+                      isPassed
+                        ? "text-[#7AD62A]"
+                        : maxReached
+                          ? "text-red-300"
+                          : "text-slate-500"
+                    }`}
+                  >
+                    {isPassed
+                      ? "Passed"
+                      : maxReached
+                        ? "Attempts used"
+                        : `${Math.max(0, attemptsLeft)} attempts left`}
                   </span>
                 )}
               </div>
 
               <div className="bg-slate-950/50 rounded-lg p-4 mb-4 border border-white/5">
                 <p className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed">
-                  {practice.prompt}
+                  {normalizeDisplayText(practice.prompt)}
                 </p>
                 {practice.instructions && (
                   <p className="text-slate-500 text-xs mt-3 border-t border-white/5 pt-3">
-                    {practice.instructions}
+                    {normalizeDisplayText(practice.instructions)}
                   </p>
                 )}
               </div>
@@ -293,6 +334,7 @@ export default function InlinePracticeRenderer({
                   onReset={resetPractice}
                   isSubmitting={isSubmitting}
                   isPassed={isPassed}
+                  maxReached={maxReached}
                   result={result}
                 />
               )}
@@ -327,7 +369,7 @@ export default function InlinePracticeRenderer({
                             size={12}
                             className="text-amber-400 mt-0.5 shrink-0"
                           />
-                          {hint}
+                          {normalizeDisplayText(hint)}
                         </div>
                       ))}
                     </div>
@@ -358,6 +400,7 @@ function TextInputExercise({
   onReset,
   isSubmitting,
   isPassed,
+  maxReached,
   result,
 }: {
   practice: InlinePracticeProgress;
@@ -367,20 +410,30 @@ function TextInputExercise({
   onReset: (id: string) => void;
   isSubmitting: boolean;
   isPassed: boolean;
+  maxReached: boolean;
   result?: InlinePracticeSubmission;
 }) {
   const value = answers[practice.id] || "";
 
-  if (isPassed && !result) {
+  if (isPassed) {
     return (
       <div className="flex items-center gap-2 text-sm text-[#7AD62A] bg-[#7AD62A]/5 rounded-lg px-4 py-3 border border-[#7AD62A]/10">
         <CheckCircle size={16} />
-        <span>Completed</span>
-        {practice.latestSubmission?.feedback && (
+        <span>Practice passed</span>
+        {(result?.feedback || practice.latestSubmission?.feedback) && (
           <span className="text-slate-400 ml-2">
-            &middot; {practice.latestSubmission.feedback}
+            &middot; {result?.feedback || practice.latestSubmission?.feedback}
           </span>
         )}
+      </div>
+    );
+  }
+
+  if (maxReached) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-red-300 bg-red-500/5 rounded-lg px-4 py-3 border border-red-500/10">
+        <XCircle size={16} />
+        <span>Attempts used. Review the lesson before retry is available.</span>
       </div>
     );
   }
@@ -404,15 +457,15 @@ function TextInputExercise({
           }}
           placeholder={
             practice.type === "FLAG_CAPTURE"
-              ? "Enter the flag (e.g., flag{...})"
+              ? "Enter the flag or captured value..."
               : "Type your answer..."
           }
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPassed || maxReached}
           className="flex-1 bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#7AD62A]/50 focus:ring-1 focus:ring-[#7AD62A]/30 transition-all disabled:opacity-50 font-mono"
         />
         <button
           onClick={() => onSubmit(practice)}
-          disabled={isSubmitting || !value.trim()}
+          disabled={isSubmitting || isPassed || maxReached || !value.trim()}
           className="btn-primary flex items-center gap-2 disabled:opacity-40"
         >
           {isSubmitting ? (
@@ -458,6 +511,8 @@ function ChecklistExercise({
   isPassed: boolean;
 }) {
   const items = practice.prompt
+    .replace(/\\r\\n/g, "\n")
+    .replace(/\\n/g, "\n")
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean);

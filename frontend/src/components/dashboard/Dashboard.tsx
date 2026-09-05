@@ -21,6 +21,7 @@ import {
   Users,
   Shield,
   FileCheck,
+  Flame,
 } from "lucide-react";
 import {
   clearOnboardingState,
@@ -37,6 +38,14 @@ import {
   syncOnboardingFromProfile,
 } from "@/lib/onboarding";
 import type { DashboardRecommendations, UserPreference } from "@/types/api";
+import AchievementToast from "@/components/gamification/AchievementToast";
+import LevelUpModal from "@/components/gamification/LevelUpModal";
+import XpGainLayer from "@/components/gamification/XpGain";
+import DailyMissions from "@/components/dashboard/DailyMissions";
+import SkillProfile from "@/components/dashboard/SkillProfile";
+import SocialFeed from "@/components/dashboard/SocialFeed";
+import LeaderboardPreview from "@/components/dashboard/LeaderboardPreview";
+import { getLevel, getLevelProgress } from "@/lib/levelGating";
 
 interface User {
   id: string;
@@ -190,7 +199,7 @@ export default function Dashboard() {
   const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
   const [loading, setLoading] = useState(true);
   const [greeting, setGreeting] = useState("Good day");
-  const { userMetrics } = useDashboard();
+  const { userMetrics, feed, leaderboard } = useDashboard();
 
   useEffect(() => {
     setGreeting(getStoredGreeting());
@@ -377,6 +386,9 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      <AchievementToast />
+      <LevelUpModal />
+      <XpGainLayer />
       {/* ─── GREETING HERO ─── */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0F203A] via-[#122a47] to-[#1a3a5c] p-5 sm:p-6 lg:p-8 animate-fade-in-up border border-white/[0.06] shadow-lg shadow-black/20">
         <div className="absolute inset-0 dot-grid-bg opacity-[0.04] pointer-events-none" />
@@ -634,28 +646,66 @@ export default function Dashboard() {
 
       {/* ─── ACTIVE PROGRESS ─── */}
       <div className="grid grid-cols-1 xl:grid-cols-[0.8fr_1.2fr] gap-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-fade-in-up animate-delay-3">
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] hover:border-[#7AD62A]/20 transition-all duration-300">
-          <div className="w-8 h-8 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-[#7AD62A]/20 transition-colors">
-            <FlaskConical size={16} className="text-[#7AD62A]" />
+        {/* Gamification hero strip */}
+        <div className="angular-card bg-[#0f172a] border border-white/6 p-5 animate-fade-in-up animate-delay-3">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-white">Your Progress</h3>
+            <Link href="/dashboard/ranking" className="text-xs text-[#7AD62A] hover:text-[#6bc422] font-medium flex items-center gap-1">
+              Full ranking <ChevronRight size={12} />
+            </Link>
           </div>
-          <p className="text-xl font-bold text-white">{labsCompleted}</p>
-          <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Labs Done</p>
-        </div>
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] hover:border-violet-400/20 transition-all duration-300">
-          <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-violet-500/20 transition-colors">
-            <Award size={16} className="text-violet-400" />
+          <div className="grid grid-cols-2 gap-3">
+            {/* XP */}
+            <div className="rounded-xl bg-white/[0.03] border border-white/4 p-4 text-center">
+              <Zap size={16} className="text-amber-400 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-white font-mono">{(userMetrics?.xp || 0).toLocaleString()}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wide mt-1">Total XP</p>
+              <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-700" style={{ width: `${getLevelProgress(userMetrics?.xp || 0) * 100}%` }} />
+              </div>
+              <p className="text-[10px] text-slate-500 mt-1">Level {getLevel(userMetrics?.xp || 0)}</p>
+            </div>
+            {/* Streak */}
+            <div className="rounded-xl bg-white/[0.03] border border-white/4 p-4 text-center">
+              <Flame size={16} className="text-orange-400 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-white">{userMetrics?.streak || 0}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wide mt-1">Day Streak</p>
+              <div className="mt-2 flex justify-center gap-0.5">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${i < Math.min(userMetrics?.streak || 0, 7) ? "bg-orange-400" : "bg-white/10"}`}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-slate-500 mt-1">{userMetrics?.streak || 0}/7 days</p>
+            </div>
+            {/* Division */}
+            <div className="rounded-xl bg-white/[0.03] border border-white/4 p-4 text-center">
+              <Shield size={16} className="text-blue-400 mx-auto mb-2" />
+              <p className="text-lg font-bold text-white">{userMetrics?.division || "BRONZE"}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wide mt-1">Division</p>
+              <div className="mt-2 flex justify-center gap-0.5">
+                {["BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND", "TITAN", "GRANDMASTER"].map((d, i) => (
+                  <div
+                    key={d}
+                    className={`w-1.5 h-1.5 rounded-full ${["BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND", "TITAN", "GRANDMASTER"].indexOf(userMetrics?.division || "BRONZE") >= i ? "bg-blue-400" : "bg-white/10"}`}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-slate-500 mt-1">Rating: {userMetrics?.rank || 1200}</p>
+            </div>
+            {/* Skills & Labs */}
+            <div className="rounded-xl bg-white/[0.03] border border-white/4 p-4 text-center">
+              <Award size={16} className="text-violet-400 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-white">{outcomesCompleted}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wide mt-1">Skills Mastered</p>
+              <div className="mt-2 text-[10px] text-slate-400">
+                <span className="text-[#7AD62A] font-medium">{labsCompleted}</span> labs · <span className="text-violet-400 font-medium">{outcomesCompleted}</span> skills
+              </div>
+              <p className="text-[10px] text-slate-500 mt-1">{userMetrics?.clearance || "STUDENT_L1"}</p>
+            </div>
           </div>
-          <p className="text-xl font-bold text-white">{outcomesCompleted}</p>
-          <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Skills Mastered</p>
-        </div>
-        <div className="angular-card bg-[#0f172a] border border-white/6 p-4 text-center group hover:bg-white/[0.03] hover:border-amber-400/20 transition-all duration-300">
-          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-500/20 transition-colors">
-            <Zap size={16} className="text-amber-400" />
-          </div>
-          <p className="text-xl font-bold text-white">{userMetrics?.streak || 0}</p>
-          <p className="text-[10px] text-slate-500 uppercase tracking-wide font-medium mt-0.5">Day Streak</p>
-        </div>
         </div>
 
         {(activeLabs.length > 0 || enrolledCourses.length > 0) && (
@@ -719,6 +769,39 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* ─── DAILY MISSIONS ─── */}
+      {!isNewUser && (
+        <div className="animate-fade-in-up animate-delay-4">
+          <DailyMissions />
+        </div>
+      )}
+
+      {/* ─── COMMUNITY PREVIEW ─── */}
+      {!isNewUser && (feed.length > 0 || leaderboard.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up animate-delay-4">
+          <div className="angular-card bg-[#0f172a] border border-white/6 overflow-hidden">
+            <SocialFeed />
+          </div>
+          <div className="space-y-4">
+            {leaderboard.length > 0 && (
+              <div className="angular-card bg-[#0f172a] border border-white/6 overflow-hidden">
+                <LeaderboardPreview leaderboard={leaderboard} />
+              </div>
+            )}
+            <Link href="/dashboard/guilds" className="angular-card bg-[#0f172a] border border-white/6 p-4 flex items-center gap-3 hover:border-[#7AD62A]/20 transition-colors block">
+              <div className="w-10 h-10 rounded-lg bg-[#7AD62A]/10 flex items-center justify-center shrink-0">
+                <Shield size={18} className="text-[#7AD62A]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Guilds</p>
+                <p className="text-xs text-slate-400">Join up to 50 engineers. Compete, chat, grow together.</p>
+              </div>
+              <ChevronRight size={16} className="text-slate-500 ml-auto shrink-0" />
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* ─── SKILLS ─── */}
       {domains.length > 0 && domains.some((d) => d.score > 0) && (
         <div className="angular-card bg-[#0f172a] border border-white/6 p-5 animate-fade-in-up animate-delay-4">
@@ -777,6 +860,13 @@ export default function Dashboard() {
               </Link>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ─── SKILL PROFILE ─── */}
+      {!isNewUser && (
+        <div className="animate-fade-in-up animate-delay-5">
+          <SkillProfile />
         </div>
       )}
     </div>

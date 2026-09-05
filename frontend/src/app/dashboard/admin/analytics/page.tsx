@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { BarChart3, Users, GraduationCap, BookOpen, Microscope, Trophy, Award, Target, Activity, TrendingUp, Loader2, ShieldCheck, Download, FileDown } from "lucide-react";
+import Link from "next/link";
+import { BarChart3, Users, GraduationCap, BookOpen, Microscope, Trophy, Award, Target, Activity, TrendingUp, Loader2, ShieldCheck, Download, FileDown, ChevronRight } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import { downloadAnalyticsCsv, downloadAnalyticsPdf } from "@/lib/analyticsReport";
 import type { AnalyticsOverview } from "@/types/api";
@@ -194,6 +195,18 @@ export default function AdminAnalyticsPage() {
         <StatCard label="Quiz Submissions" value={totals.quizSubmissions} icon={Activity} color="bg-violet-500" />
         <StatCard label="Flags Solved" value={totals.flagsSolved} icon={Target} color="bg-amber-500" />
       </div>
+
+      {/* Lab analytics deep-dive link */}
+      <Link href="/dashboard/admin/analytics/labs" className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#0f172a] hover:bg-white/5 transition-colors group">
+        <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0">
+          <Microscope size={18} className="text-rose-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-white group-hover:text-[#7AD62A] transition-colors">Lab Analytics Dashboard</p>
+          <p className="text-xs text-slate-400">Completion rates, solve times, difficulty calibration, and AI insights per lab</p>
+        </div>
+        <ChevronRight size={16} className="text-slate-500 group-hover:text-[#7AD62A] transition-colors" />
+      </Link>
 
       {/* User growth + Quiz/Flag stats */}
       <div className="grid lg:grid-cols-3 gap-4">

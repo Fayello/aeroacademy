@@ -712,6 +712,17 @@ export interface AdminLab {
   imageUrl: string | null;
   basePath: string | null;
   briefing: string | null;
+  resourceProfile?: string;
   createdAt?: string;
   flags: AdminLabFlag[];
+}
+
+export interface LabCheckpoint {
+  id: string;
+  userId: string;
+  labId: string;
+  walkthroughState: number[];
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

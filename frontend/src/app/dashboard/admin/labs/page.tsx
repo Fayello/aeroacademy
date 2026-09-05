@@ -29,7 +29,7 @@ export default function AdminLabsPage() {
   const [batchDelete, setBatchDelete] = useState<{ open: boolean; items: AdminLab[] }>({ open: false, items: [] });
 
   // Form states
-  const [labForm, setLabForm] = useState({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "" });
+  const [labForm, setLabForm] = useState({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "", resourceProfile: "STANDARD" });
   const [flagForm, setFlagForm] = useState({ title: "", description: "", points: 100, correctAnswer: "" });
   const [saving, setSaving] = useState(false);
 
@@ -69,7 +69,7 @@ export default function AdminLabsPage() {
     if (!labForm.title.trim() || !labForm.dockerImage.trim()) { toast.error("Title and Docker image are required"); return; }
     setSaving(true);
     try {
-      const payload = { ...labForm, difficulty: parseInt(labForm.difficulty), imageUrl: labForm.imageUrl || null, basePath: labForm.basePath || null, briefing: labForm.briefing || null };
+      const payload = { ...labForm, difficulty: parseInt(labForm.difficulty), imageUrl: labForm.imageUrl || null, basePath: labForm.basePath || null, briefing: labForm.briefing || null, resourceProfile: labForm.resourceProfile };
       if (labModal.editing) {
         await fetchApi(`/labs/${labModal.editing.id}`, { method: "PATCH", body: JSON.stringify(payload) });
         toast.success("Lab updated");
@@ -160,7 +160,7 @@ export default function AdminLabsPage() {
                 <p className="text-violet-100 text-sm">{labs.length} labs total</p>
               </div>
             </div>
-            <button onClick={() => { setLabForm({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "" }); setLabModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
+            <button onClick={() => { setLabForm({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "", resourceProfile: "STANDARD" }); setLabModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">
               <Plus size={16} /> New Lab
             </button>
           </div>
@@ -206,14 +206,19 @@ export default function AdminLabsPage() {
             )},
             { key: "difficulty", label: "Difficulty", sortable: true, render: (lab: AdminLab) => { const d = getDifficultyLabel(lab.difficulty || 1200); return <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${d.color}`}>{d.label}</span>; }},
             { key: "flags", label: "Flags", render: (lab: AdminLab) => <span className="flex items-center gap-1.5 text-slate-300"><Shield size={14} className="text-slate-400" />{lab.flags?.length || 0}</span> },
+            { key: "resourceProfile", label: "Resources", render: (lab: AdminLab) => {
+              const profile = lab.resourceProfile || "STANDARD";
+              const colors: Record<string, string> = { LIGHTWEIGHT: "bg-green-500/10 text-green-400", STANDARD: "bg-blue-500/10 text-blue-400", HEAVY: "bg-amber-500/10 text-amber-400" };
+              return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${colors[profile] || colors.STANDARD}`}>{profile}</span>;
+            }},
             { key: "basePath", label: "Base Path", render: (lab: AdminLab) => <span className="text-xs font-mono text-slate-400">{lab.basePath || "/"}</span> },
           ]}
           data={labs}
           loading={loading}
           searchPlaceholder="Search labs..."
           searchKeys={["title", "dockerImage"]}
-          onAdd={() => { setLabForm({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "" }); setLabModal({ open: true, editing: null }); }}
-          onEdit={(lab) => { setLabForm({ title: lab.title, description: lab.description, dockerImage: lab.dockerImage, difficulty: String(lab.difficulty || 1200), briefing: lab.briefing || "", imageUrl: lab.imageUrl || "", basePath: lab.basePath || "" }); setLabModal({ open: true, editing: lab }); }}
+          onAdd={() => { setLabForm({ title: "", description: "", dockerImage: "", difficulty: "1200", briefing: "", imageUrl: "", basePath: "", resourceProfile: "STANDARD" }); setLabModal({ open: true, editing: null }); }}
+          onEdit={(lab) => { setLabForm({ title: lab.title, description: lab.description, dockerImage: lab.dockerImage, difficulty: String(lab.difficulty || 1200), briefing: lab.briefing || "", imageUrl: lab.imageUrl || "", basePath: lab.basePath || "", resourceProfile: lab.resourceProfile || "STANDARD" }); setLabModal({ open: true, editing: lab }); }}
           onDelete={(item) => setDeleteDialog({ open: true, type: "lab", item })}
           onRowClick={(lab) => loadLabDetail(lab.id)}
           addLabel="New Lab"
@@ -232,6 +237,7 @@ export default function AdminLabsPage() {
             <AdminInput label="Image URL" value={labForm.imageUrl} onChange={(e) => setLabForm({ ...labForm, imageUrl: e.target.value })} placeholder="Lab thumbnail URL" />
             <AdminInput label="Base Path" value={labForm.basePath} onChange={(e) => setLabForm({ ...labForm, basePath: e.target.value })} placeholder="/" />
             <AdminSelect label="Difficulty" value={labForm.difficulty} onChange={(e) => setLabForm({ ...labForm, difficulty: e.target.value })} options={[{ value: "1000", label: "Beginner (1000)" }, { value: "1100", label: "Beginner+ (1100)" }, { value: "1200", label: "Intermediate (1200)" }, { value: "1300", label: "Intermediate+ (1300)" }, { value: "1400", label: "Advanced (1400)" }, { value: "1500", label: "Advanced+ (1500)" }, { value: "1600", label: "Expert (1600)" }]} />
+            <AdminSelect label="Resource Profile" value={labForm.resourceProfile} onChange={(e) => setLabForm({ ...labForm, resourceProfile: e.target.value })} options={[{ value: "LIGHTWEIGHT", label: "Lightweight (256MB / 5% CPU)" }, { value: "STANDARD", label: "Standard (512MB / 10% CPU)" }, { value: "HEAVY", label: "Heavy (1GB / 20% CPU)" }]} />
             <div className="md:col-span-2"><AdminTextarea label="Description" value={labForm.description} onChange={(e) => setLabForm({ ...labForm, description: e.target.value })} placeholder="Lab description" rows={3} /></div>
             <div className="md:col-span-2"><AdminTextarea label="Briefing (Markdown)" value={labForm.briefing} onChange={(e) => setLabForm({ ...labForm, briefing: e.target.value })} placeholder="Lab briefing / instructions" rows={6} /></div>
           </div>
@@ -260,6 +266,10 @@ export default function AdminLabsPage() {
             <div>
               <h1 className="text-2xl font-bold">{selectedLab!.title}</h1>
               <p className="text-amber-100 text-sm font-mono">{selectedLab!.dockerImage} | {selectedLab!.flags?.length || 0} flags</p>
+              <div className="flex items-center gap-2 mt-2">
+                {(() => { const d = getDifficultyLabel(selectedLab!.difficulty || 1200); return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${d.color}`}>{d.label}</span>; })()}
+                {(() => { const p = selectedLab!.resourceProfile || "STANDARD"; const c: Record<string, string> = { LIGHTWEIGHT: "bg-green-500/10 text-green-400", STANDARD: "bg-blue-500/10 text-blue-400", HEAVY: "bg-amber-500/10 text-amber-400" }; return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${c[p] || c.STANDARD}`}>{p}</span>; })()}
+              </div>
             </div>
           </div>
           <button onClick={() => { setFlagForm({ title: "", description: "", points: 100, correctAnswer: "" }); setFlagModal({ open: true, editing: null }); }} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-medium py-2.5 px-5 rounded-xl transition-all text-sm backdrop-blur-sm">

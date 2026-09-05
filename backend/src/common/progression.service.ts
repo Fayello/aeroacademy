@@ -3,6 +3,8 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsService } from './events.service';
 import { MasteryService } from './mastery.service';
+import { GuildsService } from '../guilds/guilds.service';
+import { CertificationEngineService } from '../certifications/certification-engine.service';
 
 export interface AwardXPParams {
   amount: number;
@@ -44,6 +46,8 @@ export class ProgressionService {
     private readonly prisma: PrismaService,
     private readonly eventsService: EventsService,
     private readonly masteryService: MasteryService,
+    private readonly guildsService: GuildsService,
+    private readonly certificationEngineService: CertificationEngineService,
   ) {}
 
   async awardXP(userId: string, params: AwardXPParams): Promise<AwardXPResult> {
@@ -62,6 +66,12 @@ export class ProgressionService {
       where: { id: userId },
       data: { xp: newXp },
     });
+
+    this.guildsService.contributeXp(userId, amount).catch(() => {});
+
+    if (newXp >= 5000) {
+      this.certificationEngineService.autoAwardForUser(userId).catch(() => {});
+    }
 
     let skillXp: number | undefined;
     let skillLevel: number | undefined;

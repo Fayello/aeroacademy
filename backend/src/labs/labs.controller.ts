@@ -98,6 +98,9 @@ export class LabsController {
       dockerImage: string;
       difficulty?: number;
       briefing?: string;
+      imageUrl?: string;
+      basePath?: string;
+      resourceProfile?: string;
     },
   ) {
     return this.labsService.create(body);
@@ -118,6 +121,8 @@ export class LabsController {
       difficulty?: number;
       briefing?: string;
       imageUrl?: string;
+      basePath?: string;
+      resourceProfile?: string;
     },
   ) {
     return this.labsService.update(id, body);
@@ -271,6 +276,32 @@ export class LabsController {
       labId,
       body.rating,
       body.comment,
+    );
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Get(':labId/checkpoint')
+  @UseGuards(AuthGuard('jwt'))
+  async getCheckpoint(
+    @Request() req: RequestWithUser,
+    @Param('labId') labId: string,
+  ) {
+    return this.labsService.getCheckpoint(req.user.id, labId);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @Post(':labId/checkpoint')
+  @UseGuards(AuthGuard('jwt'))
+  async saveCheckpoint(
+    @Request() req: RequestWithUser,
+    @Param('labId') labId: string,
+    @Body() body: { walkthroughState: number[]; notes?: string },
+  ) {
+    return this.labsService.saveCheckpoint(
+      req.user.id,
+      labId,
+      body.walkthroughState,
+      body.notes,
     );
   }
 }

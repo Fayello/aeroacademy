@@ -71,17 +71,41 @@ const DEFAULT_CONTEXT: NavigationContext = {
         { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
         { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
         { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
-        { href: "/dashboard/training/my-sessions", tKey: "nav.trainerDashboard", icon: "BookOpen", label: "Trainer Dashboard" },
+        { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
       ],
     },
     {
-      id: "labs",
+      id: "practice",
       label: "Practice",
       items: [
         { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
         { href: "/dashboard/exams", tKey: "nav.exams", icon: "ClipboardCheck", label: "Practical Exams" },
         { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Skill Assessments" },
       ],
+    },
+    {
+      id: "compete",
+      label: "Compete",
+      items: [
+        { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Trophy", label: "Leaderboard" },
+        { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
+        { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
+      ],
+    },
+    {
+      id: "community",
+      label: "Community",
+      items: [
+        { href: "/dashboard/community", tKey: "nav.community", icon: "Megaphone", label: "Community" },
+        { href: "/dashboard/guilds", tKey: "nav.guilds", icon: "Shield", label: "Guilds" },
+        { href: "/dashboard/teams", tKey: "nav.teams", icon: "Users", label: "Teams" },
+        { href: "/dashboard/leaderboard", tKey: "nav.leaderboard", icon: "Trophy", label: "Leaderboard" },
+      ],
+    },
+    {
+      id: "profile",
+      label: "Profile",
+      items: [{ href: "/dashboard/profile", tKey: "nav.profile", icon: "User", label: "Profile" }],
     },
   ],
   alerts: [],
@@ -134,25 +158,40 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
       sections: [
         {
           id: "dashboard",
-          label: "Overview",
-          items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Academic Overview" }],
+          label: "Dashboard",
+          items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Dashboard" }],
         },
         {
-          id: "academics",
-          label: "Academic Delivery",
+          id: "learn",
+          label: "Learn",
           items: [
-            { href: "/dashboard/academics", tKey: "nav.academics", icon: "GraduationCap", label: "Academic Record" },
-            { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
-            { href: "/dashboard/gradebook", tKey: "nav.gradebook", icon: "ClipboardCheck", label: "Gradebook" },
+            { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
+            { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
+            { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
+            { href: "/dashboard/training/my-sessions", tKey: "nav.trainerDashboard", icon: "BookOpen", label: "Trainer Dashboard" },
           ],
         },
         {
           id: "practice",
-          label: "Labs and Readiness",
+          label: "Practice",
           items: [
             { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
             { href: "/dashboard/exams", tKey: "nav.exams", icon: "ShieldCheck", label: "Practical Exams" },
           ],
+        },
+        {
+          id: "academic",
+          label: "Academic",
+          items: [
+            { href: "/dashboard/academics", tKey: "nav.academics", icon: "ClipboardCheck", label: "Academic Record" },
+            { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
+            { href: "/dashboard/gradebook", tKey: "nav.gradebook", icon: "Target", label: "Gradebook" },
+          ],
+        },
+        {
+          id: "profile",
+          label: "Profile",
+          items: [{ href: "/dashboard/profile", tKey: "nav.profile", icon: "User", label: "Profile" }],
         },
       ],
       alerts: [],
@@ -175,12 +214,28 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
       sections: [
         {
           id: "dashboard",
-          label: "Overview",
-          items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Capability Overview" }],
+          label: "Dashboard",
+          items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Dashboard" }],
+        },
+        {
+          id: "learn",
+          label: "Learn",
+          items: [
+            { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
+            { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
+          ],
+        },
+        {
+          id: "practice",
+          label: "Practice",
+          items: [
+            { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+            { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
+          ],
         },
         {
           id: "enterprise",
-          label: "Institutional Tools",
+          label: "Enterprise",
           items: [
             { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Building2", label: "Enterprise Portal" },
             { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
@@ -188,12 +243,9 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
           ],
         },
         {
-          id: "evidence",
-          label: "Evidence",
-          items: [
-            { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
-            { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
-          ],
+          id: "profile",
+          label: "Profile",
+          items: [{ href: "/dashboard/profile", tKey: "nav.profile", icon: "User", label: "Profile" }],
         },
       ],
       alerts: [],
@@ -207,12 +259,65 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
     };
   }
 
+  // Default INDIVIDUAL learner
   return {
-    ...DEFAULT_CONTEXT,
     experience,
     level,
     role,
     viewMode: "LEARNER",
+    sections: [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        items: [{ href: "/dashboard", tKey: "nav.dashboard", icon: "Home", label: "Dashboard" }],
+      },
+      {
+        id: "learn",
+        label: "Learn",
+        items: [
+          { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
+          { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
+          { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
+          { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
+        ],
+      },
+      {
+        id: "practice",
+        label: "Practice",
+        items: [
+          { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
+          { href: "/dashboard/exams", tKey: "nav.exams", icon: "ClipboardCheck", label: "Exams" },
+          { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Assessments" },
+        ],
+      },
+      {
+        id: "compete",
+        label: "Compete",
+        items: [
+          { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Swords", label: "Leaderboard" },
+          { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
+          { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
+        ],
+      },
+      {
+        id: "community",
+        label: "Community",
+        items: [
+          { href: "/dashboard/community", tKey: "nav.community", icon: "Megaphone", label: "Community" },
+          { href: "/dashboard/guilds", tKey: "nav.guilds", icon: "Shield", label: "Guilds" },
+          { href: "/dashboard/teams", tKey: "nav.teams", icon: "Users", label: "Teams" },
+          { href: "/dashboard/leaderboard", tKey: "nav.leaderboard", icon: "Trophy", label: "Leaderboard" },
+        ],
+      },
+      {
+        id: "profile",
+        label: "Profile",
+        items: [{ href: "/dashboard/profile", tKey: "nav.profile", icon: "User", label: "Profile" }],
+      },
+    ],
+    alerts: [],
+    showTeach: false,
+    showAcademic: false,
     showAdmin: canAccessAdminView(role),
     canAccessAdminView: canAccessAdminView(role),
     adminHomePath: getAdminHomePath(role),
@@ -231,17 +336,22 @@ function getAdminFallbackContext(role: string, level: number): NavigationContext
       sections: [
         {
           id: "dashboard",
-          label: "Recruitment",
+          label: "Dashboard",
           items: [{ href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Building2", label: "Talent Portal" }],
         },
         {
           id: "pipeline",
-          label: "Talent Pipeline",
+          label: "Pipeline",
           items: [
-            { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Users", label: "Talent Pool" },
-            { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Institutional Inquiries" },
-            { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community Programs" },
+            { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Inquiries" },
+            { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community" },
+            { href: "/dashboard/admin/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
           ],
+        },
+        {
+          id: "settings",
+          label: "Settings",
+          items: [{ href: "/dashboard/settings", tKey: "nav.settings", icon: "Settings", label: "Settings" }],
         },
       ],
       alerts: [],
@@ -255,6 +365,7 @@ function getAdminFallbackContext(role: string, level: number): NavigationContext
     };
   }
 
+  // Admin
   return {
     experience: "ADMIN",
     level,
@@ -263,39 +374,44 @@ function getAdminFallbackContext(role: string, level: number): NavigationContext
     sections: [
       {
         id: "dashboard",
-        label: "Operations",
-        items: [{ href: "/dashboard/admin", tKey: "nav.adminDashboard", icon: "ShieldCheck", label: "Admin Overview" }],
+        label: "Dashboard",
+        items: [{ href: "/dashboard/admin", tKey: "nav.adminDashboard", icon: "ShieldCheck", label: "Admin Dashboard" }],
       },
       {
-        id: "platform",
-        label: "Platform Control",
+        id: "users",
+        label: "Users",
         items: [
           { href: "/dashboard/admin/users", tKey: "nav.users", icon: "Users", label: "Users" },
-          { href: "/dashboard/admin/inquiries", tKey: "nav.inquiries", icon: "Inbox", label: "Inquiries" },
-          { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community Programs" },
-          { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Lab Monitoring" },
-          { href: "/dashboard/admin/traffic", tKey: "nav.traffic", icon: "Globe", label: "Traffic Analytics" },
-          { href: "/dashboard/admin/threats", tKey: "nav.threats", icon: "Shield", label: "Threat Intelligence" },
-          { href: "/dashboard/admin/security", tKey: "nav.security", icon: "Lock", label: "Security Ops" },
-          { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
+          { href: "/dashboard/admin/cohort-intelligence", tKey: "nav.cohorts", icon: "Megaphone", label: "Cohorts" },
+          { href: "/dashboard/admin/community-programs", tKey: "nav.community", icon: "Megaphone", label: "Community" },
         ],
       },
       {
-        id: "delivery",
-        label: "Delivery Systems",
+        id: "content",
+        label: "Content",
         items: [
           { href: "/dashboard/admin/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
           { href: "/dashboard/admin/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
           { href: "/dashboard/admin/assessments", tKey: "nav.assessments", icon: "ClipboardCheck", label: "Assessments" },
+          { href: "/dashboard/admin/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
         ],
       },
       {
-        id: "intelligence",
+        id: "security",
+        label: "Security",
+        items: [
+          { href: "/dashboard/admin/security", tKey: "nav.security", icon: "Lock", label: "Security Ops" },
+          { href: "/dashboard/admin/audit", tKey: "nav.audit", icon: "ScrollText", label: "Audit Logs" },
+          { href: "/dashboard/admin/threats", tKey: "nav.threats", icon: "ShieldAlert", label: "Threats" },
+        ],
+      },
+      {
+        id: "analytics",
         label: "Analytics",
         items: [
           { href: "/dashboard/admin/analytics", tKey: "nav.analytics", icon: "TrendingUp", label: "Analytics" },
-          { href: "/dashboard/admin/cohort-intelligence", tKey: "nav.cohorts", icon: "Users", label: "Cohort Intelligence" },
-          { href: "/dashboard/admin/predictive-analytics", tKey: "nav.predictive", icon: "ShieldAlert", label: "Predictive Analytics" },
+          { href: "/dashboard/admin/predictive-analytics", tKey: "nav.predictive", icon: "ShieldAlert", label: "Predictive" },
+          { href: "/dashboard/admin/monitoring", tKey: "nav.monitoring", icon: "Activity", label: "Monitoring" },
         ],
       },
     ],

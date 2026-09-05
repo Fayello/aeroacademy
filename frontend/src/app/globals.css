@@ -255,6 +255,40 @@ body {
   border-color: rgba(122, 214, 42, 0.3);
 }
 
+/* ===== SAFE AREA INSETS (iOS notch / home bar) ===== */
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-area-pl {
+  padding-left: env(safe-area-inset-left);
+}
+.safe-area-pr {
+  padding-right: env(safe-area-inset-right);
+}
+.safe-area-all {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ===== MOBILE UTILITIES ===== */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Light mode button overrides */
 .light .btn-primary {
   background-color: #7AD62A;
@@ -481,6 +515,34 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 0.5rem;
+}
+
+/* ===== GAMIFICATION ANIMATIONS ===== */
+
+@keyframes xpFloat {
+  0% { opacity: 0; transform: translateY(0) scale(0.8); }
+  20% { opacity: 1; transform: translateY(-10px) scale(1); }
+  80% { opacity: 1; transform: translateY(-50px) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.9); }
+}
+.animate-xp-float {
+  animation: xpFloat 2s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(100px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes celebrationPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-celebration-pulse {
+  animation: celebrationPulse 1.5s ease-in-out infinite;
 }
 
 /* ===== SCROLLBAR ===== */

@@ -15,6 +15,8 @@ interface NotificationEventPayload {
   flagTitle?: string;
   trainerName?: string;
   link?: string;
+  level?: number;
+  streak?: number;
 }
 
 export interface CreateNotificationInput {
@@ -126,6 +128,50 @@ export class NotificationsService implements OnModuleInit {
             message: `You completed "${p.title ?? 'a mission'}" and earned +${p.xpReward ?? 0} XP. Claim your reward!`,
             type: 'SUCCESS',
             link: '/dashboard',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'LEVEL_UP':
+          this.create({
+            userId: p.userId,
+            title: 'Level Up!',
+            message: `You reached Level ${p.level ?? '?'}! Keep building practical skills.`,
+            type: 'ACHIEVEMENT',
+            link: '/dashboard/ranking',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'STREAK_MILESTONE':
+          this.create({
+            userId: p.userId,
+            title: 'Streak Milestone',
+            message: `You're on a ${p.streak ?? 0}-day streak! Consistency is key.`,
+            type: 'ACHIEVEMENT',
+            link: '/dashboard',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'COURSE_COMPLETED':
+          this.create({
+            userId: p.userId,
+            title: 'Course Completed',
+            message: `You completed "${p.title ?? 'a course'}"! Strong work.`,
+            type: 'SUCCESS',
+            link: '/dashboard/courses',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'LAB_COMPLETED':
+          this.create({
+            userId: p.userId,
+            title: 'Lab Completed',
+            message: `You completed "${p.title ?? 'a lab'}" and captured all flags!`,
+            type: 'SUCCESS',
+            link: '/dashboard/labs',
           }).catch((err) =>
             logger.error(`Failed to create notification: ${err.message}`),
           );

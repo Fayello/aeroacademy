@@ -42,6 +42,17 @@ const STALE_PROVISIONING_MS = parseInt(
   10,
 );
 
+function getResourceLimits(profile: string): { memoryMB: number; cpuQuota: number } {
+  switch (profile) {
+    case 'LIGHTWEIGHT':
+      return { memoryMB: 256, cpuQuota: 50000 };
+    case 'HEAVY':
+      return { memoryMB: 1024, cpuQuota: 200000 };
+    default:
+      return { memoryMB: LAB_MEMORY_MB, cpuQuota: LAB_CPU_QUOTA };
+  }
+}
+
 @Injectable()
 export class LabsService implements OnModuleInit {
   private docker: Docker;
@@ -329,6 +340,7 @@ export class LabsService implements OnModuleInit {
         imageName.toLowerCase().includes(name),
       );
 
+      const resourceLimits = getResourceLimits(lab.resourceProfile || 'STANDARD');
       const containerOpts: any = {
         Image: imageName,
         name: `lab-${labId.slice(0, 8)}-${userId.slice(0, 8)}-${Date.now()}`,
@@ -336,8 +348,8 @@ export class LabsService implements OnModuleInit {
         Env: env,
         HostConfig: {
           PortBindings: { [internalPort]: [{ HostPort: port.toString() }] },
-          Memory: LAB_MEMORY_MB * 1024 * 1024,
-          CpuQuota: LAB_CPU_QUOTA,
+          Memory: resourceLimits.memoryMB * 1024 * 1024,
+          CpuQuota: resourceLimits.cpuQuota,
           NetworkMode: 'tactical-net',
         },
         NetworkingConfig: {
@@ -1025,8 +1037,11 @@ export class LabsService implements OnModuleInit {
     dockerImage: string;
     difficulty?: number;
     briefing?: string;
+    imageUrl?: string;
+    basePath?: string;
+    resourceProfile?: string;
   }) {
-    return this.prisma.lab.create({ data });
+    return this.prisma.lab.create({ data: data as any });
   }
 
   async update(
@@ -1038,11 +1053,13 @@ export class LabsService implements OnModuleInit {
       difficulty?: number;
       briefing?: string;
       imageUrl?: string;
+      basePath?: string;
+      resourceProfile?: string;
     },
   ) {
     const lab = await this.prisma.lab.findUnique({ where: { id } });
     if (!lab) throw new NotFoundException('Lab not found');
-    return this.prisma.lab.update({ where: { id }, data });
+    return this.prisma.lab.update({ where: { id }, data: data as any });
   }
 
   async remove(id: string) {
@@ -1282,6 +1299,25 @@ export class LabsService implements OnModuleInit {
       where: { userId_labId: { userId, labId } },
       update: { rating, comment },
       create: { userId, labId, rating, comment },
+    });
+  }
+
+  async getCheckpoint(userId: string, labId: string) {
+    return this.prisma.labCheckpoint.findUnique({
+      where: { userId_labId: { userId, labId } },
+    });
+  }
+
+  async saveCheckpoint(
+    userId: string,
+    labId: string,
+    walkthroughState: number[],
+    notes?: string,
+  ) {
+    return this.prisma.labCheckpoint.upsert({
+      where: { userId_labId: { userId, labId } },
+      update: { walkthroughState, notes },
+      create: { userId, labId, walkthroughState, notes },
     });
   }
 }

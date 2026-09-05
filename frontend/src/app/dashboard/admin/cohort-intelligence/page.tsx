@@ -199,7 +199,7 @@ export default function CohortIntelligencePage() {
             <div className="px-6 py-4 border-b border-white/10 bg-white/5">
               <h3 className="font-semibold text-white">Student Rankings ({sortedStudents.length})</h3>
             </div>
-            <div className="overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -244,6 +244,26 @@ export default function CohortIntelligencePage() {
                 </tbody>
               </table>
             </div>
+            {/* Mobile card view */}
+            {sortedStudents.length > 0 && (
+              <div className="md:hidden divide-y divide-white/5">
+                {sortedStudents.map((s, i) => (
+                  <div key={s.id} className="p-4 flex items-center gap-3">
+                    <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
+                      i === 0 ? "bg-amber-500/10 text-amber-400" : i === 1 ? "bg-white/10 text-slate-400" : i === 2 ? "bg-orange-100 text-orange-700" : "bg-white/5 text-slate-500"
+                    }`}>{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-white text-sm truncate">{s.name}</div>
+                      <div className="text-xs text-slate-400 truncate">{s.email}</div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <ScoreBadge score={s.avgScore} />
+                      <div className="text-[10px] text-slate-500 mt-1">{s.totalAssessments} assessments</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </>
       )}

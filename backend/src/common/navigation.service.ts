@@ -196,6 +196,12 @@ export class NavigationService {
           icon: 'Award',
           label: 'Master Classes',
         },
+        {
+          href: '/dashboard/certifications',
+          tKey: 'nav.certifications',
+          icon: 'Award',
+          label: 'Certifications',
+        },
       ],
     });
 
@@ -225,39 +231,62 @@ export class NavigationService {
       ],
     });
 
-    // Compete (single hub entry)
+    // Compete
     sections.push({
       id: 'compete',
       label: 'Compete',
       items: [
         {
-          href: '/dashboard/compete',
-          tKey: 'nav.compete',
+          href: '/dashboard/ranking',
+          tKey: 'nav.ranking',
+          icon: 'Trophy',
+          label: 'Leaderboard',
+        },
+        {
+          href: '/dashboard/head-to-head',
+          tKey: 'nav.headToHead',
           icon: 'Swords',
-          label: 'Compete',
+          label: 'Head-to-Head',
+        },
+        {
+          href: '/dashboard/challenges/lab-challenges',
+          tKey: 'nav.labChallenges',
+          icon: 'Swords',
+          label: 'Lab Challenges',
         },
       ],
     });
 
     // Community
-    const communityItems: NavItem[] = [
-      {
-        href: '/dashboard/teams',
-        tKey: 'nav.teams',
-        icon: 'Users',
-        label: 'Teams',
-      },
-      {
-        href: '/dashboard/events',
-        tKey: 'nav.events',
-        icon: 'ScrollText',
-        label: 'Events',
-      },
-    ];
     sections.push({
       id: 'community',
       label: 'Community',
-      items: communityItems,
+      items: [
+        {
+          href: '/dashboard/community',
+          tKey: 'nav.community',
+          icon: 'Megaphone',
+          label: 'Community',
+        },
+        {
+          href: '/dashboard/guilds',
+          tKey: 'nav.guilds',
+          icon: 'Shield',
+          label: 'Guilds',
+        },
+        {
+          href: '/dashboard/teams',
+          tKey: 'nav.teams',
+          icon: 'Users',
+          label: 'Teams',
+        },
+        {
+          href: '/dashboard/leaderboard',
+          tKey: 'nav.leaderboard',
+          icon: 'Trophy',
+          label: 'Leaderboard',
+        },
+      ],
     });
 
     // ─── ACADEMIC SECTION (for enrolled students) ───

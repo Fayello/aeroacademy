@@ -64,4 +64,45 @@ export class ChallengesController {
   async getLeaderboard(@Param('id') id: string) {
     return this.challengesService.getLeaderboard(id);
   }
+
+  @Post('lab-challenges')
+  @Audit('LAB_CHALLENGE_SENT')
+  async sendChallenge(
+    @Request() req: RequestWithUser,
+    @Body() body: { opponentId: string; labId: string },
+  ) {
+    return this.challengesService.sendLabChallenge(req.user.id, body.opponentId, body.labId);
+  }
+
+  @Get('lab-challenges/mine')
+  async getMyChallenges(@Request() req: RequestWithUser) {
+    return this.challengesService.getMyLabChallenges(req.user.id);
+  }
+
+  @Post('lab-challenges/:id/accept')
+  @Audit('LAB_CHALLENGE_ACCEPTED')
+  async acceptChallenge(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+  ) {
+    return this.challengesService.acceptLabChallenge(req.user.id, id);
+  }
+
+  @Post('lab-challenges/:id/decline')
+  @Audit('LAB_CHALLENGE_DECLINED')
+  async declineChallenge(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+  ) {
+    return this.challengesService.declineLabChallenge(req.user.id, id);
+  }
+
+  @Post('lab-challenges/:id/complete')
+  @Audit('LAB_CHALLENGE_COMPLETED')
+  async completeChallenge(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+  ) {
+    return this.challengesService.completeLabChallenge(req.user.id, id);
+  }
 }

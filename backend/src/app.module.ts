@@ -57,6 +57,7 @@ import { UploadModule } from './upload/upload.module';
 import { TrafficTrackerModule } from './common/traffic-tracker.module';
 import { ThreatIntelModule } from './common/threat-intel.module';
 import { SecurityOpsModule } from './common/security-ops.module';
+import { GuildsModule } from './guilds/guilds.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { SecurityOpsModule } from './common/security-ops.module';
     AssessmentsModule,
     LearningPathsModule,
     VerifyModule,
+    GuildsModule,
     DiscussionsModule,
     TeamEnrollmentsModule,
     CourseAdminModule,

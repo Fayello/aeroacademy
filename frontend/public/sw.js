@@ -1,22 +1,16 @@
-// XpertClass PWA Service Worker — placeholder minimal offline-capable SW
-// Increment CACHE_VERSION when assets change
-const CACHE_VERSION = "xpertclass-v1";
+// XpertClass PWA Service Worker
+const CACHE_VERSION = "xpertclass-v2";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
+const PAGES_CACHE = `${CACHE_VERSION}-pages`;
 const OFFLINE_URL = "/";
 
-// Install: pre-cache offline fallback if needed
 self.addEventListener("install", (event) => {
   self.skipWaiting();
-  // Minimal: optionally cache offline page
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => {
-      // Best-effort cache OFFLINE_URL; ignore failures
-      return cache.add(OFFLINE_URL).catch(() => undefined);
-    })
+    caches.open(STATIC_CACHE).then((cache) => cache.add(OFFLINE_URL).catch(() => undefined))
   );
 });
 
-// Activate: cleanup old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
@@ -24,7 +18,7 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((k) => k !== STATIC_CACHE && k.startsWith("xpertclass-"))
+            .filter((k) => k !== STATIC_CACHE && k !== PAGES_CACHE && k.startsWith("xpertclass-"))
             .map((k) => caches.delete(k))
         )
       )
@@ -32,26 +26,41 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch: network-first for navigations, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Only handle same-origin
   if (url.origin !== location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
 
-  // Bypass for API calls and Next.js HMR
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/_next/")) return;
+  // Next.js build manifest chunks: cache-first (immutable content)
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(
+      caches.match(req).then((cached) => {
+        if (cached) return cached;
+        return fetch(req).then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(STATIC_CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          }
+          return res;
+        }).catch(() => cached);
+      })
+    );
+    return;
+  }
 
-  // For navigation requests: network first, fallback to cache/offline
+  // Next.js HMR / build: bypass
+  if (url.pathname.startsWith("/_next/")) return;
+
+  // Navigation requests: network-first, cache for offline
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          // Optionally cache successful navigations
           const copy = res.clone();
-          caches.open(STATIC_CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          caches.open(PAGES_CACHE).then((c) => c.put(req, copy)).catch(() => {});
           return res;
         })
         .catch(async () => {
@@ -62,21 +71,25 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // For static assets: cache-first
+  // Static assets (images, fonts, styles, scripts): cache-first
   if (["style", "script", "image", "font"].includes(req.destination)) {
     event.respondWith(
       caches.match(req).then((cached) => {
         if (cached) return cached;
-        return fetch(req)
-          .then((res) => {
-            if (res.ok) {
-              const copy = res.clone();
-              caches.open(STATIC_CACHE).then((c) => c.put(req, copy)).catch(() => {});
-            }
-            return res;
-          })
-          .catch(() => cached);
+        return fetch(req).then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(STATIC_CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          }
+          return res;
+        }).catch(() => cached);
       })
     );
+    return;
   }
+
+  // Everything else: network-first
+  event.respondWith(
+    fetch(req).catch(() => caches.match(req))
+  );
 });

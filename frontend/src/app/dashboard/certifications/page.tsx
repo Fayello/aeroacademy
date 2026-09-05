@@ -12,6 +12,7 @@ import {
   Target,
   ExternalLink,
   FileCheck,
+  Download,
 } from "lucide-react";
 
 interface DomainResult {
@@ -85,6 +86,65 @@ export default function CertificationsPage() {
     } finally {
       setAwarding(null);
     }
+  };
+
+  const handleDownloadPdf = async (aw: AwardData) => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+
+    const w = doc.internal.pageSize.getWidth();
+    const h = doc.internal.pageSize.getHeight();
+
+    doc.setFillColor(15, 32, 58);
+    doc.rect(0, 0, w, h, "F");
+
+    doc.setDrawColor(122, 214, 42);
+    doc.setLineWidth(1.5);
+    doc.rect(8, 8, w - 16, h - 16);
+
+    doc.setTextColor(122, 214, 42);
+    doc.setFontSize(11);
+    doc.text("XPERTCLASS ACADEMY", w / 2, 28, { align: "center" });
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(28);
+    doc.text("CERTIFICATION OF COMPETENCY", w / 2, 45, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.setTextColor(180, 180, 180);
+    doc.text("This certifies that", w / 2, 62, { align: "center" });
+
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text("—", w / 2, 72, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.setTextColor(180, 180, 180);
+    doc.text(`has been awarded the`, w / 2, 84, { align: "center" });
+
+    doc.setFontSize(20);
+    doc.setTextColor(122, 214, 42);
+    doc.text(aw.certification.name, w / 2, 96, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.setTextColor(200, 200, 200);
+    doc.text(`Code: ${aw.certification.code}`, w / 2, 108, { align: "center" });
+
+    const issuedDate = new Date(aw.awardedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    doc.text(`Issued: ${issuedDate}`, w / 2, 116, { align: "center" });
+
+    if (aw.expiresAt) {
+      const expDate = new Date(aw.expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      doc.text(`Expires: ${expDate}`, w / 2, 124, { align: "center" });
+    }
+
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text(`Credential ID: ${aw.credentialId}`, w / 2, h - 24, { align: "center" });
+    doc.text(`Verify: https://xpertclass.academy/credential/${aw.credentialId}`, w / 2, h - 18, { align: "center" });
+    doc.text("XpertClass Academy — xpertclass.academy", w / 2, h - 12, { align: "center" });
+
+    doc.save(`XpertClass_${aw.certification.code}_${aw.credentialId}.pdf`);
   };
 
   if (loading) {
@@ -179,6 +239,13 @@ export default function CertificationsPage() {
                       <ExternalLink size={10} />
                       Verify
                     </Link>
+                    <button
+                      onClick={() => handleDownloadPdf(aw)}
+                      className="inline-flex items-center gap-1 mt-3 ml-3 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+                    >
+                      <Download size={10} />
+                      PDF
+                    </button>
                   </div>
                 </div>
               );

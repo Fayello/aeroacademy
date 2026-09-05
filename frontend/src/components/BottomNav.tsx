@@ -32,10 +32,10 @@ export default function BottomNav() {
         { href: "/dashboard/notifications", label: "Alerts", icon: Bell, show: true, isNotifications: true },
       ]
     : [
-        { href: "/dashboard/admin", label: "Admin", icon: ShieldCheck, show: true },
+        { href: "/dashboard/admin", label: "Dashboard", icon: ShieldCheck, show: true },
         { href: "/dashboard/admin/users", label: "Users", icon: Users, show: true },
-        { href: "/dashboard/admin/inquiries", label: "Inquiries", icon: Inbox, show: true },
-        { href: "/dashboard/admin/community-programs", label: "Programs", icon: Megaphone, show: true },
+        { href: "/dashboard/admin/courses", label: "Content", icon: GraduationCap, show: true },
+        { href: "/dashboard/admin/security", label: "Security", icon: ShieldCheck, show: true },
         { href: "/dashboard/notifications", label: "Alerts", icon: Bell, show: true, isNotifications: true },
       ];
 

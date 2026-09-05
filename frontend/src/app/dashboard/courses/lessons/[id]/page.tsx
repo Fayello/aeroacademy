@@ -19,6 +19,7 @@ type ReactPlayerComponent = React.ComponentType<{
 }>;
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as unknown as ReactPlayerComponent;
 import toast from "@/lib/toast";
+import { showXpGain } from "@/components/gamification/XpGain";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
@@ -258,6 +259,7 @@ export default function LessonPage() {
           setCompleted(true);
           setCourseProgress((prev) => prev ? { ...prev, completed: prev.completed + 1, percentage: Math.min(100, ((prev.completed + 1) / prev.total) * 100) } : prev);
           toast.success("Lesson completed! +10 XP earned");
+          showXpGain(10);
           if (andNext) {
             const nav = findLessonNav();
             if (nav.next) {
@@ -571,7 +573,15 @@ export default function LessonPage() {
             {inlinePractices.length > 0 && (
               <InlinePracticeRenderer
                 practices={inlinePractices}
-                onAllPassed={() => setCompleted(true)}
+                onPracticeUpdate={(updatedPractice) => {
+                  setInlinePractices((current) =>
+                    current.map((practice) =>
+                      practice.id === updatedPractice.id
+                        ? updatedPractice
+                        : practice
+                    ),
+                  );
+                }}
               />
             )}
 

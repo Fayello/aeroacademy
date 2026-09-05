@@ -1248,6 +1248,7 @@ export default function CourseContentAdminPage() {
                   >
                     <option value="COMMAND_ANSWER">Command answer</option>
                     <option value="FLAG_CAPTURE">Flag capture</option>
+                    <option value="CHECKLIST">Checklist</option>
                     <option value="LOG_ANALYSIS">Log analysis</option>
                     <option value="CODE_FIX">Code fix</option>
                     <option value="SHORT_RESPONSE">Short response</option>
@@ -1263,6 +1264,10 @@ export default function CourseContentAdminPage() {
                       setPracticeForm({
                         ...practiceForm,
                         validationMode: event.target.value,
+                        required:
+                          event.target.value === "MANUAL"
+                            ? false
+                            : practiceForm.required,
                       })
                     }
                     className="w-full rounded-xl border border-white/10 bg-[#0f172a] px-4 py-2.5 text-sm text-white focus:border-[#7AD62A] focus:outline-none"
@@ -1386,14 +1391,24 @@ export default function CourseContentAdminPage() {
                         required: !practiceForm.required,
                       })
                     }
+                    disabled={practiceForm.validationMode === "MANUAL"}
                     className={`w-full rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${
                       practiceForm.required
                         ? "border-[#7AD62A]/30 bg-[#7AD62A]/10 text-[#7AD62A]"
                         : "border-white/10 bg-white/5 text-slate-400"
-                    }`}
+                    } disabled:cursor-not-allowed disabled:opacity-50`}
                   >
-                    {practiceForm.required ? "Yes" : "No"}
+                    {practiceForm.validationMode === "MANUAL"
+                      ? "No"
+                      : practiceForm.required
+                        ? "Yes"
+                        : "No"}
                   </button>
+                  {practiceForm.validationMode === "MANUAL" && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      Manual review is optional until approval workflow exists.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

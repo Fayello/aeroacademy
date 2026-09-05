@@ -231,7 +231,7 @@ export default function AdminChallengesPage() {
       </div>
 
       <div className="angular-card bg-[#0f172a] overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
@@ -305,6 +305,53 @@ export default function AdminChallengesPage() {
             title="No missions found"
             description="Create a mission to get started."
           />
+        )}
+        {/* Mobile card view */}
+        {filtered.length > 0 && (
+          <div className="md:hidden divide-y divide-white/5">
+            {filtered.map((c) => {
+              const now = new Date();
+              const start = new Date(c.startAt);
+              const end = new Date(c.endAt);
+              const status = !c.isActive ? "Inactive" : now < start ? "Scheduled" : now > end ? "Ended" : "Active";
+              const statusColor =
+                status === "Active" ? "text-[#7AD62A]" :
+                status === "Scheduled" ? "text-blue-600" :
+                status === "Ended" ? "text-slate-400" : "text-slate-400";
+              return (
+                <div key={c.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{c.title}</p>
+                      <p className="text-[11px] text-slate-400 truncate">{c.description}</p>
+                    </div>
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${TYPE_COLORS[c.type] || "bg-slate-100 text-slate-600"}`}>
+                      {c.type.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px]">
+                    <span className={`font-medium px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[c.difficulty] || "bg-slate-100 text-slate-600"}`}>
+                      {c.difficulty}
+                    </span>
+                    <span className={`font-medium ${statusColor}`}>{status}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-[11px]">
+                    <div><span className="text-slate-500">XP:</span> <span className="text-white">{c.xpReward}</span></div>
+                    <div><span className="text-slate-500">Start:</span> <span className="text-white">{formatDate(c.startAt)}</span></div>
+                    <div><span className="text-slate-500">End:</span> <span className="text-white">{formatDate(c.endAt)}</span></div>
+                  </div>
+                  <div className="flex items-center gap-1 pt-1">
+                    <button onClick={() => openEdit(c)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
+                      <Pencil size={14} />
+                    </button>
+                    <button onClick={() => setDeleteDialog({ open: true, item: c })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 

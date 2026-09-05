@@ -153,7 +153,7 @@ export default function AdminBadgesPage() {
       } />
 
       <div className="angular-card bg-[#0f172a] overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
@@ -207,6 +207,39 @@ export default function AdminBadgesPage() {
             title="No badges yet"
             description="Create a badge to get started."
           />
+        )}
+        {/* Mobile card view */}
+        {badges.length > 0 && (
+          <div className="md:hidden divide-y divide-white/5">
+            {badges.map((b) => (
+              <div key={b.id} className="p-4 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{b.name}</p>
+                    <p className="text-[11px] text-slate-400 truncate">{b.description}</p>
+                  </div>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${categoryColors[b.category] || "bg-white/5 text-slate-400"}`}>
+                    {b.category}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className={`font-medium px-2 py-0.5 rounded-full ${tierColors[b.tier] || "bg-white/5 text-slate-400"}`}>
+                    {b.tier}
+                  </span>
+                  <span className="text-white">{b.xpReward} XP</span>
+                  <span className="text-slate-400">{b._count.users} earned</span>
+                </div>
+                <div className="flex items-center gap-1 pt-1">
+                  <button onClick={() => openEdit(b)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-500/10 transition-colors">
+                    <Pencil size={14} />
+                  </button>
+                  <button onClick={() => setDeleteDialog({ open: true, item: b })} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 

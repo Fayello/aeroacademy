@@ -1,5 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+
+const INLINE_PRACTICE_TYPES = new Set([
+  'COMMAND_ANSWER',
+  'FLAG_CAPTURE',
+  'CHECKLIST',
+  'LOG_ANALYSIS',
+  'CODE_FIX',
+  'SHORT_RESPONSE',
+]);
+
+const INLINE_PRACTICE_VALIDATION_MODES = new Set([
+  'EXACT',
+  'CONTAINS',
+  'REGEX',
+  'MANUAL',
+]);
 
 @Injectable()
 export class CourseAdminService {
@@ -399,20 +419,25 @@ export class CourseAdminService {
       order?: number;
     },
   ) {
+    const type = this.normalizeInlinePracticeType(data.type);
+    const validationMode = this.normalizeInlinePracticeValidationMode(
+      data.validationMode,
+    );
+
     return {
       lessonId,
       title: data.title.trim(),
-      type: data.type || 'COMMAND_ANSWER',
+      type,
       prompt: data.prompt.trim(),
       instructions: data.instructions?.trim() || null,
       expectedAnswer: data.expectedAnswer?.trim() || null,
-      validationMode: data.validationMode || 'EXACT',
+      validationMode,
       hints: Array.isArray(data.hints)
         ? data.hints.map((hint) => hint.trim()).filter(Boolean)
         : [],
       maxAttempts: Math.max(0, Number(data.maxAttempts ?? 0)),
       xpReward: Math.max(0, Number(data.xpReward ?? 25)),
-      required: data.required ?? true,
+      required: validationMode === 'MANUAL' ? false : (data.required ?? true),
       order: data.order ?? 0,
     };
   }
@@ -430,9 +455,16 @@ export class CourseAdminService {
     required?: boolean;
     order?: number;
   }) {
+    const validationMode =
+      data.validationMode === undefined
+        ? undefined
+        : this.normalizeInlinePracticeValidationMode(data.validationMode);
+
     return {
       ...(data.title !== undefined ? { title: data.title.trim() } : {}),
-      ...(data.type !== undefined ? { type: data.type } : {}),
+      ...(data.type !== undefined
+        ? { type: this.normalizeInlinePracticeType(data.type) }
+        : {}),
       ...(data.prompt !== undefined ? { prompt: data.prompt.trim() } : {}),
       ...(data.instructions !== undefined
         ? { instructions: data.instructions?.trim() || null }
@@ -440,9 +472,7 @@ export class CourseAdminService {
       ...(data.expectedAnswer !== undefined
         ? { expectedAnswer: data.expectedAnswer?.trim() || null }
         : {}),
-      ...(data.validationMode !== undefined
-        ? { validationMode: data.validationMode }
-        : {}),
+      ...(validationMode !== undefined ? { validationMode } : {}),
       ...(data.hints !== undefined
         ? {
             hints: Array.isArray(data.hints)
@@ -456,9 +486,29 @@ export class CourseAdminService {
       ...(data.xpReward !== undefined
         ? { xpReward: Math.max(0, Number(data.xpReward)) }
         : {}),
-      ...(data.required !== undefined ? { required: data.required } : {}),
+      ...(data.required !== undefined || validationMode === 'MANUAL'
+        ? { required: validationMode === 'MANUAL' ? false : data.required }
+        : {}),
       ...(data.order !== undefined ? { order: data.order } : {}),
     };
+  }
+
+  private normalizeInlinePracticeType(type?: string) {
+    const normalized = type || 'COMMAND_ANSWER';
+    if (!INLINE_PRACTICE_TYPES.has(normalized)) {
+      throw new BadRequestException('Unsupported inline practice type');
+    }
+    return normalized;
+  }
+
+  private normalizeInlinePracticeValidationMode(validationMode?: string) {
+    const normalized = validationMode || 'EXACT';
+    if (!INLINE_PRACTICE_VALIDATION_MODES.has(normalized)) {
+      throw new BadRequestException(
+        'Unsupported inline practice validation mode',
+      );
+    }
+    return normalized;
   }
 
   async deleteLesson(lessonId: string) {

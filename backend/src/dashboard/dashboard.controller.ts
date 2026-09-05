@@ -129,6 +129,30 @@ export class DashboardController {
     return this.activityService.getActiveLabUsers();
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Post('seeking-team')
+  async toggleSeekingTeam(@Request() req: RequestWithUser) {
+    const user = await this.prisma.user.findUnique({ where: { id: req.user.id }, select: { seekingTeam: true } });
+    await this.prisma.user.update({ where: { id: req.user.id }, data: { seekingTeam: !user?.seekingTeam } });
+    return { seekingTeam: !user?.seekingTeam };
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('team-seekers')
+  async getTeamSeekers() {
+    return this.prisma.user.findMany({
+      where: { seekingTeam: true, teamId: null },
+      select: {
+        id: true, name: true, username: true, xp: true, division: true,
+        rank: true, currentStreak: true, avatarUrl: true, city: true,
+      },
+      orderBy: { xp: 'desc' },
+      take: 30,
+    });
+  }
+
   // V2: Achievement progress for current user
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))
