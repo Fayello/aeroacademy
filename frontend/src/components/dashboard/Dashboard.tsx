@@ -249,15 +249,27 @@ export default function Dashboard() {
         .then((data) => {
           if (cancelled || !data) return;
           if (data.activeLabs) setActiveLabs(data.activeLabs);
-          if (data.enrolledCourses) setEnrolledCourses(data.enrolledCourses.slice(0, 5));
+          if (data.enrolledCourses) {
+            const mapped = data.enrolledCourses.map((e: any) => ({
+              id: e.course?.id || e.courseId || e.id,
+              title: e.course?.title || e.title || "Untitled",
+              progress: e.progress,
+              imageUrl: e.course?.imageUrl || e.imageUrl || null,
+            }));
+            setEnrolledCourses(mapped.slice(0, 5));
+          }
           if (data.recommendations) setRecommendations(data.recommendations);
         })
         .catch(() => {});
 
-      fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`)
-        .then((data) => { if (cancelled || !data) return; setCompetency(data); })
-        .catch(() => {})
-        .finally(() => { if (!cancelled) setLoading(false); });
+      Promise.all([
+        fetchApi<CompetencyData>(`/learning-outcomes/competency-profile/${userId}/enhanced`)
+          .then((data) => { if (!cancelled && data) setCompetency(data); })
+          .catch(() => {}),
+        fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=5")
+          .then((data) => { if (!cancelled && data) setRecommendations(data); })
+          .catch(() => {}),
+      ]).finally(() => { if (!cancelled) setLoading(false); });
     }
 
     load();
