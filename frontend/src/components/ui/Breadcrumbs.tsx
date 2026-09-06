@@ -86,7 +86,7 @@ export default function Breadcrumbs() {
   if (crumbs.length === 0) return null;
 
   return (
-    <nav className="mb-4 flex items-center gap-2 text-sm text-slate-500">
+    <nav aria-label="breadcrumb" className="mb-4 flex items-center gap-2 text-sm text-slate-500">
       <Link href={rootHref} className="hover:text-slate-200 transition-colors">
         <Home size={14} />
       </Link>
