@@ -250,7 +250,8 @@ export default function Dashboard() {
           if (cancelled || !data) return;
           if (data.activeLabs) setActiveLabs(data.activeLabs);
           if (data.enrolledCourses) {
-            const mapped: EnrolledCourse[] = data.enrolledCourses.map((e: { course?: { id?: string; title?: string; imageUrl?: string }; courseId?: string; id?: string; title?: string; progress?: number; imageUrl?: string }) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const mapped: EnrolledCourse[] = (data.enrolledCourses as any[]).map((e) => ({
               id: e.course?.id || e.courseId || e.id || "",
               title: e.course?.title || e.title || "Untitled",
               progress: e.progress,
