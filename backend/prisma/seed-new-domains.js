@@ -29,6 +29,10 @@ const FILES = [
   'labs-fintech.json',
   'labs-blockchain.json',
   'labs-iot.json',
+  'labs-operational-cicd-monitoring.json',
+  'labs-operational-db-mq-web.json',
+  'labs-operational-network-mail-backup.json',
+  'labs-capstones.json',
 ];
 
 async function main() {

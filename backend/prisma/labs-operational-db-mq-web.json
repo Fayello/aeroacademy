@@ -1,0 +1,602 @@
+[
+  {
+    "title": "Deploy PostgreSQL Primary-Replica",
+    "description": "Set up PostgreSQL streaming replication with primary and replica, automated failover with Patroni.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy PostgreSQL with streaming replication — primary, replica, Patroni for failover, and verify data sync.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postgresql-15, patroni, etcd, haproxy\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL 15 on both nodes\n2. Configure primary with replication user\n3. Set up etcd for DCS\n4. Configure Patroni on primary\n5. Configure Patroni on replica\n6. Verify streaming replication is active\n7. Insert data on primary, verify on replica\n8. Test failover by stopping primary\n\n### Verification\n- Primary accepts writes\n- Replica shows replicated data\n- Patroni cluster shows healthy\n- Failover completes successfully",
+    "tasks": ["Install PostgreSQL 15", "Configure replication user", "Set up etcd", "Configure Patroni primary", "Configure Patroni replica", "Verify replication", "Insert and verify data", "Test failover"],
+    "flags": [
+      {"title": "PG Running", "description": "Run: systemctl status postgresql | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Replication Active", "description": "Run: sudo -u postgres psql -c \"SELECT client_addr, state FROM pg_stat_replication;\". What is the state?", "ans": "streaming", "pts": 75},
+      {"title": "Patroni Healthy", "description": "Run: patronictl -c /etc/patroni/config.yml list | grep -c 'running'. How many running nodes?", "ans": "2", "pts": 75},
+      {"title": "Data Synced", "description": "Run: sudo -u postgres psql -d testdb -c \"SELECT count(*) FROM test_data;\". How many rows?", "ans": "100", "pts": 100},
+      {"title": "Replica Lag", "description": "Run: sudo -u postgres psql -c \"SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0 ELSE EXTRACT(EPOCH FROM now() - pg_last_xact_replay_timestamp())::int END as lag;\". What is the lag?", "ans": "0", "pts": 100},
+      {"title": "Failover Works", "description": "Run: patronictl -c /etc/patroni/config.yml list | grep 'Leader' | wc -l. How many leaders after failover?", "ans": "1", "pts": 100},
+      {"title": "WAL Archiving", "description": "Run: ls /var/lib/postgresql/wal_archive/ | wc -l. How many WAL files archived?", "ans": "3", "pts": 100},
+      {"title": "Connection Pool", "description": "Run: psql -h localhost -p 5000 -U postgres -c 'SELECT 1' 2>/dev/null && echo 'OK' || echo 'FAIL'. Is PgBouncer responding?", "ans": "OK", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy MySQL Primary-Replica with GTID",
+    "description": "Set up MySQL primary-replica replication using GTID-based replication for reliable failover.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 80,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy MySQL 8 with GTID-based replication between primary and replica, ensure data consistency and test failover.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mysql-8.0, mysql-shell, orchestrator\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL 8.0 on both nodes\n2. Configure primary with server-id and GTID mode\n3. Create replication user on primary\n4. Configure replica with read-only and GTID\n5. Start replication and verify GTID sync\n6. Insert test data on primary\n7. Verify data on replica\n8. Test failover with Orchestrator\n\n### Verification\n- Both nodes running MySQL\n- GTID positions match\n- Data replicated correctly\n- Failover completes",
+    "tasks": ["Install MySQL 8.0", "Configure GTID primary", "Create replication user", "Configure replica", "Start replication", "Insert test data", "Verify replica data", "Test failover"],
+    "flags": [
+      {"title": "MySQL Primary", "description": "Run: systemctl status mysql | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "GTID Enabled", "description": "Run: mysql -u root -e \"SHOW VARIABLES LIKE 'gtid_mode';\". What is the value?", "ans": "ON", "pts": 75},
+      {"title": "Replication Running", "description": "Run: mysql -u root -e \"SHOW REPLICA STATUS\\G\" | grep Slave_IO_Running. What is the value?", "ans": "Yes", "pts": 75},
+      {"title": "SQL Thread Running", "description": "Run: mysql -u root -e \"SHOW REPLICA STATUS\\G\" | grep Slave_SQL_Running. What is the value?", "ans": "Yes", "pts": 75},
+      {"title": "Data Synced", "description": "Run: mysql -u root -e \"SELECT COUNT(*) FROM testdb.users;\". How many rows?", "ans": "50", "pts": 100},
+      {"title": "Executed GTID", "description": "Run: mysql -u root -e \"SHOW VARIABLES LIKE 'gtid_executed';\". Does it contain a UUID?", "ans": "YES", "pts": 100},
+      {"title": "Replication Lag", "description": "Run: mysql -u root -e \"SHOW REPLICA STATUS\\G\" | grep Seconds_Behind. What is the value?", "ans": "0", "pts": 100},
+      {"title": "Orchestrator Online", "description": "Run: curl -s http://localhost:3000/api/cluster/cluster-1 | grep -c 'Master'. How many nodes in orchestrator?", "ans": "2", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy MongoDB Replica Set",
+    "description": "Set up a 3-member MongoDB replica set with election, read preference, and failover testing.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 85,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy a 3-member MongoDB replica set, configure election priority, read preferences, and validate automatic failover.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mongodb-7.0, mongosh, mongod\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MongoDB 7.0 on all three nodes\n2. Configure each mongod with replica set config\n3. Initialize the replica set\n4. Add members and set priorities\n5. Verify primary election\n6. Insert and query data\n7. Configure read preference for secondaries\n8. Simulate primary failure and verify election\n\n### Verification\n- 3 members running\n- Primary elected\n- Data readable from secondaries\n- Failover succeeds",
+    "tasks": ["Install MongoDB 7.0", "Configure mongod instances", "Initialize replica set", "Add members", "Verify primary", "Insert and query data", "Configure read preference", "Test failover"],
+    "flags": [
+      {"title": "RS Status", "description": "Run: mongosh --eval 'rs.status().ok'. What is the return value?", "ans": "1", "pts": 50},
+      {"title": "Members Count", "description": "Run: mongosh --eval 'rs.status().members.length'. How many members?", "ans": "3", "pts": 75},
+      {"title": "Primary Exists", "description": "Run: mongosh --eval 'rs.status().members.filter(m=>m.stateStr==\"PRIMARY\").length'. How many primaries?", "ans": "1", "pts": 75},
+      {"title": "Data Inserted", "description": "Run: mongosh --eval 'db.testcoll.countDocuments()'. How many documents?", "ans": "200", "pts": 100},
+      {"title": "Secondary Readable", "description": "Run: mongosh --readPreference secondary --eval 'db.testcoll.countDocuments()'. How many documents from secondary?", "ans": "200", "pts": 100},
+      {"title": "Oplog Active", "description": "Run: mongosh --eval 'rs.printReplicationInfo().ok'. Is oplog active?", "ans": "1", "pts": 100},
+      {"title": "Heartbeat OK", "description": "Run: mongosh --eval 'rs.status().members[0].health'. Is health value?", "ans": "1", "pts": 100},
+      {"title": "Election Winner", "description": "Run: mongosh --eval 'rs.status().members.find(m=>m.stateStr==\"PRIMARY\").state'. What is the state value?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Redis Sentinel HA",
+    "description": "Set up Redis with Sentinel for high availability, automatic failover, and client redirection.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 70,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy Redis master-replica with 3 Sentinel nodes for automatic failover, client discovery, and data persistence.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: redis-7.2, redis-sentinel, redis-cli\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Redis on all nodes\n2. Configure master with password and persistence\n3. Configure replicas to connect to master\n4. Deploy 3 Sentinel instances\n5. Configure Sentinel monitoring\n6. Verify Sentinel sees master\n7. Insert data and verify replication\n8. Stop master and verify Sentinel failover\n\n### Verification\n- Master running with data\n- Replicas synchronized\n- Sentinel quorum achieved\n- Failover automatic",
+    "tasks": ["Install Redis", "Configure master", "Configure replicas", "Deploy Sentinels", "Configure monitoring", "Verify master detection", "Insert data", "Test failover"],
+    "flags": [
+      {"title": "Redis Master", "description": "Run: redis-cli -a ItLab2025! INFO replication | grep role. What role?", "ans": "role:master", "pts": 50},
+      {"title": "Slaves Connected", "description": "Run: redis-cli -a ItLab2025! INFO replication | grep connected_slaves. How many?", "ans": "2", "pts": 75},
+      {"title": "Sentinel Running", "description": "Run: redis-cli -p 26379 SENTINEL master mymaster | grep -c flags. How many flags?", "ans": "1", "pts": 75},
+      {"title": "Sentinels See Master", "description": "Run: redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster | head -1. What port?", "ans": "6379", "pts": 75},
+      {"title": "Data Set", "description": "Run: redis-cli -a ItLab2025! GET testkey. What value?", "ans": "operational", "pts": 100},
+      {"title": "Replication Offset", "description": "Run: redis-cli -a ItLab2025! INFO replication | grep master_repl_offset. What is offset > 0?", "ans": "1000", "pts": 100},
+      {"title": "Persistence AOF", "description": "Run: redis-cli -a ItLab2025! INFO persistence | grep aof_enabled. What value?", "ans": "1", "pts": 100},
+      {"title": "Sentinel Quorum", "description": "Run: redis-cli -p 26379 SENTINEL masters | grep -c 'name mymaster'. How many masters?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Elasticsearch 3-Node Cluster",
+    "description": "Set up a 3-node Elasticsearch cluster with shard allocation and health monitoring.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 90,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy a 3-node Elasticsearch 7.17 cluster, configure index sharding, replica allocation, and verify cluster health.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: elasticsearch-7.17, curl, jq\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch 7.17 on all nodes\n2. Configure cluster name and node roles\n3. Set discovery seed hosts\n4. Start nodes and verify cluster formation\n5. Create an index with 3 shards and 1 replica\n6. Index test documents\n7. Verify shard distribution\n8. Test cluster resilience by stopping one node\n\n### Verification\n- Cluster status green\n- 3 nodes discovered\n- Shards distributed evenly\n- Cluster recovers after node loss",
+    "tasks": ["Install Elasticsearch", "Configure cluster", "Set seed hosts", "Start nodes", "Create index", "Index documents", "Verify shards", "Test resilience"],
+    "flags": [
+      {"title": "Cluster Health", "description": "Run: curl -s localhost:9200/_cluster/health | jq -r .status. What status?", "ans": "green", "pts": 50},
+      {"title": "Node Count", "description": "Run: curl -s localhost:9200/_cat/nodes | wc -l. How many nodes?", "ans": "3", "pts": 75},
+      {"title": "Cluster Name", "description": "Run: curl -s localhost:9200/_cluster/health | jq -r .cluster_name. What name?", "ans": "aero-cluster", "pts": 75},
+      {"title": "Indices Created", "description": "Run: curl -s localhost:9200/_cat/indices | grep -c 'testidx'. How many indices?", "ans": "1", "pts": 100},
+      {"title": "Doc Count", "description": "Run: curl -s localhost:9200/testidx/_count | jq -r .count. How many docs?", "ans": "500", "pts": 100},
+      {"title": "Shards Allocated", "description": "Run: curl -s localhost:9200/_cat/shards | grep -c 'testidx'. How many shards?", "ans": "6", "pts": 100},
+      {"title": "Primary Shards", "description": "Run: curl -s localhost:9200/_cat/shards/testidx | grep -c 'p '. How many primary shards?", "ans": "3", "pts": 100},
+      {"title": "Active Shards", "description": "Run: curl -s localhost:9200/_cluster/health | jq -r .active_shards. How many active shards?", "ans": "6", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy MariaDB Galera Multi-Master",
+    "description": "Set up a 3-node MariaDB Galera cluster for synchronous multi-master replication.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 100,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy a 3-node MariaDB Galera cluster with synchronous replication, verify multi-master write capability, and test cluster resilience.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mariadb-10.11, galera-4, mysql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MariaDB 10.11 on all nodes\n2. Configure Galera cluster parameters\n3. Bootstrap the first node\n4. Join remaining nodes to cluster\n5. Verify cluster size\n6. Write to different nodes simultaneously\n7. Verify synchronous replication\n8. Test by stopping one node and writing from others\n\n### Verification\n- 3 nodes in cluster\n- Galera sync status active\n- Writes succeed from any node\n- Cluster survives node loss",
+    "tasks": ["Install MariaDB", "Configure Galera", "Bootstrap first node", "Join nodes", "Verify cluster", "Write to nodes", "Check sync", "Test node loss"],
+    "flags": [
+      {"title": "Cluster Size", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_cluster_size';\". What value?", "ans": "3", "pts": 50},
+      {"title": "Galera Ready", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_ready';\". What value?", "ans": "ON", "pts": 75},
+      {"title": "Sync Connected", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_connected';\". What value?", "ans": "ON", "pts": 75},
+      {"title": "Cluster Status", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_cluster_status';\". What value?", "ans": "Primary", "pts": 75},
+      {"title": "Data Synced", "description": "Run: mysql -u root -e \"SELECT COUNT(*) FROM testdb.employees;\". How many rows?", "ans": "100", "pts": 100},
+      {"title": "Local State", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_local_state_comment';\". What value?", "ans": "Synced", "pts": 100},
+      {"title": "Ready Commits", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_cert_deps_distance';\". Is value > 0?", "ans": "1", "pts": 100},
+      {"title": "Flow Control", "description": "Run: mysql -u root -e \"SHOW STATUS LIKE 'wsrep_flow_control_paused';\". What is the value?", "ans": "0", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy TimescaleDB Time-Series",
+    "description": "Set up TimescaleDB for time-series workloads with hypertables, compression, and retention policies.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 75,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy TimescaleDB as a PostgreSQL extension, create hypertables for time-series data, configure compression and data retention.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postgresql-15, timescaledb-2.14, psql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL 15 and TimescaleDB extension\n2. Create a time-series table for IoT sensor data\n3. Convert to hypertable with appropriate chunk interval\n4. Insert time-series data\n5. Create continuous aggregate\n6. Configure compression policy\n7. Set up retention policy\n8. Verify compression and data lifecycle\n\n### Verification\n- Hypertable created\n- Data inserted with timestamps\n- Continuous aggregate materialized\n- Compression active on old chunks",
+    "tasks": ["Install PostgreSQL + TimescaleDB", "Create sensor table", "Convert to hypertable", "Insert data", "Create continuous aggregate", "Configure compression", "Set retention policy", "Verify lifecycle"],
+    "flags": [
+      {"title": "Extension Loaded", "description": "Run: psql -U postgres -c \"SELECT extname FROM pg_extension WHERE extname='timescaledb';\". What extension?", "ans": "timescaledb", "pts": 50},
+      {"title": "Hypertable Created", "description": "Run: psql -U postgres -c \"SELECT count(*) FROM timescaledb_information.hypertables;\". How many hypertables?", "ans": "1", "pts": 75},
+      {"title": "Chunks Created", "description": "Run: psql -U postgres -c \"SELECT count(*) FROM timescaledb_information.chunks WHERE hypertable_name='sensor_data';\". How many chunks?", "ans": "3", "pts": 75},
+      {"title": "Data Inserted", "description": "Run: psql -U postgres -c \"SELECT count(*) FROM sensor_data;\". How many rows?", "ans": "10000", "pts": 100},
+      {"title": "Aggregate Exists", "description": "Run: psql -U postgres -c \"SELECT count(*) FROM timescaledb_information.continuous_aggregates;\". How many?", "ans": "1", "pts": 100},
+      {"title": "Compression On", "description": "Run: psql -U postgres -c \"SELECT count(*) FROM timescaledb_information.jobs WHERE proc_name='policy_compression';\". How many compression policies?", "ans": "1", "pts": 100},
+      {"title": "Retention Set", "description": "Run: psql -U postgres -c \"SELECT count(*) FROM timescaledb_information.jobs WHERE proc_name='policy_retention';\". How many retention policies?", "ans": "1", "pts": 100},
+      {"title": "Time Bucket", "description": "Run: psql -U postgres -c \"SELECT time_bucket('1 hour', time) as bucket, count(*) FROM sensor_data GROUP BY bucket LIMIT 1;\". Does it return a bucket?", "ans": "YES", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy MinIO S3-Compatible Storage",
+    "description": "Set up MinIO as an S3-compatible object storage with buckets, policies, and event notifications.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 60,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy MinIO for S3-compatible object storage, configure buckets with policies, and test upload/download operations.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: minio, mc (minio client), curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MinIO server\n2. Configure data directories and start server\n3. Install MinIO client (mc)\n4. Configure mc alias for local MinIO\n5. Create buckets with different policies\n6. Upload test objects\n7. Configure bucket versioning\n8. Test download and presigned URLs\n\n### Verification\n- MinIO server running\n- Buckets created with policies\n- Objects uploaded and downloadable\n- Versioning enabled",
+    "tasks": ["Install MinIO", "Start server", "Install mc", "Configure alias", "Create buckets", "Upload objects", "Enable versioning", "Test presigned URLs"],
+    "flags": [
+      {"title": "MinIO Running", "description": "Run: mc admin info local | grep -c '_drives'. How many drives configured?", "ans": "1", "pts": 50},
+      {"title": "Buckets Created", "description": "Run: mc ls local/ | grep -c 'DIR'. How many buckets?", "ans": "3", "pts": 75},
+      {"title": "Object Uploaded", "description": "Run: mc ls local/data-bucket/ | grep -c 'testfile'. How many files?", "ans": "5", "pts": 75},
+      {"title": "Versioning On", "description": "Run: mc version info local/data-bucket | grep -c 'Enabled'. Is versioning enabled?", "ans": "1", "pts": 100},
+      {"title": "Policy Set", "description": "Run: mc anonymous get-json local/public-bucket. What policy type?", "ans": "readonly", "pts": 100},
+      {"title": "File Download", "description": "Run: mc cat local/data-bucket/testfile.txt | wc -c. What file size?", "ans": "1024", "pts": 100},
+      {"title": "Disk Usage", "description": "Run: mc admin info local | grep 'Used'. Is disk usage > 0?", "ans": "1", "pts": 100},
+      {"title": "Server Status", "description": "Run: mc admin info local | grep 'Version'. What version string?", "ans": "DEVELOPMENT", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy InfluxDB + Telegraf",
+    "description": "Set up InfluxDB for time-series metrics collection with Telegraf as the agent.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 70,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy InfluxDB 2.x for metrics storage and Telegraf for system metrics collection, create dashboards and alerts.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: influxdb-2.7, telegraf, influx CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install InfluxDB 2.7 and start service\n2. Set up initial organization, bucket, and token\n3. Install and configure Telegraf\n4. Configure Telegraf input plugins (cpu, mem, disk)\n5. Configure Telegraf InfluxDB output\n6. Start Telegraf and verify data flow\n7. Create a monitoring task with Flux\n8. Set up alert notification endpoint\n\n### Verification\n- InfluxDB running and accessible\n- Telegraf sending metrics\n- Data queryable via Flux\n- Alert task active",
+    "tasks": ["Install InfluxDB", "Setup org and bucket", "Install Telegraf", "Configure inputs", "Configure outputs", "Start Telegraf", "Create Flux task", "Setup alerts"],
+    "flags": [
+      {"title": "InfluxDB Running", "description": "Run: influx ping 2>&1 | head -1. Is InfluxDB responding?", "ans": "OK", "pts": 50},
+      {"title": "Bucket Created", "description": "Run: influx bucket list | grep -c 'system-metrics'. How many buckets?", "ans": "1", "pts": 75},
+      {"title": "Telegraf Active", "description": "Run: systemctl status telegraf | grep active. What status?", "ans": "active (running)", "pts": 75},
+      {"title": "Metrics Incoming", "description": "Run: influx query 'from(bucket:\"system-metrics\") |> range(start:-5m) |> count()'. Are there results?", "ans": "YES", "pts": 100},
+      {"title": "CPU Data", "description": "Run: influx query 'from(bucket:\"system-metrics\") |> range(start:-5m) |> filter(fn:(r) => r._measurement == \"cpu\") |> count()'. Is CPU data present?", "ans": "YES", "pts": 100},
+      {"title": "Memory Data", "description": "Run: influx query 'from(bucket:\"system-metrics\") |> range(start:-5m) |> filter(fn:(r) => r._measurement == \"mem\") |> count()'. Is memory data present?", "ans": "YES", "pts": 100},
+      {"title": "Task Active", "description": "Run: influx task list | grep -c 'monitoring'. How many monitoring tasks?", "ans": "1", "pts": 100},
+      {"title": "Token Valid", "description": "Run: influx auth list | grep -c 'token'. How many tokens?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy CockroachDB Distributed SQL",
+    "description": "Set up a 3-node CockroachDB cluster with distributed SQL queries and schema management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 95,
+    "skillName": "DATABASES",
+    "briefing": "### Mission Objective\nDeploy a 3-node CockroachDB cluster, configure multi-region settings, and test distributed SQL queries with automatic range rebalancing.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: cockroachdb-23.2, cockroach sql CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install CockroachDB on all 3 nodes\n2. Start first node in insecure mode\n3. Join remaining nodes to the cluster\n4. Initialize the cluster\n5. Create a database and table across ranges\n6. Insert distributed data\n7. Verify range distribution\n8. Test by killing a node and querying\n\n### Verification\n- 3 nodes in cluster\n- SQL queries execute successfully\n- Ranges distributed across nodes\n- Cluster tolerates node loss",
+    "tasks": ["Install CockroachDB", "Start first node", "Join nodes", "Initialize cluster", "Create database", "Insert data", "Verify ranges", "Test fault tolerance"],
+    "flags": [
+      {"title": "Cluster Live", "description": "Run: cockroach node status --insecure --host=localhost:26257 | grep -c 'true'. How many live nodes?", "ans": "3", "pts": 50},
+      {"title": "DB Created", "description": "Run: cockroach sql --insecure -e \"SHOW DATABASES;\" | grep -c 'appdb'. How many app databases?", "ans": "1", "pts": 75},
+      {"title": "Table Created", "description": "Run: cockroach sql --insecure -d appdb -e \"SHOW TABLES;\" | grep -c 'orders'. How many tables?", "ans": "1", "pts": 75},
+      {"title": "Data Inserted", "description": "Run: cockroach sql --insecure -d appdb -e \"SELECT count(*) FROM orders;\". How many rows?", "ans": "500", "pts": 100},
+      {"title": "Ranges Distributed", "description": "Run: cockroach sql --insecure -e \"SELECT count(DISTINCT store_id) FROM crdb_internal.ranges;\". How many stores with ranges?", "ans": "3", "pts": 100},
+      {"title": "Replicas Per Range", "description": "Run: cockroach sql --insecure -e \"SELECT array_length(replicas, 1) FROM crdb_internal.ranges LIMIT 1;\". What replica count?", "ans": "3", "pts": 100},
+      {"title": "Schema Frozen", "description": "Run: cockroach sql --insecure -e \"SHOW ZONE CONFIGURATION FOR DATABASE appdb;\" | grep -c 'num_replicas'. Is zone config set?", "ans": "1", "pts": 100},
+      {"title": "Cluster Settings", "description": "Run: cockroach sql --insecure -e \"SHOW CLUSTER SETTING version;\". Is version > 0?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy RabbitMQ Cluster",
+    "description": "Set up a 3-node RabbitMQ cluster with mirrored queues and high availability.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 80,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy a 3-node RabbitMQ cluster with mirrored queues, configure exchanges and bindings, and test message durability.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: rabbitmq-3.13, erlang-26, rabbitmqctl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Erlang 26 on all nodes\n2. Install RabbitMQ 3.13 on all nodes\n3. Configure Erlang cookie for clustering\n4. Join nodes to form cluster\n5. Enable management plugin\n6. Configure mirrored queue policy\n7. Create exchanges and queues\n8. Publish and consume test messages\n\n### Verification\n- 3 nodes in cluster\n- Management UI accessible\n- Mirrored queues active\n- Messages flow correctly",
+    "tasks": ["Install Erlang", "Install RabbitMQ", "Configure cookie", "Join cluster", "Enable management", "Configure mirroring", "Create exchanges", "Test messaging"],
+    "flags": [
+      {"title": "Cluster Running", "description": "Run: rabbitmqctl cluster_status | grep -c 'running_nodes'. How many running nodes?", "ans": "3", "pts": 50},
+      {"title": "Erlang Cookie", "description": "Run: rabbitmqctl cluster_status | grep 'cluster_name'. What is the cluster name?", "ans": "rabbit@node1", "pts": 75},
+      {"title": "Mirrored Queues", "description": "Run: rabbitmqctl list_policies | grep -c ha-all. How many HA policies?", "ans": "1", "pts": 75},
+      {"title": "Queues Created", "description": "Run: rabbitmqctl list_queues name | grep -c 'test-queue'. How many test queues?", "ans": "3", "pts": 100},
+      {"title": "Messages Published", "description": "Run: rabbitmqctl list_queues messages | head -1 | awk '{print $2}'. How many messages?", "ans": "100", "pts": 100},
+      {"title": "Exchange Type", "description": "Run: rabbitmqctl list_exchanges name type | grep 'test-exchange'. What type?", "ans": "direct", "pts": 100},
+      {"title": "Consumers Active", "description": "Run: rabbitmqctl list_queues consumers | head -1 | awk '{print $2}'. How many consumers?", "ans": "1", "pts": 100},
+      {"title": "Memory Alarm", "description": "Run: rabbitmqctl list_alarms | grep -c memory. How many memory alarms?", "ans": "0", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Apache Kafka Single Node",
+    "description": "Set up a single-node Apache Kafka with topics, producers, and consumers for event streaming.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Apache Kafka 3.7 on a single node with KRaft (no ZooKeeper), create topics, produce and consume events.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: kafka-3.7, kraft, kafka-topics.sh, kafka-console\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Java 17 and Kafka 3.7\n2. Generate cluster UUID for KRaft\n3. Format log directories\n4. Start Kafka in KRaft mode\n5. Create topics with partitions\n6. Produce test messages\n7. Consume and verify messages\n8. Configure topic retention policy\n\n### Verification\n- Kafka broker running\n- Topics created with partitions\n- Messages produced and consumed\n- Retention policy applied",
+    "tasks": ["Install Java + Kafka", "Generate cluster UUID", "Format logs", "Start KRaft mode", "Create topics", "Produce messages", "Consume messages", "Configure retention"],
+    "flags": [
+      {"title": "Kafka Running", "description": "Run: kafka-broker-api-versions.sh --bootstrap-server localhost:9092 | head -1. Is Kafka responding?", "ans": "23", "pts": 50},
+      {"title": "Topics Created", "description": "Run: kafka-topics.sh --bootstrap-server localhost:9092 --list | grep -c 'events'. How many event topics?", "ans": "2", "pts": 75},
+      {"title": "Partitions Set", "description": "Run: kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic events | grep -c 'Partition'. How many partitions?", "ans": "3", "pts": 75},
+      {"title": "Messages Produced", "description": "Run: kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic events | awk -F: '{print $3}'. How many offsets?", "ans": "50", "pts": 100},
+      {"title": "Consumer Group", "description": "Run: kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list | grep -c 'test-group'. How many consumer groups?", "ans": "1", "pts": 100},
+      {"title": "Replication Factor", "description": "Run: kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic events | grep 'ReplicationFactor' | awk '{print $3}'. What RF?", "ans": "1", "pts": 100},
+      {"title": "Log Retention", "description": "Run: kafka-configs.sh --bootstrap-server localhost:9092 --describe --entity-type topics --entity-name events | grep retention.ms. Is retention set?", "ans": "604800000", "pts": 100},
+      {"title": "Broker ID", "description": "Run: kafka-broker-api-versions.sh --bootstrap-server localhost:9092 2>&1 | grep -c 'id'. Is broker ID present?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy NATS Server",
+    "description": "Set up NATS messaging server with JetStream for persistent messaging and exactly-once delivery.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 55,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy NATS server with JetStream enabled, configure streams and consumers, and test persistent messaging.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nats-server-2.10, nats CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install NATS server 2.10\n2. Configure JetStream in nats.conf\n3. Start NATS server\n4. Install nats CLI tool\n5. Create JetStream streams\n6. Publish test messages\n7. Create durable consumers\n8. Verify message acknowledgment and replay\n\n### Verification\n- NATS server running\n- JetStream enabled\n- Streams created\n- Messages persisted and consumed",
+    "tasks": ["Install NATS", "Configure JetStream", "Start server", "Install CLI", "Create streams", "Publish messages", "Create consumers", "Verify acks"],
+    "flags": [
+      {"title": "NATS Running", "description": "Run: nats server info | grep -c 'JetStream'. Is JetStream enabled?", "ans": "1", "pts": 50},
+      {"title": "Streams Created", "description": "Run: nats stream ls | grep -c 'ORDERS'. How many streams?", "ans": "2", "pts": 75},
+      {"title": "Messages Stored", "description": "Run: nats stream info ORDERS | grep 'Messages'. How many messages?", "ans": "25", "pts": 75},
+      {"title": "Consumers Active", "description": "Run: nats consumer ls ORDERS | grep -c 'REPLICA'. How many consumers?", "ans": "1", "pts": 100},
+      {"title": "Subjects Bound", "description": "Run: nats stream info ORDERS | grep 'Subjects'. What subject prefix?", "ans": "orders.*", "pts": 100},
+      {"title": "Storage Type", "description": "Run: nats stream info ORDERS | grep 'Storage'. What storage type?", "ans": "File", "pts": 100},
+      {"title": "Retention Policy", "description": "Run: nats stream info ORDERS | grep 'Retention'. What policy?", "ans": "Limits", "pts": 100},
+      {"title": "Max Messages", "description": "Run: nats stream info ORDERS | grep 'Max Messages'. Is max messages > 0?", "ans": "-1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Mosquitto MQTT Broker",
+    "description": "Set up Eclipse Mosquitto as an MQTT broker with TLS, authentication, and topic ACLs.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 50,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Mosquitto MQTT broker with password authentication, TLS encryption, and topic-based access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mosquitto-2.0, mosquitto-clients, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Mosquitto 2.0 and clients\n2. Generate TLS certificates with openssl\n3. Configure mosquitto.conf with TLS\n4. Set up password file with users\n5. Configure topic ACLs\n6. Start Mosquitto broker\n7. Publish and subscribe with TLS\n8. Test ACL restrictions\n\n### Verification\n- Broker running with TLS\n- Password auth required\n- ACLs enforced\n- Messages encrypted",
+    "tasks": ["Install Mosquitto", "Generate TLS certs", "Configure TLS", "Setup passwords", "Configure ACLs", "Start broker", "Test pub/sub with TLS", "Test ACLs"],
+    "flags": [
+      {"title": "Mosquitto Running", "description": "Run: systemctl status mosquitto | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "TLS Enabled", "description": "Run: mosquitto_sub -h localhost -p 8883 --cafile /etc/mosquitto/certs/ca.crt -t 'test' -W 1 2>&1 | grep -c 'Connection'. Is TLS connection working?", "ans": "1", "pts": 75},
+      {"title": "Auth Required", "description": "Run: mosquitto_pub -h localhost -p 8883 --cafile /etc/mosquitto/certs/ca.crt -t 'test' -m 'hello' 2>&1 | grep -c 'Auth'. Is auth required?", "ans": "1", "pts": 75},
+      {"title": "Password File", "description": "Run: ls -la /etc/mosquitto/passwd | grep -c '-rw'. Is password file present?", "ans": "1", "pts": 75},
+      {"title": "TLS Cert Valid", "description": "Run: openssl x509 -in /etc/mosquitto/certs/server.crt -noout -dates | grep -c 'notAfter'. Is cert valid?", "ans": "1", "pts": 100},
+      {"title": "ACL Configured", "description": "Run: grep -c 'topic' /etc/mosquitto/acl.conf. How many ACL rules?", "ans": "3", "pts": 100},
+      {"title": "MQTT 5.0", "description": "Run: mosquitto_sub -h localhost -p 8883 --cafile /etc/mosquitto/certs/ca.crt -V 5 -t 'test' -W 1 2>&1 | head -1. Is MQTT 5 supported?", "ans": "YES", "pts": 100},
+      {"title": "Log Enabled", "description": "Run: grep -c 'log_dest' /etc/mosquitto/mosquitto.conf. How many log destinations?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Redis Streams Event Processing",
+    "description": "Set up Redis Streams for event sourcing with consumer groups and message acknowledgment.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 65,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Redis Streams for event-driven architecture, create consumer groups, process events with acknowledgment, and handle dead-letter queues.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: redis-7.2, redis-cli, python3\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Redis 7.2 with Streams support\n2. Configure Redis with AOF persistence\n3. Create event streams with XADD\n4. Create consumer groups\n5. Process events with XREADGROUP\n6. Acknowledge processed messages\n7. Implement dead-letter queue for failed events\n8. Monitor stream length and pending entries\n\n### Verification\n- Streams created and populated\n- Consumer groups active\n- Messages acknowledged\n- Dead-letter queue working",
+    "tasks": ["Install Redis", "Configure persistence", "Create streams", "Create consumer groups", "Process events", "Ack messages", "Implement DLQ", "Monitor streams"],
+    "flags": [
+      {"title": "Stream Created", "description": "Run: redis-cli -a ItLab2025! XLEN events. How many entries in stream?", "ans": "100", "pts": 50},
+      {"title": "Consumer Groups", "description": "Run: redis-cli -a ItLab2025! XINFO GROUPS events | grep -c 'name'. How many consumer groups?", "ans": "2", "pts": 75},
+      {"title": "Consumers Active", "description": "Run: redis-cli -a ItLab2025! XINFO CONSUMERS events processor-group | grep -c 'name'. How many consumers?", "ans": "2", "pts": 75},
+      {"title": "Pending Entries", "description": "Run: redis-cli -a ItLab2025! XPENDING events processor-group | head -2 | tail -1. How many pending?", "ans": "10", "pts": 100},
+      {"title": "Messages Acked", "description": "Run: redis-cli -a ItLab2025! XINFO GROUPS events | grep 'lag'. What is the lag?", "ans": "0", "pts": 100},
+      {"title": "DLQ Stream", "description": "Run: redis-cli -a ItLab2025! XLEN events:dlq. How many dead-letter entries?", "ans": "5", "pts": 100},
+      {"title": "Stream ID", "description": "Run: redis-cli -a ItLab2025! XINFO STREAM events | grep 'length'. What is the length?", "ans": "100", "pts": 100},
+      {"title": "Last ID", "description": "Run: redis-cli -a ItLab2025! XINFO STREAM entries 1 | head -1. Is the last ID valid?", "ans": "YES", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Nginx Reverse Proxy + LB",
+    "description": "Set up Nginx as a reverse proxy with load balancing across multiple backend servers.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 55,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Nginx as a reverse proxy with round-robin and least-connections load balancing, health checks, and SSL termination.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nginx-1.24, openssl, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Nginx 1.24\n2. Configure upstream backend servers\n3. Set up reverse proxy location blocks\n4. Configure load balancing method\n5. Add health check endpoints\n6. Set up SSL with self-signed cert\n7. Configure rate limiting\n8. Test load distribution across backends\n\n### Verification\n- Nginx running\n- Backends load balanced\n- SSL termination working\n- Rate limiting enforced",
+    "tasks": ["Install Nginx", "Configure upstream", "Setup reverse proxy", "Set LB method", "Add health checks", "Configure SSL", "Setup rate limiting", "Test distribution"],
+    "flags": [
+      {"title": "Nginx Running", "description": "Run: systemctl status nginx | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Upstream Configured", "description": "Run: nginx -T 2>/dev/null | grep -c 'upstream'. How many upstream blocks?", "ans": "1", "pts": 75},
+      {"title": "SSL Enabled", "description": "Run: curl -sk https://localhost/ -o /dev/null -w '%{http_code}'. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "LB Round Robin", "description": "Run: curl -s http://localhost/ -H 'Host: app.local' | grep -c 'backend'. Is load balancing working?", "ans": "1", "pts": 100},
+      {"title": "Health Check", "description": "Run: curl -s http://localhost/health | grep -c 'healthy'. Are health checks active?", "ans": "1", "pts": 100},
+      {"title": "Rate Limit Active", "description": "Run: for i in {1..20}; do curl -s -o /dev/null -w '%{http_code} ' http://localhost/; done | grep -c '503'. Any rate-limited requests?", "ans": "2", "pts": 100},
+      {"title": "Access Log", "description": "Run: ls -la /var/log/nginx/ | grep -c 'access'. Is access log present?", "ans": "1", "pts": 100},
+      {"title": "Error Log", "description": "Run: tail -1 /var/log/nginx/error.log | grep -c 'error'. Is error log active?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy HAProxy TCP/HTTP LB",
+    "description": "Set up HAProxy for both TCP and HTTP load balancing with health checks and statistics.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 65,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy HAProxy for TCP and HTTP load balancing with health checks, sticky sessions, and a statistics dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: haproxy-2.8, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install HAProxy 2.8\n2. Configure frontend for HTTP and TCP\n3. Configure backend servers with health checks\n4. Set up stick tables for session persistence\n5. Enable statistics dashboard\n6. Configure ACLs for routing\n7. Set up rate limiting and timeouts\n8. Test HTTP and TCP load balancing\n\n### Verification\n- HAProxy running\n- HTTP and TCP frontends active\n- Health checks passing\n- Stats dashboard accessible",
+    "tasks": ["Install HAProxy", "Configure frontends", "Configure backends", "Setup stick tables", "Enable stats", "Configure ACLs", "Set rate limits", "Test balancing"],
+    "flags": [
+      {"title": "HAProxy Running", "description": "Run: systemctl status haproxy | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Stats Enabled", "description": "Run: curl -s http://localhost:8404/stats | grep -c 'HAProxy'. Is stats page accessible?", "ans": "1", "pts": 75},
+      {"title": "Backends Up", "description": "Run: echo 'show stat' | socat stdio /var/run/haproxy/admin.sock | grep -c 'UP'. How many backends UP?", "ans": "2", "pts": 75},
+      {"title": "HTTP Frontend", "description": "Run: echo 'show stat' | socat stdio /var/run/haproxy/admin.sock | grep 'http_front' | grep -c 'OPEN'. Is HTTP frontend open?", "ans": "1", "pts": 100},
+      {"title": "TCP Frontend", "description": "Run: echo 'show stat' | socat stdio /var/run/haproxy/admin.sock | grep 'tcp_front' | grep -c 'OPEN'. Is TCP frontend open?", "ans": "1", "pts": 100},
+      {"title": "Health Checks", "description": "Run: echo 'show stat' | socat stdio /var/run/haproxy/admin.sock | grep -c 'L7OK'. How many L7 health checks OK?", "ans": "2", "pts": 100},
+      {"title": "Stick Table", "description": "Run: echo 'show table stick-table' | socat stdio /var/run/haproxy/admin.sock | grep -c 'type'. Is stick table configured?", "ans": "1", "pts": 100},
+      {"title": "Sessions Active", "description": "Run: echo 'show stat' | socat stdio /var/run/haproxy/admin.sock | grep 'http_back' | awk -F',' '{print $5}'. Are sessions > 0?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Traefik Auto-Discovery Proxy",
+    "description": "Set up Traefik as a reverse proxy with Docker provider auto-discovery and Let's Encrypt TLS.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 65,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Traefik as an edge proxy with automatic Docker service discovery, Let's Encrypt certificate management, and a dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: traefik-3.0, docker, docker-compose\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Traefik 3.0\n2. Configure Docker provider for auto-discovery\n3. Set up entrypoints for HTTP and HTTPS\n4. Configure Let's Encrypt resolvers\n5. Deploy test containers with labels\n6. Verify automatic route creation\n7. Enable Traefik dashboard\n8. Test SSL certificate auto-renewal\n\n### Verification\n- Traefik running\n- Docker labels create routes\n- TLS certificates issued\n- Dashboard accessible",
+    "tasks": ["Install Traefik", "Configure Docker provider", "Setup entrypoints", "Configure Let's Encrypt", "Deploy test containers", "Verify routes", "Enable dashboard", "Test SSL renewal"],
+    "flags": [
+      {"title": "Traefik Running", "description": "Run: systemctl status traefik | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Dashboard Accessible", "description": "Run: curl -s http://localhost:8080/api/overview | grep -c 'routers'. Is dashboard responding?", "ans": "1", "pts": 75},
+      {"title": "Docker Provider", "description": "Run: curl -s http://localhost:8080/api/overview | grep -c 'docker'. Is Docker provider enabled?", "ans": "1", "pts": 75},
+      {"title": "Routers Created", "description": "Run: curl -s http://localhost:8080/api/http/routers | grep -c 'router'. How many routers auto-discovered?", "ans": "3", "pts": 100},
+      {"title": "Services Detected", "description": "Run: curl -s http://localhost:8080/api/http/services | grep -c 'service'. How many services?", "ans": "3", "pts": 100},
+      {"title": "Entrypoints Active", "description": "Run: curl -s http://localhost:8080/api/entrypoints | grep -c 'entrypoint'. How many entrypoints?", "ans": "2", "pts": 100},
+      {"title": "Certificates Ready", "description": "Run: curl -s http://localhost:8080/api/tls/certificates | grep -c 'certificate'. How many TLS certs?", "ans": "1", "pts": 100},
+      {"title": "Middleware Active", "description": "Run: curl -s http://localhost:8080/api/http/middlewares | grep -c 'middleware'. How many middlewares?", "ans": "2", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Caddy with Auto-TLS",
+    "description": "Set up Caddy web server with automatic HTTPS, reverse proxy, and dynamic configuration via API.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 45,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Caddy as a web server and reverse proxy with automatic TLS certificate management, logging, and dynamic config.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: caddy-2.7, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Caddy 2.7\n2. Configure Caddyfile with reverse proxy\n3. Set up automatic HTTPS\n4. Configure access and error logging\n5. Start Caddy with admin API\n6. Deploy test backend services\n7. Verify automatic certificate provisioning\n8. Test dynamic config reload via API\n\n### Verification\n- Caddy running\n- Auto-TLS working\n- Reverse proxy configured\n- Dynamic reload functional",
+    "tasks": ["Install Caddy", "Configure Caddyfile", "Setup auto HTTPS", "Configure logging", "Start Caddy", "Deploy backends", "Verify TLS", "Test dynamic reload"],
+    "flags": [
+      {"title": "Caddy Running", "description": "Run: systemctl status caddy | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "TLS Enabled", "description": "Run: curl -sk https://localhost/ -o /dev/null -w '%{http_code}'. Is HTTPS working?", "ans": "200", "pts": 75},
+      {"title": "Admin API", "description": "Run: curl -s http://localhost:2019/config/ | grep -c 'apps'. Is admin API active?", "ans": "1", "pts": 75},
+      {"title": "Logging Active", "description": "Run: ls /var/log/caddy/ | grep -c 'access'. Is access log present?", "ans": "1", "pts": 100},
+      {"title": "Reverse Proxy", "description": "Run: curl -s http://localhost:2019/config/apps/http/servers | grep -c 'routes'. Are routes configured?", "ans": "1", "pts": 100},
+      {"title": "Cert Managed", "description": "Run: ls /var/lib/caddy/certificates/ | grep -c 'localhost'. Are certs stored?", "ans": "1", "pts": 100},
+      {"title": "Config Reload", "description": "Run: curl -s -X POST http://localhost:2019/load -H 'Content-Type: application/json' -d '{\"apps\":{}}' 2>&1 | grep -c 'error'. Does reload work?", "ans": "0", "pts": 100},
+      {"title": "HTTP Redirect", "description": "Run: curl -s http://localhost/ -o /dev/null -w '%{redirect_url}'. Does HTTP redirect to HTTPS?", "ans": "https://localhost/", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Apache with ModSecurity WAF",
+    "description": "Set up Apache HTTP server with ModSecurity Web Application Firewall and OWASP CRS rules.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 70,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Apache with ModSecurity WAF, configure OWASP CRS rules, and test SQL injection and XSS protection.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: apache-2.4, modsecurity-3.0, owasp-crs, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Apache 2.4\n2. Install ModSecurity 3.0 module\n3. Enable ModSecurity in Apache config\n4. Download and install OWASP CRS\n5. Configure SecRuleEngine and rule exclusions\n6. Set up test application\n7. Test SQL injection protection\n8. Test XSS attack prevention\n\n### Verification\n- Apache running with ModSecurity\n- OWASP CRS loaded\n- SQLi attacks blocked\n- XSS attacks blocked",
+    "tasks": ["Install Apache", "Install ModSecurity", "Enable ModSecurity", "Install OWASP CRS", "Configure rules", "Setup test app", "Test SQLi blocking", "Test XSS blocking"],
+    "flags": [
+      {"title": "Apache Running", "description": "Run: systemctl status apache2 | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "ModSecurity Loaded", "description": "Run: apache2ctl -M 2>/dev/null | grep -c 'security'. Is ModSecurity loaded?", "ans": "1", "pts": 75},
+      {"title": "CRS Loaded", "description": "Run: ls /etc/apache2/modsecurity.d/owasp-crs/rules/ | grep -c 'REQUEST-94'. How many CRS rule files?", "ans": "3", "pts": 75},
+      {"title": "SQLi Blocked", "description": "Run: curl -s 'http://localhost/?id=1%20OR%201=1' -o /dev/null -w '%{http_code}'. What HTTP code for SQLi attempt?", "ans": "403", "pts": 100},
+      {"title": "XSS Blocked", "description": "Run: curl -s 'http://localhost/?q=%3Cscript%3Ealert(1)%3C/script%3E' -o /dev/null -w '%{http_code}'. What HTTP code for XSS attempt?", "ans": "403", "pts": 100},
+      {"title": "Audit Log", "description": "Run: ls /var/log/apache2/ | grep -c 'modsec'. Is ModSecurity audit log present?", "ans": "1", "pts": 100},
+      {"title": "SecRuleEngine", "description": "Run: grep -c 'SecRuleEngine' /etc/apache2/modsecurity.d/modsecurity.conf. Is engine configured?", "ans": "1", "pts": 100},
+      {"title": "Debug Log", "description": "Run: grep -c 'SecAuditLog' /etc/apache2/modsecurity.d/modsecurity.conf. Is audit logging enabled?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Keycloak SSO + OIDC",
+    "description": "Set up Keycloak as an identity provider with OIDC, SSO, and user federation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 80,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Keycloak 24 as an SSO identity provider with OIDC flows, user federation, and role-based access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: keycloak-24, postgresql-15, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL 15 for Keycloak backend\n2. Install Keycloak 24\n3. Configure Keycloak with PostgreSQL datasource\n4. Start Keycloak in production mode\n5. Create admin user and realm\n6. Configure OIDC client\n7. Set up user federation\n8. Test OIDC authorization code flow\n\n### Verification\n- Keycloak running\n- OIDC endpoints accessible\n- Token issuance working\n- User federation connected",
+    "tasks": ["Install PostgreSQL", "Install Keycloak", "Configure datasource", "Start production mode", "Create realm", "Configure OIDC client", "Setup user federation", "Test OIDC flow"],
+    "flags": [
+      {"title": "Keycloak Running", "description": "Run: systemctl status keycloak | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "OIDC Discovery", "description": "Run: curl -s http://localhost:8080/realms/master/.well-known/openid-configuration | grep -c 'issuer'. Is OIDC discovery active?", "ans": "1", "pts": 75},
+      {"title": "Realm Created", "description": "Run: curl -s http://localhost:8080/admin/realms | grep -c 'aerorealm'. How many custom realms?", "ans": "1", "pts": 75},
+      {"title": "Client Configured", "description": "Run: curl -s http://localhost:8080/admin/realms/aerorealm/clients | grep -c 'aero-client'. How many OIDC clients?", "ans": "1", "pts": 100},
+      {"title": "Token Endpoint", "description": "Run: curl -s -X POST http://localhost:8080/realms/aerorealm/protocol/openid-connect/token -d 'grant_type=client_credentials' -u 'aero-client:secret' | grep -c 'access_token'. Does token endpoint work?", "ans": "1", "pts": 100},
+      {"title": "Users Created", "description": "Run: curl -s http://localhost:8080/admin/realms/aerorealm/users | grep -c 'username'. How many users?", "ans": "5", "pts": 100},
+      {"title": "Roles Defined", "description": "Run: curl -s http://localhost:8080/admin/realms/aerorealm/roles | grep -c 'name'. How many roles?", "ans": "3", "pts": 100},
+      {"title": "DB Connected", "description": "Run: psql -U keycloak -d keycloak -c 'SELECT count(*) FROM PUBLIC.USER_ENTITY;' 2>/dev/null || echo 'checking'. Is Keycloak DB accessible?", "ans": "5", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy FreeIPA Identity Domain",
+    "description": "Set up FreeIPA server for centralized identity management with LDAP, Kerberos, and DNS.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy FreeIPA as a centralized identity domain with LDAP directory, Kerberos authentication, DNS integration, and HBAC rules.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: freeipa-server, 389-ds, krb5kdc, bind9\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install FreeIPA server packages\n2. Configure domain name and realm\n3. Run ipa-server-install\n4. Configure DNS zone\n5. Create users and groups\n6. Set up HBAC rules\n7. Configure Kerberos principal\n8. Test LDAP search and Kerberos auth\n\n### Verification\n- FreeIPA server installed\n- LDAP directory populated\n- Kerberos realm functional\n- DNS records managed",
+    "tasks": ["Install FreeIPA", "Configure domain", "Run server install", "Setup DNS", "Create users", "Setup HBAC", "Configure Kerberos", "Test LDAP and Kerberos"],
+    "flags": [
+      {"title": "IPA Installed", "description": "Run: ipactl status 2>/dev/null | grep -c 'running'. Are IPA services running?", "ans": "1", "pts": 50},
+      {"title": "LDAP Searchable", "description": "Run: ldapsearch -x -H ldap://localhost -b 'dc=aero,dc=academy' -D 'cn=Directory Manager' -W '(&(objectClass=person))' 2>/dev/null | grep -c 'uid'. How many LDAP users?", "ans": "5", "pts": 75},
+      {"title": "Kerberos Realm", "description": "Run: kinit admin 2>&1 | head -1. Does kinit succeed?", "ans": "Password", "pts": 75},
+      {"title": "DNS Zone", "description": "Run: dig @localhost aero.academy SOA | grep -c 'aero.academy'. Is DNS zone configured?", "ans": "1", "pts": 100},
+      {"title": "HBAC Rules", "description": "Run: ipa hbacrule-find 2>/dev/null | grep -c 'rule'. How many HBAC rules?", "ans": "2", "pts": 100},
+      {"title": "Users in Domain", "description": "Run: ipa user-find 2>/dev/null | grep -c 'User login'. How many users in domain?", "ans": "5", "pts": 100},
+      {"title": "Groups Defined", "description": "Run: ipa group-find 2>/dev/null | grep -c 'Group name'. How many groups?", "ans": "3", "pts": 100},
+      {"title": "Services Registered", "description": "Run: ipa service-find 2>/dev/null | grep -c 'Principal'. How many services?", "ans": "2", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy OpenLDAP Directory Server",
+    "description": "Set up OpenLDAP as a directory server with replication, TLS, and administrative tools.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy OpenLDAP 2.5 as a directory server with multi-master replication, TLS encryption, and access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: slapd-2.5, ldap-utils, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install slapd and ldap-utils\n2. Configure base DN and admin password\n3. Generate TLS certificates\n4. Configure slapd with TLS\n5. Populate directory with OUs and users\n6. Configure ACLs for access control\n7. Set up multi-master replication\n8. Verify replication and search\n\n### Verification\n- OpenLDAP running with TLS\n- Directory entries searchable\n- Replication active\n- ACLs enforced",
+    "tasks": ["Install slapd", "Configure base DN", "Generate TLS certs", "Enable TLS", "Populate directory", "Configure ACLs", "Setup replication", "Verify replication"],
+    "flags": [
+      {"title": "Slapd Running", "description": "Run: systemctl status slapd | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "TLS Enabled", "description": "Run: ldapsearch -H ldaps://localhost -x -b '' -s base namingContexts 2>/dev/null | grep -c 'namingContexts'. Is TLS working?", "ans": "1", "pts": 75},
+      {"title": "Base DN Set", "description": "Run: ldapsearch -x -H ldap://localhost -b 'dc=aero,dc=academy' -D 'cn=admin,dc=aero,dc=academy' -W 'objectClass=organizationalUnit' 2>/dev/null | grep -c 'ou='. How many OUs?", "ans": "4", "pts": 75},
+      {"title": "Users Populated", "description": "Run: ldapsearch -x -H ldap://localhost -b 'ou=users,dc=aero,dc=academy' -D 'cn=admin,dc=aero,dc=academy' -W '(objectClass=person)' 2>/dev/null | grep -c 'uid='. How many users?", "ans": "10", "pts": 100},
+      {"title": "ACL Configured", "description": "Run: slapcat -n0 | grep -c 'olcAccess'. How many ACL rules?", "ans": "3", "pts": 100},
+      {"title": "Replication Active", "description": "Run: ldapsearch -x -H ldap://localhost -b 'cn=config' -D 'cn=admin,cn=config' -W '(objectClass=olcSyncReplConfig)' 2>/dev/null | grep -c 'syncrepl'. Is replication configured?", "ans": "1", "pts": 100},
+      {"title": "Schema Loaded", "description": "Run: ldapsearch -x -H ldap://localhost -b 'cn=schema,cn=config' -D 'cn=admin,cn=config' -W 2>/dev/null | grep -c 'cn='; How many schemas loaded?", "ans": "10", "pts": 100},
+      {"title": "Index Present", "description": "Run: ldapsearch -x -H ldap://localhost -b 'olcDatabase={1}mdb,cn=config' -D 'cn=admin,cn=config' -W 2>/dev/null | grep -c 'olcDbIndex'. How many indexes?", "ans": "5", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy OAuth2 Proxy with Keycloak",
+    "description": "Set up OAuth2 Proxy in front of a web app, using Keycloak as the identity provider for SSO.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 65,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy OAuth2 Proxy as an authentication gateway in front of a backend application, using Keycloak as the OIDC provider.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: oauth2-proxy-7.6, keycloak-24, nginx, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install and configure OAuth2 Proxy\n2. Configure Keycloak OIDC client\n3. Set up OAuth2 Proxy with Keycloak provider\n4. Configure Nginx as reverse proxy\n5. Set upstream to backend app\n6. Configure session storage\n7. Test SSO login flow\n8. Verify token refresh and logout\n\n### Verification\n- OAuth2 Proxy running\n- SSO login via Keycloak\n- Protected routes require auth\n- Session management working",
+    "tasks": ["Install OAuth2 Proxy", "Configure Keycloak client", "Setup proxy config", "Configure Nginx", "Set upstream", "Configure session storage", "Test SSO flow", "Test logout"],
+    "flags": [
+      {"title": "Proxy Running", "description": "Run: systemctl status oauth2-proxy | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Auth Redirect", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost/ -H 'Host: app.local'. What code for unauthenticated?", "ans": "302", "pts": 75},
+      {"title": "Keycloak Client", "description": "Run: curl -s http://localhost:8080/admin/realms/aerorealm/clients | grep -c 'oauth2-proxy'. Is Keycloak client registered?", "ans": "1", "pts": 75},
+      {"title": "Session Cookie", "description": "Run: curl -s -c /tmp/cookies.txt http://localhost:4180/oauth2/auth -H 'X-Auth-Request-Redirect: /' 2>/dev/null | head -1. Is session cookie set?", "ans": "YES", "pts": 100},
+      {"title": "Upstream Active", "description": "Run: curl -s http://localhost/ -H 'Host: app.local' -b /tmp/cookies.txt | grep -c 'backend'. Is upstream reachable?", "ans": "1", "pts": 100},
+      {"title": "Provider Config", "description": "Run: grep -c 'provider' /etc/oauth2-proxy/config.cfg. Is provider configured?", "ans": "1", "pts": 100},
+      {"title": "Email Domain", "description": "Run: grep 'email-domain' /etc/oauth2-proxy/config.cfg | head -1. What domain is allowed?", "ans": "aero.academy", "pts": 100},
+      {"title": "Cookie Secret", "description": "Run: grep -c 'cookie-secret' /etc/oauth2-proxy/config.cfg. Is cookie secret set?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Casdoor Identity Platform",
+    "description": "Set up Casdoor as an identity and access management platform with SSO, RBAC, and multi-factor auth.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 55,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Casdoor 1.x as an IAM platform with OIDC support, user management, RBAC policies, and multi-factor authentication.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: casdoor-1.x, mysql-8.0, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL 8.0 for Casdoor backend\n2. Download and install Casdoor\n3. Configure database connection\n4. Start Casdoor server\n5. Create organization and application\n6. Add users with roles\n7. Configure MFA policies\n8. Test OIDC login flow\n\n### Verification\n- Casdoor running\n- OIDC endpoints active\n- Users and roles configured\n- MFA enforced",
+    "tasks": ["Install MySQL", "Install Casdoor", "Configure DB", "Start server", "Create org", "Add users", "Configure MFA", "Test OIDC"],
+    "flags": [
+      {"title": "Casdoor Running", "description": "Run: systemctl status casdoor | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Web UI Accessible", "description": "Run: curl -s http://localhost:8000 | grep -c 'casdoor'. Is web UI accessible?", "ans": "1", "pts": 75},
+      {"title": "API Responding", "description": "Run: curl -s http://localhost:8000/api/get-organizations | grep -c 'aero'. How many organizations?", "ans": "1", "pts": 75},
+      {"title": "OIDC Discovery", "description": "Run: curl -s http://localhost:8000/.well-known/openid-configuration | grep -c 'issuer'. Is OIDC active?", "ans": "1", "pts": 100},
+      {"title": "Users Created", "description": "Run: curl -s http://localhost:8000/api/get-users | grep -c 'name'. How many users?", "ans": "5", "pts": 100},
+      {"title": "Roles Defined", "description": "Run: curl -s http://localhost:8000/api/get-roles | grep -c 'admin'. How many admin roles?", "ans": "1", "pts": 100},
+      {"title": "Applications Configured", "description": "Run: curl -s http://localhost:8000/api/get-applications | grep -c 'app-built-in'. How many apps?", "ans": "1", "pts": 100},
+      {"title": "Providers Set", "description": "Run: curl -s http://localhost:8000/api/get-providers | grep -c 'email'. How many email providers?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy NFS Server + Client",
+    "description": "Set up an NFS server with shared exports and configure client machines to mount the shares.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 50,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy an NFS server with shared directories, configure exports with proper permissions, and mount shares on client machines.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nfs-kernel-server, nfs-common, exportfs\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install NFS server packages\n2. Create shared directories\n3. Configure /etc/exports\n4. Start and enable NFS server\n5. Export filesystems\n6. Install NFS client on another node\n7. Mount NFS share on client\n8. Test read/write access\n\n### Verification\n- NFS server running\n- Exports listed\n- Client mount successful\n- Files readable/writable",
+    "tasks": ["Install NFS server", "Create directories", "Configure exports", "Start NFS server", "Export filesystems", "Install client", "Mount share", "Test access"],
+    "flags": [
+      {"title": "NFS Running", "description": "Run: systemctl status nfs-kernel-server | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "Exports Active", "description": "Run: exportfs -v | grep -c '/srv/nfs'. How many exports?", "ans": "2", "pts": 75},
+      {"title": "NFS Mount Point", "description": "Run: showmount -e localhost | grep -c '/srv/nfs'. Is export visible?", "ans": "2", "pts": 75},
+      {"title": "Client Mounted", "description": "Run: mount | grep -c 'nfs'. How many NFS mounts?", "ans": "1", "pts": 100},
+      {"title": "File Accessible", "description": "Run: cat /mnt/nfs-shared/testfile.txt 2>/dev/null | head -1. Is file readable?", "ans": "NFS_TEST_OK", "pts": 100},
+      {"title": "Write Test", "description": "Run: touch /mnt/nfs-shared/write_test 2>/dev/null && echo 'OK' || echo 'FAIL'. Can client write?", "ans": "OK", "pts": 100},
+      {"title": "Export Options", "description": "Run: exportfs -v | grep '/srv/nfs/shared'. What options are set?", "ans": "rw,sync,no_subtree_check", "pts": 100},
+      {"title": "NFS Version", "description": "Run: nfsstat --server | head -2 | grep -c 'v3'. Is NFS v3 or v4 active?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Ceph Distributed Storage",
+    "description": "Set up a minimal Ceph cluster with MON, OSD, and RADOS gateway for object storage.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy a single-node Ceph cluster with monitor daemon, OSD, and RADOS gateway for S3-compatible object storage.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ceph-18, cephadm, radosgw, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install cephadm bootstrap tool\n2. Bootstrap minimal Ceph cluster\n3. Add OSD with available disk\n4. Enable RADOS gateway\n5. Create S3 user and bucket\n6. Configure CephFS for file storage\n7. Verify cluster health\n8. Test object storage operations\n\n### Verification\n- Ceph cluster healthy\n- OSD in cluster\n- RADOS gateway running\n- Object storage working",
+    "tasks": ["Install cephadm", "Bootstrap cluster", "Add OSD", "Enable RGW", "Create S3 user", "Configure CephFS", "Verify health", "Test object storage"],
+    "flags": [
+      {"title": "Cluster Health", "description": "Run: ceph health | head -1. What is the cluster health?", "ans": "HEALTH_OK", "pts": 50},
+      {"title": "OSD Count", "description": "Run: ceph osd stat | awk '{print $1}'. How many OSDs?", "ans": "1", "pts": 75},
+      {"title": "MON Count", "description": "Run: ceph mon stat | awk '{print $2}'. How many monitors?", "ans": "1", "pts": 75},
+      {"title": "RGW Running", "description": "Run: ceph -s | grep 'rgw'. Is RADOS gateway running?", "ans": "rgw", "pts": 100},
+      {"title": "Pool Created", "description": "Run: ceph osd pool ls | grep -c 's3'. How many S3 pools?", "ans": "2", "pts": 100},
+      {"title": "S3 Bucket", "description": "Run: radosgw-admin bucket list 2>/dev/null | grep -c 'test-bucket'. How many buckets?", "ans": "1", "pts": 100},
+      {"title": "OSD Up", "description": "Run: ceph osd tree | grep -c 'up'. How many OSDs up?", "ans": "1", "pts": 100},
+      {"title": "Capacity Used", "description": "Run: ceph df | grep 'TOTAL' | awk '{print $3}'. Is capacity > 0?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy GlusterFS Replicated Volume",
+    "description": "Set up a 3-node GlusterFS cluster with replicated volumes and geo-replication.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 80,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy a 3-node GlusterFS cluster, create replicated volumes, configure geo-replication, and test data resilience.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: glusterfs-10, gluster CLI, FUSE\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install GlusterFS on all 3 nodes\n2. Configure trusted pool\n3. Create replicated volume\n4. Start and mount volume\n5. Write test data\n6. Verify replication across bricks\n7. Configure geo-replication\n8. Test node failure resilience\n\n### Verification\n- 3-node cluster formed\n- Replicated volume active\n- Data replicated to all bricks\n- Geo-replication running",
+    "tasks": ["Install GlusterFS", "Configure pool", "Create volume", "Start volume", "Mount volume", "Write data", "Configure geo-rep", "Test resilience"],
+    "flags": [
+      {"title": "Cluster Formed", "description": "Run: gluster peer status | grep -c 'Peer'. How many peers?", "ans": "2", "pts": 50},
+      {"title": "Volume Created", "description": "Run: gluster volume info | grep -c 'Volume Name'. How many volumes?", "ans": "1", "pts": 75},
+      {"title": "Volume Started", "description": "Run: gluster volume info | grep 'Status'. What status?", "ans": "Started", "pts": 75},
+      {"title": "Replica Count", "description": "Run: gluster volume info | grep 'Number of Bricks'. What count?", "ans": "3", "pts": 100},
+      {"title": "Data Replicated", "description": "Run: ls /mnt/glusterfs/ | grep -c 'testfile'. Are files replicated?", "ans": "10", "pts": 100},
+      {"title": "Bricks Online", "description": "Run: gluster volume status | grep -c 'Y'. How many bricks online?", "ans": "3", "pts": 100},
+      {"title": "Self-Heal Active", "description": "Run: gluster volume heal info | grep -c 'files'. Is self-heal tracking files?", "ans": "0", "pts": 100},
+      {"title": "Geo-Rep Configured", "description": "Run: gluster volume geo-replication | grep -c 'config'. Is geo-replication configured?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy ZFS Pool + Snapshots",
+    "description": "Set up ZFS storage pools with snapshots, compression, and send/recv for backup.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 65,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy ZFS storage with pools, datasets, snapshots, compression, and zfs send/recv for off-site backup.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: zfs-2.1, zpool, zfs CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install ZFS packages\n2. Create zpool with mirror configuration\n3. Create datasets for different use cases\n4. Enable compression (lz4)\n5. Create initial snapshot\n6. Modify data and create second snapshot\n7. Use zfs send/recv to replicate\n8. Test snapshot rollback\n\n### Verification\n- ZFS pool created\n- Datasets configured\n- Snapshots taken\n- Send/recv replication working",
+    "tasks": ["Install ZFS", "Create zpool", "Create datasets", "Enable compression", "Create snapshots", "Modify data", "Send/recv backup", "Test rollback"],
+    "flags": [
+      {"title": "Pool Created", "description": "Run: zpool list | grep -c 'tank'. How many pools?", "ans": "1", "pts": 50},
+      {"title": "Pool Healthy", "description": "Run: zpool status tank | grep -c 'ONLINE'. How many ONLINE devices?", "ans": "2", "pts": 75},
+      {"title": "Compression On", "description": "Run: zfs get compression tank | tail -1 | awk '{print $3}'. What compression?", "ans": "lz4", "pts": 75},
+      {"title": "Datasets Created", "description": "Run: zfs list -t dataset | grep -c 'tank/'. How many datasets?", "ans": "3", "pts": 100},
+      {"title": "Snapshots Exist", "description": "Run: zfs list -t snapshot | grep -c 'tank'. How many snapshots?", "ans": "2", "pts": 100},
+      {"title": "Snapshot Differ", "description": "Run: zfs diff tank/data@snap1 tank/data@snap2 | grep -c '+'. Are there differences?", "ans": "5", "pts": 100},
+      {"title": "Send/Recv Done", "description": "Run: zfs list -t snapshot | grep 'backup' | grep -c 'tank'. Is backup replication done?", "ans": "2", "pts": 100},
+      {"title": "Space Used", "description": "Run: zpool list tank | awk '{print $3}' | head -1. Is space > 0?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy iSCSI Target + Initiator",
+    "description": "Set up an iSCSI target server and configure a client initiator to mount block storage.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 70,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy an iSCSI target with LIO, create logical units, configure initiators, and mount block storage on clients.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: targetcli, lio, open-iscsi, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install targetcli and iSCSI target tools\n2. Create a backing store (disk image)\n3. Configure iSCSI target and IQN\n4. Create LUN and ACL\n5. Install open-iscsi on client node\n6. Discover and login to target\n7. Create filesystem and mount\n8. Verify block device access\n\n### Verification\n- iSCSI target running\n- LUN accessible from client\n- Block device mounted\n- Read/write operations work",
+    "tasks": ["Install targetcli", "Create backing store", "Configure target", "Create LUN", "Install client", "Discover target", "Mount filesystem", "Test block access"],
+    "flags": [
+      {"title": "Target Running", "description": "Run: systemctl status target | grep active. What status?", "ans": "active (running)", "pts": 50},
+      {"title": "LUN Created", "description": "Run: targetcli ls /iscsi | grep -c 'target'. How many iSCSI targets?", "ans": "1", "pts": 75},
+      {"title": "LUN Accessible", "description": "Run: targetcli ls /iscsi/iqn.2025.local:storage/tpg1/luns | grep -c 'lun'. How many LUNs?", "ans": "1", "pts": 75},
+      {"title": "ACL Configured", "description": "Run: targetcli ls /iscsi/iqn.2025.local:storage/tpg1/acls | grep -c 'acl'. How many ACLs?", "ans": "1", "pts": 100},
+      {"title": "Client Connected", "description": "Run: iscsiadm -m session | grep -c 'Connected'. How many iSCSI sessions?", "ans": "1", "pts": 100},
+      {"title": "Block Device", "description": "Run: lsblk | grep -c 'sd'. How many SCSI disks?", "ans": "1", "pts": 100},
+      {"title": "Filesystem Mounted", "description": "Run: mount | grep -c 'iscsi'. Is iSCSI mounted?", "ans": "1", "pts": 100},
+      {"title": "Write Test", "description": "Run: dd if=/dev/zero of=/mnt/iscsi/testfile bs=1M count=1 2>&1 | grep -c 'copied'. Does write succeed?", "ans": "1", "pts": 100}
+    ]
+  }
+]

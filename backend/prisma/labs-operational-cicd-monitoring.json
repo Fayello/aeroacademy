@@ -1,0 +1,602 @@
+[
+  {
+    "title": "Deploy Jenkins with Pipeline",
+    "description": "Set up Jenkins CI server with pipeline-as-code, credentials management, and a working CI pipeline.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Jenkins CI server from scratch — install, configure plugins, create pipeline-as-code jobs, and verify a successful build run.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: java, jenkins, curl, git\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Java JDK 17 and Jenkins LTS\n2. Start Jenkins and unlock with initial admin password\n3. Install required plugins: Pipeline, Git, Docker, Credentials\n4. Create admin user (itadmin / ItLab2025!)\n5. Configure Jenkins with pipeline-as-code support\n6. Create a Jenkinsfile for a sample Node.js app build\n7. Create a pipeline job named lab-pipeline pointing to the Jenkinsfile\n8. Run the pipeline and verify build succeeds\n\n### Permissions & Access\n- Container runs as root\n- Jenkins runs on port 8080\n- All verification is done via curl and systemctl\n- Credentials stored in /var/secrets/",
+    "tasks": ["Install Java JDK", "Install Jenkins", "Start Jenkins service", "Unlock Jenkins", "Install plugins", "Create admin user", "Write Jenkinsfile", "Create pipeline job", "Run pipeline", "Verify build success"],
+    "flags": [
+      {"title": "Jenkins Running", "description": "Run: systemctl status jenkins 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Jenkins Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8080. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Plugins Installed", "description": "Run: ls /var/lib/jenkins/plugins/ 2>/dev/null | grep -c pipeline. How many pipeline plugin files?", "ans": "3", "pts": 75},
+      {"title": "Jenkinsfile Exists", "description": "Run: ls /home/student/app/Jenkinsfile 2>/dev/null. What is the full path?", "ans": "/home/student/app/Jenkinsfile", "pts": 75},
+      {"title": "Pipeline Job", "description": "Run: curl -s http://localhost:8080/job/lab-pipeline/api/json 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[\"lastBuild\"][\"number\"])' 2>/dev/null. What is the build number?", "ans": "1", "pts": 100},
+      {"title": "Build Success", "description": "Run: curl -s http://localhost:8080/job/lab-pipeline/1/api/json 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"result\"])' 2>/dev/null. What is the result?", "ans": "SUCCESS", "pts": 100},
+      {"title": "Credentials Stored", "description": "Run: ls /var/secrets/ 2>/dev/null | wc -l. How many secret files?", "ans": "2", "pts": 100},
+      {"title": "Pipeline Logs", "description": "Run: curl -s http://localhost:8080/job/lab-pipeline/1/consoleText 2>/dev/null | grep -c 'Finished: SUCCESS'. How many lines match?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy GitLab CE with CI Runner",
+    "description": "Deploy GitLab Community Edition with a registered CI runner and a working .gitlab-ci.yml pipeline.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy GitLab Community Edition from scratch, configure it, register a GitLab Runner, and create a working CI pipeline.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: curl, gitlab-runner, gitlab-ce\n- Login: root / ItLab2025!\n\n### Tasks\n1. Install and configure GitLab CE (external_url set to http://localhost)\n2. Start GitLab and wait for it to be healthy\n3. Set root password and configure initial settings\n4. Install GitLab Runner package\n5. Register the runner with a runner token\n6. Create a sample project with a .gitlab-ci.yml\n7. Push the project and trigger the CI pipeline\n8. Verify pipeline succeeds in GitLab CI/CD interface\n\n### Permissions & Access\n- Container runs as root\n- GitLab runs on port 80 or 8929\n- Runner registered with shared runner token\n- Verification via curl and gitlab-runner commands",
+    "tasks": ["Install GitLab CE", "Configure GitLab", "Start GitLab service", "Set root password", "Install GitLab Runner", "Register runner", "Create project with CI file", "Trigger pipeline", "Verify pipeline success"],
+    "flags": [
+      {"title": "GitLab Running", "description": "Run: systemctl status gitlab-runsvdir 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "GitLab Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:80 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Runner Registered", "description": "Run: gitlab-runner list 2>/dev/null | grep -c 'URL:'. How many runners registered?", "ans": "1", "pts": 75},
+      {"title": "CI File Exists", "description": "Run: ls /home/student/project/.gitlab-ci.yml 2>/dev/null. What is the full path?", "ans": "/home/student/project/.gitlab-ci.yml", "pts": 75},
+      {"title": "Runner Online", "description": "Run: gitlab-runner verify 2>/dev/null | grep -c 'is alive'. How many runners are alive?", "ans": "1", "pts": 100},
+      {"title": "Project Created", "description": "Run: curl -s http://localhost/api/v4/projects?private_token=$(cat /etc/gitlab/initial_root_password 2>/dev/null | grep -A1 'Password:' | tail -1 | awk '{print $2}') 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many projects exist?", "ans": "1", "pts": 100},
+      {"title": "Pipeline Triggered", "description": "Run: ls /home/student/project/.gitlab-ci.yml 2>/dev/null | wc -l. Does CI file exist?", "ans": "1", "pts": 100},
+      {"title": "Runner Config", "description": "Run: cat /etc/gitlab-runner/config.toml 2>/dev/null | grep -c '[[runners]]'. How many runner entries?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "GitHub Actions Self-Hosted Runner",
+    "description": "Configure a GitHub Actions self-hosted runner and execute a workflow from a repository.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nSet up a GitHub Actions self-hosted runner on an Ubuntu machine, configure it to listen for workflow jobs, and verify it picks up and completes a workflow run.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: actions-runner, curl, git\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Download the GitHub Actions runner package\n2. Extract and configure the runner with a registration token\n3. Start the runner service\n4. Create a sample workflow YAML file (.github/workflows/lab.yml)\n5. Configure the workflow to use runs-on: self-hosted\n6. Verify the runner is online and ready\n7. Trigger the workflow and watch the runner pick it up\n8. Confirm workflow completes successfully\n\n### Permissions & Access\n- Container runs as root\n- Runner installed in /home/student/actions-runner\n- Token-based registration (pre-configured)\n- Verification via systemctl and runner logs",
+    "tasks": ["Download runner package", "Extract runner", "Configure runner", "Start runner service", "Create workflow file", "Verify runner online", "Trigger workflow", "Confirm workflow success"],
+    "flags": [
+      {"title": "Runner Installed", "description": "Run: ls /home/student/actions-runner/bin/Runner.Listener 2>/dev/null. Does the binary exist?", "ans": "/home/student/actions-runner/bin/Runner.Listener", "pts": 50},
+      {"title": "Runner Running", "description": "Run: systemctl status actions.runner.* 2>/dev/null | grep -i active || ps aux | grep Runner.Listener | grep -v grep | wc -l. How many runner processes?", "ans": "1", "pts": 75},
+      {"title": "Workflow File", "description": "Run: ls /home/student/repo/.github/workflows/lab.yml 2>/dev/null. What is the path?", "ans": "/home/student/repo/.github/workflows/lab.yml", "pts": 75},
+      {"title": "Runner Config", "description": "Run: cat /home/student/actions-runner/.runner 2>/dev/null | grep -c 'agentName'. Is the agent configured?", "ans": "1", "pts": 75},
+      {"title": "Runner Listener", "description": "Run: ps aux | grep -c 'Runner.Listener'. How many listener processes?", "ans": "1", "pts": 100},
+      {"title": "Workflow YAML Valid", "description": "Run: python3 -c 'import yaml;yaml.safe_load(open(\"/home/student/repo/.github/workflows/lab.yml\"));print(\"valid\")' 2>/dev/null. Is the YAML valid?", "ans": "valid", "pts": 100},
+      {"title": "Runner Credentials", "description": "Run: ls /home/student/actions-runner/.credentials 2>/dev/null | wc -l. How many credential files?", "ans": "3", "pts": 100},
+      {"title": "Runner Logs", "description": "Run: ls /home/student/actions-runner/_diag/ 2>/dev/null | wc -l. How many log files exist?", "ans": "3", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy ArgoCD for GitOps",
+    "description": "Deploy ArgoCD on Kubernetes and configure a GitOps application that syncs from a Git repository.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy ArgoCD on a Kubernetes cluster, configure it to watch a Git repository, and verify that it syncs application manifests automatically.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: kubectl, argocd, helm, git\n- Login: itadmin / ItLab2025!\n- Pre-installed: minikube or kind cluster\n\n### Tasks\n1. Create argocd namespace in Kubernetes\n2. Install ArgoCD using the official manifests\n3. Wait for all ArgoCD pods to be Running\n4. Get the initial admin password\n5. Access ArgoCD server on port 8084\n6. Create an Application CR pointing to a Git repo\n7. Verify the application syncs successfully\n8. Confirm the deployed resources are running\n\n### Permissions & Access\n- Container runs as root with kubectl access\n- ArgoCD server accessible on port 8084\n- Initial admin password stored in argocd-initial-admin-secret\n- Verification via kubectl and argocd CLI",
+    "tasks": ["Create argocd namespace", "Install ArgoCD manifests", "Wait for pods", "Get initial password", "Access ArgoCD UI", "Create Application CR", "Verify sync", "Confirm resources running"],
+    "flags": [
+      {"title": "ArgoCD Namespace", "description": "Run: kubectl get ns argocd 2>/dev/null | grep -c argocd. Does the namespace exist?", "ans": "1", "pts": 50},
+      {"title": "ArgoCD Pods", "description": "Run: kubectl get pods -n argocd 2>/dev/null | grep -c Running. How many pods are Running?", "ans": "5", "pts": 75},
+      {"title": "ArgoCD Server", "description": "Run: kubectl get svc -n argocd argocd-server 2>/dev/null | grep -c argocd-server. Does the service exist?", "ans": "1", "pts": 75},
+      {"title": "Initial Password", "description": "Run: kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath='{.data.password}' 2>/dev/null | base64 -d 2>/dev/null | wc -c. How many characters?", "ans": "20", "pts": 75},
+      {"title": "ArgoCD Version", "description": "Run: argocd version 2>/dev/null | head -1. What version string is shown?", "ans": "argcd", "pts": 100},
+      {"title": "App Created", "description": "Run: argocd app list 2>/dev/null | grep -c 'lab-app'. How many lab apps?", "ans": "1", "pts": 100},
+      {"title": "App Synced", "description": "Run: argocd app get lab-app 2>/dev/null | grep 'Status:' | awk '{print $2}'. What is the sync status?", "ans": "Synced", "pts": 100},
+      {"title": "Resources Healthy", "description": "Run: argocd app get lab-app 2>/dev/null | grep 'Health:' | awk '{print $2}'. What is the health status?", "ans": "Healthy", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Flux CD for GitOps",
+    "description": "Deploy Flux CD on Kubernetes and configure automated GitOps reconciliation from a Git repository.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Flux CD on a Kubernetes cluster, bootstrap it with a Git repository, and verify that resources reconcile automatically.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: kubectl, flux, helm, git\n- Login: itadmin / ItLab2025!\n- Pre-installed: minikube or kind cluster\n\n### Tasks\n1. Install Flux CLI\n2. Bootstrap Flux with a Git repository\n3. Verify all Flux components are running\n4. Create a Kustomization pointing to app manifests\n5. Create a GitRepository source\n6. Wait for Flux to reconcile the manifests\n7. Verify deployed resources are running\n8. Confirm reconciliation succeeds\n\n### Permissions & Access\n- Container runs as root with kubectl access\n- Flux runs in flux-system namespace\n- Git repo pre-configured in /home/student/manifests\n- Verification via kubectl and flux CLI",
+    "tasks": ["Install Flux CLI", "Bootstrap Flux", "Verify components running", "Create Kustomization", "Create GitRepository source", "Wait for reconciliation", "Verify deployed resources", "Confirm reconciliation success"],
+    "flags": [
+      {"title": "Flux Namespace", "description": "Run: kubectl get ns flux-system 2>/dev/null | grep -c flux-system. Does namespace exist?", "ans": "1", "pts": 50},
+      {"title": "Flux Pods", "description": "Run: kubectl get pods -n flux-system 2>/dev/null | grep -c Running. How many pods Running?", "ans": "4", "pts": 75},
+      {"title": "Flux Version", "description": "Run: flux version 2>/dev/null | grep -c 'flux'. Is Flux CLI installed?", "ans": "1", "pts": 75},
+      {"title": "GitRepository", "description": "Run: kubectl get gitrepository -n flux-system 2>/dev/null | grep -c 'lab-repo'. How many repos?", "ans": "1", "pts": 75},
+      {"title": "Kustomization", "description": "Run: kubectl get kustomization -n flux-system 2>/dev/null | grep -c 'lab-app'. How many kustomizations?", "ans": "1", "pts": 100},
+      {"title": "Flux Ready", "description": "Run: kubectl get pods -n flux-system 2>/dev/null | grep -c '1/1'. How many pods are ready?", "ans": "4", "pts": 100},
+      {"title": "Reconciled", "description": "Run: kubectl get kustomization lab-app -n flux-system -o jsonpath='{.status.conditions[0].status}' 2>/dev/null. What is the condition status?", "ans": "True", "pts": 100},
+      {"title": "Source Ready", "description": "Run: kubectl get gitrepository lab-repo -n flux-system -o jsonpath='{.status.conditions[0].status}' 2>/dev/null. What is the ready status?", "ans": "True", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Drone CI",
+    "description": "Deploy Drone CI server with a drone-runner-docker and create a working pipeline for a sample project.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Drone CI from scratch — server and Docker runner — configure it with a Gitea or GitHub backend, and verify a pipeline builds successfully.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: docker, drone, curl, git\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Docker and Drone server\n2. Configure Drone with a version control backend\n3. Start Drone server on port 8082\n4. Install and start drone-runner-docker\n5. Create a .drone.yml pipeline file\n6. Create a sample project with the pipeline\n7. Trigger a build via the Drone API\n8. Verify the build succeeds\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Drone server on port 8082\n- Runner communicates with server via gRPC\n- Verification via curl and drone CLI",
+    "tasks": ["Install Docker", "Install Drone server", "Configure Drone", "Start Drone server", "Install drone-runner", "Create .drone.yml", "Trigger build", "Verify build success"],
+    "flags": [
+      {"title": "Drone Running", "description": "Run: systemctl status drone 2>/dev/null | grep -i active || docker ps | grep -c drone. How many drone containers?", "ans": "1", "pts": 50},
+      {"title": "Drone Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8082 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Runner Running", "description": "Run: docker ps | grep -c drone-runner. How many drone-runner containers?", "ans": "1", "pts": 75},
+      {"title": "Drone File", "description": "Run: ls /home/student/project/.drone.yml 2>/dev/null. Does the pipeline file exist?", "ans": "/home/student/project/.drone.yml", "pts": 75},
+      {"title": "Drone CLI", "description": "Run: which drone 2>/dev/null | wc -l. Is drone CLI installed?", "ans": "1", "pts": 100},
+      {"title": "Drone DB", "description": "Run: ls /var/lib/drone/ 2>/dev/null | wc -l. How many files in drone data dir?", "ans": "1", "pts": 100},
+      {"title": "Drone Config", "description": "Run: cat /etc/drone/dronerc 2>/dev/null | grep -c DRONE_RPC_SECRET. Is RPC secret configured?", "ans": "1", "pts": 100},
+      {"title": "Runner Logs", "description": "Run: docker logs drone-runner 2>/dev/null | grep -c 'health check'. How many health checks logged?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Tekton Pipelines",
+    "description": "Deploy Tekton Pipelines on Kubernetes and create a working CI pipeline with Tasks, PipelineRuns, and custom steps.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 120,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Tekton Pipelines on a Kubernetes cluster, define Pipeline Tasks, and run a PipelineRun that builds and tests a sample application.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: kubectl, tkn, helm, git\n- Login: itadmin / ItLab2025!\n- Pre-installed: minikube or kind cluster\n\n### Tasks\n1. Install Tekton Pipelines using official YAML manifests\n2. Wait for all Tekton controller pods to be Running\n3. Install Tekton CLI (tkn)\n4. Create a Task that clones a Git repo\n5. Create a Task that runs tests\n6. Create a Pipeline combining both Tasks\n7. Create a PipelineRun to execute the pipeline\n8. Verify the PipelineRun succeeds\n\n### Permissions & Access\n- Container runs as root with kubectl access\n- Tekton runs in tekton-pipelines namespace\n- Tasks defined in /home/student/tekton/\n- Verification via kubectl and tkn CLI",
+    "tasks": ["Install Tekton Pipelines", "Wait for controller pods", "Install tkn CLI", "Create clone Task", "Create test Task", "Create Pipeline", "Create PipelineRun", "Verify PipelineRun success"],
+    "flags": [
+      {"title": "Tekton Namespace", "description": "Run: kubectl get ns tekton-pipelines 2>/dev/null | grep -c tekton-pipelines. Does namespace exist?", "ans": "1", "pts": 50},
+      {"title": "Tekton Pods", "description": "Run: kubectl get pods -n tekton-pipelines 2>/dev/null | grep -c Running. How many pods Running?", "ans": "4", "pts": 75},
+      {"title": "Task Created", "description": "Run: tkn task list 2>/dev/null | grep -c 'git-clone'. How many git-clone tasks?", "ans": "1", "pts": 75},
+      {"title": "Pipeline Created", "description": "Run: tkn pipeline list 2>/dev/null | grep -c 'lab-pipeline'. How many pipelines?", "ans": "1", "pts": 75},
+      {"title": "PipelineRun", "description": "Run: tkn pipelinerun list 2>/dev/null | grep -c 'lab-pipeline-run'. How many runs?", "ans": "1", "pts": 100},
+      {"title": "Run Succeeded", "description": "Run: tkn pipelinerun describe lab-pipeline-run -o jsonpath='{.status.conditions[0].status}' 2>/dev/null. What is the status?", "ans": "True", "pts": 100},
+      {"title": "tkn Installed", "description": "Run: which tkn 2>/dev/null | wc -l. Is tkn CLI installed?", "ans": "1", "pts": 100},
+      {"title": "Tasks Count", "description": "Run: tkn task list 2>/dev/null | grep -c 'test'. How many test tasks?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Woodpecker CI",
+    "description": "Deploy Woodpecker CI server with a Docker agent and create a working pipeline for a sample project.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Woodpecker CI — a community fork of Drone — with server and Docker agent, configure it, and verify a pipeline runs.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: docker, woodpecker, curl, git\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Docker and Woodpecker server\n2. Configure Woodpecker with version control backend\n3. Start Woodpecker server on port 8083\n4. Install and start Woodpecker Docker agent\n5. Create a .woodpecker.yml pipeline file\n6. Create a sample project with the pipeline\n7. Trigger a build via the Woodpecker API\n8. Verify the build succeeds\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Woodpecker server on port 8083\n- Agent communicates via Woodpecker agent protocol\n- Verification via curl and woodpecker CLI",
+    "tasks": ["Install Docker", "Install Woodpecker server", "Configure Woodpecker", "Start Woodpecker server", "Install Docker agent", "Create .woodpecker.yml", "Trigger build", "Verify build success"],
+    "flags": [
+      {"title": "Woodpecker Running", "description": "Run: docker ps | grep -c woodpecker. How many woodpecker containers?", "ans": "2", "pts": 50},
+      {"title": "Woodpecker Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8083 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Agent Running", "description": "Run: docker ps | grep -c woodpecker-agent. How many agent containers?", "ans": "1", "pts": 75},
+      {"title": "Pipeline File", "description": "Run: ls /home/student/project/.woodpecker.yml 2>/dev/null. Does the file exist?", "ans": "/home/student/project/.woodpecker.yml", "pts": 75},
+      {"title": "Woodpecker DB", "description": "Run: ls /var/lib/woodpecker/ 2>/dev/null | wc -l. How many data files?", "ans": "1", "pts": 100},
+      {"title": "Woodpecker Config", "description": "Run: cat /etc/woodpecker/config 2>/dev/null | grep -c WOODPECKER_AGENT_SECRET. Is agent secret set?", "ans": "1", "pts": 100},
+      {"title": "Agent Logs", "description": "Run: docker logs woodpecker-agent 2>/dev/null | grep -c 'heartbeat'. How many heartbeats?", "ans": "1", "pts": 100},
+      {"title": "Woodpecker Logs", "description": "Run: docker logs woodpecker-server 2>/dev/null | grep -c 'listening'. Is server listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Concourse CI",
+    "description": "Deploy Concourse CI with a working pipeline that builds, tests, and deploys a sample application.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Concourse CI — a container-based CI system — with a PostgreSQL backend, configure it, create a pipeline, and verify it executes.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: concourse, fly, postgresql, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL for Concourse\n2. Install Concourse binary\n3. Configure and start Concourse web and worker\n4. Set up the Concourse database\n5. Install fly CLI\n6. Create a pipeline YAML file with jobs\n7. Set the pipeline using fly set-pipeline\n8. Trigger a job and verify it succeeds\n\n### Permissions & Access\n- Container runs as root\n- Concourse runs on port 8085\n- fly CLI configured for local target\n- Verification via fly and curl",
+    "tasks": ["Install PostgreSQL", "Install Concourse", "Start Concourse services", "Set up database", "Install fly CLI", "Create pipeline YAML", "Set pipeline", "Trigger and verify job"],
+    "flags": [
+      {"title": "Concourse Running", "description": "Run: systemctl status concourse-web 2>/dev/null | grep -i active || ps aux | grep concourse | grep -v grep | wc -l. How many concourse processes?", "ans": "1", "pts": 50},
+      {"title": "Concourse Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8085 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Worker Running", "description": "Run: fly workers 2>/dev/null | grep -c 'lab-worker'. How many workers?", "ans": "1", "pts": 75},
+      {"title": "Pipeline File", "description": "Run: ls /home/student/pipeline.yml 2>/dev/null. Does the pipeline file exist?", "ans": "/home/student/pipeline.yml", "pts": 75},
+      {"title": "Pipeline Set", "description": "Run: fly -t lab pipelines 2>/dev/null | grep -c 'lab-pipeline'. How many pipelines set?", "ans": "1", "pts": 100},
+      {"title": "Job Triggered", "description": "Run: fly -t lab jobs -p lab-pipeline 2>/dev/null | grep -c 'succeeded'. How many jobs succeeded?", "ans": "1", "pts": 100},
+      {"title": "PostgreSQL Running", "description": "Run: systemctl status postgresql 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 100},
+      {"title": "fly Installed", "description": "Run: which fly 2>/dev/null | wc -l. Is fly CLI installed?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Spinnaker for Multi-Cloud",
+    "description": "Deploy Spinnaker as a multi-cloud continuous delivery platform with pipeline stages and deployment targets.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 150,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDeploy Spinnaker — Netflix's continuous delivery platform — with Hal for configuration, and verify it can manage multi-cloud deployments.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: halyard, spin, curl, kubectl\n- Login: itadmin / ItLab2025!\n- Pre-installed: minikube or kind cluster\n\n### Tasks\n1. Install Halyard (Spinnaker configuration tool)\n2. Configure Spinnaker with Kubernetes provider\n3. Deploy Spinnaker using hal deploy apply\n4. Wait for all Spinnaker services to start\n5. Configure application in Spinnaker\n6. Create a deployment pipeline with stages\n7. Verify Spinnaker UI is accessible\n8. Confirm pipeline is configured correctly\n\n### Permissions & Access\n- Container runs as root with kubectl access\n- Spinnaker UI on port 9000\n- API on port 8084\n- Verification via spin CLI and curl",
+    "tasks": ["Install Halyard", "Configure Kubernetes provider", "Deploy Spinnaker", "Wait for services", "Configure application", "Create pipeline", "Verify UI access", "Confirm pipeline configuration"],
+    "flags": [
+      {"title": "Spinnaker Running", "description": "Run: kubectl get pods -n spinnaker 2>/dev/null | grep -c Running. How many Spinnaker pods?", "ans": "5", "pts": 50},
+      {"title": "Spinnaker UI", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Halyard Installed", "description": "Run: hal version 2>/dev/null | grep -c 'halyard'. Is Halyard installed?", "ans": "1", "pts": 75},
+      {"title": "Spinnaker Config", "description": "Run: ls ~/.hal/config 2>/dev/null | wc -l. Does hal config exist?", "ans": "1", "pts": 75},
+      {"title": "Spin CLI", "description": "Run: which spin 2>/dev/null | wc -l. Is spin CLI installed?", "ans": "1", "pts": 100},
+      {"title": "Application Created", "description": "Run: spin application list 2>/dev/null | grep -c 'lab-app'. How many applications?", "ans": "1", "pts": 100},
+      {"title": "Pipeline Exists", "description": "Run: spin pipeline list --app lab-app 2>/dev/null | grep -c 'deploy'. How many deploy pipelines?", "ans": "1", "pts": 100},
+      {"title": "Spinnaker Namespace", "description": "Run: kubectl get ns spinnaker 2>/dev/null | grep -c spinnaker. Does namespace exist?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Prometheus + Grafana Stack",
+    "description": "Deploy Prometheus for metrics collection and Grafana for visualization with pre-configured dashboards.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Prometheus for time-series metrics collection and Grafana for dashboard visualization. Configure scrape targets and build a working monitoring dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: prometheus, grafana-server, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Prometheus and configure scrape targets\n2. Start Prometheus on port 9090\n3. Install Grafana and configure data source\n4. Start Grafana on port 3000\n5. Add Prometheus as a Grafana data source\n6. Create a dashboard with CPU and memory panels\n7. Configure node_exporter for system metrics\n8. Verify dashboards show live data\n\n### Permissions & Access\n- Container runs as root\n- Prometheus on port 9090, Grafana on port 3000\n- Grafana login: admin / admin\n- Verification via curl and systemctl",
+    "tasks": ["Install Prometheus", "Configure scrape targets", "Start Prometheus", "Install Grafana", "Configure data source", "Create dashboard", "Configure node_exporter", "Verify live data"],
+    "flags": [
+      {"title": "Prometheus Running", "description": "Run: systemctl status prometheus 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Prometheus Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9090 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Grafana Running", "description": "Run: systemctl status grafana-server 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Grafana Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Prometheus Config", "description": "Run: ls /etc/prometheus/prometheus.yml 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 100},
+      {"title": "Grafana Datasource", "description": "Run: curl -s http://localhost:3000/api/datasources 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many datasources?", "ans": "1", "pts": 100},
+      {"title": "Grafana Dashboards", "description": "Run: curl -s http://localhost:3000/api/search 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many dashboards?", "ans": "1", "pts": 100},
+      {"title": "Node Exporter", "description": "Run: systemctl status node_exporter 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Zabbix Server + Agent",
+    "description": "Deploy Zabbix monitoring server with an agent, configure hosts, and create alerting rules.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Zabbix server with a PostgreSQL backend and Zabbix agent for infrastructure monitoring. Configure hosts, templates, and alerting.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: zabbix-server, zabbix-agent, postgresql, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL and create Zabbix database\n2. Install Zabbix server and configure database connection\n3. Start Zabbix server on port 10051\n4. Install Zabbix agent and configure ServerActive\n5. Start Zabbix agent on port 10050\n6. Install Zabbix web frontend on port 8081\n7. Configure host monitoring in Zabbix\n8. Verify agent is reporting to server\n\n### Permissions & Access\n- Container runs as root\n- Zabbix server on port 10051, agent on port 10050\n- Web UI on port 8081 (Admin / zabbix)\n- Verification via curl, zabbix_server, and zabbix_agentd",
+    "tasks": ["Install PostgreSQL", "Create Zabbix database", "Install Zabbix server", "Configure DB connection", "Install Zabbix agent", "Start services", "Install web frontend", "Verify agent reporting"],
+    "flags": [
+      {"title": "Zabbix Server", "description": "Run: systemctl status zabbix-server 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Zabbix Agent", "description": "Run: systemctl status zabbix-agent 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Zabbix Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8081 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "PostgreSQL Running", "description": "Run: systemctl status postgresql 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Zabbix Config", "description": "Run: ls /etc/zabbix/zabbix_server.conf 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 100},
+      {"title": "Agent Config", "description": "Run: grep -c 'ServerActive' /etc/zabbix/zabbix_agentd.conf 2>/dev/null. Is ServerActive configured?", "ans": "1", "pts": 100},
+      {"title": "Zabbix DB", "description": "Run: psql -U zabbix -d zabbix -c 'SELECT count(*) FROM hosts' 2>/dev/null | tail -2 | head -1 | tr -d ' '. How many hosts?", "ans": "1", "pts": 100},
+      {"title": "Agent Running", "description": "Run: ps aux | grep -c zabbix_agentd. How many agent processes?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Nagios Core",
+    "description": "Deploy Nagios Core monitoring system with plugins, hosts, services, and notification configuration.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Nagios Core — the industry-standard monitoring tool — with plugins, configure hosts and services, and verify monitoring is active.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nagios, nagios-plugins, apache2, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Nagios Core and dependencies\n2. Configure Apache2 for Nagios web interface\n3. Install Nagios plugins package\n4. Configure localhost monitoring\n5. Add custom service checks (HTTP, SSH, disk)\n6. Start Nagios and Apache services\n7. Verify Nagios web UI shows hosts as UP\n8. Configure notification contacts\n\n### Permissions & Access\n- Container runs as root\n- Nagios web UI on port 8086 (nagiosadmin / ItLab2025!)\n- Nagios config in /usr/local/nagios/etc/\n- Verification via curl, systemctl, and nagios commands",
+    "tasks": ["Install Nagios Core", "Configure Apache2", "Install plugins", "Configure localhost", "Add service checks", "Start services", "Verify web UI", "Configure notifications"],
+    "flags": [
+      {"title": "Nagios Running", "description": "Run: systemctl status nagios 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Nagios Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8086 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Apache Running", "description": "Run: systemctl status apache2 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Plugins Installed", "description": "Run: ls /usr/local/nagios/libexec/check_http 2>/dev/null | wc -l. Is check_http plugin installed?", "ans": "1", "pts": 75},
+      {"title": "Host Config", "description": "Run: ls /usr/local/nagios/etc/objects/localhost.cfg 2>/dev/null | wc -l. Does localhost config exist?", "ans": "1", "pts": 100},
+      {"title": "Services Configured", "description": "Run: grep -c 'define service' /usr/local/nagios/etc/objects/localhost.cfg 2>/dev/null. How many services defined?", "ans": "4", "pts": 100},
+      {"title": "Nagios Log", "description": "Run: tail -5 /usr/local/nagios/var/nagios.log 2>/dev/null | grep -c 'Nagios.*starting'. Was Nagios started?", "ans": "1", "pts": 100},
+      {"title": "Contacts Config", "description": "Run: grep -c 'define contact' /usr/local/nagios/etc/objects/contacts.cfg 2>/dev/null. How many contacts defined?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy LibreNMS Network Monitoring",
+    "description": "Deploy LibreNMS for auto-discovery network monitoring with SNMP polling, alerting, and dashboards.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy LibreNMS — a powerful auto-discovery network monitoring system — with MySQL, SNMP, and verify it discovers and monitors devices.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: librenms, mysql, snmpd, nginx, php-fpm\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL and create LibreNMS database\n2. Install PHP-FPM and required extensions\n3. Install and configure LibreNMS\n4. Configure SNMP daemon\n5. Set up Nginx for web interface\n6. Run LibreNMS discovery\n7. Add a device for monitoring\n8. Verify dashboards show device data\n\n### Permissions & Access\n- Container runs as root\n- LibreNMS web on port 8087\n- MySQL: librenms / librenms\n- Verification via curl, lnms, and MySQL queries",
+    "tasks": ["Install MySQL", "Create database", "Install PHP-FPM", "Install LibreNMS", "Configure SNMP", "Set up Nginx", "Run discovery", "Verify dashboards"],
+    "flags": [
+      {"title": "LibreNMS Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8087 2>/dev/null. What HTTP code?", "ans": "200", "pts": 50},
+      {"title": "MySQL Running", "description": "Run: systemctl status mysql 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Nginx Running", "description": "Run: systemctl status nginx 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "SNMP Running", "description": "Run: systemctl status snmpd 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "LibreNMS Config", "description": "Run: ls /opt/librenms/config.php 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 100},
+      {"title": "Device Added", "description": "Run: mysql -u librenms -plibrenms librenms -e 'SELECT count(*) FROM devices' 2>/dev/null | tail -1. How many devices?", "ans": "1", "pts": 100},
+      {"title": "Discovery Run", "description": "Run: ls /opt/librenms/logs/discovery.log 2>/dev/null | wc -l. Does discovery log exist?", "ans": "1", "pts": 100},
+      {"title": "RRD Directory", "description": "Run: ls /opt/librenms/rrd/ 2>/dev/null | wc -l. How many RRD dirs?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy ELK Stack",
+    "description": "Deploy Elasticsearch, Logstash, and Kibana (ELK) for log aggregation, search, and visualization.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy the ELK stack — Elasticsearch for storage, Logstash for processing, Kibana for visualization. Ingest logs and build a working dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: elasticsearch, logstash, kibana, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Java JDK 17 (required for ELK)\n2. Install and configure Elasticsearch on port 9200\n3. Install and configure Logstash with an input pipeline\n4. Install and configure Kibana on port 5601\n5. Create a Logstash pipeline to ingest syslog\n6. Ingest sample log data into Elasticsearch\n7. Create a Kibana index pattern\n8. Build a dashboard showing log analysis\n\n### Permissions & Access\n- Container runs as root\n- Elasticsearch on port 9200, Kibana on port 5601\n- Logstash pipeline in /etc/logstash/conf.d/\n- Verification via curl and systemctl",
+    "tasks": ["Install Java JDK", "Install Elasticsearch", "Configure Elasticsearch", "Install Logstash", "Configure Logstash pipeline", "Install Kibana", "Ingest sample logs", "Build dashboard"],
+    "flags": [
+      {"title": "Elasticsearch Running", "description": "Run: systemctl status elasticsearch 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "ES Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9200 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Logstash Running", "description": "Run: systemctl status logstash 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Kibana Running", "description": "Run: systemctl status kibana 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "ES Cluster", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is cluster status?", "ans": "green", "pts": 100},
+      {"title": "Logstash Pipeline", "description": "Run: ls /etc/logstash/conf.d/syslog.conf 2>/dev/null | wc -l. Does pipeline config exist?", "ans": "1", "pts": 100},
+      {"title": "Kibana Index", "description": "Run: curl -s http://localhost:9200/_cat/indices?v 2>/dev/null | grep -c 'logstash'. How many logstash indices?", "ans": "1", "pts": 100},
+      {"title": "Kibana Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:5601 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Grafana Loki for Log Aggregation",
+    "description": "Deploy Grafana Loki as a log aggregation system with Promtail for log shipping and Grafana for querying.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Grafana Loki for log aggregation — lightweight, index-free logging. Ship logs with Promtail and query them in Grafana.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: loki, promtail, grafana, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Grafana Loki binary\n2. Configure Loki with a local storage backend\n3. Start Loki on port 3100\n4. Install Promtail and configure log targets\n5. Start Promtail to ship system logs\n6. Install Grafana and configure Loki data source\n7. Create a Grafana dashboard for log exploration\n8. Query logs and verify data flows correctly\n\n### Permissions & Access\n- Container runs as root\n- Loki on port 3100, Grafana on port 3000\n- Loki config in /etc/loki/\n- Verification via curl, systemctl, and Grafana API",
+    "tasks": ["Install Loki", "Configure Loki", "Start Loki", "Install Promtail", "Configure log targets", "Start Promtail", "Install Grafana", "Query logs in Grafana"],
+    "flags": [
+      {"title": "Loki Running", "description": "Run: systemctl status loki 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Loki Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3100/ready 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Promtail Running", "description": "Run: systemctl status promtail 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Grafana Running", "description": "Run: systemctl status grafana-server 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Loki Config", "description": "Run: ls /etc/loki/loki-config.yml 2>/dev/null | wc -l. Does Loki config exist?", "ans": "1", "pts": 100},
+      {"title": "Promtail Config", "description": "Run: ls /etc/promtail/promtail-config.yml 2>/dev/null | wc -l. Does Promtail config exist?", "ans": "1", "pts": 100},
+      {"title": "Loki Labels", "description": "Run: curl -s http://localhost:3100/loki/api/v1/labels 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"values\"]))' 2>/dev/null. How many labels?", "ans": "3", "pts": 100},
+      {"title": "Grafana Datasource", "description": "Run: curl -s http://localhost:3000/api/datasources 2>/dev/null | grep -c 'Loki'. Is Loki datasource configured?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Jaeger Distributed Tracing",
+    "description": "Deploy Jaeger for distributed tracing with a sample application instrumented with OpenTelemetry.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Jaeger — Uber's distributed tracing system — to capture, visualize, and analyze traces from a microservices application.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: jaeger, elasticsearch, curl, python\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch as Jaeger storage backend\n2. Install Jaeger all-in-one binary\n3. Start Jaeger on port 16686 (UI) and 6831 (agent)\n4. Install a sample Python application with instrumentation\n5. Configure the app to send traces to Jaeger\n6. Generate traffic to create traces\n7. Verify traces appear in Jaeger UI\n8. Configure sampling rate\n\n### Permissions & Access\n- Container runs as root\n- Jaeger UI on port 16686, Collector on port 14268\n- Sample app on port 8088\n- Verification via curl and Jaeger API",
+    "tasks": ["Install Elasticsearch", "Install Jaeger", "Start Jaeger", "Install sample app", "Configure instrumentation", "Generate traffic", "Verify traces", "Configure sampling"],
+    "flags": [
+      {"title": "Jaeger Running", "description": "Run: systemctl status jaeger 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Jaeger Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:16686 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "ES Running", "description": "Run: systemctl status elasticsearch 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Sample App", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8088 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Jaeger Services", "description": "Run: curl -s http://localhost:16686/api/services 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]))' 2>/dev/null. How many services?", "ans": "1", "pts": 100},
+      {"title": "Traces Captured", "description": "Run: curl -s 'http://localhost:16686/api/traces?service=sample-app&limit=1' 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(len(d[\"data\"]))' 2>/dev/null. How many traces?", "ans": "1", "pts": 100},
+      {"title": "Jaeger Config", "description": "Run: ls /etc/jaeger/ 2>/dev/null | wc -l. How many config files?", "ans": "2", "pts": 100},
+      {"title": "Collector Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:14268/api/traces 2>/dev/null. What HTTP code for collector?", "ans": "405", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy OpenTelemetry Collector",
+    "description": "Deploy OpenTelemetry Collector as a vendor-agnostic telemetry pipeline for metrics, traces, and logs.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy OpenTelemetry Collector (OTel Collector) — the CNCF standard for telemetry collection. Configure receivers, processors, and exporters.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: otel-collector, curl, prometheus\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install OpenTelemetry Collector binary\n2. Create a collector config with receivers, processors, exporters\n3. Configure OTLP receiver for traces and metrics\n4. Configure Prometheus exporter\n5. Start the collector on port 4317 (gRPC) and 4318 (HTTP)\n6. Send test telemetry data to the collector\n7. Verify data flows to Prometheus\n8. Configure batch processor for efficiency\n\n### Permissions & Access\n- Container runs as root\n- OTel Collector on ports 4317, 4318, 8888\n- Config in /etc/otel/\n- Verification via curl and systemctl",
+    "tasks": ["Install OTel Collector", "Create config", "Configure OTLP receiver", "Configure Prometheus exporter", "Start collector", "Send test data", "Verify Prometheus", "Configure batch processor"],
+    "flags": [
+      {"title": "OTel Running", "description": "Run: systemctl status otel-collector 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "OTel Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8888 2>/dev/null. What HTTP code for health?", "ans": "200", "pts": 75},
+      {"title": "Config Exists", "description": "Run: ls /etc/otel/config.yml 2>/dev/null | wc -l. Does collector config exist?", "ans": "1", "pts": 75},
+      {"title": "Receivers Configured", "description": "Run: grep -c 'otlp' /etc/otel/config.yml 2>/dev/null. How many OTLP references?", "ans": "3", "pts": 75},
+      {"title": "OTel Metrics", "description": "Run: curl -s http://localhost:8888/metrics 2>/dev/null | grep -c 'otelcol_'. How many OTel metrics?", "ans": "5", "pts": 100},
+      {"title": "Exporters Configured", "description": "Run: grep -c 'exporters' /etc/otel/config.yml 2>/dev/null. How many exporter sections?", "ans": "1", "pts": 100},
+      {"title": "Processors Configured", "description": "Run: grep -c 'batch' /etc/otel/config.yml 2>/dev/null. Is batch processor configured?", "ans": "1", "pts": 100},
+      {"title": "OTel Binary", "description": "Run: which otelcol 2>/dev/null | wc -l. Is otelcol binary installed?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Graylog SIEM",
+    "description": "Deploy Graylog for log management with MongoDB and Elasticsearch backends, streams, and alert rules.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Graylog — an open-source log management platform — with MongoDB, Elasticsearch, input streams, and alert notifications.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: graylog, mongodb, elasticsearch, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install and start MongoDB on port 27017\n2. Install and start Elasticsearch on port 9200\n3. Install Graylog server and configure\n4. Set Graylog admin password hash\n5. Start Graylog on port 9000\n6. Create a GELF input for log ingestion\n7. Ingest sample logs via GELF HTTP\n8. Create an alert rule for error logs\n\n### Permissions & Access\n- Container runs as root\n- Graylog web on port 9000 (admin / ItLab2025!)\n- MongoDB on port 27017, ES on port 9200\n- Verification via curl, systemctl, and Graylog API",
+    "tasks": ["Install MongoDB", "Install Elasticsearch", "Install Graylog", "Configure admin password", "Start Graylog", "Create GELF input", "Ingest sample logs", "Create alert rule"],
+    "flags": [
+      {"title": "Graylog Running", "description": "Run: systemctl status graylog-server 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Graylog Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "MongoDB Running", "description": "Run: systemctl status mongodb 2>/dev/null | grep -i active || mongosh --eval 'db.runCommand({ping:1})' 2>/dev/null | grep -c ok. Is MongoDB up?", "ans": "1", "pts": 75},
+      {"title": "ES Running", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is ES status?", "ans": "green", "pts": 75},
+      {"title": "GELF Input", "description": "Run: curl -s http://localhost:9000/api/system/inputs -u admin:ItLab2025! 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many inputs?", "ans": "1", "pts": 100},
+      {"title": "Graylog Config", "description": "Run: ls /etc/graylog/server/server.conf 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 100},
+      {"title": "Logs Ingested", "description": "Run: curl -s http://localhost:9000/api/search/universal/relative -u admin:ItLab2025! -H 'Content-Type: application/json' -d '{\"query\":\"*\",\"range\":300}' 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"total_results\"])' 2>/dev/null. How many logs?", "ans": "10", "pts": 100},
+      {"title": "Alert Rule", "description": "Run: curl -s http://localhost:9000/api/events/definitions -u admin:ItLab2025! 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many alert definitions?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Uptime Kuma Monitoring",
+    "description": "Deploy Uptime Kuma — a self-hosted monitoring tool — with HTTP, TCP, and keyword monitors.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 800,
+    "estimatedMinutes": 45,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Uptime Kuma — a modern, self-hosted uptime monitoring tool — and configure monitors for websites and services.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: uptime-kuma, nodejs, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Node.js and npm\n2. Clone Uptime Kuma repository\n3. Install dependencies with npm install\n4. Start Uptime Kuma on port 3001\n5. Create admin account\n6. Add an HTTP monitor for a sample website\n7. Add a TCP port monitor\n8. Verify monitors show UP status\n\n### Permissions & Access\n- Container runs as root\n- Uptime Kuma on port 3001\n- Admin created on first visit\n- Verification via curl and systemctl",
+    "tasks": ["Install Node.js", "Clone Uptime Kuma", "Install dependencies", "Start Uptime Kuma", "Create admin account", "Add HTTP monitor", "Add TCP monitor", "Verify monitors"],
+    "flags": [
+      {"title": "Uptime Kuma Running", "description": "Run: systemctl status uptime-kuma 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "UK Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3001 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Node.js Installed", "description": "Run: node --version 2>/dev/null | grep -c 'v'. Is Node.js installed?", "ans": "1", "pts": 75},
+      {"title": "UK Cloned", "description": "Run: ls /opt/uptime-kuma/package.json 2>/dev/null | wc -l. Was Uptime Kuma cloned?", "ans": "1", "pts": 75},
+      {"title": "Monitors Active", "description": "Run: curl -s http://localhost:3001/api/monitors -H 'Authorization: token' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many monitors?", "ans": "2", "pts": 100},
+      {"title": "Admin Created", "description": "Run: ls /opt/uptime-kuma/data/uptime-kuma.db 2>/dev/null | wc -l. Does database exist?", "ans": "1", "pts": 100},
+      {"title": "UK Data Dir", "description": "Run: ls /opt/uptime-kuma/data/ 2>/dev/null | wc -l. How many files in data dir?", "ans": "3", "pts": 100},
+      {"title": "UK Process", "description": "Run: ps aux | grep -c node.*uptime-kuma. How many Uptime Kuma processes?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Wazuh SIEM Manager + Agent",
+    "description": "Deploy Wazuh SIEM with manager, indexer, and agent for security monitoring and compliance.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 120,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Wazuh — an open-source SIEM and XDR platform — with manager, indexer, dashboard, and an agent reporting security events.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: wazuh-manager, wazuh-indexer, wazuh-dashboard, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Wazuh indexer and configure cluster\n2. Start Wazuh indexer on port 9200\n3. Install Wazuh manager and configure\n4. Start Wazuh manager on port 1514 (UDP) and 1515 (TCP)\n5. Install Wazuh dashboard on port 443\n6. Install Wazuh agent locally\n7. Register and connect agent to manager\n8. Verify agent appears as active in dashboard\n\n### Permissions & Access\n- Container runs as root\n- Dashboard on port 443 (admin / SecretPassword)\n- Manager on ports 1514, 1515, 55000\n- Verification via curl, systemctl, and Wazuh API",
+    "tasks": ["Install Wazuh indexer", "Configure indexer cluster", "Install Wazuh manager", "Start manager", "Install Wazuh dashboard", "Install agent", "Register agent", "Verify agent active"],
+    "flags": [
+      {"title": "Wazuh Manager", "description": "Run: systemctl status wazuh-manager 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Wazuh Indexer", "description": "Run: systemctl status wazuh-indexer 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Wazuh Dashboard", "description": "Run: systemctl status wazuh-dashboard 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Manager Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' https://localhost:55000 -k 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "Agent Installed", "description": "Run: systemctl status wazuh-agent 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 100},
+      {"title": "Agent Connected", "description": "Run: curl -s -k -u admin:SecretPassword https://localhost:55000/agents 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"data\"][\"total_affected_items\"])' 2>/dev/null. How many agents?", "ans": "1", "pts": 100},
+      {"title": "Wazuh Config", "description": "Run: ls /var/ossec/etc/ossec.conf 2>/dev/null | wc -l. Does agent config exist?", "ans": "1", "pts": 100},
+      {"title": "Agent Key", "description": "Run: ls /var/ossec/etc/client.keys 2>/dev/null | wc -l. Does agent key file exist?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Suricata IDS/IPS",
+    "description": "Deploy Suricata as an Intrusion Detection/Prevention System with custom rules and packet capture.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Suricata — a high-performance IDS/IPS — with custom detection rules, integration with packet capture, and alert analysis.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: suricata, suricata-update, curl, tcpdump\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Suricata and dependencies\n2. Configure Suricata for eth0 network interface\n3. Update rules with suricata-update\n4. Add custom detection rules\n5. Start Suricata in IDS mode\n6. Generate test traffic to trigger alerts\n7. Analyze alerts in eve.json\n8. Verify Suricata captures packets correctly\n\n### Permissions & Access\n- Container runs as root\n- Suricata runs in IDS mode on eth0\n- Config in /etc/suricata/\n- Alerts in /var/log/suricata/eve.json\n- Verification via systemctl and suricatasc",
+    "tasks": ["Install Suricata", "Configure network interface", "Update rules", "Add custom rules", "Start Suricata", "Generate test traffic", "Analyze alerts", "Verify packet capture"],
+    "flags": [
+      {"title": "Suricata Running", "description": "Run: systemctl status suricata 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Suricata PID", "description": "Run: pgrep -c suricata. How many Suricata processes?", "ans": "1", "pts": 75},
+      {"title": "Eve.json Exists", "description": "Run: ls /var/log/suricata/eve.json 2>/dev/null | wc -l. Does eve.json exist?", "ans": "1", "pts": 75},
+      {"title": "Custom Rule", "description": "Run: grep -c 'alert' /etc/suricata/rules/custom.rules 2>/dev/null. How many custom alert rules?", "ans": "3", "pts": 75},
+      {"title": "Rules Updated", "description": "Run: ls /var/lib/suricata/rules/ 2>/dev/null | wc -l. How many rule files?", "ans": "5", "pts": 100},
+      {"title": "Alerts Generated", "description": "Run: grep -c 'alert' /var/log/suricata/eve.json 2>/dev/null || cat /var/log/suricata/eve.json 2>/dev/null | grep -c 'alert_type'. How many alert entries?", "ans": "1", "pts": 100},
+      {"title": "Suricata Config", "description": "Run: ls /etc/suricata/suricata.yaml 2>/dev/null | wc -l. Does main config exist?", "ans": "1", "pts": 100},
+      {"title": "Stats Running", "description": "Run: grep -c 'stats' /var/log/suricata/eve.json 2>/dev/null. Are stats events logged?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy CrowdSec Bouncer",
+    "description": "Deploy CrowdSec — a collaborative, open-source IPS — with bouncers, scenarios, and remediation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy CrowdSec — a modern, collaborative security engine — that analyzes logs and applies bouncer remediation to block malicious IPs.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: crowdsec, crowdsec-firewall-bouncer, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install CrowdSec security engine\n2. Configure CrowdSec to parse syslog and auth logs\n3. Start CrowdSec and enroll with community\n4. Install firewall bouncer (iptables)\n5. Configure bouncer to enforce decisions\n6. Generate brute-force login attempts\n7. Verify CrowdSec detects and bans the IP\n8. Check banned IPs in bouncer status\n\n### Permissions & Access\n- Container runs as root\n- CrowdSec on port 6060 (API)\n- Bouncer integrates with iptables\n- Verification via systemctl, cscli, and iptables",
+    "tasks": ["Install CrowdSec", "Configure parsers", "Start CrowdSec", "Install firewall bouncer", "Configure bouncer", "Generate brute-force", "Verify ban", "Check bouncer status"],
+    "flags": [
+      {"title": "CrowdSec Running", "description": "Run: systemctl status crowdsec 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "CrowdSec API", "description": "Run: curl -s http://localhost:6060/health 2>/dev/null | grep -c 'message'. Is API responding?", "ans": "1", "pts": 75},
+      {"title": "Bouncer Installed", "description": "Run: systemctl status crowdsec-firewall-bouncer 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Parsers Loaded", "description": "Run: cscli parsers list 2>/dev/null | grep -c 'enabled'. How many parsers enabled?", "ans": "3", "pts": 75},
+      {"title": "Scenarios Loaded", "description": "Run: cscli scenarios list 2>/dev/null | grep -c 'enabled'. How many scenarios enabled?", "ans": "5", "pts": 100},
+      {"title": "Decisions Made", "description": "Run: cscli decisions list 2>/dev/null | grep -c 'ban'. How many ban decisions?", "ans": "1", "pts": 100},
+      {"title": "Bouncers Registered", "description": "Run: cscli bouncers list 2>/dev/null | grep -c 'firewall'. How many firewall bouncers?", "ans": "1", "pts": 100},
+      {"title": "CrowdSec Config", "description": "Run: ls /etc/crowdsec/config.yaml 2>/dev/null | wc -l. Does CrowdSec config exist?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy OSSEC HIDS",
+    "description": "Deploy OSSEC Host-based Intrusion Detection System with active response and log analysis.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy OSSEC — a comprehensive host-based intrusion detection system — with log monitoring, file integrity checking, and active response.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ossec, ossec-control, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Download and install OSSEC HIDS\n2. Run the OSSEC installer script\n3. Configure ossec.conf for syscheck and rootcheck\n4. Configure log monitoring for /var/log/auth.log\n5. Enable active response\n6. Start OSSEC with ossec-control start\n7. Generate security events (failed logins)\n8. Verify alerts in /var/ossec/logs/alerts.log\n\n### Permissions & Access\n- Container runs as root\n- OSSEC installed in /var/ossec/\n- Config in /var/ossec/etc/ossec.conf\n- Alerts in /var/ossec/logs/alerts.log\n- Verification via ossec-control and grep",
+    "tasks": ["Download OSSEC", "Run installer", "Configure syscheck", "Configure log monitoring", "Enable active response", "Start OSSEC", "Generate events", "Verify alerts"],
+    "flags": [
+      {"title": "OSSEC Running", "description": "Run: /var/ossec/bin/ossec-control status 2>/dev/null | grep -c 'running'. How many daemons running?", "ans": "3", "pts": 50},
+      {"title": "OSSEC Config", "description": "Run: ls /var/ossec/etc/ossec.conf 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 75},
+      {"title": "Syscheck Enabled", "description": "Run: grep -c 'syscheck' /var/ossec/etc/ossec.conf 2>/dev/null. Is syscheck configured?", "ans": "2", "pts": 75},
+      {"title": "Rootcheck Enabled", "description": "Run: grep -c 'rootcheck' /var/ossec/etc/ossec.conf 2>/dev/null. Is rootcheck configured?", "ans": "2", "pts": 75},
+      {"title": "Alerts Log", "description": "Run: ls /var/ossec/logs/alerts/alerts.log 2>/dev/null | wc -l. Does alerts log exist?", "ans": "1", "pts": 100},
+      {"title": "Active Response", "description": "Run: grep -c 'active-response' /var/ossec/etc/ossec.conf 2>/dev/null. Is active response configured?", "ans": "1", "pts": 100},
+      {"title": "OSSEC User", "description": "Run: id ossec 2>/dev/null | wc -l. Is ossec user created?", "ans": "1", "pts": 100},
+      {"title": "Agents List", "description": "Run: /var/ossec/bin/agent_control -l 2>/dev/null | grep -c '1001'. How many local agents?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Fail2ban with Custom Jails",
+    "description": "Deploy Fail2ban with custom jails, actions, and filters to protect SSH and web services from brute-force attacks.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 60,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Fail2ban — an intrusion prevention framework — with custom jails for SSH, nginx, and application-specific protection.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: fail2ban, iptables, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Fail2ban\n2. Configure jail.local with custom settings\n3. Create a custom jail for SSH brute-force\n4. Create a custom filter for nginx auth failures\n5. Create an action to ban IPs via iptables\n6. Start Fail2ban service\n7. Generate failed login attempts to trigger bans\n8. Verify banned IPs appear in fail2ban-client status\n\n### Permissions & Access\n- Container runs as root\n- Fail2ban config in /etc/fail2ban/\n- Logs in /var/log/fail2ban.log\n- Verification via fail2ban-client and iptables",
+    "tasks": ["Install Fail2ban", "Configure jail.local", "Create SSH jail", "Create nginx filter", "Create iptables action", "Start Fail2ban", "Generate failed logins", "Verify bans"],
+    "flags": [
+      {"title": "Fail2ban Running", "description": "Run: systemctl status fail2ban 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Jails Active", "description": "Run: fail2ban-client status 2>/dev/null | grep -c 'Jail list'. Are jails loaded?", "ans": "1", "pts": 75},
+      {"title": "SSH Jail", "description": "Run: fail2ban-client status sshd 2>/dev/null | grep -c 'Currently banned'. Is SSH jail active?", "ans": "1", "pts": 75},
+      {"title": "Custom Jail", "description": "Run: ls /etc/fail2ban/jail.local 2>/dev/null | wc -l. Does custom jail config exist?", "ans": "1", "pts": 75},
+      {"title": "Nginx Filter", "description": "Run: ls /etc/fail2ban/filter.d/nginx-auth.conf 2>/dev/null | wc -l. Does nginx filter exist?", "ans": "1", "pts": 100},
+      {"title": "Ban Count", "description": "Run: fail2ban-client status sshd 2>/dev/null | grep 'Currently banned' | awk '{print $NF}'. How many IPs banned?", "ans": "1", "pts": 100},
+      {"title": "Fail2ban Log", "description": "Run: tail -1 /var/log/fail2ban.log 2>/dev/null | grep -c 'Ban'. Are bans being logged?", "ans": "1", "pts": 100},
+      {"title": "Iptables Rules", "description": "Run: iptables -L f2b-sshd -n 2>/dev/null | grep -c 'DROP'. How many DROP rules in f2b-sshd chain?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Security Onion",
+    "description": "Deploy Security Onion for full-spectrum security monitoring with Suricata, Zeek, and Elasticsearch.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 150,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Security Onion — a Linux distribution for intrusion detection, network security monitoring, and log management — with full stack components.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: securityonion, suricata, zeek, elasticsearch, kibana\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Security Onion dependencies\n2. Configure networking for monitoring interface\n3. Install Elasticsearch, Logstash, Kibana\n4. Install Suricata for IDS\n5. Install Zeek for network analysis\n6. Configure Security Onion setup\n7. Run so-setup to initialize\n8. Verify all services are running and capturing\n\n### Permissions & Access\n- Container runs as root\n- Kibana on port 5601, Elasticsearch on port 9200\n- Suricata monitoring eth0\n- Verification via systemctl, curl, and so-status",
+    "tasks": ["Install dependencies", "Configure networking", "Install ELK stack", "Install Suricata", "Install Zeek", "Configure Security Onion", "Run setup", "Verify all services"],
+    "flags": [
+      {"title": "Security Onion Setup", "description": "Run: ls /opt/so 2>/dev/null | wc -l. Was Security Onion installed?", "ans": "1", "pts": 50},
+      {"title": "Elasticsearch Running", "description": "Run: systemctl status elasticsearch 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Kibana Running", "description": "Run: systemctl status kibana 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Suricata Running", "description": "Run: systemctl status suricata 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Zeek Running", "description": "Run: systemctl status zeek 2>/dev/null | grep -i active || ps aux | grep -c zeek. Is Zeek running?", "ans": "1", "pts": 75},
+      {"title": "ES Cluster Health", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is cluster status?", "ans": "green", "pts": 100},
+      {"title": "Kibana Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:5601 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
+      {"title": "Network Capture", "description": "Run: ls /opt/so/suricata/logs/ 2>/dev/null | wc -l. How many log directories?", "ans": "3", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Arkime Full Packet Capture",
+    "description": "Deploy Arkime (formerly Moloch) for full packet capture and indexed network traffic analysis.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Arkime — a large-scale, open-source packet capture and search system — with Elasticsearch backend and viewer interface.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: arkime, elasticsearch, curl, tcpdump\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch for Arkime storage\n2. Download and install Arkime\n3. Configure Arkime with Elasticsearch connection\n4. Initialize Arkime database with esinitial.sh\n5. Configure capture interface (eth0)\n6. Start Arkime capture and viewer\n7. Capture test traffic\n8. Verify packets appear in Arkime viewer\n\n### Permissions & Access\n- Container runs as root\n- Arkime viewer on port 8005\n- Elasticsearch on port 9200\n- Config in /opt/arkime/etc/\n- Verification via systemctl, curl, and Arkime viewer",
+    "tasks": ["Install Elasticsearch", "Download Arkime", "Install Arkime", "Configure connection", "Initialize database", "Configure capture", "Start services", "Verify packet capture"],
+    "flags": [
+      {"title": "Arkime Running", "description": "Run: systemctl status arkime 2>/dev/null | grep -i active || systemctl status arkime capture 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Arkime Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8005 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "ES Running", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is cluster status?", "ans": "green", "pts": 75},
+      {"title": "Arkime Config", "description": "Run: ls /opt/arkime/etc/config.ini 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 75},
+      {"title": "Capture Running", "description": "Run: ps aux | grep -c arkime-capture. How many capture processes?", "ans": "1", "pts": 100},
+      {"title": "Viewer Running", "description": "Run: ps aux | grep -c arkime-viewer. How many viewer processes?", "ans": "1", "pts": 100},
+      {"title": "ES Indices", "description": "Run: curl -s http://localhost:9200/_cat/indices 2>/dev/null | grep -c 'arkime'. How many Arkime indices?", "ans": "1", "pts": 100},
+      {"title": "Packets Captured", "description": "Run: ls /opt/arkime/raw/ 2>/dev/null | wc -l. How many raw capture files?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy TheHive Incident Response",
+    "description": "Deploy TheHive — a security incident response platform — with case management, alert triage, and analyst workflows.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy TheHive — a scalable, open-source Security Incident Response Platform — with Elasticsearch, Cortex integration, and case templates.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: thehive, elasticsearch, cortex, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch for TheHive storage\n2. Install TheHive application\n3. Configure TheHive with Elasticsearch backend\n4. Start TheHive on port 9000\n5. Create admin user and organization\n6. Configure case templates\n7. Create a test incident case\n8. Verify case appears in TheHive UI\n\n### Permissions & Access\n- Container runs as root\n- TheHive on port 9000 (admin@thehive.local / secret)\n- Elasticsearch on port 9200\n- Verification via curl, systemctl, and TheHive API",
+    "tasks": ["Install Elasticsearch", "Install TheHive", "Configure backend", "Start TheHive", "Create admin user", "Configure templates", "Create test case", "Verify case in UI"],
+    "flags": [
+      {"title": "TheHive Running", "description": "Run: systemctl status thehive 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "TheHive Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "ES Running", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is cluster status?", "ans": "green", "pts": 75},
+      {"title": "TheHive Config", "description": "Run: ls /etc/thehive/application.conf 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 75},
+      {"title": "Admin Created", "description": "Run: curl -s http://localhost:9000/api/v1/user -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many users?", "ans": "1", "pts": 100},
+      {"title": "Case Created", "description": "Run: curl -s http://localhost:9000/api/v1/case -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many cases?", "ans": "1", "pts": 100},
+      {"title": "TheHive DB", "description": "Run: ls /opt/thehive/db/ 2>/dev/null | wc -l. How many DB files?", "ans": "1", "pts": 100},
+      {"title": "TheHive Logs", "description": "Run: ls /var/log/thehive/ 2>/dev/null | wc -l. How many log files?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Cortex Analyzer Engine",
+    "description": "Deploy Cortex — TheHive's analysis engine — with analyzers, responders, and integration for automated threat analysis.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Cortex — TheHive Project's observable analysis and active response engine — with analyzers, responders, and job management.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: cortex, elasticsearch, docker, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch for Cortex storage\n2. Install Cortex application\n3. Configure Cortex with Elasticsearch backend\n4. Start Cortex on port 9001\n5. Create organization and user\n6. Enable and configure analyzers\n7. Run an analysis job on a test observable\n8. Verify analysis results appear in Cortex\n\n### Permissions & Access\n- Container runs as root\n- Cortex on port 9001 (admin@localhost / ItLab2025!)\n- Elasticsearch on port 9200\n- Verification via curl, systemctl, and Cortex API",
+    "tasks": ["Install Elasticsearch", "Install Cortex", "Configure backend", "Start Cortex", "Create organization", "Enable analyzers", "Run analysis job", "Verify results"],
+    "flags": [
+      {"title": "Cortex Running", "description": "Run: systemctl status cortex 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
+      {"title": "Cortex Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9001 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "ES Running", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is cluster status?", "ans": "green", "pts": 75},
+      {"title": "Cortex Config", "description": "Run: ls /etc/cortex/application.conf 2>/dev/null | wc -l. Does config exist?", "ans": "1", "pts": 75},
+      {"title": "Analyzers Enabled", "description": "Run: curl -s http://localhost:9001/api/analyzer -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many analyzers?", "ans": "3", "pts": 100},
+      {"title": "Organization Created", "description": "Run: curl -s http://localhost:9001/api/organization -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many organizations?", "ans": "1", "pts": 100},
+      {"title": "Analysis Job", "description": "Run: curl -s http://localhost:9001/api/job -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many jobs?", "ans": "1", "pts": 100},
+      {"title": "Cortex DB", "description": "Run: ls /opt/cortex/db/ 2>/dev/null | wc -l. How many DB files?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Shuffle SOAR Platform",
+    "description": "Deploy Shuffle — an open-source SOAR platform — with workflows, apps, and automated incident response playbooks.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Shuffle — a Security Orchestration, Automation, and Response (SOAR) platform — with workflows, apps, and automated playbooks.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: shuffle, docker, elasticsearch, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Docker and Docker Compose\n2. Clone Shuffle repository\n3. Configure Shuffle with Elasticsearch backend\n4. Start Shuffle with docker-compose\n5. Access Shuffle UI on port 3001\n6. Create admin account\n7. Build a sample workflow with triggers and actions\n8. Execute the workflow and verify results\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Shuffle UI on port 3001\n- Elasticsearch on port 9200\n- Verification via curl, docker, and Shuffle API",
+    "tasks": ["Install Docker", "Clone Shuffle", "Configure Elasticsearch", "Start with docker-compose", "Access UI", "Create admin", "Build workflow", "Execute and verify"],
+    "flags": [
+      {"title": "Shuffle Running", "description": "Run: docker ps | grep -c shuffle. How many shuffle containers?", "ans": "3", "pts": 50},
+      {"title": "Shuffle Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3001 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
+      {"title": "ES Running", "description": "Run: curl -s http://localhost:9200/_cluster/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])' 2>/dev/null. What is cluster status?", "ans": "green", "pts": 75},
+      {"title": "Docker Running", "description": "Run: systemctl status docker 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 75},
+      {"title": "Workflows Created", "description": "Run: curl -s http://localhost:3001/api/v1/workflows -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many workflows?", "ans": "1", "pts": 100},
+      {"title": "Shuffle Cloned", "description": "Run: ls /opt/shuffle/docker-compose.yml 2>/dev/null | wc -l. Was Shuffle cloned?", "ans": "1", "pts": 100},
+      {"title": "Apps Installed", "description": "Run: curl -s http://localhost:3001/api/v1/apps -H 'Authorization: Bearer' 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many apps?", "ans": "2", "pts": 100},
+      {"title": "Shuffle Data", "description": "Run: ls /opt/shuffle/data/ 2>/dev/null | wc -l. How many data files?", "ans": "2", "pts": 100}
+    ]
+  }
+]

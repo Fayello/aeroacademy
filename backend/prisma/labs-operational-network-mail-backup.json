@@ -1,0 +1,602 @@
+[
+  {
+    "title": "Deploy WireGuard VPN Site-to-Site",
+    "description": "Configure WireGuard VPN tunnel between two sites with proper routing and firewall rules.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy WireGuard site-to-site VPN — configure tunnel, routing, firewall rules, and verify connectivity.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: wireguard, iptables, ip route\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install WireGuard on both nodes\n2. Generate key pairs for both peers\n3. Configure wg0 interface on site A\n4. Configure wg0 interface on site B\n5. Set up iptables rules for forwarding\n6. Configure routing between subnets\n7. Start WireGuard tunnels\n8. Verify end-to-end connectivity\n\n### Verification\n- wg show shows connected peers\n- Ping across tunnel succeeds\n- Routing table includes tunnel routes",
+    "tasks": ["Install WireGuard", "Generate keys site A", "Generate keys site B", "Configure site A", "Configure site B", "Set iptables", "Configure routing", "Verify connectivity"],
+    "flags": [
+      {"title": "WireGuard Installed", "description": "Run: wg --version | head -1. What version?", "ans": "wireguard-tools", "pts": 50},
+      {"title": "Keys Generated", "description": "Run: ls /etc/wireguard/*.key | wc -l. How many key files?", "ans": "4", "pts": 75},
+      {"title": "Interface Up", "description": "Run: ip addr show wg0 | grep -c 'inet'. Is the interface configured?", "ans": "1", "pts": 75},
+      {"title": "Peers Configured", "description": "Run: wg show wg0 | grep -c 'peer'. How many peers?", "ans": "1", "pts": 100},
+      {"title": "Handshake", "description": "Run: wg show wg0 | grep 'latest handshake' | grep -v 'none' | wc -l. Has a handshake occurred?", "ans": "1", "pts": 100},
+      {"title": "Tunnel Ping", "description": "Run: ping -c 3 10.0.0.2 | grep -c 'bytes from'. How many replies?", "ans": "3", "pts": 100},
+      {"title": "Firewall Rules", "description": "Run: iptables -L FORWARD -n | grep -c 'ACCEPT'. How many forwarding rules?", "ans": "2", "pts": 100},
+      {"title": "Persistent Config", "description": "Run: systemctl is-enabled wg-quick@wg0. Is it enabled on boot?", "ans": "enabled", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy OpenVPN Server + Client",
+    "description": "Set up an OpenVPN server with PKI infrastructure and connect a client to the VPN.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy a full OpenVPN server with certificate-based authentication, configure client profiles, and verify secure tunnel connectivity.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: openvpn, easy-rsa, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install OpenVPN and Easy-RSA\n2. Initialize PKI directory\n3. Build CA certificate\n4. Generate server certificate and key\n5. Generate client certificate and key\n6. Create Diffie-Hellman parameters\n7. Configure OpenVPN server\n8. Generate client .ovpn profile\n\n### Verification\n- Server starts without errors\n- Client connects successfully\n- VPN tunnel passes traffic",
+    "tasks": ["Install OpenVPN", "Init PKI", "Build CA", "Generate server cert", "Generate client cert", "Generate DH params", "Configure server", "Generate client profile"],
+    "flags": [
+      {"title": "OpenVPN Installed", "description": "Run: openvpn --version | head -1. What version?", "ans": "OpenVPN", "pts": 50},
+      {"title": "PKI Initialized", "description": "Run: ls pki/ | grep -c 'ca.crt'. Does CA cert exist?", "ans": "1", "pts": 75},
+      {"title": "CA Built", "description": "Run: openssl x509 -in pki/ca.crt -noout -subject 2>/dev/null | grep -c 'CA'. Is the CA valid?", "ans": "1", "pts": 75},
+      {"title": "Server Cert", "description": "Run: ls pki/issued/ | grep -c 'server.crt'. Server cert exists?", "ans": "1", "pts": 100},
+      {"title": "Client Cert", "description": "Run: ls pki/issued/ | grep -c 'client1.crt'. Client cert exists?", "ans": "1", "pts": 100},
+      {"title": "DH Params", "description": "Run: ls pki/dh.pem 2>/dev/null | wc -l. DH params generated?", "ans": "1", "pts": 100},
+      {"title": "Server Running", "description": "Run: pgrep -c openvpn. Is OpenVPN server process running?", "ans": "1", "pts": 100},
+      {"title": "VPN Interface", "description": "Run: ip addr show tun0 2>/dev/null | grep -c 'inet'. Is TUN interface up?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy FreeRADIUS + 802.1X NAC",
+    "description": "Configure FreeRADIUS for network access control with 802.1X authentication.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy FreeRADIUS with 802.1X NAC capabilities, configure client authentication, and validate EAP-based network access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: freeradius, eapol_test, radclient\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install FreeRADIUS\n2. Configure clients.conf for NAS devices\n3. Add test user to users file\n4. Configure EAP-TLS or PEAP\n5. Generate server certificates\n6. Start FreeRADIUS in debug mode\n7. Test authentication with radclient\n8. Validate 802.1X EAP exchange\n\n### Verification\n- FreeRADIUS starts without errors\n- Test user authenticates via RADIUS\n- EAP handshake completes",
+    "tasks": ["Install FreeRADIUS", "Configure clients", "Add test user", "Configure EAP", "Generate certs", "Start debug mode", "Test with radclient", "Validate EAP"],
+    "flags": [
+      {"title": "FreeRADIUS Installed", "description": "Run: freeradius -v | head -1. What version?", "ans": "FreeRADIUS", "pts": 50},
+      {"title": "Clients Configured", "description": "Run: grep -c 'client' /etc/freeradius/3.0/clients.conf. How many client entries?", "ans": "2", "pts": 75},
+      {"title": "User Added", "description": "Run: grep -c 'testuser' /etc/freeradius/3.0/mods-config/files/authorize. Is user present?", "ans": "1", "pts": 75},
+      {"title": "EAP Configured", "description": "Run: grep -c 'eap' /etc/freeradius/3.0/mods-enabled/eap 2>/dev/null || echo 1. EAP module enabled?", "ans": "1", "pts": 100},
+      {"title": "Server Certs", "description": "Run: ls /etc/freeradius/3.0/certs/ | grep -c 'server'. Server certs present?", "ans": "1", "pts": 100},
+      {"title": "RADIUS Running", "description": "Run: pgrep -c freeradius. Is FreeRADIUS process running?", "ans": "1", "pts": 100},
+      {"title": "Auth Success", "description": "Run: radclient -x localhost:1812 auth testing123 2>&1 | grep -c 'Access-Accept'. Auth accepted?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -tlnp | grep -c '1812'. Is RADIUS port listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy ISC DHCP Server + Failover",
+    "description": "Set up ISC DHCP server with failover configuration for high availability.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 80,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy ISC DHCP server with subnet declarations, static reservations, and failover pair configuration for HA.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: isc-dhcp-server, dhcpfailover\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install ISC DHCP server\n2. Configure dhcpd.conf with subnets\n3. Set up address pool ranges\n4. Create static host reservations\n5. Configure failover pair\n6. Set lease database parameters\n7. Start and test DHCP service\n8. Verify lease assignments\n\n### Verification\n- DHCP service starts without errors\n- Subnets are properly declared\n- Leases are assigned to clients",
+    "tasks": ["Install DHCP", "Configure subnets", "Set address pools", "Add reservations", "Configure failover", "Set lease params", "Start service", "Verify leases"],
+    "flags": [
+      {"title": "DHCP Installed", "description": "Run: dhcpd --version 2>&1 | head -1. What version?", "ans": "isc-dhcp", "pts": 50},
+      {"title": "Subnets Configured", "description": "Run: grep -c 'subnet' /etc/dhcp/dhcpd.conf. How many subnet declarations?", "ans": "3", "pts": 75},
+      {"title": "Pools Defined", "description": "Run: grep -c 'range' /etc/dhcp/dhcpd.conf. How many range declarations?", "ans": "2", "pts": 75},
+      {"title": "Reservations", "description": "Run: grep -c 'host' /etc/dhcp/dhcpd.conf. How many static reservations?", "ans": "2", "pts": 100},
+      {"title": "Failover Pair", "description": "Run: grep -c 'failover peer' /etc/dhcp/dhcpd.conf. Failover configured?", "ans": "1", "pts": 100},
+      {"title": "DHCP Running", "description": "Run: pgrep -c dhcpd. Is DHCP server running?", "ans": "1", "pts": 100},
+      {"title": "Lease File", "description": "Run: ls /var/lib/dhcp/ | grep -c 'leases'. Lease file exists?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -ulnp | grep -c '67'. Is DHCP port listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy BIND9 Authoritative DNS",
+    "description": "Configure BIND9 as an authoritative DNS server with zone files and DNSSEC.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 70,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy BIND9 as an authoritative DNS server, configure forward and reverse zones, and enable DNSSEC signing.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: bind9, dig, dnssec-keygen\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install BIND9\n2. Configure named.conf.options\n3. Create forward zone file\n4. Create reverse zone file\n5. Add A, AAAA, MX, and CNAME records\n6. Configure zone transfers\n7. Enable DNSSEC signing\n8. Test with dig queries\n\n### Verification\n- BIND9 starts without errors\n- Zone files load correctly\n- DNS queries return correct records",
+    "tasks": ["Install BIND9", "Configure options", "Create forward zone", "Create reverse zone", "Add DNS records", "Configure transfers", "Enable DNSSEC", "Test with dig"],
+    "flags": [
+      {"title": "BIND9 Installed", "description": "Run: named -v | head -1. What version?", "ans": "BIND", "pts": 50},
+      {"title": "Options Configured", "description": "Run: named-checkconf /etc/bind/named.conf.options 2>&1 | wc -l. Config valid?", "ans": "0", "pts": 75},
+      {"title": "Forward Zone", "description": "Run: ls /etc/bind/ | grep -c 'db.'. Zone files exist?", "ans": "1", "pts": 75},
+      {"title": "Reverse Zone", "description": "Run: grep -c 'zone' /etc/bind/named.conf.local. How many zones defined?", "ans": "2", "pts": 100},
+      {"title": "Zone Valid", "description": "Run: named-checkzone example.com /etc/bind/db.example.com 2>&1 | grep -c 'OK'. Zone file valid?", "ans": "1", "pts": 100},
+      {"title": "BIND Running", "description": "Run: pgrep -c named. Is BIND process running?", "ans": "1", "pts": 100},
+      {"title": "DNS Query", "description": "Run: dig @localhost example.com A +short | grep -c '192.168'. A record returned?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -tlnp | grep -c '53'. Is DNS port listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Unbound Recursive DNS + DNSSEC",
+    "description": "Configure Unbound as a recursive DNS resolver with DNSSEC validation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 75,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy Unbound as a recursive resolver, configure DNSSEC validation, set up forward zones, and verify encrypted DNS resolution.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: unbound, unbound-anchor, dig\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Unbound\n2. Configure unbound.conf\n3. Set up root hints\n4. Enable DNSSEC validation\n5. Configure access control\n6. Set up cache and performance tuning\n7. Start Unbound service\n8. Test recursive resolution\n\n### Verification\n- Unbound starts without errors\n- DNSSEC validation works\n- Recursive queries resolve correctly",
+    "tasks": ["Install Unbound", "Configure unbound.conf", "Set root hints", "Enable DNSSEC", "Configure ACL", "Tune performance", "Start service", "Test resolution"],
+    "flags": [
+      {"title": "Unbound Installed", "description": "Run: unbound -v | head -1. What version?", "ans": "unbound", "pts": 50},
+      {"title": "Config Valid", "description": "Run: unbound-checkconf 2>&1 | grep -c 'success'. Config valid?", "ans": "1", "pts": 75},
+      {"title": "Root Hints", "description": "Run: ls /var/lib/unbound/ | grep -c 'root'. Root hints present?", "ans": "1", "pts": 75},
+      {"title": "DNSSEC Enabled", "description": "Run: grep -c 'auto-trust-anchor-file' /etc/unbound/unbound.conf. DNSSEC configured?", "ans": "1", "pts": 100},
+      {"title": "ACL Configured", "description": "Run: grep -c 'access-control' /etc/unbound/unbound.conf. ACL rules defined?", "ans": "2", "pts": 100},
+      {"title": "Unbound Running", "description": "Run: pgrep -c unbound. Is Unbound running?", "ans": "1", "pts": 100},
+      {"title": "Recursive Query", "description": "Run: dig @localhost google.com A +short | grep -c '.'. Resolution works?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -tlnp | grep -c '53'. Is port 53 listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy pfSense Firewall (Simulated)",
+    "description": "Simulate pfSense firewall configuration with pf rules, NAT, and VLAN support.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nSimulate a pfSense-like firewall environment using iptables and pf-like rule syntax, configure NAT, VLANs, and traffic filtering.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: iptables, vlan, bridge-utils\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install firewall prerequisites\n2. Create VLAN interfaces\n3. Configure bridge for VLANs\n4. Set up NAT rules (MASQUERADE)\n5. Configure INPUT/OUTPUT/FORWARD chains\n6. Add port forwarding rules\n7. Create firewall rule sets\n8. Test rule enforcement\n\n### Verification\n- VLANs are created and tagged\n- NAT is working for outbound\n- Firewall rules block/allow as expected",
+    "tasks": ["Install prerequisites", "Create VLANs", "Configure bridge", "Set NAT rules", "Configure chains", "Add port forwarding", "Create rule sets", "Test enforcement"],
+    "flags": [
+      {"title": "VLAN Support", "description": "Run: ip link show | grep -c 'vlan'. VLAN interfaces created?", "ans": "2", "pts": 50},
+      {"title": "Bridge Created", "description": "Run: brctl show 2>/dev/null | grep -c 'br' || ip link show type bridge | grep -c 'bridge'. Bridge exists?", "ans": "1", "pts": 75},
+      {"title": "NAT Configured", "description": "Run: iptables -t nat -L -n | grep -c 'MASQUERADE'. NAT masquerade rule?", "ans": "1", "pts": 75},
+      {"title": "FORWARD Rules", "description": "Run: iptables -L FORWARD -n | grep -c 'ACCEPT'. Forward rules defined?", "ans": "2", "pts": 100},
+      {"title": "INPUT Rules", "description": "Run: iptables -L INPUT -n | grep -c 'ACCEPT'. Input rules defined?", "ans": "3", "pts": 100},
+      {"title": "Port Forwarding", "description": "Run: iptables -t nat -L PREROUTING -n | grep -c 'DNAT'. Port forwarding configured?", "ans": "1", "pts": 100},
+      {"title": "IP Forwarding", "description": "Run: cat /proc/sys/net/ipv4/ip_forward. Is IP forwarding enabled?", "ans": "1", "pts": 100},
+      {"title": "Rules Persisted", "description": "Run: iptables-save | grep -c '-A'. How many rules saved?", "ans": "6", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy VyOS Router Configuration",
+    "description": "Configure a VyOS-style router with interfaces, static routes, OSPF, and firewall policies.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nSimulate VyOS router configuration using Linux networking tools, configure interfaces, routing protocols, and firewall policies.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ip route, ip link, iptables, frrouting\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Configure multiple network interfaces\n2. Assign IP addresses to interfaces\n3. Add static routes\n4. Enable IP forwarding\n5. Configure OSPF with FRRouting\n6. Set up firewall policies\n7. Add NAT for outbound traffic\n8. Verify routing tables\n\n### Verification\n- Interfaces are configured with IPs\n- Static and dynamic routes are present\n- Firewall policies are enforced",
+    "tasks": ["Configure interfaces", "Assign IPs", "Add static routes", "Enable forwarding", "Configure OSPF", "Set firewall policies", "Add NAT", "Verify routing"],
+    "flags": [
+      {"title": "Interfaces Up", "description": "Run: ip -br link | grep -c 'UP'. How many interfaces are up?", "ans": "3", "pts": 50},
+      {"title": "IPs Assigned", "description": "Run: ip -br addr | grep -c 'inet'. How many IP addresses assigned?", "ans": "3", "pts": 75},
+      {"title": "Static Routes", "description": "Run: ip route | grep -c 'via'. Static routes configured?", "ans": "2", "pts": 75},
+      {"title": "IP Forwarding", "description": "Run: cat /proc/sys/net/ipv4/ip_forward. Forwarding enabled?", "ans": "1", "pts": 100},
+      {"title": "OSPF Running", "description": "Run: pgrep -c ospfd 2>/dev/null || echo 1. OSPF daemon running?", "ans": "1", "pts": 100},
+      {"title": "FRR Config", "description": "Run: ls /etc/frr/ 2>/dev/null | grep -c 'ospfd'. OSPF config present?", "ans": "1", "pts": 100},
+      {"title": "Firewall Active", "description": "Run: iptables -L -n | grep -c 'ACCEPT'. Firewall rules active?", "ans": "4", "pts": 100},
+      {"title": "Route Table", "description": "Run: ip route | wc -l. How many routes in table?", "ans": "5", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy NetBox IPAM + DCIM",
+    "description": "Set up NetBox for IP address management and data center infrastructure tracking.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 85,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy NetBox with PostgreSQL, configure IPAM modules, add devices and sites, and validate the web interface.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: netbox, postgresql, python\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL and create database\n2. Install NetBox and dependencies\n3. Configure settings.py\n4. Run database migrations\n5. Create superuser account\n6. Add sites and device types\n7. Configure IP prefixes and addresses\n8. Verify web interface access\n\n### Verification\n- NetBox web interface is accessible\n- Sites and devices are created\n- IPAM data is properly stored",
+    "tasks": ["Install PostgreSQL", "Install NetBox", "Configure settings", "Run migrations", "Create superuser", "Add sites/devices", "Configure IPAM", "Verify web UI"],
+    "flags": [
+      {"title": "PostgreSQL Running", "description": "Run: pg_isready 2>&1 | grep -c 'accepting'. PostgreSQL ready?", "ans": "1", "pts": 50},
+      {"title": "NetBox Installed", "description": "Run: pip show netbox 2>/dev/null | grep -c 'Name'. NetBox installed?", "ans": "1", "pts": 75},
+      {"title": "DB Migrated", "description": "Run: python manage.py showmigrations --list 2>/dev/null | grep -c 'X'. Migrations applied?", "ans": "1", "pts": 75},
+      {"title": "Superuser", "description": "Run: python manage.py shell -c 'from users.models import User; print(User.objects.count())' 2>/dev/null | head -1. Users exist?", "ans": "1", "pts": 100},
+      {"title": "Sites Created", "description": "Run: python manage.py shell -c 'from dcim.models import Site; print(Site.objects.count())' 2>/dev/null | head -1. Sites present?", "ans": "2", "pts": 100},
+      {"title": "Service Running", "description": "Run: pgrep -c 'manage.py' || pgrep -c netbox. NetBox process running?", "ans": "1", "pts": 100},
+      {"title": "Web Interface", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/ 2>/dev/null || echo 200. API accessible?", "ans": "200", "pts": 100},
+      {"title": "Config Present", "description": "Run: ls /opt/netbox/netbox/ 2>/dev/null | grep -c 'configuration'. Config file exists?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy phpIPAM Address Management",
+    "description": "Set up phpIPAM for IP address management with subnets, VLANs, and device tracking.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "NETWORKING",
+    "briefing": "### Mission Objective\nDeploy phpIPAM with MySQL, configure IP subnets, VLANs, and device tracking for network management.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: phpipam, mysql, php\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL and create database\n2. Install phpIPAM and PHP dependencies\n3. Configure database connection\n4. Run installation script\n5. Set up admin account\n6. Add VLAN definitions\n7. Create IP subnets and addresses\n8. Verify web interface\n\n### Verification\n- phpIPAM web interface is accessible\n- Subnets are properly configured\n- VLAN tracking works correctly",
+    "tasks": ["Install MySQL", "Install phpIPAM", "Configure DB connection", "Run installer", "Create admin", "Add VLANs", "Create subnets", "Verify web UI"],
+    "flags": [
+      {"title": "MySQL Running", "description": "Run: mysqladmin status 2>&1 | grep -c 'Uptime'. MySQL running?", "ans": "1", "pts": 50},
+      {"title": "phpIPAM Installed", "description": "Run: ls /var/www/phpipam/ 2>/dev/null | grep -c 'config'. Config exists?", "ans": "1", "pts": 75},
+      {"title": "DB Created", "description": "Run: mysql -e 'SHOW DATABASES' 2>/dev/null | grep -c 'phpipam'. Database created?", "ans": "1", "pts": 75},
+      {"title": "Admin User", "description": "Run: mysql -e 'SELECT COUNT(*) FROM phpipam.users WHERE admin=1' 2>/dev/null | tail -1. Admin exists?", "ans": "1", "pts": 100},
+      {"title": "VLANs Defined", "description": "Run: mysql -e 'SELECT COUNT(*) FROM phpipam.vlans' 2>/dev/null | tail -1. VLANs created?", "ans": "2", "pts": 100},
+      {"title": "Subnets Created", "description": "Run: mysql -e 'SELECT COUNT(*) FROM phpipam.subnets' 2>/dev/null | tail -1. Subnets present?", "ans": "3", "pts": 100},
+      {"title": "Web Accessible", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost/ 2>/dev/null || echo 200. Web UI accessible?", "ans": "200", "pts": 100},
+      {"title": "Config Valid", "description": "Run: php -l /var/www/phpipam/config/config.php 2>&1 | grep -c 'No syntax'. Config valid?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Postfix SMTP Server",
+    "description": "Configure Postfix as an SMTP mail server with TLS and relay host support.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 70,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Postfix as a fully-functional SMTP server with TLS encryption, relay configuration, and mailbox delivery.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postfix, mailutils, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Postfix and mailutils\n2. Configure main.cf for SMTP\n3. Enable TLS with certificates\n4. Set up relay host configuration\n5. Configure mailbox delivery\n6. Set hostname and domain\n7. Start Postfix service\n8. Test sending email\n\n### Verification\n- Postfix starts without errors\n- TLS is enabled on port 587\n- Email can be sent and received",
+    "tasks": ["Install Postfix", "Configure main.cf", "Enable TLS", "Set relay host", "Configure mailbox", "Set hostname", "Start service", "Test email"],
+    "flags": [
+      {"title": "Postfix Installed", "description": "Run: postconf -d mail_version 2>/dev/null | head -1. What version?", "ans": "mail_version", "pts": 50},
+      {"title": "TLS Configured", "description": "Run: postconf smtpd_tls_cert_file 2>/dev/null | grep -c ' pem'. TLS cert configured?", "ans": "1", "pts": 75},
+      {"title": "Myhostname", "description": "Run: postconf myhostname 2>/dev/null | grep -c '@'. Myhostname set?", "ans": "1", "pts": 75},
+      {"title": "Relay Config", "description": "Run: postconf relayhost 2>/dev/null | grep -c 'inet'. Relay host configured?", "ans": "1", "pts": 100},
+      {"title": "Service Running", "description": "Run: pgrep -c master. Is Postfix master running?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -tlnp | grep -c '25'. SMTP port listening?", "ans": "1", "pts": 100},
+      {"title": "Maildir Created", "description": "Run: ls /var/mail/ 2>/dev/null | grep -c 'itadmin'. Mailbox exists?", "ans": "1", "pts": 100},
+      {"title": "Queue Empty", "description": "Run: postqueue -p 2>/dev/null | grep -c 'Queue is empty'. Mail queue status?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Dovecot IMAP/POP3 Server",
+    "description": "Set up Dovecot for IMAP and POP3 email retrieval with SSL/TLS encryption.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Dovecot as an IMAP/POP3 mail retrieval server with SSL/TLS, mailbox format, and authentication.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: dovecot, openssl, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Dovecot\n2. Configure protocols (IMAP, POP3)\n3. Set up SSL/TLS certificates\n4. Configure mail_location (Maildir)\n5. Set authentication mechanisms\n6. Configure passdb and userdb\n7. Start Dovecot service\n8. Test IMAP connection\n\n### Verification\n- Dovecot starts without errors\n- IMAP and POP3 ports are listening\n- SSL/TLS connections work",
+    "tasks": ["Install Dovecot", "Configure protocols", "Set up SSL", "Configure mail_location", "Set auth mechanisms", "Configure passdb/userdb", "Start service", "Test IMAP"],
+    "flags": [
+      {"title": "Dovecot Installed", "description": "Run: dovecot --version 2>/dev/null | head -1. What version?", "ans": "dovecot", "pts": 50},
+      {"title": "Protocols Enabled", "description": "Run: grep -c 'protocols' /etc/dovecot/dovecot.conf 2>/dev/null || echo 1. Protocols configured?", "ans": "1", "pts": 75},
+      {"title": "SSL Configured", "description": "Run: grep -c 'ssl_cert' /etc/dovecot/conf.d/10-ssl.conf 2>/dev/null || echo 1. SSL cert configured?", "ans": "1", "pts": 75},
+      {"title": "Mail Location", "description": "Run: grep -c 'mail_location' /etc/dovecot/conf.d/10-mail.conf 2>/dev/null || echo 1. Mail location set?", "ans": "1", "pts": 100},
+      {"title": "Service Running", "description": "Run: pgrep -c dovecot. Is Dovecot running?", "ans": "1", "pts": 100},
+      {"title": "IMAP Listening", "description": "Run: ss -tlnp | grep -c '993'. IMAPS port listening?", "ans": "1", "pts": 100},
+      {"title": "POP3 Listening", "description": "Run: ss -tlnp | grep -c '995'. POP3S port listening?", "ans": "1", "pts": 100},
+      {"title": "Auth Config", "description": "Run: grep -c 'auth_mechanisms' /etc/dovecot/conf.d/10-auth.conf 2>/dev/null || echo 1. Auth configured?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Rspamd Anti-Spam + DKIM",
+    "description": "Configure Rspamd for spam filtering with DKIM signing and reputation management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 85,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Rspamd for anti-spam filtering, configure DKIM signing, set up rules, and validate spam detection.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: rspamd, opendkim, redis\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Rspamd and dependencies\n2. Configure Redis backend\n3. Set up DKIM keys and signing\n4. Configure rspamd.local.php\n5. Add custom spam rules\n6. Set up greylisting\n7. Start Rspamd service\n8. Test spam detection\n\n### Verification\n- Rspamd web interface accessible\n- DKIM signing works\n- Spam detection is functional",
+    "tasks": ["Install Rspamd", "Configure Redis", "Set up DKIM", "Configure rspamd.local.php", "Add custom rules", "Set greylisting", "Start service", "Test spam detection"],
+    "flags": [
+      {"title": "Rspamd Installed", "description": "Run: rspamd --version 2>/dev/null | head -1. What version?", "ans": "rspamd", "pts": 50},
+      {"title": "Redis Configured", "description": "Run: redis-cli ping 2>/dev/null | grep -c 'PONG'. Redis responding?", "ans": "1", "pts": 75},
+      {"title": "DKIM Keys", "description": "Run: ls /var/lib/rspamd/dkim/ 2>/dev/null | grep -c 'key'. DKIM keys exist?", "ans": "1", "pts": 75},
+      {"title": "DKIM Signing", "description": "Run: grep -c 'dkim_signing' /etc/rspamd/local.d/dkim_signing.conf 2>/dev/null || echo 1. DKIM signing configured?", "ans": "1", "pts": 100},
+      {"title": "Service Running", "description": "Run: pgrep -c rspamd. Is Rspamd running?", "ans": "1", "pts": 100},
+      {"title": "Web Interface", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:11334/ 2>/dev/null || echo 200. Web UI accessible?", "ans": "200", "pts": 100},
+      {"title": "Rules Loaded", "description": "Run: rspamadm stats 2>/dev/null | grep -c 'symbols' || echo 1. Rules loaded?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -tlnp | grep -c '11333'. Rspamd port listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Full Mail Stack: Postfix + Dovecot + Rspamd",
+    "description": "Integrate Postfix, Dovecot, and Rspamd into a complete mail solution with spam filtering.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy and integrate Postfix (SMTP), Dovecot (IMAP), and Rspamd (anti-spam) into a complete mail stack.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postfix, dovecot, rspamd, redis\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install all mail components\n2. Configure Postfix for SMTP + submission\n3. Configure Dovecot for IMAP + LDA\n4. Configure Rspamd milter integration\n5. Set up virtual mailbox domains\n6. Configure SASL authentication\n7. Test full mail flow\n8. Verify spam filtering works\n\n### Verification\n- All three services running\n- Full send/receive cycle works\n- Spam is filtered correctly",
+    "tasks": ["Install components", "Configure Postfix", "Configure Dovecot", "Configure Rspamd milter", "Set virtual domains", "Configure SASL", "Test mail flow", "Verify spam filtering"],
+    "flags": [
+      {"title": "Postfix Running", "description": "Run: pgrep -c master. Postfix master running?", "ans": "1", "pts": 40},
+      {"title": "Dovecot Running", "description": "Run: pgrep -c dovecot. Dovecot running?", "ans": "1", "pts": 40},
+      {"title": "Rspamd Running", "description": "Run: pgrep -c rspamd. Rspamd running?", "ans": "1", "pts": 40},
+      {"title": "Milter Configured", "description": "Run: postconf milter_default_action 2>/dev/null | grep -c 'accept'. Milter integrated?", "ans": "1", "pts": 100},
+      {"title": "SMTP Port", "description": "Run: ss -tlnp | grep -c '25'. SMTP port listening?", "ans": "1", "pts": 80},
+      {"title": "IMAP Port", "description": "Run: ss -tlnp | grep -c '143'. IMAP port listening?", "ans": "1", "pts": 80},
+      {"title": "Submission Port", "description": "Run: ss -tlnp | grep -c '587'. Submission port listening?", "ans": "1", "pts": 80},
+      {"title": "Full Stack", "description": "Run: echo 'test' | mail -s 'test' itadmin 2>/dev/null; echo $? | head -1. Mail sent successfully?", "ans": "0", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Mailpile Local Mail Client",
+    "description": "Set up Mailpile as a local mail client with web interface and encryption support.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 800,
+    "estimatedMinutes": 60,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Mailpile as a privacy-focused local mail client with web UI, PGP encryption, and search capabilities.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mailpile, python, gnupg\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Mailpile dependencies\n2. Download and configure Mailpile\n3. Set up local mail profile\n4. Configure IMAP account\n5. Enable PGP encryption\n6. Set up web interface\n7. Configure search indexing\n8. Test email retrieval\n\n### Verification\n- Mailpile web interface accessible\n- Mail account is configured\n- Email search works correctly",
+    "tasks": ["Install dependencies", "Download Mailpile", "Set up profile", "Configure IMAP", "Enable PGP", "Set up web UI", "Configure search", "Test retrieval"],
+    "flags": [
+      {"title": "Mailpile Installed", "description": "Run: mailpile --version 2>/dev/null | head -1. What version?", "ans": "Mailpile", "pts": 50},
+      {"title": "Profile Created", "description": "Run: ls ~/.local/share/Mailpile/ 2>/dev/null | grep -c 'mailpile'. Profile exists?", "ans": "1", "pts": 75},
+      {"title": "IMAP Configured", "description": "Run: mailpile --batch -c 'whoami' 2>/dev/null | grep -c 'Mailpile' || echo 1. Mailpile initialized?", "ans": "1", "pts": 75},
+      {"title": "Web UI Running", "description": "Run: ss -tlnp | grep -c '33411'. Web interface listening?", "ans": "1", "pts": 100},
+      {"title": "PGP Available", "description": "Run: gpg --version 2>/dev/null | head -1 | grep -c 'gpg'. GPG available?", "ans": "1", "pts": 100},
+      {"title": "Config Directory", "description": "Run: ls ~/.local/share/Mailpile/ 2>/dev/null | wc -l. Config files present?", "ans": "3", "pts": 100},
+      {"title": "Service Running", "description": "Run: pgrep -c mailpile. Mailpile process running?", "ans": "1", "pts": 100},
+      {"title": "Index Created", "description": "Run: ls ~/.local/share/Mailpile/mail/ 2>/dev/null | grep -c 'index' || echo 1. Index created?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Restic Backup to S3",
+    "description": "Configure Restic for encrypted backups to S3-compatible storage with deduplication.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 70,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Restic backup solution with S3 backend, configure encryption, snapshots, and retention policies.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: restic, minio (S3-compatible)\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Restic\n2. Set up MinIO S3-compatible storage\n3. Initialize Restic repository\n4. Create initial backup snapshot\n5. Configure environment variables\n6. Set up retention policy\n7. Create backup script\n8. Verify restore capability\n\n### Verification\n- Restic repository initialized\n- Backups are created successfully\n- Restore operation works",
+    "tasks": ["Install Restic", "Set up MinIO", "Init repository", "Create snapshot", "Configure env vars", "Set retention", "Create backup script", "Verify restore"],
+    "flags": [
+      {"title": "Restic Installed", "description": "Run: restic version 2>/dev/null | head -1. What version?", "ans": "restic", "pts": 50},
+      {"title": "MinIO Running", "description": "Run: pgrep -c minio. MinIO server running?", "ans": "1", "pts": 75},
+      {"title": "Repo Initialized", "description": "Run: restic snapshots 2>/dev/null | grep -c 'repository'. Repository initialized?", "ans": "1", "pts": 75},
+      {"title": "Snapshot Created", "description": "Run: restic snapshots 2>/dev/null | grep -c 'snapshot'. Snapshots exist?", "ans": "1", "pts": 100},
+      {"title": "Encryption Active", "description": "Run: restic snapshots 2>&1 | grep -c 'password'. Password required (encrypted)?", "ans": "1", "pts": 100},
+      {"title": "Backup Script", "description": "Run: ls /usr/local/bin/ 2>/dev/null | grep -c 'backup'. Backup script exists?", "ans": "1", "pts": 100},
+      {"title": "Retention Set", "description": "Run: restic forget --keep-daily 7 --dry-run 2>&1 | grep -c 'would'. Retention policy works?", "ans": "1", "pts": 100},
+      {"title": "S3 Backend", "description": "Run: restic snapshots 2>/dev/null | grep -c 's3'. S3 backend configured?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy BorgBackup with Encryption",
+    "description": "Set up BorgBackup with encryption, deduplication, and offsite backup support.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 70,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy BorgBackup with AES-256 encryption, configure deduplication, compression, and automated backup schedules.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: borgbackup, cron\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install BorgBackup\n2. Initialize encrypted repository\n3. Configure passphrase encryption\n4. Create initial backup archive\n5. Set up compression (lz4)\n6. Configure retention policy\n7. Add cron job for automation\n8. Verify archive integrity\n\n### Verification\n- Borg repository is initialized\n- Archives are created with encryption\n- Deduplication is working",
+    "tasks": ["Install BorgBackup", "Init repository", "Configure passphrase", "Create archive", "Set compression", "Configure retention", "Add cron job", "Verify integrity"],
+    "flags": [
+      {"title": "Borg Installed", "description": "Run: borg --version 2>/dev/null | head -1. What version?", "ans": "borg", "pts": 50},
+      {"title": "Repo Initialized", "description": "Run: borg list 2>/dev/null | wc -l. Repository initialized?", "ans": "0", "pts": 75},
+      {"title": "Encryption Active", "description": "Run: borg info 2>&1 | grep -c 'Encryption'. Encryption configured?", "ans": "1", "pts": 75},
+      {"title": "Archive Created", "description": "Run: borg list 2>/dev/null | grep -c 'archive'. Archives exist?", "ans": "1", "pts": 100},
+      {"title": "Compression Set", "description": "Run: borg info 2>&1 | grep -c 'Compression'. Compression active?", "ans": "1", "pts": 100},
+      {"title": "Cron Configured", "description": "Run: crontab -l 2>/dev/null | grep -c 'borg'. Cron job added?", "ans": "1", "pts": 100},
+      {"title": "Retention Active", "description": "Run: borg prune --list --dry-run 2>&1 | grep -c 'Prune'. Retention works?", "ans": "1", "pts": 100},
+      {"title": "Deduplication", "description": "Run: borg info 2>&1 | grep -c 'Dedup'. Dedup enabled?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Velero Backup for Kubernetes",
+    "description": "Set up Velero for Kubernetes cluster backup and disaster recovery.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 95,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Velero for Kubernetes backup with S3 storage, configure backup schedules, and test restore operations.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: velero, kubectl, minio\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Velero CLI\n2. Set up MinIO S3 backend\n3. Configure Velero credentials\n4. Install Velero server\n5. Create backup schedule\n6. Take on-demand backup\n7. Test restore operation\n8. Verify backup integrity\n\n### Verification\n- Velero server is running\n- Backups are created successfully\n- Restore operation works",
+    "tasks": ["Install Velero CLI", "Set up MinIO", "Configure credentials", "Install Velero server", "Create backup schedule", "Take backup", "Test restore", "Verify integrity"],
+    "flags": [
+      {"title": "Velero Installed", "description": "Run: velero version 2>/dev/null | head -1. What version?", "ans": "velero", "pts": 50},
+      {"title": "MinIO Running", "description": "Run: pgrep -c minio. MinIO running?", "ans": "1", "pts": 75},
+      {"title": "Credentials Set", "description": "Run: ls /etc/velero/ 2>/dev/null | grep -c 'credentials'. Credentials file exists?", "ans": "1", "pts": 75},
+      {"title": "Velero Running", "description": "Run: velero get backup-locations 2>/dev/null | grep -c 'Available'. Backup location available?", "ans": "1", "pts": 100},
+      {"title": "Schedule Created", "description": "Run: velero schedule get 2>/dev/null | grep -c 'Schedule'. Schedules exist?", "ans": "1", "pts": 100},
+      {"title": "Backup Taken", "description": "Run: velero backup get 2>/dev/null | grep -c 'Completed'. Backups completed?", "ans": "1", "pts": 100},
+      {"title": "Restore Available", "description": "Run: velero restore get 2>/dev/null | grep -c 'Restore' || echo 1. Restore command works?", "ans": "1", "pts": 100},
+      {"title": "Plugin Installed", "description": "Run: velero get plugins 2>/dev/null | grep -c 'velero-plugin'. Plugins installed?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Duplicati Web Backup",
+    "description": "Set up Duplicati with web interface for encrypted, scheduled backups.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 65,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Duplicati as a web-based backup solution with encryption, scheduling, and web management interface.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: duplicati, mono, cron\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Duplicati and Mono\n2. Configure Duplicati service\n3. Set up web interface on port 8200\n4. Configure backup destination\n5. Enable AES-256 encryption\n6. Set up backup schedule\n7. Create initial backup job\n8. Verify backup and restore\n\n### Verification\n- Duplicati web interface accessible\n- Backups run on schedule\n- Encryption is enabled",
+    "tasks": ["Install Duplicati", "Configure service", "Set up web UI", "Configure destination", "Enable encryption", "Set schedule", "Create backup job", "Verify backup/restore"],
+    "flags": [
+      {"title": "Duplicati Installed", "description": "Run: duplicati --version 2>/dev/null | head -1. What version?", "ans": "Duplicati", "pts": 50},
+      {"title": "Service Running", "description": "Run: pgrep -c 'Duplicati'. Duplicati process running?", "ans": "1", "pts": 75},
+      {"title": "Web UI Accessible", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8200/ 2>/dev/null || echo 200. Web UI accessible?", "ans": "200", "pts": 75},
+      {"title": "Encryption Enabled", "description": "Run: ls ~/.config/Duplicati/ 2>/dev/null | grep -c 'sqlite'. DB exists (config stored)?", "ans": "1", "pts": 100},
+      {"title": "Port Listening", "description": "Run: ss -tlnp | grep -c '8200'. Web port listening?", "ans": "1", "pts": 100},
+      {"title": "Backup Config", "description": "Run: ls ~/.config/Duplicati/ 2>/dev/null | wc -l. Config files present?", "ans": "3", "pts": 100},
+      {"title": "Cron Scheduled", "description": "Run: crontab -l 2>/dev/null | grep -c 'duplicati' || echo 1. Schedule configured?", "ans": "1", "pts": 100},
+      {"title": "Mono Available", "description": "Run: mono --version 2>/dev/null | head -1 | grep -c 'Mono'. Mono available?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy rsync + cron Automated Backups",
+    "description": "Set up automated incremental backups using rsync and cron scheduling.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 800,
+    "estimatedMinutes": 55,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy automated incremental backups using rsync with cron scheduling, log rotation, and verification.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: rsync, cron, logrotate\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Create source and destination directories\n2. Configure rsync with incremental sync\n3. Set up rsync daemon (optional)\n4. Create backup script\n5. Add cron job for scheduling\n6. Configure log rotation\n7. Add email notifications\n8. Test backup and verify\n\n### Verification\n- Cron job is scheduled\n- Rsync syncs correctly\n- Logs are rotated properly",
+    "tasks": ["Create directories", "Configure rsync", "Set up daemon", "Create backup script", "Add cron job", "Configure logrotate", "Add notifications", "Test backup"],
+    "flags": [
+      {"title": "Rsync Installed", "description": "Run: rsync --version | head -1. What version?", "ans": "rsync", "pts": 50},
+      {"title": "Source Dir", "description": "Run: ls /data/source/ 2>/dev/null | wc -l. Source directory exists?", "ans": "2", "pts": 75},
+      {"title": "Dest Dir", "description": "Run: ls /data/backup/ 2>/dev/null | wc -l. Destination directory exists?", "ans": "1", "pts": 75},
+      {"title": "Backup Script", "description": "Run: ls /usr/local/bin/ 2>/dev/null | grep -c 'backup'. Backup script exists?", "ans": "1", "pts": 75},
+      {"title": "Cron Job", "description": "Run: crontab -l 2>/dev/null | grep -c 'rsync'. Cron job scheduled?", "ans": "1", "pts": 100},
+      {"title": "Log Rotation", "description": "Run: ls /etc/logrotate.d/ 2>/dev/null | grep -c 'backup'. Logrotate configured?", "ans": "1", "pts": 100},
+      {"title": "Backup Files", "description": "Run: ls /data/backup/ 2>/dev/null | grep -c 'source'. Backup files present?", "ans": "1", "pts": 100},
+      {"title": "Log Created", "description": "Run: ls /var/log/ 2>/dev/null | grep -c 'backup'. Log file created?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Ansible Playbook for Server Provisioning",
+    "description": "Create Ansible playbooks for automated server provisioning and configuration.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Ansible for automated server provisioning, create playbooks for package installation, user management, and service configuration.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ansible, ssh, python\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Ansible\n2. Create inventory file\n3. Write provisioning playbook\n4. Add package installation tasks\n5. Create user management tasks\n6. Configure service handlers\n7. Test playbook locally\n8. Verify all configurations applied\n\n### Verification\n- Ansible is installed and configured\n- Playbook runs without errors\n- All tasks complete successfully",
+    "tasks": ["Install Ansible", "Create inventory", "Write playbook", "Add package tasks", "Create user tasks", "Configure handlers", "Test playbook", "Verify configs"],
+    "flags": [
+      {"title": "Ansible Installed", "description": "Run: ansible --version | head -1. What version?", "ans": "ansible", "pts": 50},
+      {"title": "Inventory Created", "description": "Run: ls /etc/ansible/ 2>/dev/null | grep -c 'hosts' || echo 1. Inventory exists?", "ans": "1", "pts": 75},
+      {"title": "Playbook Created", "description": "Run: ls ~/playbooks/ 2>/dev/null | grep -c 'provision'. Playbook exists?", "ans": "1", "pts": 75},
+      {"title": "Packages Task", "description": "Run: grep -c 'apt:' ~/playbooks/provision.yml 2>/dev/null || echo 2. Package tasks defined?", "ans": "2", "pts": 100},
+      {"title": "User Task", "description": "Run: grep -c 'user:' ~/playbooks/provision.yml 2>/dev/null || echo 1. User tasks defined?", "ans": "1", "pts": 100},
+      {"title": "Handlers", "description": "Run: grep -c 'handler' ~/playbooks/provision.yml 2>/dev/null || echo 1. Handlers defined?", "ans": "1", "pts": 100},
+      {"title": "Dry Run", "description": "Run: ansible-playbook --syntax-check ~/playbooks/provision.yml 2>&1 | grep -c 'error' || echo 0. Syntax valid?", "ans": "0", "pts": 100},
+      {"title": "Config Applied", "description": "Run: ansible all -m ping 2>&1 | grep -c 'success' || echo 1. Connectivity verified?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Ansible Role for Hardening",
+    "description": "Create an Ansible role for server security hardening with CIS benchmarks.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 80,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nCreate an Ansible role for server hardening following CIS benchmarks, including SSH, firewall, and kernel parameters.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ansible, ssh, sysctl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Create Ansible role directory structure\n2. Write SSH hardening tasks\n3. Configure firewall rules\n4. Set kernel security parameters\n5. Add user authentication policies\n6. Create audit logging tasks\n7. Add role to playbook\n8. Test and verify hardening\n\n### Verification\n- Role directory structure is correct\n- SSH is hardened (no root login)\n- Kernel parameters are secure",
+    "tasks": ["Create role structure", "Write SSH tasks", "Configure firewall", "Set kernel params", "Add auth policies", "Create audit tasks", "Add to playbook", "Test hardening"],
+    "flags": [
+      {"title": "Role Structure", "description": "Run: ls roles/hardening/ 2>/dev/null | grep -c 'tasks'. Role structure exists?", "ans": "1", "pts": 50},
+      {"title": "SSH Hardened", "description": "Run: grep -c 'PermitRootLogin' /etc/ssh/sshd_config 2>/dev/null || echo 1. SSH hardened?", "ans": "1", "pts": 75},
+      {"title": "Firewall Rules", "description": "Run: iptables -L -n 2>/dev/null | grep -c 'DROP'. Firewall drops unknown traffic?", "ans": "1", "pts": 75},
+      {"title": "Kernel Params", "description": "Run: sysctl net.ipv4.ip_forward 2>/dev/null | head -1. Kernel param set?", "ans": "net.ipv4.ip_forward", "pts": 100},
+      {"title": "Handlers File", "description": "Run: ls roles/hardening/handlers/ 2>/dev/null | grep -c 'main'. Handlers defined?", "ans": "1", "pts": 100},
+      {"title": "Defaults", "description": "Run: ls roles/hardening/defaults/ 2>/dev/null | grep -c 'main'. Defaults defined?", "ans": "1", "pts": 100},
+      {"title": "Role Valid", "description": "Run: ansible-playbook --syntax-check ~/playbooks/harden.yml 2>&1 | grep -c 'error' || echo 0. Role syntax valid?", "ans": "0", "pts": 100},
+      {"title": "Audit Config", "description": "Run: ls /etc/audit/ 2>/dev/null | grep -c 'auditd' || echo 1. Audit configured?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Terraform + Ansible Combo Deployment",
+    "description": "Integrate Terraform for infrastructure provisioning with Ansible for configuration management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy infrastructure with Terraform and configure with Ansible, integrating both tools for complete IaC workflow.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: terraform, ansible, local provider\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Terraform and Ansible\n2. Create Terraform local provider config\n3. Write infrastructure-as-code resources\n4. Create Ansible playbooks\n5. Configure Terraform provisioner\n6. Run terraform init and apply\n7. Verify Ansible execution\n8. Test destroy workflow\n\n### Verification\n- Terraform plan succeeds\n- Infrastructure is provisioned\n- Ansible configures provisioned resources",
+    "tasks": ["Install tools", "Create Terraform config", "Write resources", "Create Ansible playbooks", "Configure provisioner", "Run terraform apply", "Verify Ansible", "Test destroy"],
+    "flags": [
+      {"title": "Terraform Installed", "description": "Run: terraform --version | head -1. What version?", "ans": "Terraform", "pts": 50},
+      {"title": "Ansible Installed", "description": "Run: ansible --version | head -1. What version?", "ans": "ansible", "pts": 50},
+      {"title": "TF Config", "description": "Run: ls ~/terraform/ 2>/dev/null | grep -c 'main.tf'. Terraform config exists?", "ans": "1", "pts": 75},
+      {"title": "TF State", "description": "Run: ls ~/terraform/ 2>/dev/null | grep -c 'terraform.tfstate'. State file exists?", "ans": "1", "pts": 75},
+      {"title": "Ansible Playbook", "description": "Run: ls ~/ansible/ 2>/dev/null | grep -c 'site.yml'. Playbook exists?", "ans": "1", "pts": 100},
+      {"title": "Provisioner", "description": "Run: grep -c 'provisioner' ~/terraform/main.tf 2>/dev/null || echo 1. Provisioner configured?", "ans": "1", "pts": 100},
+      {"title": "TF Applied", "description": "Run: terraform state list 2>/dev/null | wc -l. Resources provisioned?", "ans": "1", "pts": 100},
+      {"title": "Integration", "description": "Run: grep -c 'ansible' ~/terraform/main.tf 2>/dev/null || echo 1. Ansible integrated in Terraform?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Packer Golden Image Build",
+    "description": "Use Packer to build golden images with pre-configured software and security settings.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 85,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Packer for automated image building, configure builders, provisioners, and post-processors for golden images.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: packer, shell, ansible\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Packer\n2. Create HCL2 template\n3. Configure builder (docker)\n4. Add shell provisioner scripts\n5. Configure Ansible provisioner\n6. Set up post-processors\n7. Validate template\n8. Build golden image\n\n### Verification\n- Packer template is valid\n- Image builds successfully\n- Built image contains all software",
+    "tasks": ["Install Packer", "Create template", "Configure builder", "Add provisioners", "Configure Ansible provisioner", "Set post-processors", "Validate template", "Build image"],
+    "flags": [
+      {"title": "Packer Installed", "description": "Run: packer --version 2>/dev/null | head -1. What version?", "ans": "Packer", "pts": 50},
+      {"title": "Template Created", "description": "Run: ls ~/packer/ 2>/dev/null | grep -c 'template'. Template exists?", "ans": "1", "pts": 75},
+      {"title": "Builder Configured", "description": "Run: grep -c 'docker' ~/packer/template.pkr.hcl 2>/dev/null || echo 1. Docker builder configured?", "ans": "1", "pts": 75},
+      {"title": "Provisioner", "description": "Run: grep -c 'provisioner' ~/packer/template.pkr.hcl 2>/dev/null || echo 2. Provisioners defined?", "ans": "2", "pts": 100},
+      {"title": "Shell Scripts", "description": "Run: ls ~/packer/scripts/ 2>/dev/null | grep -c 'install'. Install scripts exist?", "ans": "1", "pts": 100},
+      {"title": "Template Valid", "description": "Run: packer validate ~/packer/template.pkr.hcl 2>&1 | grep -c 'valid'. Template valid?", "ans": "1", "pts": 100},
+      {"title": "Image Built", "description": "Run: docker images 2>/dev/null | grep -c 'golden' || echo 1. Golden image exists?", "ans": "1", "pts": 100},
+      {"title": "Vars Configured", "description": "Run: ls ~/packer/ 2>/dev/null | grep -c 'vars'. Variables file exists?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Vagrant Multi-Node Dev Environment",
+    "description": "Set up Vagrant for multi-node development environments with networking.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Vagrant multi-node environment with private networking, provisioners, and synced folders.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: vagrant, virtualbox (simulated)\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Vagrant\n2. Create Vagrantfile\n3. Configure multi-node setup\n4. Set up private networking\n5. Configure synced folders\n6. Add shell provisioners\n7. Bring up environment\n8. Verify all nodes running\n\n### Verification\n- Vagrantfile is valid\n- All nodes start successfully\n- Network between nodes works",
+    "tasks": ["Install Vagrant", "Create Vagrantfile", "Configure multi-node", "Set up networking", "Configure synced folders", "Add provisioners", "Bring up environment", "Verify nodes"],
+    "flags": [
+      {"title": "Vagrant Installed", "description": "Run: vagrant --version 2>/dev/null | head -1. What version?", "ans": "Vagrant", "pts": 50},
+      {"title": "Vagrantfile Created", "description": "Run: ls ~/vagrant/ 2>/dev/null | grep -c 'Vagrantfile'. Vagrantfile exists?", "ans": "1", "pts": 75},
+      {"title": "Multi-Node", "description": "Run: grep -c 'vm.define' ~/vagrant/Vagrantfile 2>/dev/null || echo 3. Nodes defined?", "ans": "3", "pts": 75},
+      {"title": "Networking", "description": "Run: grep -c 'private_network' ~/vagrant/Vagrantfile 2>/dev/null || echo 1. Private network configured?", "ans": "1", "pts": 100},
+      {"title": "Synced Folders", "description": "Run: grep -c 'synced_folder' ~/vagrant/Vagrantfile 2>/dev/null || echo 1. Synced folders configured?", "ans": "1", "pts": 100},
+      {"title": "Provisioners", "description": "Run: grep -c 'provision' ~/vagrant/Vagrantfile 2>/dev/null || echo 2. Provisioners defined?", "ans": "2", "pts": 100},
+      {"title": "VM Status", "description": "Run: vagrant status 2>/dev/null | grep -c 'running' || echo 1. VMs running?", "ans": "1", "pts": 100},
+      {"title": "SSH Access", "description": "Run: vagrant ssh-config 2>/dev/null | grep -c 'HostName'. SSH configured?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Ansible AWX/Tower",
+    "description": "Set up Ansible AWX as a web-based automation platform for Ansible playbooks.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 95,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Ansible AWX as a web UI for Ansible automation, configure projects, job templates, and credentials.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: awx, docker, postgresql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Docker and dependencies\n2. Deploy AWX with docker-compose\n3. Configure PostgreSQL backend\n4. Access AWX web interface\n5. Create organization and project\n6. Add inventory and credentials\n7. Create job template\n8. Execute and verify job\n\n### Verification\n- AWX web interface is accessible\n- Project syncs successfully\n- Job template runs without errors",
+    "tasks": ["Install Docker", "Deploy AWX", "Configure PostgreSQL", "Access web UI", "Create org/project", "Add inventory/creds", "Create job template", "Execute job"],
+    "flags": [
+      {"title": "Docker Installed", "description": "Run: docker --version 2>/dev/null | head -1. What version?", "ans": "Docker", "pts": 50},
+      {"title": "AWX Deployed", "description": "Run: docker ps 2>/dev/null | grep -c 'awx'. AWX container running?", "ans": "1", "pts": 75},
+      {"title": "PostgreSQL Running", "description": "Run: pg_isready 2>&1 | grep -c 'accepting'. PostgreSQL ready?", "ans": "1", "pts": 75},
+      {"title": "Web Interface", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:80/ 2>/dev/null || echo 200. AWX UI accessible?", "ans": "200", "pts": 100},
+      {"title": "Organization", "description": "Run: awx organizations list 2>/dev/null | grep -c 'Default' || echo 1. Organization exists?", "ans": "1", "pts": 100},
+      {"title": "Project", "description": "Run: awx projects list 2>/dev/null | grep -c 'Project' || echo 1. Project created?", "ans": "1", "pts": 100},
+      {"title": "Inventory", "description": "Run: awx inventory list 2>/dev/null | grep -c 'Inventory' || echo 1. Inventory created?", "ans": "1", "pts": 100},
+      {"title": "Job Template", "description": "Run: awx job_templates list 2>/dev/null | grep -c 'Template' || echo 1. Job template created?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Semaphore Ansible UI",
+    "description": "Set up Semaphore as a modern web UI for Ansible automation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Semaphore as a lightweight Ansible UI with task scheduling, environment management, and API access.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: semaphore, ansible, mysql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL and create database\n2. Install Semaphore binary\n3. Configure database connection\n4. Run setup wizard\n5. Add Ansible repository\n6. Create environment and inventory\n7. Add task template\n8. Execute and verify task\n\n### Verification\n- Semaphore web UI accessible\n- Repository is synced\n- Task runs successfully",
+    "tasks": ["Install MySQL", "Install Semaphore", "Configure DB", "Run setup", "Add repository", "Create environment", "Add template", "Execute task"],
+    "flags": [
+      {"title": "MySQL Running", "description": "Run: mysqladmin status 2>&1 | grep -c 'Uptime'. MySQL running?", "ans": "1", "pts": 50},
+      {"title": "Semaphore Installed", "description": "Run: semaphore version 2>/dev/null | head -1. What version?", "ans": "semaphore", "pts": 75},
+      {"title": "DB Configured", "description": "Run: ls /etc/semaphore/ 2>/dev/null | grep -c 'config'. Config exists?", "ans": "1", "pts": 75},
+      {"title": "Web UI", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/ 2>/dev/null || echo 200. Web UI accessible?", "ans": "200", "pts": 100},
+      {"title": "Repository Added", "description": "Run: semaphore repository list 2>/dev/null | grep -c 'ansible' || echo 1. Repo added?", "ans": "1", "pts": 100},
+      {"title": "Template Created", "description": "Run: semaphore template list 2>/dev/null | grep -c 'template' || echo 1. Template exists?", "ans": "1", "pts": 100},
+      {"title": "Environment", "description": "Run: semaphore environment list 2>/dev/null | grep -c 'env' || echo 1. Environment created?", "ans": "1", "pts": 100},
+      {"title": "Service Running", "description": "Run: pgrep -c semaphore. Semaphore process running?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy SaltStack Configuration Management",
+    "description": "Set up SaltStack for remote execution and configuration management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy SaltStack with master/minion architecture, create states, and manage configurations remotely.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: salt-master, salt-minion, salt-call\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Salt master and minion\n2. Configure master\n3. Configure minion\n4. Accept minion key\n5. Create SLS state files\n6. Apply highstate\n7. Test remote execution\n8. Verify configuration applied\n\n### Verification\n- Salt master is running\n- Minion connects to master\n- States apply successfully",
+    "tasks": ["Install Salt master/minion", "Configure master", "Configure minion", "Accept key", "Create SLS states", "Apply highstate", "Test remote execution", "Verify configs"],
+    "flags": [
+      {"title": "Salt Master Installed", "description": "Run: salt --version 2>/dev/null | head -1. What version?", "ans": "Salt", "pts": 50},
+      {"title": "Master Running", "description": "Run: pgrep -c salt-master. Salt master running?", "ans": "1", "pts": 75},
+      {"title": "Minion Running", "description": "Run: pgrep -c salt-minion. Salt minion running?", "ans": "1", "pts": 75},
+      {"title": "Key Accepted", "description": "Run: salt-key -L 2>/dev/null | grep -c 'Accepted'. Key accepted?", "ans": "1", "pts": 75},
+      {"title": "SLS Created", "description": "Run: ls /srv/salt/ 2>/dev/null | grep -c 'init.sls'. SLS file exists?", "ans": "1", "pts": 100},
+      {"title": "Master Config", "description": "Run: grep -c 'interface' /etc/salt/master 2>/dev/null || echo 1. Master config exists?", "ans": "1", "pts": 100},
+      {"title": "Minion Config", "description": "Run: grep -c 'master' /etc/salt/minion 2>/dev/null || echo 1. Minion config exists?", "ans": "1", "pts": 100},
+      {"title": "Grains Available", "description": "Run: salt-call grains.items 2>/dev/null | grep -c 'os' || echo 1. Grains accessible?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Chef Infra Server + Client",
+    "description": "Set up Chef Infra Server and client for infrastructure automation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Chef Infra Server with client, configure cookbooks, recipes, and nodes for infrastructure management.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: chef-server, chef-client, knife\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Chef Server\n2. Configure Chef Server\n3. Create organization\n4. Generate client key\n5. Install Chef Workstation\n6. Create cookbook\n7. Bootstrap node\n8. Run chef-client\n\n### Verification\n- Chef Server is running\n- Client connects to server\n- Cookbook applies successfully",
+    "tasks": ["Install Chef Server", "Configure server", "Create org", "Generate client key", "Install workstation", "Create cookbook", "Bootstrap node", "Run chef-client"],
+    "flags": [
+      {"title": "Chef Installed", "description": "Run: chef-server-ctl version 2>/dev/null | head -1. What version?", "ans": "chef", "pts": 50},
+      {"title": "Server Running", "description": "Run: pgrep -c chef-server. Chef server running?", "ans": "1", "pts": 75},
+      {"title": "Org Created", "description": "Run: chef-server-ctl org-list 2>/dev/null | grep -c 'org'. Organization exists?", "ans": "1", "pts": 75},
+      {"title": "Client Key", "description": "Run: ls ~/.chef/ 2>/dev/null | grep -c 'pem'. Client key exists?", "ans": "1", "pts": 100},
+      {"title": "Knife Config", "description": "Run: ls ~/.chef/ 2>/dev/null | grep -c 'knife.rb'. Knife config exists?", "ans": "1", "pts": 100},
+      {"title": "Cookbook", "description": "Run: ls cookbooks/ 2>/dev/null | grep -c 'mycookbook'. Cookbook exists?", "ans": "1", "pts": 100},
+      {"title": "Node Registered", "description": "Run: knife node list 2>/dev/null | grep -c 'node' || echo 1. Node registered?", "ans": "1", "pts": 100},
+      {"title": "Service Ports", "description": "Run: ss -tlnp | grep -c '443'. Chef API port listening?", "ans": "1", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deploy Puppet Agent + Server",
+    "description": "Set up Puppet server and agent for declarative configuration management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEMS",
+    "briefing": "### Mission Objective\nDeploy Puppet server with agent, create manifests, and manage node configurations declaratively.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: puppet-server, puppet-agent, facter\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Puppet server\n2. Configure Puppet server\n3. Generate SSL certificates\n4. Install Puppet agent\n5. Configure agent\n6. Sign agent certificate\n7. Create manifest\n8. Apply catalog\n\n### Verification\n- Puppet server is running\n- Agent connects and gets catalog\n- Manifest applies successfully",
+    "tasks": ["Install Puppet server", "Configure server", "Generate SSL", "Install agent", "Configure agent", "Sign certificate", "Create manifest", "Apply catalog"],
+    "flags": [
+      {"title": "Puppet Installed", "description": "Run: puppet --version 2>/dev/null | head -1. What version?", "ans": "puppet", "pts": 50},
+      {"title": "Server Running", "description": "Run: pgrep -c puppet. Puppet server running?", "ans": "1", "pts": 75},
+      {"title": "SSL Generated", "description": "Run: ls /etc/puppetlabs/puppet/ssl/ca/ 2>/dev/null | grep -c 'ca_crt'. SSL certs generated?", "ans": "1", "pts": 75},
+      {"title": "Agent Installed", "description": "Run: puppet agent --version 2>/dev/null | head -1. Agent installed?", "ans": "puppet", "pts": 100},
+      {"title": "Manifest Created", "description": "Run: ls /etc/puppetlabs/code/environments/production/manifests/ 2>/dev/null | grep -c 'site.pp'. Manifest exists?", "ans": "1", "pts": 100},
+      {"title": "Module Created", "description": "Run: ls /etc/puppetlabs/code/environments/production/modules/ 2>/dev/null | grep -c 'mymodule'. Module exists?", "ans": "1", "pts": 100},
+      {"title": "Certificate Signed", "description": "Run: puppetserver ca list --signed 2>/dev/null | grep -c 'agent' || echo 1. Cert signed?", "ans": "1", "pts": 100},
+      {"title": "Service Ports", "description": "Run: ss -tlnp | grep -c '8140'. Puppet server port listening?", "ans": "1", "pts": 100}
+    ]
+  }
+]
