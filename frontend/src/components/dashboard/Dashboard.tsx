@@ -250,8 +250,8 @@ export default function Dashboard() {
           if (cancelled || !data) return;
           if (data.activeLabs) setActiveLabs(data.activeLabs);
           if (data.enrolledCourses) {
-            const mapped = data.enrolledCourses.map((e: { course?: { id?: string; title?: string; imageUrl?: string }; courseId?: string; id?: string; title?: string; progress?: number; imageUrl?: string }) => ({
-              id: e.course?.id || e.courseId || e.id,
+            const mapped: EnrolledCourse[] = data.enrolledCourses.map((e: { course?: { id?: string; title?: string; imageUrl?: string }; courseId?: string; id?: string; title?: string; progress?: number; imageUrl?: string }) => ({
+              id: e.course?.id || e.courseId || e.id || "",
               title: e.course?.title || e.title || "Untitled",
               progress: e.progress,
               imageUrl: e.course?.imageUrl || e.imageUrl || null,
