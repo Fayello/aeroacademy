@@ -64,6 +64,13 @@ async function main() {
         continue;
       }
 
+      // Skip if lab already exists
+      const existing = await prisma.$queryRaw`SELECT id FROM "Lab" WHERE title = ${lab.title} LIMIT 1`;
+      if (existing.length > 0) {
+        console.log(`    SKIP: "${lab.title}" already exists`);
+        continue;
+      }
+
       const labRow = await prisma.$queryRaw`
         INSERT INTO "Lab" (id, title, description, "dockerImage", briefing, tasks, difficulty, "estimatedMinutes", "resourceProfile")
         VALUES (
