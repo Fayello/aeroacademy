@@ -34,3 +34,10 @@ ad_noconfig.json
 ad_resource.json
 camlight_resource.json
 connector_full.json
+tests/screenshots/
+tests/uat-e2e/screenshots/
+tests/uat-e2e/screenshots-personas/
+tests/screenshots/output/
+tests/screenshots/uat-output/
+tests/screenshots/uat-ruthless/
+package-lock.json
