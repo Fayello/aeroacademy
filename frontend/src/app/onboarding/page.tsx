@@ -37,6 +37,8 @@ import {
   Lightbulb,
   Sparkles,
   Smartphone,
+  DollarSign,
+  Blocks,
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import {
@@ -295,8 +297,9 @@ export default function OnboardingPage() {
                   { id: "devops", label: "DevOps & Infrastructure", icon: Terminal, description: "CI/CD, containers, IaC, platform engineering" },
                   { id: "networking", label: "Networking & Systems", icon: Network, description: "Network engineering, sysadmin, infrastructure" },
                   { id: "web", label: "Web & Mobile Development", icon: Globe, description: "Frontend, backend, React, mobile apps" },
-                  { id: "design", label: "UX/UI Design", icon: Palette, description: "Product design, user research, prototyping" },
-                  { id: "other", label: "Other Technology Field", icon: Cpu, description: "Hardware, IoT, blockchain, or something else" },
+                  { id: "fintech", label: "Fintech & Financial Engineering", icon: DollarSign, description: "Algorithmic trading, payment systems, risk modeling" },
+                  { id: "blockchain", label: "Blockchain & Web3", icon: Blocks, description: "Smart contracts, DeFi, DApps, Solidity" },
+                  { id: "iot", label: "IoT & Edge Computing", icon: Cpu, description: "MQTT, edge computing, embedded systems, device management" },
                 ]}
                 selected={selections.field}
                 onToggle={(id) => toggleMulti("field", id)}
@@ -358,7 +361,9 @@ export default function OnboardingPage() {
                   { id: "networking", label: "Networking & Systems", icon: Network, description: "TCP/IP, Linux admin, system design" },
                   { id: "cybersecurity", label: "Security & Compliance", icon: Shield, description: "AppSec, cloud security, compliance frameworks" },
                   { id: "mobile", label: "Mobile Development", icon: Smartphone, description: "React Native, Flutter, iOS/Android" },
-                  { id: "design", label: "UX/UI Design", icon: Palette, description: "Figma, user research, design systems" },
+                  { id: "fintech", label: "Fintech & Financial Engineering", icon: DollarSign, description: "Trading bots, payment systems, risk models" },
+                  { id: "blockchain", label: "Blockchain & Web3", icon: Blocks, description: "Smart contracts, DeFi, DApps, Solidity" },
+                  { id: "iot", label: "IoT & Edge Computing", icon: Cpu, description: "MQTT, embedded Linux, device fleets" },
                 ]}
                 selected={selections.skills}
                 onToggle={(id) => toggleMulti("skills", id)}
