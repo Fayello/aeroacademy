@@ -5,7 +5,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy WireGuard site-to-site VPN — configure tunnel, routing, firewall rules, and verify connectivity.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: wireguard, iptables, ip route\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install WireGuard on both nodes\n2. Generate key pairs for both peers\n3. Configure wg0 interface on site A\n4. Configure wg0 interface on site B\n5. Set up iptables rules for forwarding\n6. Configure routing between subnets\n7. Start WireGuard tunnels\n8. Verify end-to-end connectivity\n\n### Verification\n- wg show shows connected peers\n- Ping across tunnel succeeds\n- Routing table includes tunnel routes",
     "tasks": ["Install WireGuard", "Generate keys site A", "Generate keys site B", "Configure site A", "Configure site B", "Set iptables", "Configure routing", "Verify connectivity"],
     "flags": [
@@ -25,7 +25,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy a full OpenVPN server with certificate-based authentication, configure client profiles, and verify secure tunnel connectivity.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: openvpn, easy-rsa, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install OpenVPN and Easy-RSA\n2. Initialize PKI directory\n3. Build CA certificate\n4. Generate server certificate and key\n5. Generate client certificate and key\n6. Create Diffie-Hellman parameters\n7. Configure OpenVPN server\n8. Generate client .ovpn profile\n\n### Verification\n- Server starts without errors\n- Client connects successfully\n- VPN tunnel passes traffic",
     "tasks": ["Install OpenVPN", "Init PKI", "Build CA", "Generate server cert", "Generate client cert", "Generate DH params", "Configure server", "Generate client profile"],
     "flags": [
@@ -45,7 +45,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 100,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy FreeRADIUS with 802.1X NAC capabilities, configure client authentication, and validate EAP-based network access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: freeradius, eapol_test, radclient\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install FreeRADIUS\n2. Configure clients.conf for NAS devices\n3. Add test user to users file\n4. Configure EAP-TLS or PEAP\n5. Generate server certificates\n6. Start FreeRADIUS in debug mode\n7. Test authentication with radclient\n8. Validate 802.1X EAP exchange\n\n### Verification\n- FreeRADIUS starts without errors\n- Test user authenticates via RADIUS\n- EAP handshake completes",
     "tasks": ["Install FreeRADIUS", "Configure clients", "Add test user", "Configure EAP", "Generate certs", "Start debug mode", "Test with radclient", "Validate EAP"],
     "flags": [
@@ -65,7 +65,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 80,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy ISC DHCP server with subnet declarations, static reservations, and failover pair configuration for HA.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: isc-dhcp-server, dhcpfailover\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install ISC DHCP server\n2. Configure dhcpd.conf with subnets\n3. Set up address pool ranges\n4. Create static host reservations\n5. Configure failover pair\n6. Set lease database parameters\n7. Start and test DHCP service\n8. Verify lease assignments\n\n### Verification\n- DHCP service starts without errors\n- Subnets are properly declared\n- Leases are assigned to clients",
     "tasks": ["Install DHCP", "Configure subnets", "Set address pools", "Add reservations", "Configure failover", "Set lease params", "Start service", "Verify leases"],
     "flags": [
@@ -85,7 +85,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 70,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy BIND9 as an authoritative DNS server, configure forward and reverse zones, and enable DNSSEC signing.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: bind9, dig, dnssec-keygen\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install BIND9\n2. Configure named.conf.options\n3. Create forward zone file\n4. Create reverse zone file\n5. Add A, AAAA, MX, and CNAME records\n6. Configure zone transfers\n7. Enable DNSSEC signing\n8. Test with dig queries\n\n### Verification\n- BIND9 starts without errors\n- Zone files load correctly\n- DNS queries return correct records",
     "tasks": ["Install BIND9", "Configure options", "Create forward zone", "Create reverse zone", "Add DNS records", "Configure transfers", "Enable DNSSEC", "Test with dig"],
     "flags": [
@@ -105,7 +105,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 75,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy Unbound as a recursive resolver, configure DNSSEC validation, set up forward zones, and verify encrypted DNS resolution.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: unbound, unbound-anchor, dig\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Unbound\n2. Configure unbound.conf\n3. Set up root hints\n4. Enable DNSSEC validation\n5. Configure access control\n6. Set up cache and performance tuning\n7. Start Unbound service\n8. Test recursive resolution\n\n### Verification\n- Unbound starts without errors\n- DNSSEC validation works\n- Recursive queries resolve correctly",
     "tasks": ["Install Unbound", "Configure unbound.conf", "Set root hints", "Enable DNSSEC", "Configure ACL", "Tune performance", "Start service", "Test resolution"],
     "flags": [
@@ -125,7 +125,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 90,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nSimulate a pfSense-like firewall environment using iptables and pf-like rule syntax, configure NAT, VLANs, and traffic filtering.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: iptables, vlan, bridge-utils\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install firewall prerequisites\n2. Create VLAN interfaces\n3. Configure bridge for VLANs\n4. Set up NAT rules (MASQUERADE)\n5. Configure INPUT/OUTPUT/FORWARD chains\n6. Add port forwarding rules\n7. Create firewall rule sets\n8. Test rule enforcement\n\n### Verification\n- VLANs are created and tagged\n- NAT is working for outbound\n- Firewall rules block/allow as expected",
     "tasks": ["Install prerequisites", "Create VLANs", "Configure bridge", "Set NAT rules", "Configure chains", "Add port forwarding", "Create rule sets", "Test enforcement"],
     "flags": [
@@ -145,7 +145,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 90,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nSimulate VyOS router configuration using Linux networking tools, configure interfaces, routing protocols, and firewall policies.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ip route, ip link, iptables, frrouting\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Configure multiple network interfaces\n2. Assign IP addresses to interfaces\n3. Add static routes\n4. Enable IP forwarding\n5. Configure OSPF with FRRouting\n6. Set up firewall policies\n7. Add NAT for outbound traffic\n8. Verify routing tables\n\n### Verification\n- Interfaces are configured with IPs\n- Static and dynamic routes are present\n- Firewall policies are enforced",
     "tasks": ["Configure interfaces", "Assign IPs", "Add static routes", "Enable forwarding", "Configure OSPF", "Set firewall policies", "Add NAT", "Verify routing"],
     "flags": [
@@ -165,7 +165,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 85,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy NetBox with PostgreSQL, configure IPAM modules, add devices and sites, and validate the web interface.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: netbox, postgresql, python\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL and create database\n2. Install NetBox and dependencies\n3. Configure settings.py\n4. Run database migrations\n5. Create superuser account\n6. Add sites and device types\n7. Configure IP prefixes and addresses\n8. Verify web interface access\n\n### Verification\n- NetBox web interface is accessible\n- Sites and devices are created\n- IPAM data is properly stored",
     "tasks": ["Install PostgreSQL", "Install NetBox", "Configure settings", "Run migrations", "Create superuser", "Add sites/devices", "Configure IPAM", "Verify web UI"],
     "flags": [
@@ -185,7 +185,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "NETWORKING",
+    "skillName": "netadmin",
     "briefing": "### Mission Objective\nDeploy phpIPAM with MySQL, configure IP subnets, VLANs, and device tracking for network management.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: phpipam, mysql, php\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL and create database\n2. Install phpIPAM and PHP dependencies\n3. Configure database connection\n4. Run installation script\n5. Set up admin account\n6. Add VLAN definitions\n7. Create IP subnets and addresses\n8. Verify web interface\n\n### Verification\n- phpIPAM web interface is accessible\n- Subnets are properly configured\n- VLAN tracking works correctly",
     "tasks": ["Install MySQL", "Install phpIPAM", "Configure DB connection", "Run installer", "Create admin", "Add VLANs", "Create subnets", "Verify web UI"],
     "flags": [
@@ -205,7 +205,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 70,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Postfix as a fully-functional SMTP server with TLS encryption, relay configuration, and mailbox delivery.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postfix, mailutils, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Postfix and mailutils\n2. Configure main.cf for SMTP\n3. Enable TLS with certificates\n4. Set up relay host configuration\n5. Configure mailbox delivery\n6. Set hostname and domain\n7. Start Postfix service\n8. Test sending email\n\n### Verification\n- Postfix starts without errors\n- TLS is enabled on port 587\n- Email can be sent and received",
     "tasks": ["Install Postfix", "Configure main.cf", "Enable TLS", "Set relay host", "Configure mailbox", "Set hostname", "Start service", "Test email"],
     "flags": [
@@ -225,7 +225,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Dovecot as an IMAP/POP3 mail retrieval server with SSL/TLS, mailbox format, and authentication.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: dovecot, openssl, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Dovecot\n2. Configure protocols (IMAP, POP3)\n3. Set up SSL/TLS certificates\n4. Configure mail_location (Maildir)\n5. Set authentication mechanisms\n6. Configure passdb and userdb\n7. Start Dovecot service\n8. Test IMAP connection\n\n### Verification\n- Dovecot starts without errors\n- IMAP and POP3 ports are listening\n- SSL/TLS connections work",
     "tasks": ["Install Dovecot", "Configure protocols", "Set up SSL", "Configure mail_location", "Set auth mechanisms", "Configure passdb/userdb", "Start service", "Test IMAP"],
     "flags": [
@@ -245,7 +245,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 85,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Rspamd for anti-spam filtering, configure DKIM signing, set up rules, and validate spam detection.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: rspamd, opendkim, redis\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Rspamd and dependencies\n2. Configure Redis backend\n3. Set up DKIM keys and signing\n4. Configure rspamd.local.php\n5. Add custom spam rules\n6. Set up greylisting\n7. Start Rspamd service\n8. Test spam detection\n\n### Verification\n- Rspamd web interface accessible\n- DKIM signing works\n- Spam detection is functional",
     "tasks": ["Install Rspamd", "Configure Redis", "Set up DKIM", "Configure rspamd.local.php", "Add custom rules", "Set greylisting", "Start service", "Test spam detection"],
     "flags": [
@@ -265,7 +265,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 110,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy and integrate Postfix (SMTP), Dovecot (IMAP), and Rspamd (anti-spam) into a complete mail stack.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postfix, dovecot, rspamd, redis\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install all mail components\n2. Configure Postfix for SMTP + submission\n3. Configure Dovecot for IMAP + LDA\n4. Configure Rspamd milter integration\n5. Set up virtual mailbox domains\n6. Configure SASL authentication\n7. Test full mail flow\n8. Verify spam filtering works\n\n### Verification\n- All three services running\n- Full send/receive cycle works\n- Spam is filtered correctly",
     "tasks": ["Install components", "Configure Postfix", "Configure Dovecot", "Configure Rspamd milter", "Set virtual domains", "Configure SASL", "Test mail flow", "Verify spam filtering"],
     "flags": [
@@ -285,7 +285,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 800,
     "estimatedMinutes": 60,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Mailpile as a privacy-focused local mail client with web UI, PGP encryption, and search capabilities.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mailpile, python, gnupg\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Mailpile dependencies\n2. Download and configure Mailpile\n3. Set up local mail profile\n4. Configure IMAP account\n5. Enable PGP encryption\n6. Set up web interface\n7. Configure search indexing\n8. Test email retrieval\n\n### Verification\n- Mailpile web interface accessible\n- Mail account is configured\n- Email search works correctly",
     "tasks": ["Install dependencies", "Download Mailpile", "Set up profile", "Configure IMAP", "Enable PGP", "Set up web UI", "Configure search", "Test retrieval"],
     "flags": [
@@ -305,7 +305,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 70,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Restic backup solution with S3 backend, configure encryption, snapshots, and retention policies.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: restic, minio (S3-compatible)\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Restic\n2. Set up MinIO S3-compatible storage\n3. Initialize Restic repository\n4. Create initial backup snapshot\n5. Configure environment variables\n6. Set up retention policy\n7. Create backup script\n8. Verify restore capability\n\n### Verification\n- Restic repository initialized\n- Backups are created successfully\n- Restore operation works",
     "tasks": ["Install Restic", "Set up MinIO", "Init repository", "Create snapshot", "Configure env vars", "Set retention", "Create backup script", "Verify restore"],
     "flags": [
@@ -325,7 +325,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 70,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy BorgBackup with AES-256 encryption, configure deduplication, compression, and automated backup schedules.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: borgbackup, cron\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install BorgBackup\n2. Initialize encrypted repository\n3. Configure passphrase encryption\n4. Create initial backup archive\n5. Set up compression (lz4)\n6. Configure retention policy\n7. Add cron job for automation\n8. Verify archive integrity\n\n### Verification\n- Borg repository is initialized\n- Archives are created with encryption\n- Deduplication is working",
     "tasks": ["Install BorgBackup", "Init repository", "Configure passphrase", "Create archive", "Set compression", "Configure retention", "Add cron job", "Verify integrity"],
     "flags": [
@@ -345,7 +345,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 95,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Velero for Kubernetes backup with S3 storage, configure backup schedules, and test restore operations.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: velero, kubectl, minio\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Velero CLI\n2. Set up MinIO S3 backend\n3. Configure Velero credentials\n4. Install Velero server\n5. Create backup schedule\n6. Take on-demand backup\n7. Test restore operation\n8. Verify backup integrity\n\n### Verification\n- Velero server is running\n- Backups are created successfully\n- Restore operation works",
     "tasks": ["Install Velero CLI", "Set up MinIO", "Configure credentials", "Install Velero server", "Create backup schedule", "Take backup", "Test restore", "Verify integrity"],
     "flags": [
@@ -365,7 +365,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 900,
     "estimatedMinutes": 65,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Duplicati as a web-based backup solution with encryption, scheduling, and web management interface.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: duplicati, mono, cron\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Duplicati and Mono\n2. Configure Duplicati service\n3. Set up web interface on port 8200\n4. Configure backup destination\n5. Enable AES-256 encryption\n6. Set up backup schedule\n7. Create initial backup job\n8. Verify backup and restore\n\n### Verification\n- Duplicati web interface accessible\n- Backups run on schedule\n- Encryption is enabled",
     "tasks": ["Install Duplicati", "Configure service", "Set up web UI", "Configure destination", "Enable encryption", "Set schedule", "Create backup job", "Verify backup/restore"],
     "flags": [
@@ -385,7 +385,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 800,
     "estimatedMinutes": 55,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy automated incremental backups using rsync with cron scheduling, log rotation, and verification.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: rsync, cron, logrotate\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Create source and destination directories\n2. Configure rsync with incremental sync\n3. Set up rsync daemon (optional)\n4. Create backup script\n5. Add cron job for scheduling\n6. Configure log rotation\n7. Add email notifications\n8. Test backup and verify\n\n### Verification\n- Cron job is scheduled\n- Rsync syncs correctly\n- Logs are rotated properly",
     "tasks": ["Create directories", "Configure rsync", "Set up daemon", "Create backup script", "Add cron job", "Configure logrotate", "Add notifications", "Test backup"],
     "flags": [
@@ -405,7 +405,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Ansible for automated server provisioning, create playbooks for package installation, user management, and service configuration.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ansible, ssh, python\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Ansible\n2. Create inventory file\n3. Write provisioning playbook\n4. Add package installation tasks\n5. Create user management tasks\n6. Configure service handlers\n7. Test playbook locally\n8. Verify all configurations applied\n\n### Verification\n- Ansible is installed and configured\n- Playbook runs without errors\n- All tasks complete successfully",
     "tasks": ["Install Ansible", "Create inventory", "Write playbook", "Add package tasks", "Create user tasks", "Configure handlers", "Test playbook", "Verify configs"],
     "flags": [
@@ -425,7 +425,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 80,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nCreate an Ansible role for server hardening following CIS benchmarks, including SSH, firewall, and kernel parameters.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ansible, ssh, sysctl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Create Ansible role directory structure\n2. Write SSH hardening tasks\n3. Configure firewall rules\n4. Set kernel security parameters\n5. Add user authentication policies\n6. Create audit logging tasks\n7. Add role to playbook\n8. Test and verify hardening\n\n### Verification\n- Role directory structure is correct\n- SSH is hardened (no root login)\n- Kernel parameters are secure",
     "tasks": ["Create role structure", "Write SSH tasks", "Configure firewall", "Set kernel params", "Add auth policies", "Create audit tasks", "Add to playbook", "Test hardening"],
     "flags": [
@@ -445,7 +445,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 110,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy infrastructure with Terraform and configure with Ansible, integrating both tools for complete IaC workflow.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: terraform, ansible, local provider\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Terraform and Ansible\n2. Create Terraform local provider config\n3. Write infrastructure-as-code resources\n4. Create Ansible playbooks\n5. Configure Terraform provisioner\n6. Run terraform init and apply\n7. Verify Ansible execution\n8. Test destroy workflow\n\n### Verification\n- Terraform plan succeeds\n- Infrastructure is provisioned\n- Ansible configures provisioned resources",
     "tasks": ["Install tools", "Create Terraform config", "Write resources", "Create Ansible playbooks", "Configure provisioner", "Run terraform apply", "Verify Ansible", "Test destroy"],
     "flags": [
@@ -465,7 +465,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 85,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Packer for automated image building, configure builders, provisioners, and post-processors for golden images.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: packer, shell, ansible\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Packer\n2. Create HCL2 template\n3. Configure builder (docker)\n4. Add shell provisioner scripts\n5. Configure Ansible provisioner\n6. Set up post-processors\n7. Validate template\n8. Build golden image\n\n### Verification\n- Packer template is valid\n- Image builds successfully\n- Built image contains all software",
     "tasks": ["Install Packer", "Create template", "Configure builder", "Add provisioners", "Configure Ansible provisioner", "Set post-processors", "Validate template", "Build image"],
     "flags": [
@@ -485,7 +485,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Vagrant multi-node environment with private networking, provisioners, and synced folders.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: vagrant, virtualbox (simulated)\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Vagrant\n2. Create Vagrantfile\n3. Configure multi-node setup\n4. Set up private networking\n5. Configure synced folders\n6. Add shell provisioners\n7. Bring up environment\n8. Verify all nodes running\n\n### Verification\n- Vagrantfile is valid\n- All nodes start successfully\n- Network between nodes works",
     "tasks": ["Install Vagrant", "Create Vagrantfile", "Configure multi-node", "Set up networking", "Configure synced folders", "Add provisioners", "Bring up environment", "Verify nodes"],
     "flags": [
@@ -505,7 +505,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 95,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Ansible AWX as a web UI for Ansible automation, configure projects, job templates, and credentials.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: awx, docker, postgresql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Docker and dependencies\n2. Deploy AWX with docker-compose\n3. Configure PostgreSQL backend\n4. Access AWX web interface\n5. Create organization and project\n6. Add inventory and credentials\n7. Create job template\n8. Execute and verify job\n\n### Verification\n- AWX web interface is accessible\n- Project syncs successfully\n- Job template runs without errors",
     "tasks": ["Install Docker", "Deploy AWX", "Configure PostgreSQL", "Access web UI", "Create org/project", "Add inventory/creds", "Create job template", "Execute job"],
     "flags": [
@@ -525,7 +525,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Semaphore as a lightweight Ansible UI with task scheduling, environment management, and API access.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: semaphore, ansible, mysql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL and create database\n2. Install Semaphore binary\n3. Configure database connection\n4. Run setup wizard\n5. Add Ansible repository\n6. Create environment and inventory\n7. Add task template\n8. Execute and verify task\n\n### Verification\n- Semaphore web UI accessible\n- Repository is synced\n- Task runs successfully",
     "tasks": ["Install MySQL", "Install Semaphore", "Configure DB", "Run setup", "Add repository", "Create environment", "Add template", "Execute task"],
     "flags": [
@@ -545,7 +545,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy SaltStack with master/minion architecture, create states, and manage configurations remotely.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: salt-master, salt-minion, salt-call\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Salt master and minion\n2. Configure master\n3. Configure minion\n4. Accept minion key\n5. Create SLS state files\n6. Apply highstate\n7. Test remote execution\n8. Verify configuration applied\n\n### Verification\n- Salt master is running\n- Minion connects to master\n- States apply successfully",
     "tasks": ["Install Salt master/minion", "Configure master", "Configure minion", "Accept key", "Create SLS states", "Apply highstate", "Test remote execution", "Verify configs"],
     "flags": [
@@ -565,7 +565,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 100,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Chef Infra Server with client, configure cookbooks, recipes, and nodes for infrastructure management.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: chef-server, chef-client, knife\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Chef Server\n2. Configure Chef Server\n3. Create organization\n4. Generate client key\n5. Install Chef Workstation\n6. Create cookbook\n7. Bootstrap node\n8. Run chef-client\n\n### Verification\n- Chef Server is running\n- Client connects to server\n- Cookbook applies successfully",
     "tasks": ["Install Chef Server", "Configure server", "Create org", "Generate client key", "Install workstation", "Create cookbook", "Bootstrap node", "Run chef-client"],
     "flags": [
@@ -585,7 +585,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 100,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Puppet server with agent, create manifests, and manage node configurations declaratively.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: puppet-server, puppet-agent, facter\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Puppet server\n2. Configure Puppet server\n3. Generate SSL certificates\n4. Install Puppet agent\n5. Configure agent\n6. Sign agent certificate\n7. Create manifest\n8. Apply catalog\n\n### Verification\n- Puppet server is running\n- Agent connects and gets catalog\n- Manifest applies successfully",
     "tasks": ["Install Puppet server", "Configure server", "Generate SSL", "Install agent", "Configure agent", "Sign certificate", "Create manifest", "Apply catalog"],
     "flags": [

@@ -205,7 +205,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Prometheus for time-series metrics collection and Grafana for dashboard visualization. Configure scrape targets and build a working monitoring dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: prometheus, grafana-server, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Prometheus and configure scrape targets\n2. Start Prometheus on port 9090\n3. Install Grafana and configure data source\n4. Start Grafana on port 3000\n5. Add Prometheus as a Grafana data source\n6. Create a dashboard with CPU and memory panels\n7. Configure node_exporter for system metrics\n8. Verify dashboards show live data\n\n### Permissions & Access\n- Container runs as root\n- Prometheus on port 9090, Grafana on port 3000\n- Grafana login: admin / admin\n- Verification via curl and systemctl",
     "tasks": ["Install Prometheus", "Configure scrape targets", "Start Prometheus", "Install Grafana", "Configure data source", "Create dashboard", "Configure node_exporter", "Verify live data"],
     "flags": [
@@ -225,7 +225,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Zabbix server with a PostgreSQL backend and Zabbix agent for infrastructure monitoring. Configure hosts, templates, and alerting.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: zabbix-server, zabbix-agent, postgresql, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL and create Zabbix database\n2. Install Zabbix server and configure database connection\n3. Start Zabbix server on port 10051\n4. Install Zabbix agent and configure ServerActive\n5. Start Zabbix agent on port 10050\n6. Install Zabbix web frontend on port 8081\n7. Configure host monitoring in Zabbix\n8. Verify agent is reporting to server\n\n### Permissions & Access\n- Container runs as root\n- Zabbix server on port 10051, agent on port 10050\n- Web UI on port 8081 (Admin / zabbix)\n- Verification via curl, zabbix_server, and zabbix_agentd",
     "tasks": ["Install PostgreSQL", "Create Zabbix database", "Install Zabbix server", "Configure DB connection", "Install Zabbix agent", "Start services", "Install web frontend", "Verify agent reporting"],
     "flags": [
@@ -245,7 +245,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Nagios Core — the industry-standard monitoring tool — with plugins, configure hosts and services, and verify monitoring is active.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nagios, nagios-plugins, apache2, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Nagios Core and dependencies\n2. Configure Apache2 for Nagios web interface\n3. Install Nagios plugins package\n4. Configure localhost monitoring\n5. Add custom service checks (HTTP, SSH, disk)\n6. Start Nagios and Apache services\n7. Verify Nagios web UI shows hosts as UP\n8. Configure notification contacts\n\n### Permissions & Access\n- Container runs as root\n- Nagios web UI on port 8086 (nagiosadmin / ItLab2025!)\n- Nagios config in /usr/local/nagios/etc/\n- Verification via curl, systemctl, and nagios commands",
     "tasks": ["Install Nagios Core", "Configure Apache2", "Install plugins", "Configure localhost", "Add service checks", "Start services", "Verify web UI", "Configure notifications"],
     "flags": [
@@ -265,7 +265,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 100,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy LibreNMS — a powerful auto-discovery network monitoring system — with MySQL, SNMP, and verify it discovers and monitors devices.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: librenms, mysql, snmpd, nginx, php-fpm\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL and create LibreNMS database\n2. Install PHP-FPM and required extensions\n3. Install and configure LibreNMS\n4. Configure SNMP daemon\n5. Set up Nginx for web interface\n6. Run LibreNMS discovery\n7. Add a device for monitoring\n8. Verify dashboards show device data\n\n### Permissions & Access\n- Container runs as root\n- LibreNMS web on port 8087\n- MySQL: librenms / librenms\n- Verification via curl, lnms, and MySQL queries",
     "tasks": ["Install MySQL", "Create database", "Install PHP-FPM", "Install LibreNMS", "Configure SNMP", "Set up Nginx", "Run discovery", "Verify dashboards"],
     "flags": [
@@ -285,7 +285,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 120,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy the ELK stack — Elasticsearch for storage, Logstash for processing, Kibana for visualization. Ingest logs and build a working dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: elasticsearch, logstash, kibana, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Java JDK 17 (required for ELK)\n2. Install and configure Elasticsearch on port 9200\n3. Install and configure Logstash with an input pipeline\n4. Install and configure Kibana on port 5601\n5. Create a Logstash pipeline to ingest syslog\n6. Ingest sample log data into Elasticsearch\n7. Create a Kibana index pattern\n8. Build a dashboard showing log analysis\n\n### Permissions & Access\n- Container runs as root\n- Elasticsearch on port 9200, Kibana on port 5601\n- Logstash pipeline in /etc/logstash/conf.d/\n- Verification via curl and systemctl",
     "tasks": ["Install Java JDK", "Install Elasticsearch", "Configure Elasticsearch", "Install Logstash", "Configure Logstash pipeline", "Install Kibana", "Ingest sample logs", "Build dashboard"],
     "flags": [
@@ -305,7 +305,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Grafana Loki for log aggregation — lightweight, index-free logging. Ship logs with Promtail and query them in Grafana.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: loki, promtail, grafana, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Grafana Loki binary\n2. Configure Loki with a local storage backend\n3. Start Loki on port 3100\n4. Install Promtail and configure log targets\n5. Start Promtail to ship system logs\n6. Install Grafana and configure Loki data source\n7. Create a Grafana dashboard for log exploration\n8. Query logs and verify data flows correctly\n\n### Permissions & Access\n- Container runs as root\n- Loki on port 3100, Grafana on port 3000\n- Loki config in /etc/loki/\n- Verification via curl, systemctl, and Grafana API",
     "tasks": ["Install Loki", "Configure Loki", "Start Loki", "Install Promtail", "Configure log targets", "Start Promtail", "Install Grafana", "Query logs in Grafana"],
     "flags": [
@@ -325,7 +325,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Jaeger — Uber's distributed tracing system — to capture, visualize, and analyze traces from a microservices application.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: jaeger, elasticsearch, curl, python\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch as Jaeger storage backend\n2. Install Jaeger all-in-one binary\n3. Start Jaeger on port 16686 (UI) and 6831 (agent)\n4. Install a sample Python application with instrumentation\n5. Configure the app to send traces to Jaeger\n6. Generate traffic to create traces\n7. Verify traces appear in Jaeger UI\n8. Configure sampling rate\n\n### Permissions & Access\n- Container runs as root\n- Jaeger UI on port 16686, Collector on port 14268\n- Sample app on port 8088\n- Verification via curl and Jaeger API",
     "tasks": ["Install Elasticsearch", "Install Jaeger", "Start Jaeger", "Install sample app", "Configure instrumentation", "Generate traffic", "Verify traces", "Configure sampling"],
     "flags": [
@@ -345,7 +345,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy OpenTelemetry Collector (OTel Collector) — the CNCF standard for telemetry collection. Configure receivers, processors, and exporters.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: otel-collector, curl, prometheus\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install OpenTelemetry Collector binary\n2. Create a collector config with receivers, processors, exporters\n3. Configure OTLP receiver for traces and metrics\n4. Configure Prometheus exporter\n5. Start the collector on port 4317 (gRPC) and 4318 (HTTP)\n6. Send test telemetry data to the collector\n7. Verify data flows to Prometheus\n8. Configure batch processor for efficiency\n\n### Permissions & Access\n- Container runs as root\n- OTel Collector on ports 4317, 4318, 8888\n- Config in /etc/otel/\n- Verification via curl and systemctl",
     "tasks": ["Install OTel Collector", "Create config", "Configure OTLP receiver", "Configure Prometheus exporter", "Start collector", "Send test data", "Verify Prometheus", "Configure batch processor"],
     "flags": [
@@ -365,7 +365,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 100,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Graylog — an open-source log management platform — with MongoDB, Elasticsearch, input streams, and alert notifications.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: graylog, mongodb, elasticsearch, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install and start MongoDB on port 27017\n2. Install and start Elasticsearch on port 9200\n3. Install Graylog server and configure\n4. Set Graylog admin password hash\n5. Start Graylog on port 9000\n6. Create a GELF input for log ingestion\n7. Ingest sample logs via GELF HTTP\n8. Create an alert rule for error logs\n\n### Permissions & Access\n- Container runs as root\n- Graylog web on port 9000 (admin / ItLab2025!)\n- MongoDB on port 27017, ES on port 9200\n- Verification via curl, systemctl, and Graylog API",
     "tasks": ["Install MongoDB", "Install Elasticsearch", "Install Graylog", "Configure admin password", "Start Graylog", "Create GELF input", "Ingest sample logs", "Create alert rule"],
     "flags": [
@@ -385,7 +385,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 800,
     "estimatedMinutes": 45,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Uptime Kuma — a modern, self-hosted uptime monitoring tool — and configure monitors for websites and services.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: uptime-kuma, nodejs, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Node.js and npm\n2. Clone Uptime Kuma repository\n3. Install dependencies with npm install\n4. Start Uptime Kuma on port 3001\n5. Create admin account\n6. Add an HTTP monitor for a sample website\n7. Add a TCP port monitor\n8. Verify monitors show UP status\n\n### Permissions & Access\n- Container runs as root\n- Uptime Kuma on port 3001\n- Admin created on first visit\n- Verification via curl and systemctl",
     "tasks": ["Install Node.js", "Clone Uptime Kuma", "Install dependencies", "Start Uptime Kuma", "Create admin account", "Add HTTP monitor", "Add TCP monitor", "Verify monitors"],
     "flags": [
@@ -405,7 +405,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 120,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Wazuh — an open-source SIEM and XDR platform — with manager, indexer, dashboard, and an agent reporting security events.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: wazuh-manager, wazuh-indexer, wazuh-dashboard, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Wazuh indexer and configure cluster\n2. Start Wazuh indexer on port 9200\n3. Install Wazuh manager and configure\n4. Start Wazuh manager on port 1514 (UDP) and 1515 (TCP)\n5. Install Wazuh dashboard on port 443\n6. Install Wazuh agent locally\n7. Register and connect agent to manager\n8. Verify agent appears as active in dashboard\n\n### Permissions & Access\n- Container runs as root\n- Dashboard on port 443 (admin / SecretPassword)\n- Manager on ports 1514, 1515, 55000\n- Verification via curl, systemctl, and Wazuh API",
     "tasks": ["Install Wazuh indexer", "Configure indexer cluster", "Install Wazuh manager", "Start manager", "Install Wazuh dashboard", "Install agent", "Register agent", "Verify agent active"],
     "flags": [
@@ -425,7 +425,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Suricata — a high-performance IDS/IPS — with custom detection rules, integration with packet capture, and alert analysis.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: suricata, suricata-update, curl, tcpdump\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Suricata and dependencies\n2. Configure Suricata for eth0 network interface\n3. Update rules with suricata-update\n4. Add custom detection rules\n5. Start Suricata in IDS mode\n6. Generate test traffic to trigger alerts\n7. Analyze alerts in eve.json\n8. Verify Suricata captures packets correctly\n\n### Permissions & Access\n- Container runs as root\n- Suricata runs in IDS mode on eth0\n- Config in /etc/suricata/\n- Alerts in /var/log/suricata/eve.json\n- Verification via systemctl and suricatasc",
     "tasks": ["Install Suricata", "Configure network interface", "Update rules", "Add custom rules", "Start Suricata", "Generate test traffic", "Analyze alerts", "Verify packet capture"],
     "flags": [
@@ -445,7 +445,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy CrowdSec — a modern, collaborative security engine — that analyzes logs and applies bouncer remediation to block malicious IPs.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: crowdsec, crowdsec-firewall-bouncer, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install CrowdSec security engine\n2. Configure CrowdSec to parse syslog and auth logs\n3. Start CrowdSec and enroll with community\n4. Install firewall bouncer (iptables)\n5. Configure bouncer to enforce decisions\n6. Generate brute-force login attempts\n7. Verify CrowdSec detects and bans the IP\n8. Check banned IPs in bouncer status\n\n### Permissions & Access\n- Container runs as root\n- CrowdSec on port 6060 (API)\n- Bouncer integrates with iptables\n- Verification via systemctl, cscli, and iptables",
     "tasks": ["Install CrowdSec", "Configure parsers", "Start CrowdSec", "Install firewall bouncer", "Configure bouncer", "Generate brute-force", "Verify ban", "Check bouncer status"],
     "flags": [
@@ -465,7 +465,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy OSSEC — a comprehensive host-based intrusion detection system — with log monitoring, file integrity checking, and active response.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ossec, ossec-control, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Download and install OSSEC HIDS\n2. Run the OSSEC installer script\n3. Configure ossec.conf for syscheck and rootcheck\n4. Configure log monitoring for /var/log/auth.log\n5. Enable active response\n6. Start OSSEC with ossec-control start\n7. Generate security events (failed logins)\n8. Verify alerts in /var/ossec/logs/alerts.log\n\n### Permissions & Access\n- Container runs as root\n- OSSEC installed in /var/ossec/\n- Config in /var/ossec/etc/ossec.conf\n- Alerts in /var/ossec/logs/alerts.log\n- Verification via ossec-control and grep",
     "tasks": ["Download OSSEC", "Run installer", "Configure syscheck", "Configure log monitoring", "Enable active response", "Start OSSEC", "Generate events", "Verify alerts"],
     "flags": [
@@ -485,7 +485,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 900,
     "estimatedMinutes": 60,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Fail2ban — an intrusion prevention framework — with custom jails for SSH, nginx, and application-specific protection.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: fail2ban, iptables, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Fail2ban\n2. Configure jail.local with custom settings\n3. Create a custom jail for SSH brute-force\n4. Create a custom filter for nginx auth failures\n5. Create an action to ban IPs via iptables\n6. Start Fail2ban service\n7. Generate failed login attempts to trigger bans\n8. Verify banned IPs appear in fail2ban-client status\n\n### Permissions & Access\n- Container runs as root\n- Fail2ban config in /etc/fail2ban/\n- Logs in /var/log/fail2ban.log\n- Verification via fail2ban-client and iptables",
     "tasks": ["Install Fail2ban", "Configure jail.local", "Create SSH jail", "Create nginx filter", "Create iptables action", "Start Fail2ban", "Generate failed logins", "Verify bans"],
     "flags": [
@@ -505,7 +505,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1400,
     "estimatedMinutes": 150,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Security Onion — a Linux distribution for intrusion detection, network security monitoring, and log management — with full stack components.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: securityonion, suricata, zeek, elasticsearch, kibana\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Security Onion dependencies\n2. Configure networking for monitoring interface\n3. Install Elasticsearch, Logstash, Kibana\n4. Install Suricata for IDS\n5. Install Zeek for network analysis\n6. Configure Security Onion setup\n7. Run so-setup to initialize\n8. Verify all services are running and capturing\n\n### Permissions & Access\n- Container runs as root\n- Kibana on port 5601, Elasticsearch on port 9200\n- Suricata monitoring eth0\n- Verification via systemctl, curl, and so-status",
     "tasks": ["Install dependencies", "Configure networking", "Install ELK stack", "Install Suricata", "Install Zeek", "Configure Security Onion", "Run setup", "Verify all services"],
     "flags": [
@@ -525,7 +525,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 120,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Arkime — a large-scale, open-source packet capture and search system — with Elasticsearch backend and viewer interface.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: arkime, elasticsearch, curl, tcpdump\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch for Arkime storage\n2. Download and install Arkime\n3. Configure Arkime with Elasticsearch connection\n4. Initialize Arkime database with esinitial.sh\n5. Configure capture interface (eth0)\n6. Start Arkime capture and viewer\n7. Capture test traffic\n8. Verify packets appear in Arkime viewer\n\n### Permissions & Access\n- Container runs as root\n- Arkime viewer on port 8005\n- Elasticsearch on port 9200\n- Config in /opt/arkime/etc/\n- Verification via systemctl, curl, and Arkime viewer",
     "tasks": ["Install Elasticsearch", "Download Arkime", "Install Arkime", "Configure connection", "Initialize database", "Configure capture", "Start services", "Verify packet capture"],
     "flags": [
@@ -545,7 +545,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 100,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy TheHive — a scalable, open-source Security Incident Response Platform — with Elasticsearch, Cortex integration, and case templates.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: thehive, elasticsearch, cortex, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch for TheHive storage\n2. Install TheHive application\n3. Configure TheHive with Elasticsearch backend\n4. Start TheHive on port 9000\n5. Create admin user and organization\n6. Configure case templates\n7. Create a test incident case\n8. Verify case appears in TheHive UI\n\n### Permissions & Access\n- Container runs as root\n- TheHive on port 9000 (admin@thehive.local / secret)\n- Elasticsearch on port 9200\n- Verification via curl, systemctl, and TheHive API",
     "tasks": ["Install Elasticsearch", "Install TheHive", "Configure backend", "Start TheHive", "Create admin user", "Configure templates", "Create test case", "Verify case in UI"],
     "flags": [
@@ -565,7 +565,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Cortex — TheHive Project's observable analysis and active response engine — with analyzers, responders, and job management.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: cortex, elasticsearch, docker, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch for Cortex storage\n2. Install Cortex application\n3. Configure Cortex with Elasticsearch backend\n4. Start Cortex on port 9001\n5. Create organization and user\n6. Enable and configure analyzers\n7. Run an analysis job on a test observable\n8. Verify analysis results appear in Cortex\n\n### Permissions & Access\n- Container runs as root\n- Cortex on port 9001 (admin@localhost / ItLab2025!)\n- Elasticsearch on port 9200\n- Verification via curl, systemctl, and Cortex API",
     "tasks": ["Install Elasticsearch", "Install Cortex", "Configure backend", "Start Cortex", "Create organization", "Enable analyzers", "Run analysis job", "Verify results"],
     "flags": [
@@ -585,7 +585,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 100,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Shuffle — a Security Orchestration, Automation, and Response (SOAR) platform — with workflows, apps, and automated playbooks.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: shuffle, docker, elasticsearch, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Docker and Docker Compose\n2. Clone Shuffle repository\n3. Configure Shuffle with Elasticsearch backend\n4. Start Shuffle with docker-compose\n5. Access Shuffle UI on port 3001\n6. Create admin account\n7. Build a sample workflow with triggers and actions\n8. Execute the workflow and verify results\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Shuffle UI on port 3001\n- Elasticsearch on port 9200\n- Verification via curl, docker, and Shuffle API",
     "tasks": ["Install Docker", "Clone Shuffle", "Configure Elasticsearch", "Start with docker-compose", "Access UI", "Create admin", "Build workflow", "Execute and verify"],
     "flags": [

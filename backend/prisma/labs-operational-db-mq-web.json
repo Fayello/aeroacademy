@@ -5,7 +5,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 90,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy PostgreSQL with streaming replication — primary, replica, Patroni for failover, and verify data sync.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postgresql-15, patroni, etcd, haproxy\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL 15 on both nodes\n2. Configure primary with replication user\n3. Set up etcd for DCS\n4. Configure Patroni on primary\n5. Configure Patroni on replica\n6. Verify streaming replication is active\n7. Insert data on primary, verify on replica\n8. Test failover by stopping primary\n\n### Verification\n- Primary accepts writes\n- Replica shows replicated data\n- Patroni cluster shows healthy\n- Failover completes successfully",
     "tasks": ["Install PostgreSQL 15", "Configure replication user", "Set up etcd", "Configure Patroni primary", "Configure Patroni replica", "Verify replication", "Insert and verify data", "Test failover"],
     "flags": [
@@ -25,7 +25,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 80,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy MySQL 8 with GTID-based replication between primary and replica, ensure data consistency and test failover.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mysql-8.0, mysql-shell, orchestrator\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL 8.0 on both nodes\n2. Configure primary with server-id and GTID mode\n3. Create replication user on primary\n4. Configure replica with read-only and GTID\n5. Start replication and verify GTID sync\n6. Insert test data on primary\n7. Verify data on replica\n8. Test failover with Orchestrator\n\n### Verification\n- Both nodes running MySQL\n- GTID positions match\n- Data replicated correctly\n- Failover completes",
     "tasks": ["Install MySQL 8.0", "Configure GTID primary", "Create replication user", "Configure replica", "Start replication", "Insert test data", "Verify replica data", "Test failover"],
     "flags": [
@@ -45,7 +45,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 85,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy a 3-member MongoDB replica set, configure election priority, read preferences, and validate automatic failover.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mongodb-7.0, mongosh, mongod\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MongoDB 7.0 on all three nodes\n2. Configure each mongod with replica set config\n3. Initialize the replica set\n4. Add members and set priorities\n5. Verify primary election\n6. Insert and query data\n7. Configure read preference for secondaries\n8. Simulate primary failure and verify election\n\n### Verification\n- 3 members running\n- Primary elected\n- Data readable from secondaries\n- Failover succeeds",
     "tasks": ["Install MongoDB 7.0", "Configure mongod instances", "Initialize replica set", "Add members", "Verify primary", "Insert and query data", "Configure read preference", "Test failover"],
     "flags": [
@@ -65,7 +65,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 70,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy Redis master-replica with 3 Sentinel nodes for automatic failover, client discovery, and data persistence.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: redis-7.2, redis-sentinel, redis-cli\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Redis on all nodes\n2. Configure master with password and persistence\n3. Configure replicas to connect to master\n4. Deploy 3 Sentinel instances\n5. Configure Sentinel monitoring\n6. Verify Sentinel sees master\n7. Insert data and verify replication\n8. Stop master and verify Sentinel failover\n\n### Verification\n- Master running with data\n- Replicas synchronized\n- Sentinel quorum achieved\n- Failover automatic",
     "tasks": ["Install Redis", "Configure master", "Configure replicas", "Deploy Sentinels", "Configure monitoring", "Verify master detection", "Insert data", "Test failover"],
     "flags": [
@@ -85,7 +85,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 90,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy a 3-node Elasticsearch 7.17 cluster, configure index sharding, replica allocation, and verify cluster health.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: elasticsearch-7.17, curl, jq\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Elasticsearch 7.17 on all nodes\n2. Configure cluster name and node roles\n3. Set discovery seed hosts\n4. Start nodes and verify cluster formation\n5. Create an index with 3 shards and 1 replica\n6. Index test documents\n7. Verify shard distribution\n8. Test cluster resilience by stopping one node\n\n### Verification\n- Cluster status green\n- 3 nodes discovered\n- Shards distributed evenly\n- Cluster recovers after node loss",
     "tasks": ["Install Elasticsearch", "Configure cluster", "Set seed hosts", "Start nodes", "Create index", "Index documents", "Verify shards", "Test resilience"],
     "flags": [
@@ -105,7 +105,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1400,
     "estimatedMinutes": 100,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy a 3-node MariaDB Galera cluster with synchronous replication, verify multi-master write capability, and test cluster resilience.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mariadb-10.11, galera-4, mysql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MariaDB 10.11 on all nodes\n2. Configure Galera cluster parameters\n3. Bootstrap the first node\n4. Join remaining nodes to cluster\n5. Verify cluster size\n6. Write to different nodes simultaneously\n7. Verify synchronous replication\n8. Test by stopping one node and writing from others\n\n### Verification\n- 3 nodes in cluster\n- Galera sync status active\n- Writes succeed from any node\n- Cluster survives node loss",
     "tasks": ["Install MariaDB", "Configure Galera", "Bootstrap first node", "Join nodes", "Verify cluster", "Write to nodes", "Check sync", "Test node loss"],
     "flags": [
@@ -125,7 +125,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 75,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy TimescaleDB as a PostgreSQL extension, create hypertables for time-series data, configure compression and data retention.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: postgresql-15, timescaledb-2.14, psql\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL 15 and TimescaleDB extension\n2. Create a time-series table for IoT sensor data\n3. Convert to hypertable with appropriate chunk interval\n4. Insert time-series data\n5. Create continuous aggregate\n6. Configure compression policy\n7. Set up retention policy\n8. Verify compression and data lifecycle\n\n### Verification\n- Hypertable created\n- Data inserted with timestamps\n- Continuous aggregate materialized\n- Compression active on old chunks",
     "tasks": ["Install PostgreSQL + TimescaleDB", "Create sensor table", "Convert to hypertable", "Insert data", "Create continuous aggregate", "Configure compression", "Set retention policy", "Verify lifecycle"],
     "flags": [
@@ -145,7 +145,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 60,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy MinIO for S3-compatible object storage, configure buckets with policies, and test upload/download operations.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: minio, mc (minio client), curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MinIO server\n2. Configure data directories and start server\n3. Install MinIO client (mc)\n4. Configure mc alias for local MinIO\n5. Create buckets with different policies\n6. Upload test objects\n7. Configure bucket versioning\n8. Test download and presigned URLs\n\n### Verification\n- MinIO server running\n- Buckets created with policies\n- Objects uploaded and downloadable\n- Versioning enabled",
     "tasks": ["Install MinIO", "Start server", "Install mc", "Configure alias", "Create buckets", "Upload objects", "Enable versioning", "Test presigned URLs"],
     "flags": [
@@ -165,7 +165,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 70,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy InfluxDB 2.x for metrics storage and Telegraf for system metrics collection, create dashboards and alerts.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: influxdb-2.7, telegraf, influx CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install InfluxDB 2.7 and start service\n2. Set up initial organization, bucket, and token\n3. Install and configure Telegraf\n4. Configure Telegraf input plugins (cpu, mem, disk)\n5. Configure Telegraf InfluxDB output\n6. Start Telegraf and verify data flow\n7. Create a monitoring task with Flux\n8. Set up alert notification endpoint\n\n### Verification\n- InfluxDB running and accessible\n- Telegraf sending metrics\n- Data queryable via Flux\n- Alert task active",
     "tasks": ["Install InfluxDB", "Setup org and bucket", "Install Telegraf", "Configure inputs", "Configure outputs", "Start Telegraf", "Create Flux task", "Setup alerts"],
     "flags": [
@@ -185,7 +185,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 95,
-    "skillName": "DATABASES",
+    "skillName": "dba",
     "briefing": "### Mission Objective\nDeploy a 3-node CockroachDB cluster, configure multi-region settings, and test distributed SQL queries with automatic range rebalancing.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: cockroachdb-23.2, cockroach sql CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install CockroachDB on all 3 nodes\n2. Start first node in insecure mode\n3. Join remaining nodes to the cluster\n4. Initialize the cluster\n5. Create a database and table across ranges\n6. Insert distributed data\n7. Verify range distribution\n8. Test by killing a node and querying\n\n### Verification\n- 3 nodes in cluster\n- SQL queries execute successfully\n- Ranges distributed across nodes\n- Cluster tolerates node loss",
     "tasks": ["Install CockroachDB", "Start first node", "Join nodes", "Initialize cluster", "Create database", "Insert data", "Verify ranges", "Test fault tolerance"],
     "flags": [
@@ -205,7 +205,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 80,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy a 3-node RabbitMQ cluster with mirrored queues, configure exchanges and bindings, and test message durability.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: rabbitmq-3.13, erlang-26, rabbitmqctl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Erlang 26 on all nodes\n2. Install RabbitMQ 3.13 on all nodes\n3. Configure Erlang cookie for clustering\n4. Join nodes to form cluster\n5. Enable management plugin\n6. Configure mirrored queue policy\n7. Create exchanges and queues\n8. Publish and consume test messages\n\n### Verification\n- 3 nodes in cluster\n- Management UI accessible\n- Mirrored queues active\n- Messages flow correctly",
     "tasks": ["Install Erlang", "Install RabbitMQ", "Configure cookie", "Join cluster", "Enable management", "Configure mirroring", "Create exchanges", "Test messaging"],
     "flags": [
@@ -225,7 +225,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Apache Kafka 3.7 on a single node with KRaft (no ZooKeeper), create topics, produce and consume events.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: kafka-3.7, kraft, kafka-topics.sh, kafka-console\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Java 17 and Kafka 3.7\n2. Generate cluster UUID for KRaft\n3. Format log directories\n4. Start Kafka in KRaft mode\n5. Create topics with partitions\n6. Produce test messages\n7. Consume and verify messages\n8. Configure topic retention policy\n\n### Verification\n- Kafka broker running\n- Topics created with partitions\n- Messages produced and consumed\n- Retention policy applied",
     "tasks": ["Install Java + Kafka", "Generate cluster UUID", "Format logs", "Start KRaft mode", "Create topics", "Produce messages", "Consume messages", "Configure retention"],
     "flags": [
@@ -245,7 +245,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 55,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy NATS server with JetStream enabled, configure streams and consumers, and test persistent messaging.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nats-server-2.10, nats CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install NATS server 2.10\n2. Configure JetStream in nats.conf\n3. Start NATS server\n4. Install nats CLI tool\n5. Create JetStream streams\n6. Publish test messages\n7. Create durable consumers\n8. Verify message acknowledgment and replay\n\n### Verification\n- NATS server running\n- JetStream enabled\n- Streams created\n- Messages persisted and consumed",
     "tasks": ["Install NATS", "Configure JetStream", "Start server", "Install CLI", "Create streams", "Publish messages", "Create consumers", "Verify acks"],
     "flags": [
@@ -265,7 +265,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 900,
     "estimatedMinutes": 50,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Mosquitto MQTT broker with password authentication, TLS encryption, and topic-based access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: mosquitto-2.0, mosquitto-clients, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Mosquitto 2.0 and clients\n2. Generate TLS certificates with openssl\n3. Configure mosquitto.conf with TLS\n4. Set up password file with users\n5. Configure topic ACLs\n6. Start Mosquitto broker\n7. Publish and subscribe with TLS\n8. Test ACL restrictions\n\n### Verification\n- Broker running with TLS\n- Password auth required\n- ACLs enforced\n- Messages encrypted",
     "tasks": ["Install Mosquitto", "Generate TLS certs", "Configure TLS", "Setup passwords", "Configure ACLs", "Start broker", "Test pub/sub with TLS", "Test ACLs"],
     "flags": [
@@ -285,7 +285,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 65,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Redis Streams for event-driven architecture, create consumer groups, process events with acknowledgment, and handle dead-letter queues.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: redis-7.2, redis-cli, python3\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Redis 7.2 with Streams support\n2. Configure Redis with AOF persistence\n3. Create event streams with XADD\n4. Create consumer groups\n5. Process events with XREADGROUP\n6. Acknowledge processed messages\n7. Implement dead-letter queue for failed events\n8. Monitor stream length and pending entries\n\n### Verification\n- Streams created and populated\n- Consumer groups active\n- Messages acknowledged\n- Dead-letter queue working",
     "tasks": ["Install Redis", "Configure persistence", "Create streams", "Create consumer groups", "Process events", "Ack messages", "Implement DLQ", "Monitor streams"],
     "flags": [
@@ -305,7 +305,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 55,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Nginx as a reverse proxy with round-robin and least-connections load balancing, health checks, and SSL termination.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nginx-1.24, openssl, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Nginx 1.24\n2. Configure upstream backend servers\n3. Set up reverse proxy location blocks\n4. Configure load balancing method\n5. Add health check endpoints\n6. Set up SSL with self-signed cert\n7. Configure rate limiting\n8. Test load distribution across backends\n\n### Verification\n- Nginx running\n- Backends load balanced\n- SSL termination working\n- Rate limiting enforced",
     "tasks": ["Install Nginx", "Configure upstream", "Setup reverse proxy", "Set LB method", "Add health checks", "Configure SSL", "Setup rate limiting", "Test distribution"],
     "flags": [
@@ -325,7 +325,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 65,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy HAProxy for TCP and HTTP load balancing with health checks, sticky sessions, and a statistics dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: haproxy-2.8, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install HAProxy 2.8\n2. Configure frontend for HTTP and TCP\n3. Configure backend servers with health checks\n4. Set up stick tables for session persistence\n5. Enable statistics dashboard\n6. Configure ACLs for routing\n7. Set up rate limiting and timeouts\n8. Test HTTP and TCP load balancing\n\n### Verification\n- HAProxy running\n- HTTP and TCP frontends active\n- Health checks passing\n- Stats dashboard accessible",
     "tasks": ["Install HAProxy", "Configure frontends", "Configure backends", "Setup stick tables", "Enable stats", "Configure ACLs", "Set rate limits", "Test balancing"],
     "flags": [
@@ -345,7 +345,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 65,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Traefik as an edge proxy with automatic Docker service discovery, Let's Encrypt certificate management, and a dashboard.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: traefik-3.0, docker, docker-compose\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Traefik 3.0\n2. Configure Docker provider for auto-discovery\n3. Set up entrypoints for HTTP and HTTPS\n4. Configure Let's Encrypt resolvers\n5. Deploy test containers with labels\n6. Verify automatic route creation\n7. Enable Traefik dashboard\n8. Test SSL certificate auto-renewal\n\n### Verification\n- Traefik running\n- Docker labels create routes\n- TLS certificates issued\n- Dashboard accessible",
     "tasks": ["Install Traefik", "Configure Docker provider", "Setup entrypoints", "Configure Let's Encrypt", "Deploy test containers", "Verify routes", "Enable dashboard", "Test SSL renewal"],
     "flags": [
@@ -365,7 +365,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 900,
     "estimatedMinutes": 45,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Caddy as a web server and reverse proxy with automatic TLS certificate management, logging, and dynamic config.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: caddy-2.7, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Caddy 2.7\n2. Configure Caddyfile with reverse proxy\n3. Set up automatic HTTPS\n4. Configure access and error logging\n5. Start Caddy with admin API\n6. Deploy test backend services\n7. Verify automatic certificate provisioning\n8. Test dynamic config reload via API\n\n### Verification\n- Caddy running\n- Auto-TLS working\n- Reverse proxy configured\n- Dynamic reload functional",
     "tasks": ["Install Caddy", "Configure Caddyfile", "Setup auto HTTPS", "Configure logging", "Start Caddy", "Deploy backends", "Verify TLS", "Test dynamic reload"],
     "flags": [
@@ -385,7 +385,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 70,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Apache with ModSecurity WAF, configure OWASP CRS rules, and test SQL injection and XSS protection.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: apache-2.4, modsecurity-3.0, owasp-crs, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install Apache 2.4\n2. Install ModSecurity 3.0 module\n3. Enable ModSecurity in Apache config\n4. Download and install OWASP CRS\n5. Configure SecRuleEngine and rule exclusions\n6. Set up test application\n7. Test SQL injection protection\n8. Test XSS attack prevention\n\n### Verification\n- Apache running with ModSecurity\n- OWASP CRS loaded\n- SQLi attacks blocked\n- XSS attacks blocked",
     "tasks": ["Install Apache", "Install ModSecurity", "Enable ModSecurity", "Install OWASP CRS", "Configure rules", "Setup test app", "Test SQLi blocking", "Test XSS blocking"],
     "flags": [
@@ -405,7 +405,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 80,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Keycloak 24 as an SSO identity provider with OIDC flows, user federation, and role-based access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: keycloak-24, postgresql-15, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install PostgreSQL 15 for Keycloak backend\n2. Install Keycloak 24\n3. Configure Keycloak with PostgreSQL datasource\n4. Start Keycloak in production mode\n5. Create admin user and realm\n6. Configure OIDC client\n7. Set up user federation\n8. Test OIDC authorization code flow\n\n### Verification\n- Keycloak running\n- OIDC endpoints accessible\n- Token issuance working\n- User federation connected",
     "tasks": ["Install PostgreSQL", "Install Keycloak", "Configure datasource", "Start production mode", "Create realm", "Configure OIDC client", "Setup user federation", "Test OIDC flow"],
     "flags": [
@@ -425,7 +425,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1300,
     "estimatedMinutes": 90,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy FreeIPA as a centralized identity domain with LDAP directory, Kerberos authentication, DNS integration, and HBAC rules.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: freeipa-server, 389-ds, krb5kdc, bind9\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install FreeIPA server packages\n2. Configure domain name and realm\n3. Run ipa-server-install\n4. Configure DNS zone\n5. Create users and groups\n6. Set up HBAC rules\n7. Configure Kerberos principal\n8. Test LDAP search and Kerberos auth\n\n### Verification\n- FreeIPA server installed\n- LDAP directory populated\n- Kerberos realm functional\n- DNS records managed",
     "tasks": ["Install FreeIPA", "Configure domain", "Run server install", "Setup DNS", "Create users", "Setup HBAC", "Configure Kerberos", "Test LDAP and Kerberos"],
     "flags": [
@@ -445,7 +445,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 75,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy OpenLDAP 2.5 as a directory server with multi-master replication, TLS encryption, and access control.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: slapd-2.5, ldap-utils, openssl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install slapd and ldap-utils\n2. Configure base DN and admin password\n3. Generate TLS certificates\n4. Configure slapd with TLS\n5. Populate directory with OUs and users\n6. Configure ACLs for access control\n7. Set up multi-master replication\n8. Verify replication and search\n\n### Verification\n- OpenLDAP running with TLS\n- Directory entries searchable\n- Replication active\n- ACLs enforced",
     "tasks": ["Install slapd", "Configure base DN", "Generate TLS certs", "Enable TLS", "Populate directory", "Configure ACLs", "Setup replication", "Verify replication"],
     "flags": [
@@ -465,7 +465,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 65,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy OAuth2 Proxy as an authentication gateway in front of a backend application, using Keycloak as the OIDC provider.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: oauth2-proxy-7.6, keycloak-24, nginx, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install and configure OAuth2 Proxy\n2. Configure Keycloak OIDC client\n3. Set up OAuth2 Proxy with Keycloak provider\n4. Configure Nginx as reverse proxy\n5. Set upstream to backend app\n6. Configure session storage\n7. Test SSO login flow\n8. Verify token refresh and logout\n\n### Verification\n- OAuth2 Proxy running\n- SSO login via Keycloak\n- Protected routes require auth\n- Session management working",
     "tasks": ["Install OAuth2 Proxy", "Configure Keycloak client", "Setup proxy config", "Configure Nginx", "Set upstream", "Configure session storage", "Test SSO flow", "Test logout"],
     "flags": [
@@ -485,7 +485,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1000,
     "estimatedMinutes": 55,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy Casdoor 1.x as an IAM platform with OIDC support, user management, RBAC policies, and multi-factor authentication.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: casdoor-1.x, mysql-8.0, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install MySQL 8.0 for Casdoor backend\n2. Download and install Casdoor\n3. Configure database connection\n4. Start Casdoor server\n5. Create organization and application\n6. Add users with roles\n7. Configure MFA policies\n8. Test OIDC login flow\n\n### Verification\n- Casdoor running\n- OIDC endpoints active\n- Users and roles configured\n- MFA enforced",
     "tasks": ["Install MySQL", "Install Casdoor", "Configure DB", "Start server", "Create org", "Add users", "Configure MFA", "Test OIDC"],
     "flags": [
@@ -505,7 +505,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 900,
     "estimatedMinutes": 50,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy an NFS server with shared directories, configure exports with proper permissions, and mount shares on client machines.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: nfs-kernel-server, nfs-common, exportfs\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install NFS server packages\n2. Create shared directories\n3. Configure /etc/exports\n4. Start and enable NFS server\n5. Export filesystems\n6. Install NFS client on another node\n7. Mount NFS share on client\n8. Test read/write access\n\n### Verification\n- NFS server running\n- Exports listed\n- Client mount successful\n- Files readable/writable",
     "tasks": ["Install NFS server", "Create directories", "Configure exports", "Start NFS server", "Export filesystems", "Install client", "Mount share", "Test access"],
     "flags": [
@@ -525,7 +525,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1500,
     "estimatedMinutes": 120,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy a single-node Ceph cluster with monitor daemon, OSD, and RADOS gateway for S3-compatible object storage.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: ceph-18, cephadm, radosgw, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install cephadm bootstrap tool\n2. Bootstrap minimal Ceph cluster\n3. Add OSD with available disk\n4. Enable RADOS gateway\n5. Create S3 user and bucket\n6. Configure CephFS for file storage\n7. Verify cluster health\n8. Test object storage operations\n\n### Verification\n- Ceph cluster healthy\n- OSD in cluster\n- RADOS gateway running\n- Object storage working",
     "tasks": ["Install cephadm", "Bootstrap cluster", "Add OSD", "Enable RGW", "Create S3 user", "Configure CephFS", "Verify health", "Test object storage"],
     "flags": [
@@ -545,7 +545,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 80,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy a 3-node GlusterFS cluster, create replicated volumes, configure geo-replication, and test data resilience.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: glusterfs-10, gluster CLI, FUSE\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install GlusterFS on all 3 nodes\n2. Configure trusted pool\n3. Create replicated volume\n4. Start and mount volume\n5. Write test data\n6. Verify replication across bricks\n7. Configure geo-replication\n8. Test node failure resilience\n\n### Verification\n- 3-node cluster formed\n- Replicated volume active\n- Data replicated to all bricks\n- Geo-replication running",
     "tasks": ["Install GlusterFS", "Configure pool", "Create volume", "Start volume", "Mount volume", "Write data", "Configure geo-rep", "Test resilience"],
     "flags": [
@@ -565,7 +565,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1100,
     "estimatedMinutes": 65,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy ZFS storage with pools, datasets, snapshots, compression, and zfs send/recv for off-site backup.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: zfs-2.1, zpool, zfs CLI\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install ZFS packages\n2. Create zpool with mirror configuration\n3. Create datasets for different use cases\n4. Enable compression (lz4)\n5. Create initial snapshot\n6. Modify data and create second snapshot\n7. Use zfs send/recv to replicate\n8. Test snapshot rollback\n\n### Verification\n- ZFS pool created\n- Datasets configured\n- Snapshots taken\n- Send/recv replication working",
     "tasks": ["Install ZFS", "Create zpool", "Create datasets", "Enable compression", "Create snapshots", "Modify data", "Send/recv backup", "Test rollback"],
     "flags": [
@@ -585,7 +585,7 @@
     "dockerImage": "ubuntu:22.04",
     "difficulty": 1200,
     "estimatedMinutes": 70,
-    "skillName": "SYSTEMS",
+    "skillName": "sysadmin",
     "briefing": "### Mission Objective\nDeploy an iSCSI target with LIO, create logical units, configure initiators, and mount block storage on clients.\n\n### Environment\n- Image: ubuntu:22.04\n- Tools: targetcli, lio, open-iscsi, curl\n- Login: itadmin / ItLab2025!\n\n### Tasks\n1. Install targetcli and iSCSI target tools\n2. Create a backing store (disk image)\n3. Configure iSCSI target and IQN\n4. Create LUN and ACL\n5. Install open-iscsi on client node\n6. Discover and login to target\n7. Create filesystem and mount\n8. Verify block device access\n\n### Verification\n- iSCSI target running\n- LUN accessible from client\n- Block device mounted\n- Read/write operations work",
     "tasks": ["Install targetcli", "Create backing store", "Configure target", "Create LUN", "Install client", "Discover target", "Mount filesystem", "Test block access"],
     "flags": [
