@@ -31,8 +31,22 @@ echo "$LABS" | while IFS='|' read -r ID TITLE IMAGE DIFFICULTY FLAGS; do
     continue
   fi
   
-  # Start container
-  CID=$(sudo docker run -d --name "$CONTAINER_NAME" --rm "$IMAGE" tail -f /dev/null 2>&1)
+  # Detect service images (run their native CMD, don't override with tail)
+  IMAGE_LOWER=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
+  IS_SERVICE=0
+  for SVC in juice-shop webgoat nodegoat dvwa vapi grafana prometheus nginx redis postgres mongo elasticsearch; do
+    if echo "$IMAGE_LOWER" | grep -q "$SVC"; then
+      IS_SERVICE=1
+      break
+    fi
+  done
+
+  # Start container — service images get their native CMD, others get tail -f
+  if [ $IS_SERVICE -eq 1 ]; then
+    CID=$(sudo docker run -d --name "$CONTAINER_NAME" --rm "$IMAGE" 2>&1)
+  else
+    CID=$(sudo docker run -d --name "$CONTAINER_NAME" --rm "$IMAGE" tail -f /dev/null 2>&1)
+  fi
   if [ $? -ne 0 ]; then
     echo "[$INDEX/$TOTAL] FAIL: $TITLE — container start failed"
     FAIL=$((FAIL + 1))
@@ -40,8 +54,12 @@ echo "$LABS" | while IFS='|' read -r ID TITLE IMAGE DIFFICULTY FLAGS; do
     continue
   fi
   
-  # Wait for container
-  sleep 2
+  # Wait for container — service images need more time to initialize
+  if [ $IS_SERVICE -eq 1 ]; then
+    sleep 5
+  else
+    sleep 2
+  fi
   
   # Check running
   STATUS=$(sudo docker inspect --format='{{.State.Status}}' "$CONTAINER_NAME" 2>/dev/null)
