@@ -1,0 +1,173 @@
+{
+  "timestamp": "2026-09-06T21:00:00Z",
+  "summary": {
+    "critical": 4,
+    "high": 8,
+    "medium": 6,
+    "total": 18
+  },
+  "pain_points": [
+    {
+      "id": "C1",
+      "severity": "CRITICAL",
+      "area": "Public Course Catalog",
+      "perspective": "First-Time Visitor, Prospective Student",
+      "description": "The /courses page shows 'Course catalog is available after sign-in' with zero courses visible. Prospective students cannot evaluate course quality before committing to registration.",
+      "impact": "MASSIVE conversion killer. Users evaluating competitors can browse courses freely. We force registration blind.",
+      "fix": "Show a public course catalog with course cards (title, description, lesson count, difficulty, XP), category filtering, and 'Sign up to start' CTAs."
+    },
+    {
+      "id": "C2",
+      "severity": "CRITICAL",
+      "area": "Public Lab Catalog",
+      "perspective": "First-Time Visitor, Lab Experimenter",
+      "description": "The /labs page shows 'Lab catalog is available after sign-in' with zero labs visible. The platform's biggest differentiator (540 hands-on labs) is completely invisible to prospects.",
+      "impact": "Users cannot evaluate the lab experience before signing up. Homepage mentions '540 hands-on labs' but clicking Labs shows nothing.",
+      "fix": "Show a public lab catalog with lab cards (title, domain, difficulty, estimated time), domain filtering, and 'Sign up to access' CTAs."
+    },
+    {
+      "id": "C3",
+      "severity": "CRITICAL",
+      "area": "Lab Detail Breadcrumb",
+      "perspective": "Lab Experimenter",
+      "description": "Breadcrumb shows raw UUID '76cc73c5 c198 4392 affa 37d2fb7be2a9' instead of the lab name.",
+      "impact": "Users have no idea what lab they're looking at. Confusing and unprofessional.",
+      "fix": "Breadcrumb should show the lab's actual name from the API response instead of the UUID."
+    },
+    {
+      "id": "C4",
+      "severity": "CRITICAL",
+      "area": "Lab Loading State",
+      "perspective": "Lab Experimenter",
+      "description": "After clicking a lab, the page shows only 'Loading lab...' spinner with no lab info, title, description, or objectives.",
+      "impact": "Users don't know if the page is broken or just slow. No fallback content.",
+      "fix": "Show lab metadata immediately from page props. Only show spinner for terminal/workspace area, not the entire page."
+    },
+    {
+      "id": "H1",
+      "severity": "HIGH",
+      "area": "New User Guidance",
+      "perspective": "New Learner",
+      "description": "Sidebar has 20+ links but no clear 'Start Here' or 'Getting Started' path for new users.",
+      "impact": "Choice paralysis. Users don't know whether to start with Courses, Labs, Learning Paths, or something else.",
+      "fix": "Add prominent 'Start Here' section at top of sidebar for users with <100 XP."
+    },
+    {
+      "id": "H2",
+      "severity": "HIGH",
+      "area": "Course Recommendations",
+      "perspective": "New Learner, Returning Learner",
+      "description": "Courses page shows 20 courses in flat grid with no recommendation. Every course says 'Begin training' with no guidance.",
+      "impact": "Users don't know which course to start with. May pick advanced course first and get frustrated.",
+      "fix": "Add 'Recommended for You' section at top. Show 'Continue Where You Left Off' for returning users."
+    },
+    {
+      "id": "H3",
+      "severity": "HIGH",
+      "area": "Learner View Banner",
+      "perspective": "All logged-in users",
+      "description": "Persistent 'Learner View active' banner takes ~80px on every page. Shows 'Open Admin Workspace' button to all users.",
+      "impact": "Wasted screen real estate. Confusing for non-admin users.",
+      "fix": "Show banner once on first login, then dismiss. Or make it a subtle header indicator."
+    },
+    {
+      "id": "H4",
+      "severity": "HIGH",
+      "area": "Search Scope",
+      "perspective": "Active Learner",
+      "description": "Global search bar says 'Search course catalog...' but only searches courses on Enter. Labs, assessments, certifications not searchable.",
+      "impact": "Users expect global search but get course-only filtering. Labs are not searchable from global search.",
+      "fix": "Make it a true global search (Cmd+K palette) or rename to 'Filter courses...'"
+    },
+    {
+      "id": "H5",
+      "severity": "HIGH",
+      "area": "Mobile Navigation",
+      "perspective": "Mobile User",
+      "description": "Entire sidebar hidden behind hamburger menu on mobile. Users may not realize more content exists.",
+      "impact": "Mobile users may think dashboard homepage IS the entire platform.",
+      "fix": "Add bottom tab bar on mobile for top 4-5 actions (Home, Courses, Labs, Community, Profile)."
+    },
+    {
+      "id": "H6",
+      "severity": "HIGH",
+      "area": "Empty Community States",
+      "perspective": "Community Explorer",
+      "description": "Community page shows 'No activity yet' and 'No leaderboard data' with no guidance.",
+      "impact": "Community features feel abandoned. New users don't know how to generate activity.",
+      "fix": "Show sample activity or 'Be the first to post' CTA. Add 'Join a Team' prompt."
+    },
+    {
+      "id": "H7",
+      "severity": "HIGH",
+      "area": "Certification Next Steps",
+      "perspective": "Job Seeker",
+      "description": "All certification tiers show 'Requirements pending' with requirements listed but no 'Start Working Toward This' button.",
+      "impact": "Users see what they need but don't know how to get there.",
+      "fix": "Add 'Start Path' button linking to relevant courses/labs for that certification tier."
+    },
+    {
+      "id": "H8",
+      "severity": "HIGH",
+      "area": "Duplicate Leaderboard",
+      "perspective": "All users",
+      "description": "Leaderboard appears in both 'Compete' AND 'Community' sections of sidebar.",
+      "impact": "Navigation confusion. Users don't know which to click.",
+      "fix": "Remove duplicate. Keep in 'Compete' only."
+    },
+    {
+      "id": "M1",
+      "severity": "MEDIUM",
+      "area": "Missing Footer",
+      "perspective": "First-Time Visitor",
+      "description": "Public pages have no footer with Terms, Privacy, About, Contact links.",
+      "impact": "Users cannot find legal pages or contact info from homepage.",
+      "fix": "Add proper footer with Terms, Privacy, About, Contact, social links."
+    },
+    {
+      "id": "M2",
+      "severity": "MEDIUM",
+      "area": "Choose Your Path CTA",
+      "perspective": "First-Time Visitor",
+      "description": "'Choose Your Path' looks like text label, not a clickable button.",
+      "impact": "Users may miss the alternative CTA.",
+      "fix": "Make it look more like a button or add clear hover/click state."
+    },
+    {
+      "id": "M3",
+      "severity": "MEDIUM",
+      "area": "Mobile Touch Targets",
+      "perspective": "Mobile User",
+      "description": "Several interactive elements on login/register are below 44px minimum touch target.",
+      "impact": "Mobile users may struggle to tap small buttons/links.",
+      "fix": "Increase all interactive elements to minimum 44x44px on mobile."
+    },
+    {
+      "id": "M4",
+      "severity": "MEDIUM",
+      "area": "Admin Banner Mismatch",
+      "perspective": "Admin",
+      "description": "Admin dashboard shows 'Learner View active' banner even though viewing admin content.",
+      "impact": "Banner contradicts what user is actually seeing.",
+      "fix": "Banner should reflect actual view mode or hide entirely on admin pages."
+    },
+    {
+      "id": "M5",
+      "severity": "MEDIUM",
+      "area": "Labs Flat List",
+      "perspective": "Lab Experimenter",
+      "description": "540 labs loaded at once in scrollable grid. Extremely long page, overwhelming choice.",
+      "impact": "Slow page load, hard to find specific labs.",
+      "fix": "Add pagination or infinite scroll. Show 20-30 labs per page."
+    },
+    {
+      "id": "M6",
+      "severity": "MEDIUM",
+      "area": "Core vs Elective Courses",
+      "perspective": "New Learner",
+      "description": "All courses show 'CORE' badge with no distinction between required and optional.",
+      "impact": "Users may waste time on elective courses.",
+      "fix": "Clearly differentiate core vs elective. Show 'Recommended Path' with priority ordering."
+    }
+  ]
+}

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const API_URL = process.env.BACKEND_INTERNAL_URL || "http://backend:4000";
 
-export const revalidate = 3600;
+export const revalidate = 0;
 
 async function getCourses() {
   try {

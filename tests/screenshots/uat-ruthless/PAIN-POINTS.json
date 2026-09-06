@@ -1,0 +1,114 @@
+[
+  {
+    "sev": "HIGH",
+    "area": "Login",
+    "desc": "No error shown for empty form submission",
+    "fix": "Show validation error",
+    "page": "login"
+  },
+  {
+    "sev": "CRITICAL",
+    "area": "teams",
+    "desc": "Error boundary hit at /dashboard/teams",
+    "fix": "Fix runtime error",
+    "page": "teams"
+  },
+  {
+    "sev": "CRITICAL",
+    "area": "battle-pass",
+    "desc": "Error boundary hit at /dashboard/battle-pass",
+    "fix": "Fix runtime error",
+    "page": "battle-pass"
+  },
+  {
+    "sev": "CRITICAL",
+    "area": "community",
+    "desc": "Error boundary hit at /dashboard/community",
+    "fix": "Fix runtime error",
+    "page": "community"
+  },
+  {
+    "sev": "HIGH",
+    "area": "Navigation",
+    "desc": "Sidebar link \"Community\" leads to error page",
+    "fix": "Fix page",
+    "page": "navigation"
+  },
+  {
+    "sev": "HIGH",
+    "area": "Navigation",
+    "desc": "Sidebar link \"Teams\" leads to error page",
+    "fix": "Fix page",
+    "page": "navigation"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Navigation",
+    "desc": "No breadcrumb navigation on dashboard pages",
+    "fix": "Add breadcrumbs for nested pages",
+    "page": "navigation"
+  },
+  {
+    "sev": "HIGH",
+    "area": "Search",
+    "desc": "Search returns no results for \"kubernetes\" (known content)",
+    "fix": "Fix search indexing",
+    "page": "search"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Mobile",
+    "desc": "58 touch targets < 44px on /",
+    "fix": "Increase tap target size",
+    "page": "mobile-homepage"
+  },
+  {
+    "sev": "HIGH",
+    "area": "Mobile",
+    "desc": "Horizontal overflow on /courses",
+    "fix": "Fix responsive CSS",
+    "page": "mobile-courses"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Mobile",
+    "desc": "1 elements with font-size < 10px on /login",
+    "fix": "Increase minimum font size",
+    "page": "mobile-login"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Mobile",
+    "desc": "15 touch targets < 44px on /login",
+    "fix": "Increase tap target size",
+    "page": "mobile-login"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Mobile",
+    "desc": "1 elements with font-size < 10px on /register",
+    "fix": "Increase minimum font size",
+    "page": "mobile-register"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Mobile",
+    "desc": "15 touch targets < 44px on /register",
+    "fix": "Increase tap target size",
+    "page": "mobile-register"
+  },
+  {
+    "sev": "MEDIUM",
+    "area": "Accessibility",
+    "desc": "No skip-to-content link",
+    "fix": "Add skip navigation link",
+    "page": "accessibility"
+  },
+  {
+    "sev": "HIGH",
+    "area": "Error Handling",
+    "desc": "Non-existent dashboard page shows no 404",
+    "fix": "Show custom 404 for dashboard",
+    "page": "error-404"
+  }
+]

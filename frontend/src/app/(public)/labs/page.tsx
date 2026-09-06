@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 };
 
 const API_URL = process.env.BACKEND_INTERNAL_URL || "http://backend:4000";
-export const revalidate = 3600;
+export const revalidate = 0;
 
 async function getLabs() {
   try {
-    const res = await fetch(`${API_URL}/api/v1/labs`, { next: { revalidate: 3600 } });
+    const res = await fetch(`${API_URL}/api/v1/labs`, { next: { revalidate: 0 } });
     if (!res.ok) return [];
     const data = await res.json();
     return Array.isArray(data) ? data : data.data || [];

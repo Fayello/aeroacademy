@@ -1,0 +1,635 @@
+{
+  "timestamp": "2026-09-06T20:45:06.371169",
+  "summary": {
+    "FOUND": 63,
+    "BROKEN": 2,
+    "HIDDEN": 12,
+    "CONFUSING": 1
+  },
+  "findings": [
+    {
+      "severity": "HIGH",
+      "persona": "Beginner",
+      "feature": "Homepage Value Prop",
+      "status": "FOUND",
+      "detail": "Value proposition is clear",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Beginner",
+      "feature": "Find Courses from Nav",
+      "status": "FOUND",
+      "detail": "Found: Courses",
+      "fix": ""
+    },
+    {
+      "severity": "CRITICAL",
+      "persona": "Beginner",
+      "feature": "Public Course Browsing",
+      "status": "BROKEN",
+      "detail": "Cannot see any courses without login \u2014 dead wall",
+      "fix": ""
+    },
+    {
+      "severity": "CRITICAL",
+      "persona": "Beginner",
+      "feature": "Public Lab Browsing",
+      "status": "BROKEN",
+      "detail": "Cannot see any labs without login \u2014 dead wall",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Beginner",
+      "feature": "Pricing Information",
+      "status": "FOUND",
+      "detail": "Pricing info available on get-started page",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Beginner",
+      "feature": "Social Proof",
+      "status": "FOUND",
+      "detail": "Testimonials visible on homepage",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Beginner",
+      "feature": "Contact/Support",
+      "status": "FOUND",
+      "detail": "Found: Contact",
+      "fix": ""
+    },
+    {
+      "severity": "LOW",
+      "persona": "Beginner",
+      "feature": "Legal Pages",
+      "status": "FOUND",
+      "detail": "Found: Privacy Policy",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "CareerSwitcher",
+      "feature": "Find Learning Paths",
+      "status": "FOUND",
+      "detail": "Learning Paths in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "CareerSwitcher",
+      "feature": "Learning Paths Content",
+      "status": "FOUND",
+      "detail": "Learning paths with clear CTAs",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "CareerSwitcher",
+      "feature": "Find Certifications",
+      "status": "FOUND",
+      "detail": "Certifications in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "CareerSwitcher",
+      "feature": "Course Categories",
+      "status": "FOUND",
+      "detail": "Courses filterable by category",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "CareerSwitcher",
+      "feature": "Lab Topic Filters",
+      "status": "HIDDEN",
+      "detail": "No lab topic filters visible",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "CareerSwitcher",
+      "feature": "Starting Point Page",
+      "status": "HIDDEN",
+      "detail": "No 'Starting Point' in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "UniStudent",
+      "feature": "Academic Record",
+      "status": "HIDDEN",
+      "detail": "No 'Academic' section in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "UniStudent",
+      "feature": "Gradebook",
+      "status": "HIDDEN",
+      "detail": "No 'Gradebook' in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "UniStudent",
+      "feature": "Curricula",
+      "status": "HIDDEN",
+      "detail": "No 'Curricula' in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "UniStudent",
+      "feature": "Practical Exams",
+      "status": "FOUND",
+      "detail": "Exams in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "UniStudent",
+      "feature": "Skill Assessments",
+      "status": "FOUND",
+      "detail": "Assessments in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "UniStudent",
+      "feature": "Readiness Transcript",
+      "status": "HIDDEN",
+      "detail": "No 'Readiness Transcript' in sidebar \u2014 must know URL",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "UniStudent",
+      "feature": "Credential Verification",
+      "status": "FOUND",
+      "detail": "Public credential verification page exists",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "WorkingPro",
+      "feature": "Master Classes",
+      "status": "FOUND",
+      "detail": "Master Classes / Training in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "WorkingPro",
+      "feature": "Master Class Sessions",
+      "status": "FOUND",
+      "detail": "Sessions with scheduling info visible",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "WorkingPro",
+      "feature": "Book Sessions",
+      "status": "HIDDEN",
+      "detail": "No 'Bookings' visible in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "WorkingPro",
+      "feature": "Streak Tracking",
+      "status": "HIDDEN",
+      "detail": "No 'Streak' in sidebar \u2014 must know URL",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "WorkingPro",
+      "feature": "Resume Learning",
+      "status": "FOUND",
+      "detail": "Current record / resume section on dashboard",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "WorkingPro",
+      "feature": "Recommendations",
+      "status": "FOUND",
+      "detail": "Recommendations visible on dashboard",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "TeamLead",
+      "feature": "Find Teams",
+      "status": "FOUND",
+      "detail": "Teams in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "TeamLead",
+      "feature": "Create/Join Team",
+      "status": "FOUND",
+      "detail": "Create: True, Join: True",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "TeamLead",
+      "feature": "Find Guilds",
+      "status": "FOUND",
+      "detail": "Guilds in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "TeamLead",
+      "feature": "Guild Content",
+      "status": "FOUND",
+      "detail": "Guilds page has content",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "TeamLead",
+      "feature": "Enterprise Portal",
+      "status": "FOUND",
+      "detail": "Enterprise features visible",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "TeamLead",
+      "feature": "Team Gradebook",
+      "status": "FOUND",
+      "detail": "Gradebook with team progress",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "JobSeeker",
+      "feature": "Certification Tiers",
+      "status": "FOUND",
+      "detail": "Clear certification tiers visible",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "JobSeeker",
+      "feature": "Cert Requirements",
+      "status": "FOUND",
+      "detail": "Requirements visible for each tier",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "JobSeeker",
+      "feature": "Profile Portfolio",
+      "status": "FOUND",
+      "detail": "Portfolio/shareable profile visible",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "JobSeeker",
+      "feature": "Shareable Credentials",
+      "status": "FOUND",
+      "detail": "Shareable credential link available",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "JobSeeker",
+      "feature": "Leaderboard Ranking",
+      "status": "FOUND",
+      "detail": "Leaderboard visible for competitive proof",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "JobSeeker",
+      "feature": "Find Badges",
+      "status": "HIDDEN",
+      "detail": "No 'Badges' in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Find Leaderboard",
+      "status": "FOUND",
+      "detail": "Leaderboard in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Leaderboard Data",
+      "status": "FOUND",
+      "detail": "Leaderboard with rankings visible",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Find Head-to-Head",
+      "status": "FOUND",
+      "detail": "Head-to-Head in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Head-to-Head Content",
+      "status": "FOUND",
+      "detail": "Head-to-Head page has content",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Find Lab Challenges",
+      "status": "FOUND",
+      "detail": "Lab Challenges in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Lab Challenges Content",
+      "status": "FOUND",
+      "detail": "Lab Challenges page has content",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Find Battle Pass",
+      "status": "HIDDEN",
+      "detail": "No 'Battle Pass' in sidebar \u2014 user doesn't know it exists",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "Find Boss Missions",
+      "status": "HIDDEN",
+      "detail": "No 'Boss Missions' in sidebar \u2014 user doesn't know it exists",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Competitive",
+      "feature": "Find Seasons",
+      "status": "HIDDEN",
+      "detail": "No 'Seasons' in sidebar",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Competitive",
+      "feature": "XP/Progress Visibility",
+      "status": "FOUND",
+      "detail": "XP and progress visible on dashboard",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Command Center",
+      "status": "FOUND",
+      "detail": "Page has 5876 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Courses",
+      "status": "FOUND",
+      "detail": "Page has 7940 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Learning Paths",
+      "status": "FOUND",
+      "detail": "Page has 762 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Master Classes",
+      "status": "FOUND",
+      "detail": "Page has 1379 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Certifications",
+      "status": "FOUND",
+      "detail": "Page has 2237 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Labs",
+      "status": "FOUND",
+      "detail": "Page has 94301 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Practical Exams",
+      "status": "FOUND",
+      "detail": "Page has 1190 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Skill Assessments",
+      "status": "FOUND",
+      "detail": "Page has 1563 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Leaderboard",
+      "status": "FOUND",
+      "detail": "Page has 985 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Head-to-Head",
+      "status": "FOUND",
+      "detail": "Page has 764 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Lab Challenges",
+      "status": "FOUND",
+      "detail": "Page has 806 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Explorer",
+      "feature": "Feature: Community",
+      "status": "CONFUSING",
+      "detail": "Page has empty state: '['no activity']'",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Guilds",
+      "status": "FOUND",
+      "detail": "Page has 804 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Teams",
+      "status": "FOUND",
+      "detail": "Page has 770 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Leaderboard",
+      "status": "FOUND",
+      "detail": "Page has 1817 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Admin Workspace",
+      "status": "FOUND",
+      "detail": "Page has 3042 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Notifications",
+      "status": "FOUND",
+      "detail": "Page has 788 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Explorer",
+      "feature": "Feature: Settings",
+      "status": "FOUND",
+      "detail": "Page has 862 chars, CTA: True",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Mobile",
+      "feature": "Hamburger Menu",
+      "status": "FOUND",
+      "detail": "Menu opens, 26 visible links",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Mobile",
+      "feature": "Mobile Course Cards",
+      "status": "FOUND",
+      "detail": "20 course cards visible",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Mobile",
+      "feature": "Mobile Lab Cards",
+      "status": "FOUND",
+      "detail": "168 lab cards visible",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Mobile",
+      "feature": "Mobile Profile",
+      "status": "FOUND",
+      "detail": "Profile accessible on mobile",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Mobile",
+      "feature": "Mobile Settings",
+      "status": "FOUND",
+      "detail": "Settings accessible on mobile",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Mobile",
+      "feature": "Mobile Overflow",
+      "status": "FOUND",
+      "detail": "No horizontal overflow",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Returning",
+      "feature": "Resume Activity",
+      "status": "FOUND",
+      "detail": "Resume/continue section visible on dashboard",
+      "fix": ""
+    },
+    {
+      "severity": "HIGH",
+      "persona": "Returning",
+      "feature": "Progress Overview",
+      "status": "FOUND",
+      "detail": "Progress visible on dashboard",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Returning",
+      "feature": "Community Activity",
+      "status": "FOUND",
+      "detail": "Community activity visible",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Returning",
+      "feature": "Notifications",
+      "status": "FOUND",
+      "detail": "Notifications page accessible",
+      "fix": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "persona": "Returning",
+      "feature": "Achievements",
+      "status": "FOUND",
+      "detail": "Achievements page has content",
+      "fix": ""
+    }
+  ]
+}

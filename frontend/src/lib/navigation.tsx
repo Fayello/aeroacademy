@@ -165,10 +165,12 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
           id: "learn",
           label: "Learn",
           items: [
+            { href: "/dashboard/starting-point", tKey: "nav.startingPoint", icon: "Compass", label: "Starting Point" },
             { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
             { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
             { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
             { href: "/dashboard/training/my-sessions", tKey: "nav.trainerDashboard", icon: "BookOpen", label: "Trainer Dashboard" },
+            { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
           ],
         },
         {
@@ -177,6 +179,20 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
           items: [
             { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
             { href: "/dashboard/exams", tKey: "nav.exams", icon: "ShieldCheck", label: "Practical Exams" },
+            { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Assessments" },
+          ],
+        },
+        {
+          id: "compete",
+          label: "Compete",
+          items: [
+            { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Trophy", label: "Leaderboard" },
+            { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
+            { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
+            { href: "/dashboard/battle-pass", tKey: "nav.battlePass", icon: "Ticket", label: "Battle Pass" },
+            { href: "/dashboard/boss-missions", tKey: "nav.bossMissions", icon: "Skull", label: "Boss Missions" },
+            { href: "/dashboard/seasons", tKey: "nav.seasons", icon: "Calendar", label: "Seasons" },
+            { href: "/dashboard/badges", tKey: "nav.badges", icon: "Medal", label: "Badges" },
           ],
         },
         {
@@ -186,6 +202,15 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
             { href: "/dashboard/academics", tKey: "nav.academics", icon: "ClipboardCheck", label: "Academic Record" },
             { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
             { href: "/dashboard/gradebook", tKey: "nav.gradebook", icon: "Target", label: "Gradebook" },
+          ],
+        },
+        {
+          id: "community",
+          label: "Community",
+          items: [
+            { href: "/dashboard/community", tKey: "nav.community", icon: "Megaphone", label: "Community" },
+            { href: "/dashboard/guilds", tKey: "nav.guilds", icon: "Shield", label: "Guilds" },
+            { href: "/dashboard/teams", tKey: "nav.teams", icon: "Users", label: "Teams" },
           ],
         },
         {
@@ -223,6 +248,8 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
           items: [
             { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
             { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
+            { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
+            { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
           ],
         },
         {
@@ -230,7 +257,19 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
           label: "Practice",
           items: [
             { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
-            { href: "/dashboard/certifications", tKey: "nav.certifications", icon: "Award", label: "Certifications" },
+            { href: "/dashboard/exams", tKey: "nav.exams", icon: "ClipboardCheck", label: "Exams" },
+            { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Assessments" },
+          ],
+        },
+        {
+          id: "compete",
+          label: "Compete",
+          items: [
+            { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Trophy", label: "Leaderboard" },
+            { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
+            { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
+            { href: "/dashboard/battle-pass", tKey: "nav.battlePass", icon: "Ticket", label: "Battle Pass" },
+            { href: "/dashboard/seasons", tKey: "nav.seasons", icon: "Calendar", label: "Seasons" },
           ],
         },
         {
@@ -240,6 +279,15 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
             { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Building2", label: "Enterprise Portal" },
             { href: "/dashboard/curricula", tKey: "nav.curricula", icon: "BookOpen", label: "Curricula" },
             { href: "/dashboard/gradebook", tKey: "nav.gradebook", icon: "ClipboardCheck", label: "Gradebook" },
+          ],
+        },
+        {
+          id: "community",
+          label: "Community",
+          items: [
+            { href: "/dashboard/community", tKey: "nav.community", icon: "Megaphone", label: "Community" },
+            { href: "/dashboard/guilds", tKey: "nav.guilds", icon: "Shield", label: "Guilds" },
+            { href: "/dashboard/teams", tKey: "nav.teams", icon: "Users", label: "Teams" },
           ],
         },
         {
@@ -275,6 +323,7 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
         id: "learn",
         label: "Learn",
         items: [
+          { href: "/dashboard/starting-point", tKey: "nav.startingPoint", icon: "Compass", label: "Starting Point" },
           { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
           { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
           { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
@@ -294,9 +343,13 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
         id: "compete",
         label: "Compete",
         items: [
-          { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Swords", label: "Leaderboard" },
+          { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Trophy", label: "Leaderboard" },
           { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
           { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
+          { href: "/dashboard/battle-pass", tKey: "nav.battlePass", icon: "Ticket", label: "Battle Pass" },
+          { href: "/dashboard/boss-missions", tKey: "nav.bossMissions", icon: "Skull", label: "Boss Missions" },
+          { href: "/dashboard/seasons", tKey: "nav.seasons", icon: "Calendar", label: "Seasons" },
+          { href: "/dashboard/badges", tKey: "nav.badges", icon: "Medal", label: "Badges" },
         ],
       },
       {
@@ -306,7 +359,6 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
           { href: "/dashboard/community", tKey: "nav.community", icon: "Megaphone", label: "Community" },
           { href: "/dashboard/guilds", tKey: "nav.guilds", icon: "Shield", label: "Guilds" },
           { href: "/dashboard/teams", tKey: "nav.teams", icon: "Users", label: "Teams" },
-          { href: "/dashboard/leaderboard", tKey: "nav.leaderboard", icon: "Trophy", label: "Leaderboard" },
         ],
       },
       {

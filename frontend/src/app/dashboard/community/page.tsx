@@ -180,6 +180,10 @@ export default function CommunityPage() {
               <div className="text-center py-8">
                 <Activity size={24} className="text-slate-600 mx-auto mb-2" />
                 <p className="text-sm text-slate-500">No activity yet</p>
+                <p className="text-xs text-slate-600 mt-1">Complete a lab or course to see your activity here</p>
+                <Link href="/dashboard/courses" className="inline-flex mt-3 px-3 py-1.5 text-xs font-medium text-[#7AD62A] border border-[#7AD62A]/20 rounded-lg hover:bg-[#7AD62A]/10 transition-colors">
+                  Browse Courses
+                </Link>
               </div>
             )}
           </div>
@@ -217,6 +221,10 @@ export default function CommunityPage() {
               <div className="text-center py-8">
                 <Trophy size={24} className="text-slate-600 mx-auto mb-2" />
                 <p className="text-sm text-slate-500">No leaderboard data</p>
+                <p className="text-xs text-slate-600 mt-1">Complete labs and assessments to climb the ranks</p>
+                <Link href="/dashboard/labs" className="inline-flex mt-3 px-3 py-1.5 text-xs font-medium text-[#7AD62A] border border-[#7AD62A]/20 rounded-lg hover:bg-[#7AD62A]/10 transition-colors">
+                  Start a Lab
+                </Link>
               </div>
             )}
           </div>

@@ -1,5 +1,30 @@
 {
   "dependencies": {
     "bcrypt": "^6.0.0"
-  }
+  },
+  "name": "aeroacademy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "puppeteer-core": "^25.10.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fayello/aeroacademy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fayello/aeroacademy/issues"
+  },
+  "homepage": "https://github.com/Fayello/aeroacademy#readme",
+  "description": ""
 }
