@@ -150,7 +150,7 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                 />
               </div>
-              {errors.email && <p className="text-xs text-red-600 mt-1.5">{errors.email.message}</p>}
+              {errors.email && <p role="alert" className="text-xs text-red-600 mt-1.5">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -165,7 +165,7 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                 />
               </div>
-              {errors.password && <p className="text-xs text-red-600 mt-1.5">{errors.password.message}</p>}
+              {errors.password && <p role="alert" className="text-xs text-red-600 mt-1.5">{errors.password.message}</p>}
             </div>
 
             <div className="flex items-center justify-between">
