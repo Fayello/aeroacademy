@@ -1,0 +1,467 @@
+[
+  {
+    "title": "Python ML Pipeline with Scikit-Learn",
+    "description": "Build an end-to-end machine learning pipeline using Scikit-Learn with data preprocessing, feature engineering, model training, and evaluation.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "ML_FOUNDATIONS",
+    "briefing": "### Mission Objective\nConstruct a production-ready ML pipeline using Scikit-Learn that handles data loading, preprocessing, feature engineering, model training, evaluation, and serialization. The pipeline should handle missing values, encode categorical features, and scale numerical features.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: scikit-learn, pandas, numpy, matplotlib, seaborn\n- Dataset: customer_churn.csv (pre-provided)\n- Working directory: /opt/ml-pipeline\n\n### Tasks\n1. Load the customer churn dataset and perform EDA (shape, dtypes, missing values)\n2. Create a preprocessing pipeline with SimpleImputer, StandardScaler, OneHotEncoder\n3. Split data into train/test sets with stratification\n4. Train a Random Forest classifier with hyperparameter tuning via GridSearchCV\n5. Evaluate the model with accuracy, precision, recall, F1, and ROC-AUC\n6. Generate a classification report and confusion matrix\n7. Serialize the trained pipeline using joblib\n8. Write a prediction script that loads the pipeline and predicts on new data\n\n### Permissions & Access\n- Container runs as root\n- pip packages pre-installed\n- Dataset at /opt/ml-pipeline/data/customer_churn.csv",
+    "tasks": [
+      "Load the customer churn dataset and perform EDA (shape, dtypes, missing values)",
+      "Create a preprocessing pipeline with SimpleImputer, StandardScaler, OneHotEncoder",
+      "Split data into train/test sets with stratification",
+      "Train a Random Forest classifier with hyperparameter tuning via GridSearchCV",
+      "Evaluate the model with accuracy, precision, recall, F1, and ROC-AUC",
+      "Generate a classification report and confusion matrix",
+      "Serialize the trained pipeline using joblib",
+      "Write a prediction script that loads the pipeline and predicts on new data"
+    ],
+    "flags": [
+      {"title": "EDA Script", "description": "Run: ls /opt/ml-pipeline/eda.py. Does the EDA script exist?", "ans": "eda.py", "pts": 100},
+      {"title": "Pipeline Script", "description": "Run: ls /opt/ml-pipeline/pipeline.py. Does the pipeline script exist?", "ans": "pipeline.py", "pts": 100},
+      {"title": "Train Script", "description": "Run: ls /opt/ml-pipeline/train.py. Does the training script exist?", "ans": "train.py", "pts": 100},
+      {"title": "Model Saved", "description": "Run: ls /opt/ml-pipeline/models/churn_model.joblib. Is the model serialized?", "ans": "churn_model.joblib", "pts": 150},
+      {"title": "Test Split", "description": "Run: python3 -c 'import pandas; df=pandas.read_csv(\"/opt/ml-pipeline/data/customer_churn.csv\"); print(df.shape)'. What is the shape?", "ans": "7043", "pts": 100},
+      {"title": "Pipeline Steps", "description": "Run: grep -c 'Pipeline' /opt/ml-pipeline/pipeline.py. How many Pipeline objects?", "ans": "2", "pts": 100},
+      {"title": "GridSearch", "description": "Run: grep -c 'GridSearchCV' /opt/ml-pipeline/train.py. Is GridSearchCV used?", "ans": "1", "pts": 100},
+      {"title": "Metrics Output", "description": "Run: ls /opt/ml-pipeline/reports/metrics.json. Was the metrics report generated?", "ans": "metrics.json", "pts": 100},
+      {"title": "Confusion Matrix", "description": "Run: ls /opt/ml-pipeline/reports/confusion_matrix.png. Was the confusion matrix saved?", "ans": "confusion_matrix.png", "pts": 150},
+      {"title": "Predict Script", "description": "Run: ls /opt/ml-pipeline/predict.py. Does the prediction script exist?", "ans": "predict.py", "pts": 100}
+    ]
+  },
+  {
+    "title": "Neural Network with PyTorch: Image Classification",
+    "description": "Build and train a Convolutional Neural Network (CNN) on CIFAR-10 using PyTorch with data augmentation and learning rate scheduling.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "DEEP_LEARNING",
+    "briefing": "### Mission Objective\nImplement a CNN from scratch using PyTorch to classify CIFAR-10 images. Apply modern deep learning techniques including data augmentation, batch normalization, learning rate scheduling, and early stopping.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: torch, torchvision, matplotlib, tqdm\n- CIFAR-10 dataset auto-downloaded on first run\n- Working directory: /opt/pytorch-cnn\n\n### Tasks\n1. Set up data loading with transforms (RandomHorizontalFlip, Normalize, ToTensor)\n2. Define a CNN architecture: Conv→BN→ReLU→Pool → Conv→BN→ReLU→Pool → FC layers\n3. Implement training loop with CrossEntropyLoss and Adam optimizer\n4. Add ReduceLROnPlateau learning rate scheduler\n5. Implement early stopping based on validation loss\n6. Train for 10 epochs and track train/validation accuracy\n7. Plot training curves (loss and accuracy vs epochs)\n8. Save the best model checkpoint and generate a classification report\n\n### Permissions & Access\n- Container runs as root\n- PyTorch CPU-only version installed\n- Model checkpoints saved to /opt/pytorch-cnn/checkpoints/",
+    "tasks": [
+      "Set up data loading with transforms (RandomHorizontalFlip, Normalize, ToTensor)",
+      "Define a CNN architecture: Conv→BN→ReLU→Pool → Conv→BN→ReLU→Pool → FC layers",
+      "Implement training loop with CrossEntropyLoss and Adam optimizer",
+      "Add ReduceLROnPlateau learning rate scheduler",
+      "Implement early stopping based on validation loss",
+      "Train for 10 epochs and track train/validation accuracy",
+      "Plot training curves (loss and accuracy vs epochs)",
+      "Save the best model checkpoint and generate a classification report"
+    ],
+    "flags": [
+      {"title": "Model Script", "description": "Run: ls /opt/pytorch-cnn/model.py. Does the model definition exist?", "ans": "model.py", "pts": 100},
+      {"title": "Train Script", "description": "Run: ls /opt/pytorch-cnn/train.py. Does the training script exist?", "ans": "train.py", "pts": 100},
+      {"title": "Checkpoint Saved", "description": "Run: ls /opt/pytorch-cnn/checkpoints/best_model.pth. Is the checkpoint saved?", "ans": "best_model.pth", "pts": 150},
+      {"title": "Training Curves", "description": "Run: ls /opt/pytorch-cnn/reports/training_curves.png. Were curves plotted?", "ans": "training_curves.png", "pts": 100},
+      {"title": "Batch Norm", "description": "Run: grep -c 'BatchNorm' /opt/pytorch-cnn/model.py. How many BatchNorm layers?", "ans": "2", "pts": 100},
+      {"title": "Data Augmentation", "description": "Run: grep -c 'RandomHorizontalFlip\\|RandomCrop' /opt/pytorch-cnn/train.py. Augmentation used?", "ans": "1", "pts": 100},
+      {"title": "LR Scheduler", "description": "Run: grep -c 'ReduceLROnPlateau' /opt/pytorch-cnn/train.py. LR scheduler used?", "ans": "1", "pts": 100},
+      {"title": "Early Stopping", "description": "Run: grep -c 'early_stop' /opt/pytorch-cnn/train.py. Early stopping implemented?", "ans": "1", "pts": 150},
+      {"title": "Classification Report", "description": "Run: ls /opt/pytorch-cnn/reports/classification_report.txt. Report generated?", "ans": "classification_report.txt", "pts": 100},
+      {"title": "Model Accuracy", "description": "Run: python3 -c 'import torch; m=torch.load(\"/opt/pytorch-cnn/checkpoints/best_model.pth\"); print(type(m))'. Model loaded?", "ans": "OrderedDict", "pts": 100}
+    ]
+  },
+  {
+    "title": "NLP Text Classification with Transformers",
+    "description": "Fine-tune a pre-trained BERT model for sentiment analysis using Hugging Face Transformers library.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1400,
+    "estimatedMinutes": 130,
+    "skillName": "NLP",
+    "briefing": "### Mission Objective\nFine-tune a BERT-base model for binary sentiment classification using the Hugging Face Transformers library. Implement proper tokenization, training with mixed precision, and evaluation with standard NLP metrics.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: transformers, datasets, torch, evaluate, accelerate\n- Dataset: IMDB reviews subset (5000 samples)\n- Working directory: /opt/nlp-sentiment\n\n### Tasks\n1. Load the IMDB dataset using the datasets library\n2. Tokenize reviews using BERT tokenizer with padding and truncation\n3. Create a PyTorch DataLoader with batching and shuffling\n4. Load bert-base-uncased with a classification head\n5. Fine-tune for 3 epochs with AdamW optimizer and linear warmup\n6. Evaluate on test set with accuracy, precision, recall, F1\n7. Save the fine-tuned model and tokenizer\n8. Create an inference script for predicting sentiment on new text\n\n### Permissions & Access\n- Container runs as root\n- Hugging Face cache at ~/.cache/huggingface\n- Pre-downloaded BERT model weights",
+    "tasks": [
+      "Load the IMDB dataset using the datasets library",
+      "Tokenize reviews using BERT tokenizer with padding and truncation",
+      "Create a PyTorch DataLoader with batching and shuffling",
+      "Load bert-base-uncased with a classification head",
+      "Fine-tune for 3 epochs with AdamW optimizer and linear warmup",
+      "Evaluate on test set with accuracy, precision, recall, F1",
+      "Save the fine-tuned model and tokenizer",
+      "Create an inference script for predicting sentiment on new text"
+    ],
+    "flags": [
+      {"title": "Dataset Loaded", "description": "Run: ls /opt/nlp-sentiment/data/processed/. Are train/test splits saved?", "ans": "train", "pts": 100},
+      {"title": "Tokenizer Script", "description": "Run: ls /opt/nlp-sentiment/tokenize.py. Does it exist?", "ans": "tokenize.py", "pts": 100},
+      {"title": "Model Script", "description": "Run: ls /opt/nlp-sentiment/model.py. Does it exist?", "ans": "model.py", "pts": 100},
+      {"title": "Train Script", "description": "Run: ls /opt/nlp-sentiment/train.py. Does it exist?", "ans": "train.py", "pts": 100},
+      {"title": "Fine-tuned Model", "description": "Run: ls /opt/nlp-sentiment/checkpoints/best_model/. Is the model saved?", "ans": "best_model", "pts": 150},
+      {"title": "Tokenizer Saved", "description": "Run: ls /opt/nlp-sentiment/checkpoints/best_model/tokenizer.json. Tokenizer saved?", "ans": "tokenizer.json", "pts": 100},
+      {"title": "Training Log", "description": "Run: ls /opt/nlp-sentiment/reports/training_log.csv. Training log exists?", "ans": "training_log.csv", "pts": 100},
+      {"title": "Evaluation Metrics", "description": "Run: ls /opt/nlp-sentiment/reports/metrics.json. Metrics file exists?", "ans": "metrics.json", "pts": 100},
+      {"title": "Inference Script", "description": "Run: ls /opt/nlp-sentiment/inference.py. Inference script exists?", "ans": "inference.py", "pts": 100},
+      {"title": "F1 Score", "description": "Run: python3 -c 'import json; m=json.load(open(\"/opt/nlp-sentiment/reports/metrics.json\")); print(m[\"f1\"])'. F1 > 0.85?", "ans": "0.85", "pts": 150}
+    ]
+  },
+  {
+    "title": "Computer Vision: Object Detection with YOLOv8",
+    "description": "Train a YOLOv8 model for custom object detection on a labeled dataset with proper evaluation metrics.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1400,
+    "estimatedMinutes": 140,
+    "skillName": "COMPUTER_VISION",
+    "briefing": "### Mission Objective\nTrain a YOLOv8 model for custom object detection. Prepare the dataset in YOLO format, configure training with augmentation, and evaluate using mAP, precision, and recall metrics.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: ultralytics, opencv-python-headless, pillow\n- Dataset: custom_bounding_boxes (200 annotated images)\n- Working directory: /opt/yolo-detection\n\n### Tasks\n1. Organize the dataset into train/val/test splits (70/15/15)\n2. Create a data.yaml configuration file for YOLO\n3. Train YOLOv8n (nano) for 50 epochs with image size 640\n4. Configure augmentation: mosaic, mixup, HSV adjustments\n5. Evaluate on the validation set with mAP@0.5 and mAP@0.5:0.95\n6. Run inference on test images and save bounding box visualizations\n7. Export the trained model to ONNX format\n8. Create a metrics comparison chart for training vs validation\n\n### Permissions & Access\n- Container runs as root\n- Ultralytics YOLOv8 pre-installed\n- Dataset at /opt/yolo-detection/dataset/",
+    "tasks": [
+      "Organize the dataset into train/val/test splits (70/15/15)",
+      "Create a data.yaml configuration file for YOLO",
+      "Train YOLOv8n (nano) for 50 epochs with image size 640",
+      "Configure augmentation: mosaic, mixup, HSV adjustments",
+      "Evaluate on the validation set with mAP@0.5 and mAP@0.5:0.95",
+      "Run inference on test images and save bounding box visualizations",
+      "Export the trained model to ONNX format",
+      "Create a metrics comparison chart for training vs validation"
+    ],
+    "flags": [
+      {"title": "Data YAML", "description": "Run: ls /opt/yolo-detection/data.yaml. Does the config exist?", "ans": "data.yaml", "pts": 100},
+      {"title": "Train Split", "description": "Run: ls /opt/yolo-detection/dataset/train/images | wc -l. How many training images?", "ans": "140", "pts": 100},
+      {"title": "Val Split", "description": "Run: ls /opt/yolo-detection/dataset/val/images | wc -l. How many validation images?", "ans": "30", "pts": 100},
+      {"title": "Test Split", "description": "Run: ls /opt/yolo-detection/dataset/test/images | wc -l. How many test images?", "ans": "30", "pts": 100},
+      {"title": "Model Trained", "description": "Run: ls /opt/yolo-detection/runs/detect/train/weights/best.pt. Best weights saved?", "ans": "best.pt", "pts": 150},
+      {"title": "ONNX Export", "description": "Run: ls /opt/yolo-detection/exports/model.onnx. ONNX model exported?", "ans": "model.onnx", "pts": 150},
+      {"title": "Inference Results", "description": "Run: ls /opt/yolo-detection/runs/detect/predict/ | wc -l. How many result images?", "ans": "30", "pts": 100},
+      {"title": "Metrics Chart", "description": "Run: ls /opt/yolo-detection/reports/metrics_chart.png. Chart generated?", "ans": "metrics_chart.png", "pts": 100},
+      {"title": "mAP Score", "description": "Run: python3 -c 'import yaml; d=yaml.safe_load(open(\"/opt/yolo-detection/data.yaml\")); print(d[\"nc\"])'. How many classes?", "ans": "5", "pts": 100},
+      {"title": "Epochs Completed", "description": "Run: grep -c 'epoch' /opt/yolo-detection/runs/detect/train/results.csv. Training epochs logged?", "ans": "50", "pts": 100}
+    ]
+  },
+  {
+    "title": "MLOps: MLflow Experiment Tracking and Model Registry",
+    "description": "Set up MLflow for experiment tracking, model versioning, and deployment with a PostgreSQL backend.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "MLOPS",
+    "briefing": "### Mission Objective\nConfigure MLflow with a PostgreSQL backend for experiment tracking. Log parameters, metrics, and artifacts for multiple model runs. Register the best model and create a loading script for production inference.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: mlflow, scikit-learn, pandas, sqlalchemy, psycopg2\n- PostgreSQL database pre-configured\n- Working directory: /opt/mlflow-tracker\n\n### Tasks\n1. Configure MLflow to use PostgreSQL as the backend store\n2. Set up artifact storage at /opt/mlflow-tracker/artifacts\n3. Run 3 experiments with different hyperparameters for Random Forest\n4. Log parameters, metrics (accuracy, f1, auc), and model artifacts\n5. Compare experiments and identify the best performing model\n6. Register the best model in the MLflow Model Registry\n7. Transition the model to 'Production' stage\n8. Write a loading script that fetches the production model for inference\n\n### Permissions & Access\n- Container runs as root\n- MLflow UI accessible at localhost:5000\n- PostgreSQL connection: postgresql://mlflow:mlflow@localhost:5432/mlflow",
+    "tasks": [
+      "Configure MLflow to use PostgreSQL as the backend store",
+      "Set up artifact storage at /opt/mlflow-tracker/artifacts",
+      "Run 3 experiments with different hyperparameters for Random Forest",
+      "Log parameters, metrics (accuracy, f1, auc), and model artifacts",
+      "Compare experiments and identify the best performing model",
+      "Register the best model in the MLflow Model Registry",
+      "Transition the model to 'Production' stage",
+      "Write a loading script that fetches the production model for inference"
+    ],
+    "flags": [
+      {"title": "MLflow Config", "description": "Run: ls /opt/mlflow-tracker/mlflow.yaml. Config file exists?", "ans": "mlflow.yaml", "pts": 100},
+      {"title": "Artifacts Dir", "description": "Run: ls -d /opt/mlflow-tracker/artifacts. Artifact directory exists?", "ans": "artifacts", "pts": 100},
+      {"title": "Experiments Run", "description": "Run: mlflow experiments list | grep -c 'RandomForest'. How many experiments?", "ans": "3", "pts": 100},
+      {"title": "Params Logged", "description": "Run: mlflow runs list --experiment-id 1 | grep -c 'params'. Parameters logged?", "ans": "3", "pts": 100},
+      {"title": "Metrics Logged", "description": "Run: mlflow runs list --experiment-id 1 | grep -c 'metrics'. Metrics logged?", "ans": "3", "pts": 100},
+      {"title": "Model Registered", "description": "Run: mlflow models list | grep RandomForest. Model registered?", "ans": "RandomForest", "pts": 150},
+      {"title": "Production Stage", "description": "Run: mlflow models stages list --name RandomForest | grep Production. In production?", "ans": "Production", "pts": 150},
+      {"title": "Load Script", "description": "Run: ls /opt/mlflow-tracker/load_model.py. Loading script exists?", "ans": "load_model.py", "pts": 100},
+      {"title": "MLflow Running", "description": "Run: curl -s http://localhost:5000/api/2.0/experiments/list | grep experiment_id | wc -l. MLflow API responding?", "ans": "3", "pts": 100},
+      {"title": "Best Model URI", "description": "Run: mlflow models describe --name RandomForest --version 1 | grep 'URI'. Model URI present?", "ans": "mlflow-artifacts", "pts": 100}
+    ]
+  },
+  {
+    "title": "LLM Prompt Engineering and RAG Pipeline",
+    "description": "Build a Retrieval-Augmented Generation (RAG) pipeline with vector embeddings and a local LLM for question answering.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1500,
+    "estimatedMinutes": 140,
+    "skillName": "LLMS",
+    "briefing": "### Mission Objective\nBuild a RAG pipeline that ingests documents, creates vector embeddings, performs similarity search, and uses a language model to answer questions based on retrieved context.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: langchain, chromadb, sentence-transformers, openai\n- Document corpus: 50 technical PDFs pre-processed to text\n- Working directory: /opt/rag-pipeline\n\n### Tasks\n1. Load and chunk the document corpus (512 tokens per chunk, 50 overlap)\n2. Create embeddings using sentence-transformers/all-MiniLM-L6-v2\n3. Store embeddings in a ChromaDB vector database\n4. Create a retrieval function with similarity search (top_k=5)\n5. Build a RAG chain combining retrieval with LLM generation\n6. Test with 10 sample questions and evaluate answer quality\n7. Add metadata filtering for document source and date\n8. Create an interactive CLI for querying the RAG system\n\n### Permissions & Access\n- Container runs as root\n- ChromaDB data at /opt/rag-pipeline/chromadb/\n- Embeddings cached to avoid recomputation",
+    "tasks": [
+      "Load and chunk the document corpus (512 tokens per chunk, 50 overlap)",
+      "Create embeddings using sentence-transformers/all-MiniLM-L6-v2",
+      "Store embeddings in a ChromaDB vector database",
+      "Create a retrieval function with similarity search (top_k=5)",
+      "Build a RAG chain combining retrieval with LLM generation",
+      "Test with 10 sample questions and evaluate answer quality",
+      "Add metadata filtering for document source and date",
+      "Create an interactive CLI for querying the RAG system"
+    ],
+    "flags": [
+      {"title": "Chunking Script", "description": "Run: ls /opt/rag-pipeline/chunk_documents.py. Chunking script exists?", "ans": "chunk_documents.py", "pts": 100},
+      {"title": "Embeddings Script", "description": "Run: ls /opt/rag-pipeline/create_embeddings.py. Embedding script exists?", "ans": "create_embeddings.py", "pts": 100},
+      {"title": "ChromaDB Created", "description": "Run: ls -d /opt/rag-pipeline/chromadb/. ChromaDB directory exists?", "ans": "chromadb", "pts": 100},
+      {"title": "Vector Count", "description": "Run: python3 -c 'import chromadb; c=chromadb.PersistentClient(\"/opt/rag-pipeline/chromadb\"); print(c.get_collection(\"docs\").count())'. Vectors stored?", "ans": "500", "pts": 150},
+      {"title": "Retrieval Script", "description": "Run: ls /opt/rag-pipeline/retrieve.py. Retrieval function exists?", "ans": "retrieve.py", "pts": 100},
+      {"title": "RAG Chain", "description": "Run: ls /opt/rag-pipeline/rag_chain.py. RAG chain implemented?", "ans": "rag_chain.py", "pts": 100},
+      {"title": "Test Results", "description": "Run: ls /opt/rag-pipeline/reports/test_results.json. Test results saved?", "ans": "test_results.json", "pts": 100},
+      {"title": "Interactive CLI", "description": "Run: ls /opt/rag-pipeline/query_cli.py. CLI script exists?", "ans": "query_cli.py", "pts": 100},
+      {"title": "Metadata Filter", "description": "Run: grep -c 'where' /opt/rag-pipeline/retrieve.py. Metadata filtering implemented?", "ans": "1", "pts": 100},
+      {"title": "Chunk Size", "description": "Run: grep 'chunk_size' /opt/rag-pipeline/chunk_documents.py. Chunk size is 512?", "ans": "512", "pts": 100}
+    ]
+  },
+  {
+    "title": "Time Series Forecasting with LSTM",
+    "description": "Build an LSTM-based time series forecasting model for stock price prediction with proper sequence handling.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "DEEP_LEARNING",
+    "briefing": "### Mission Objective\nDevelop an LSTM neural network for time series forecasting. Prepare sequential data, build the model architecture, train with proper validation, and evaluate forecasting performance.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: torch, pandas, numpy, matplotlib, scikit-learn\n- Dataset: stock_prices.csv (daily OHLCV data)\n- Working directory: /opt/lstm-forecast\n\n### Tasks\n1. Load and normalize stock price data using MinMaxScaler\n2. Create sequences of 60 days to predict the next day's closing price\n3. Split into train/validation/test sets respecting time order\n4. Define LSTM model: 2 layers, 128 hidden units, dropout 0.2\n5. Train with MSELoss and Adam optimizer for 30 epochs\n6. Plot predictions vs actual values on the test set\n7. Calculate RMSE, MAE, and MAPE metrics\n8. Save the model and scaler for future predictions\n\n### Permissions & Access\n- Container runs as root\n- PyTorch CPU-only installed\n- Data at /opt/lstm-forecast/data/stock_prices.csv",
+    "tasks": [
+      "Load and normalize stock price data using MinMaxScaler",
+      "Create sequences of 60 days to predict the next day's closing price",
+      "Split into train/validation/test sets respecting time order",
+      "Define LSTM model: 2 layers, 128 hidden units, dropout 0.2",
+      "Train with MSELoss and Adam optimizer for 30 epochs",
+      "Plot predictions vs actual values on the test set",
+      "Calculate RMSE, MAE, and MAPE metrics",
+      "Save the model and scaler for future predictions"
+    ],
+    "flags": [
+      {"title": "Data Loaded", "description": "Run: wc -l /opt/lstm-forecast/data/stock_prices.csv. How many rows?", "ans": "2500", "pts": 100},
+      {"title": "Sequence Script", "description": "Run: ls /opt/lstm-forecast/create_sequences.py. Sequence creation script exists?", "ans": "create_sequences.py", "pts": 100},
+      {"title": "Model Script", "description": "Run: ls /opt/lstm-forecast/model.py. LSTM model defined?", "ans": "model.py", "pts": 100},
+      {"title": "Train Script", "description": "Run: ls /opt/lstm-forecast/train.py. Training script exists?", "ans": "train.py", "pts": 100},
+      {"title": "Model Saved", "description": "Run: ls /opt/lstm-forecast/checkpoints/lstm_forecast.pth. Model saved?", "ans": "lstm_forecast.pth", "pts": 150},
+      {"title": "Scaler Saved", "description": "Run: ls /opt/lstm-forecast/checkpoints/scaler.pkl. Scaler saved?", "ans": "scaler.pkl", "pts": 100},
+      {"title": "Prediction Plot", "description": "Run: ls /opt/lstm-forecast/reports/predictions.png. Plot generated?", "ans": "predictions.png", "pts": 100},
+      {"title": "Metrics File", "description": "Run: ls /opt/lstm-forecast/reports/metrics.json. Metrics saved?", "ans": "metrics.json", "pts": 100},
+      {"title": "LSTM Layers", "description": "Run: grep -c 'LSTM' /opt/lstm-forecast/model.py. How many LSTM layers?", "ans": "2", "pts": 100},
+      {"title": "Sequence Length", "description": "Run: grep 'seq_length\\|sequence_length\\|LOOKBACK' /opt/lstm-forecast/create_sequences.py. Length is 60?", "ans": "60", "pts": 100}
+    ]
+  },
+  {
+    "title": "XGBoost Hyperparameter Optimization with Optuna",
+    "description": "Use Optuna for automated hyperparameter optimization of an XGBoost model with cross-validation.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "ML_FOUNDATIONS",
+    "briefing": "### Mission Objective\nOptimize XGBoost hyperparameters using Optuna's TPE sampler with 5-fold cross-validation. Compare optimized model against baseline with default parameters and visualize the optimization history.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: xgboost, optuna, scikit-learn, pandas, matplotlib\n- Dataset: house_prices.csv (regression task)\n- Working directory: /opt/xgboost-optuna\n\n### Tasks\n1. Load the house prices dataset and perform basic EDA\n2. Create a baseline XGBoost model with default parameters\n3. Define an Optuna objective function optimizing RMSE\n4. Run 50 trials of hyperparameter optimization\n5. Configure parameters: max_depth, learning_rate, n_estimators, subsample\n6. Use 5-fold cross-validation within each trial\n7. Compare baseline vs optimized model performance\n8. Plot optimization history and parameter importance\n\n### Permissions & Access\n- Container runs as root\n- Optuna dashboard accessible at localhost:8080\n- Data at /opt/xgboost-optuna/data/house_prices.csv",
+    "tasks": [
+      "Load the house prices dataset and perform basic EDA",
+      "Create a baseline XGBoost model with default parameters",
+      "Define an Optuna objective function optimizing RMSE",
+      "Run 50 trials of hyperparameter optimization",
+      "Configure parameters: max_depth, learning_rate, n_estimators, subsample",
+      "Use 5-fold cross-validation within each trial",
+      "Compare baseline vs optimized model performance",
+      "Plot optimization history and parameter importance"
+    ],
+    "flags": [
+      {"title": "Baseline Script", "description": "Run: ls /opt/xgboost-optuna/baseline.py. Baseline script exists?", "ans": "baseline.py", "pts": 100},
+      {"title": "Optuna Script", "description": "Run: ls /opt/xgboost-optuna/optimize.py. Optimization script exists?", "ans": "optimize.py", "pts": 100},
+      {"title": "Best Params", "description": "Run: ls /opt/xgboost-optuna/reports/best_params.json. Best params saved?", "ans": "best_params.json", "pts": 100},
+      {"title": "Optimization Plot", "description": "Run: ls /opt/xgboost-optuna/reports/optimization_history.png. Plot exists?", "ans": "optimization_history.png", "pts": 100},
+      {"title": "Importance Plot", "description": "Run: ls /opt/xgboost-optuna/reports/param_importance.png. Importance plot exists?", "ans": "param_importance.png", "pts": 100},
+      {"title": "Comparison Report", "description": "Run: ls /opt/xgboost-optuna/reports/comparison.md. Comparison report exists?", "ans": "comparison.md", "pts": 100},
+      {"title": "Trials Count", "description": "Run: grep -c 'trial' /opt/xgboost-optuna/reports/optimization_history.csv. 50 trials logged?", "ans": "50", "pts": 100},
+      {"title": "CV Folds", "description": "Run: grep 'n_splits\\|cv' /opt/xgboost-optuna/optimize.py | head -1. 5-fold CV used?", "ans": "5", "pts": 100},
+      {"title": "Best RMSE", "description": "Run: python3 -c 'import json; p=json.load(open(\"/opt/xgboost-optuna/reports/best_params.json\")); print(p.get(\"best_rmse\"))'. Best RMSE logged?", "ans": "best_rmse", "pts": 150},
+      {"title": "XGBoost Model", "description": "Run: ls /opt/xgboost-optuna/models/xgboost_optimized.json. Optimized model saved?", "ans": "xgboost_optimized.json", "pts": 100}
+    ]
+  },
+  {
+    "title": "GAN Image Generation with PyTorch",
+    "description": "Implement a Generative Adversarial Network (GAN) to generate handwritten digits from the MNIST dataset.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1500,
+    "estimatedMinutes": 140,
+    "skillName": "DEEP_LEARNING",
+    "briefing": "### Mission Objective\nBuild and train a GAN from scratch using PyTorch. The generator learns to create realistic handwritten digits while the discriminator learns to distinguish real from fake. Monitor training stability and generate sample outputs.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: torch, torchvision, matplotlib, tqdm\n- MNIST dataset auto-downloaded on first run\n- Working directory: /opt/gan-digits\n\n### Tasks\n1. Define the Generator network: Linear→BN→ReLU→Linear→BN→ReLU→Linear→Tanh\n2. Define the Discriminator network: Linear→LeakyReLU→Dropout→Linear→Sigmoid\n3. Initialize weights using the DCGAN initialization scheme\n4. Train with Binary Cross Entropy loss and Adam optimizer (lr=0.0002, beta1=0.5)\n5. Train for 50 epochs, alternating generator and discriminator updates\n6. Save generated sample grids every 5 epochs\n7. Plot generator and discriminator loss curves\n8. Save the final generator model for inference\n\n### Permissions & Access\n- Container runs as root\n- PyTorch CPU-only installed\n- Samples saved to /opt/gan-digits/samples/",
+    "tasks": [
+      "Define the Generator network: Linear→BN→ReLU→Linear→BN→ReLU→Linear→Tanh",
+      "Define the Discriminator network: Linear→LeakyReLU→Dropout→Linear→Sigmoid",
+      "Initialize weights using the DCGAN initialization scheme",
+      "Train with Binary Cross Entropy loss and Adam optimizer (lr=0.0002, beta1=0.5)",
+      "Train for 50 epochs, alternating generator and discriminator updates",
+      "Save generated sample grids every 5 epochs",
+      "Plot generator and discriminator loss curves",
+      "Save the final generator model for inference"
+    ],
+    "flags": [
+      {"title": "Generator Script", "description": "Run: ls /opt/gan-digits/generator.py. Generator model defined?", "ans": "generator.py", "pts": 100},
+      {"title": "Discriminator Script", "description": "Run: ls /opt/gan-digits/discriminator.py. Discriminator model defined?", "ans": "discriminator.py", "pts": 100},
+      {"title": "Train Script", "description": "Run: ls /opt/gan-digits/train.py. Training script exists?", "ans": "train.py", "pts": 100},
+      {"title": "Samples Generated", "description": "Run: ls /opt/gan-digits/samples/ | wc -l. How many sample grids?", "ans": "10", "pts": 100},
+      {"title": "Loss Curves", "description": "Run: ls /opt/gan-digits/reports/loss_curves.png. Loss plot generated?", "ans": "loss_curves.png", "pts": 100},
+      {"title": "Generator Saved", "description": "Run: ls /opt/gan-digits/checkpoints/generator_final.pth. Generator saved?", "ans": "generator_final.pth", "pts": 150},
+      {"title": "Weight Init", "description": "Run: grep -c 'weights_init\\|DCGAN' /opt/gan-digits/train.py. DCGAN init used?", "ans": "1", "pts": 100},
+      {"title": "Learning Rate", "description": "Run: grep '0.0002\\|lr.*0.0002' /opt/gan-digits/train.py. LR is 0.0002?", "ans": "0.0002", "pts": 100},
+      {"title": "Beta1", "description": "Run: grep 'beta1.*0.5\\|betas.*0.5' /opt/gan-digits/train.py. Beta1 is 0.5?", "ans": "0.5", "pts": 100},
+      {"title": "Epoch Count", "description": "Run: grep 'epochs\\|EPOCHS' /opt/gan-digits/train.py | head -1. 50 epochs?", "ans": "50", "pts": 100}
+    ]
+  },
+  {
+    "title": "Semantic Segmentation with U-Net",
+    "description": "Implement a U-Net architecture for semantic segmentation on medical images with Dice loss and data augmentation.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1600,
+    "estimatedMinutes": 150,
+    "skillName": "COMPUTER_VISION",
+    "briefing": "### Mission Objective\nBuild a U-Net model for semantic segmentation of medical images (lung CT scans). Implement the encoder-decoder architecture with skip connections, use Dice loss for imbalanced classes, and evaluate with IoU and Dice coefficients.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: torch, torchvision, opencv-python-headless, albumentations\n- Dataset: lung_masks (100 CT scans with segmentation masks)\n- Working directory: /opt/unet-segmentation\n\n### Tasks\n1. Create a data augmentation pipeline using Albumentations\n2. Implement U-Net encoder with pre-trained ResNet18 backbone\n3. Implement decoder with transposed convolutions and skip connections\n4. Define Dice loss function for handling class imbalance\n5. Train for 25 epochs with Adam optimizer and learning rate warmup\n6. Evaluate with IoU (Jaccard) and Dice coefficients on test set\n7. Generate prediction masks overlayed on original images\n8. Save the model and create a visualization dashboard\n\n### Permissions & Access\n- Container runs as root\n- Albumentations for augmentation\n- Data at /opt/unet-segmentation/data/",
+    "tasks": [
+      "Create a data augmentation pipeline using Albumentations",
+      "Implement U-Net encoder with pre-trained ResNet18 backbone",
+      "Implement decoder with transposed convolutions and skip connections",
+      "Define Dice loss function for handling class imbalance",
+      "Train for 25 epochs with Adam optimizer and learning rate warmup",
+      "Evaluate with IoU (Jaccard) and Dice coefficients on test set",
+      "Generate prediction masks overlayed on original images",
+      "Save the model and create a visualization dashboard"
+    ],
+    "flags": [
+      {"title": "UNet Script", "description": "Run: ls /opt/unet-segmentation/unet.py. U-Net model defined?", "ans": "unet.py", "pts": 100},
+      {"title": "Augmentation", "description": "Run: ls /opt/unet-segmentation/augmentations.py. Augmentation pipeline exists?", "ans": "augmentations.py", "pts": 100},
+      {"title": "Dice Loss", "description": "Run: grep -c 'DiceLoss\\|dice_loss' /opt/unet-segmentation/losses.py. Dice loss implemented?", "ans": "1", "pts": 100},
+      {"title": "Model Saved", "description": "Run: ls /opt/unet-segmentation/checkpoints/unet_best.pth. Model saved?", "ans": "unet_best.pth", "pts": 150},
+      {"title": "Predictions", "description": "Run: ls /opt/unet-segmentation/reports/predictions/ | wc -l. Prediction images generated?", "ans": "20", "pts": 100},
+      {"title": "Metrics File", "description": "Run: ls /opt/unet-segmentation/reports/metrics.json. Metrics saved?", "ans": "metrics.json", "pts": 100},
+      {"title": "Dashboard", "description": "Run: ls /opt/unet-segmentation/reports/dashboard.html. Dashboard created?", "ans": "dashboard.html", "pts": 100},
+      {"title": "ResNet Backbone", "description": "Run: grep -c 'resnet18\\|ResNet18' /opt/unet-segmentation/unet.py. ResNet18 used?", "ans": "1", "pts": 100},
+      {"title": "Skip Connections", "description": "Run: grep -c 'cat\\|concat\\|skip' /opt/unet-segmentation/unet.py. Skip connections present?", "ans": "3", "pts": 100},
+      {"title": "IoU Score", "description": "Run: python3 -c 'import json; m=json.load(open(\"/opt/unet-segmentation/reports/metrics.json\")); print(m.get(\"iou\"))'. IoU > 0.7?", "ans": "0.7", "pts": 150}
+    ]
+  },
+  {
+    "title": "Federated Learning Simulation",
+    "description": "Implement federated learning with multiple simulated clients training a shared model without sharing raw data.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1600,
+    "estimatedMinutes": 140,
+    "skillName": "MLOPS",
+    "briefing": "### Mission Objective\nSimulate a federated learning setup where multiple clients train locally on their data partitions and only share model updates with a central server. Implement FedAvg aggregation and compare against centralized training.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: torch, scikit-learn, pandas, numpy\n- Dataset: MNIST partitioned across 5 simulated clients\n- Working directory: /opt/federated-learning\n\n### Tasks\n1. Partition MNIST dataset across 5 clients using Dirichlet distribution\n2. Implement a local training function for each client\n3. Build a central server that collects model updates\n4. Implement FedAvg (Federated Averaging) aggregation algorithm\n5. Run 10 rounds of federated training with 3 local epochs each\n6. Compare federated model accuracy vs centralized baseline\n7. Plot convergence curves for both approaches\n8. Save the final federated model and generate a comparison report\n\n### Permissions & Access\n- Container runs as root\n- PyTorch CPU-only installed\n- Results saved to /opt/federated-learning/results/",
+    "tasks": [
+      "Partition MNIST dataset across 5 clients using Dirichlet distribution",
+      "Implement a local training function for each client",
+      "Build a central server that collects model updates",
+      "Implement FedAvg (Federated Averaging) aggregation algorithm",
+      "Run 10 rounds of federated training with 3 local epochs each",
+      "Compare federated model accuracy vs centralized baseline",
+      "Plot convergence curves for both approaches",
+      "Save the final federated model and generate a comparison report"
+    ],
+    "flags": [
+      {"title": "Client Partition", "description": "Run: ls /opt/federated-learning/partition.py. Data partitioning script exists?", "ans": "partition.py", "pts": 100},
+      {"title": "Local Training", "description": "Run: ls /opt/federated-learning/client.py. Client training script exists?", "ans": "client.py", "pts": 100},
+      {"title": "Server Script", "description": "Run: ls /opt/federated-learning/server.py. Server aggregation script exists?", "ans": "server.py", "pts": 100},
+      {"title": "FedAvg Impl", "description": "Run: grep -c 'fedavg\\|FedAvg\\|federated_averaging' /opt/federated-learning/server.py. FedAvg implemented?", "ans": "1", "pts": 150},
+      {"title": "Model Saved", "description": "Run: ls /opt/federated-learning/checkpoints/federated_model.pth. Model saved?", "ans": "federated_model.pth", "pts": 100},
+      {"title": "Convergence Plot", "description": "Run: ls /opt/federated-learning/reports/convergence.png. Plot generated?", "ans": "convergence.png", "pts": 100},
+      {"title": "Comparison Report", "description": "Run: ls /opt/federated-learning/reports/comparison.md. Report exists?", "ans": "comparison.md", "pts": 100},
+      {"title": "Client Count", "description": "Run: grep 'num_clients\\|NUM_CLIENTS' /opt/federated-learning/server.py | head -1. 5 clients?", "ans": "5", "pts": 100},
+      {"title": "Rounds Count", "description": "Run: grep 'num_rounds\\|NUM_ROUNDS\\|rounds' /opt/federated-learning/server.py | head -1. 10 rounds?", "ans": "10", "pts": 100},
+      {"title": "Local Epochs", "description": "Run: grep 'local_epochs\\|LOCAL_EPOCHS' /opt/federated-learning/client.py | head -1. 3 local epochs?", "ans": "3", "pts": 100}
+    ]
+  },
+  {
+    "title": "Recommender System with Matrix Factorization",
+    "description": "Build a movie recommendation system using Alternating Least Squares (ALS) matrix factorization with implicit feedback.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "ML_FOUNDATIONS",
+    "briefing": "### Mission Objective\nCreate a collaborative filtering recommender system using ALS matrix factorization. Handle implicit feedback (views, clicks), evaluate with precision@K and NDCG@K, and build an API for real-time recommendations.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: implicit, scikit-learn, pandas, numpy, scipy\n- Dataset: movie_ratings.csv (user-item interactions)\n- Working directory: /opt/recommender\n\n### Tasks\n1. Load and preprocess the movie ratings dataset\n2. Create a user-item interaction matrix from implicit feedback\n3. Train an ALS model with 100 factors and regularization=0.01\n4. Generate top-10 recommendations for 10 test users\n5. Evaluate with precision@10, recall@10, and NDCG@10\n6. Create a similarity-based item-to-item recommendation function\n7. Build a simple Flask API for serving recommendations\n8. Save the model and create an evaluation dashboard\n\n### Permissions & Access\n- Container runs as root\n- Implicit library for ALS\n- Data at /opt/recommender/data/movie_ratings.csv",
+    "tasks": [
+      "Load and preprocess the movie ratings dataset",
+      "Create a user-item interaction matrix from implicit feedback",
+      "Train an ALS model with 100 factors and regularization=0.01",
+      "Generate top-10 recommendations for 10 test users",
+      "Evaluate with precision@10, recall@10, and NDCG@10",
+      "Create a similarity-based item-to-item recommendation function",
+      "Build a simple Flask API for serving recommendations",
+      "Save the model and create an evaluation dashboard"
+    ],
+    "flags": [
+      {"title": "Data Loaded", "description": "Run: wc -l /opt/recommender/data/movie_ratings.csv. How many ratings?", "ans": "100000", "pts": 100},
+      {"title": "ALS Script", "description": "Run: ls /opt/recommender/train_als.py. ALS training script exists?", "ans": "train_als.py", "pts": 100},
+      {"title": "Model Saved", "description": "Run: ls /opt/recommender/checkpoints/als_model.npz. Model saved?", "ans": "als_model.npz", "pts": 150},
+      {"title": "Evaluation Script", "description": "Run: ls /opt/recommender/evaluate.py. Evaluation script exists?", "ans": "evaluate.py", "pts": 100},
+      {"title": "Metrics File", "description": "Run: ls /opt/recommender/reports/metrics.json. Metrics saved?", "ans": "metrics.json", "pts": 100},
+      {"title": "API Script", "description": "Run: ls /opt/recommender/api.py. Flask API script exists?", "ans": "api.py", "pts": 100},
+      {"title": "Dashboard", "description": "Run: ls /opt/recommender/reports/dashboard.html. Dashboard exists?", "ans": "dashboard.html", "pts": 100},
+      {"title": "Factors Count", "description": "Run: grep 'factors\\|n_factors\\|NUM_FACTORS' /opt/recommender/train_als.py | head -1. 100 factors?", "ans": "100", "pts": 100},
+      {"title": "Regularization", "description": "Run: grep 'regularization\\|reg' /opt/recommender/train_als.py | head -1. Reg is 0.01?", "ans": "0.01", "pts": 100},
+      {"title": "Precision Score", "description": "Run: python3 -c 'import json; m=json.load(open(\"/opt/recommender/reports/metrics.json\")); print(m.get(\"precision_at_10\"))'. P@10 > 0.1?", "ans": "0.1", "pts": 150}
+    ]
+  },
+  {
+    "title": "AutoML Pipeline with Feature Selection",
+    "description": "Build an automated machine learning pipeline that handles feature selection, model comparison, and ensemble creation.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "MLOPS",
+    "briefing": "### Mission Objective\nCreate an AutoML system that automatically selects features, compares multiple models, performs hyperparameter tuning, and creates an ensemble of the top performers. Generate a comprehensive report of all experiments.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: scikit-learn, pandas, numpy, xgboost, lightgbm, matplotlib\n- Dataset: credit_card_fraud.csv (imbalanced classification)\n- Working directory: /opt/automl\n\n### Tasks\n1. Load the fraud detection dataset and analyze class imbalance\n2. Implement feature selection using mutual information and recursive feature elimination\n3. Compare 5 models: LogisticRegression, RandomForest, XGBoost, LightGBM, SVM\n4. Perform hyperparameter tuning with RandomizedSearchCV for each model\n5. Handle class imbalance with SMOTE oversampling\n6. Create a VotingClassifier ensemble from top 3 models\n7. Generate a comprehensive comparison report with visualizations\n8. Save the final ensemble model and feature selector\n\n### Permissions & Access\n- Container runs as root\n- Imblearn for SMOTE\n- Data at /opt/automl/data/credit_card_fraud.csv",
+    "tasks": [
+      "Load the fraud detection dataset and analyze class imbalance",
+      "Implement feature selection using mutual information and recursive feature elimination",
+      "Compare 5 models: LogisticRegression, RandomForest, XGBoost, LightGBM, SVM",
+      "Perform hyperparameter tuning with RandomizedSearchCV for each model",
+      "Handle class imbalance with SMOTE oversampling",
+      "Create a VotingClassifier ensemble from top 3 models",
+      "Generate a comprehensive comparison report with visualizations",
+      "Save the final ensemble model and feature selector"
+    ],
+    "flags": [
+      {"title": "Feature Selection", "description": "Run: ls /opt/automl/feature_selection.py. Feature selection script exists?", "ans": "feature_selection.py", "pts": 100},
+      {"title": "Model Comparison", "description": "Run: ls /opt/automl/model_comparison.py. Model comparison script exists?", "ans": "model_comparison.py", "pts": 100},
+      {"title": "SMOTE Applied", "description": "Run: grep -c 'SMOTE\\|smote' /opt/automl/pipeline.py. SMOTE used?", "ans": "1", "pts": 100},
+      {"title": "Ensemble Created", "description": "Run: grep -c 'VotingClassifier\\|voting' /opt/automl/ensemble.py. Ensemble created?", "ans": "1", "pts": 150},
+      {"title": "Comparison Report", "description": "Run: ls /opt/automl/reports/model_comparison.csv. Comparison report exists?", "ans": "model_comparison.csv", "pts": 100},
+      {"title": "Visualizations", "description": "Run: ls /opt/automl/reports/ | grep -c 'png\\|jpg'. How many visualization files?", "ans": "3", "pts": 100},
+      {"title": "Final Model", "description": "Run: ls /opt/automl/models/ensemble_model.joblib. Ensemble model saved?", "ans": "ensemble_model.joblib", "pts": 100},
+      {"title": "Feature Selector", "description": "Run: ls /opt/automl/models/feature_selector.joblib. Feature selector saved?", "ans": "feature_selector.joblib", "pts": 100},
+      {"title": "Models Compared", "description": "Run: wc -l /opt/automl/reports/model_comparison.csv. 5 models compared?", "ans": "6", "pts": 100},
+      {"title": "SMOTE Sampling", "description": "Run: grep 'sampling_strategy\\|sampling_strategy' /opt/automl/pipeline.py. Sampling strategy defined?", "ans": "sampling_strategy", "pts": 100}
+    ]
+  },
+  {
+    "title": "Deep Reinforcement Learning: CartPole with DQN",
+    "description": "Implement a Deep Q-Network (DQN) agent that learns to balance a CartPole using experience replay and target network.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1600,
+    "estimatedMinutes": 150,
+    "skillName": "DEEP_LEARNING",
+    "briefing": "### Mission Objective\nBuild a DQN agent from scratch that learns to solve the CartPole-v1 environment. Implement experience replay buffer, target network with periodic updates, and epsilon-greedy exploration.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: gymnasium, torch, numpy, matplotlib\n- OpenAI Gymnasium CartPole-v1 environment\n- Working directory: /opt/dqn-cartpole\n\n### Tasks\n1. Implement the Q-Network: 4→128→128→2 fully connected layers\n2. Create an Experience Replay Buffer with capacity 10000\n3. Implement the DQN training algorithm with target network\n4. Configure epsilon-greedy with decay from 1.0 to 0.01\n5. Train for 500 episodes and track rewards\n6. Plot episode rewards and moving average over time\n7. Save the trained model and create an evaluation video\n8. Test the trained agent and report average score over 100 episodes\n\n### Permissions & Access\n- Container runs as root\n- PyTorch CPU-only installed\n- Gymnasium for environment",
+    "tasks": [
+      "Implement the Q-Network: 4→128→128→2 fully connected layers",
+      "Create an Experience Replay Buffer with capacity 10000",
+      "Implement the DQN training algorithm with target network",
+      "Configure epsilon-greedy with decay from 1.0 to 0.01",
+      "Train for 500 episodes and track rewards",
+      "Plot episode rewards and moving average over time",
+      "Save the trained model and create an evaluation video",
+      "Test the trained agent and report average score over 100 episodes"
+    ],
+    "flags": [
+      {"title": "Q-Network", "description": "Run: ls /opt/dqn-cartpole/q_network.py. Q-Network defined?", "ans": "q_network.py", "pts": 100},
+      {"title": "Replay Buffer", "description": "Run: ls /opt/dqn-cartpole/replay_buffer.py. Replay buffer implemented?", "ans": "replay_buffer.py", "pts": 100},
+      {"title": "Train Script", "description": "Run: ls /opt/dqn-cartpole/train.py. Training script exists?", "ans": "train.py", "pts": 100},
+      {"title": "Model Saved", "description": "Run: ls /opt/dqn-cartpole/checkpoints/dqn_best.pth. Model saved?", "ans": "dqn_best.pth", "pts": 150},
+      {"title": "Rewards Plot", "description": "Run: ls /opt/dqn-cartpole/reports/rewards_curve.png. Plot generated?", "ans": "rewards_curve.png", "pts": 100},
+      {"title": "Evaluation Video", "description": "Run: ls /opt/dqn-cartpole/reports/eval_video.mp4. Video created?", "ans": "eval_video.mp4", "pts": 100},
+      {"title": "Target Network", "description": "Run: grep -c 'target_net\\|target_network' /opt/dqn-cartpole/train.py. Target network used?", "ans": "2", "pts": 100},
+      {"title": "Epsilon Decay", "description": "Run: grep 'epsilon.*decay\\|eps_decay' /opt/dqn-cartpole/train.py. Epsilon decay implemented?", "ans": "decay", "pts": 100},
+      {"title": "Buffer Capacity", "description": "Run: grep 'capacity\\|BUFFER_SIZE' /opt/dqn-cartpole/replay_buffer.py | head -1. Capacity is 10000?", "ans": "10000", "pts": 100},
+      {"title": "Avg Score", "description": "Run: python3 -c 'import json; r=json.load(open(\"/opt/dqn-cartpole/reports/results.json\")); print(r.get(\"avg_score\"))'. Avg score > 400?", "ans": "400", "pts": 150}
+    ]
+  },
+  {
+    "title": "Attention Mechanism Visualization and Interpretability",
+    "description": "Implement a Transformer-based text classifier with attention visualization and model interpretability tools.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1500,
+    "estimatedMinutes": 130,
+    "skillName": "NLP",
+    "briefing": "### Mission Objective\nBuild a Transformer-based text classifier with custom multi-head attention. Implement attention visualization, SHAP-based feature importance, and LIME explanations to understand model decisions.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: torch, transformers, shap, lime, matplotlib, seaborn\n- Dataset: AG News (4-class text classification)\n- Working directory: /opt/attention-interp\n\n### Tasks\n1. Implement a custom Transformer encoder with multi-head self-attention\n2. Train on AG News dataset for text classification\n3. Extract attention weights from all layers\n4. Create attention heatmap visualizations for sample texts\n5. Implement SHAP-based feature importance for text inputs\n6. Create LIME explanations for individual predictions\n7. Build a comparison dashboard of attention vs SHAP vs LIME\n8. Evaluate model accuracy and interpretability metrics\n\n### Permissions & Access\n- Container runs as root\n- SHAP and LIME pre-installed\n- Data auto-downloaded on first run",
+    "tasks": [
+      "Implement a custom Transformer encoder with multi-head self-attention",
+      "Train on AG News dataset for text classification",
+      "Extract attention weights from all layers",
+      "Create attention heatmap visualizations for sample texts",
+      "Implement SHAP-based feature importance for text inputs",
+      "Create LIME explanations for individual predictions",
+      "Build a comparison dashboard of attention vs SHAP vs LIME",
+      "Evaluate model accuracy and interpretability metrics"
+    ],
+    "flags": [
+      {"title": "Transformer Model", "description": "Run: ls /opt/attention-interp/transformer.py. Custom Transformer defined?", "ans": "transformer.py", "pts": 100},
+      {"title": "Attention Viz", "description": "Run: ls /opt/attention-interp/attention_viz.py. Attention visualization exists?", "ans": "attention_viz.py", "pts": 100},
+      {"title": "SHAP Script", "description": "Run: ls /opt/attention-interp/shap_explainer.py. SHAP explainer exists?", "ans": "shap_explainer.py", "pts": 100},
+      {"title": "LIME Script", "description": "Run: ls /opt/attention-interp/lime_explainer.py. LIME explainer exists?", "ans": "lime_explainer.py", "pts": 100},
+      {"title": "Heatmaps", "description": "Run: ls /opt/attention-interp/reports/attention_heatmaps/ | wc -l. How many heatmaps?", "ans": "10", "pts": 100},
+      {"title": "Dashboard", "description": "Run: ls /opt/attention-interp/reports/interpretability_dashboard.html. Dashboard exists?", "ans": "interpretability_dashboard.html", "pts": 150},
+      {"title": "Model Saved", "description": "Run: ls /opt/attention-interp/checkpoints/transformer_best.pth. Model saved?", "ans": "transformer_best.pth", "pts": 100},
+      {"title": "Multi-Head", "description": "Run: grep -c 'MultiheadAttention\\|multi_head' /opt/attention-interp/transformer.py. Multi-head attention used?", "ans": "1", "pts": 100},
+      {"title": "Accuracy", "description": "Run: python3 -c 'import json; m=json.load(open(\"/opt/attention-interp/reports/metrics.json\")); print(m.get(\"accuracy\"))'. Accuracy > 0.88?", "ans": "0.88", "pts": 150},
+      {"title": "Layers Count", "description": "Run: grep 'num_layers\\|n_layers\\|NUM_LAYERS' /opt/attention-interp/transformer.py | head -1. How many layers?", "ans": "4", "pts": 100}
+    ]
+  }
+]

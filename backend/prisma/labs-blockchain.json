@@ -1,0 +1,812 @@
+[
+  {
+    "title": "ERC-20 Token Deployment",
+    "description": "Deploy a custom ERC-20 token on a local blockchain with minting, burning, and transfer functionality.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 80,
+    "skillName": "SOLIDITY",
+    "briefing": "### Mission Objective\nWrite, compile, and deploy a custom ERC-20 token smart contract on a local Hardhat blockchain. Implement minting, burning, and transfer functions with proper access control.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin pre-installed\n- Working directory: /opt/erc20-lab\n\n### Tasks\n1. Initialize a Hardhat project with Solidity 0.8.x\n2. Create an ERC-20 token contract inheriting OpenZeppelin ERC20\n3. Add mint function with onlyOwner modifier\n4. Add burn function that destroys caller's tokens\n5. Add token metadata (name, symbol, decimals)\n6. Write deployment script using Hardhat Ignition or ethers\n7. Deploy to local Hardhat network\n8. Write tests verifying token functionality\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20, Hardhat, and OpenZeppelin pre-installed\n- Local blockchain starts automatically",
+    "tasks": [
+      "Initialize a Hardhat project with Solidity 0.8.x",
+      "Create an ERC-20 token contract inheriting OpenZeppelin ERC20",
+      "Add mint function with onlyOwner modifier",
+      "Add burn function that destroys caller's tokens",
+      "Add token metadata (name, symbol, decimals)",
+      "Write deployment script using Hardhat Ignition or ethers",
+      "Deploy to local Hardhat network",
+      "Write tests verifying token functionality"
+    ],
+    "flags": [
+      {
+        "title": "Hardhat Project",
+        "description": "Run: ls /opt/erc20-lab/hardhat.config.js. Does Hardhat config exist?",
+        "ans": "hardhat.config.js",
+        "pts": 75
+      },
+      {
+        "title": "Solidity Contract",
+        "description": "Run: ls /opt/erc20-lab/contracts/MyToken.sol. Does the contract exist?",
+        "ans": "MyToken.sol",
+        "pts": 100
+      },
+      {
+        "title": "ERC20 Inherited",
+        "description": "Run: grep -c 'ERC20' /opt/erc20-lab/contracts/MyToken.sol. Does it inherit ERC20?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Mint Function",
+        "description": "Run: grep -c 'mint' /opt/erc20-lab/contracts/MyToken.sol. Is mint function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Burn Function",
+        "description": "Run: grep -c 'burn' /opt/erc20-lab/contracts/MyToken.sol. Is burn function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Only Owner",
+        "description": "Run: grep -c 'onlyOwner\\|Ownable' /opt/erc20-lab/contracts/MyToken.sol. Is access control present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Deployment Script",
+        "description": "Run: ls /opt/erc20-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 125
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/erc20-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Token Deployed",
+        "description": "Run: cd /opt/erc20-lab && npx hardhat run scripts/deploy.js --network localhost. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Solidity Version",
+        "description": "Run: grep 'pragma solidity' /opt/erc20-lab/contracts/MyToken.sol. Version 0.8.x?",
+        "ans": "0.8",
+        "pts": 75
+      }
+    ]
+  },
+  {
+    "title": "NFT Marketplace Smart Contracts",
+    "description": "Build NFT marketplace smart contracts with listing, buying, and royalty support using ERC-721.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "DAPP_DEV",
+    "briefing": "### Mission Objective\nDevelop a complete NFT marketplace using Solidity smart contracts. Implement ERC-721 NFT minting, marketplace listing, buying, and creator royalty payments using the EIP-2981 standard.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat, OpenZeppelin, and Ethers.js\n- Working directory: /opt/nft-marketplace-lab\n\n### Tasks\n1. Create an ERC-721 NFT contract with metadata URI\n2. Implement the marketplace contract for listings\n3. Add buy function with ETH transfer to seller\n4. Implement creator royalties (EIP-2981)\n5. Add listing fee mechanism for marketplace revenue\n6. Create auction functionality for NFTs\n7. Write comprehensive tests for all marketplace functions\n8. Deploy and verify contracts on local network\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- OpenZeppelin contracts available",
+    "tasks": [
+      "Create an ERC-721 NFT contract with metadata URI",
+      "Implement the marketplace contract for listings",
+      "Add buy function with ETH transfer to seller",
+      "Implement creator royalties (EIP-2981)",
+      "Add listing fee mechanism for marketplace revenue",
+      "Create auction functionality for NFTs",
+      "Write comprehensive tests for all marketplace functions",
+      "Deploy and verify contracts on local network"
+    ],
+    "flags": [
+      {
+        "title": "NFT Contract",
+        "description": "Run: ls /opt/nft-marketplace-lab/contracts/NFT.sol. Does NFT contract exist?",
+        "ans": "NFT.sol",
+        "pts": 100
+      },
+      {
+        "title": "Marketplace Contract",
+        "description": "Run: ls /opt/nft-marketplace-lab/contracts/Marketplace.sol. Does marketplace contract exist?",
+        "ans": "Marketplace.sol",
+        "pts": 100
+      },
+      {
+        "title": "ERC721 Inherited",
+        "description": "Run: grep -c 'ERC721' /opt/nft-marketplace-lab/contracts/NFT.sol. Does NFT inherit ERC721?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Listing Function",
+        "description": "Run: grep -c 'list\\|listing\\|listNFT' /opt/nft-marketplace-lab/contracts/Marketplace.sol. Listing function present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Buy Function",
+        "description": "Run: grep -c 'buy\\|purchase\\|buyNFT' /opt/nft-marketplace-lab/contracts/Marketplace.sol. Buy function present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Royalty Support",
+        "description": "Run: grep -c 'royalty\\|EIP2981\\|royaltyInfo' /opt/nft-marketplace-lab/contracts/*.sol. Royalty support present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Listing Fee",
+        "description": "Run: grep -c 'listingFee\\|fee\\|platformFee' /opt/nft-marketplace-lab/contracts/Marketplace.sol. Listing fee present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Auction Function",
+        "description": "Run: grep -c 'auction\\|bid\\|highestBid' /opt/nft-marketplace-lab/contracts/Marketplace.sol. Auction present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/nft-marketplace-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/nft-marketplace-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "DeFi Lending Pool",
+    "description": "Build a DeFi lending pool with interest accrual, collateral requirements, and liquidation mechanisms.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "DEFI",
+    "briefing": "### Mission Objective\nImplement a decentralized lending pool smart contract. Users can supply ETH to earn interest and borrow against their collateral. Implement interest rate models and liquidation mechanics.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin\n- Working directory: /opt/lending-pool-lab\n\n### Tasks\n1. Create a LendingPool contract with supply and withdraw\n2. Implement borrow function with collateral requirements\n3. Add interest accrual using utilization-based rate model\n4. Implement liquidation when collateral ratio falls below threshold\n5. Create a price oracle interface for collateral valuation\n6. Add health factor calculation for positions\n7. Write tests for all lending pool operations\n8. Create deployment and initialization scripts\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- OpenZeppelin math libraries available",
+    "tasks": [
+      "Create a LendingPool contract with supply and withdraw",
+      "Implement borrow function with collateral requirements",
+      "Add interest accrual using utilization-based rate model",
+      "Implement liquidation when collateral ratio falls below threshold",
+      "Create a price oracle interface for collateral valuation",
+      "Add health factor calculation for positions",
+      "Write tests for all lending pool operations",
+      "Create deployment and initialization scripts"
+    ],
+    "flags": [
+      {
+        "title": "Lending Pool Contract",
+        "description": "Run: ls /opt/lending-pool-lab/contracts/LendingPool.sol. Does lending pool exist?",
+        "ans": "LendingPool.sol",
+        "pts": 100
+      },
+      {
+        "title": "Supply Function",
+        "description": "Run: grep -c 'supply\\|deposit\\|lend' /opt/lending-pool-lab/contracts/LendingPool.sol. Supply function present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Borrow Function",
+        "description": "Run: grep -c 'borrow' /opt/lending-pool-lab/contracts/LendingPool.sol. Borrow function present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Interest Model",
+        "description": "Run: grep -c 'interest\\|rate\\|utilization' /opt/lending-pool-lab/contracts/*.sol. Interest model present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Liquidation",
+        "description": "Run: grep -c 'liquidat\\|seize\\|healthFactor' /opt/lending-pool-lab/contracts/*.sol. Liquidation logic present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Oracle Interface",
+        "description": "Run: grep -c 'oracle\\|price\\|getPrice' /opt/lending-pool-lab/contracts/*.sol. Oracle interface present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Health Factor",
+        "description": "Run: grep -c 'healthFactor\\|health_factor\\|collateralRatio' /opt/lending-pool-lab/contracts/*.sol. Health factor present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/lending-pool-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Withdraw Function",
+        "description": "Run: grep -c 'withdraw' /opt/lending-pool-lab/contracts/LendingPool.sol. Withdraw function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/lending-pool-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "DAO Governance Voting",
+    "description": "Build a DAO governance system with proposal creation, voting, and execution of on-chain actions.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "WEB3_JS",
+    "briefing": "### Mission Objective\nImplement a DAO governance system where token holders can create proposals, vote with their tokens, and execute approved actions automatically. Implement time-locked execution and quorum requirements.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin Governor\n- Working directory: /opt/dao-governance-lab\n\n### Tasks\n1. Create a governance token contract (ERC-20 with voting extensions)\n2. Implement a Governor contract using OpenZeppelin Governor\n3. Add proposal creation with description metadata\n4. Implement voting with token-weighted votes\n5. Add quorum and threshold requirements\n6. Create time-lock executor for approved proposals\n7. Write end-to-end governance tests\n8. Deploy the complete governance system\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- OpenZeppelin Governor contracts available",
+    "tasks": [
+      "Create a governance token contract (ERC-20 with voting extensions)",
+      "Implement a Governor contract using OpenZeppelin Governor",
+      "Add proposal creation with description metadata",
+      "Implement voting with token-weighted votes",
+      "Add quorum and threshold requirements",
+      "Create time-lock executor for approved proposals",
+      "Write end-to-end governance tests",
+      "Deploy the complete governance system"
+    ],
+    "flags": [
+      {
+        "title": "Governance Token",
+        "description": "Run: ls /opt/dao-governance-lab/contracts/GovToken.sol. Does governance token exist?",
+        "ans": "GovToken.sol",
+        "pts": 100
+      },
+      {
+        "title": "Governor Contract",
+        "description": "Run: ls /opt/dao-governance-lab/contracts/DAOGovernor.sol. Does governor contract exist?",
+        "ans": "DAOGovernor.sol",
+        "pts": 100
+      },
+      {
+        "title": "ERC20Votes",
+        "description": "Run: grep -c 'ERC20Votes\\|Votes\\|ERC20Permit' /opt/dao-governance-lab/contracts/GovToken.sol. Voting extension present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Proposal Creation",
+        "description": "Run: grep -c 'propose\\|proposal\\|createProposal' /opt/dao-governance-lab/contracts/*.sol. Proposal creation present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Voting Function",
+        "description": "Run: grep -c 'vote\\|castVote\\|forVotes\\|againstVotes' /opt/dao-governance-lab/contracts/*.sol. Voting present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Quorum Check",
+        "description": "Run: grep -c 'quorum\\|quorumNumerator\\|threshold' /opt/dao-governance-lab/contracts/*.sol. Quorum logic present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Time Lock",
+        "description": "Run: grep -c 'timelock\\|TimelockController\\|delay' /opt/dao-governance-lab/contracts/*.sol. Time-lock present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/dao-governance-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Execute Function",
+        "description": "Run: grep -c 'execute' /opt/dao-governance-lab/contracts/DAOGovernor.sol. Execute function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/dao-governance-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "DEX Liquidity Pool",
+    "description": "Build a decentralized exchange liquidity pool with token swaps, fee collection, and LP token rewards.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "DEFI",
+    "briefing": "### Mission Objective\nImplement a constant product (x*y=k) DEX liquidity pool. Users can provide liquidity to earn fees and swap tokens using the AMM pricing mechanism.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin\n- Working directory: /opt/dex-pool-lab\n\n### Tasks\n1. Create a LiquidityPool contract for two ERC-20 tokens\n2. Implement addLiquidity with LP token minting\n3. Implement removeLiquidity with proportional token withdrawal\n4. Add swap function with constant product formula\n5. Implement 0.3% swap fee collection\n6. Create LP token accounting and share calculation\n7. Add price oracle from pool reserves\n8. Write comprehensive tests for all pool operations\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- Test ERC-20 tokens provided",
+    "tasks": [
+      "Create a LiquidityPool contract for two ERC-20 tokens",
+      "Implement addLiquidity with LP token minting",
+      "Implement removeLiquidity with proportional token withdrawal",
+      "Add swap function with constant product formula",
+      "Implement 0.3% swap fee collection",
+      "Create LP token accounting and share calculation",
+      "Add price oracle from pool reserves",
+      "Write comprehensive tests for all pool operations"
+    ],
+    "flags": [
+      {
+        "title": "Pool Contract",
+        "description": "Run: ls /opt/dex-pool-lab/contracts/LiquidityPool.sol. Does pool contract exist?",
+        "ans": "LiquidityPool.sol",
+        "pts": 100
+      },
+      {
+        "title": "Add Liquidity",
+        "description": "Run: grep -c 'addLiquidity\\|mintLP' /opt/dex-pool-lab/contracts/LiquidityPool.sol. Add liquidity present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Remove Liquidity",
+        "description": "Run: grep -c 'removeLiquidity\\|burnLP' /opt/dex-pool-lab/contracts/LiquidityPool.sol. Remove liquidity present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Swap Function",
+        "description": "Run: grep -c 'swap\\|getAmountOut' /opt/dex-pool-lab/contracts/LiquidityPool.sol. Swap function present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Constant Product",
+        "description": "Run: grep -c 'sqrt\\|k\\|reserves\\[0\\]\\*reserves\\[1\\]' /opt/dex-pool-lab/contracts/LiquidityPool.sol. AMM formula present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Fee Collection",
+        "description": "Run: grep -c 'fee\\|0.3\\|30' /opt/dex-pool-lab/contracts/LiquidityPool.sol. Fee mechanism present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "LP Tokens",
+        "description": "Run: grep -c 'totalSupply\\|shares\\|lpToken' /opt/dex-pool-lab/contracts/LiquidityPool.sol. LP token logic present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Price Oracle",
+        "description": "Run: grep -c 'getPrice\\|spotPrice\\|reserve' /opt/dex-pool-lab/contracts/LiquidityPool.sol. Price oracle present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/dex-pool-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/dex-pool-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Multi-sig Wallet",
+    "description": "Build a multi-signature wallet requiring M-of-N approvals for transaction execution.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "SOLIDITY",
+    "briefing": "### Mission Objective\nImplement a multi-signature wallet smart contract that requires M-of-N owner approvals before executing transactions. Add proper event logging and owner management.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin\n- Working directory: /opt/multisig-lab\n\n### Tasks\n1. Create a MultiSigWallet contract with owner management\n2. Implement submitTransaction function\n3. Add confirmTransaction for owner approvals\n4. Implement executeTransaction after M confirmations\n5. Add revokeConfirmation function\n6. Create transaction event logging\n7. Implement owner add/remove with existing owner approval\n8. Write tests for all multisig operations\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Create a MultiSigWallet contract with owner management",
+      "Implement submitTransaction function",
+      "Add confirmTransaction for owner approvals",
+      "Implement executeTransaction after M confirmations",
+      "Add revokeConfirmation function",
+      "Create transaction event logging",
+      "Implement owner add/remove with existing owner approval",
+      "Write tests for all multisig operations"
+    ],
+    "flags": [
+      {
+        "title": "MultiSig Contract",
+        "description": "Run: ls /opt/multisig-lab/contracts/MultiSigWallet.sol. Does multisig contract exist?",
+        "ans": "MultiSigWallet.sol",
+        "pts": 100
+      },
+      {
+        "title": "Submit Transaction",
+        "description": "Run: grep -c 'submitTransaction' /opt/multisig-lab/contracts/MultiSigWallet.sol. Submit function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Confirm Transaction",
+        "description": "Run: grep -c 'confirmTransaction' /opt/multisig-lab/contracts/MultiSigWallet.sol. Confirm function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Execute Transaction",
+        "description": "Run: grep -c 'executeTransaction' /opt/multisig-lab/contracts/MultiSigWallet.sol. Execute function present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Revoke Confirmation",
+        "description": "Run: grep -c 'revokeConfirmation\\|revoke' /opt/multisig-lab/contracts/MultiSigWallet.sol. Revoke function present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Event Logging",
+        "description": "Run: grep -c 'event\\|emit' /opt/multisig-lab/contracts/MultiSigWallet.sol. Events defined?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Owner Management",
+        "description": "Run: grep -c 'addOwner\\|removeOwner\\|owners' /opt/multisig-lab/contracts/MultiSigWallet.sol. Owner management present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "M-of-N Logic",
+        "description": "Run: grep -c 'required\\|confirmations\\|numConfirmations' /opt/multisig-lab/contracts/MultiSigWallet.sol. M-of-N logic present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/multisig-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/multisig-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Cross-chain Bridge (Simulated)",
+    "description": "Build a simulated cross-chain bridge with lock-and-mint mechanism for token transfers between chains.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "WEB3_JS",
+    "briefing": "### Mission Objective\nImplement a simulated cross-chain bridge that locks tokens on one chain and mints wrapped tokens on another. Create relayer infrastructure for message passing between chains.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat with multiple network configurations\n- Working directory: /opt/bridge-lab\n\n### Tasks\n1. Create a BridgeVault contract that locks tokens on source chain\n2. Create a WrappedToken contract for minting on destination chain\n3. Implement message passing with Merkle proof verification\n4. Add relayer registration and message relay\n5. Implement nonce-based replay protection\n6. Create bridge fee collection mechanism\n7. Write tests simulating cross-chain transfers\n8. Deploy contracts to two local Hardhat networks\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- Two local networks configured",
+    "tasks": [
+      "Create a BridgeVault contract that locks tokens on source chain",
+      "Create a WrappedToken contract for minting on destination chain",
+      "Implement message passing with Merkle proof verification",
+      "Add relayer registration and message relay",
+      "Implement nonce-based replay protection",
+      "Create bridge fee collection mechanism",
+      "Write tests simulating cross-chain transfers",
+      "Deploy contracts to two local Hardhat networks"
+    ],
+    "flags": [
+      {
+        "title": "Bridge Vault",
+        "description": "Run: ls /opt/bridge-lab/contracts/BridgeVault.sol. Does vault contract exist?",
+        "ans": "BridgeVault.sol",
+        "pts": 100
+      },
+      {
+        "title": "Wrapped Token",
+        "description": "Run: ls /opt/bridge-lab/contracts/WrappedToken.sol. Does wrapped token exist?",
+        "ans": "WrappedToken.sol",
+        "pts": 100
+      },
+      {
+        "title": "Lock Tokens",
+        "description": "Run: grep -c 'lock\\|deposit\\|bridgeIn' /opt/bridge-lab/contracts/BridgeVault.sol. Lock mechanism present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Mint Wrapped",
+        "description": "Run: grep -c 'mint\\|bridgeOut\\|wrapped' /opt/bridge-lab/contracts/WrappedToken.sol. Mint mechanism present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Merkle Proof",
+        "description": "Run: grep -c 'merkle\\|proof\\|verify' /opt/bridge-lab/contracts/*.sol. Merkle verification present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Relayer System",
+        "description": "Run: grep -c 'relayer\\|relay\\|register' /opt/bridge-lab/contracts/*.sol. Relayer system present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Nonce Protection",
+        "description": "Run: grep -c 'nonce\\|replay\\|usedNonces' /opt/bridge-lab/contracts/*.sol. Nonce protection present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Bridge Fee",
+        "description": "Run: grep -c 'fee\\|bridgeFee' /opt/bridge-lab/contracts/BridgeVault.sol. Fee mechanism present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/bridge-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Scripts",
+        "description": "Run: ls /opt/bridge-lab/scripts/deploy-*.js | wc -l. Are there 2 deploy scripts?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Token Vesting Contract",
+    "description": "Build a token vesting contract with cliff periods, linear vesting, and beneficiary management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 80,
+    "skillName": "TOKENOMICS",
+    "briefing": "### Mission Objective\nCreate a token vesting smart contract that supports cliff periods, linear vesting schedules, and beneficiary management for token distribution.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin\n- Working directory: /opt/vesting-lab\n\n### Tasks\n1. Create a VestingContract with cliff and duration parameters\n2. Implement linear vesting with continuous release\n3. Add cliff period before any tokens are released\n4. Create beneficiary management with multiple schedules\n5. Implement revoke function for unvested tokens\n6. Add vested amount query function\n7. Create deployment with token allocation\n8. Write tests verifying vesting schedules\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- Test ERC-20 token provided",
+    "tasks": [
+      "Create a VestingContract with cliff and duration parameters",
+      "Implement linear vesting with continuous release",
+      "Add cliff period before any tokens are released",
+      "Create beneficiary management with multiple schedules",
+      "Implement revoke function for unvested tokens",
+      "Add vested amount query function",
+      "Create deployment with token allocation",
+      "Write tests verifying vesting schedules"
+    ],
+    "flags": [
+      {
+        "title": "Vesting Contract",
+        "description": "Run: ls /opt/vesting-lab/contracts/TokenVesting.sol. Does vesting contract exist?",
+        "ans": "TokenVesting.sol",
+        "pts": 100
+      },
+      {
+        "title": "Linear Vesting",
+        "description": "Run: grep -c 'linear\\|release\\|vestedAmount' /opt/vesting-lab/contracts/TokenVesting.sol. Linear vesting present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Cliff Period",
+        "description": "Run: grep -c 'cliff' /opt/vesting-lab/contracts/TokenVesting.sol. Cliff period present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Beneficiary Mgmt",
+        "description": "Run: grep -c 'beneficiary\\|schedules\\|addSchedule' /opt/vesting-lab/contracts/TokenVesting.sol. Beneficiary management present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Revoke Function",
+        "description": "Run: grep -c 'revoke' /opt/vesting-lab/contracts/TokenVesting.sol. Revoke function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Vested Query",
+        "description": "Run: grep -c 'vestedAmount\\|releasable' /opt/vesting-lab/contracts/TokenVesting.sol. Query functions present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/vesting-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/vesting-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Token Allocation",
+        "description": "Run: grep -c 'allocate\\|totalAllocation\\|token' /opt/vesting-lab/scripts/deploy.js. Token allocation present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Time Calculation",
+        "description": "Run: grep -c 'block.timestamp\\|block.timestamp\\|duration' /opt/vesting-lab/contracts/TokenVesting.sol. Time-based logic present?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "DAO Treasury Management",
+    "description": "Build a DAO treasury contract with multi-sig controls, budget allocation, and spending proposals.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "TOKENOMICS",
+    "briefing": "### Mission Objective\nDevelop a DAO treasury management system with multi-signature controls, budget allocations for departments, and spending proposal workflows with approval mechanisms.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin\n- Working directory: /opt/dao-treasury-lab\n\n### Tasks\n1. Create a Treasury contract with ETH and token support\n2. Implement multi-sig withdrawal mechanism\n3. Add budget allocation system for departments\n4. Create spending proposal workflow\n5. Implement approval voting for proposals\n6. Add spending limits and time-based restrictions\n7. Create treasury balance and reporting functions\n8. Write comprehensive tests for treasury operations\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Hardhat pre-installed\n- OpenZeppelin utilities available",
+    "tasks": [
+      "Create a Treasury contract with ETH and token support",
+      "Implement multi-sig withdrawal mechanism",
+      "Add budget allocation system for departments",
+      "Create spending proposal workflow",
+      "Implement approval voting for proposals",
+      "Add spending limits and time-based restrictions",
+      "Create treasury balance and reporting functions",
+      "Write comprehensive tests for treasury operations"
+    ],
+    "flags": [
+      {
+        "title": "Treasury Contract",
+        "description": "Run: ls /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Does treasury contract exist?",
+        "ans": "DAOTreasury.sol",
+        "pts": 100
+      },
+      {
+        "title": "Multi-sig Withdrawal",
+        "description": "Run: grep -c 'multiSig\\|multi_sig\\|confirmations\\|withdraw' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Multi-sig withdrawal present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Budget Allocation",
+        "description": "Run: grep -c 'budget\\|allocation\\|department' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Budget system present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Spending Proposal",
+        "description": "Run: grep -c 'proposal\\|spending\\|request' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Spending proposal present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Approval Voting",
+        "description": "Run: grep -c 'approve\\|voting\\|votes' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Approval voting present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Spending Limits",
+        "description": "Run: grep -c 'limit\\|maxSpend\\|cap' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Spending limits present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Reporting",
+        "description": "Run: grep -c 'balance\\|getBalance\\|report\\|treasury' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. Reporting functions present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/dao-treasury-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "ETH Support",
+        "description": "Run: grep -c 'receive\\|payable\\|msg.value' /opt/dao-treasury-lab/contracts/DAOTreasury.sol. ETH support present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls /opt/dao-treasury-lab/scripts/deploy.js. Does deploy script exist?",
+        "ans": "deploy.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Smart Contract Upgrade Pattern",
+    "description": "Implement upgradeable smart contracts using the proxy pattern with storage slot management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1600,
+    "estimatedMinutes": 130,
+    "skillName": "SOLIDITY",
+    "briefing": "### Mission Objective\nImplement the proxy upgrade pattern for smart contracts using OpenZeppelin's upgradeable contracts. Deploy an initial version, upgrade to v2, and verify state preservation across upgrades.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Hardhat and OpenZeppelin Upgrades plugin\n- Working directory: /opt/upgradeable-lab\n\n### Tasks\n1. Create an upgradeable V1 contract with proxy pattern\n2. Deploy using OpenZeppelin Upgrades plugin\n3. Create a V2 contract that adds new functionality\n4. Upgrade the proxy to V2 implementation\n5. Verify state is preserved after upgrade\n6. Add storage gap pattern for future upgrades\n7. Implement initializer pattern instead of constructor\n8. Write tests for upgrade scenarios\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20, Hardhat, and OZ Upgrades pre-installed\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Create an upgradeable V1 contract with proxy pattern",
+      "Deploy using OpenZeppelin Upgrades plugin",
+      "Create a V2 contract that adds new functionality",
+      "Upgrade the proxy to V2 implementation",
+      "Verify state is preserved after upgrade",
+      "Add storage gap pattern for future upgrades",
+      "Implement initializer pattern instead of constructor",
+      "Write tests for upgrade scenarios"
+    ],
+    "flags": [
+      {
+        "title": "V1 Contract",
+        "description": "Run: ls /opt/upgradeable-lab/contracts/V1.sol. Does V1 contract exist?",
+        "ans": "V1.sol",
+        "pts": 100
+      },
+      {
+        "title": "V2 Contract",
+        "description": "Run: ls /opt/upgradeable-lab/contracts/V2.sol. Does V2 contract exist?",
+        "ans": "V2.sol",
+        "pts": 100
+      },
+      {
+        "title": "Initializable",
+        "description": "Run: grep -c 'Initializable\\|initializer' /opt/upgradeable-lab/contracts/V1.sol. Initializer pattern used?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Storage Gap",
+        "description": "Run: grep -c '__gap\\|gap' /opt/upgradeable-lab/contracts/V1.sol. Storage gap present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Proxy Deploy",
+        "description": "Run: grep -c 'deployProxy\\|upgradeProxy' /opt/upgradeable-lab/scripts/deploy.js. Proxy deployment present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "State Preserved",
+        "description": "Run: grep -c 'value\\|getValue\\|stored' /opt/upgradeable-lab/contracts/V1.sol. State variable present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "V2 New Feature",
+        "description": "Run: grep -c 'newFunction\\|v2Feature\\|added' /opt/upgradeable-lab/contracts/V2.sol. New V2 feature present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/upgradeable-lab && npx hardhat test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Upgrade Test",
+        "description": "Run: grep -c 'upgrade\\|upgradeProxy' /opt/upgradeable-lab/test/*.test.js. Upgrade test present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Hardhat Upgrades Plugin",
+        "description": "Run: grep 'openzeppelin' /opt/upgradeable-lab/hardhat.config.js. OZ Upgrades configured?",
+        "ans": "openzeppelin",
+        "pts": 100
+      }
+    ]
+  }
+]

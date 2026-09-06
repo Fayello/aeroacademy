@@ -1,0 +1,1217 @@
+[
+  {
+    "title": "Pandas Data Wrangling Masterclass",
+    "description": "Master advanced Pandas techniques for data cleaning, transformation, aggregation, and time series manipulation.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1000,
+    "estimatedMinutes": 80,
+    "skillName": "PYTHON_DATA",
+    "briefing": "### Mission Objective\nBecome proficient with Pandas for real-world data wrangling tasks. Handle missing values, merge multiple datasets, perform group-by aggregations, and manipulate time series data.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: pandas, numpy, openpyxl\n- Datasets: sales_2023.csv, customers.csv, products.csv\n- Working directory: /opt/pandas-wrangling\n\n### Tasks\n1. Load sales data and inspect shape, dtypes, missing values\n2. Handle missing values: fill numeric with median, categorical with mode\n3. Merge sales with customers and products using appropriate join types\n4. Create derived columns: revenue, profit_margin, year_quarter\n5. Group by category and region to compute aggregated statistics\n6. Pivot tables to create cross-tabulation of sales by month and category\n7. Resample daily sales to weekly totals using time series operations\n8. Export the cleaned dataset to CSV and Excel formats\n\n### Permissions & Access\n- Container runs as root\n- pandas 2.2+ installed\n- Data at /opt/pandas-wrangling/data/",
+    "tasks": [
+      "Load sales data and inspect shape, dtypes, missing values",
+      "Handle missing values: fill numeric with median, categorical with mode",
+      "Merge sales with customers and products using appropriate join types",
+      "Create derived columns: revenue, profit_margin, year_quarter",
+      "Group by category and region to compute aggregated statistics",
+      "Pivot tables to create cross-tabulation of sales by month and category",
+      "Resample daily sales to weekly totals using time series operations",
+      "Export the cleaned dataset to CSV and Excel formats"
+    ],
+    "flags": [
+      {
+        "title": "Data Loaded",
+        "description": "Run: wc -l /opt/pandas-wrangling/data/sales_2023.csv. How many rows?",
+        "ans": "10000",
+        "pts": 100
+      },
+      {
+        "title": "Missing Values",
+        "description": "Run: grep -c 'fillna\\|dropna' /opt/pandas-wrangling/wrangle.py. Missing values handled?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Merge Script",
+        "description": "Run: ls /opt/pandas-wrangling/wrangle.py. Main wrangling script exists?",
+        "ans": "wrangle.py",
+        "pts": 100
+      },
+      {
+        "title": "Revenue Column",
+        "description": "Run: grep -c 'revenue' /opt/pandas-wrangling/wrangle.py. Revenue column created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Group By",
+        "description": "Run: grep -c 'groupby' /opt/pandas-wrangling/wrangle.py. GroupBy operations used?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Pivot Table",
+        "description": "Run: grep -c 'pivot' /opt/pandas-wrangling/wrangle.py. Pivot table created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Resample",
+        "description": "Run: grep -c 'resample' /opt/pandas-wrangling/wrangle.py. Time series resampling done?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "CSV Export",
+        "description": "Run: ls /opt/pandas-wrangling/output/cleaned_sales.csv. CSV exported?",
+        "ans": "cleaned_sales.csv",
+        "pts": 100
+      },
+      {
+        "title": "Excel Export",
+        "description": "Run: ls /opt/pandas-wrangling/output/cleaned_sales.xlsx. Excel exported?",
+        "ans": "cleaned_sales.xlsx",
+        "pts": 100
+      },
+      {
+        "title": "Output Rows",
+        "description": "Run: wc -l /opt/pandas-wrangling/output/cleaned_sales.csv. Cleaned rows count?",
+        "ans": "10000",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "SQL Analytics: Complex Queries and Window Functions",
+    "description": "Write advanced SQL queries using window functions, CTEs, subqueries, and analytical patterns on PostgreSQL.",
+    "dockerImage": "postgres:15-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "SQL_ANALYTICS",
+    "briefing": "### Mission Objective\nMaster advanced SQL analytics using PostgreSQL. Write complex queries with window functions, common table expressions, recursive queries, and materialized views for business intelligence.\n\n### Environment\n- PostgreSQL 15 with pre-loaded e-commerce database\n- Tables: orders, customers, products, order_items, categories\n- Working directory: /opt/sql-analytics\n\n### Tasks\n1. Write a CTE to calculate running totals of sales by customer\n2. Use ROW_NUMBER() to find the top 3 products per category by revenue\n3. Calculate month-over-month growth rate using LAG() window function\n4. Create a cohort analysis showing customer retention by signup month\n5. Write a recursive CTE to traverse a category hierarchy\n6. Use NTILE() to segment customers into quartiles by lifetime value\n7. Create a materialized view for daily sales dashboard\n8. Write a query to detect anomalous orders using Z-score calculation\n\n### Permissions & Access\n- Container runs as postgres user\n- Database: analytics_db pre-loaded with sample data\n- psql client available",
+    "tasks": [
+      "Write a CTE to calculate running totals of sales by customer",
+      "Use ROW_NUMBER() to find the top 3 products per category by revenue",
+      "Calculate month-over-month growth rate using LAG() window function",
+      "Create a cohort analysis showing customer retention by signup month",
+      "Write a recursive CTE to traverse a category hierarchy",
+      "Use NTILE() to segment customers into quartiles by lifetime value",
+      "Create a materialized view for daily sales dashboard",
+      "Write a query to detect anomalous orders using Z-score calculation"
+    ],
+    "flags": [
+      {
+        "title": "CTE Script",
+        "description": "Run: ls /opt/sql-analytics/queries/01_running_totals.sql. Query file exists?",
+        "ans": "01_running_totals.sql",
+        "pts": 100
+      },
+      {
+        "title": "Row Number",
+        "description": "Run: ls /opt/sql-analytics/queries/02_top_products.sql. ROW_NUMBER query exists?",
+        "ans": "02_top_products.sql",
+        "pts": 100
+      },
+      {
+        "title": "Growth Rate",
+        "description": "Run: ls /opt/sql-analytics/queries/03_growth_rate.sql. LAG() query exists?",
+        "ans": "03_growth_rate.sql",
+        "pts": 100
+      },
+      {
+        "title": "Cohort Analysis",
+        "description": "Run: ls /opt/sql-analytics/queries/04_cohort_analysis.sql. Cohort query exists?",
+        "ans": "04_cohort_analysis.sql",
+        "pts": 150
+      },
+      {
+        "title": "Recursive CTE",
+        "description": "Run: ls /opt/sql-analytics/queries/05_recursive_hierarchy.sql. Recursive CTE exists?",
+        "ans": "05_recursive_hierarchy.sql",
+        "pts": 100
+      },
+      {
+        "title": "NTILE",
+        "description": "Run: ls /opt/sql-analytics/queries/06_quartile_segmentation.sql. NTILE query exists?",
+        "ans": "06_quartile_segmentation.sql",
+        "pts": 100
+      },
+      {
+        "title": "Mat View",
+        "description": "Run: psql -d analytics_db -c 'SELECT matviewname FROM pg_matviews' | grep daily_sales. Mat view created?",
+        "ans": "daily_sales",
+        "pts": 150
+      },
+      {
+        "title": "Anomaly Detection",
+        "description": "Run: ls /opt/sql-analytics/queries/08_anomaly_detection.sql. Anomaly query exists?",
+        "ans": "08_anomaly_detection.sql",
+        "pts": 100
+      },
+      {
+        "title": "Window Functions",
+        "description": "Run: grep -rc 'OVER' /opt/sql-analytics/queries/ | awk -F: '{sum+=$2}END{print sum}'. How many OVER clauses?",
+        "ans": "6",
+        "pts": 100
+      },
+      {
+        "title": "Queries Executed",
+        "description": "Run: ls /opt/sql-analytics/queries/*.sql | wc -l. How many query files?",
+        "ans": "8",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "ETL Pipeline with Apache Airflow",
+    "description": "Build a production ETL pipeline using Python that extracts from multiple sources, transforms data, and loads into a data warehouse.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "ETL_PIPELINES",
+    "briefing": "### Mission Objective\nDesign and implement a robust ETL pipeline that extracts data from CSV files and a REST API, performs cleaning and transformation, and loads results into a PostgreSQL data warehouse with proper error handling and logging.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: pandas, sqlalchemy, psycopg2, requests, python-dotenv\n- Source data: multiple CSV files and a mock REST API\n- Working directory: /opt/etl-pipeline\n\n### Tasks\n1. Create an Extract module that reads CSVs and fetches from REST API\n2. Implement data validation with schema checking using pandera\n3. Build a Transform module that cleans, deduplicates, and enriches data\n4. Create a Load module that writes to PostgreSQL with upsert logic\n5. Implement retry logic with exponential backoff for API calls\n6. Add comprehensive logging with structured JSON output\n7. Create a DAG-like orchestration script with dependency management\n8. Run the full pipeline end-to-end and verify data in warehouse\n\n### Permissions & Access\n- Container runs as root\n- PostgreSQL connection: postgresql://etl:etl@localhost:5432/warehouse\n- Mock API running at localhost:8080",
+    "tasks": [
+      "Create an Extract module that reads CSVs and fetches from REST API",
+      "Implement data validation with schema checking using pandera",
+      "Build a Transform module that cleans, deduplicates, and enriches data",
+      "Create a Load module that writes to PostgreSQL with upsert logic",
+      "Implement retry logic with exponential backoff for API calls",
+      "Add comprehensive logging with structured JSON output",
+      "Create a DAG-like orchestration script with dependency management",
+      "Run the full pipeline end-to-end and verify data in warehouse"
+    ],
+    "flags": [
+      {
+        "title": "Extract Module",
+        "description": "Run: ls /opt/etl-pipeline/extract.py. Extract module exists?",
+        "ans": "extract.py",
+        "pts": 100
+      },
+      {
+        "title": "Transform Module",
+        "description": "Run: ls /opt/etl-pipeline/transform.py. Transform module exists?",
+        "ans": "transform.py",
+        "pts": 100
+      },
+      {
+        "title": "Load Module",
+        "description": "Run: ls /opt/etl-pipeline/load.py. Load module exists?",
+        "ans": "load.py",
+        "pts": 100
+      },
+      {
+        "title": "Validation",
+        "description": "Run: grep -c 'pandera\\|SchemaModel' /opt/etl-pipeline/validate.py. Schema validation used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Retry Logic",
+        "description": "Run: grep -c 'retry\\|backoff' /opt/etl-pipeline/extract.py. Retry logic implemented?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Logging",
+        "description": "Run: grep -c 'logging\\|logger' /opt/etl-pipeline/*.py | awk -F: '{sum+=$2}END{print sum}'. Logging calls across modules?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Orchestrator",
+        "description": "Run: ls /opt/etl-pipeline/orchestrate.py. Orchestration script exists?",
+        "ans": "orchestrate.py",
+        "pts": 100
+      },
+      {
+        "title": "Upsert Logic",
+        "description": "Run: grep -c 'ON CONFLICT\\|on_conflict\\|upsert' /opt/etl-pipeline/load.py. Upsert implemented?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Pipeline Log",
+        "description": "Run: ls /opt/etl-pipeline/logs/pipeline.log. Pipeline log exists?",
+        "ans": "pipeline.log",
+        "pts": 100
+      },
+      {
+        "title": "Warehouse Rows",
+        "description": "Run: psql -d warehouse -c 'SELECT COUNT(*) FROM fact_sales' 2>/dev/null | grep -o '[0-9]*'. Rows loaded?",
+        "ans": "5000",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Data Visualization Dashboard with Plotly and Dash",
+    "description": "Build an interactive data visualization dashboard using Plotly and Dash with real-time filtering and drill-down capabilities.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "VISUALIZATION",
+    "briefing": "### Mission Objective\nCreate a professional interactive dashboard using Plotly and Dash. Include multiple chart types, dropdown filters, date range selectors, and responsive layouts for exploring business data.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: plotly, dash, pandas, numpy\n- Dataset: business_metrics.csv (monthly KPIs)\n- Working directory: /opt/plotly-dashboard\n\n### Tasks\n1. Load and prepare business metrics data for visualization\n2. Create a Dash app with a responsive multi-column layout\n3. Build an interactive bar chart with category filtering\n4. Add a line chart showing trends over time with date range selector\n5. Create a heatmap for correlation analysis between metrics\n6. Implement dropdown callbacks for dynamic chart updates\n7. Add KPI cards showing key metrics with conditional formatting\n8. Deploy the dashboard and verify all interactive features work\n\n### Permissions & Access\n- Container runs as root\n- Dash app runs on localhost:8050\n- Data at /opt/plotly-dashboard/data/business_metrics.csv",
+    "tasks": [
+      "Load and prepare business metrics data for visualization",
+      "Create a Dash app with a responsive multi-column layout",
+      "Build an interactive bar chart with category filtering",
+      "Add a line chart showing trends over time with date range selector",
+      "Create a heatmap for correlation analysis between metrics",
+      "Implement dropdown callbacks for dynamic chart updates",
+      "Add KPI cards showing key metrics with conditional formatting",
+      "Deploy the dashboard and verify all interactive features work"
+    ],
+    "flags": [
+      {
+        "title": "App Script",
+        "description": "Run: ls /opt/plotly-dashboard/app.py. Main Dash app exists?",
+        "ans": "app.py",
+        "pts": 100
+      },
+      {
+        "title": "Data Loaded",
+        "description": "Run: wc -l /opt/plotly-dashboard/data/business_metrics.csv. Data rows?",
+        "ans": "365",
+        "pts": 100
+      },
+      {
+        "title": "Bar Chart",
+        "description": "Run: grep -c 'go.Bar\\|bar' /opt/plotly-dashboard/app.py. Bar chart created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Line Chart",
+        "description": "Run: grep -c 'go.Scatter\\|line' /opt/plotly-dashboard/app.py. Line chart created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Heatmap",
+        "description": "Run: grep -c 'go.Heatmap\\|heatmap' /opt/plotly-dashboard/app.py. Heatmap created?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Callbacks",
+        "description": "Run: grep -c '@app.callback' /opt/plotly-dashboard/app.py. How many callbacks?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "KPI Cards",
+        "description": "Run: grep -c 'dbc.Card\\|Card' /opt/plotly-dashboard/app.py. KPI cards created?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Date Picker",
+        "description": "Run: grep -c 'DatePickerRange\\|date_picker' /opt/plotly-dashboard/app.py. Date picker added?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Dropdown",
+        "description": "Run: grep -c 'dcc.Dropdown' /opt/plotly-dashboard/app.py. Dropdown filter added?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "App Runs",
+        "description": "Run: curl -s http://localhost:8050 | grep -c 'Dash'. Is the app serving?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Statistical Analysis and Hypothesis Testing",
+    "description": "Perform comprehensive statistical analysis including hypothesis testing, A/B testing, and Bayesian inference.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "STATISTICS",
+    "briefing": "### Mission Objective\nApply statistical methods to real business problems. Perform A/B test analysis, calculate sample sizes, run chi-squared tests, and implement Bayesian A/B testing with proper statistical rigor.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: scipy, numpy, pandas, matplotlib, seaborn\n- Dataset: ab_test_results.csv (conversion data)\n- Working directory: /opt/stats-analysis\n\n### Tasks\n1. Load A/B test data and compute conversion rates for control and treatment\n2. Perform a two-proportion z-test for conversion rate difference\n3. Calculate 95% confidence interval for the difference\n4. Compute minimum sample size needed for 80% power\n5. Perform chi-squared test for categorical variable associations\n6. Implement Bayesian A/B testing with Beta-Binomial model\n7. Run normality tests (Shapiro-Wilk) and choose appropriate tests\n8. Generate a comprehensive statistical report with visualizations\n\n### Permissions & Access\n- Container runs as root\n- scipy 1.12+ installed\n- Data at /opt/stats-analysis/data/ab_test_results.csv",
+    "tasks": [
+      "Load A/B test data and compute conversion rates for control and treatment",
+      "Perform a two-proportion z-test for conversion rate difference",
+      "Calculate 95% confidence interval for the difference",
+      "Compute minimum sample size needed for 80% power",
+      "Perform chi-squared test for categorical variable associations",
+      "Implement Bayesian A/B testing with Beta-Binomial model",
+      "Run normality tests (Shapiro-Wilk) and choose appropriate tests",
+      "Generate a comprehensive statistical report with visualizations"
+    ],
+    "flags": [
+      {
+        "title": "Data Loaded",
+        "description": "Run: wc -l /opt/stats-analysis/data/ab_test_results.csv. How many rows?",
+        "ans": "10000",
+        "pts": 100
+      },
+      {
+        "title": "Z-Test Script",
+        "description": "Run: ls /opt/stats-analysis/z_test.py. Z-test script exists?",
+        "ans": "z_test.py",
+        "pts": 100
+      },
+      {
+        "title": "Chi-Squared",
+        "description": "Run: ls /opt/stats-analysis/chi_squared.py. Chi-squared test exists?",
+        "ans": "chi_squared.py",
+        "pts": 100
+      },
+      {
+        "title": "Bayesian AB",
+        "description": "Run: ls /opt/stats-analysis/bayesian_ab.py. Bayesian A/B test exists?",
+        "ans": "bayesian_ab.py",
+        "pts": 150
+      },
+      {
+        "title": "Sample Size",
+        "description": "Run: ls /opt/stats-analysis/sample_size.py. Sample size calculator exists?",
+        "ans": "sample_size.py",
+        "pts": 100
+      },
+      {
+        "title": "Report Generated",
+        "description": "Run: ls /opt/stats-analysis/reports/statistical_report.md. Report generated?",
+        "ans": "statistical_report.md",
+        "pts": 100
+      },
+      {
+        "title": "Visualizations",
+        "description": "Run: ls /opt/stats-analysis/reports/ | grep -c 'png'. How many visualization files?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Confidence Interval",
+        "description": "Run: grep -c 'confidence_interval\\|ci' /opt/stats-analysis/z_test.py. CI calculated?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "P-Value",
+        "description": "Run: grep -c 'p_value\\|pvalue' /opt/stats-analysis/z_test.py. P-value computed?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Power Analysis",
+        "description": "Run: grep 'power\\|POWER' /opt/stats-analysis/sample_size.py | head -1. Power is 0.8?",
+        "ans": "0.8",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Big Data Processing with PySpark",
+    "description": "Process large datasets using PySpark with DataFrame operations, SQL queries, and machine learning pipelines.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1400,
+    "estimatedMinutes": 120,
+    "skillName": "BIG_DATA",
+    "briefing": "### Mission Objective\nLearn to process big data using PySpark. Perform distributed DataFrame operations, write Spark SQL queries, and build a ML pipeline that scales to millions of records.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: pyspark, pandas, py4j\n- Large dataset: transactions_10m.csv (10 million rows)\n- Working directory: /opt/pyspark-lab\n\n### Tasks\n1. Initialize a SparkSession with appropriate configuration\n2. Load 10M rows CSV into a Spark DataFrame\n3. Perform DataFrame transformations: select, filter, groupBy, agg\n4. Cache the DataFrame and persist to disk\n5. Write Spark SQL queries using temp views\n6. Implement window functions for running totals\n7. Build a PySpark ML pipeline with VectorAssembler and RandomForest\n8. Save the trained model and evaluation metrics\n\n### Permissions & Access\n- Container runs as root\n- PySpark 3.5+ installed\n- Java 11+ required for Spark",
+    "tasks": [
+      "Initialize a SparkSession with appropriate configuration",
+      "Load 10M rows CSV into a Spark DataFrame",
+      "Perform DataFrame transformations: select, filter, groupBy, agg",
+      "Cache the DataFrame and persist to disk",
+      "Write Spark SQL queries using temp views",
+      "Implement window functions for running totals",
+      "Build a PySpark ML pipeline with VectorAssembler and RandomForest",
+      "Save the trained model and evaluation metrics"
+    ],
+    "flags": [
+      {
+        "title": "SparkSession",
+        "description": "Run: ls /opt/pyspark-lab/01_session.py. SparkSession script exists?",
+        "ans": "01_session.py",
+        "pts": 100
+      },
+      {
+        "title": "DataFrame Load",
+        "description": "Run: ls /opt/pyspark-lab/02_load_data.py. Data loading script exists?",
+        "ans": "02_load_data.py",
+        "pts": 100
+      },
+      {
+        "title": "Transformations",
+        "description": "Run: ls /opt/pyspark-lab/03_transformations.py. Transformations script exists?",
+        "ans": "03_transformations.py",
+        "pts": 100
+      },
+      {
+        "title": "SQL Queries",
+        "description": "Run: ls /opt/pyspark-lab/04_spark_sql.py. Spark SQL script exists?",
+        "ans": "04_spark_sql.py",
+        "pts": 100
+      },
+      {
+        "title": "Window Functions",
+        "description": "Run: grep -c 'Window\\|over(' /opt/pyspark-lab/05_window_functions.py. Window functions used?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "ML Pipeline",
+        "description": "Run: ls /opt/pyspark-lab/06_ml_pipeline.py. ML pipeline script exists?",
+        "ans": "06_ml_pipeline.py",
+        "pts": 100
+      },
+      {
+        "title": "Model Saved",
+        "description": "Run: ls -d /opt/pyspark-lab/models/rf_model. Model saved?",
+        "ans": "rf_model",
+        "pts": 150
+      },
+      {
+        "title": "Cache Used",
+        "description": "Run: grep -c 'cache\\|persist' /opt/pyspark-lab/03_transformations.py. Caching used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Row Count",
+        "description": "Run: grep '10_000_000\\|10000000' /opt/pyspark-lab/02_load_data.py | head -1. 10M rows loaded?",
+        "ans": "10000000",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Stages",
+        "description": "Run: grep -c 'Pipeline\\|PipelineStage' /opt/pyspark-lab/06_ml_pipeline.py. Pipeline stages defined?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Data Quality Framework with Great Expectations",
+    "description": "Build a comprehensive data quality framework using Great Expectations for validation, profiling, and monitoring.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "ETL_PIPELINES",
+    "briefing": "### Mission Objective\nImplement a data quality framework using Great Expectations. Create expectations for data validation, build data profiles, generate quality reports, and set up monitoring for data drift.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: great_expectations, pandas, sqlalchemy\n- Dataset: customer_data.csv with intentional quality issues\n- Working directory: /opt/data-quality\n\n### Tasks\n1. Initialize a Great Expectations DataContext\n2. Connect to the customer_data.csv as a datasource\n3. Create expectations: column values in range, no nulls, unique IDs\n4. Build a suite of expectations for data type validation\n5. Run validation and generate a Data Docs HTML report\n6. Create a data profile with statistical summaries\n7. Implement automated expectation suite updates based on data\n8. Set up monitoring for data drift between batches\n\n### Permissions & Access\n- Container runs as root\n- Great Expectations 0.18+ installed\n- Data at /opt/data-quality/data/customer_data.csv",
+    "tasks": [
+      "Initialize a Great Expectations DataContext",
+      "Connect to the customer_data.csv as a datasource",
+      "Create expectations: column values in range, no nulls, unique IDs",
+      "Build a suite of expectations for data type validation",
+      "Run validation and generate a Data Docs HTML report",
+      "Create a data profile with statistical summaries",
+      "Implement automated expectation suite updates based on data",
+      "Set up monitoring for data drift between batches"
+    ],
+    "flags": [
+      {
+        "title": "GE Config",
+        "description": "Run: ls /opt/data-quality/great_expectations/. Is GE configured?",
+        "ans": "great_expectations",
+        "pts": 100
+      },
+      {
+        "title": "Expectation Suite",
+        "description": "Run: ls /opt/data-quality/expectation_suites/*.json | wc -l. How many suites?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Validation Script",
+        "description": "Run: ls /opt/data-quality/validate.py. Validation script exists?",
+        "ans": "validate.py",
+        "pts": 100
+      },
+      {
+        "title": "Data Docs",
+        "description": "Run: ls -d /opt/data-quality/great_expectations/uncommitted/data_docs/ 2>/dev/null | head -1. Data Docs generated?",
+        "ans": "data_docs",
+        "pts": 150
+      },
+      {
+        "title": "Profile Script",
+        "description": "Run: ls /opt/data-quality/profile.py. Profiling script exists?",
+        "ans": "profile.py",
+        "pts": 100
+      },
+      {
+        "title": "Drift Monitor",
+        "description": "Run: ls /opt/data-quality/drift_monitor.py. Drift monitoring exists?",
+        "ans": "drift_monitor.py",
+        "pts": 100
+      },
+      {
+        "title": "Validation Results",
+        "description": "Run: ls /opt/data-quality/validation_results/*.json | wc -l. Validation results saved?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Null Check",
+        "description": "Run: grep -c 'expect_column_values_to_not_be_null' /opt/data-quality/expectation_suites/*.json. Null checks defined?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Range Check",
+        "description": "Run: grep -c 'expect_column_values_to_be_between' /opt/data-quality/expectation_suites/*.json. Range checks defined?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Unique Check",
+        "description": "Run: grep -c 'expect_column_values_to_be_unique' /opt/data-quality/expectation_suites/*.json. Unique checks defined?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Feature Engineering for Machine Learning",
+    "description": "Master feature engineering techniques including encoding, scaling, feature creation, and feature selection for ML models.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "PYTHON_DATA",
+    "briefing": "### Mission Objective\nLearn and apply advanced feature engineering techniques. Create interaction features, handle categorical encoding, perform feature selection, and build a feature pipeline that can be productionized.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: scikit-learn, pandas, numpy, category_encoders, feature-engine\n- Dataset: housing_features.csv (regression task with mixed types)\n- Working directory: /opt/feature-engineering\n\n### Tasks\n1. Analyze features: correlation matrix, variance threshold, mutual information\n2. Create polynomial and interaction features from numerical columns\n3. Apply target encoding to high-cardinality categorical features\n4. Implement binning for continuous variables with optimal cutpoints\n5. Build a feature pipeline using scikit-learn ColumnTransformer\n6. Perform feature selection using SelectKBest and recursive feature elimination\n7. Compare model performance with and without engineered features\n8. Export the feature pipeline for production use\n\n### Permissions & Access\n- Container runs as root\n- category_encoders and feature-engine installed\n- Data at /opt/feature-engineering/data/housing_features.csv",
+    "tasks": [
+      "Analyze features: correlation matrix, variance threshold, mutual information",
+      "Create polynomial and interaction features from numerical columns",
+      "Apply target encoding to high-cardinality categorical features",
+      "Implement binning for continuous variables with optimal cutpoints",
+      "Build a feature pipeline using scikit-learn ColumnTransformer",
+      "Perform feature selection using SelectKBest and recursive feature elimination",
+      "Compare model performance with and without engineered features",
+      "Export the feature pipeline for production use"
+    ],
+    "flags": [
+      {
+        "title": "Analysis Script",
+        "description": "Run: ls /opt/feature-engineering/01_analysis.py. Feature analysis script exists?",
+        "ans": "01_analysis.py",
+        "pts": 100
+      },
+      {
+        "title": "Interaction Features",
+        "description": "Run: ls /opt/feature-engineering/02_interactions.py. Interaction features created?",
+        "ans": "02_interactions.py",
+        "pts": 100
+      },
+      {
+        "title": "Target Encoding",
+        "description": "Run: ls /opt/feature-engineering/03_target_encoding.py. Target encoding implemented?",
+        "ans": "03_target_encoding.py",
+        "pts": 100
+      },
+      {
+        "title": "Binning Script",
+        "description": "Run: ls /opt/feature-engineering/04_binning.py. Binning implemented?",
+        "ans": "04_binning.py",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Script",
+        "description": "Run: ls /opt/feature-engineering/05_feature_pipeline.py. Feature pipeline built?",
+        "ans": "05_feature_pipeline.py",
+        "pts": 150
+      },
+      {
+        "title": "Feature Selection",
+        "description": "Run: ls /opt/feature-engineering/06_feature_selection.py. Feature selection done?",
+        "ans": "06_feature_selection.py",
+        "pts": 100
+      },
+      {
+        "title": "Comparison",
+        "description": "Run: ls /opt/feature-engineering/reports/comparison.md. Model comparison report exists?",
+        "ans": "comparison.md",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Export",
+        "description": "Run: ls /opt/feature-engineering/models/feature_pipeline.joblib. Pipeline exported?",
+        "ans": "feature_pipeline.joblib",
+        "pts": 150
+      },
+      {
+        "title": "Correlation Matrix",
+        "description": "Run: ls /opt/feature-engineering/reports/correlation_matrix.png. Correlation plot exists?",
+        "ans": "correlation_matrix.png",
+        "pts": 100
+      },
+      {
+        "title": "ColumnTransformer",
+        "description": "Run: grep -c 'ColumnTransformer' /opt/feature-engineering/05_feature_pipeline.py. ColumnTransformer used?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Time Series Analysis with Prophet",
+    "description": "Perform time series forecasting, seasonality decomposition, and anomaly detection using Facebook Prophet.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "STATISTICS",
+    "briefing": "### Mission Objective\nApply Facebook Prophet for time series analysis. Decompose trends and seasonality, forecast future values, detect anomalies, and create interactive visualizations of time patterns.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: prophet, pandas, numpy, matplotlib, plotly\n- Dataset: website_traffic.csv (daily traffic for 2 years)\n- Working directory: /opt/prophet-ts\n\n### Tasks\n1. Load and prepare data in Prophet-required format (ds, y)\n2. Fit a Prophet model with default parameters\n3. Decompose the time series into trend, weekly, and yearly seasonality\n4. Make future predictions for the next 90 days\n5. Add custom seasonality (monthly) and holidays\n6. Detect anomalies using uncertainty intervals\n7. Perform cross-validation to evaluate forecast accuracy\n8. Create an interactive forecast visualization with Plotly\n\n### Permissions & Access\n- Container runs as root\n- Prophet 1.1+ installed\n- Data at /opt/prophet-ts/data/website_traffic.csv",
+    "tasks": [
+      "Load and prepare data in Prophet-required format (ds, y)",
+      "Fit a Prophet model with default parameters",
+      "Decompose the time series into trend, weekly, and yearly seasonality",
+      "Make future predictions for the next 90 days",
+      "Add custom seasonality (monthly) and holidays",
+      "Detect anomalies using uncertainty intervals",
+      "Perform cross-validation to evaluate forecast accuracy",
+      "Create an interactive forecast visualization with Plotly"
+    ],
+    "flags": [
+      {
+        "title": "Data Prepared",
+        "description": "Run: wc -l /opt/prophet-ts/data/website_traffic.csv. Data rows?",
+        "ans": "730",
+        "pts": 100
+      },
+      {
+        "title": "Model Script",
+        "description": "Run: ls /opt/prophet-ts/fit_model.py. Model fitting script exists?",
+        "ans": "fit_model.py",
+        "pts": 100
+      },
+      {
+        "title": "Forecast Output",
+        "description": "Run: ls /opt/prophet-ts/output/forecast.csv. Forecast generated?",
+        "ans": "forecast.csv",
+        "pts": 100
+      },
+      {
+        "title": "Seasonality Plot",
+        "description": "Run: ls /opt/prophet-ts/reports/seasonality.png. Seasonality plot exists?",
+        "ans": "seasonality.png",
+        "pts": 100
+      },
+      {
+        "title": "Anomaly Detection",
+        "description": "Run: ls /opt/prophet-ts/detect_anomalies.py. Anomaly detection script exists?",
+        "ans": "detect_anomalies.py",
+        "pts": 150
+      },
+      {
+        "title": "Cross Validation",
+        "description": "Run: ls /opt/prophet-ts/cross_validate.py. Cross-validation script exists?",
+        "ans": "cross_validate.py",
+        "pts": 100
+      },
+      {
+        "title": "Interactive Viz",
+        "description": "Run: ls /opt/prophet-ts/reports/forecast_interactive.html. Interactive plot exists?",
+        "ans": "forecast_interactive.html",
+        "pts": 100
+      },
+      {
+        "title": "Custom Seasonality",
+        "description": "Run: grep -c 'add_seasonality' /opt/prophet-ts/fit_model.py. Custom seasonality added?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Holidays Added",
+        "description": "Run: grep -c 'holidays' /opt/prophet-ts/fit_model.py. Holidays configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "MAPE Score",
+        "description": "Run: python3 -c 'import pandas; df=pandas.read_csv(\"/opt/prophet-ts/output/cross_validation.csv\"); print(df.columns.tolist())'. CV results contain metric columns?",
+        "ans": "mape",
+        "pts": 150
+      }
+    ]
+  },
+  {
+    "title": "Data Pipeline with dbt Core",
+    "description": "Build a modern data transformation pipeline using dbt Core with PostgreSQL, including tests, documentation, and snapshots.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "ETL_PIPELINES",
+    "briefing": "### Mission Objective\nCreate a dbt Core project that transforms raw data into analytics-ready models. Implement staging, intermediate, and marts layers with proper testing, documentation, and slowly changing dimensions.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: dbt-core, dbt-postgres, sqlalchemy\n- PostgreSQL with raw data schema loaded\n- Working directory: /opt/dbt-project\n\n### Tasks\n1. Initialize a dbt project with PostgreSQL connection\n2. Create a staging model that cleans raw orders data\n3. Build intermediate models for customer and product aggregations\n4. Create a mart model for revenue analytics\n5. Add schema tests: unique, not_null, accepted_values, relationships\n6. Generate documentation with dbt docs generate\n7. Implement a snapshot for slowly changing dimension (SCD Type 2)\n8. Run the full dbt pipeline and verify all models pass tests\n\n### Permissions & Access\n- Container runs as root\n- dbt 1.7+ installed\n- PostgreSQL: postgresql://dbt:dbt@localhost:5432/analytics",
+    "tasks": [
+      "Initialize a dbt project with PostgreSQL connection",
+      "Create a staging model that cleans raw orders data",
+      "Build intermediate models for customer and product aggregations",
+      "Create a mart model for revenue analytics",
+      "Add schema tests: unique, not_null, accepted_values, relationships",
+      "Generate documentation with dbt docs generate",
+      "Implement a snapshot for slowly changing dimension (SCD Type 2)",
+      "Run the full dbt pipeline and verify all models pass tests"
+    ],
+    "flags": [
+      {
+        "title": "Project Init",
+        "description": "Run: ls /opt/dbt-project/dbt_project.yml. dbt project initialized?",
+        "ans": "dbt_project.yml",
+        "pts": 100
+      },
+      {
+        "title": "Staging Model",
+        "description": "Run: ls /opt/dbt-project/models/staging/stg_orders.sql. Staging model exists?",
+        "ans": "stg_orders.sql",
+        "pts": 100
+      },
+      {
+        "title": "Intermediate",
+        "description": "Run: ls /opt/dbt-project/models/intermediate/int_customer_metrics.sql. Intermediate model exists?",
+        "ans": "int_customer_metrics.sql",
+        "pts": 100
+      },
+      {
+        "title": "Mart Model",
+        "description": "Run: ls /opt/dbt-project/models/marts/fct_revenue.sql. Mart model exists?",
+        "ans": "fct_revenue.sql",
+        "pts": 100
+      },
+      {
+        "title": "Schema Tests",
+        "description": "Run: grep -c 'unique\\|not_null' /opt/dbt-project/models/staging/schema.yml. Tests defined?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Snapshot",
+        "description": "Run: ls /opt/dbt-project/snapshots/scd_customers.sql. Snapshot exists?",
+        "ans": "scd_customers.sql",
+        "pts": 150
+      },
+      {
+        "title": "Documentation",
+        "description": "Run: ls /opt/dbt-project/target/manifest.json. Docs generated?",
+        "ans": "manifest.json",
+        "pts": 100
+      },
+      {
+        "title": "Sources",
+        "description": "Run: ls /opt/dbt-project/models/staging/sources.yml. Sources defined?",
+        "ans": "sources.yml",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: grep 'PASS' /opt/dbt-project/run_results.json | wc -l. Tests passed?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Models Built",
+        "description": "Run: ls /opt/dbt-project/models/**/*.sql | wc -l. How many models?",
+        "ans": "4",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Exploratory Data Analysis Report Generator",
+    "description": "Build an automated EDA tool that generates comprehensive analysis reports with statistics, visualizations, and insights.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 85,
+    "skillName": "PYTHON_DATA",
+    "briefing": "### Mission Objective\nCreate an automated EDA tool that takes any dataset and generates a comprehensive analysis report. Include univariate analysis, bivariate correlations, distribution plots, missing value analysis, and automated insights.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: pandas, numpy, matplotlib, seaborn, ydata-profiling\n- Dataset: telecommunications churn data\n- Working directory: /opt/eda-tool\n\n### Tasks\n1. Create a data loader that handles CSV, Excel, and JSON formats\n2. Implement univariate analysis with histogram and box plots per column\n3. Build bivariate analysis with correlation matrix and pair plots\n4. Create missing value analysis with heatmap visualization\n5. Implement outlier detection using IQR method\n6. Generate automated insights (skewness, kurtosis, top categories)\n7. Build a PDF report with all visualizations and statistics\n8. Create an HTML interactive version using ydata-profiling\n\n### Permissions & Access\n- Container runs as root\n- ydata-profiling (formerly pandas-profiling) installed\n- Data at /opt/eda-tool/data/churn_data.csv",
+    "tasks": [
+      "Create a data loader that handles CSV, Excel, and JSON formats",
+      "Implement univariate analysis with histogram and box plots per column",
+      "Build bivariate analysis with correlation matrix and pair plots",
+      "Create missing value analysis with heatmap visualization",
+      "Implement outlier detection using IQR method",
+      "Generate automated insights (skewness, kurtosis, top categories)",
+      "Build a PDF report with all visualizations and statistics",
+      "Create an HTML interactive version using ydata-profiling"
+    ],
+    "flags": [
+      {
+        "title": "Data Loader",
+        "description": "Run: ls /opt/eda-tool/data_loader.py. Data loader module exists?",
+        "ans": "data_loader.py",
+        "pts": 100
+      },
+      {
+        "title": "Univariate",
+        "description": "Run: ls /opt/eda-tool/univariate.py. Univariate analysis module exists?",
+        "ans": "univariate.py",
+        "pts": 100
+      },
+      {
+        "title": "Bivariate",
+        "description": "Run: ls /opt/eda-tool/bivariate.py. Bivariate analysis module exists?",
+        "ans": "bivariate.py",
+        "pts": 100
+      },
+      {
+        "title": "Missing Analysis",
+        "description": "Run: ls /opt/eda-tool/missing_analysis.py. Missing value analysis exists?",
+        "ans": "missing_analysis.py",
+        "pts": 100
+      },
+      {
+        "title": "Outlier Detection",
+        "description": "Run: ls /opt/eda-tool/outlier_detection.py. Outlier detection exists?",
+        "ans": "outlier_detection.py",
+        "pts": 100
+      },
+      {
+        "title": "PDF Report",
+        "description": "Run: ls /opt/eda-tool/reports/eda_report.pdf. PDF report generated?",
+        "ans": "eda_report.pdf",
+        "pts": 150
+      },
+      {
+        "title": "HTML Report",
+        "description": "Run: ls /opt/eda-tool/reports/eda_interactive.html. HTML report generated?",
+        "ans": "eda_interactive.html",
+        "pts": 100
+      },
+      {
+        "title": "Visualizations",
+        "description": "Run: ls /opt/eda-tool/reports/figures/ | wc -l. How many visualization files?",
+        "ans": "8",
+        "pts": 100
+      },
+      {
+        "title": "Correlation Plot",
+        "description": "Run: ls /opt/eda-tool/reports/figures/correlation_matrix.png. Correlation plot exists?",
+        "ans": "correlation_matrix.png",
+        "pts": 100
+      },
+      {
+        "title": "Insights File",
+        "description": "Run: ls /opt/eda-tool/reports/insights.json. Automated insights saved?",
+        "ans": "insights.json",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Geospatial Data Analysis with GeoPandas",
+    "description": "Analyze geographic data using GeoPandas for spatial operations, mapping, and location-based analytics.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "BIG_DATA",
+    "briefing": "### Mission Objective\nPerform geospatial analysis using GeoPandas. Load shapefiles, perform spatial joins, calculate distances, createchoropleth maps, and build a location analytics pipeline.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: geopandas, shapely, folium, matplotlib, pandas\n- Dataset: city_points.geojson, neighborhoods.shp, crime_data.csv\n- Working directory: /opt/geospatial-analysis\n\n### Tasks\n1. Load neighborhood shapefiles and city point data\n2. Perform spatial join to assign points to neighborhoods\n3. Calculate distance matrix between all city points\n4. Create a choropleth map of crime density by neighborhood\n5. Build an interactive Folium map with markers and heatmaps\n6. Calculate spatial autocorrelation (Moran's I)\n7. Perform buffer analysis around key locations\n8. Export results as GeoJSON and interactive HTML map\n\n### Permissions & Access\n- Container runs as root\n- GeoPandas 0.14+ installed\n- Data at /opt/geospatial-analysis/data/",
+    "tasks": [
+      "Load neighborhood shapefiles and city point data",
+      "Perform spatial join to assign points to neighborhoods",
+      "Calculate distance matrix between all city points",
+      "Create a choropleth map of crime density by neighborhood",
+      "Build an interactive Folium map with markers and heatmaps",
+      "Calculate spatial autocorrelation (Moran's I)",
+      "Perform buffer analysis around key locations",
+      "Export results as GeoJSON and interactive HTML map"
+    ],
+    "flags": [
+      {
+        "title": "Shapefile Loaded",
+        "description": "Run: ls /opt/geospatial-analysis/load_data.py. Data loading script exists?",
+        "ans": "load_data.py",
+        "pts": 100
+      },
+      {
+        "title": "Spatial Join",
+        "description": "Run: ls /opt/geospatial-analysis/spatial_join.py. Spatial join script exists?",
+        "ans": "spatial_join.py",
+        "pts": 100
+      },
+      {
+        "title": "Distance Calc",
+        "description": "Run: ls /opt/geospatial-analysis/distance_matrix.py. Distance calculation exists?",
+        "ans": "distance_matrix.py",
+        "pts": 100
+      },
+      {
+        "title": "Choropleth",
+        "description": "Run: ls /opt/geospatial-analysis/choropleth_map.py. Choropleth map script exists?",
+        "ans": "choropleth_map.py",
+        "pts": 100
+      },
+      {
+        "title": "Folium Map",
+        "description": "Run: ls /opt/geospatial-analysis/interactive_map.py. Interactive map script exists?",
+        "ans": "interactive_map.py",
+        "pts": 150
+      },
+      {
+        "title": "HTML Map",
+        "description": "Run: ls /opt/geospatial-analysis/reports/city_map.html. Interactive HTML map exists?",
+        "ans": "city_map.html",
+        "pts": 100
+      },
+      {
+        "title": "GeoJSON Export",
+        "description": "Run: ls /opt/geospatial-analysis/output/results.geojson. GeoJSON exported?",
+        "ans": "results.geojson",
+        "pts": 100
+      },
+      {
+        "title": "Moran's I",
+        "description": "Run: grep -c 'moran\\|Moran' /opt/geospatial-analysis/spatial_stats.py. Moran's I calculated?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Buffer Analysis",
+        "description": "Run: ls /opt/geospatial-analysis/buffer_analysis.py. Buffer analysis exists?",
+        "ans": "buffer_analysis.py",
+        "pts": 100
+      },
+      {
+        "title": "Heatmap",
+        "description": "Run: grep -c 'HeatMap\\|heatmap' /opt/geospatial-analysis/interactive_map.py. Heatmap added?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Stream Processing with Python Generators",
+    "description": "Build real-time data processing pipelines using Python generators, itertools, and async patterns for streaming data.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 85,
+    "skillName": "PYTHON_DATA",
+    "briefing": "### Mission Objective\nMaster stream processing in Python using generators, async generators, and itertools. Build pipelines that process infinite data streams, perform windowed aggregations, and handle backpressure.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: pandas, asyncio, itertools, collections\n- Simulated sensor data generator provided\n- Working directory: /opt/stream-processing\n\n### Tasks\n1. Create a generator that produces infinite sensor readings\n2. Build a pipeline with chaining generators for transformation\n3. Implement sliding window aggregation (5-minute moving average)\n4. Create an async generator for concurrent stream processing\n5. Implement rate limiting and backpressure handling\n6. Build a real-time anomaly detection pipeline\n7. Create a windowed count aggregation using deque\n8. Write results to a rolling log file using generator patterns\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with enhanced generator support\n- Data streams simulated in code",
+    "tasks": [
+      "Create a generator that produces infinite sensor readings",
+      "Build a pipeline with chaining generators for transformation",
+      "Implement sliding window aggregation (5-minute moving average)",
+      "Create an async generator for concurrent stream processing",
+      "Implement rate limiting and backpressure handling",
+      "Build a real-time anomaly detection pipeline",
+      "Create a windowed count aggregation using deque",
+      "Write results to a rolling log file using generator patterns"
+    ],
+    "flags": [
+      {
+        "title": "Sensor Generator",
+        "description": "Run: ls /opt/stream-processing/sensor_stream.py. Sensor generator exists?",
+        "ans": "sensor_stream.py",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Script",
+        "description": "Run: ls /opt/stream-processing/pipeline.py. Pipeline with chained generators?",
+        "ans": "pipeline.py",
+        "pts": 100
+      },
+      {
+        "title": "Window Aggregation",
+        "description": "Run: ls /opt/stream-processing/window_aggregator.py. Sliding window implemented?",
+        "ans": "window_aggregator.py",
+        "pts": 100
+      },
+      {
+        "title": "Async Generator",
+        "description": "Run: ls /opt/stream-processing/async_stream.py. Async generator exists?",
+        "ans": "async_stream.py",
+        "pts": 150
+      },
+      {
+        "title": "Backpressure",
+        "description": "Run: grep -c 'backpressure\\|rate_limit\\|Semaphore' /opt/stream-processing/async_stream.py. Backpressure handled?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Anomaly Detection",
+        "description": "Run: ls /opt/stream-processing/anomaly_detector.py. Real-time anomaly detection?",
+        "ans": "anomaly_detector.py",
+        "pts": 100
+      },
+      {
+        "title": "Windowed Count",
+        "description": "Run: grep -c 'deque\\|Counter' /opt/stream-processing/window_aggregator.py. Windowed count with deque?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Rolling Log",
+        "description": "Run: ls /opt/stream-processing/rolling_log.py. Rolling log writer exists?",
+        "ans": "rolling_log.py",
+        "pts": 100
+      },
+      {
+        "title": "Yield Count",
+        "description": "Run: grep -rc 'yield' /opt/stream-processing/*.py | awk -F: '{sum+=$2}END{print sum}'. How many yield statements?",
+        "ans": "8",
+        "pts": 100
+      },
+      {
+        "title": "Output File",
+        "description": "Run: ls /opt/stream-processing/output/stream_results.jsonl. Output file created?",
+        "ans": "stream_results.jsonl",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Data Catalog and Metadata Management",
+    "description": "Build a data catalog system that tracks datasets, schemas, lineage, and metadata for a data platform.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "BIG_DATA",
+    "briefing": "### Mission Objective\nCreate a metadata management system that catalogs datasets, tracks schema changes, documents data lineage, and provides a search interface for data discovery.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: sqlalchemy, pandas, json, sqlite3\n- Multiple dataset files in different formats\n- Working directory: /opt/data-catalog\n\n### Tasks\n1. Design a metadata database schema (datasets, columns, lineage, tags)\n2. Create an auto-discovery tool that scans directories for datasets\n3. Implement schema extraction for CSV, JSON, and Parquet files\n4. Build a lineage tracker showing data flow between transformations\n5. Create a tag system for data classification (PII, financial, public)\n6. Implement a search API for discovering datasets by name, tag, or schema\n7. Generate a data catalog HTML page with browsable entries\n8. Create an alert system for schema changes\n\n### Permissions & Access\n- Container runs as root\n- SQLAlchemy for database\n- Catalog DB at /opt/data-catalog/catalog.db",
+    "tasks": [
+      "Design a metadata database schema (datasets, columns, lineage, tags)",
+      "Create an auto-discovery tool that scans directories for datasets",
+      "Implement schema extraction for CSV, JSON, and Parquet files",
+      "Build a lineage tracker showing data flow between transformations",
+      "Create a tag system for data classification (PII, financial, public)",
+      "Implement a search API for discovering datasets by name, tag, or schema",
+      "Generate a data catalog HTML page with browsable entries",
+      "Create an alert system for schema changes"
+    ],
+    "flags": [
+      {
+        "title": "Schema DB",
+        "description": "Run: ls /opt/data-catalog/models.py. Database schema defined?",
+        "ans": "models.py",
+        "pts": 100
+      },
+      {
+        "title": "Discovery Tool",
+        "description": "Run: ls /opt/data-catalog/discover.py. Auto-discovery tool exists?",
+        "ans": "discover.py",
+        "pts": 100
+      },
+      {
+        "title": "Schema Extract",
+        "description": "Run: ls /opt/data-catalog/schema_extractor.py. Schema extraction exists?",
+        "ans": "schema_extractor.py",
+        "pts": 100
+      },
+      {
+        "title": "Lineage Tracker",
+        "description": "Run: ls /opt/data-catalog/lineage.py. Lineage tracking exists?",
+        "ans": "lineage.py",
+        "pts": 150
+      },
+      {
+        "title": "Tag System",
+        "description": "Run: ls /opt/data-catalog/tagging.py. Tag system implemented?",
+        "ans": "tagging.py",
+        "pts": 100
+      },
+      {
+        "title": "Search API",
+        "description": "Run: ls /opt/data-catalog/search_api.py. Search API exists?",
+        "ans": "search_api.py",
+        "pts": 100
+      },
+      {
+        "title": "Catalog HTML",
+        "description": "Run: ls /opt/data-catalog/output/catalog.html. HTML catalog generated?",
+        "ans": "catalog.html",
+        "pts": 100
+      },
+      {
+        "title": "Alert System",
+        "description": "Run: ls /opt/data-catalog/schema_alerts.py. Schema change alerts exist?",
+        "ans": "schema_alerts.py",
+        "pts": 100
+      },
+      {
+        "title": "DB Created",
+        "description": "Run: ls /opt/data-catalog/catalog.db. Catalog database exists?",
+        "ans": "catalog.db",
+        "pts": 100
+      },
+      {
+        "title": "Datasets Cataloged",
+        "description": "Run: python3 -c 'import sqlite3; c=sqlite3.connect(\"/opt/data-catalog/catalog.db\"); print(c.execute(\"SELECT COUNT(*) FROM datasets\").fetchone()[0])'. How many datasets?",
+        "ans": "5",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Data Versioning with DVC and Git",
+    "description": "Implement data version control using DVC (Data Version Control) with Git for reproducible ML experiments.",
+    "dockerImage": "python:3.12-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "ETL_PIPELINES",
+    "briefing": "### Mission Objective\nSet up Data Version Control (DVC) to track datasets, models, and experiments alongside Git. Create a reproducible ML pipeline where data, code, and model versions are linked.\n\n### Environment\n- Python 3.12 with pip\n- Pre-installed: dvc, git, pandas, scikit-learn\n- Git repository initialized\n- Working directory: /opt/dvc-lab\n\n### Tasks\n1. Initialize DVC in the Git repository\n2. Configure a local DVC remote storage\n3. Track a large dataset file with DVC\n4. Create a DVC pipeline with train and evaluate stages\n5. Tag a DVC-tracked experiment version\n6. Compare two experiment versions using DVC metrics\n7. Push dataset to remote storage\n8. Clone and reproduce the experiment from scratch\n\n### Permissions & Access\n- Container runs as root\n- DVC 3.0+ installed\n- Local remote at /opt/dvc-storage/",
+    "tasks": [
+      "Initialize DVC in the Git repository",
+      "Configure a local DVC remote storage",
+      "Track a large dataset file with DVC",
+      "Create a DVC pipeline with train and evaluate stages",
+      "Tag a DVC-tracked experiment version",
+      "Compare two experiment versions using DVC metrics",
+      "Push dataset to remote storage",
+      "Clone and reproduce the experiment from scratch"
+    ],
+    "flags": [
+      {
+        "title": "DVC Init",
+        "description": "Run: ls /opt/dvc-lab/.dvc/config. DVC config exists?",
+        "ans": "config",
+        "pts": 100
+      },
+      {
+        "title": "Remote Config",
+        "description": "Run: grep -c remote /opt/dvc-lab/.dvc/config. Remote configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Data Tracked",
+        "description": "Run: ls /opt/dvc-lab/data/*.csv.dvc | wc -l. DVC tracking files?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline File",
+        "description": "Run: ls /opt/dvc-lab/dvc.yaml. DVC pipeline exists?",
+        "ans": "dvc.yaml",
+        "pts": 150
+      },
+      {
+        "title": "Stages Defined",
+        "description": "Run: grep -c cmd: /opt/dvc-lab/dvc.yaml. Pipeline stages?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Metrics File",
+        "description": "Run: ls /opt/dvc-lab/metrics.json. Metrics file tracked?",
+        "ans": "metrics.json",
+        "pts": 100
+      },
+      {
+        "title": "Params File",
+        "description": "Run: ls /opt/dvc-lab/params.yaml. Params file exists?",
+        "ans": "params.yaml",
+        "pts": 100
+      },
+      {
+        "title": "Gitignore",
+        "description": "Run: grep -c .dvc/cache /opt/dvc-lab/.gitignore. DVC cache in gitignore?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Lock File",
+        "description": "Run: ls /opt/dvc-lab/dvc.lock. DVC lock file exists?",
+        "ans": "dvc.lock",
+        "pts": 100
+      },
+      {
+        "title": "Remote Push",
+        "description": "Run: ls -d /opt/dvc-storage/files/md5/* 2>/dev/null | wc -l. Files pushed to remote?",
+        "ans": "1",
+        "pts": 150
+      }
+    ]
+  }
+]

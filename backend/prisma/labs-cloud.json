@@ -1,0 +1,1622 @@
+[
+  {
+    "title": "Terraform IaC: AWS VPC from Scratch",
+    "description": "Build a production-grade AWS VPC with public/private subnets, NAT gateway, and route tables using Terraform.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "TERRAFORM",
+    "briefing": "### Mission Objective\nProvision a complete AWS Virtual Private Cloud infrastructure using Terraform. You will create a multi-AZ VPC with public and private subnets, internet gateway, NAT gateway, and proper routing tables — all defined as Infrastructure as Code.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform 1.6+ installed\n- AWS CLI configured with lab credentials (us-east-1)\n- Pre-installed: terraform-docs, tflint\n- Working directory: /opt/terraform-vpc\n\n### Tasks\n1. Initialize a new Terraform project with proper backend configuration\n2. Define a VPC with CIDR block 10.0.0.0/16 and enable DNS support\n3. Create 2 public subnets across different availability zones\n4. Create 2 private subnets across different availability zones\n5. Deploy an Internet Gateway and attach it to the VPC\n6. Deploy a NAT Gateway in a public subnet for private subnet outbound traffic\n7. Configure route tables for both public and private subnets\n8. Output the VPC ID, subnet IDs, and NAT gateway public IP\n\n### Permissions & Access\n- Container runs as root with AWS credentials pre-configured\n- Terraform state stored locally (no S3 backend for lab)\n- Destroy all resources after verification to avoid charges",
+    "tasks": [
+      "Initialize a new Terraform project with proper backend configuration",
+      "Define a VPC with CIDR block 10.0.0.0/16 and enable DNS support",
+      "Create 2 public subnets across different availability zones",
+      "Create 2 private subnets across different availability zones",
+      "Deploy an Internet Gateway and attach it to the VPC",
+      "Deploy a NAT Gateway in a public subnet for private subnet outbound traffic",
+      "Configure route tables for both public and private subnets",
+      "Output the VPC ID, subnet IDs, and NAT gateway public IP"
+    ],
+    "flags": [
+      {
+        "title": "VPC Exists",
+        "description": "Run: terraform state show aws_vpc.main | grep 'id'. What is the VPC ID?",
+        "ans": "vpc-",
+        "pts": 100
+      },
+      {
+        "title": "Public Subnets",
+        "description": "Run: terraform state list | grep public_subnet. How many public subnets exist?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Private Subnets",
+        "description": "Run: terraform state list | grep private_subnet. How many private subnets exist?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Internet Gateway",
+        "description": "Run: terraform state show aws_internet_gateway. What is the IGW ID?",
+        "ans": "igw-",
+        "pts": 150
+      },
+      {
+        "title": "NAT Gateway",
+        "description": "Run: terraform state show aws_nat_gateway.main. What is the NAT GW allocation ID?",
+        "ans": "eipalloc-",
+        "pts": 150
+      },
+      {
+        "title": "Route Tables",
+        "description": "Run: terraform state list | grep route_table. How many route tables exist?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "DNS Support",
+        "description": "Run: terraform state show aws_vpc.main | grep 'enable_dns_support'. Is it true?",
+        "ans": "true",
+        "pts": 100
+      },
+      {
+        "title": "Outputs Valid",
+        "description": "Run: terraform output. Does vpc_id output contain 'vpc-'?",
+        "ans": "true",
+        "pts": 100
+      },
+      {
+        "title": "Plan Clean",
+        "description": "Run: terraform plan -detailed-exitcode. Exit code 0 means no changes?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Validate Pass",
+        "description": "Run: terraform validate. Output must say 'Success!'",
+        "ans": "Success!",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "K3s Kubernetes Cluster on Ubuntu",
+    "description": "Deploy a lightweight K3s Kubernetes cluster and deploy a multi-tier application with Ingress.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "KUBERNETES",
+    "briefing": "### Mission Objective\nInstall and configure a production-ready K3s Kubernetes cluster. Deploy a web application with a backend API, database, and Ingress controller. Verify all components are running correctly.\n\n### Environment\n- Ubuntu 22.04 LTS with root access\n- K3s installer available at https://get.k3s.io\n- kubectl pre-installed\n- Working directory: /opt/k3s-lab\n\n### Tasks\n1. Install K3s with disabled Traefik (we will install NGINX Ingress manually)\n2. Verify all nodes are in Ready state\n3. Deploy a PostgreSQL database using a StatefulSet with PersistentVolumeClaim\n4. Deploy a Node.js API backend as a Deployment with 3 replicas\n5. Deploy a React frontend as a Deployment with 2 replicas\n6. Create a Service for the API backend (ClusterIP) and frontend (NodePort)\n7. Install NGINX Ingress Controller via Helm chart\n8. Create an Ingress resource routing /api to the backend and / to the frontend\n\n### Permissions & Access\n- Container runs as root\n- K3s kubeconfig at /etc/rancher/k3s/k3s.yaml\n- Helm 3 pre-installed for Ingress controller installation",
+    "tasks": [
+      "Install K3s with disabled Traefik",
+      "Verify all nodes are in Ready state",
+      "Deploy a PostgreSQL database using a StatefulSet with PersistentVolumeClaim",
+      "Deploy a Node.js API backend as a Deployment with 3 replicas",
+      "Deploy a React frontend as a Deployment with 2 replicas",
+      "Create a Service for the API backend (ClusterIP) and frontend (NodePort)",
+      "Install NGINX Ingress Controller via Helm chart",
+      "Create an Ingress resource routing /api to the backend and / to the frontend"
+    ],
+    "flags": [
+      {
+        "title": "K3s Installed",
+        "description": "Run: k3s --version. What version of K3s is running?",
+        "ans": "k3s version",
+        "pts": 100
+      },
+      {
+        "title": "Nodes Ready",
+        "description": "Run: kubectl get nodes -o wide. How many nodes are in Ready state?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "PostgreSQL Running",
+        "description": "Run: kubectl get pods -n default | grep postgres. Is postgres pod Running?",
+        "ans": "Running",
+        "pts": 100
+      },
+      {
+        "title": "API Replicas",
+        "description": "Run: kubectl get deployments api-backend. How many ready replicas?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Frontend Replicas",
+        "description": "Run: kubectl get deployments frontend. How many ready replicas?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Services Created",
+        "description": "Run: kubectl get svc. How many services exist (excluding kubernetes)?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Ingress Installed",
+        "description": "Run: kubectl get pods -n ingress-nginx | grep controller. Is it Running?",
+        "ans": "Running",
+        "pts": 150
+      },
+      {
+        "title": "Ingress Routing",
+        "description": "Run: kubectl get ingress. What host is configured for the Ingress?",
+        "ans": "app.local",
+        "pts": 100
+      },
+      {
+        "title": "PV Bound",
+        "description": "Run: kubectl get pvc. Is the PostgreSQL PVC in Bound state?",
+        "ans": "Bound",
+        "pts": 150
+      },
+      {
+        "title": "System Pods",
+        "description": "Run: kubectl get pods -A | grep -c Running. How many pods are Running across all namespaces?",
+        "ans": "6",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS S3 Static Website with CloudFront CDN",
+    "description": "Host a static website on S3 with CloudFront distribution, OAC, and custom error pages.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 75,
+    "skillName": "AWS_STORAGE",
+    "briefing": "### Mission Objective\nDeploy a static website to S3 and distribute it globally using CloudFront CDN. Configure Origin Access Control, custom error responses, and cache invalidation.\n\n### Environment\n- Ubuntu 22.04 LTS with AWS CLI and Terraform\n- S3 bucket name must be globally unique (use your initials + random)\n- AWS credentials pre-configured\n- Working directory: /opt/s3-cloudfront\n\n### Tasks\n1. Create an S3 bucket with public access blocked\n2. Upload static website files (index.html, error.html, styles.css) to S3\n3. Configure S3 bucket policy to allow CloudFront OAC access\n4. Create a CloudFront distribution with S3 as origin\n5. Set custom error pages (404 → /error.html with 200 response)\n6. Configure cache policy with 1-hour default TTL\n7. Create a CloudFront invalidation for /index.html\n8. Output the CloudFront distribution domain name\n\n### Permissions & Access\n- Container runs as root\n- AWS credentials with S3 and CloudFront permissions\n- Bucket naming: lab-static-site-{your-initials}-{random}",
+    "tasks": [
+      "Create an S3 bucket with public access blocked",
+      "Upload static website files (index.html, error.html, styles.css) to S3",
+      "Configure S3 bucket policy to allow CloudFront OAC access",
+      "Create a CloudFront distribution with S3 as origin",
+      "Set custom error pages (404 → /error.html with 200 response)",
+      "Configure cache policy with 1-hour default TTL",
+      "Create a CloudFront invalidation for /index.html",
+      "Output the CloudFront distribution domain name"
+    ],
+    "flags": [
+      {
+        "title": "Bucket Created",
+        "description": "Run: aws s3 ls | grep lab-static-site. What is the bucket name?",
+        "ans": "lab-static-site",
+        "pts": 100
+      },
+      {
+        "title": "Files Uploaded",
+        "description": "Run: aws s3 ls s3://BUCKET_NAME. How many files are in the bucket?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Public Access Blocked",
+        "description": "Run: aws s3api get-public-access-block --bucket BUCKET_NAME. Is BlockPublicAcls true?",
+        "ans": "true",
+        "pts": 100
+      },
+      {
+        "title": "OAC Configured",
+        "description": "Run: aws cloudfront list-origin-access-controls. How many OACs exist?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Distribution Deployed",
+        "description": "Run: aws cloudfront list-distributions. What is the distribution status?",
+        "ans": "Deployed",
+        "pts": 150
+      },
+      {
+        "title": "Custom Error Pages",
+        "description": "Run: aws cloudfront get-distribution-config. Does CustomErrorResponses contain 404?",
+        "ans": "true",
+        "pts": 100
+      },
+      {
+        "title": "Cache Policy",
+        "description": "Run: aws cloudfront list-cache-policies. What is the DefaultTTL in seconds?",
+        "ans": "3600",
+        "pts": 100
+      },
+      {
+        "title": "Invalidation",
+        "description": "Run: aws cloudfront list-invalidations --distribution-id ID. How many invalidations?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "HTTPS Enabled",
+        "description": "Run: aws cloudfront get-distribution. Is ViewerProtocolPolicy set to redirect-to-https?",
+        "ans": "redirect-to-https",
+        "pts": 100
+      },
+      {
+        "title": "Distribution ID",
+        "description": "Run: terraform output cloudfront_distribution_id. Does it start with E?",
+        "ans": "E",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Docker Compose Multi-Service Stack",
+    "description": "Deploy a full-stack application using Docker Compose with PostgreSQL, Redis, Node.js API, and Nginx reverse proxy.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "AWS_COMPUTE",
+    "briefing": "### Mission Objective\nOrchestrate a multi-container application stack using Docker Compose. The stack includes a PostgreSQL database, Redis cache, Node.js API server, and Nginx reverse proxy with proper networking, volumes, and health checks.\n\n### Environment\n- Ubuntu 22.04 LTS with Docker and Docker Compose v2\n- Available images: postgres:15-alpine, redis:7-alpine, node:20-alpine, nginx:1.27-alpine\n- Working directory: /opt/docker-stack\n\n### Tasks\n1. Create a docker-compose.yml with all four services defined\n2. Configure PostgreSQL with health check, persistent volume, and environment variables\n3. Configure Redis with health check and command-line password protection\n4. Build and run a Node.js API that connects to PostgreSQL and Redis\n5. Configure Nginx as reverse proxy forwarding /api to Node.js service\n6. Set up Docker networks so services communicate by service name\n7. Configure named volumes for PostgreSQL data persistence\n8. Deploy the full stack and verify all containers are healthy\n\n### Permissions & Access\n- Container runs as root with Docker socket mounted\n- All configuration files in /opt/docker-stack/\n- Use 'docker compose' (v2 syntax, not docker-compose)",
+    "tasks": [
+      "Create a docker-compose.yml with all four services defined",
+      "Configure PostgreSQL with health check, persistent volume, and environment variables",
+      "Configure Redis with health check and command-line password protection",
+      "Build and run a Node.js API that connects to PostgreSQL and Redis",
+      "Configure Nginx as reverse proxy forwarding /api to Node.js service",
+      "Set up Docker networks so services communicate by service name",
+      "Configure named volumes for PostgreSQL data persistence",
+      "Deploy the full stack and verify all containers are healthy"
+    ],
+    "flags": [
+      {
+        "title": "Compose File",
+        "description": "Run: cat /opt/docker-stack/docker-compose.yml | grep 'version'. What version is specified?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "All Running",
+        "description": "Run: docker compose ps --format '{{.Names}}' | wc -l. How many services are running?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "PostgreSQL Healthy",
+        "description": "Run: docker compose ps postgres --format '{{.Status}}'. Is it healthy?",
+        "ans": "healthy",
+        "pts": 100
+      },
+      {
+        "title": "Redis Healthy",
+        "description": "Run: docker compose ps redis --format '{{.Status}}'. Is it healthy?",
+        "ans": "healthy",
+        "pts": 100
+      },
+      {
+        "title": "Volume Exists",
+        "description": "Run: docker volume ls | grep postgres. Does postgres_data volume exist?",
+        "ans": "postgres_data",
+        "pts": 100
+      },
+      {
+        "title": "Network Exists",
+        "description": "Run: docker network ls | grep stack. Does the app network exist?",
+        "ans": "app",
+        "pts": 100
+      },
+      {
+        "title": "API Responds",
+        "description": "Run: curl -s http://localhost:3000/api/health. What is the status field?",
+        "ans": "ok",
+        "pts": 150
+      },
+      {
+        "title": "Nginx Proxying",
+        "description": "Run: curl -s http://localhost:80/api/health. Does it return the same response as port 3000?",
+        "ans": "ok",
+        "pts": 150
+      },
+      {
+        "title": "Restart Policy",
+        "description": "Run: docker inspect postgres --format '{{.HostConfig.RestartPolicy.Name}}'. What is the restart policy?",
+        "ans": "unless-stopped",
+        "pts": 100
+      },
+      {
+        "title": "Env Variables",
+        "description": "Run: docker inspect postgres --format '{{range .Config.Env}}{{println .}}{{end}}' | grep POSTGRES_DB. What is the DB name?",
+        "ans": "appdb",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Azure DevOps CI/CD Pipeline with Docker",
+    "description": "Set up a complete CI/CD pipeline using Docker that builds, tests, and deploys a Node.js application.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "AZURE_FOUNDATIONS",
+    "briefing": "### Mission Objective\nConfigure a full CI/CD pipeline using Docker containers that builds a Node.js application, runs tests, performs security scanning, and deploys to a staging environment. All stages use Docker for consistency.\n\n### Environment\n- Ubuntu 22.04 LTS with Docker and Docker Compose\n- Node.js 20 available inside containers\n- Pre-created Git repository at /opt/cicd-app\n- Working directory: /opt/cicd-pipeline\n\n### Tasks\n1. Create a Dockerfile for multi-stage Node.js build (build + production)\n2. Write a docker-compose.test.yml for running Jest tests in a container\n3. Create a CI pipeline script (ci.sh) that runs lint, test, and build stages\n4. Create a Dockerfile for the production image with non-root user\n5. Write a deploy.sh script that stops old containers and deploys new ones\n6. Set up health check endpoints in the Node.js application\n7. Create a .dockerignore file to exclude unnecessary files\n8. Run the full pipeline end-to-end and verify the app is accessible\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Application source at /opt/cicd-app/\n- Pipeline scripts at /opt/cicd-pipeline/",
+    "tasks": [
+      "Create a Dockerfile for multi-stage Node.js build (build + production)",
+      "Write a docker-compose.test.yml for running Jest tests in a container",
+      "Create a CI pipeline script (ci.sh) that runs lint, test, and build stages",
+      "Create a Dockerfile for the production image with non-root user",
+      "Write a deploy.sh script that stops old containers and deploys new ones",
+      "Set up health check endpoints in the Node.js application",
+      "Create a .dockerignore file to exclude unnecessary files",
+      "Run the full pipeline end-to-end and verify the app is accessible"
+    ],
+    "flags": [
+      {
+        "title": "Dockerfile Exists",
+        "description": "Run: ls -la /opt/cicd-app/Dockerfile. Does the file exist?",
+        "ans": "Dockerfile",
+        "pts": 100
+      },
+      {
+        "title": "Multi-Stage Build",
+        "description": "Run: grep -c 'FROM' /opt/cicd-app/Dockerfile. How many FROM stages are there?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Test Compose",
+        "description": "Run: ls /opt/cicd-pipeline/docker-compose.test.yml. Does it exist?",
+        "ans": "docker-compose.test.yml",
+        "pts": 100
+      },
+      {
+        "title": "CI Script",
+        "description": "Run: ls -la /opt/cicd-pipeline/ci.sh. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls -la /opt/cicd-pipeline/deploy.sh. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Non-Root User",
+        "description": "Run: grep 'USER' /opt/cicd-app/Dockerfile. What user is the app running as?",
+        "ans": "node",
+        "pts": 150
+      },
+      {
+        "title": "Dockerignore",
+        "description": "Run: cat /opt/cicd-app/.dockerignore | grep 'node_modules'. Does it exclude node_modules?",
+        "ans": "node_modules",
+        "pts": 100
+      },
+      {
+        "title": "Health Check",
+        "description": "Run: curl -s http://localhost:3000/health. Does it return a 200 status?",
+        "ans": "ok",
+        "pts": 150
+      },
+      {
+        "title": "Build Passes",
+        "description": "Run: /opt/cicd-pipeline/ci.sh. Exit code 0 means success?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Image Tagged",
+        "description": "Run: docker images | grep cicd-app | grep latest. Does the image exist?",
+        "ans": "latest",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Prometheus + Grafana Monitoring Stack",
+    "description": "Deploy a complete monitoring solution with Prometheus scraping metrics and Grafana dashboards.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "KUBERNETES",
+    "briefing": "### Mission Objective\nSet up a production-grade monitoring stack using Docker Compose. Prometheus will scrape system and application metrics, and Grafana will visualize them with pre-configured dashboards.\n\n### Environment\n- Ubuntu 22.04 LTS with Docker and Docker Compose\n- Available images: prom/prometheus:v2.52.0, grafana/grafana:11.0.0\n- Working directory: /opt/monitoring\n\n### Tasks\n1. Create a prometheus.yml configuration to scrape localhost:9090 and node-exporter\n2. Deploy Prometheus using Docker Compose with persistent volume\n3. Deploy Grafana with admin credentials configured\n4. Create a Docker Compose file linking Prometheus and Grafana\n5. Configure Grafana as a data source pointing to Prometheus\n6. Create a JSON dashboard file for system metrics\n7. Deploy a Node Exporter container for system metrics collection\n8. Verify both services are accessible and data is flowing\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Prometheus UI: localhost:9090\n- Grafana UI: localhost:3000 (admin/monitoring-2024!)",
+    "tasks": [
+      "Create a prometheus.yml configuration to scrape localhost:9090 and node-exporter",
+      "Deploy Prometheus using Docker Compose with persistent volume",
+      "Deploy Grafana with admin credentials configured",
+      "Create a Docker Compose file linking Prometheus and Grafana",
+      "Configure Grafana as a data source pointing to Prometheus",
+      "Create a JSON dashboard file for system metrics",
+      "Deploy a Node Exporter container for system metrics collection",
+      "Verify both services are accessible and data is flowing"
+    ],
+    "flags": [
+      {
+        "title": "Prometheus Running",
+        "description": "Run: docker ps | grep prometheus | grep -c Up. Is Prometheus running?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Running",
+        "description": "Run: docker ps | grep grafana | grep -c Up. Is Grafana running?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Prometheus Config",
+        "description": "Run: cat /opt/monitoring/prometheus.yml | grep 'scrape_interval'. What is the interval?",
+        "ans": "15s",
+        "pts": 100
+      },
+      {
+        "title": "Prometheus Volume",
+        "description": "Run: docker volume ls | grep prometheus. Does prometheus_data exist?",
+        "ans": "prometheus_data",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Datasource",
+        "description": "Run: curl -s http://localhost:3000/api/datasources | grep 'Prometheus'. Is Prometheus a datasource?",
+        "ans": "Prometheus",
+        "pts": 150
+      },
+      {
+        "title": "Grafana Dashboard",
+        "description": "Run: curl -s http://localhost:3000/api/search | grep 'title'. What is the dashboard title?",
+        "ans": "System Metrics",
+        "pts": 150
+      },
+      {
+        "title": "Node Exporter",
+        "description": "Run: docker ps | grep node-exporter | grep -c Up. Is Node Exporter running?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Metrics Target",
+        "description": "Run: curl -s http://localhost:9090/api/v1/targets | grep 'node-exporter'. Is the target UP?",
+        "ans": "up",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Admin",
+        "description": "Run: docker inspect grafana | grep 'GF_SECURITY_ADMIN_PASSWORD'. What is the password?",
+        "ans": "monitoring-2024!",
+        "pts": 100
+      },
+      {
+        "title": "Data Flowing",
+        "description": "Run: curl -s http://localhost:9090/api/v1/query?query=up | grep 'value'. Does it return a value?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS EC2 Auto Scaling Group with ALB",
+    "description": "Configure an Auto Scaling Group with Application Load Balancer for a high-availability web application.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "AWS_COMPUTE",
+    "briefing": "### Mission Objective\nDesign and deploy an Auto Scaling Group backed by an Application Load Balancer. Configure launch templates, scaling policies, and health checks for a fault-tolerant web application.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform and AWS CLI\n- AWS credentials with EC2, ELB, and AutoScaling permissions\n- Pre-created VPC with 2 public subnets\n- Working directory: /opt/asg-alb\n\n### Tasks\n1. Create a Launch Template with user data that installs and starts nginx\n2. Configure an Auto Scaling Group with min=1, max=4, desired=2\n3. Deploy an Application Load Balancer with target group\n4. Create a health check for the target group on port 80\n5. Configure a scaling policy based on CPU utilization (target 70%)\n6. Create a security group allowing inbound HTTP from ALB only\n7. Verify instances are registered with the target group\n8. Test load distribution by making multiple HTTP requests\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- VPC and subnets pre-provisioned in us-east-1\n- Use terraform for all infrastructure",
+    "tasks": [
+      "Create a Launch Template with user data that installs and starts nginx",
+      "Configure an Auto Scaling Group with min=1, max=4, desired=2",
+      "Deploy an Application Load Balancer with target group",
+      "Create a health check for the target group on port 80",
+      "Configure a scaling policy based on CPU utilization (target 70%)",
+      "Create a security group allowing inbound HTTP from ALB only",
+      "Verify instances are registered with the target group",
+      "Test load distribution by making multiple HTTP requests"
+    ],
+    "flags": [
+      {
+        "title": "Launch Template",
+        "description": "Run: terraform state show aws_launch_template.web. What is the template name?",
+        "ans": "web-lt",
+        "pts": 100
+      },
+      {
+        "title": "ASG Created",
+        "description": "Run: terraform state show aws_autoscaling_group.web. What is the desired capacity?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Min Instances",
+        "description": "Run: terraform state show aws_autoscaling_group.web | grep min_size. What is min_size?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Max Instances",
+        "description": "Run: terraform state show aws_autoscaling_group.web | grep max_size. What is max_size?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "ALB Deployed",
+        "description": "Run: terraform state show aws_lb.web. What is the load balancer type?",
+        "ans": "application",
+        "pts": 150
+      },
+      {
+        "title": "Target Group",
+        "description": "Run: terraform state show aws_lb_target_group.web. What port is the target group on?",
+        "ans": "80",
+        "pts": 100
+      },
+      {
+        "title": "Health Check",
+        "description": "Run: terraform state show aws_lb_target_group.web | grep health_check. Path is /?",
+        "ans": "/",
+        "pts": 100
+      },
+      {
+        "title": "Scaling Policy",
+        "description": "Run: terraform state list | grep scaling_policy. How many policies exist?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Security Group",
+        "description": "Run: terraform state show aws_security_group.alb. Inbound port 80 from 0.0.0.0/0?",
+        "ans": "true",
+        "pts": 100
+      },
+      {
+        "title": "DNS Name",
+        "description": "Run: terraform output alb_dns_name. Does it end with amazonaws.com?",
+        "ans": "amazonaws.com",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "GCP Cloud Run Serverless Deployment",
+    "description": "Deploy a containerized application to Google Cloud Run with auto-scaling and traffic splitting.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 80,
+    "skillName": "GCP_FOUNDATIONS",
+    "briefing": "### Mission Objective\nDeploy a Python Flask application to Google Cloud Run as a serverless container. Configure auto-scaling, traffic splitting between revisions, and custom domain mapping.\n\n### Environment\n- Ubuntu 22.04 LTS with gcloud CLI pre-installed\n- GCP project with Cloud Run API enabled\n- Docker installed for building images\n- Working directory: /opt/cloudrun-deploy\n\n### Tasks\n1. Create a Dockerfile for the Python Flask application\n2. Build the Docker image locally\n3. Configure gcloud with the provided project credentials\n4. Deploy to Cloud Run with 100% traffic to the initial revision\n5. Make code changes and deploy as a new revision with 50/50 traffic split\n6. Configure Cloud Run service with minimum 1 and maximum 10 instances\n7. Set environment variables for DATABASE_URL and API_KEY\n8. Verify the service URL is accessible and returns HTTP 200\n\n### Permissions & Access\n- Container runs as root with gcloud credentials\n- GCP project: lab-cloudrun-project\n- Region: us-central1\n- Auth: service account with Cloud Run Admin role",
+    "tasks": [
+      "Create a Dockerfile for the Python Flask application",
+      "Build the Docker image locally",
+      "Configure gcloud with the provided project credentials",
+      "Deploy to Cloud Run with 100% traffic to the initial revision",
+      "Make code changes and deploy as a new revision with 50/50 traffic split",
+      "Configure Cloud Run service with minimum 1 and maximum 10 instances",
+      "Set environment variables for DATABASE_URL and API_KEY",
+      "Verify the service URL is accessible and returns HTTP 200"
+    ],
+    "flags": [
+      {
+        "title": "Dockerfile Exists",
+        "description": "Run: ls /opt/cloudrun-deploy/Dockerfile. Does it exist?",
+        "ans": "Dockerfile",
+        "pts": 100
+      },
+      {
+        "title": "Image Built",
+        "description": "Run: docker images | grep flask-app | grep latest. Does the image exist?",
+        "ans": "latest",
+        "pts": 100
+      },
+      {
+        "title": "gcloud Config",
+        "description": "Run: gcloud config get-value project. What project is configured?",
+        "ans": "lab-cloudrun-project",
+        "pts": 100
+      },
+      {
+        "title": "Service Deployed",
+        "description": "Run: gcloud run services list | grep flask-app. Is the service listed?",
+        "ans": "flask-app",
+        "pts": 150
+      },
+      {
+        "title": "Min Instances",
+        "description": "Run: gcloud run services describe flask-app --region us-central1 | grep minInstanceCount. Value is 1?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Max Instances",
+        "description": "Run: gcloud run services describe flask-app --region us-central1 | grep maxInstanceCount. Value is 10?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Traffic Split",
+        "description": "Run: gcloud run services describe flask-app --region us-central1 | grep traffic. Are there 2 revisions?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Env Vars Set",
+        "description": "Run: gcloud run services describe flask-app --region us-central1 | grep DATABASE_URL. Is it set?",
+        "ans": "DATABASE_URL",
+        "pts": 100
+      },
+      {
+        "title": "Service URL",
+        "description": "Run: curl -s https://SERVICE_URL. Does it return HTTP 200?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Revision Active",
+        "description": "Run: gcloud run revisions list --service flask-app --region us-central1. How many revisions?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Kubernetes Persistent Volumes with StatefulSet",
+    "description": "Deploy a stateful application on Kubernetes using StatefulSets, PersistentVolumeClaims, and headless Services.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "KUBERNETES",
+    "briefing": "### Mission Objective\nDeploy a distributed key-value store (Redis cluster simulation) using Kubernetes StatefulSets. Configure persistent storage, headless services for stable network identity, and ordered deployment.\n\n### Environment\n- Ubuntu 22.04 LTS with K3s or minikube installed\n- kubectl and Helm pre-installed\n- Working directory: /opt/stateful-app\n\n### Tasks\n1. Create a StorageClass for dynamic volume provisioning\n2. Deploy a headless Service for stable DNS names\n3. Create a StatefulSet with 3 replicas of Redis\n4. Configure PersistentVolumeClaims with 1Gi storage each\n5. Set up a ConfigMap for custom Redis configuration\n6. Deploy a regular Service for client connections\n7. Verify pods are created in order (redis-0, redis-1, redis-2)\n8. Test data persistence by deleting and recreating a pod\n\n### Permissions & Access\n- Container runs as root with cluster-admin access\n- K3s pre-installed with local-path storage class\n- All manifests in /opt/stateful-app/manifests/",
+    "tasks": [
+      "Create a StorageClass for dynamic volume provisioning",
+      "Deploy a headless Service for stable DNS names",
+      "Create a StatefulSet with 3 replicas of Redis",
+      "Configure PersistentVolumeClaims with 1Gi storage each",
+      "Set up a ConfigMap for custom Redis configuration",
+      "Deploy a regular Service for client connections",
+      "Verify pods are created in order (redis-0, redis-1, redis-2)",
+      "Test data persistence by deleting and recreating a pod"
+    ],
+    "flags": [
+      {
+        "title": "StorageClass",
+        "description": "Run: kubectl get sc. Is 'fast' storageclass available?",
+        "ans": "fast",
+        "pts": 100
+      },
+      {
+        "title": "Headless Service",
+        "description": "Run: kubectl get svc redis-headless | grep ClusterIP. Is it None?",
+        "ans": "None",
+        "pts": 100
+      },
+      {
+        "title": "StatefulSet Pods",
+        "description": "Run: kubectl get pods | grep redis | wc -l. How many Redis pods?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Ordered Creation",
+        "description": "Run: kubectl get pods | grep redis-0 | grep Running. Is redis-0 running?",
+        "ans": "Running",
+        "pts": 100
+      },
+      {
+        "title": "PVC Bound",
+        "description": "Run: kubectl get pvc | grep Bound | wc -l. How many PVCs are Bound?",
+        "ans": "3",
+        "pts": 150
+      },
+      {
+        "title": "ConfigMap",
+        "description": "Run: kubectl get configmap redis-config. Does it have maxmemory key?",
+        "ans": "maxmemory",
+        "pts": 100
+      },
+      {
+        "title": "Client Service",
+        "description": "Run: kubectl get svc redis-client. What port is exposed?",
+        "ans": "6379",
+        "pts": 100
+      },
+      {
+        "title": "DNS Resolution",
+        "description": "Run: kubectl exec redis-0 -- nslookup redis-0.redis-headless. Does it resolve?",
+        "ans": "redis-0.redis-headless",
+        "pts": 150
+      },
+      {
+        "title": "Data Persistence",
+        "description": "Run: kubectl exec redis-1 -- redis-cli ping. Does it return PONG?",
+        "ans": "PONG",
+        "pts": 100
+      },
+      {
+        "title": "Pod Identity",
+        "description": "Run: kubectl get pods -o jsonpath='{.items[*].metadata.name}' | grep -o 'redis-[0-9]' | sort -u | wc -l. Unique pods?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS Lambda Serverless API with API Gateway",
+    "description": "Build a serverless REST API using AWS Lambda, API Gateway, and DynamoDB with Terraform.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 120,
+    "skillName": "TERRAFORM",
+    "briefing": "### Mission Objective\nCreate a fully serverless REST API that handles CRUD operations for a 'tasks' resource. Use API Gateway for routing, Lambda for business logic, and DynamoDB for persistence — all defined with Terraform.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform and AWS CLI\n- Python 3.12 runtime for Lambda functions\n- AWS credentials with Lambda, API Gateway, and DynamoDB permissions\n- Working directory: /opt/serverless-api\n\n### Tasks\n1. Define a DynamoDB table with 'id' as partition key\n2. Create Lambda function for creating tasks (POST /tasks)\n3. Create Lambda function for listing tasks (GET /tasks)\n4. Create Lambda function for getting a single task (GET /tasks/{id})\n5. Create Lambda function for deleting a task (DELETE /tasks/{id})\n6. Deploy API Gateway REST API with proper resource paths\n7. Configure CORS headers for browser access\n8. Test all endpoints and verify DynamoDB contains the data\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- Region: us-east-1\n- Lambda zip files pre-packaged in /opt/serverless-api/lambdas/",
+    "tasks": [
+      "Define a DynamoDB table with 'id' as partition key",
+      "Create Lambda function for creating tasks (POST /tasks)",
+      "Create Lambda function for listing tasks (GET /tasks)",
+      "Create Lambda function for getting a single task (GET /tasks/{id})",
+      "Create Lambda function for deleting a task (DELETE /tasks/{id})",
+      "Deploy API Gateway REST API with proper resource paths",
+      "Configure CORS headers for browser access",
+      "Test all endpoints and verify DynamoDB contains the data"
+    ],
+    "flags": [
+      {
+        "title": "Table Created",
+        "description": "Run: aws dynamodb list-tables | grep TasksTable. Does it exist?",
+        "ans": "TasksTable",
+        "pts": 100
+      },
+      {
+        "title": "Lambda Functions",
+        "description": "Run: terraform state list | grep aws_lambda_function | wc -l. How many Lambda functions?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "API Gateway",
+        "description": "Run: terraform state show aws_api_gateway_rest_api.tasks. What is the API name?",
+        "ans": "tasks-api",
+        "pts": 150
+      },
+      {
+        "title": "CORS Enabled",
+        "description": "Run: terraform state list | grep cors. Is CORS configuration present?",
+        "ans": "cors",
+        "pts": 100
+      },
+      {
+        "title": "POST Endpoint",
+        "description": "Run: curl -s -X POST https://API_URL/tasks -d '{\"title\":\"test\"}'. What status code?",
+        "ans": "201",
+        "pts": 150
+      },
+      {
+        "title": "GET Endpoint",
+        "description": "Run: curl -s https://API_URL/tasks. Does it return a JSON array?",
+        "ans": "[",
+        "pts": 100
+      },
+      {
+        "title": "DELETE Endpoint",
+        "description": "Run: curl -s -X DELETE https://API_URL/tasks/ID. What status code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "DynamoDB Items",
+        "description": "Run: aws dynamodb scan --table-name TasksTable | grep Count. How many items?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Lambda IAM Role",
+        "description": "Run: terraform state list | grep iam_role. Is the Lambda execution role present?",
+        "ans": "lambda",
+        "pts": 100
+      },
+      {
+        "title": "API Stage",
+        "description": "Run: terraform state show aws_api_gateway_deployment.tasks | grep stage_name. What is the stage?",
+        "ans": "prod",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS RDS Multi-AZ with Automated Backups",
+    "description": "Provision a PostgreSQL RDS instance with Multi-AZ deployment, automated backups, and read replica.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "AWS_STORAGE",
+    "briefing": "### Mission Objective\nDeploy a production-grade PostgreSQL RDS instance with high availability through Multi-AZ deployment. Configure automated backups, parameter groups, and a read replica for reporting workloads.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform and AWS CLI\n- Pre-existing VPC with 2 private subnets in different AZs\n- AWS credentials with RDS full access\n- Working directory: /opt/rds-postgres\n\n### Tasks\n1. Create a DB Subnet Group using 2 private subnets\n2. Create a Parameter Group for PostgreSQL 15 with custom settings\n3. Deploy an RDS instance with Multi-AZ enabled\n4. Configure automated backups with 7-day retention\n5. Set master password using AWS Secrets Manager\n6. Deploy a Read Replica in a different AZ\n7. Configure security group allowing port 5432 from app subnets only\n8. Verify both primary and replica instances are available\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- VPC and private subnets pre-provisioned\n- Instance class: db.t3.micro (free tier eligible)",
+    "tasks": [
+      "Create a DB Subnet Group using 2 private subnets",
+      "Create a Parameter Group for PostgreSQL 15 with custom settings",
+      "Deploy an RDS instance with Multi-AZ enabled",
+      "Configure automated backups with 7-day retention",
+      "Set master password using AWS Secrets Manager",
+      "Deploy a Read Replica in a different AZ",
+      "Configure security group allowing port 5432 from app subnets only",
+      "Verify both primary and replica instances are available"
+    ],
+    "flags": [
+      {
+        "title": "Subnet Group",
+        "description": "Run: aws rds describe-db-subnet-groups | grep DBSubnetGroupName. Name is postgres-subnets?",
+        "ans": "postgres-subnets",
+        "pts": 100
+      },
+      {
+        "title": "Parameter Group",
+        "description": "Run: aws rds describe-db-parameter-groups | grep DBParameterGroupName. Name contains postgres?",
+        "ans": "postgres",
+        "pts": 100
+      },
+      {
+        "title": "Multi-AZ",
+        "description": "Run: terraform state show aws_db_instance.postgres | grep multi_az. Is it true?",
+        "ans": "true",
+        "pts": 150
+      },
+      {
+        "title": "Backup Retention",
+        "description": "Run: terraform state show aws_db_instance.postgres | grep backup_retention. Value is 7?",
+        "ans": "7",
+        "pts": 100
+      },
+      {
+        "title": "Engine Version",
+        "description": "Run: terraform state show aws_db_instance.postgres | grep engine_version. Version 15?",
+        "ans": "15",
+        "pts": 100
+      },
+      {
+        "title": "Read Replica",
+        "description": "Run: terraform state list | grep aws_db_instance. How many RDS instances?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Secrets Manager",
+        "description": "Run: aws secretsmanager list-secrets | grep postgres. Is the secret created?",
+        "ans": "postgres",
+        "pts": 100
+      },
+      {
+        "title": "Security Group",
+        "description": "Run: aws ec2 describe-security-groups | grep 5432. Is port 5432 allowed?",
+        "ans": "5432",
+        "pts": 100
+      },
+      {
+        "title": "Instance Status",
+        "description": "Run: aws rds describe-db-instances | grep DBInstanceStatus. Both are 'available'?",
+        "ans": "available",
+        "pts": 100
+      },
+      {
+        "title": "Encryption",
+        "description": "Run: terraform state show aws_db_instance.postgres | grep storage_encrypted. Is storage encrypted?",
+        "ans": "true",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Azure Container Instances with VNet",
+    "description": "Deploy a multi-container group on Azure Container Instances within a virtual network.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 90,
+    "skillName": "AZURE_FOUNDATIONS",
+    "briefing": "### Mission Objective\nDeploy a container group on Azure Container Instances containing a web application and a sidecar logging container. Place the deployment within a virtual network for secure communication.\n\n### Environment\n- Ubuntu 22.04 LTS with Azure CLI installed\n- Azure subscription with contributor access\n- Pre-created resource group: lab-aci-rg\n- Working directory: /opt/aci-deploy\n\n### Tasks\n1. Create a Virtual Network with a /16 address space\n2. Create a subnet for container instances\n3. Deploy a container group with 2 containers (app + log-collector)\n4. Configure the app container with 1 CPU and 1.5 GB memory\n5. Expose port 80 with a public IP address\n6. Set environment variables for both containers\n7. Deploy a second container group without public IP (internal only)\n8. Verify both container groups are running and accessible\n\n### Permissions & Access\n- Container runs as root with Azure CLI authenticated\n- Resource group: lab-aci-rg (West US 2)\n- Use Azure CLI commands (az container)",
+    "tasks": [
+      "Create a Virtual Network with a /16 address space",
+      "Create a subnet for container instances",
+      "Deploy a container group with 2 containers (app + log-collector)",
+      "Configure the app container with 1 CPU and 1.5 GB memory",
+      "Expose port 80 with a public IP address",
+      "Set environment variables for both containers",
+      "Deploy a second container group without public IP (internal only)",
+      "Verify both container groups are running and accessible"
+    ],
+    "flags": [
+      {
+        "title": "VNet Created",
+        "description": "Run: az network vnet list --resource-group lab-aci-rg --query '[0].name'. What is the VNet name?",
+        "ans": "lab-vnet",
+        "pts": 100
+      },
+      {
+        "title": "Subnet Exists",
+        "description": "Run: az network vnet subnet list --resource-group lab-aci-rg --vnet-name lab-vnet --query '[0].name'. Name?",
+        "ans": "aci-subnet",
+        "pts": 100
+      },
+      {
+        "title": "Public Group",
+        "description": "Run: az container list --resource-group lab-aci-rg --query '[0].name'. First container group name?",
+        "ans": "web-app-group",
+        "pts": 100
+      },
+      {
+        "title": "Container Count",
+        "description": "Run: az container show --resource-group lab-aci-rg --name web-app-group --query 'containers | length(@)'. Count?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "CPU Limit",
+        "description": "Run: az container show --resource-group lab-aci-rg --name web-app-group --query 'containers[0].resources.requests.cpu'. Value?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Memory Limit",
+        "description": "Run: az container show --resource-group lab-aci-rg --name web-app-group --query 'containers[0].resources.requests.memoryInGB'. Value?",
+        "ans": "1.5",
+        "pts": 100
+      },
+      {
+        "title": "Public IP",
+        "description": "Run: az container show --resource-group lab-aci-rg --name web-app-group --query 'ipAddress.type'. Is it Public?",
+        "ans": "Public",
+        "pts": 150
+      },
+      {
+        "title": "Internal Group",
+        "description": "Run: az container list --resource-group lab-aci-rg --query '[1].name'. Second group name?",
+        "ans": "internal-group",
+        "pts": 100
+      },
+      {
+        "title": "Env Variables",
+        "description": "Run: az container show --resource-group lab-aci-rg --name web-app-group --query 'containers[0].environmentVariables[0].name'. Var name?",
+        "ans": "APP_ENV",
+        "pts": 100
+      },
+      {
+        "title": "Both Running",
+        "description": "Run: az container list --resource-group lab-aci-rg --query '[?state==\"Running\"] | length(@)'. How many running?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "EKS Kubernetes Cluster with Managed Node Groups",
+    "description": "Provision an Amazon EKS cluster with managed node groups, IRSA, and cluster autoscaler.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 150,
+    "skillName": "AWS_COMPUTE",
+    "briefing": "### Mission Objective\nDeploy a production Amazon EKS cluster using Terraform. Configure managed node groups, IAM roles for service accounts (IRSA), the cluster autoscaler, and metrics-server for HPA support.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform, AWS CLI, eksctl, and kubectl\n- AWS credentials with EKS, EC2, IAM full access\n- Pre-configured VPC with public and private subnets\n- Working directory: /opt/eks-cluster\n\n### Tasks\n1. Create an EKS cluster IAM role with AmazonEKSClusterPolicy\n2. Deploy the EKS control plane in us-east-1\n3. Create a managed node group with 2 t3.medium instances\n4. Configure the node group IAM role with required policies\n5. Install the AWS Load Balancer Controller via Helm\n6. Set up IRSA for a sample application that reads S3\n7. Install metrics-server for HPA support\n8. Verify cluster is healthy and nodes are Ready\n\n### Permissions & Access\n- Container runs as root with full AWS credentials\n- VPC ID and subnet IDs pre-provided in variables\n- Cluster creation takes ~15 minutes",
+    "tasks": [
+      "Create an EKS cluster IAM role with AmazonEKSClusterPolicy",
+      "Deploy the EKS control plane in us-east-1",
+      "Create a managed node group with 2 t3.medium instances",
+      "Configure the node group IAM role with required policies",
+      "Install the AWS Load Balancer Controller via Helm",
+      "Set up IRSA for a sample application that reads S3",
+      "Install metrics-server for HPA support",
+      "Verify cluster is healthy and nodes are Ready"
+    ],
+    "flags": [
+      {
+        "title": "Cluster Created",
+        "description": "Run: aws eks describe-cluster --name lab-eks | grep 'status'. What is the status?",
+        "ans": "ACTIVE",
+        "pts": 150
+      },
+      {
+        "title": "IAM Role",
+        "description": "Run: terraform state list | grep eks_cluster_role. Is the cluster role present?",
+        "ans": "eks_cluster_role",
+        "pts": 100
+      },
+      {
+        "title": "Node Group",
+        "description": "Run: aws eks list-nodegroups --cluster-name lab-eks | grep nodegroups. How many groups?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Nodes Ready",
+        "description": "Run: kubectl get nodes | grep -c Ready. How many nodes are Ready?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "LB Controller",
+        "description": "Run: kubectl get pods -n kube-system | grep aws-load-balancer-controller | grep -c Running",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "IRSA Configured",
+        "description": "Run: kubectl get sa -n default s3-reader | grep annotations | grep amazonaws. Is IRSA set?",
+        "ans": "amazonaws",
+        "pts": 150
+      },
+      {
+        "title": "Metrics Server",
+        "description": "Run: kubectl get pods -n kube-system | grep metrics-server | grep -c Running",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Cluster Endpoint",
+        "description": "Run: aws eks describe-cluster --name lab-eks | grep endpoint. Does it start with https?",
+        "ans": "https",
+        "pts": 100
+      },
+      {
+        "title": "Kubeconfig",
+        "description": "Run: kubectl cluster-info | head -1. Does it show the EKS endpoint?",
+        "ans": "Kubernetes control plane",
+        "pts": 100
+      },
+      {
+        "title": "Autoscaler",
+        "description": "Run: kubectl get deployment -n kube-system cluster-autoscaler | grep READY. Is it available?",
+        "ans": "1/1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Terraform Modules: Reusable VPC Module",
+    "description": "Build a reusable Terraform module for VPC creation with configurable subnets, NAT, and flow logs.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "TERRAFORM",
+    "briefing": "### Mission Objective\nCreate a reusable Terraform module that provisions a complete VPC with configurable parameters. The module should support public/private subnets, optional NAT gateway, VPC flow logs, and output all necessary values.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform 1.6+\n- No AWS credentials needed (use local/mock provider)\n- Working directory: /opt/terraform-modules\n\n### Tasks\n1. Create the module directory structure (modules/vpc/main.tf, variables.tf, outputs.tf)\n2. Define input variables for CIDR, AZ count, enable_nat, enable_flow_logs\n3. Implement VPC creation in main.tf using dynamic blocks\n4. Create public and private subnets using count parameter\n5. Conditionally create NAT Gateway based on enable_nat variable\n6. Configure VPC Flow Logs to CloudWatch (or local file for lab)\n7. Write a root module that calls the VPC module twice (dev and staging)\n8. Run terraform init, plan, and validate to verify the module works\n\n### Permissions & Access\n- Container runs as root\n- Terraform 1.6+ installed\n- Use terraform validate (no AWS calls needed)",
+    "tasks": [
+      "Create the module directory structure (modules/vpc/main.tf, variables.tf, outputs.tf)",
+      "Define input variables for CIDR, AZ count, enable_nat, enable_flow_logs",
+      "Implement VPC creation in main.tf using dynamic blocks",
+      "Create public and private subnets using count parameter",
+      "Conditionally create NAT Gateway based on enable_nat variable",
+      "Configure VPC Flow Logs to CloudWatch (or local file for lab)",
+      "Write a root module that calls the VPC module twice (dev and staging)",
+      "Run terraform init, plan, and validate to verify the module works"
+    ],
+    "flags": [
+      {
+        "title": "Module Structure",
+        "description": "Run: ls /opt/terraform-modules/modules/vpc/. How many .tf files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Variables Defined",
+        "description": "Run: grep 'variable' /opt/terraform-modules/modules/vpc/variables.tf | wc -l. How many variables?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Dynamic Blocks",
+        "description": "Run: grep -c 'dynamic' /opt/terraform-modules/modules/vpc/main.tf. How many dynamic blocks?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Count Parameter",
+        "description": "Run: grep -c 'count' /opt/terraform-modules/modules/vpc/main.tf. How many count references?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Conditional NAT",
+        "description": "Run: grep -c 'enable_nat' /opt/terraform-modules/modules/vpc/main.tf. Is NAT conditional?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Outputs Defined",
+        "description": "Run: grep 'output' /opt/terraform-modules/modules/vpc/outputs.tf | wc -l. How many outputs?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Module Calls",
+        "description": "Run: grep -c 'module' /opt/terraform-modules/main.tf. How many module calls?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Validate Pass",
+        "description": "Run: cd /opt/terraform-modules && terraform validate. Output 'Success!'?",
+        "ans": "Success!",
+        "pts": 150
+      },
+      {
+        "title": "Init Pass",
+        "description": "Run: cd /opt/terraform-modules && terraform init -backend=false. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Plan Clean",
+        "description": "Run: cd /opt/terraform-modules && terraform plan -detailed-exitcode. Exit code 0 or 2?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS ECR Container Registry with Lifecycle Policies",
+    "description": "Set up Amazon ECR repositories with lifecycle policies, image scanning, and cross-account access.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 70,
+    "skillName": "AWS_STORAGE",
+    "briefing": "### Mission Objective\nConfigure Amazon Elastic Container Registry for storing Docker images. Set up multiple repositories, lifecycle policies for image retention, enable vulnerability scanning, and configure cross-account pull access.\n\n### Environment\n- Ubuntu 22.04 LTS with Docker and AWS CLI\n- AWS credentials with ECR full access\n- Pre-built Docker image to push\n- Working directory: /opt/ecr-setup\n\n### Tasks\n1. Create an ECR repository for the 'web-api' application\n2. Create an ECR repository for the 'worker' background service\n3. Configure lifecycle policy to keep only last 10 images\n4. Enable image scanning on push for vulnerability detection\n5. Get login token and authenticate Docker to ECR\n6. Tag and push the web-api image to ECR\n7. Create a repository policy allowing cross-account pull access\n8. Verify the image is pushed and scan results are available\n\n### Permissions & Access\n- Container runs as root with Docker and AWS credentials\n- Region: us-east-1\n- Account ID pre-configured in environment",
+    "tasks": [
+      "Create an ECR repository for the 'web-api' application",
+      "Create an ECR repository for the 'worker' background service",
+      "Configure lifecycle policy to keep only last 10 images",
+      "Enable image scanning on push for vulnerability detection",
+      "Get login token and authenticate Docker to ECR",
+      "Tag and push the web-api image to ECR",
+      "Create a repository policy allowing cross-account pull access",
+      "Verify the image is pushed and scan results are available"
+    ],
+    "flags": [
+      {
+        "title": "Web-API Repo",
+        "description": "Run: aws ecr describe-repositories | grep repositoryName | grep web-api. Exists?",
+        "ans": "web-api",
+        "pts": 100
+      },
+      {
+        "title": "Worker Repo",
+        "description": "Run: aws ecr describe-repositories | grep repositoryName | grep worker. Exists?",
+        "ans": "worker",
+        "pts": 100
+      },
+      {
+        "title": "Lifecycle Policy",
+        "description": "Run: aws ecr get-lifecycle-policy --repository-name web-api | grep 'lifecyclePolicyText'. Is it set?",
+        "ans": "lifecyclePolicyText",
+        "pts": 150
+      },
+      {
+        "title": "Scan Enabled",
+        "description": "Run: aws ecr describe-repositories --repository-names web-api | grep scanOnPush. Is it true?",
+        "ans": "true",
+        "pts": 100
+      },
+      {
+        "title": "Docker Login",
+        "description": "Run: aws ecr get-login-password --region us-east-1 | wc -c. Does it return a token?",
+        "ans": "2000",
+        "pts": 100
+      },
+      {
+        "title": "Image Pushed",
+        "description": "Run: aws ecr list-images --repository-name web-api | grep imageIds | wc -l. How many images?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Image Tag",
+        "description": "Run: aws ecr describe-images --repository-name web-api | grep imageTags. What tag?",
+        "ans": "latest",
+        "pts": 100
+      },
+      {
+        "title": "Repo Policy",
+        "description": "Run: aws ecr get-repository-policy --repository-name web-api | grep policyText. Is it set?",
+        "ans": "policyText",
+        "pts": 100
+      },
+      {
+        "title": "Scan Status",
+        "description": "Run: aws ecr describe-image-scan-findings --repository-name web-api --image-id imageTag=latest | grep scanStatus. Status?",
+        "ans": "COMPLETE",
+        "pts": 100
+      },
+      {
+        "title": "Registry URI",
+        "description": "Run: aws ecr describe-repositories | grep registryUri. Does it end with amazonaws.com?",
+        "ans": "amazonaws.com",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Helm Chart Development for Kubernetes Apps",
+    "description": "Create a custom Helm chart for deploying a microservice with configurable values, ingress, and HPA.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 120,
+    "skillName": "KUBERNETES",
+    "briefing": "### Mission Objective\nDevelop a production-quality Helm chart from scratch. Create templates for Deployment, Service, Ingress, ConfigMap, and HorizontalPodAutoscaler. Package it with proper values.yaml and test with helm template.\n\n### Environment\n- Ubuntu 22.04 LTS with Helm 3.13+ and kubectl\n- K3s or minikube for local testing\n- Working directory: /opt/helm-chart\n\n### Tasks\n1. Create Helm chart scaffolding with 'helm create'\n2. Modify Chart.yaml with proper metadata and version\n3. Create ConfigMap template for application configuration\n4. Modify Deployment template to use ConfigMap and support replica count from values\n5. Create Ingress template with conditional TLS support\n6. Create HorizontalPodAutoscaler template with min/max replicas\n7. Create a custom values-dev.yaml and values-staging.yaml\n8. Run 'helm template' and 'helm lint' to validate all templates\n\n### Permissions & Access\n- Container runs as root\n- Helm 3.13+ and kubectl installed\n- Chart name: 'taskflow-api'",
+    "tasks": [
+      "Create Helm chart scaffolding with 'helm create'",
+      "Modify Chart.yaml with proper metadata and version",
+      "Create ConfigMap template for application configuration",
+      "Modify Deployment template to use ConfigMap and support replica count from values",
+      "Create Ingress template with conditional TLS support",
+      "Create HorizontalPodAutoscaler template with min/max replicas",
+      "Create a custom values-dev.yaml and values-staging.yaml",
+      "Run 'helm template' and 'helm lint' to validate all templates"
+    ],
+    "flags": [
+      {
+        "title": "Chart Created",
+        "description": "Run: ls /opt/helm-chart/taskflow-api/Chart.yaml. Does it exist?",
+        "ans": "Chart.yaml",
+        "pts": 100
+      },
+      {
+        "title": "Chart Version",
+        "description": "Run: grep 'version' /opt/helm-chart/taskflow-api/Chart.yaml. What version?",
+        "ans": "0.1.0",
+        "pts": 100
+      },
+      {
+        "title": "ConfigMap",
+        "description": "Run: ls /opt/helm-chart/taskflow-api/templates/configmap.yaml. Does it exist?",
+        "ans": "configmap.yaml",
+        "pts": 100
+      },
+      {
+        "title": "HPA Template",
+        "description": "Run: ls /opt/helm-chart/taskflow-api/templates/hpa.yaml. Does it exist?",
+        "ans": "hpa.yaml",
+        "pts": 100
+      },
+      {
+        "title": "Ingress TLS",
+        "description": "Run: grep -c 'tls' /opt/helm-chart/taskflow-api/templates/ingress.yaml. TLS support present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Values Dev",
+        "description": "Run: ls /opt/helm-chart/taskflow-api/values-dev.yaml. Does it exist?",
+        "ans": "values-dev.yaml",
+        "pts": 100
+      },
+      {
+        "title": "Values Staging",
+        "description": "Run: ls /opt/helm-chart/taskflow-api/values-staging.yaml. Does it exist?",
+        "ans": "values-staging.yaml",
+        "pts": 100
+      },
+      {
+        "title": "Lint Pass",
+        "description": "Run: helm lint /opt/helm-chart/taskflow-api/. Does it say '1 chart(s) linted, no failures'?",
+        "ans": "no failures",
+        "pts": 150
+      },
+      {
+        "title": "Template Renders",
+        "description": "Run: helm template taskflow /opt/helm-chart/taskflow-api/ | wc -l. Does it output YAML?",
+        "ans": "100",
+        "pts": 100
+      },
+      {
+        "title": "Replica Count",
+        "description": "Run: grep 'replicaCount' /opt/helm-chart/taskflow-api/values.yaml. Default is 2?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS DynamoDB Table with Streams and Lambda Trigger",
+    "description": "Create a DynamoDB table with streams enabled and a Lambda function triggered on every write.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "TERRAFORM",
+    "briefing": "### Mission Objective\nBuild an event-driven architecture using DynamoDB Streams and Lambda. Every item written to the table triggers a Lambda function that processes the data and writes to a secondary table for analytics.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform and AWS CLI\n- Python 3.12 Lambda runtime\n- AWS credentials with DynamoDB and Lambda access\n- Working directory: /opt/dynamodb-streams\n\n### Tasks\n1. Create a primary DynamoDB table (orders) with 'orderId' partition key\n2. Enable DynamoDB Streams with NEW_AND_OLD_IMAGES view type\n3. Create a secondary DynamoDB table (order-analytics) for aggregated data\n4. Create a Lambda function that processes stream events\n5. Configure the event source mapping from DynamoDB stream to Lambda\n6. Create IAM roles for Lambda with DynamoDB access\n7. Write test items to the primary table\n8. Verify the Lambda processed items appear in the analytics table\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- Region: us-east-1\n- Lambda code pre-written in /opt/dynamodb-streams/lambda/",
+    "tasks": [
+      "Create a primary DynamoDB table (orders) with 'orderId' partition key",
+      "Enable DynamoDB Streams with NEW_AND_OLD_IMAGES view type",
+      "Create a secondary DynamoDB table (order-analytics) for aggregated data",
+      "Create a Lambda function that processes stream events",
+      "Configure the event source mapping from DynamoDB stream to Lambda",
+      "Create IAM roles for Lambda with DynamoDB access",
+      "Write test items to the primary table",
+      "Verify the Lambda processed items appear in the analytics table"
+    ],
+    "flags": [
+      {
+        "title": "Primary Table",
+        "description": "Run: aws dynamodb list-tables | grep orders. Does the orders table exist?",
+        "ans": "orders",
+        "pts": 100
+      },
+      {
+        "title": "Analytics Table",
+        "description": "Run: aws dynamodb list-tables | grep order-analytics. Does it exist?",
+        "ans": "order-analytics",
+        "pts": 100
+      },
+      {
+        "title": "Stream Enabled",
+        "description": "Run: aws dynamodb describe-table --table-name orders | grep StreamViewType. What view type?",
+        "ans": "NEW_AND_OLD_IMAGES",
+        "pts": 150
+      },
+      {
+        "title": "Lambda Created",
+        "description": "Run: aws lambda list-functions | grep FunctionName | grep processor. Exists?",
+        "ans": "processor",
+        "pts": 100
+      },
+      {
+        "title": "Event Source",
+        "description": "Run: aws lambda list-event-source-mappings | grep EventSourceArn | wc -l. How many mappings?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "IAM Role",
+        "description": "Run: aws iam list-roles | grep RoleName | grep lambda-dynamodb. Exists?",
+        "ans": "lambda-dynamodb",
+        "pts": 100
+      },
+      {
+        "title": "Test Item",
+        "description": "Run: aws dynamodb get-item --table-name orders --key '{\"orderId\":{\"S\":\"test-001\"}}'. Item found?",
+        "ans": "test-001",
+        "pts": 100
+      },
+      {
+        "title": "Analytics Item",
+        "description": "Run: aws dynamodb scan --table-name order-analytics | grep Count. Items processed?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Stream ARN",
+        "description": "Run: aws dynamodb describe-table --table-name orders | grep StreamArn. Does it contain dynamodbstream?",
+        "ans": "dynamodbstream",
+        "pts": 100
+      },
+      {
+        "title": "Lambda Logs",
+        "description": "Run: aws logs describe-log-groups | grep /aws/lambda/processor. Log group exists?",
+        "ans": "/aws/lambda/processor",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Multi-Region Terraform with Workspaces",
+    "description": "Deploy identical infrastructure across multiple AWS regions using Terraform workspaces.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 130,
+    "skillName": "TERRAFORM",
+    "briefing": "### Mission Objective\nUse Terraform workspaces to deploy the same VPC and EC2 instance configuration across three AWS regions. Manage state isolation between environments and create a deployment script for multi-region rollout.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform 1.6+ and AWS CLI\n- AWS credentials with multi-region access\n- Working directory: /opt/multi-region\n\n### Tasks\n1. Create a Terraform configuration for a VPC and t3.micro EC2 instance\n2. Use variables for region, CIDR block, and instance type\n3. Create three workspaces: us-east-1, eu-west-1, ap-southeast-1\n4. Write a shell script that deploys to each workspace sequentially\n5. Add workspace-specific CIDR blocks to avoid conflicts\n6. Configure remote state with workspace key prefix\n7. Deploy to all three regions and verify resources exist\n8. Create a cleanup script that destroys all workspaces\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- Regions: us-east-1, eu-west-1, ap-southeast-1\n- Instance type: t3.micro (free tier)",
+    "tasks": [
+      "Create a Terraform configuration for a VPC and t3.micro EC2 instance",
+      "Use variables for region, CIDR block, and instance type",
+      "Create three workspaces: us-east-1, eu-west-1, ap-southeast-1",
+      "Write a shell script that deploys to each workspace sequentially",
+      "Add workspace-specific CIDR blocks to avoid conflicts",
+      "Configure remote state with workspace key prefix",
+      "Deploy to all three regions and verify resources exist",
+      "Create a cleanup script that destroys all workspaces"
+    ],
+    "flags": [
+      {
+        "title": "Workspaces Exist",
+        "description": "Run: terraform workspace list | grep -c 'us-east-1\\|eu-west-1\\|ap-southeast-1'. How many workspaces?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls -la /opt/multi-region/deploy.sh. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Cleanup Script",
+        "description": "Run: ls -la /opt/multi-region/cleanup.sh. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Region Variable",
+        "description": "Run: grep 'variable.*region' /opt/multi-region/variables.tf. Is region variable defined?",
+        "ans": "region",
+        "pts": 100
+      },
+      {
+        "title": "CIDR Variable",
+        "description": "Run: grep 'variable.*cidr' /opt/multi-region/variables.tf. Is cidr variable defined?",
+        "ans": "cidr",
+        "pts": 100
+      },
+      {
+        "title": "Workspace Key",
+        "description": "Run: grep -c 'key_prefix' /opt/multi-region/backend.tf. Is workspace key prefix configured?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "US Resources",
+        "description": "Run: terraform workspace select us-east-1 && terraform state list | wc -l. Resources in us-east-1?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "EU Resources",
+        "description": "Run: terraform workspace select eu-west-1 && terraform state list | wc -l. Resources in eu-west-1?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "AP Resources",
+        "description": "Run: terraform workspace select ap-southeast-1 && terraform state list | wc -l. Resources in ap-southeast-1?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "All Regions",
+        "description": "Run: terraform workspace list | wc -l. Total workspaces (including default)?",
+        "ans": "4",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "CloudWatch Alarms and SNS Notifications",
+    "description": "Set up comprehensive monitoring with CloudWatch alarms, SNS topics, and Lambda-based auto-remediation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 85,
+    "skillName": "GCP_FOUNDATIONS",
+    "briefing": "### Mission Objective\nCreate a monitoring and alerting system using CloudWatch Alarms and SNS. When an EC2 instance's CPU exceeds 80%, trigger an SNS notification and a Lambda function that automatically adds a ScaleUp tag.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform and AWS CLI\n- Pre-existing EC2 instance for monitoring\n- AWS credentials with CloudWatch, SNS, and Lambda access\n- Working directory: /opt/cloudwatch-alerts\n\n### Tasks\n1. Create an SNS topic for infrastructure alerts\n2. Create an email subscription to the SNS topic\n3. Create a CloudWatch alarm for EC2 CPU utilization > 80%\n4. Create a CloudWatch alarm for status check failures\n5. Create a Lambda function for auto-remediation (add ScaleUp tag)\n6. Configure the alarm to trigger both SNS and Lambda\n7. Create a CloudWatch dashboard with EC2 metrics\n8. Test the alarm by simulating high CPU\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- Pre-existing EC2 instance ID in environment variables\n- Email endpoint: alerts@lab.example.com",
+    "tasks": [
+      "Create an SNS topic for infrastructure alerts",
+      "Create an email subscription to the SNS topic",
+      "Create a CloudWatch alarm for EC2 CPU utilization > 80%",
+      "Create a CloudWatch alarm for status check failures",
+      "Create a Lambda function for auto-remediation (add ScaleUp tag)",
+      "Configure the alarm to trigger both SNS and Lambda",
+      "Create a CloudWatch dashboard with EC2 metrics",
+      "Test the alarm by simulating high CPU"
+    ],
+    "flags": [
+      {
+        "title": "SNS Topic",
+        "description": "Run: aws sns list-topics | grep infra-alerts. Topic created?",
+        "ans": "infra-alerts",
+        "pts": 100
+      },
+      {
+        "title": "Subscription",
+        "description": "Run: aws sns list-subscriptions-by-topic --topic-arn ARN | grep Protocol. Protocol is email?",
+        "ans": "email",
+        "pts": 100
+      },
+      {
+        "title": "CPU Alarm",
+        "description": "Run: aws cloudwatch describe-alarms | grep AlarmName | grep cpu-high. Exists?",
+        "ans": "cpu-high",
+        "pts": 100
+      },
+      {
+        "title": "Status Alarm",
+        "description": "Run: aws cloudwatch describe-alarms | grep AlarmName | grep status-check. Exists?",
+        "ans": "status-check",
+        "pts": 100
+      },
+      {
+        "title": "Lambda Function",
+        "description": "Run: aws lambda list-functions | grep FunctionName | grep remediate. Exists?",
+        "ans": "remediate",
+        "pts": 150
+      },
+      {
+        "title": "Alarm Actions",
+        "description": "Run: aws cloudwatch describe-alarms --alarm-names cpu-high | grep AlarmActions | wc -l. How many actions?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: aws cloudwatch list-dashboards | grep DashboardName | grep ec2-monitoring. Exists?",
+        "ans": "ec2-monitoring",
+        "pts": 100
+      },
+      {
+        "title": "Threshold",
+        "description": "Run: aws cloudwatch describe-alarms --alarm-names cpu-high | grep Threshold. Value is 80?",
+        "ans": "80",
+        "pts": 100
+      },
+      {
+        "title": "Evaluation Periods",
+        "description": "Run: aws cloudwatch describe-alarms --alarm-names cpu-high | grep EvaluationPeriods. Value is 2?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Alarm State",
+        "description": "Run: aws cloudwatch describe-alarms --alarm-names cpu-high | grep StateValue. Initial state?",
+        "ans": "OK",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "AWS SQS and SNS Event-Driven Architecture",
+    "description": "Build a decoupled microservices architecture using SQS queues, SNS topics, and Lambda processors.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "AWS_NETWORKING",
+    "briefing": "### Mission Objective\nDesign an event-driven architecture where an SNS topic fans out messages to multiple SQS queues. Each queue is consumed by a dedicated Lambda function. Implement dead-letter queues for failed processing.\n\n### Environment\n- Ubuntu 22.04 LTS with Terraform and AWS CLI\n- Python 3.12 Lambda runtime\n- AWS credentials with SQS, SNS, and Lambda access\n- Working directory: /opt/sqs-sns-arch\n\n### Tasks\n1. Create an SNS topic for incoming orders\n2. Create 3 SQS queues: orders-processing, orders-notifications, orders-analytics\n3. Subscribe all 3 queues to the SNS topic (fan-out pattern)\n4. Create dead-letter queues for each processing queue\n5. Create 3 Lambda functions, each consuming from one queue\n6. Configure Lambda event source mappings with batch size\n7. Set queue access policies allowing Lambda to receive messages\n8. Send a test message and verify all 3 Lambdas process it\n\n### Permissions & Access\n- Container runs as root with AWS credentials\n- Region: us-east-1\n- Lambda code pre-packaged in /opt/sqs-sns-arch/lambdas/",
+    "tasks": [
+      "Create an SNS topic for incoming orders",
+      "Create 3 SQS queues: orders-processing, orders-notifications, orders-analytics",
+      "Subscribe all 3 queues to the SNS topic (fan-out pattern)",
+      "Create dead-letter queues for each processing queue",
+      "Create 3 Lambda functions, each consuming from one queue",
+      "Configure Lambda event source mappings with batch size",
+      "Set queue access policies allowing Lambda to receive messages",
+      "Send a test message and verify all 3 Lambdas process it"
+    ],
+    "flags": [
+      {
+        "title": "SNS Topic",
+        "description": "Run: aws sns list-topics | grep orders-topic. Topic exists?",
+        "ans": "orders-topic",
+        "pts": 100
+      },
+      {
+        "title": "SQS Queues",
+        "description": "Run: aws sqs list-queues | grep -c orders. How many orders queues?",
+        "ans": "6",
+        "pts": 100
+      },
+      {
+        "title": "Subscriptions",
+        "description": "Run: aws sns list-subscriptions-by-topic --topic-arn ARN | grep -c Queue. How many queue subscriptions?",
+        "ans": "3",
+        "pts": 150
+      },
+      {
+        "title": "DLQ Queues",
+        "description": "Run: aws sqs list-queues | grep dlq | grep -c orders. How many DLQs?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Lambda Count",
+        "description": "Run: aws lambda list-functions | grep -c FunctionName. How many Lambda functions total?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Event Sources",
+        "description": "Run: aws lambda list-event-source-mappings | grep -c EventSourceArn. How many event source mappings?",
+        "ans": "3",
+        "pts": 150
+      },
+      {
+        "title": "Batch Size",
+        "description": "Run: aws lambda list-event-source-mappings | grep BatchSize. What is the batch size?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Redrive Policy",
+        "description": "Run: aws sqs get-queue-attributes --queue-url URL --attribute-names RedrivePolicy. Is it set?",
+        "ans": "RedrivePolicy",
+        "pts": 100
+      },
+      {
+        "title": "Fan-Out",
+        "description": "Run: aws sns list-subscriptions-by-topic --topic-arn ARN | grep Protocol | grep -c sqs. SQS subscriptions?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Queue Policy",
+        "description": "Run: aws sqs get-queue-attributes --queue-url URL --attribute-names Policy. Is policy set?",
+        "ans": "Policy",
+        "pts": 100
+      }
+    ]
+  }
+]

@@ -1,0 +1,1622 @@
+[
+  {
+    "title": "React Component Library with Storybook",
+    "description": "Build a reusable React component library with Storybook for documentation, testing, and visual development.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 100,
+    "skillName": "REACT",
+    "briefing": "### Mission Objective\nCreate a professional React component library with Storybook for isolated component development and documentation. Build reusable UI components with proper props, variants, and accessibility.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: create-react-app, storybook\n- Working directory: /opt/react-components\n\n### Tasks\n1. Initialize a React project with TypeScript\n2. Set up Storybook with auto-detection configuration\n3. Build a Button component with variants (primary, secondary, danger)\n4. Create a Card component with header, body, and footer slots\n5. Build a Modal component with open/close animations\n6. Create a Form components: Input, Select, Checkbox with validation\n7. Add accessibility attributes (aria-labels, roles) to all components\n8. Generate a static Storybook build for deployment\n\n### Permissions & Access\n- Container runs as root\n- npm packages pre-installed globally\n- Storybook runs on localhost:6006",
+    "tasks": [
+      "Initialize a React project with TypeScript",
+      "Set up Storybook with auto-detection configuration",
+      "Build a Button component with variants (primary, secondary, danger)",
+      "Create a Card component with header, body, and footer slots",
+      "Build a Modal component with open/close animations",
+      "Create a Form components: Input, Select, Checkbox with validation",
+      "Add accessibility attributes (aria-labels, roles) to all components",
+      "Generate a static Storybook build for deployment"
+    ],
+    "flags": [
+      {
+        "title": "Project Init",
+        "description": "Run: ls /opt/react-components/package.json. React project initialized?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Storybook Config",
+        "description": "Run: ls /opt/react-components/.storybook/main.js. Storybook configured?",
+        "ans": "main.js",
+        "pts": 100
+      },
+      {
+        "title": "Button Component",
+        "description": "Run: ls /opt/react-components/src/components/Button/Button.tsx. Button exists?",
+        "ans": "Button.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Card Component",
+        "description": "Run: ls /opt/react-components/src/components/Card/Card.tsx. Card exists?",
+        "ans": "Card.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Modal Component",
+        "description": "Run: ls /opt/react-components/src/components/Modal/Modal.tsx. Modal exists?",
+        "ans": "Modal.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Form Components",
+        "description": "Run: ls /opt/react-components/src/components/Form/ | wc -l. Form components count?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Stories Files",
+        "description": "Run: ls /opt/react-components/src/components/**/*.stories.tsx | wc -l. Story files created?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Aria Labels",
+        "description": "Run: grep -rc 'aria-' /opt/react-components/src/components/ | awk -F: '{sum+=$2}END{print sum}'. Aria attributes count?",
+        "ans": "10",
+        "pts": 150
+      },
+      {
+        "title": "Static Build",
+        "description": "Run: ls -d /opt/react-components/storybook-static 2>/dev/null | head -1. Static build exists?",
+        "ans": "storybook-static",
+        "pts": 100
+      },
+      {
+        "title": "TypeScript",
+        "description": "Run: ls /opt/react-components/tsconfig.json. TypeScript configured?",
+        "ans": "tsconfig.json",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Node.js REST API with PostgreSQL and JWT Auth",
+    "description": "Build a production REST API with Express.js, PostgreSQL, JWT authentication, and input validation.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 110,
+    "skillName": "NODEJS_BACKEND",
+    "briefing": "### Mission Objective\nCreate a complete REST API using Express.js with PostgreSQL database, JWT-based authentication, role-based access control, and comprehensive input validation.\n\n### Environment\n- Node.js 20 LTS with npm\n- PostgreSQL 15 pre-configured\n- Pre-installed: express, pg, jsonwebtoken, bcrypt, joi\n- Working directory: /opt/node-api\n\n### Tasks\n1. Set up Express.js project with middleware structure\n2. Create PostgreSQL connection pool and migration system\n3. Implement user registration and login with bcrypt hashing\n4. Create JWT authentication middleware with token refresh\n5. Build CRUD endpoints for a 'projects' resource\n6. Add role-based access control (admin, member, viewer)\n7. Implement input validation with Joi schemas\n8. Create API documentation with Swagger/OpenAPI\n\n### Permissions & Access\n- Container runs as root\n- PostgreSQL: postgresql://api:api@localhost:5432/apidb\n- JWT secret pre-configured",
+    "tasks": [
+      "Set up Express.js project with middleware structure",
+      "Create PostgreSQL connection pool and migration system",
+      "Implement user registration and login with bcrypt hashing",
+      "Create JWT authentication middleware with token refresh",
+      "Build CRUD endpoints for a 'projects' resource",
+      "Add role-based access control (admin, member, viewer)",
+      "Implement input validation with Joi schemas",
+      "Create API documentation with Swagger/OpenAPI"
+    ],
+    "flags": [
+      {
+        "title": "Project Setup",
+        "description": "Run: ls /opt/node-api/package.json. Node project exists?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "DB Connection",
+        "description": "Run: ls /opt/node-api/src/config/database.js. Database config exists?",
+        "ans": "database.js",
+        "pts": 100
+      },
+      {
+        "title": "Auth Routes",
+        "description": "Run: ls /opt/node-api/src/routes/auth.js. Auth routes exist?",
+        "ans": "auth.js",
+        "pts": 100
+      },
+      {
+        "title": "JWT Middleware",
+        "description": "Run: ls /opt/node-api/src/middleware/auth.js. JWT middleware exists?",
+        "ans": "auth.js",
+        "pts": 100
+      },
+      {
+        "title": "Projects CRUD",
+        "description": "Run: ls /opt/node-api/src/routes/projects.js. Projects routes exist?",
+        "ans": "projects.js",
+        "pts": 100
+      },
+      {
+        "title": "RBAC",
+        "description": "Run: ls /opt/node-api/src/middleware/rbac.js. RBAC middleware exists?",
+        "ans": "rbac.js",
+        "pts": 150
+      },
+      {
+        "title": "Validation",
+        "description": "Run: ls /opt/node-api/src/validators/*.js | wc -l. Validator files?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Swagger",
+        "description": "Run: ls /opt/node-api/src/config/swagger.js. Swagger config exists?",
+        "ans": "swagger.js",
+        "pts": 100
+      },
+      {
+        "title": "Migrations",
+        "description": "Run: ls /opt/node-api/migrations/*.sql | wc -l. Migration files?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Server Start",
+        "description": "Run: curl -s http://localhost:3000/api/docs | grep -c 'swagger'. Swagger UI serving?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React Native Mobile App with Navigation",
+    "description": "Build a cross-platform React Native app with tab navigation, screen transitions, and native device features.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "REACT_NATIVE",
+    "briefing": "### Mission Objective\nCreate a React Native mobile application with proper navigation structure, screen management, and integration with device features like camera and storage.\n\n### Environment\n- Node.js 20 LTS with npm\n- React Native CLI (not Expo) pre-installed\n- Working directory: /opt/react-native-app\n\n### Tasks\n1. Initialize a React Native project with TypeScript template\n2. Set up React Navigation with bottom tabs and stack navigators\n3. Create Home, Profile, Settings, and Detail screens\n4. Implement stack navigation from list to detail screens\n5. Add a custom header with gradient styling\n6. Integrate AsyncStorage for persistent user preferences\n7. Create a form screen with keyboard-aware scrolling\n8. Set up environment variables for API endpoints\n\n### Permissions & Access\n- Container runs as root\n- React Native CLI pre-installed\n- No physical device needed (configuration and code only)",
+    "tasks": [
+      "Initialize a React Native project with TypeScript template",
+      "Set up React Navigation with bottom tabs and stack navigators",
+      "Create Home, Profile, Settings, and Detail screens",
+      "Implement stack navigation from list to detail screens",
+      "Add a custom header with gradient styling",
+      "Integrate AsyncStorage for persistent user preferences",
+      "Create a form screen with keyboard-aware scrolling",
+      "Set up environment variables for API endpoints"
+    ],
+    "flags": [
+      {
+        "title": "Project Init",
+        "description": "Run: ls /opt/react-native-app/package.json. RN project exists?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Navigation Setup",
+        "description": "Run: ls /opt/react-native-app/src/navigation/AppNavigator.tsx. Navigator exists?",
+        "ans": "AppNavigator.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Home Screen",
+        "description": "Run: ls /opt/react-native-app/src/screens/HomeScreen.tsx. Home screen exists?",
+        "ans": "HomeScreen.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Profile Screen",
+        "description": "Run: ls /opt/react-native-app/src/screens/ProfileScreen.tsx. Profile screen exists?",
+        "ans": "ProfileScreen.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Tab Navigator",
+        "description": "Run: grep -c 'createBottomTabNavigator' /opt/react-native-app/src/navigation/*.tsx. Tab navigator used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Stack Navigator",
+        "description": "Run: grep -c 'createStackNavigator' /opt/react-native-app/src/navigation/*.tsx. Stack navigator used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "AsyncStorage",
+        "description": "Run: grep -c '@react-native-async-storage' /opt/react-native-app/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. AsyncStorage imports?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Custom Header",
+        "description": "Run: ls /opt/react-native-app/src/components/CustomHeader.tsx. Custom header exists?",
+        "ans": "CustomHeader.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Env Config",
+        "description": "Run: ls /opt/react-native-app/.env. Environment config exists?",
+        "ans": ".env",
+        "pts": 100
+      },
+      {
+        "title": "TypeScript",
+        "description": "Run: ls /opt/react-native-app/tsconfig.json. TypeScript configured?",
+        "ans": "tsconfig.json",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Next.js Full-Stack Application with SSR",
+    "description": "Build a Next.js application with server-side rendering, API routes, authentication, and database integration.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 120,
+    "skillName": "NEXTJS",
+    "briefing": "### Mission Objective\nCreate a full-stack Next.js application with server-side rendering (SSR), static generation (SSG), API routes, and PostgreSQL integration. Implement authentication and protected routes.\n\n### Environment\n- Node.js 20 LTS with npm\n- PostgreSQL 15 pre-configured\n- Pre-installed: next, react, prisma, next-auth\n- Working directory: /opt/nextjs-app\n\n### Tasks\n1. Initialize Next.js project with App Router and TypeScript\n2. Set up Prisma ORM with PostgreSQL connection\n3. Create database schema for users and blog posts\n4. Build SSR pages for blog listing and individual posts\n5. Create API routes for CRUD operations on posts\n6. Implement NextAuth.js with credentials provider\n7. Add protected routes with middleware\n8. Set up static generation for the homepage\n\n### Permissions & Access\n- Container runs as root\n- PostgreSQL: postgresql://next:next@localhost:5432/nextdb\n- Prisma CLI pre-installed",
+    "tasks": [
+      "Initialize Next.js project with App Router and TypeScript",
+      "Set up Prisma ORM with PostgreSQL connection",
+      "Create database schema for users and blog posts",
+      "Build SSR pages for blog listing and individual posts",
+      "Create API routes for CRUD operations on posts",
+      "Implement NextAuth.js with credentials provider",
+      "Add protected routes with middleware",
+      "Set up static generation for the homepage"
+    ],
+    "flags": [
+      {
+        "title": "Next.js Init",
+        "description": "Run: ls /opt/nextjs-app/package.json. Next.js project exists?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Prisma Schema",
+        "description": "Run: ls /opt/nextjs-app/prisma/schema.prisma. Prisma schema exists?",
+        "ans": "schema.prisma",
+        "pts": 100
+      },
+      {
+        "title": "Blog Page SSR",
+        "description": "Run: ls /opt/nextjs-app/src/app/blog/page.tsx. Blog listing page exists?",
+        "ans": "page.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Post Page SSR",
+        "description": "Run: ls /opt/nextjs-app/src/app/blog/[id]/page.tsx. Dynamic post page exists?",
+        "ans": "page.tsx",
+        "pts": 100
+      },
+      {
+        "title": "API Routes",
+        "description": "Run: ls /opt/nextjs-app/src/app/api/**/*.ts | wc -l. API route files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Auth Config",
+        "description": "Run: ls /opt/nextjs-app/src/lib/auth.ts. NextAuth config exists?",
+        "ans": "auth.ts",
+        "pts": 100
+      },
+      {
+        "title": "Middleware",
+        "description": "Run: ls /opt/nextjs-app/src/middleware.ts. Middleware exists?",
+        "ans": "middleware.ts",
+        "pts": 150
+      },
+      {
+        "title": "SSG Homepage",
+        "description": "Run: grep -c 'generateStaticParams\\|revalidate' /opt/nextjs-app/src/app/page.tsx. SSG configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Prisma Client",
+        "description": "Run: ls /opt/nextjs-app/src/lib/prisma.ts. Prisma client singleton?",
+        "ans": "prisma.ts",
+        "pts": 100
+      },
+      {
+        "title": "Layout File",
+        "description": "Run: ls /opt/nextjs-app/src/app/layout.tsx. Root layout exists?",
+        "ans": "layout.tsx",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "RESTful API Design with OpenAPI Specification",
+    "description": "Design and implement a RESTful API following OpenAPI 3.0 specification with proper HTTP methods, status codes, and HATEOAS.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "API_DESIGN",
+    "briefing": "### Mission Objective\nDesign a RESTful API following OpenAPI 3.0 best practices. Implement proper resource naming, HTTP methods, status codes, pagination, filtering, and HATEOAS links.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: express, swagger-ui-express, yamljs\n- Working directory: /opt/rest-api\n\n### Tasks\n1. Create an OpenAPI 3.0 specification YAML file for a bookstore API\n2. Define resources: books, authors, reviews, categories\n3. Implement proper HTTP methods: GET, POST, PUT, PATCH, DELETE\n4. Add pagination with cursor-based navigation\n5. Implement filtering and sorting query parameters\n6. Create proper error responses with problem details JSON\n7. Add HATEOAS links in response objects\n8. Set up Swagger UI for API documentation\n\n### Permissions & Access\n- Container runs as root\n- Swagger UI accessible at localhost:3000/docs\n- API runs on localhost:3000",
+    "tasks": [
+      "Create an OpenAPI 3.0 specification YAML file for a bookstore API",
+      "Define resources: books, authors, reviews, categories",
+      "Implement proper HTTP methods: GET, POST, PUT, PATCH, DELETE",
+      "Add pagination with cursor-based navigation",
+      "Implement filtering and sorting query parameters",
+      "Create proper error responses with problem details JSON",
+      "Add HATEOAS links in response objects",
+      "Set up Swagger UI for API documentation"
+    ],
+    "flags": [
+      {
+        "title": "OpenAPI Spec",
+        "description": "Run: ls /opt/rest-api/openapi.yaml. OpenAPI spec exists?",
+        "ans": "openapi.yaml",
+        "pts": 100
+      },
+      {
+        "title": "Books Resource",
+        "description": "Run: grep -c '/books' /opt/rest-api/openapi.yaml. Books endpoint defined?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Authors Resource",
+        "description": "Run: grep -c '/authors' /opt/rest-api/openapi.yaml. Authors endpoint defined?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "HTTP Methods",
+        "description": "Run: grep -c 'get:\\|post:\\|put:\\|patch:\\|delete:' /opt/rest-api/openapi.yaml. HTTP methods defined?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Pagination",
+        "description": "Run: grep -c 'cursor\\|pageToken\\|nextPage' /opt/rest-api/openapi.yaml. Pagination params?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Error Responses",
+        "description": "Run: grep -c 'problem-details\\|ErrorResponse' /opt/rest-api/openapi.yaml. Error schemas?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "HATEOAS",
+        "description": "Run: grep -c '_links\\|href' /opt/rest-api/src/**/*.js | awk -F: '{sum+=$2}END{print sum}'. HATEOAS links?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Swagger UI",
+        "description": "Run: curl -s http://localhost:3000/docs | grep -c 'swagger-ui'. Swagger UI serving?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Status Codes",
+        "description": "Run: grep -c '201\\|204\\|404\\|400' /opt/rest-api/openapi.yaml. Status codes defined?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "API Server",
+        "description": "Run: ls /opt/rest-api/src/server.js. Server entry point exists?",
+        "ans": "server.js",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React State Management with Redux Toolkit",
+    "description": "Build a React application with Redux Toolkit for global state, RTK Query for API caching, and middleware for side effects.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "REACT",
+    "briefing": "### Mission Objective\nImplement a React application using Redux Toolkit for state management. Use RTK Query for API data fetching with caching, create slices for complex state, and implement custom middleware.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: react, reduxjs/toolkit, react-redux\n- Working directory: /opt/redux-toolkit\n\n### Tasks\n1. Set up a React project with Redux Toolkit and TypeScript\n2. Create a slice for user authentication state\n3. Create a slice for shopping cart with complex reducers\n4. Set up RTK Query API for a products endpoints\n5. Implement query caching and invalidation\n6. Add custom middleware for logging actions\n7. Create async thunks for complex operations\n8. Build components that dispatch actions and use selectors\n\n### Permissions & Access\n- Container runs as root\n- Redux DevTools extension available\n- API mock server on localhost:4000",
+    "tasks": [
+      "Set up a React project with Redux Toolkit and TypeScript",
+      "Create a slice for user authentication state",
+      "Create a slice for shopping cart with complex reducers",
+      "Set up RTK Query API for a products endpoints",
+      "Implement query caching and invalidation",
+      "Add custom middleware for logging actions",
+      "Create async thunks for complex operations",
+      "Build components that dispatch actions and use selectors"
+    ],
+    "flags": [
+      {
+        "title": "RTK Setup",
+        "description": "Run: ls /opt/redux-toolkit/src/store/store.ts. Store configured?",
+        "ans": "store.ts",
+        "pts": 100
+      },
+      {
+        "title": "Auth Slice",
+        "description": "Run: ls /opt/redux-toolkit/src/store/slices/authSlice.ts. Auth slice exists?",
+        "ans": "authSlice.ts",
+        "pts": 100
+      },
+      {
+        "title": "Cart Slice",
+        "description": "Run: ls /opt/redux-toolkit/src/store/slices/cartSlice.ts. Cart slice exists?",
+        "ans": "cartSlice.ts",
+        "pts": 100
+      },
+      {
+        "title": "RTK Query API",
+        "description": "Run: ls /opt/redux-toolkit/src/store/api/productsApi.ts. Products API exists?",
+        "ans": "productsApi.ts",
+        "pts": 150
+      },
+      {
+        "title": "Caching Config",
+        "description": "Run: grep -c 'providesTags\\|invalidatesTags' /opt/redux-toolkit/src/store/api/productsApi.ts. Cache tags used?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Middleware",
+        "description": "Run: ls /opt/redux-toolkit/src/store/middleware/logger.ts. Logger middleware exists?",
+        "ans": "logger.ts",
+        "pts": 100
+      },
+      {
+        "title": "Async Thunks",
+        "description": "Run: grep -c 'createAsyncThunk' /opt/redux-toolkit/src/store/slices/*.ts. Async thunks created?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Components",
+        "description": "Run: ls /opt/redux-toolkit/src/components/*.tsx | wc -l. React components?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Selectors",
+        "description": "Run: grep -c 'useSelector\\|createSelector' /opt/redux-toolkit/src/**/*.ts*. | awk -F: '{sum+=$2}END{print sum}'. Selectors used?",
+        "ans": "6",
+        "pts": 100
+      },
+      {
+        "title": "TypeScript",
+        "description": "Run: ls /opt/redux-toolkit/src/store/types.ts. TypeScript types defined?",
+        "ans": "types.ts",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Node.js Microservices with Message Queue",
+    "description": "Build a microservices architecture with Node.js services communicating through RabbitMQ message broker.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1400,
+    "estimatedMinutes": 130,
+    "skillName": "NODEJS_BACKEND",
+    "briefing": "### Mission Objective\nDesign and implement a microservices system with three Node.js services communicating asynchronously through RabbitMQ. Implement service discovery, health checks, and circuit breaker patterns.\n\n### Environment\n- Node.js 20 LTS with npm\n- RabbitMQ pre-installed and running\n- Pre-installed: amqplib, express, circuit-breaker-js\n- Working directory: /opt/microservices\n\n### Tasks\n1. Create an order-service that publishes order.created events\n2. Create an inventory-service that subscribes to order events\n3. Create a notification-service that sends emails on order events\n4. Set up RabbitMQ exchanges and queues with routing keys\n5. Implement dead letter queues for failed message processing\n6. Add health check endpoints for each service\n7. Implement circuit breaker for inter-service HTTP calls\n8. Create a Docker Compose file for all services\n\n### Permissions & Access\n- Container runs as root\n- RabbitMQ management UI at localhost:15672 (guest/guest)\n- AMQP on localhost:5672",
+    "tasks": [
+      "Create an order-service that publishes order.created events",
+      "Create an inventory-service that subscribes to order events",
+      "Create a notification-service that sends emails on order events",
+      "Set up RabbitMQ exchanges and queues with routing keys",
+      "Implement dead letter queues for failed message processing",
+      "Add health check endpoints for each service",
+      "Implement circuit breaker for inter-service HTTP calls",
+      "Create a Docker Compose file for all services"
+    ],
+    "flags": [
+      {
+        "title": "Order Service",
+        "description": "Run: ls /opt/microservices/order-service/index.js. Order service exists?",
+        "ans": "index.js",
+        "pts": 100
+      },
+      {
+        "title": "Inventory Service",
+        "description": "Run: ls /opt/microservices/inventory-service/index.js. Inventory service exists?",
+        "ans": "index.js",
+        "pts": 100
+      },
+      {
+        "title": "Notification Service",
+        "description": "Run: ls /opt/microservices/notification-service/index.js. Notification service exists?",
+        "ans": "index.js",
+        "pts": 100
+      },
+      {
+        "title": "RabbitMQ Config",
+        "description": "Run: ls /opt/microservices/shared/rabbitmq.js. RabbitMQ connection module exists?",
+        "ans": "rabbitmq.js",
+        "pts": 100
+      },
+      {
+        "title": "Dead Letter Queue",
+        "description": "Run: grep -c 'dead-letter\\|dlx\\|DLX' /opt/microservices/shared/*.js. DLQ configured?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Health Checks",
+        "description": "Run: grep -c '/health' /opt/microservices/*/index.js. Health endpoints?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Circuit Breaker",
+        "description": "Run: ls /opt/microservices/shared/circuit-breaker.js. Circuit breaker exists?",
+        "ans": "circuit-breaker.js",
+        "pts": 150
+      },
+      {
+        "title": "Docker Compose",
+        "description": "Run: ls /opt/microservices/docker-compose.yml. Docker Compose exists?",
+        "ans": "docker-compose.yml",
+        "pts": 100
+      },
+      {
+        "title": "Exchange Config",
+        "description": "Run: grep 'exchange\\|EXCHANGE' /opt/microservices/shared/rabbitmq.js | head -1. Exchange name defined?",
+        "ans": "orders-exchange",
+        "pts": 100
+      },
+      {
+        "title": "Queue Config",
+        "description": "Run: grep 'queue\\|QUEUE' /opt/microservices/shared/rabbitmq.js | head -1. Queue names defined?",
+        "ans": "inventory-queue",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "CSS Grid and Flexbox Layout Mastery",
+    "description": "Build responsive layouts using CSS Grid and Flexbox with modern techniques, custom properties, and container queries.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 900,
+    "estimatedMinutes": 75,
+    "skillName": "FRONTEND_FUNDAMENTALS",
+    "briefing": "### Mission Objective\nMaster modern CSS layout techniques by building a responsive dashboard, a card grid system, and a navigation layout using CSS Grid and Flexbox.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: live-server for preview\n- Working directory: /opt/css-layouts\n\n### Tasks\n1. Create a responsive dashboard layout using CSS Grid\n2. Build a card grid that adapts from 1 to 4 columns\n3. Create a sticky sidebar layout with content area\n4. Build a Flexbox-based navigation bar with mobile hamburger\n5. Implement a holy grail layout using Grid template areas\n6. Add container queries for component-level responsiveness\n7. Create CSS custom properties for theming\n8. Build a masonry-style layout using Grid with varying row spans\n\n### Permissions & Access\n- Container runs as root\n- live-server available for preview\n- All HTML/CSS in /opt/css-layouts/",
+    "tasks": [
+      "Create a responsive dashboard layout using CSS Grid",
+      "Build a card grid that adapts from 1 to 4 columns",
+      "Create a sticky sidebar layout with content area",
+      "Build a Flexbox-based navigation bar with mobile hamburger",
+      "Implement a holy grail layout using Grid template areas",
+      "Add container queries for component-level responsiveness",
+      "Create CSS custom properties for theming",
+      "Build a masonry-style layout using Grid with varying row spans"
+    ],
+    "flags": [
+      {
+        "title": "Dashboard HTML",
+        "description": "Run: ls /opt/css-layouts/dashboard.html. Dashboard page exists?",
+        "ans": "dashboard.html",
+        "pts": 100
+      },
+      {
+        "title": "Card Grid",
+        "description": "Run: ls /opt/css-layouts/card-grid.html. Card grid page exists?",
+        "ans": "card-grid.html",
+        "pts": 100
+      },
+      {
+        "title": "Sidebar Layout",
+        "description": "Run: ls /opt/css-layouts/sidebar-layout.html. Sidebar layout exists?",
+        "ans": "sidebar-layout.html",
+        "pts": 100
+      },
+      {
+        "title": "Nav Bar",
+        "description": "Run: ls /opt/css-layouts/navbar.html. Navigation bar exists?",
+        "ans": "navbar.html",
+        "pts": 100
+      },
+      {
+        "title": "Grid Template",
+        "description": "Run: grep -c 'grid-template-areas' /opt/css-layouts/dashboard.css. Grid areas used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Container Queries",
+        "description": "Run: grep -c '@container' /opt/css-layouts/*.css | awk -F: '{sum+=$2}END{print sum}'. Container queries?",
+        "ans": "3",
+        "pts": 150
+      },
+      {
+        "title": "CSS Variables",
+        "description": "Run: grep -c '--' /opt/css-layouts/theme.css | head -1. CSS custom properties?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Flexbox",
+        "description": "Run: grep -c 'display: flex' /opt/css-layouts/*.css | awk -F: '{sum+=$2}END{print sum}'. Flexbox uses?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Media Queries",
+        "description": "Run: grep -c '@media' /opt/css-layouts/*.css | awk -F: '{sum+=$2}END{print sum}'. Responsive breakpoints?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Masonry Layout",
+        "description": "Run: ls /opt/css-layouts/masonry.html. Masonry layout page exists?",
+        "ans": "masonry.html",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Next.js E-Commerce Platform",
+    "description": "Build a full e-commerce platform with Next.js including product catalog, cart, checkout, and admin dashboard.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1500,
+    "estimatedMinutes": 150,
+    "skillName": "NEXTJS",
+    "briefing": "### Mission Objective\nCreate a complete e-commerce platform using Next.js with server-side rendering for SEO, Stripe integration for payments, and an admin dashboard for product management.\n\n### Environment\n- Node.js 20 LTS with npm\n- PostgreSQL 15 with Prisma\n- Pre-installed: next, stripe, prisma, next-auth\n- Working directory: /opt/ecommerce-next\n\n### Tasks\n1. Set up Next.js with App Router and Prisma schema for products/orders\n2. Build product listing page with SSR and search/filter\n3. Create product detail pages with dynamic routing\n4. Implement shopping cart with localStorage persistence\n5. Build checkout flow with Stripe integration\n6. Create admin dashboard for product CRUD\n7. Add user authentication with order history\n8. Set up image optimization with Next.js Image component\n\n### Permissions & Access\n- Container runs as root\n- PostgreSQL: postgresql://shop:shop@localhost:5432/ecommerce\n- Stripe test keys provided",
+    "tasks": [
+      "Set up Next.js with App Router and Prisma schema for products/orders",
+      "Build product listing page with SSR and search/filter",
+      "Create product detail pages with dynamic routing",
+      "Implement shopping cart with localStorage persistence",
+      "Build checkout flow with Stripe integration",
+      "Create admin dashboard for product CRUD",
+      "Add user authentication with order history",
+      "Set up image optimization with Next.js Image component"
+    ],
+    "flags": [
+      {
+        "title": "Prisma Schema",
+        "description": "Run: grep -c 'model' /opt/ecommerce-next/prisma/schema.prisma. How many models?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Product Pages",
+        "description": "Run: ls /opt/ecommerce-next/src/app/products/*/page.tsx 2>/dev/null | wc -l. Product pages?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Cart Context",
+        "description": "Run: ls /opt/ecommerce-next/src/context/CartContext.tsx. Cart context exists?",
+        "ans": "CartContext.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Checkout",
+        "description": "Run: ls /opt/ecommerce-next/src/app/checkout/page.tsx. Checkout page exists?",
+        "ans": "page.tsx",
+        "pts": 150
+      },
+      {
+        "title": "Admin Dashboard",
+        "description": "Run: ls /opt/ecommerce-next/src/app/admin/page.tsx. Admin page exists?",
+        "ans": "page.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Auth Setup",
+        "description": "Run: ls /opt/ecommerce-next/src/lib/auth.ts. Auth config exists?",
+        "ans": "auth.ts",
+        "pts": 100
+      },
+      {
+        "title": "API Routes",
+        "description": "Run: ls /opt/ecommerce-next/src/app/api/**/*.ts | wc -l. API routes?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Stripe Integration",
+        "description": "Run: grep -c 'stripe\\|Stripe' /opt/ecommerce-next/src/**/*.ts* | awk -F: '{sum+=$2}END{print sum}'. Stripe references?",
+        "ans": "3",
+        "pts": 150
+      },
+      {
+        "title": "Image Optimization",
+        "description": "Run: grep -c 'next/image' /opt/ecommerce-next/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Next Image usage?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Middleware",
+        "description": "Run: ls /opt/ecommerce-next/src/middleware.ts. Middleware for auth exists?",
+        "ans": "middleware.ts",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React Testing Library and Cypress E2E",
+    "description": "Implement comprehensive testing for React applications with unit tests, integration tests, and end-to-end Cypress tests.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "REACT",
+    "briefing": "### Mission Objective\nBuild a complete testing suite for a React application. Write unit tests with React Testing Library, integration tests for API interactions, and E2E tests with Cypress.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: @testing-library/react, cypress, jest\n- Working directory: /opt/react-testing\n\n### Tasks\n1. Set up Jest and React Testing Library configuration\n2. Write unit tests for utility functions\n3. Create component tests for Button, Form, and Modal\n4. Write integration tests with mocked API calls\n5. Test form validation and error states\n6. Set up Cypress with custom commands\n7. Write E2E tests for user registration flow\n8. Create E2E tests for shopping cart functionality\n\n### Permissions & Access\n- Container runs as root\n- Cypress browsers pre-installed\n- Test app at localhost:3000",
+    "tasks": [
+      "Set up Jest and React Testing Library configuration",
+      "Write unit tests for utility functions",
+      "Create component tests for Button, Form, and Modal",
+      "Write integration tests with mocked API calls",
+      "Test form validation and error states",
+      "Set up Cypress with custom commands",
+      "Write E2E tests for user registration flow",
+      "Create E2E tests for shopping cart functionality"
+    ],
+    "flags": [
+      {
+        "title": "Jest Config",
+        "description": "Run: ls /opt/react-testing/jest.config.js. Jest configured?",
+        "ans": "jest.config.js",
+        "pts": 100
+      },
+      {
+        "title": "Unit Tests",
+        "description": "Run: ls /opt/react-testing/src/**/*.test.js | wc -l. How many test files?",
+        "ans": "6",
+        "pts": 100
+      },
+      {
+        "title": "Button Test",
+        "description": "Run: ls /opt/react-testing/src/components/Button/Button.test.js. Button test exists?",
+        "ans": "Button.test.js",
+        "pts": 100
+      },
+      {
+        "title": "Form Test",
+        "description": "Run: ls /opt/react-testing/src/components/Form/Form.test.js. Form test exists?",
+        "ans": "Form.test.js",
+        "pts": 100
+      },
+      {
+        "title": "Mock API",
+        "description": "Run: grep -c 'msw\\|jest.mock' /opt/react-testing/src/**/*.test.js | awk -F: '{sum+=$2}END{print sum}'. API mocking?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Cypress Config",
+        "description": "Run: ls /opt/react-testing/cypress.config.js. Cypress configured?",
+        "ans": "cypress.config.js",
+        "pts": 100
+      },
+      {
+        "title": "E2E Tests",
+        "description": "Run: ls /opt/react-testing/cypress/e2e/*.cy.js | wc -l. How many E2E test files?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Custom Commands",
+        "description": "Run: ls /opt/react-testing/cypress/support/commands.js. Custom commands exist?",
+        "ans": "commands.js",
+        "pts": 100
+      },
+      {
+        "title": "Test Coverage",
+        "description": "Run: grep -c 'coverage' /opt/react-testing/jest.config.js. Coverage configured?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Fixtures",
+        "description": "Run: ls /opt/react-testing/cypress/fixtures/*.json | wc -l. Fixture files?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "GraphQL API with Apollo Server",
+    "description": "Build a GraphQL API with Apollo Server, schema-first approach, resolvers, subscriptions, and dataloaders.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "API_DESIGN",
+    "briefing": "### Mission Objective\nCreate a GraphQL API using Apollo Server with a schema-first approach. Implement queries, mutations, subscriptions for real-time updates, and DataLoader for N+1 query prevention.\n\n### Environment\n- Node.js 20 LTS with npm\n- PostgreSQL 15 pre-configured\n- Pre-installed: @apollo/server, graphql, dataloader, pg\n- Working directory: /opt/graphql-api\n\n### Tasks\n1. Define GraphQL schema with types for Users, Posts, Comments\n2. Implement resolvers for queries: user, users, post, posts\n3. Create mutations for CRUD operations on posts\n4. Add subscriptions for real-time post updates using WebSocket\n5. Implement DataLoader to batch database queries\n6. Add authentication directive for protected fields\n7. Create pagination with cursor-based connections\n8. Set up Apollo Sandbox for interactive query testing\n\n### Permissions & Access\n- Container runs as root\n- PostgreSQL: postgresql://gql:gql@localhost:5432/graphqldb\n- Apollo Sandbox at localhost:4000",
+    "tasks": [
+      "Define GraphQL schema with types for Users, Posts, Comments",
+      "Implement resolvers for queries: user, users, post, posts",
+      "Create mutations for CRUD operations on posts",
+      "Add subscriptions for real-time post updates using WebSocket",
+      "Implement DataLoader to batch database queries",
+      "Add authentication directive for protected fields",
+      "Create pagination with cursor-based connections",
+      "Set up Apollo Sandbox for interactive query testing"
+    ],
+    "flags": [
+      {
+        "title": "Schema File",
+        "description": "Run: ls /opt/graphql-api/src/schema.graphql. GraphQL schema exists?",
+        "ans": "schema.graphql",
+        "pts": 100
+      },
+      {
+        "title": "User Type",
+        "description": "Run: grep -c 'type User' /opt/graphql-api/src/schema.graphql. User type defined?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Post Type",
+        "description": "Run: grep -c 'type Post' /opt/graphql-api/src/schema.graphql. Post type defined?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Resolvers",
+        "description": "Run: ls /opt/graphql-api/src/resolvers/*.js | wc -l. Resolver files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Subscriptions",
+        "description": "Run: grep -c 'Subscription' /opt/graphql-api/src/schema.graphql. Subscriptions defined?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "DataLoader",
+        "description": "Run: ls /opt/graphql-api/src/dataloaders/*.js | wc -l. DataLoader files?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Auth Directive",
+        "description": "Run: grep -c 'directive @auth' /opt/graphql-api/src/schema.graphql. Auth directive?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Pagination",
+        "description": "Run: grep -c 'PageInfo\\|cursor' /opt/graphql-api/src/schema.graphql. Pagination types?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Apollo Config",
+        "description": "Run: ls /opt/graphql-api/src/server.js. Server entry point exists?",
+        "ans": "server.js",
+        "pts": 100
+      },
+      {
+        "title": "WebSocket",
+        "description": "Run: grep -c 'WebSocket\\|ws' /opt/graphql-api/src/server.js. WebSocket configured?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Progressive Web App with Service Workers",
+    "description": "Build a Progressive Web App (PWA) with service workers, offline support, push notifications, and app manifest.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "FRONTEND_FUNDAMENTALS",
+    "briefing": "### Mission Objective\nCreate a Progressive Web App that works offline, supports push notifications, and provides a native app-like experience. Implement service workers for caching and background sync.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: workbox, vite\n- Working directory: /opt/pwa-app\n\n### Tasks\n1. Create a Vite-based React app with PWA plugin\n2. Generate a service worker with Workbox\n3. Implement cache-first strategy for static assets\n4. Implement network-first strategy for API calls\n5. Add offline fallback page\n6. Create web app manifest with icons and theme colors\n7. Implement push notification subscription\n8. Add background sync for form submissions\n\n### Permissions & Access\n- Container runs as root\n- Workbox for service worker generation\n- App runs on localhost:5173",
+    "tasks": [
+      "Create a Vite-based React app with PWA plugin",
+      "Generate a service worker with Workbox",
+      "Implement cache-first strategy for static assets",
+      "Implement network-first strategy for API calls",
+      "Add offline fallback page",
+      "Create web app manifest with icons and theme colors",
+      "Implement push notification subscription",
+      "Add background sync for form submissions"
+    ],
+    "flags": [
+      {
+        "title": "Vite Config",
+        "description": "Run: ls /opt/pwa-app/vite.config.ts. Vite config exists?",
+        "ans": "vite.config.ts",
+        "pts": 100
+      },
+      {
+        "title": "Service Worker",
+        "description": "Run: ls /opt/pwa-app/public/sw.js. Service worker exists?",
+        "ans": "sw.js",
+        "pts": 150
+      },
+      {
+        "title": "Workbox Config",
+        "description": "Run: grep -c 'workbox' /opt/pwa-app/vite.config.ts. Workbox configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Offline Page",
+        "description": "Run: ls /opt/pwa-app/public/offline.html. Offline fallback exists?",
+        "ans": "offline.html",
+        "pts": 100
+      },
+      {
+        "title": "Manifest",
+        "description": "Run: ls /opt/pwa-app/public/manifest.json. Web manifest exists?",
+        "ans": "manifest.json",
+        "pts": 100
+      },
+      {
+        "title": "Icons",
+        "description": "Run: ls /opt/pwa-app/public/icons/*.png | wc -l. PWA icons?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Push Notifications",
+        "description": "Run: grep -c 'pushManager\\|PushManager' /opt/pwa-app/src/**/*.ts*. | awk -F: '{sum+=$2}END{print sum}'. Push API used?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Background Sync",
+        "description": "Run: grep -c 'sync\\|SyncManager' /opt/pwa-app/src/**/*.ts*. | awk -F: '{sum+=$2}END{print sum}'. Background sync?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Cache Strategy",
+        "description": "Run: grep -c 'CacheFirst\\|NetworkFirst\\|StaleWhileRevalidate' /opt/pwa-app/public/sw.js. Cache strategies?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Manifest Install",
+        "description": "Run: grep 'display.*standalone' /opt/pwa-app/public/manifest.json. Standalone mode?",
+        "ans": "standalone",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Node.js WebSocket Real-Time Chat",
+    "description": "Build a real-time chat application using WebSockets with rooms, typing indicators, and message persistence.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "NODEJS_BACKEND",
+    "briefing": "### Mission Objective\nCreate a real-time chat application using WebSocket connections. Implement chat rooms, private messaging, typing indicators, online status, and message persistence.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: ws, express, uuid\n- Working directory: /opt/websocket-chat\n\n### Tasks\n1. Set up Express server with WebSocket upgrade handling\n2. Implement room-based messaging with Socket.io pattern\n3. Create join/leave room functionality\n4. Add typing indicators with debounced events\n5. Implement online/offline user status\n6. Store messages in memory with recent history\n7. Create a simple HTML chat client\n8. Add reconnection logic for dropped connections\n\n### Permissions & Access\n- Container runs as root\n- Server runs on localhost:3000\n- WebSocket on ws://localhost:3000",
+    "tasks": [
+      "Set up Express server with WebSocket upgrade handling",
+      "Implement room-based messaging with Socket.io pattern",
+      "Create join/leave room functionality",
+      "Add typing indicators with debounced events",
+      "Implement online/offline user status",
+      "Store messages in memory with recent history",
+      "Create a simple HTML chat client",
+      "Add reconnection logic for dropped connections"
+    ],
+    "flags": [
+      {
+        "title": "Server Setup",
+        "description": "Run: ls /opt/websocket-chat/server.js. Server file exists?",
+        "ans": "server.js",
+        "pts": 100
+      },
+      {
+        "title": "WebSocket Handler",
+        "description": "Run: grep -c 'ws\\|WebSocket\\|upgrade' /opt/websocket-chat/server.js. WebSocket handling?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Room System",
+        "description": "Run: grep -c 'room\\|join.*room\\|leave.*room' /opt/websocket-chat/server.js. Room system?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Typing Indicator",
+        "description": "Run: grep -c 'typing\\|isTyping' /opt/websocket-chat/server.js. Typing indicator?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Online Status",
+        "description": "Run: grep -c 'online\\|status\\|presence' /opt/websocket-chat/server.js. Online status?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Message Storage",
+        "description": "Run: grep -c 'messages\\|history' /opt/websocket-chat/server.js. Message storage?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Chat Client",
+        "description": "Run: ls /opt/websocket-chat/public/index.html. HTML chat client?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Reconnection",
+        "description": "Run: grep -c 'reconnect\\|retry' /opt/websocket-chat/public/client.js. Reconnection logic?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "UUID Usage",
+        "description": "Run: grep -c 'uuid' /opt/websocket-chat/server.js. UUID for message IDs?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Broadcast",
+        "description": "Run: grep -c 'broadcast\\|send.*room' /opt/websocket-chat/server.js. Broadcast to rooms?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React Performance Optimization",
+    "description": "Optimize React application performance with memoization, code splitting, virtual scrolling, and bundle analysis.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "REACT",
+    "briefing": "### Mission Objective\nOptimize a React application for production performance. Implement memoization, code splitting, virtual scrolling for large lists, and analyze bundle size.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: react, webpack-bundle-analyzer, react-window\n- Working directory: /opt/react-perf\n\n### Tasks\n1. Profile the React app using React DevTools Profiler\n2. Implement React.memo for expensive components\n3. Add useMemo and useCallback for expensive computations\n4. Set up code splitting with React.lazy and Suspense\n5. Implement virtual scrolling for a 10,000 item list\n6. Optimize images with lazy loading\n7. Analyze bundle size with webpack-bundle-analyzer\n8. Create a performance benchmark report\n\n### Permissions & Access\n- Container runs as root\n- Bundle analyzer runs on localhost:8888\n- React 18 with concurrent features",
+    "tasks": [
+      "Profile the React app using React DevTools Profiler",
+      "Implement React.memo for expensive components",
+      "Add useMemo and useCallback for expensive computations",
+      "Set up code splitting with React.lazy and Suspense",
+      "Implement virtual scrolling for a 10,000 item list",
+      "Optimize images with lazy loading",
+      "Analyze bundle size with webpack-bundle-analyzer",
+      "Create a performance benchmark report"
+    ],
+    "flags": [
+      {
+        "title": "Memo Usage",
+        "description": "Run: grep -c 'React.memo\\|memo(' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Memo calls?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "UseMemo",
+        "description": "Run: grep -c 'useMemo' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. useMemo calls?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "UseCallback",
+        "description": "Run: grep -c 'useCallback' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. useCallback calls?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Code Splitting",
+        "description": "Run: grep -c 'React.lazy\\|lazy(' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Lazy components?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Virtual Scroll",
+        "description": "Run: grep -c 'FixedSizeList\\|VariableSizeList' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Virtual scroll usage?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "Lazy Loading",
+        "description": "Run: grep -c 'loading=\"lazy\"' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Lazy loaded images?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Bundle Analyzer",
+        "description": "Run: ls /opt/react-perf/analysis/bundle-report.html. Bundle report exists?",
+        "ans": "bundle-report.html",
+        "pts": 100
+      },
+      {
+        "title": "Perf Report",
+        "description": "Run: ls /opt/react-perf/reports/performance.md. Performance report exists?",
+        "ans": "performance.md",
+        "pts": 100
+      },
+      {
+        "title": "Suspense",
+        "description": "Run: grep -c 'Suspense' /opt/react-perf/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Suspense boundaries?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Bundle Size",
+        "description": "Run: grep 'maxSize\\|maxAssetSize' /opt/react-perf/webpack.config.js. Size limits configured?",
+        "ans": "250000",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Next.js API with Rate Limiting and Caching",
+    "description": "Build a Next.js API with Redis caching, rate limiting, request validation, and comprehensive error handling.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "NEXTJS",
+    "briefing": "### Mission Objective\nCreate a production-grade Next.js API with Redis caching, rate limiting per client, input validation, and structured error handling. Implement cache invalidation strategies.\n\n### Environment\n- Node.js 20 LTS with npm\n- Redis 7 pre-installed\n- Pre-installed: next, ioredis, rate-limiter-flexible, zod\n- Working directory: /opt/nextjs-api\n\n### Tasks\n1. Set up Next.js API routes with proper middleware\n2. Configure Redis connection with connection pooling\n3. Implement response caching with TTL\n4. Add rate limiting with sliding window algorithm\n5. Create input validation with Zod schemas\n6. Build structured error handling middleware\n7. Implement cache invalidation on write operations\n8. Add API key authentication for external clients\n\n### Permissions & Access\n- Container runs as root\n- Redis at localhost:6379\n- API runs on localhost:3000",
+    "tasks": [
+      "Set up Next.js API routes with proper middleware",
+      "Configure Redis connection with connection pooling",
+      "Implement response caching with TTL",
+      "Add rate limiting with sliding window algorithm",
+      "Create input validation with Zod schemas",
+      "Build structured error handling middleware",
+      "Implement cache invalidation on write operations",
+      "Add API key authentication for external clients"
+    ],
+    "flags": [
+      {
+        "title": "Redis Config",
+        "description": "Run: ls /opt/nextjs-api/src/lib/redis.ts. Redis config exists?",
+        "ans": "redis.ts",
+        "pts": 100
+      },
+      {
+        "title": "Cache Middleware",
+        "description": "Run: ls /opt/nextjs-api/src/middleware/cache.ts. Cache middleware exists?",
+        "ans": "cache.ts",
+        "pts": 100
+      },
+      {
+        "title": "Rate Limiter",
+        "description": "Run: ls /opt/nextjs-api/src/middleware/rateLimit.ts. Rate limiter exists?",
+        "ans": "rateLimit.ts",
+        "pts": 150
+      },
+      {
+        "title": "Zod Validation",
+        "description": "Run: grep -c 'z.object\\|z.string' /opt/nextjs-api/src/**/*.ts | awk -F: '{sum+=$2}END{print sum}'. Zod schemas?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Error Handler",
+        "description": "Run: ls /opt/nextjs-api/src/middleware/errorHandler.ts. Error handler exists?",
+        "ans": "errorHandler.ts",
+        "pts": 100
+      },
+      {
+        "title": "Cache Invalidation",
+        "description": "Run: grep -c 'del\\|invalidate\\|flush' /opt/nextjs-api/src/**/*.ts | awk -F: '{sum+=$2}END{print sum}'. Cache invalidation?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "API Key Auth",
+        "description": "Run: ls /opt/nextjs-api/src/middleware/apiKeyAuth.ts. API key auth exists?",
+        "ans": "apiKeyAuth.ts",
+        "pts": 100
+      },
+      {
+        "title": "Redis Connection",
+        "description": "Run: grep -c 'createClient\\|Redis' /opt/nextjs-api/src/lib/redis.ts. Redis client created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Sliding Window",
+        "description": "Run: grep -c 'SlidingWindow\\|sliding' /opt/nextjs-api/src/middleware/rateLimit.ts. Sliding window?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "API Routes",
+        "description": "Run: ls /opt/nextjs-api/src/app/api/**/*.ts | wc -l. API route files?",
+        "ans": "4",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React Forms with React Hook Form and Zod",
+    "description": "Build complex multi-step forms using React Hook Form with Zod validation, file uploads, and dynamic field arrays.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "REACT",
+    "briefing": "### Mission Objective\nMaster React form handling with React Hook Form and Zod. Build a multi-step registration form with validation, file upload, and dynamic field arrays for adding multiple entries.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: react-hook-form, @hookform/resolvers, zod\n- Working directory: /opt/react-forms\n\n### Tasks\n1. Set up a React project with React Hook Form\n2. Create a multi-step form wizard (3 steps)\n3. Implement Zod schemas for each step\n4. Add field-level and form-level validation\n5. Create a dynamic field array for adding education entries\n6. Implement file upload with preview\n7. Add form state persistence across steps\n8. Create a summary review page before submission\n\n### Permissions & Access\n- Container runs as root\n- Form runs on localhost:5173\n- TypeScript for type safety",
+    "tasks": [
+      "Set up a React project with React Hook Form",
+      "Create a multi-step form wizard (3 steps)",
+      "Implement Zod schemas for each step",
+      "Add field-level and form-level validation",
+      "Create a dynamic field array for adding education entries",
+      "Implement file upload with preview",
+      "Add form state persistence across steps",
+      "Create a summary review page before submission"
+    ],
+    "flags": [
+      {
+        "title": "Form Hook",
+        "description": "Run: grep -c 'useForm\\|useFormContext' /opt/react-forms/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Form hooks used?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Zod Schemas",
+        "description": "Run: ls /opt/react-forms/src/schemas/*.ts | wc -l. Zod schema files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Multi-Step",
+        "description": "Run: ls /opt/react-forms/src/components/Step*.tsx | wc -l. Step components?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Field Array",
+        "description": "Run: grep -c 'useFieldArray' /opt/react-forms/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Field array usage?",
+        "ans": "1",
+        "pts": 150
+      },
+      {
+        "title": "File Upload",
+        "description": "Run: ls /opt/react-forms/src/components/FileUpload.tsx. File upload component exists?",
+        "ans": "FileUpload.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Form Persistence",
+        "description": "Run: grep -c 'persist\\|storage' /opt/react-forms/src/**/*.ts*. | awk -F: '{sum+=$2}END{print sum}'. Form persistence?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Review Page",
+        "description": "Run: ls /opt/react-forms/src/components/ReviewStep.tsx. Review page exists?",
+        "ans": "ReviewStep.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Resolver",
+        "description": "Run: grep -c 'zodResolver' /opt/react-forms/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Zod resolver used?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Validation Mode",
+        "description": "Run: grep 'mode.*onBlur\\|mode.*onChange' /opt/react-forms/src/App.tsx | head -1. Validation mode set?",
+        "ans": "onBlur",
+        "pts": 100
+      },
+      {
+        "title": "TypeScript",
+        "description": "Run: grep -c 'z.infer' /opt/react-forms/src/schemas/*.ts | awk -F: '{sum+=$2}END{print sum}'. Type inference from Zod?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Node.js CLI Tool with Commander.js",
+    "description": "Build a professional CLI tool using Commander.js with subcommands, interactive prompts, and colored output.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1000,
+    "estimatedMinutes": 80,
+    "skillName": "NODEJS_BACKEND",
+    "briefing": "### Mission Objective\nCreate a developer CLI tool that scaffolds projects, manages configurations, and performs common development tasks. Include subcommands, flags, interactive prompts, and styled terminal output.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: commander, inquirer, chalk, ora\n- Working directory: /opt/cli-tool\n\n### Tasks\n1. Initialize a Node.js project with bin entry in package.json\n2. Create the main CLI entry point with Commander.js\n3. Implement 'init' subcommand for project scaffolding\n4. Add 'config' subcommand for managing settings\n5. Create 'generate' subcommand with templates\n6. Implement interactive prompts with Inquirer.js\n7. Add colored output and spinners with Chalk and Ora\n8. Create a help system with detailed command descriptions\n\n### Permissions & Access\n- Container runs as root\n- CLI linked globally via npm link\n- Templates in /opt/cli-tool/templates/",
+    "tasks": [
+      "Initialize a Node.js project with bin entry in package.json",
+      "Create the main CLI entry point with Commander.js",
+      "Implement 'init' subcommand for project scaffolding",
+      "Add 'config' subcommand for managing settings",
+      "Create 'generate' subcommand with templates",
+      "Implement interactive prompts with Inquirer.js",
+      "Add colored output and spinners with Chalk and Ora",
+      "Create a help system with detailed command descriptions"
+    ],
+    "flags": [
+      {
+        "title": "Package Bin",
+        "description": "Run: grep 'bin' /opt/cli-tool/package.json. Bin entry configured?",
+        "ans": "bin",
+        "pts": 100
+      },
+      {
+        "title": "CLI Entry",
+        "description": "Run: ls /opt/cli-tool/src/cli.js. CLI entry point exists?",
+        "ans": "cli.js",
+        "pts": 100
+      },
+      {
+        "title": "Init Command",
+        "description": "Run: grep -c 'init' /opt/cli-tool/src/commands/*.js. Init command exists?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Config Command",
+        "description": "Run: grep -c 'config' /opt/cli-tool/src/commands/*.js. Config command exists?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Generate Command",
+        "description": "Run: grep -c 'generate' /opt/cli-tool/src/commands/*.js. Generate command exists?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Inquirer",
+        "description": "Run: grep -c 'inquirer\\|prompt' /opt/cli-tool/src/**/*.js | awk -F: '{sum+=$2}END{print sum}'. Interactive prompts?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Chalk Output",
+        "description": "Run: grep -c 'chalk' /opt/cli-tool/src/**/*.js | awk -F: '{sum+=$2}END{print sum}'. Chalk usage?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Ora Spinners",
+        "description": "Run: grep -c 'ora\\|spinner' /opt/cli-tool/src/**/*.js | awk -F: '{sum+=$2}END{print sum}'. Spinners used?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Templates",
+        "description": "Run: ls /opt/cli-tool/templates/ | wc -l. Template files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Help Text",
+        "description": "Run: grep -c 'description\\|option' /opt/cli-tool/src/cli.js. Help text defined?",
+        "ans": "5",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Next.js Dashboard with Server Components",
+    "description": "Build a data dashboard using Next.js App Router with React Server Components, streaming, and Suspense boundaries.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1400,
+    "estimatedMinutes": 120,
+    "skillName": "NEXTJS",
+    "briefing": "### Mission Objective\nCreate a modern dashboard using Next.js App Router with React Server Components for optimal performance. Implement streaming with Suspense, loading states, and interactive client components.\n\n### Environment\n- Node.js 20 LTS with npm\n- PostgreSQL 15 with Prisma\n- Pre-installed: next, react, prisma, recharts\n- Working directory: /opt/nextjs-dashboard\n\n### Tasks\n1. Set up Next.js with App Router and TypeScript\n2. Create server components for data fetching\n3. Build interactive charts with client components\n4. Implement Suspense boundaries with loading states\n5. Add streaming for slow data queries\n6. Create a sidebar navigation with active state\n7. Build real-time metrics cards with server-side data\n8. Implement optimistic UI updates for mutations\n\n### Permissions & Access\n- Container runs as root\n- PostgreSQL: postgresql://dash:dash@localhost:5432/dashboard\n- Dashboard runs on localhost:3000",
+    "tasks": [
+      "Set up Next.js with App Router and TypeScript",
+      "Create server components for data fetching",
+      "Build interactive charts with client components",
+      "Implement Suspense boundaries with loading states",
+      "Add streaming for slow data queries",
+      "Create a sidebar navigation with active state",
+      "Build real-time metrics cards with server-side data",
+      "Implement optimistic UI updates for mutations"
+    ],
+    "flags": [
+      {
+        "title": "Server Components",
+        "description": "Run: grep -c 'use client' /opt/nextjs-dashboard/src/app/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Client components count?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Loading States",
+        "description": "Run: ls /opt/nextjs-dashboard/src/app/**/loading.tsx 2>/dev/null | wc -l. Loading files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Suspense",
+        "description": "Run: grep -rc 'Suspense' /opt/nextjs-dashboard/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Suspense usage?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Charts",
+        "description": "Run: ls /opt/nextjs-dashboard/src/components/charts/*.tsx | wc -l. Chart components?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Sidebar",
+        "description": "Run: ls /opt/nextjs-dashboard/src/components/Sidebar.tsx. Sidebar component exists?",
+        "ans": "Sidebar.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Metrics Cards",
+        "description": "Run: ls /opt/nextjs-dashboard/src/components/MetricsCard.tsx. Metrics card exists?",
+        "ans": "MetricsCard.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Streaming",
+        "description": "Run: grep -c 'loading.tsx' /opt/nextjs-dashboard/src/app/**/*.tsx | head -1. Streaming files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Prisma Schema",
+        "description": "Run: grep -c 'model' /opt/nextjs-dashboard/prisma/schema.prisma. Database models?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Server Actions",
+        "description": "Run: grep -c 'use server' /opt/nextjs-dashboard/src/**/*.ts | awk -F: '{sum+=$2}END{print sum}'. Server actions?",
+        "ans": "2",
+        "pts": 150
+      },
+      {
+        "title": "Error Boundary",
+        "description": "Run: ls /opt/nextjs-dashboard/src/app/error.tsx 2>/dev/null | head -1. Error boundary exists?",
+        "ans": "error.tsx",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React Animation with Framer Motion",
+    "description": "Create fluid animations and page transitions in React using Framer Motion with gesture support and layout animations.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "REACT",
+    "briefing": "### Mission Objective\nBuild a visually stunning React application with Framer Motion. Create page transitions, scroll animations, gesture-based interactions, and layout animations.\n\n### Environment\n- Node.js 20 LTS with npm\n- Pre-installed: framer-motion, react-router-dom\n- Working directory: /opt/react-animations\n\n### Tasks\n1. Set up React Router with animated page transitions\n2. Create fade and slide animations for route changes\n3. Build an animated card grid with stagger effects\n4. Implement scroll-triggered animations\n5. Add drag-and-drop interaction with physics\n6. Create a shared layout animation between routes\n7. Build an accordion with smooth expand/collapse\n8. Add hover and tap animations on interactive elements\n\n### Permissions & Access\n- Container runs as root\n- Framer Motion 10+ installed\n- App runs on localhost:5173",
+    "tasks": [
+      "Set up React Router with animated page transitions",
+      "Create fade and slide animations for route changes",
+      "Build an animated card grid with stagger effects",
+      "Implement scroll-triggered animations",
+      "Add drag-and-drop interaction with physics",
+      "Create a shared layout animation between routes",
+      "Build an accordion with smooth expand/collapse",
+      "Add hover and tap animations on interactive elements"
+    ],
+    "flags": [
+      {
+        "title": "AnimatePresence",
+        "description": "Run: grep -c 'AnimatePresence' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. AnimatePresence used?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Motion Components",
+        "description": "Run: grep -c 'motion\\.' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Motion components?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Page Transitions",
+        "description": "Run: ls /opt/react-animations/src/components/PageTransition.tsx. Page transition exists?",
+        "ans": "PageTransition.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Stagger Effects",
+        "description": "Run: grep -c 'stagger' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Stagger animations?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Scroll Animation",
+        "description": "Run: grep -c 'useInView\\|whileInView' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Scroll animations?",
+        "ans": "3",
+        "pts": 150
+      },
+      {
+        "title": "Drag Interaction",
+        "description": "Run: grep -c 'drag\\|DragControls' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Drag interactions?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Layout Animation",
+        "description": "Run: grep -c 'layout\\|layoutId' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Layout animations?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Accordion",
+        "description": "Run: ls /opt/react-animations/src/components/AnimatedAccordion.tsx. Accordion exists?",
+        "ans": "AnimatedAccordion.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Hover Effects",
+        "description": "Run: grep -c 'whileHover\\|whileTap' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Hover/tap effects?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Spring Physics",
+        "description": "Run: grep -c 'spring\\|type.*spring' /opt/react-animations/src/**/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Spring animations?",
+        "ans": "4",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "React Native Paper UI Kit",
+    "description": "Build a comprehensive React Native UI kit using React Native Paper with theming, custom components, and accessibility.",
+    "dockerImage": "node:20-alpine",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "REACT_NATIVE",
+    "briefing": "### Mission Objective\nCreate a React Native UI component library using React Native Paper. Implement custom theming, build reusable components, and ensure accessibility compliance.\n\n### Environment\n- Node.js 20 LTS with npm\n- React Native CLI pre-installed\n- Pre-installed: react-native-paper, react-native-vector-icons\n- Working directory: /opt/rn-paper-ui\n\n### Tasks\n1. Set up React Native Paper with custom theme configuration\n2. Create a ThemeProvider with light and dark mode support\n3. Build a custom Button component extending Paper's Button\n4. Create a FormInput component with validation state\n5. Build a List component with swipe actions\n6. Create a BottomSheet component\n7. Add accessibility labels to all custom components\n8. Create a theme preview screen\n\n### Permissions & Access\n- Container runs as root\n- React Native CLI pre-installed\n- Configuration and code only (no device needed)",
+    "tasks": [
+      "Set up React Native Paper with custom theme configuration",
+      "Create a ThemeProvider with light and dark mode support",
+      "Build a custom Button component extending Paper's Button",
+      "Create a FormInput component with validation state",
+      "Build a List component with swipe actions",
+      "Create a BottomSheet component",
+      "Add accessibility labels to all custom components",
+      "Create a theme preview screen"
+    ],
+    "flags": [
+      {
+        "title": "Theme Config",
+        "description": "Run: ls /opt/rn-paper-ui/src/theme/index.ts. Theme configuration exists?",
+        "ans": "index.ts",
+        "pts": 100
+      },
+      {
+        "title": "ThemeProvider",
+        "description": "Run: ls /opt/rn-paper-ui/src/providers/ThemeProvider.tsx. Theme provider exists?",
+        "ans": "ThemeProvider.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Custom Button",
+        "description": "Run: ls /opt/rn-paper-ui/src/components/Button/Button.tsx. Custom button exists?",
+        "ans": "Button.tsx",
+        "pts": 100
+      },
+      {
+        "title": "FormInput",
+        "description": "Run: ls /opt/rn-paper-ui/src/components/FormInput/FormInput.tsx. Form input exists?",
+        "ans": "FormInput.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Swipe List",
+        "description": "Run: ls /opt/rn-paper-ui/src/components/SwipeList/SwipeList.tsx. Swipe list exists?",
+        "ans": "SwipeList.tsx",
+        "pts": 150
+      },
+      {
+        "title": "BottomSheet",
+        "description": "Run: ls /opt/rn-paper-ui/src/components/BottomSheet/BottomSheet.tsx. Bottom sheet exists?",
+        "ans": "BottomSheet.tsx",
+        "pts": 100
+      },
+      {
+        "title": "A11y Labels",
+        "description": "Run: grep -rc 'accessibilityLabel\\|accessible' /opt/rn-paper-ui/src/components/ | awk -F: '{sum+=$2}END{print sum}'. A11y labels?",
+        "ans": "8",
+        "pts": 100
+      },
+      {
+        "title": "Preview Screen",
+        "description": "Run: ls /opt/rn-paper-ui/src/screens/ThemePreview.tsx. Theme preview exists?",
+        "ans": "ThemePreview.tsx",
+        "pts": 100
+      },
+      {
+        "title": "Dark Mode",
+        "description": "Run: grep -c 'dark\\|Dark' /opt/rn-paper-ui/src/theme/index.ts. Dark mode theme?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Paper Components",
+        "description": "Run: grep -c 'from.*react-native-paper' /opt/rn-paper-ui/src/components/*.tsx | awk -F: '{sum+=$2}END{print sum}'. Paper imports?",
+        "ans": "5",
+        "pts": 100
+      }
+    ]
+  }
+]

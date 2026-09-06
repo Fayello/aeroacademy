@@ -1,0 +1,1217 @@
+[
+  {
+    "title": "Algorithmic Trading Bot with Backtesting",
+    "description": "Build an algorithmic trading bot with backtesting engine, moving average crossover strategy, and performance metrics.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "ALGO_TRADING",
+    "briefing": "### Mission Objective\nDevelop an algorithmic trading bot that implements a moving average crossover strategy. Build a backtesting engine to evaluate strategy performance against historical data with key financial metrics.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Pandas, NumPy, and TA-Lib pre-installed\n- Working directory: /opt/algo-trading-lab\n- Historical price data provided in CSV format\n\n### Tasks\n1. Load and parse historical OHLCV price data from CSV\n2. Implement a Moving Average Crossover strategy (SMA 20/50)\n3. Create a backtesting engine with portfolio tracking\n4. Calculate Sharpe ratio, max drawdown, and win rate\n5. Generate trade signals with entry and exit points\n6. Add position sizing and risk management rules\n7. Create visualizations of equity curve and drawdowns\n8. Write a report summarizing strategy performance\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with financial libraries\n- Data files in /opt/algo-trading-lab/data/",
+    "tasks": [
+      "Load and parse historical OHLCV price data from CSV",
+      "Implement a Moving Average Crossover strategy (SMA 20/50)",
+      "Create a backtesting engine with portfolio tracking",
+      "Calculate Sharpe ratio, max drawdown, and win rate",
+      "Generate trade signals with entry and exit points",
+      "Add position sizing and risk management rules",
+      "Create visualizations of equity curve and drawdowns",
+      "Write a report summarizing strategy performance"
+    ],
+    "flags": [
+      {
+        "title": "Data Loaded",
+        "description": "Run: python3 -c \"import pandas as pd; df=pd.read_csv('data/prices.csv'); print(len(df))\". How many rows loaded?",
+        "ans": "1000",
+        "pts": 100
+      },
+      {
+        "title": "SMA Strategy",
+        "description": "Run: grep -c 'sma\\|moving_average' /opt/algo-trading-lab/src/strategy.py. Strategy implemented?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Backtest Engine",
+        "description": "Run: ls /opt/algo-trading-lab/src/backtester.py. Does backtester exist?",
+        "ans": "backtester.py",
+        "pts": 125
+      },
+      {
+        "title": "Sharpe Ratio",
+        "description": "Run: grep -c 'sharpe' /opt/algo-trading-lab/src/metrics.py. Sharpe calculation present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Max Drawdown",
+        "description": "Run: grep -c 'drawdown\\|max_drawdown' /opt/algo-trading-lab/src/metrics.py. Drawdown metric present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Trade Signals",
+        "description": "Run: grep -c 'signal\\|buy\\|sell' /opt/algo-trading-lab/src/strategy.py. Trade signals defined?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Risk Management",
+        "description": "Run: grep -c 'stop_loss\\|position_size\\|risk' /opt/algo-trading-lab/src/*.py. Risk rules present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Visualizations",
+        "description": "Run: ls /opt/algo-trading-lab/output/*.png. Are charts generated?",
+        "ans": "png",
+        "pts": 125
+      },
+      {
+        "title": "Performance Report",
+        "description": "Run: ls /opt/algo-trading-lab/output/report.md. Does report exist?",
+        "ans": "report.md",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/algo-trading-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Payment Processing Gateway Mock",
+    "description": "Build a mock payment gateway with Stripe-like API, webhook handling, idempotency, and PCI-compliant logging.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 110,
+    "skillName": "PAYMENT_SYSTEMS",
+    "briefing": "### Mission Objective\nBuild a mock payment processing gateway that simulates Stripe-like functionality. Handle payment intents, charges, refunds, and webhooks with idempotency and PCI-compliant logging.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Redis for idempotency keys\n- Working directory: /opt/payment-gateway-lab\n\n### Tasks\n1. Create a Payment Intent API (POST /api/payment-intents)\n2. Implement charge confirmation endpoint\n3. Add refund processing with partial refund support\n4. Create webhook notification system for events\n5. Implement idempotency key handling\n6. Add PCI-compliant logging (mask card numbers)\n7. Create API key authentication middleware\n8. Write comprehensive API tests\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Redis available\n- API must follow REST conventions",
+    "tasks": [
+      "Create a Payment Intent API (POST /api/payment-intents)",
+      "Implement charge confirmation endpoint",
+      "Add refund processing with partial refund support",
+      "Create webhook notification system for events",
+      "Implement idempotency key handling",
+      "Add PCI-compliant logging (mask card numbers)",
+      "Create API key authentication middleware",
+      "Write comprehensive API tests"
+    ],
+    "flags": [
+      {
+        "title": "Payment Intent Endpoint",
+        "description": "Run: grep -r 'payment-intents' /opt/payment-gateway-lab/src/routes/*.js. Is endpoint defined?",
+        "ans": "payment-intents",
+        "pts": 100
+      },
+      {
+        "title": "Charge Endpoint",
+        "description": "Run: grep -c 'charge' /opt/payment-gateway-lab/src/routes/*.js. Charge endpoint present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Refund Endpoint",
+        "description": "Run: grep -c 'refund' /opt/payment-gateway-lab/src/routes/*.js. Refund endpoint present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Webhook System",
+        "description": "Run: ls /opt/payment-gateway-lab/src/services/webhook.js. Does webhook service exist?",
+        "ans": "webhook.js",
+        "pts": 125
+      },
+      {
+        "title": "Idempotency Keys",
+        "description": "Run: grep -c 'idempotency' /opt/payment-gateway-lab/src/middleware/*.js. Idempotency middleware present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "PCI Logging",
+        "description": "Run: grep -c 'mask\\|redact\\|\\*\\*\\*' /opt/payment-gateway-lab/src/utils/logger.js. PCI masking present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "API Key Auth",
+        "description": "Run: grep -c 'api.key\\|authorization' /opt/payment-gateway-lab/src/middleware/*.js. Auth middleware present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/payment-gateway-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Stripe-like Response",
+        "description": "Run: grep -c 'client_secret' /opt/payment-gateway-lab/src/routes/*.js. Stripe-like response format?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Amount Validation",
+        "description": "Run: grep -c 'amount.*positive\\|amount.*min\\|amount > 0' /opt/payment-gateway-lab/src/routes/*.js. Amount validation present?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Risk Scoring Engine",
+    "description": "Build a real-time risk scoring engine with configurable rules, thresholds, and machine learning model integration.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "RISK_MODELING",
+    "briefing": "### Mission Objective\nDevelop a risk scoring engine that evaluates financial transactions in real-time. Implement rule-based scoring, ML model integration, and configurable risk thresholds for fraud prevention.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Scikit-learn for ML models\n- Working directory: /opt/risk-scoring-lab\n\n### Tasks\n1. Design a risk scoring data model for transactions\n2. Create rule-based scoring engine with configurable weights\n3. Implement transaction velocity checks\n4. Add geolocation risk scoring\n5. Train a simple ML model for fraud prediction\n6. Create a scoring API endpoint\n7. Add risk threshold alerts and notifications\n8. Build a dashboard for risk monitoring\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with scikit-learn\n- Training data provided",
+    "tasks": [
+      "Design a risk scoring data model for transactions",
+      "Create rule-based scoring engine with configurable weights",
+      "Implement transaction velocity checks",
+      "Add geolocation risk scoring",
+      "Train a simple ML model for fraud prediction",
+      "Create a scoring API endpoint",
+      "Add risk threshold alerts and notifications",
+      "Build a dashboard for risk monitoring"
+    ],
+    "flags": [
+      {
+        "title": "Scoring Model",
+        "description": "Run: ls /opt/risk-scoring-lab/src/models/transaction.py. Does transaction model exist?",
+        "ans": "transaction.py",
+        "pts": 100
+      },
+      {
+        "title": "Rule Engine",
+        "description": "Run: ls /opt/risk-scoring-lab/src/engine/rule_engine.py. Does rule engine exist?",
+        "ans": "rule_engine.py",
+        "pts": 125
+      },
+      {
+        "title": "Velocity Checks",
+        "description": "Run: grep -c 'velocity\\|frequency\\|count' /opt/risk-scoring-lab/src/engine/*.py. Velocity logic present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Geo Risk",
+        "description": "Run: grep -c 'geo\\|location\\|country' /opt/risk-scoring-lab/src/engine/*.py. Geolocation scoring present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "ML Model",
+        "description": "Run: ls /opt/risk-scoring-lab/src/ml/fraud_model.py. Does fraud model exist?",
+        "ans": "fraud_model.py",
+        "pts": 125
+      },
+      {
+        "title": "Scoring API",
+        "description": "Run: grep -c '/score\\|/risk' /opt/risk-scoring-lab/src/routes/*.py. Scoring endpoint present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Threshold Alerts",
+        "description": "Run: grep -c 'threshold\\|alert\\|notify' /opt/risk-scoring-lab/src/engine/*.py. Alert system present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/risk-scoring-lab/dashboard/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Model Accuracy",
+        "description": "Run: grep -c 'accuracy\\|score\\|precision' /opt/risk-scoring-lab/src/ml/fraud_model.py. Model metrics present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/risk-scoring-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Portfolio Optimization with Mean-Variance",
+    "description": "Implement Markowitz mean-variance portfolio optimization with efficient frontier visualization.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "ROBO_ADVISOR",
+    "briefing": "### Mission Objective\nImplement a portfolio optimization engine using Markowitz mean-variance analysis. Calculate optimal asset allocations, visualize the efficient frontier, and support client risk profiles.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- NumPy, Pandas, SciPy for optimization\n- Working directory: /opt/portfolio-lab\n- Historical asset price data provided\n\n### Tasks\n1. Load historical price data for 5 assets\n2. Calculate expected returns and covariance matrix\n3. Implement the efficient frontier calculation\n4. Find the minimum variance portfolio\n5. Find the maximum Sharpe ratio portfolio\n6. Create a visualization of the efficient frontier\n7. Add client risk profile matching (conservative, moderate, aggressive)\n8. Generate a portfolio recommendation report\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with financial libraries\n- Data in /opt/portfolio-lab/data/",
+    "tasks": [
+      "Load historical price data for 5 assets",
+      "Calculate expected returns and covariance matrix",
+      "Implement the efficient frontier calculation",
+      "Find the minimum variance portfolio",
+      "Find the maximum Sharpe ratio portfolio",
+      "Create a visualization of the efficient frontier",
+      "Add client risk profile matching (conservative, moderate, aggressive)",
+      "Generate a portfolio recommendation report"
+    ],
+    "flags": [
+      {
+        "title": "Data Loaded",
+        "description": "Run: python3 -c \"import pandas as pd; df=pd.read_csv('data/assets.csv'); print(df.shape[1])\". How many asset columns?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Returns Calculated",
+        "description": "Run: grep -c 'returns\\|pct_change' /opt/portfolio-lab/src/optimizer.py. Returns calculation present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Covariance Matrix",
+        "description": "Run: grep -c 'cov\\|covariance' /opt/portfolio-lab/src/optimizer.py. Covariance calculation present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Efficient Frontier",
+        "description": "Run: grep -c 'frontier\\|efficient' /opt/portfolio-lab/src/optimizer.py. Efficient frontier code present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Min Variance Portfolio",
+        "description": "Run: grep -c 'min.*var\\|minimum.*variance' /opt/portfolio-lab/src/optimizer.py. Min variance portfolio found?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Max Sharpe Portfolio",
+        "description": "Run: grep -c 'max.*sharpe\\|maximum.*sharpe' /opt/portfolio-lab/src/optimizer.py. Max Sharpe portfolio found?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Frontier Visualization",
+        "description": "Run: ls /opt/portfolio-lab/output/efficient_frontier.png. Chart generated?",
+        "ans": "efficient_frontier.png",
+        "pts": 125
+      },
+      {
+        "title": "Risk Profiles",
+        "description": "Run: grep -c 'conservative\\|moderate\\|aggressive' /opt/portfolio-lab/src/*.py. Risk profiles defined?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Report Generated",
+        "description": "Run: ls /opt/portfolio-lab/output/report.md. Portfolio report exists?",
+        "ans": "report.md",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/portfolio-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Real-time Price Feed Processing",
+    "description": "Build a real-time price feed processor with WebSocket streams, aggregation, and market data storage.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "ALGO_TRADING",
+    "briefing": "### Mission Objective\nBuild a real-time financial price feed processing system. Ingest WebSocket price streams, aggregate OHLCV candles, and store market data with low latency.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Redis for price caching\n- Working directory: /opt/price-feed-lab\n\n### Tasks\n1. Create a WebSocket server for price feed ingestion\n2. Implement price message parsing and validation\n3. Build OHLCV candle aggregation (1m, 5m, 15m intervals)\n4. Add Redis caching for latest prices\n5. Create price alert system for threshold notifications\n6. Implement data persistence to files\n7. Build a real-time price display dashboard\n8. Add price feed simulation for testing\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Redis available\n- WebSocket library pre-installed",
+    "tasks": [
+      "Create a WebSocket server for price feed ingestion",
+      "Implement price message parsing and validation",
+      "Build OHLCV candle aggregation (1m, 5m, 15m intervals)",
+      "Add Redis caching for latest prices",
+      "Create price alert system for threshold notifications",
+      "Implement data persistence to files",
+      "Build a real-time price display dashboard",
+      "Add price feed simulation for testing"
+    ],
+    "flags": [
+      {
+        "title": "WebSocket Server",
+        "description": "Run: grep -c 'WebSocket\\|wss\\|ws\\.' /opt/price-feed-lab/src/server.js. WebSocket server present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Message Parser",
+        "description": "Run: ls /opt/price-feed-lab/src/parser.js. Does parser exist?",
+        "ans": "parser.js",
+        "pts": 100
+      },
+      {
+        "title": "OHLCV Aggregation",
+        "description": "Run: grep -c 'open\\|high\\|low\\|close\\|volume' /opt/price-feed-lab/src/aggregator.js. OHLCV fields present?",
+        "ans": "5",
+        "pts": 125
+      },
+      {
+        "title": "Redis Caching",
+        "description": "Run: grep -c 'redis\\|set\\|get' /opt/price-feed-lab/src/cache.js. Redis integration present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Price Alerts",
+        "description": "Run: grep -c 'alert\\|threshold\\|notify' /opt/price-feed-lab/src/alerts.js. Alert system present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Data Persistence",
+        "description": "Run: grep -c 'writeFile\\|appendFile\\|fs\\.' /opt/price-feed-lab/src/storage.js. File persistence present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/price-feed-lab/public/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Feed Simulator",
+        "description": "Run: ls /opt/price-feed-lab/src/simulator.js. Does simulator exist?",
+        "ans": "simulator.js",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/price-feed-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Candle Intervals",
+        "description": "Run: grep -c '1m\\|5m\\|15m\\|interval' /opt/price-feed-lab/src/aggregator.js. Multiple intervals defined?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "KYC/AML Verification Pipeline",
+    "description": "Build a KYC/AML verification pipeline with document scanning, sanctions checking, and compliance workflow.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "REGTECH",
+    "briefing": "### Mission Objective\nDevelop a KYC/AML verification pipeline that processes identity documents, checks against sanctions lists, and manages compliance workflows for financial onboarding.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Mock document processing services\n- Working directory: /opt/kyc-aml-lab\n\n### Tasks\n1. Create a KYC data model for customer identity\n2. Implement document verification workflow\n3. Add sanctions list checking against OFAC format\n4. Create a risk-based screening engine\n5. Build a compliance case management system\n6. Add audit logging for all verification events\n7. Create a compliance officer dashboard\n8. Write API endpoints for the KYC pipeline\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 pre-installed\n- Mock sanctions data provided",
+    "tasks": [
+      "Create a KYC data model for customer identity",
+      "Implement document verification workflow",
+      "Add sanctions list checking against OFAC format",
+      "Create a risk-based screening engine",
+      "Build a compliance case management system",
+      "Add audit logging for all verification events",
+      "Create a compliance officer dashboard",
+      "Write API endpoints for the KYC pipeline"
+    ],
+    "flags": [
+      {
+        "title": "KYC Model",
+        "description": "Run: ls /opt/kyc-aml-lab/src/models/customer.py. Does customer model exist?",
+        "ans": "customer.py",
+        "pts": 100
+      },
+      {
+        "title": "Document Verification",
+        "description": "Run: grep -c 'verify\\|document\\|id_check' /opt/kyc-aml-lab/src/services/*.py. Document verification present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Sanctions Check",
+        "description": "Run: grep -c 'sanctions\\|ofac\\|watchlist' /opt/kyc-aml-lab/src/services/*.py. Sanctions checking present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Risk Screening",
+        "description": "Run: grep -c 'risk.*screen\\|screening' /opt/kyc-aml-lab/src/services/*.py. Risk screening present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Case Management",
+        "description": "Run: ls /opt/kyc-aml-lab/src/models/case.py. Does case model exist?",
+        "ans": "case.py",
+        "pts": 125
+      },
+      {
+        "title": "Audit Logging",
+        "description": "Run: grep -c 'audit\\|log\\|event' /opt/kyc-aml-lab/src/utils/*.py. Audit logging present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/kyc-aml-lab/dashboard/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "API Endpoints",
+        "description": "Run: grep -c 'route\\|endpoint\\|@app' /opt/kyc-aml-lab/src/api/*.py. API endpoints present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Status Workflow",
+        "description": "Run: grep -c 'pending\\|approved\\|rejected\\|review' /opt/kyc-aml-lab/src/models/*.py. Status workflow defined?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/kyc-aml-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Fraud Detection System",
+    "description": "Build a real-time fraud detection system with rule engine, anomaly detection, and alert management.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "RISK_MODELING",
+    "briefing": "### Mission Objective\nDevelop a real-time fraud detection system that analyzes transactions using rule-based checks, statistical anomaly detection, and pattern recognition. Generate alerts and manage fraud investigation workflows.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Scikit-learn for anomaly detection\n- Working directory: /opt/fraud-detection-lab\n\n### Tasks\n1. Design transaction data model with fraud indicators\n2. Implement rule-based fraud detection (velocity, amount, location)\n3. Add statistical anomaly detection using Isolation Forest\n4. Create a real-time scoring API endpoint\n5. Build an alert management system with severity levels\n6. Add fraud case investigation workflow\n7. Create a fraud analyst dashboard\n8. Generate fraud detection reports\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with scikit-learn\n- Training data in /opt/fraud-detection-lab/data/",
+    "tasks": [
+      "Design transaction data model with fraud indicators",
+      "Implement rule-based fraud detection (velocity, amount, location)",
+      "Add statistical anomaly detection using Isolation Forest",
+      "Create a real-time scoring API endpoint",
+      "Build an alert management system with severity levels",
+      "Add fraud case investigation workflow",
+      "Create a fraud analyst dashboard",
+      "Generate fraud detection reports"
+    ],
+    "flags": [
+      {
+        "title": "Transaction Model",
+        "description": "Run: ls /opt/fraud-detection-lab/src/models/transaction.py. Does model exist?",
+        "ans": "transaction.py",
+        "pts": 100
+      },
+      {
+        "title": "Rule Engine",
+        "description": "Run: ls /opt/fraud-detection-lab/src/rules/*.py. Are rule files present?",
+        "ans": "rule",
+        "pts": 125
+      },
+      {
+        "title": "Anomaly Detection",
+        "description": "Run: grep -c 'IsolationForest\\|isolation\\|anomaly' /opt/fraud-detection-lab/src/ml/*.py. Anomaly detection present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Scoring API",
+        "description": "Run: grep -c '/score\\|/detect\\|/check' /opt/fraud-detection-lab/src/api/*.py. Scoring endpoint present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Alert System",
+        "description": "Run: grep -c 'alert\\|severity\\|critical\\|warning' /opt/fraud-detection-lab/src/services/*.py. Alert system present?",
+        "ans": "4",
+        "pts": 100
+      },
+      {
+        "title": "Case Workflow",
+        "description": "Run: grep -c 'investigation\\|case\\|assign' /opt/fraud-detection-lab/src/services/*.py. Investigation workflow present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/fraud-detection-lab/dashboard/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Reports",
+        "description": "Run: grep -c 'report\\|generate\\|pdf' /opt/fraud-detection-lab/src/services/*.py. Report generation present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "ML Model Trained",
+        "description": "Run: ls /opt/fraud-detection-lab/src/ml/model.pkl. Is the model saved?",
+        "ans": "model.pkl",
+        "pts": 125
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/fraud-detection-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Loan Amortization Calculator",
+    "description": "Build a comprehensive loan amortization system with multiple payment schedules and early payoff calculations.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 70,
+    "skillName": "QUANT_ANALYSIS",
+    "briefing": "### Mission Objective\nCreate a loan amortization calculator that generates payment schedules, calculates early payoff scenarios, and compares different loan terms. Support fixed and variable rate loans.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Pandas for schedule generation\n- Working directory: /opt/loan-amort-lab\n\n### Tasks\n1. Calculate monthly payment using standard amortization formula\n2. Generate a complete amortization schedule table\n3. Add support for extra principal payments\n4. Calculate total interest paid over loan term\n5. Create early payoff calculator with saved interest\n6. Compare 15-year vs 30-year mortgage scenarios\n7. Generate a visual amortization chart\n8. Export schedule to CSV and PDF\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with pandas\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Calculate monthly payment using standard amortization formula",
+      "Generate a complete amortization schedule table",
+      "Add support for extra principal payments",
+      "Calculate total interest paid over loan term",
+      "Create early payoff calculator with saved interest",
+      "Compare 15-year vs 30-year mortgage scenarios",
+      "Generate a visual amortization chart",
+      "Export schedule to CSV and PDF"
+    ],
+    "flags": [
+      {
+        "title": "Payment Formula",
+        "description": "Run: grep -c 'payment\\|amortization\\|monthly' /opt/loan-amort-lab/src/calculator.py. Payment calculation present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Schedule Generator",
+        "description": "Run: grep -c 'schedule\\|Dataframe\\|pandas' /opt/loan-amort-lab/src/schedule.py. Schedule generator present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Extra Payments",
+        "description": "Run: grep -c 'extra\\|additional\\|principal' /opt/loan-amort-lab/src/calculator.py. Extra payment support present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Total Interest",
+        "description": "Run: grep -c 'total.*interest\\|interest.*total' /opt/loan-amort-lab/src/calculator.py. Total interest calculation present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Early Payoff",
+        "description": "Run: grep -c 'early.*payoff\\|payoff\\|saved' /opt/loan-amort-lab/src/calculator.py. Early payoff calculation present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Loan Comparison",
+        "description": "Run: grep -c 'compare\\|15.*year\\|30.*year' /opt/loan-amort-lab/src/comparison.py. Comparison feature present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Chart Generated",
+        "description": "Run: ls /opt/loan-amort-lab/output/amortization.png. Is chart generated?",
+        "ans": "amortization.png",
+        "pts": 100
+      },
+      {
+        "title": "CSV Export",
+        "description": "Run: grep -c 'to_csv\\|csv' /opt/loan-amort-lab/src/export.py. CSV export present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/loan-amort-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Rate Types",
+        "description": "Run: grep -c 'fixed\\|variable\\|rate.*type' /opt/loan-amort-lab/src/calculator.py. Multiple rate types supported?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Options Pricing with Black-Scholes",
+    "description": "Implement Black-Scholes option pricing model with Greeks calculation and implied volatility solver.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 100,
+    "skillName": "QUANT_ANALYSIS",
+    "briefing": "### Mission Objective\nImplement the Black-Scholes option pricing model for European calls and puts. Calculate all Greeks (Delta, Gamma, Theta, Vega, Rho) and solve for implied volatility using Newton-Raphson.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- NumPy, SciPy for numerical methods\n- Working directory: /opt/options-pricing-lab\n\n### Tasks\n1. Implement the Black-Scholes formula for call and put options\n2. Calculate the standard normal cumulative distribution function\n3. Compute all option Greeks: Delta, Gamma, Theta, Vega, Rho\n4. Implement implied volatility solver using Newton-Raphson method\n5. Create an option chain pricing engine\n6. Add a Greeks sensitivity analysis tool\n7. Generate visualizations of option price vs underlying price\n8. Write tests validating against known option prices\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with NumPy and SciPy\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Implement the Black-Scholes formula for call and put options",
+      "Calculate the standard normal cumulative distribution function",
+      "Compute all option Greeks: Delta, Gamma, Theta, Vega, Rho",
+      "Implement implied volatility solver using Newton-Raphson method",
+      "Create an option chain pricing engine",
+      "Add a Greeks sensitivity analysis tool",
+      "Generate visualizations of option price vs underlying price",
+      "Write tests validating against known option prices"
+    ],
+    "flags": [
+      {
+        "title": "Black-Scholes Formula",
+        "description": "Run: grep -c 'black.scholes\\|bs\\|black_scholes' /opt/options-pricing-lab/src/pricing.py. Black-Scholes implemented?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Normal CDF",
+        "description": "Run: grep -c 'norm.*cdf\\|cumulative\\|standard_normal' /opt/options-pricing-lab/src/pricing.py. CDF function present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Delta Calculated",
+        "description": "Run: grep -c 'delta' /opt/options-pricing-lab/src/greeks.py. Delta calculation present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "All Greeks Present",
+        "description": "Run: grep -c 'delta\\|gamma\\|theta\\|vega\\|rho' /opt/options-pricing-lab/src/greeks.py. All 5 Greeks implemented?",
+        "ans": "5",
+        "pts": 125
+      },
+      {
+        "title": "Implied Volatility",
+        "description": "Run: grep -c 'implied.*vol\\|newton\\|iv_solver' /opt/options-pricing-lab/src/volatility.py. IV solver present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Option Chain",
+        "description": "Run: grep -c 'chain\\|strike\\|expiry' /opt/options-pricing-lab/src/chain.py. Option chain engine present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Greeks Sensitivity",
+        "description": "Run: ls /opt/options-pricing-lab/src/sensitivity.py. Does sensitivity tool exist?",
+        "ans": "sensitivity.py",
+        "pts": 100
+      },
+      {
+        "title": "Visualizations",
+        "description": "Run: ls /opt/options-pricing-lab/output/*.png. Are option charts generated?",
+        "ans": "png",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/options-pricing-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Call and Put",
+        "description": "Run: grep -c 'call\\|put' /opt/options-pricing-lab/src/pricing.py. Both call and put options priced?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Currency Exchange Rate Aggregator",
+    "description": "Build a currency exchange rate aggregator that fetches rates from multiple providers, handles failures, and provides best rates.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 80,
+    "skillName": "PAYMENT_SYSTEMS",
+    "briefing": "### Mission Objective\nDevelop a currency exchange rate aggregation system that fetches rates from multiple providers, handles API failures gracefully, caches results, and provides the best available rates.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Redis for rate caching\n- Working directory: /opt/fx-aggregator-lab\n\n### Tasks\n1. Create provider adapters for 3 mock FX rate APIs\n2. Implement rate fetching with timeout and retry logic\n3. Add Redis caching with configurable TTL\n4. Create rate comparison logic to find best rates\n5. Implement failover between providers on errors\n6. Add rate change notification system\n7. Create a currency conversion calculator\n8. Build a rate history tracking system\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 and Redis available\n- Mock API endpoints provided",
+    "tasks": [
+      "Create provider adapters for 3 mock FX rate APIs",
+      "Implement rate fetching with timeout and retry logic",
+      "Add Redis caching with configurable TTL",
+      "Create rate comparison logic to find best rates",
+      "Implement failover between providers on errors",
+      "Add rate change notification system",
+      "Create a currency conversion calculator",
+      "Build a rate history tracking system"
+    ],
+    "flags": [
+      {
+        "title": "Provider Adapters",
+        "description": "Run: ls /opt/fx-aggregator-lab/src/providers/*.py. Are there 3 provider files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Retry Logic",
+        "description": "Run: grep -c 'retry\\|backoff\\|timeout' /opt/fx-aggregator-lab/src/fetcher.py. Retry logic present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Redis Caching",
+        "description": "Run: grep -c 'redis\\|cache\\|ttl' /opt/fx-aggregator-lab/src/cache.py. Caching implemented?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Best Rate Logic",
+        "description": "Run: grep -c 'best\\|compare\\|min\\|max' /opt/fx-aggregator-lab/src/aggregator.py. Best rate selection present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Failover Logic",
+        "description": "Run: grep -c 'fallback\\|failover\\|next.*provider' /opt/fx-aggregator-lab/src/aggregator.py. Failover present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Notifications",
+        "description": "Run: grep -c 'notify\\|alert\\|change' /opt/fx-aggregator-lab/src/notifications.py. Notification system present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Conversion Calculator",
+        "description": "Run: grep -c 'convert\\|amount\\|rate' /opt/fx-aggregator-lab/src/converter.py. Converter present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Rate History",
+        "description": "Run: grep -c 'history\\|store\\|append' /opt/fx-aggregator-lab/src/history.py. History tracking present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/fx-aggregator-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "API Endpoints",
+        "description": "Run: grep -c '@app.route\\|@router' /opt/fx-aggregator-lab/src/api.py. API endpoints present?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Financial Report Generator",
+    "description": "Build an automated financial report generator that creates PDF statements, income summaries, and tax documents.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 80,
+    "skillName": "QUANT_ANALYSIS",
+    "briefing": "### Mission Objective\nDevelop an automated financial report generator that processes transaction data, categorizes income and expenses, and produces professional PDF reports including balance sheets and income statements.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- ReportLab or WeasyPrint for PDF generation\n- Working directory: /opt/fin-report-lab\n- Sample transaction data provided\n\n### Tasks\n1. Load and categorize financial transactions by type\n2. Calculate monthly income, expenses, and net profit\n3. Generate a Balance Sheet with assets, liabilities, equity\n4. Create an Income Statement (P&L) report\n5. Build a Cash Flow Statement\n6. Add month-over-month comparison analysis\n7. Generate PDF reports with charts and tables\n8. Create a report scheduling system\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with reportlab/weasyprint\n- Data in /opt/fin-report-lab/data/",
+    "tasks": [
+      "Load and categorize financial transactions by type",
+      "Calculate monthly income, expenses, and net profit",
+      "Generate a Balance Sheet with assets, liabilities, equity",
+      "Create an Income Statement (P&L) report",
+      "Build a Cash Flow Statement",
+      "Add month-over-month comparison analysis",
+      "Generate PDF reports with charts and tables",
+      "Create a report scheduling system"
+    ],
+    "flags": [
+      {
+        "title": "Transaction Loader",
+        "description": "Run: grep -c 'load\\|parse\\|transaction' /opt/fin-report-lab/src/loader.py. Transaction loader present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Income Calculation",
+        "description": "Run: grep -c 'income\\|revenue\\|credit' /opt/fin-report-lab/src/calculator.py. Income calculation present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Balance Sheet",
+        "description": "Run: grep -c 'balance.*sheet\\|assets\\|liabilities' /opt/fin-report-lab/src/reports/balance_sheet.py. Balance sheet present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Income Statement",
+        "description": "Run: grep -c 'income.*statement\\|profit.*loss\\|p&l' /opt/fin-report-lab/src/reports/income_statement.py. Income statement present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Cash Flow",
+        "description": "Run: grep -c 'cash.*flow\\|operating\\|investing' /opt/fin-report-lab/src/reports/cash_flow.py. Cash flow statement present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "MoM Comparison",
+        "description": "Run: grep -c 'compare\\|month.*over\\|growth' /opt/fin-report-lab/src/analysis.py. MoM comparison present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "PDF Generated",
+        "description": "Run: ls /opt/fin-report-lab/output/*.pdf. Is PDF report generated?",
+        "ans": "pdf",
+        "pts": 125
+      },
+      {
+        "title": "Charts in Report",
+        "description": "Run: grep -c 'chart\\|plot\\|graph' /opt/fin-report-lab/src/reports/*.py. Charts present in reports?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/fin-report-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Report Scheduler",
+        "description": "Run: grep -c 'schedule\\|cron\\|periodic' /opt/fin-report-lab/src/scheduler.py. Scheduling present?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Compliance Audit Trail System",
+    "description": "Build a compliance audit trail system that logs all financial operations with immutable records and tamper detection.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "REGTECH",
+    "briefing": "### Mission Objective\nDevelop a compliance audit trail system that maintains immutable records of all financial operations. Implement hash chaining for tamper detection and provide audit reporting capabilities.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- SQLite for audit database\n- Working directory: /opt/audit-trail-lab\n\n### Tasks\n1. Design an immutable audit log data model\n2. Implement SHA-256 hash chaining for record integrity\n3. Create API endpoints for logging audit events\n4. Add tamper detection verification system\n5. Build an audit query API with filtering\n6. Create compliance report generator\n7. Add user activity tracking and session logging\n8. Build an audit trail visualization dashboard\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with hashlib and sqlite3\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Design an immutable audit log data model",
+      "Implement SHA-256 hash chaining for record integrity",
+      "Create API endpoints for logging audit events",
+      "Add tamper detection verification system",
+      "Build an audit query API with filtering",
+      "Create compliance report generator",
+      "Add user activity tracking and session logging",
+      "Build an audit trail visualization dashboard"
+    ],
+    "flags": [
+      {
+        "title": "Audit Model",
+        "description": "Run: ls /opt/audit-trail-lab/src/models/audit_log.py. Does audit model exist?",
+        "ans": "audit_log.py",
+        "pts": 100
+      },
+      {
+        "title": "Hash Chaining",
+        "description": "Run: grep -c 'sha256\\|hash\\|chain\\|previous_hash' /opt/audit-trail-lab/src/services/hash_chain.py. Hash chaining implemented?",
+        "ans": "4",
+        "pts": 125
+      },
+      {
+        "title": "Audit API",
+        "description": "Run: grep -c '@app.route\\|@router' /opt/audit-trail-lab/src/api/*.py. API endpoints present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Tamper Detection",
+        "description": "Run: grep -c 'tamper\\|verify\\|integrity' /opt/audit-trail-lab/src/services/verifier.py. Tamper detection present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Query API",
+        "description": "Run: grep -c 'filter\\|query\\|search' /opt/audit-trail-lab/src/api/queries.py. Query API present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Compliance Report",
+        "description": "Run: grep -c 'report\\|compliance' /opt/audit-trail-lab/src/services/reporter.py. Compliance report present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Session Logging",
+        "description": "Run: grep -c 'session\\|user.*activity\\|login' /opt/audit-trail-lab/src/services/session_logger.py. Session logging present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/audit-trail-lab/dashboard/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Immutable Records",
+        "description": "Run: grep -c 'INSERT\\|immutable\\|append.*only' /opt/audit-trail-lab/src/services/*.py. Immutability enforced?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/audit-trail-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "High-Frequency Trading Simulator",
+    "description": "Build an HFT simulator with order matching engine, market data feed, and latency measurement.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1600,
+    "estimatedMinutes": 130,
+    "skillName": "ALGO_TRADING",
+    "briefing": "### Mission Objective\nDevelop a high-frequency trading simulator with a custom order matching engine, simulated market data feed, and nanosecond-level latency measurement. Simulate market microstructure and order book dynamics.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- NumPy for numerical operations\n- Working directory: /opt/hft-simulator-lab\n\n### Tasks\n1. Implement an order book data structure with bid/ask sides\n2. Create an order matching engine with price-time priority\n3. Build a simulated market data feed generator\n4. Add latency measurement for order processing\n5. Implement a simple market making strategy\n6. Create fill and execution reporting\n7. Build a real-time order book visualization\n8. Add market impact simulation\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with NumPy\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Implement an order book data structure with bid/ask sides",
+      "Create an order matching engine with price-time priority",
+      "Build a simulated market data feed generator",
+      "Add latency measurement for order processing",
+      "Implement a simple market making strategy",
+      "Create fill and execution reporting",
+      "Build a real-time order book visualization",
+      "Add market impact simulation"
+    ],
+    "flags": [
+      {
+        "title": "Order Book",
+        "description": "Run: grep -c 'bid\\|ask\\|order_book' /opt/hft-simulator-lab/src/order_book.py. Order book present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Matching Engine",
+        "description": "Run: grep -c 'match\\|fill\\|execute' /opt/hft-simulator-lab/src/matching_engine.py. Matching engine present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Market Data Feed",
+        "description": "Run: grep -c 'feed\\|market_data\\|tick' /opt/hft-simulator-lab/src/market_data.py. Market data feed present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Latency Measurement",
+        "description": "Run: grep -c 'latency\\|time.*ns\\|nanosecond' /opt/hft-simulator-lab/src/latency.py. Latency measurement present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Market Making",
+        "description": "Run: grep -c 'market.*make\\|spread\\|quoting' /opt/hft-simulator-lab/src/strategy.py. Market making strategy present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Fill Reporting",
+        "description": "Run: grep -c 'fill\\|execution\\|trade' /opt/hft-simulator-lab/src/reporting.py. Fill reporting present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Visualization",
+        "description": "Run: ls /opt/hft-simulator-lab/visualization/orderbook.html. Does orderbook visualization exist?",
+        "ans": "orderbook.html",
+        "pts": 100
+      },
+      {
+        "title": "Market Impact",
+        "description": "Run: grep -c 'impact\\|slippage\\|spread' /opt/hft-simulator-lab/src/simulator.py. Market impact simulation present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/hft-simulator-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Price-Time Priority",
+        "description": "Run: grep -c 'price.*time\\|priority\\|FIFO' /opt/hft-simulator-lab/src/matching_engine.py. Price-time priority enforced?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Credit Score Model",
+    "description": "Build a credit scoring model using logistic regression with feature engineering and model explainability.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "RISK_MODELING",
+    "briefing": "### Mission Objective\nDevelop a credit scoring model using logistic regression. Perform feature engineering, handle class imbalance, evaluate model performance, and provide explainable predictions for loan applicants.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Scikit-learn, Pandas, SHAP for explainability\n- Working directory: /opt/credit-score-lab\n- Credit data provided in CSV format\n\n### Tasks\n1. Load and explore the credit scoring dataset\n2. Perform feature engineering (binning, encoding, scaling)\n3. Handle class imbalance with SMOTE or class weights\n4. Train a logistic regression model\n5. Evaluate with ROC-AUC, precision-recall, and confusion matrix\n6. Add SHAP-based model explainability\n7. Create a credit score calculator API\n8. Generate a model performance report\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with scikit-learn and SHAP\n- Data in /opt/credit-score-lab/data/",
+    "tasks": [
+      "Load and explore the credit scoring dataset",
+      "Perform feature engineering (binning, encoding, scaling)",
+      "Handle class imbalance with SMOTE or class weights",
+      "Train a logistic regression model",
+      "Evaluate with ROC-AUC, precision-recall, and confusion matrix",
+      "Add SHAP-based model explainability",
+      "Create a credit score calculator API",
+      "Generate a model performance report"
+    ],
+    "flags": [
+      {
+        "title": "Data Loaded",
+        "description": "Run: python3 -c \"import pandas as pd; df=pd.read_csv('data/credit.csv'); print(df.shape)\". Data loaded?",
+        "ans": "(10000,",
+        "pts": 100
+      },
+      {
+        "title": "Feature Engineering",
+        "description": "Run: grep -c 'bin\\|encode\\|scale\\|transform' /opt/credit-score-lab/src/features.py. Feature engineering present?",
+        "ans": "4",
+        "pts": 125
+      },
+      {
+        "title": "Class Imbalance",
+        "description": "Run: grep -c 'smote\\|SMOTE\\|class_weight\\|balance' /opt/credit-score-lab/src/model.py. Class imbalance handled?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Logistic Regression",
+        "description": "Run: grep -c 'LogisticRegression\\|logistic' /opt/credit-score-lab/src/model.py. Logistic regression used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "ROC-AUC Metric",
+        "description": "Run: grep -c 'roc_auc\\|ROC\\|auc' /opt/credit-score-lab/src/evaluation.py. ROC-AUC evaluation present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "SHAP Explainability",
+        "description": "Run: grep -c 'shap\\|SHAP\\|explain' /opt/credit-score-lab/src/explainability.py. SHAP explainability present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Score Calculator API",
+        "description": "Run: grep -c '/score\\|/predict\\|/calculate' /opt/credit-score-lab/src/api.py. Score API present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Model Saved",
+        "description": "Run: ls /opt/credit-score-lab/models/credit_model.pkl. Is model saved?",
+        "ans": "credit_model.pkl",
+        "pts": 100
+      },
+      {
+        "title": "Performance Report",
+        "description": "Run: ls /opt/credit-score-lab/output/report.md. Does report exist?",
+        "ans": "report.md",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/credit-score-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Regulatory Reporting Dashboard",
+    "description": "Build a regulatory reporting dashboard that generates Basel III, CCAR, and compliance reports from financial data.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "REGTECH",
+    "briefing": "### Mission Objective\nDevelop a regulatory reporting dashboard that processes financial data and generates compliance reports for Basel III capital requirements, CCAR stress testing, and general regulatory submissions.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- Pandas for data processing, Jinja2 for templates\n- Working directory: /opt/reg-reporting-lab\n\n### Tasks\n1. Create financial data models for regulatory reporting\n2. Calculate Basel III capital adequacy ratios\n3. Implement CCAR stress testing scenarios\n4. Build regulatory report templates\n5. Create data validation and reconciliation engine\n6. Add report submission workflow\n7. Build a compliance monitoring dashboard\n8. Generate audit-ready documentation\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with pandas and jinja2\n- Sample financial data provided",
+    "tasks": [
+      "Create financial data models for regulatory reporting",
+      "Calculate Basel III capital adequacy ratios",
+      "Implement CCAR stress testing scenarios",
+      "Build regulatory report templates",
+      "Create data validation and reconciliation engine",
+      "Add report submission workflow",
+      "Build a compliance monitoring dashboard",
+      "Generate audit-ready documentation"
+    ],
+    "flags": [
+      {
+        "title": "Data Models",
+        "description": "Run: ls /opt/reg-reporting-lab/src/models/*.py. Are regulatory data models defined?",
+        "ans": "model",
+        "pts": 100
+      },
+      {
+        "title": "Basel III",
+        "description": "Run: grep -c 'basel\\|capital.*adequacy\\|tier.*1' /opt/reg-reporting-lab/src/calculations/basel.py. Basel III calculations present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "CCAR Stress",
+        "description": "Run: grep -c 'ccar\\|stress.*test\\|scenario' /opt/reg-reporting-lab/src/calculations/ccar.py. CCAR stress testing present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Report Templates",
+        "description": "Run: ls /opt/reg-reporting-lab/templates/*.jinja2. Are report templates present?",
+        "ans": "jinja2",
+        "pts": 100
+      },
+      {
+        "title": "Data Validation",
+        "description": "Run: grep -c 'validate\\|reconcil\\|check' /opt/reg-reporting-lab/src/validation.py. Data validation present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Submission Workflow",
+        "description": "Run: grep -c 'submit\\|workflow\\|approve' /opt/reg-reporting-lab/src/services/submission.py. Submission workflow present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/reg-reporting-lab/dashboard/index.html. Does compliance dashboard exist?",
+        "ans": "index.html",
+        "pts": 125
+      },
+      {
+        "title": "Documentation",
+        "description": "Run: ls /opt/reg-reporting-lab/docs/*.md. Is audit documentation generated?",
+        "ans": "md",
+        "pts": 100
+      },
+      {
+        "title": "Report Generated",
+        "description": "Run: ls /opt/reg-reporting-lab/output/*.pdf. Are regulatory reports generated?",
+        "ans": "pdf",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/reg-reporting-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  }
+]

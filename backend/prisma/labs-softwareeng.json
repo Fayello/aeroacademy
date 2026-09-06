@@ -1,0 +1,1217 @@
+[
+  {
+    "title": "Git Flow & Branching Strategy",
+    "description": "Set up a complete Git Flow branching strategy with feature branches, release branches, and hotfix workflows.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 800,
+    "estimatedMinutes": 60,
+    "skillName": "GIT_WORKFLOW",
+    "briefing": "### Mission Objective\nImplement a production-grade Git Flow branching strategy in a sample repository. Create proper branch naming conventions, merge strategies, and release workflows that a team can adopt immediately.\n\n### Environment\n- Ubuntu 22.04 LTS with Git 2.x\n- Pre-created bare repository at /opt/gitflow-repo.git\n- Clone URL: /opt/gitflow-repo.git\n- Working directory: /opt/gitflow-lab\n\n### Tasks\n1. Clone the bare repository and configure Git user as 'lab-admin'\n2. Create a main branch as the production-ready branch\n3. Create a develop branch from main for integration\n4. Create a feature branch named 'feature/user-auth' from develop\n5. Add a simple auth.js file, commit, and merge back to develop via --no-ff\n6. Create a release branch 'release/v1.0.0' from develop\n7. Create a hotfix branch 'hotfix/critical-fix' from main\n8. Merge hotfix to both main and develop\n\n### Permissions & Access\n- Container runs as root\n- Git pre-installed\n- All operations on local bare repo",
+    "tasks": [
+      "Clone the bare repository and configure Git user as 'lab-admin'",
+      "Create a main branch as the production-ready branch",
+      "Create a develop branch from main for integration",
+      "Create a feature branch named 'feature/user-auth' from develop",
+      "Add a simple auth.js file, commit, and merge back to develop via --no-ff",
+      "Create a release branch 'release/v1.0.0' from develop",
+      "Create a hotfix branch 'hotfix/critical-fix' from main",
+      "Merge hotfix to both main and develop"
+    ],
+    "flags": [
+      {
+        "title": "Git Configured",
+        "description": "Run: git config user.name in /opt/gitflow-lab. What is the configured user?",
+        "ans": "lab-admin",
+        "pts": 75
+      },
+      {
+        "title": "Main Branch Exists",
+        "description": "Run: git branch --list main. Does the main branch exist?",
+        "ans": "main",
+        "pts": 75
+      },
+      {
+        "title": "Develop Branch Exists",
+        "description": "Run: git branch --list develop. Does the develop branch exist?",
+        "ans": "develop",
+        "pts": 100
+      },
+      {
+        "title": "Feature Branch Created",
+        "description": "Run: git branch --list 'feature/user-auth'. Does the feature branch exist?",
+        "ans": "feature/user-auth",
+        "pts": 100
+      },
+      {
+        "title": "Feature Merged to Develop",
+        "description": "Run: git log develop --oneline | grep -c 'user-auth'. Was the feature merged?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "No-FF Merge Used",
+        "description": "Run: git log develop --oneline | grep -c 'Merge'. Is there a merge commit?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Release Branch Exists",
+        "description": "Run: git branch --list 'release/v1.0.0'. Does the release branch exist?",
+        "ans": "release/v1.0.0",
+        "pts": 100
+      },
+      {
+        "title": "Hotfix Branch Exists",
+        "description": "Run: git branch --list 'hotfix/critical-fix'. Does the hotfix branch exist?",
+        "ans": "hotfix/critical-fix",
+        "pts": 100
+      },
+      {
+        "title": "Hotfix on Main",
+        "description": "Run: git log main --oneline | grep -c 'critical-fix'. Was hotfix merged to main?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Hotfix on Develop",
+        "description": "Run: git log develop --oneline | grep -c 'critical-fix'. Was hotfix merged to develop?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "CI/CD Pipeline with GitHub Actions",
+    "description": "Build a complete CI/CD pipeline using GitHub Actions with build, test, security scan, and deploy stages.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nDesign and implement a CI/CD pipeline using GitHub Actions. Create workflow files that handle building, linting, testing, security scanning, and deploying a Node.js application through staging and production environments.\n\n### Environment\n- Ubuntu 22.04 LTS with Git and Node.js 20\n- Pre-created Git repository at /opt/cicd-actions-repo\n- GitHub Actions runner installed locally\n- Working directory: /opt/cicd-actions-lab\n\n### Tasks\n1. Clone the repository and create .github/workflows directory\n2. Create ci.yml workflow triggered on push to main and pull_request\n3. Add a build job that runs npm ci and npm run build\n4. Add a test job that runs npm test with coverage\n5. Add a security scan job using npm audit\n6. Create deploy.yml workflow for manual deployment to staging\n7. Add environment protection rules in deploy.yml\n8. Create a reusable workflow file for common steps\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 pre-installed\n- act (GitHub Actions runner) available",
+    "tasks": [
+      "Clone the repository and create .github/workflows directory",
+      "Create ci.yml workflow triggered on push to main and pull_request",
+      "Add a build job that runs npm ci and npm run build",
+      "Add a test job that runs npm test with coverage",
+      "Add a security scan job using npm audit",
+      "Create deploy.yml workflow for manual deployment to staging",
+      "Add environment protection rules in deploy.yml",
+      "Create a reusable workflow file for common steps"
+    ],
+    "flags": [
+      {
+        "title": "Workflows Directory",
+        "description": "Run: ls /opt/cicd-actions-lab/.github/workflows/. Does the directory exist?",
+        "ans": "workflows",
+        "pts": 75
+      },
+      {
+        "title": "CI Workflow Exists",
+        "description": "Run: ls /opt/cicd-actions-lab/.github/workflows/ci.yml. Does ci.yml exist?",
+        "ans": "ci.yml",
+        "pts": 75
+      },
+      {
+        "title": "Build Job Defined",
+        "description": "Run: grep -c 'build' /opt/cicd-actions-lab/.github/workflows/ci.yml. Is build job present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Test Job Defined",
+        "description": "Run: grep -c 'test' /opt/cicd-actions-lab/.github/workflows/ci.yml. Is test job present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Security Scan Job",
+        "description": "Run: grep -c 'audit' /opt/cicd-actions-lab/.github/workflows/ci.yml. Is audit job present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Workflow Exists",
+        "description": "Run: ls /opt/cicd-actions-lab/.github/workflows/deploy.yml. Does deploy.yml exist?",
+        "ans": "deploy.yml",
+        "pts": 100
+      },
+      {
+        "title": "Environment Protection",
+        "description": "Run: grep -c 'environment' /opt/cicd-actions-lab/.github/workflows/deploy.yml. Is environment configured?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Reusable Workflow",
+        "description": "Run: ls /opt/cicd-actions-lab/.github/workflows/*.yml | wc -l. Are there 3 workflow files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Trigger Configured",
+        "description": "Run: grep 'on:' /opt/cicd-actions-lab/.github/workflows/ci.yml. Are triggers defined?",
+        "ans": "on:",
+        "pts": 100
+      },
+      {
+        "title": "Valid YAML",
+        "description": "Run: python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))\". Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Unit Testing with Jest and Pytest",
+    "description": "Write comprehensive unit tests for a Node.js API and Python service using Jest and Pytest frameworks.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 75,
+    "skillName": "TESTING",
+    "briefing": "### Mission Objective\nWrite thorough unit tests for a Node.js Express API and a Python data processing module. Achieve at least 80% code coverage with meaningful test cases that validate business logic, edge cases, and error handling.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20 and Python 3.12\n- Jest and Pytest pre-installed\n- Working directory: /opt/unit-testing-lab\n- Source code in /opt/unit-testing-lab/src/\n\n### Tasks\n1. Write unit tests for the UserService class in Node.js\n2. Test all CRUD operations with mocked database calls\n3. Write tests for error handling and edge cases\n4. Write Pytest tests for the DataProcessor class in Python\n5. Test data validation and transformation logic\n6. Create test fixtures and factories for test data\n7. Run coverage reports for both projects\n8. Ensure all tests pass with >80% coverage\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Python 3.12 pre-installed\n- Jest and Pytest pre-installed",
+    "tasks": [
+      "Write unit tests for the UserService class in Node.js",
+      "Test all CRUD operations with mocked database calls",
+      "Write tests for error handling and edge cases",
+      "Write Pytest tests for the DataProcessor class in Python",
+      "Test data validation and transformation logic",
+      "Create test fixtures and factories for test data",
+      "Run coverage reports for both projects",
+      "Ensure all tests pass with >80% coverage"
+    ],
+    "flags": [
+      {
+        "title": "Node Test File Exists",
+        "description": "Run: ls /opt/unit-testing-lab/node/tests/user.test.js. Does it exist?",
+        "ans": "user.test.js",
+        "pts": 75
+      },
+      {
+        "title": "Python Test File Exists",
+        "description": "Run: ls /opt/unit-testing-lab/python/tests/test_processor.py. Does it exist?",
+        "ans": "test_processor.py",
+        "pts": 75
+      },
+      {
+        "title": "Node Tests Pass",
+        "description": "Run: cd /opt/unit-testing-lab/node && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Python Tests Pass",
+        "description": "Run: cd /opt/unit-testing-lab/python && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Node Coverage >80%",
+        "description": "Run: cd /opt/unit-testing-lab/node && npx jest --coverage. Is coverage >80%?",
+        "ans": "80",
+        "pts": 125
+      },
+      {
+        "title": "Python Coverage >80%",
+        "description": "Run: cd /opt/unit-testing-lab/python && pytest --cov=src tests/. Coverage >80%?",
+        "ans": "80",
+        "pts": 125
+      },
+      {
+        "title": "Mocking Used",
+        "description": "Run: grep -c 'jest.mock\\|mock\\|patch' /opt/unit-testing-lab/node/tests/user.test.js. Are mocks used?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Edge Cases Tested",
+        "description": "Run: grep -c 'it\\|test' /opt/unit-testing-lab/node/tests/user.test.js. At least 5 test cases?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Pytest Fixtures",
+        "description": "Run: grep -c '@pytest.fixture\\|fixture' /opt/unit-testing-lab/python/tests/test_processor.py. Are fixtures used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Error Cases Covered",
+        "description": "Run: grep -c 'error\\|Error\\|raise\\|throws' /opt/unit-testing-lab/python/tests/test_processor.py. Are error cases tested?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "TDD: Build Feature with Tests First",
+    "description": "Implement a REST API feature using Test-Driven Development with the Red-Green-Refactor cycle.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 90,
+    "skillName": "TESTING",
+    "briefing": "### Mission Objective\nBuild a complete shopping cart API feature using strict TDD methodology. Write tests first (Red), implement minimal code to pass (Green), then refactor for quality (Refactor). Document the TDD cycle at each step.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Jest pre-installed for testing\n- Working directory: /opt/tdd-lab\n- Starter project in /opt/tdd-lab/cart-api/\n\n### Tasks\n1. Write failing tests for adding items to cart (Red phase)\n2. Implement minimal code to pass tests (Green phase)\n3. Refactor the code and ensure tests still pass\n4. Write failing tests for removing items from cart\n5. Implement remove functionality and refactor\n6. Write failing tests for calculating totals with discounts\n7. Implement discount logic and refactor\n8. Write integration tests combining all features\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Jest pre-installed\n- TDD cycle documentation in README.md",
+    "tasks": [
+      "Write failing tests for adding items to cart (Red phase)",
+      "Implement minimal code to pass tests (Green phase)",
+      "Refactor the code and ensure tests still pass",
+      "Write failing tests for removing items from cart",
+      "Implement remove functionality and refactor",
+      "Write failing tests for calculating totals with discounts",
+      "Implement discount logic and refactor",
+      "Write integration tests combining all features"
+    ],
+    "flags": [
+      {
+        "title": "Cart Test File",
+        "description": "Run: ls /opt/tdd-lab/cart-api/tests/cart.test.js. Does it exist?",
+        "ans": "cart.test.js",
+        "pts": 75
+      },
+      {
+        "title": "TDD Red Phase",
+        "description": "Run: grep -c 'test\\|it' /opt/tdd-lab/cart-api/tests/cart.test.js. At least 3 test cases?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "All Tests Pass",
+        "description": "Run: cd /opt/tdd-lab/cart-api && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Add to Cart Works",
+        "description": "Run: curl -s -X POST http://localhost:3000/api/cart/items -d '{\"id\":\"1\",\"qty\":2}'. Status 201?",
+        "ans": "201",
+        "pts": 125
+      },
+      {
+        "title": "Remove from Cart Works",
+        "description": "Run: curl -s -X DELETE http://localhost:3000/api/cart/items/1. Status 200?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Calculate Total Works",
+        "description": "Run: curl -s http://localhost:3000/api/cart/total. Returns JSON with total field?",
+        "ans": "total",
+        "pts": 125
+      },
+      {
+        "title": "Discount Applied",
+        "description": "Run: curl -s http://localhost:3000/api/cart/total?discount=10. Total reduced by 10%?",
+        "ans": "90",
+        "pts": 125
+      },
+      {
+        "title": "Coverage Report",
+        "description": "Run: cd /opt/tdd-lab/cart-api && npx jest --coverage. Statements coverage >85%?",
+        "ans": "85",
+        "pts": 100
+      },
+      {
+        "title": "TDD Commits",
+        "description": "Run: cd /opt/tdd-lab/cart-api && git log --oneline | wc -l. At least 6 commits documenting TDD cycle?",
+        "ans": "6",
+        "pts": 100
+      },
+      {
+        "title": "Refactoring Done",
+        "description": "Run: grep -c 'describe' /opt/tdd-lab/cart-api/tests/cart.test.js. Well-organized test structure?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Code Review Workflow with Pull Requests",
+    "description": "Set up a code review workflow with branch protection, PR templates, and review checklists.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 60,
+    "skillName": "GIT_WORKFLOW",
+    "briefing": "### Mission Objective\nConfigure a complete code review workflow using Git. Create PR templates, review checklists, and enforce branch protection rules through configuration files.\n\n### Environment\n- Ubuntu 22.04 LTS with Git 2.x\n- Pre-created repository at /opt/codereview-repo.git\n- Working directory: /opt/codereview-lab\n\n### Tasks\n1. Clone the repository and set up branch structure\n2. Create a pull request template file\n3. Create a CODEOWNERS file defining review requirements\n4. Set up a pre-commit hook for linting\n5. Create a feature branch, make changes, and draft a PR description\n6. Create a review checklist markdown file\n7. Configure branch protection rules via config file\n8. Document the entire workflow in CONTRIBUTING.md\n\n### Permissions & Access\n- Container runs as root\n- Git pre-installed\n- All operations on local repository",
+    "tasks": [
+      "Clone the repository and set up branch structure",
+      "Create a pull request template file",
+      "Create a CODEOWNERS file defining review requirements",
+      "Set up a pre-commit hook for linting",
+      "Create a feature branch, make changes, and draft a PR description",
+      "Create a review checklist markdown file",
+      "Configure branch protection rules via config file",
+      "Document the entire workflow in CONTRIBUTING.md"
+    ],
+    "flags": [
+      {
+        "title": "PR Template Exists",
+        "description": "Run: ls /opt/codereview-lab/.github/pull_request_template.md. Does it exist?",
+        "ans": "pull_request_template.md",
+        "pts": 75
+      },
+      {
+        "title": "CODEOWNERS Exists",
+        "description": "Run: ls /opt/codereview-lab/.github/CODEOWNERS. Does it exist?",
+        "ans": "CODEOWNERS",
+        "pts": 75
+      },
+      {
+        "title": "Pre-commit Hook",
+        "description": "Run: ls -la /opt/codereview-lab/.git/hooks/pre-commit. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Review Checklist",
+        "description": "Run: ls /opt/codereview-lab/.github/review-checklist.md. Does it exist?",
+        "ans": "review-checklist.md",
+        "pts": 100
+      },
+      {
+        "title": "CONTRIBUTING.md",
+        "description": "Run: ls /opt/codereview-lab/CONTRIBUTING.md. Does it exist?",
+        "ans": "CONTRIBUTING.md",
+        "pts": 100
+      },
+      {
+        "title": "Feature Branch Made",
+        "description": "Run: cd /opt/codereview-lab && git log --oneline | grep -c 'feature'. Feature commits present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Branch Protection Config",
+        "description": "Run: ls /opt/codereview-lab/.github/branch-protection.yml. Does config exist?",
+        "ans": "branch-protection.yml",
+        "pts": 125
+      },
+      {
+        "title": "PR Description Written",
+        "description": "Run: grep -c '##' /opt/codereview-lab/.github/pull_request_template.md. At least 3 sections?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Code Owners Has Rules",
+        "description": "Run: grep -c '@' /opt/codereview-lab/.github/CODEOWNERS. At least 2 owner rules?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Workflow Documented",
+        "description": "Run: grep -c 'review\\|PR\\|pull request' /opt/codereview-lab/CONTRIBUTING.md. Is the workflow documented?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Design Patterns: Factory, Strategy, Observer",
+    "description": "Implement Factory, Strategy, and Observer design patterns in a real-world e-commerce discount system.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "DESIGN_PATTERNS",
+    "briefing": "### Mission Objective\nImplement three classic design patterns — Factory, Strategy, and Observer — in a discount calculation system for an e-commerce platform. Each pattern should solve a distinct problem in the system.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Jest for testing\n- Working directory: /opt/design-patterns-lab\n- Starter project in /opt/design-patterns-lab/src/\n\n### Tasks\n1. Implement a DiscountFactory that creates discount objects by type\n2. Create concrete discount strategies: PercentageOff, FixedAmount, BuyXGetYFree\n3. Implement a DiscountStrategy interface with calculate() method\n4. Create an EventEmitter-based DiscountObserver for logging\n5. Add a DiscountApplied event that triggers on discount application\n6. Create a DiscountManager that coordinates Factory, Strategy, and Observer\n7. Write unit tests verifying each pattern works correctly\n8. Create an integration test using all three patterns together\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Jest pre-installed\n- Source code structure provided in starter project",
+    "tasks": [
+      "Implement a DiscountFactory that creates discount objects by type",
+      "Create concrete discount strategies: PercentageOff, FixedAmount, BuyXGetYFree",
+      "Implement a DiscountStrategy interface with calculate() method",
+      "Create an EventEmitter-based DiscountObserver for logging",
+      "Add a DiscountApplied event that triggers on discount application",
+      "Create a DiscountManager that coordinates Factory, Strategy, and Observer",
+      "Write unit tests verifying each pattern works correctly",
+      "Create an integration test using all three patterns together"
+    ],
+    "flags": [
+      {
+        "title": "Factory Pattern",
+        "description": "Run: ls /opt/design-patterns-lab/src/factory/discount-factory.js. Does the factory file exist?",
+        "ans": "discount-factory.js",
+        "pts": 100
+      },
+      {
+        "title": "Strategy Pattern",
+        "description": "Run: ls /opt/design-patterns-lab/src/strategy/*.js. Are there 3 strategy files?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Observer Pattern",
+        "description": "Run: ls /opt/design-patterns-lab/src/observer/discount-observer.js. Does it exist?",
+        "ans": "discount-observer.js",
+        "pts": 100
+      },
+      {
+        "title": "Factory Creates Discounts",
+        "description": "Run: node -e \"const f=require('./src/factory/discount-factory'); console.log(f.create('percentage').type)\". Returns 'percentage'?",
+        "ans": "percentage",
+        "pts": 125
+      },
+      {
+        "title": "Strategy Calculates",
+        "description": "Run: node -e \"const s=require('./src/strategy/percentage-off'); console.log(s.calculate(100,10))\". Returns 90?",
+        "ans": "90",
+        "pts": 125
+      },
+      {
+        "title": "Observer Listens",
+        "description": "Run: grep -c 'emit\\|on\\|addEventListener' /opt/design-patterns-lab/src/observer/discount-observer.js. Event methods used?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "All Tests Pass",
+        "description": "Run: cd /opt/design-patterns-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Integration Test",
+        "description": "Run: grep -c 'describe\\|it\\|test' /opt/design-patterns-lab/tests/integration.test.js. At least 3 tests?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "DiscountManager Exists",
+        "description": "Run: ls /opt/design-patterns-lab/src/discount-manager.js. Does it exist?",
+        "ans": "discount-manager.js",
+        "pts": 100
+      },
+      {
+        "title": "Coverage >80%",
+        "description": "Run: cd /opt/design-patterns-lab && npx jest --coverage. Statements >80%?",
+        "ans": "80",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Refactoring Legacy Code",
+    "description": "Refactor a legacy Express.js application with proper separation of concerns, dependency injection, and SOLID principles.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "CODE_QUALITY",
+    "briefing": "### Mission Objective\nRefactor a monolithic legacy Express.js application into a clean, maintainable architecture. Apply SOLID principles, dependency injection, and proper layering (controllers, services, repositories).\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Jest for testing, ESLint for linting\n- Working directory: /opt/refactor-lab\n- Legacy app at /opt/refactor-legacy-app/\n\n### Tasks\n1. Analyze the legacy monolith and identify code smells\n2. Extract database queries into a Repository layer\n3. Create a Service layer with business logic\n4. Refactor controllers to use dependency injection\n5. Add error handling middleware\n6. Create configuration management module\n7. Ensure all existing tests still pass\n8. Add new tests for the refactored services\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20, Jest, ESLint pre-installed\n- Legacy app has known code smells to fix",
+    "tasks": [
+      "Analyze the legacy monolith and identify code smells",
+      "Extract database queries into a Repository layer",
+      "Create a Service layer with business logic",
+      "Refactor controllers to use dependency injection",
+      "Add error handling middleware",
+      "Create configuration management module",
+      "Ensure all existing tests still pass",
+      "Add new tests for the refactored services"
+    ],
+    "flags": [
+      {
+        "title": "Repository Layer",
+        "description": "Run: ls /opt/refactor-lab/src/repositories/*.js. Are there repository files?",
+        "ans": "repository",
+        "pts": 100
+      },
+      {
+        "title": "Service Layer",
+        "description": "Run: ls /opt/refactor-lab/src/services/*.js. Are there service files?",
+        "ans": "service",
+        "pts": 100
+      },
+      {
+        "title": "Controller Refactored",
+        "description": "Run: grep -c 'constructor\\|inject' /opt/refactor-lab/src/controllers/*.js. Is DI used?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Error Middleware",
+        "description": "Run: ls /opt/refactor-lab/src/middleware/error-handler.js. Does it exist?",
+        "ans": "error-handler.js",
+        "pts": 100
+      },
+      {
+        "title": "Config Module",
+        "description": "Run: ls /opt/refactor-lab/src/config/*.js. Does config exist?",
+        "ans": "config",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/refactor-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 150
+      },
+      {
+        "title": "New Service Tests",
+        "description": "Run: ls /opt/refactor-lab/tests/services/*.test.js. Are service tests added?",
+        "ans": "test",
+        "pts": 100
+      },
+      {
+        "title": "No Direct DB in Controllers",
+        "description": "Run: grep -c 'db\\.query\\|knex\\|sequelize' /opt/refactor-lab/src/controllers/*.js. Should be 0?",
+        "ans": "0",
+        "pts": 150
+      },
+      {
+        "title": "ESLint Passes",
+        "description": "Run: cd /opt/refactor-lab && npx eslint src/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "Coverage Maintained",
+        "description": "Run: cd /opt/refactor-lab && npx jest --coverage. Coverage >75%?",
+        "ans": "75",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "API Contract Testing with Pact",
+    "description": "Set up consumer-driven contract testing between a frontend and backend API using Pact.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "TESTING",
+    "briefing": "### Mission Objective\nImplement consumer-driven contract testing using Pact between a React frontend consumer and a Node.js API provider. Ensure API contracts are validated automatically to prevent integration failures.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Pact JS library pre-installed\n- Working directory: /opt/pact-testing-lab\n- Consumer app at consumer/, Provider app at provider/\n\n### Tasks\n1. Set up the consumer project with Pact testing configuration\n2. Write a consumer pact test for GET /api/users endpoint\n3. Write a consumer pact test for POST /api/users endpoint\n4. Generate the pact contract file from consumer tests\n5. Set up the provider project with Pact verification\n6. Write provider verification tests against the contract\n7. Run the full contract test pipeline\n8. Create a CI integration script for contract testing\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Pact pre-installed\n- Both consumer and provider apps provided",
+    "tasks": [
+      "Set up the consumer project with Pact testing configuration",
+      "Write a consumer pact test for GET /api/users endpoint",
+      "Write a consumer pact test for POST /api/users endpoint",
+      "Generate the pact contract file from consumer tests",
+      "Set up the provider project with Pact verification",
+      "Write provider verification tests against the contract",
+      "Run the full contract test pipeline",
+      "Create a CI integration script for contract testing"
+    ],
+    "flags": [
+      {
+        "title": "Consumer Test",
+        "description": "Run: ls /opt/pact-testing-lab/consumer/tests/*.pact.test.js. Does pact test exist?",
+        "ans": "pact.test.js",
+        "pts": 100
+      },
+      {
+        "title": "Pact File Generated",
+        "description": "Run: ls /opt/pact-testing-lab/pacts/*.json. Is the contract file generated?",
+        "ans": "json",
+        "pts": 125
+      },
+      {
+        "title": "GET Contract Defined",
+        "description": "Run: grep -c 'GET' /opt/pact-testing-lab/pacts/*.json. Is GET endpoint in contract?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "POST Contract Defined",
+        "description": "Run: grep -c 'POST' /opt/pact-testing-lab/pacts/*.json. Is POST endpoint in contract?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Provider Verification",
+        "description": "Run: ls /opt/pact-testing-lab/provider/tests/*.verify.js. Does verification test exist?",
+        "ans": "verify.js",
+        "pts": 100
+      },
+      {
+        "title": "Consumer Tests Pass",
+        "description": "Run: cd /opt/pact-testing-lab/consumer && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Provider Tests Pass",
+        "description": "Run: cd /opt/pact-testing-lab/provider && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "CI Script Exists",
+        "description": "Run: ls /opt/pact-testing-lab/scripts/contract-test.sh. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Pact Broker URL",
+        "description": "Run: grep -r 'pact-broker\\|PACT_BROKER' /opt/pact-testing-lab/. Is broker configured?",
+        "ans": "pact-broker",
+        "pts": 100
+      },
+      {
+        "title": "Contract Valid",
+        "description": "Run: cat /opt/pact-testing-lab/pacts/*.json | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d['consumer']['name'])\". Consumer name?",
+        "ans": "frontend",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Integration Testing with Testcontainers",
+    "description": "Write integration tests using Testcontainers to spin up real PostgreSQL and Redis instances for testing.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "TESTING",
+    "briefing": "### Mission Objective\nWrite integration tests using Testcontainers that spin up real PostgreSQL and Redis containers for accurate testing. Verify data persistence, caching behavior, and error scenarios with real infrastructure.\n\n### Environment\n- Ubuntu 22.04 LTS with Docker and Node.js 20\n- Testcontainers library pre-installed\n- Working directory: /opt/testcontainers-lab\n- Application source in /opt/testcontainers-lab/src/\n\n### Tasks\n1. Set up Testcontainers configuration for PostgreSQL\n2. Set up Testcontainers configuration for Redis\n3. Write integration tests for user repository with real PostgreSQL\n4. Write integration tests for cache service with real Redis\n5. Test database migration scripts against PostgreSQL container\n6. Test concurrent access scenarios with Redis\n7. Create test setup/teardown utilities for container lifecycle\n8. Run full integration test suite and generate reports\n\n### Permissions & Access\n- Container runs as root with Docker socket mounted\n- Docker available for container creation\n- Testcontainers library pre-installed",
+    "tasks": [
+      "Set up Testcontainers configuration for PostgreSQL",
+      "Set up Testcontainers configuration for Redis",
+      "Write integration tests for user repository with real PostgreSQL",
+      "Write integration tests for cache service with real Redis",
+      "Test database migration scripts against PostgreSQL container",
+      "Test concurrent access scenarios with Redis",
+      "Create test setup/teardown utilities for container lifecycle",
+      "Run full integration test suite and generate reports"
+    ],
+    "flags": [
+      {
+        "title": "PostgreSQL Container Test",
+        "description": "Run: ls /opt/testcontainers-lab/tests/pg.integration.test.js. Does it exist?",
+        "ans": "pg.integration.test.js",
+        "pts": 100
+      },
+      {
+        "title": "Redis Container Test",
+        "description": "Run: ls /opt/testcontainers-lab/tests/redis.integration.test.js. Does it exist?",
+        "ans": "redis.integration.test.js",
+        "pts": 100
+      },
+      {
+        "title": "PostgreSQL Tests Pass",
+        "description": "Run: cd /opt/testcontainers-lab && npm run test:pg. Exit code 0?",
+        "ans": "0",
+        "pts": 150
+      },
+      {
+        "title": "Redis Tests Pass",
+        "description": "Run: cd /opt/testcontainers-lab && npm run test:redis. Exit code 0?",
+        "ans": "0",
+        "pts": 150
+      },
+      {
+        "title": "Container Lifecycle",
+        "description": "Run: grep -c 'GenericContainer\\|StartedContainer' /opt/testcontainers-lab/tests/*.js. Container usage?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Real DB Queries",
+        "description": "Run: grep -c 'SELECT\\|INSERT\\|query' /opt/testcontainers-lab/tests/pg.integration.test.js. Real SQL used?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Migration Tested",
+        "description": "Run: ls /opt/testcontainers-lab/tests/migration.integration.test.js. Migration test exists?",
+        "ans": "migration.integration.test.js",
+        "pts": 125
+      },
+      {
+        "title": "Cleanup Handled",
+        "description": "Run: grep -c 'afterAll\\|afterEach\\|stop' /opt/testcontainers-lab/tests/*.js. Cleanup hooks present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Test Report Generated",
+        "description": "Run: ls /opt/testcontainers-lab/reports/*.json. Test report exists?",
+        "ans": "json",
+        "pts": 100
+      },
+      {
+        "title": "Docker Compose Support",
+        "description": "Run: ls /opt/testcontainers-lab/docker-compose.test.yml. Docker Compose test config exists?",
+        "ans": "docker-compose.test.yml",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Load Testing with k6",
+    "description": "Create and run load tests using k6 to measure API performance under various traffic patterns.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 75,
+    "skillName": "CODE_QUALITY",
+    "briefing": "### Mission Objective\nDesign and execute load tests using k6 to evaluate API performance. Test normal load, spike load, and stress scenarios. Analyze results and set performance thresholds.\n\n### Environment\n- Ubuntu 22.04 LTS with k6 installed\n- Target API running on localhost:3000\n- Working directory: /opt/load-testing-lab\n- Sample Express API provided\n\n### Tasks\n1. Create a k6 test script for GET /api/users endpoint\n2. Configure virtual users (VUs) and duration for normal load\n3. Add thresholds for response time and error rate\n4. Create a spike test scenario with sudden traffic increase\n5. Create a stress test to find breaking point\n6. Set up custom metrics for business-critical endpoints\n7. Run tests and collect results in JSON format\n8. Create a performance report template\n\n### Permissions & Access\n- Container runs as root\n- k6 installed via package manager\n- Sample API pre-deployed",
+    "tasks": [
+      "Create a k6 test script for GET /api/users endpoint",
+      "Configure virtual users (VUs) and duration for normal load",
+      "Add thresholds for response time and error rate",
+      "Create a spike test scenario with sudden traffic increase",
+      "Create a stress test to find breaking point",
+      "Set up custom metrics for business-critical endpoints",
+      "Run tests and collect results in JSON format",
+      "Create a performance report template"
+    ],
+    "flags": [
+      {
+        "title": "k6 Script Exists",
+        "description": "Run: ls /opt/load-testing-lab/scripts/load-test.js. Does it exist?",
+        "ans": "load-test.js",
+        "pts": 75
+      },
+      {
+        "title": "VUs Configured",
+        "description": "Run: grep -c 'vus' /opt/load-testing-lab/scripts/load-test.js. VUs configured?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Thresholds Defined",
+        "description": "Run: grep -c 'thresholds' /opt/load-testing-lab/scripts/load-test.js. Thresholds present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Spike Test Script",
+        "description": "Run: ls /opt/load-testing-lab/scripts/spike-test.js. Does spike test exist?",
+        "ans": "spike-test.js",
+        "pts": 100
+      },
+      {
+        "title": "Stress Test Script",
+        "description": "Run: ls /opt/load-testing-lab/scripts/stress-test.js. Does stress test exist?",
+        "ans": "stress-test.js",
+        "pts": 100
+      },
+      {
+        "title": "Custom Metrics",
+        "description": "Run: grep -c 'Counter\\|Trend\\|Rate' /opt/load-testing-lab/scripts/load-test.js. Custom metrics used?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Results File",
+        "description": "Run: ls /opt/load-testing-lab/results/*.json. Are results exported?",
+        "ans": "json",
+        "pts": 100
+      },
+      {
+        "title": "Report Template",
+        "description": "Run: ls /opt/load-testing-lab/reports/performance-template.md. Does report template exist?",
+        "ans": "performance-template.md",
+        "pts": 100
+      },
+      {
+        "title": "Test Run Successful",
+        "description": "Run: cd /opt/load-testing-lab && k6 run scripts/load-test.js 2>&1 | grep 'http_req_duration'. Is duration reported?",
+        "ans": "http_req_duration",
+        "pts": 125
+      },
+      {
+        "title": "Scenarios Defined",
+        "description": "Run: grep -c 'scenarios' /opt/load-testing-lab/scripts/load-test.js. Scenarios block present?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Documentation-Driven Development",
+    "description": "Practice documentation-first development by writing OpenAPI specs, ADRs, and README docs before implementation.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 800,
+    "estimatedMinutes": 60,
+    "skillName": "CODE_QUALITY",
+    "briefing": "### Mission Objective\nPractice documentation-driven development by creating comprehensive API documentation before writing any code. Create OpenAPI specifications, Architecture Decision Records, and developer documentation.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Swagger Editor available\n- Working directory: /opt/docs-driven-lab\n\n### Tasks\n1. Create an OpenAPI 3.0 specification for a Bookstore API\n2. Define all CRUD endpoints for books, authors, and reviews\n3. Write request/response schemas with examples\n4. Create an Architecture Decision Record (ADR) for tech stack\n5. Write a comprehensive README.md with setup instructions\n6. Create a CONTRIBUTING.md with development guidelines\n7. Generate API documentation from OpenAPI spec\n8. Validate the OpenAPI spec using a linter\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 pre-installed\n- swagger-cli for validation",
+    "tasks": [
+      "Create an OpenAPI 3.0 specification for a Bookstore API",
+      "Define all CRUD endpoints for books, authors, and reviews",
+      "Write request/response schemas with examples",
+      "Create an Architecture Decision Record (ADR) for tech stack",
+      "Write a comprehensive README.md with setup instructions",
+      "Create a CONTRIBUTING.md with development guidelines",
+      "Generate API documentation from OpenAPI spec",
+      "Validate the OpenAPI spec using a linter"
+    ],
+    "flags": [
+      {
+        "title": "OpenAPI Spec Exists",
+        "description": "Run: ls /opt/docs-driven-lab/openapi.yaml. Does the spec file exist?",
+        "ans": "openapi.yaml",
+        "pts": 75
+      },
+      {
+        "title": "Spec Valid",
+        "description": "Run: npx swagger-cli validate openapi.yaml. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Books Endpoint Defined",
+        "description": "Run: grep -c '/books' /opt/docs-driven-lab/openapi.yaml. Are books endpoints defined?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Schemas Defined",
+        "description": "Run: grep -c 'schema' /opt/docs-driven-lab/openapi.yaml. Are schemas present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "ADR Exists",
+        "description": "Run: ls /opt/docs-driven-lab/docs/adr/*.md. Does ADR file exist?",
+        "ans": "adr",
+        "pts": 100
+      },
+      {
+        "title": "README Written",
+        "description": "Run: wc -l /opt/docs-driven-lab/README.md. Is README at least 30 lines?",
+        "ans": "30",
+        "pts": 100
+      },
+      {
+        "title": "CONTRIBUTING Written",
+        "description": "Run: ls /opt/docs-driven-lab/CONTRIBUTING.md. Does it exist?",
+        "ans": "CONTRIBUTING.md",
+        "pts": 75
+      },
+      {
+        "title": "API Docs Generated",
+        "description": "Run: ls /opt/docs-driven-lab/docs/api/*.html. Are docs generated?",
+        "ans": "html",
+        "pts": 125
+      },
+      {
+        "title": "Examples Included",
+        "description": "Run: grep -c 'example' /opt/docs-driven-lab/openapi.yaml. Are examples in spec?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Security Defined",
+        "description": "Run: grep -c 'securitySchemes' /opt/docs-driven-lab/openapi.yaml. Is security defined?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Monorepo with Turborepo",
+    "description": "Set up a Turborepo monorepo with multiple packages, shared libraries, and incremental builds.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "SYSTEM_DESIGN",
+    "briefing": "### Mission Objective\nConfigure a Turborepo monorepo with shared packages, applications, and proper dependency management. Set up incremental builds, caching, and task pipeline configuration.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Turborepo and pnpm pre-installed\n- Working directory: /opt/monorepo-lab\n\n### Tasks\n1. Initialize a Turborepo monorepo with pnpm workspaces\n2. Create a shared UI component library package\n3. Create a shared TypeScript config package\n4. Create a Next.js web application package\n5. Create a Node.js API package\n6. Configure turbo.json pipeline with proper task dependencies\n7. Set up build caching for all packages\n8. Create shared scripts for lint, test, and build\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20, pnpm, and Turborepo pre-installed\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Initialize a Turborepo monorepo with pnpm workspaces",
+      "Create a shared UI component library package",
+      "Create a shared TypeScript config package",
+      "Create a Next.js web application package",
+      "Create a Node.js API package",
+      "Configure turbo.json pipeline with proper task dependencies",
+      "Set up build caching for all packages",
+      "Create shared scripts for lint, test, and build"
+    ],
+    "flags": [
+      {
+        "title": "Turbo Config",
+        "description": "Run: ls /opt/monorepo-lab/turbo.json. Does turbo.json exist?",
+        "ans": "turbo.json",
+        "pts": 75
+      },
+      {
+        "title": "Workspace Config",
+        "description": "Run: grep -c 'packages' /opt/monorepo-lab/pnpm-workspace.yaml. Workspaces configured?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "UI Package",
+        "description": "Run: ls /opt/monorepo-lab/packages/ui/package.json. Does UI package exist?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Config Package",
+        "description": "Run: ls /opt/monorepo-lab/packages/config/package.json. Does config package exist?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Web App",
+        "description": "Run: ls /opt/monorepo-lab/apps/web/package.json. Does web app exist?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "API App",
+        "description": "Run: ls /opt/monorepo-lab/apps/api/package.json. Does API app exist?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Defined",
+        "description": "Run: cat turbo.json | grep -c 'pipeline'. Is pipeline defined in turbo.json?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Dependencies Configured",
+        "description": "Run: cat turbo.json | grep -c 'dependsOn'. Are dependencies between tasks set?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Build Works",
+        "description": "Run: cd /opt/monorepo-lab && pnpm turbo run build. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Caching Enabled",
+        "description": "Run: cat turbo.json | grep -c 'cache'. Is caching configured?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Feature Flags Implementation",
+    "description": "Build a feature flags system with gradual rollouts, user targeting, and A/B testing support.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 80,
+    "skillName": "CODE_QUALITY",
+    "briefing": "### Mission Objective\nImplement a feature flags system that supports gradual rollouts, user segmentation, and A/B testing. Create both the flag management API and SDK for application integration.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Redis for flag caching\n- Working directory: /opt/feature-flags-lab\n\n### Tasks\n1. Design a feature flag data model with MongoDB\n2. Create CRUD API for managing feature flags\n3. Implement flag evaluation logic with percentage rollouts\n4. Add user targeting rules (email, region, plan)\n5. Create an SDK for easy application integration\n6. Set up Redis caching for flag evaluations\n7. Add webhook notifications when flags change\n8. Create an admin dashboard for flag management\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20, Redis, and MongoDB available\n- Pre-configured Docker Compose stack",
+    "tasks": [
+      "Design a feature flag data model with MongoDB",
+      "Create CRUD API for managing feature flags",
+      "Implement flag evaluation logic with percentage rollouts",
+      "Add user targeting rules (email, region, plan)",
+      "Create an SDK for easy application integration",
+      "Set up Redis caching for flag evaluations",
+      "Add webhook notifications when flags change",
+      "Create an admin dashboard for flag management"
+    ],
+    "flags": [
+      {
+        "title": "Flag Model Defined",
+        "description": "Run: ls /opt/feature-flags-lab/src/models/feature-flag.js. Does model exist?",
+        "ans": "feature-flag.js",
+        "pts": 100
+      },
+      {
+        "title": "CRUD API",
+        "description": "Run: ls /opt/feature-flags-lab/src/routes/*.js. Are route files present?",
+        "ans": "route",
+        "pts": 100
+      },
+      {
+        "title": "Evaluation Logic",
+        "description": "Run: ls /opt/feature-flags-lab/src/services/evaluator.js. Does evaluator exist?",
+        "ans": "evaluator.js",
+        "pts": 125
+      },
+      {
+        "title": "User Targeting",
+        "description": "Run: grep -c 'targeting\\|segment' /opt/feature-flags-lab/src/services/evaluator.js. Targeting logic present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "SDK Created",
+        "description": "Run: ls /opt/feature-flags-lab/sdk/index.js. Does SDK exist?",
+        "ans": "index.js",
+        "pts": 100
+      },
+      {
+        "title": "Redis Caching",
+        "description": "Run: grep -c 'redis\\|cache' /opt/feature-flags-lab/src/services/*.js. Redis integration present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Webhook Support",
+        "description": "Run: grep -c 'webhook\\|notify' /opt/feature-flags-lab/src/services/*.js. Webhook logic present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard HTML",
+        "description": "Run: ls /opt/feature-flags-lab/public/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/feature-flags-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Percentage Rollout",
+        "description": "Run: grep -c 'percentage\\|rollout' /opt/feature-flags-lab/src/services/evaluator.js. Percentage logic present?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Canary Deployments with Feature Toggles",
+    "description": "Implement canary deployment strategy with traffic splitting and automated rollback on error thresholds.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "CI_CD",
+    "briefing": "### Mission Objective\nImplement a canary deployment system that gradually shifts traffic between old and new versions. Monitor error rates and automatically rollback if thresholds are exceeded.\n\n### Environment\n- Ubuntu 22.04 LTS with Docker and Docker Compose\n- Nginx for traffic splitting\n- Working directory: /opt/canary-deploy\n\n### Tasks\n1. Create two versions of a simple Node.js application (v1 and v2)\n2. Set up Nginx as a load balancer with weighted routing\n3. Create a deployment script that manages traffic split percentages\n4. Add health check endpoints to both application versions\n5. Create a monitoring script that checks error rates\n6. Implement automated rollback when error rate > 5%\n7. Create a canary deployment pipeline script\n8. Test the full canary deployment and rollback flow\n\n### Permissions & Access\n- Container runs as root with Docker socket\n- Nginx, Node.js 20 available\n- All scripts must be executable",
+    "tasks": [
+      "Create two versions of a simple Node.js application (v1 and v2)",
+      "Set up Nginx as a load balancer with weighted routing",
+      "Create a deployment script that manages traffic split percentages",
+      "Add health check endpoints to both application versions",
+      "Create a monitoring script that checks error rates",
+      "Implement automated rollback when error rate > 5%",
+      "Create a canary deployment pipeline script",
+      "Test the full canary deployment and rollback flow"
+    ],
+    "flags": [
+      {
+        "title": "V1 App Exists",
+        "description": "Run: ls /opt/canary-deploy/apps/v1/package.json. Does v1 app exist?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "V2 App Exists",
+        "description": "Run: ls /opt/canary-deploy/apps/v2/package.json. Does v2 app exist?",
+        "ans": "package.json",
+        "pts": 100
+      },
+      {
+        "title": "Nginx Config",
+        "description": "Run: ls /opt/canary-deploy/nginx/nginx.conf. Does nginx config exist?",
+        "ans": "nginx.conf",
+        "pts": 100
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls -la /opt/canary-deploy/scripts/deploy.sh. Is deploy script executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Health Check Endpoints",
+        "description": "Run: grep -c '/health' /opt/canary-deploy/apps/*/src/*.js. Health endpoints in both apps?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Monitor Script",
+        "description": "Run: ls -la /opt/canary-deploy/scripts/monitor.sh. Is monitor script executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Rollback Logic",
+        "description": "Run: grep -c 'rollback\\|revert' /opt/canary-deploy/scripts/*.sh. Rollback logic present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Traffic Split Config",
+        "description": "Run: grep -c 'upstream\\|weight' /opt/canary-deploy/nginx/nginx.conf. Weighted routing configured?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Docker Compose",
+        "description": "Run: ls /opt/canary-deploy/docker-compose.yml. Does compose file exist?",
+        "ans": "docker-compose.yml",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Script",
+        "description": "Run: ls -la /opt/canary-deploy/scripts/canary-pipeline.sh. Pipeline script exists?",
+        "ans": "canary-pipeline.sh",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Technical Debt Tracking Dashboard",
+    "description": "Build a dashboard that tracks code complexity, test coverage, dependency health, and code smells.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 90,
+    "skillName": "SYSTEM_DESIGN",
+    "briefing": "### Mission Objective\nCreate a technical debt tracking dashboard that aggregates metrics from code analysis tools. Track code complexity, test coverage trends, dependency vulnerabilities, and code smells over time.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- ESLint, npm-audit, and complexity tools pre-installed\n- Working directory: /opt/tech-debt-lab\n- Sample Node.js project at /opt/tech-debt-lab/target-project/\n\n### Tasks\n1. Create a metrics collection script that runs ESLint analysis\n2. Add code complexity analysis using plato or cr\n3. Create a test coverage history tracker\n4. Add dependency vulnerability scanning with npm audit\n5. Create a JSON report generator for all metrics\n6. Build an HTML dashboard to visualize debt metrics\n7. Set up a cron-like script for periodic metric collection\n8. Create alerts for when metrics exceed thresholds\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and analysis tools pre-installed\n- Target project provided for analysis",
+    "tasks": [
+      "Create a metrics collection script that runs ESLint analysis",
+      "Add code complexity analysis using plato or cr",
+      "Create a test coverage history tracker",
+      "Add dependency vulnerability scanning with npm audit",
+      "Create a JSON report generator for all metrics",
+      "Build an HTML dashboard to visualize debt metrics",
+      "Set up a cron-like script for periodic metric collection",
+      "Create alerts for when metrics exceed thresholds"
+    ],
+    "flags": [
+      {
+        "title": "Collection Script",
+        "description": "Run: ls -la /opt/tech-debt-lab/scripts/collect-metrics.sh. Is it executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Complexity Analysis",
+        "description": "Run: grep -c 'complexity\\|plato\\|cr' /opt/tech-debt-lab/scripts/*.sh. Complexity analysis present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Coverage Tracker",
+        "description": "Run: ls /opt/tech-debt-lab/scripts/track-coverage.sh. Does it exist?",
+        "ans": "track-coverage.sh",
+        "pts": 100
+      },
+      {
+        "title": "Vulnerability Scan",
+        "description": "Run: grep -c 'audit\\|vulnerability' /opt/tech-debt-lab/scripts/*.sh. Audit script present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "JSON Report",
+        "description": "Run: ls /opt/tech-debt-lab/reports/*.json. Does report file exist?",
+        "ans": "json",
+        "pts": 125
+      },
+      {
+        "title": "HTML Dashboard",
+        "description": "Run: ls /opt/tech-debt-lab/dashboard/index.html. Does dashboard exist?",
+        "ans": "index.html",
+        "pts": 125
+      },
+      {
+        "title": "Scheduled Collection",
+        "description": "Run: grep -c 'cron\\|schedule\\|interval' /opt/tech-debt-lab/scripts/*.sh. Scheduled collection present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Alert Thresholds",
+        "description": "Run: grep -c 'threshold\\|alert\\|warn' /opt/tech-debt-lab/scripts/*.sh. Alert logic present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Metrics JSON Structure",
+        "description": "Run: cat /opt/tech-debt-lab/reports/*.json | python3 -c \"import sys,json; d=json.load(sys.stdin); print(list(d.keys())[0])\". First metric key?",
+        "ans": "eslint",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard Has Charts",
+        "description": "Run: grep -c 'canvas\\|chart\\|Chart' /opt/tech-debt-lab/dashboard/index.html. Charts present in dashboard?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  }
+]

@@ -1,0 +1,812 @@
+[
+  {
+    "title": "MQTT Broker Setup & Sensor Network",
+    "description": "Set up an MQTT broker with multiple simulated IoT sensors publishing temperature, humidity, and pressure data.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 900,
+    "estimatedMinutes": 70,
+    "skillName": "MQTT_PROTOCOL",
+    "briefing": "### Mission Objective\nInstall and configure an MQTT broker (Mosquitto) and create a network of simulated IoT sensors. Configure different QoS levels, topics, and subscriptions for a smart building monitoring system.\n\n### Environment\n- Ubuntu 22.04 LTS with Mosquitto MQTT broker\n- Python 3.12 with paho-mqtt library\n- Working directory: /opt/mqtt-lab\n\n### Tasks\n1. Install and configure Mosquitto MQTT broker\n2. Set up authentication with username/password\n3. Create a temperature sensor publisher script\n4. Create a humidity sensor publisher script\n5. Create a subscriber that collects all sensor data\n6. Configure different QoS levels for different topics\n7. Add topic wildcards for monitoring all sensors\n8. Create a dashboard showing real-time sensor data\n\n### Permissions & Access\n- Container runs as root\n- Mosquitto installed via apt\n- Python 3.12 with paho-mqtt",
+    "tasks": [
+      "Install and configure Mosquitto MQTT broker",
+      "Set up authentication with username/password",
+      "Create a temperature sensor publisher script",
+      "Create a humidity sensor publisher script",
+      "Create a subscriber that collects all sensor data",
+      "Configure different QoS levels for different topics",
+      "Add topic wildcards for monitoring all sensors",
+      "Create a dashboard showing real-time sensor data"
+    ],
+    "flags": [
+      {
+        "title": "Mosquitto Running",
+        "description": "Run: systemctl status mosquitto | grep active. Is Mosquitto running?",
+        "ans": "active",
+        "pts": 100
+      },
+      {
+        "title": "Authentication Config",
+        "description": "Run: grep -c 'password_file\\|allow_anonymous false' /etc/mosquitto/conf.d/lab.conf. Auth configured?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Temperature Publisher",
+        "description": "Run: ls /opt/mqtt-lab/sensors/temperature.py. Does temp sensor exist?",
+        "ans": "temperature.py",
+        "pts": 100
+      },
+      {
+        "title": "Humidity Publisher",
+        "description": "Run: ls /opt/mqtt-lab/sensors/humidity.py. Does humidity sensor exist?",
+        "ans": "humidity.py",
+        "pts": 100
+      },
+      {
+        "title": "Subscriber Running",
+        "description": "Run: ps aux | grep subscriber | grep -v grep. Is subscriber running?",
+        "ans": "subscriber",
+        "pts": 125
+      },
+      {
+        "title": "QoS Configured",
+        "description": "Run: grep -c 'qos' /opt/mqtt-lab/sensors/*.py. QoS levels set in publishers?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Topic Wildcards",
+        "description": "Run: grep -c '#\\|+' /opt/mqtt-lab/subscriber/collector.py. Wildcards used in subscription?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard Running",
+        "description": "Run: curl -s http://localhost:8080 | grep -c 'sensor\\|mqtt'. Dashboard accessible?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Data Persisted",
+        "description": "Run: ls /opt/mqtt-lab/data/*.json | wc -l. Is sensor data being saved?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Mosquitto Passwords",
+        "description": "Run: ls /etc/mosquitto/passwd. Does password file exist?",
+        "ans": "passwd",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Edge Computing with Node-RED",
+    "description": "Deploy Node-RED for edge computing with data filtering, aggregation, and alert workflows.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1100,
+    "estimatedMinutes": 90,
+    "skillName": "EDGE_COMPUTING",
+    "briefing": "### Mission Objective\nSet up Node-RED as an edge computing platform that processes IoT sensor data locally. Create flows for data filtering, aggregation, anomaly detection, and alert notifications.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Node-RED installed via npm\n- Working directory: /opt/nodered-lab\n\n### Tasks\n1. Install and configure Node-RED\n2. Create an MQTT input node for sensor data\n3. Add function nodes for data validation and filtering\n4. Create aggregation flow for 5-minute rolling averages\n5. Add threshold alert node for temperature anomalies\n6. Create a JSON storage flow for historical data\n7. Add a dashboard node for real-time visualization\n8. Export the complete Node-RED flow JSON\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Node-RED pre-installed\n- Node-RED runs on port 1880",
+    "tasks": [
+      "Install and configure Node-RED",
+      "Create an MQTT input node for sensor data",
+      "Add function nodes for data validation and filtering",
+      "Create aggregation flow for 5-minute rolling averages",
+      "Add threshold alert node for temperature anomalies",
+      "Create a JSON storage flow for historical data",
+      "Add a dashboard node for real-time visualization",
+      "Export the complete Node-RED flow JSON"
+    ],
+    "flags": [
+      {
+        "title": "Node-RED Installed",
+        "description": "Run: nodered --version 2>/dev/null || node-red --version. Is Node-RED installed?",
+        "ans": "Node-RED",
+        "pts": 75
+      },
+      {
+        "title": "Node-RED Running",
+        "description": "Run: curl -s http://localhost:1880 | grep -c 'Node-RED'. Is Node-RED accessible?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "MQTT Input Node",
+        "description": "Run: grep -c 'mqtt in\\|mqtt-in' /opt/nodered-lab/flows/*.json. MQTT input present in flow?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Filter Function",
+        "description": "Run: grep -c 'function\\|filter\\|validate' /opt/nodered-lab/flows/*.json. Filter nodes present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Aggregation Flow",
+        "description": "Run: grep -c 'average\\|aggregate\\|rolling' /opt/nodered-lab/flows/*.json. Aggregation logic present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Alert Node",
+        "description": "Run: grep -c 'alert\\|threshold\\|notification' /opt/nodered-lab/flows/*.json. Alert nodes present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Storage Flow",
+        "description": "Run: grep -c 'file\\|write\\|storage\\|json' /opt/nodered-lab/flows/*.json. Storage flow present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard Node",
+        "description": "Run: grep -c 'ui_chart\\|ui_gauge\\|dashboard' /opt/nodered-lab/flows/*.json. Dashboard nodes present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Flow Exported",
+        "description": "Run: ls /opt/nodered-lab/flows/flows.json. Is the flow file exported?",
+        "ans": "flows.json",
+        "pts": 100
+      },
+      {
+        "title": "Nodes Configured",
+        "description": "Run: grep -c '\"type\"' /opt/nodered-lab/flows/flows.json. How many nodes configured?",
+        "ans": "8",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Device Fleet Management Dashboard",
+    "description": "Build a device fleet management system with registration, health monitoring, and OTA update tracking.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1200,
+    "estimatedMinutes": 100,
+    "skillName": "DEVICE_MANAGEMENT",
+    "briefing": "### Mission Objective\nCreate a device fleet management platform that handles device registration, health check monitoring, firmware version tracking, and over-the-air update status reporting.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- MongoDB for device database\n- Working directory: /opt/fleet-mgmt-lab\n\n### Tasks\n1. Design a device registration data model\n2. Create API endpoints for device CRUD operations\n3. Implement device health check endpoint\n4. Add firmware version tracking system\n5. Create a device group management system\n6. Build a real-time fleet dashboard\n7. Add device metrics collection and storage\n8. Create alerts for offline devices\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and MongoDB available\n- REST API conventions",
+    "tasks": [
+      "Design a device registration data model",
+      "Create API endpoints for device CRUD operations",
+      "Implement device health check endpoint",
+      "Add firmware version tracking system",
+      "Create a device group management system",
+      "Build a real-time fleet dashboard",
+      "Add device metrics collection and storage",
+      "Create alerts for offline devices"
+    ],
+    "flags": [
+      {
+        "title": "Device Model",
+        "description": "Run: ls /opt/fleet-mgmt-lab/src/models/device.js. Does device model exist?",
+        "ans": "device.js",
+        "pts": 100
+      },
+      {
+        "title": "CRUD API",
+        "description": "Run: grep -c 'router\\|get\\|post\\|put\\|delete' /opt/fleet-mgmt-lab/src/routes/device.js. CRUD routes present?",
+        "ans": "5",
+        "pts": 100
+      },
+      {
+        "title": "Health Check",
+        "description": "Run: grep -c 'health\\|heartbeat\\|status' /opt/fleet-mgmt-lab/src/routes/device.js. Health endpoint present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Firmware Tracking",
+        "description": "Run: grep -c 'firmware\\|version\\|ota' /opt/fleet-mgmt-lab/src/models/device.js. Firmware tracking present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Device Groups",
+        "description": "Run: grep -c 'group\\|fleet\\|cluster' /opt/fleet-mgmt-lab/src/models/device.js. Group management present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/fleet-mgmt-lab/public/index.html. Does fleet dashboard exist?",
+        "ans": "index.html",
+        "pts": 125
+      },
+      {
+        "title": "Metrics Collection",
+        "description": "Run: grep -c 'metrics\\|collect\\|store' /opt/fleet-mgmt-lab/src/services/metrics.js. Metrics collection present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Offline Alerts",
+        "description": "Run: grep -c 'offline\\|alert\\|notify' /opt/fleet-mgmt-lab/src/services/alerts.js. Offline alerts present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/fleet-mgmt-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "API Documentation",
+        "description": "Run: grep -c 'swagger\\|openapi\\|docs' /opt/fleet-mgmt-lab/src/routes/device.js. API docs present?",
+        "ans": "1",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "IoT Security: Device Authentication",
+    "description": "Implement device authentication using X.509 certificates, secure boot verification, and encrypted communication.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "IOT_SECURITY",
+    "briefing": "### Mission Objective\nImplement a comprehensive device authentication system using X.509 certificates, mutual TLS authentication, and secure boot verification for IoT devices.\n\n### Environment\n- Ubuntu 22.04 LTS with OpenSSL and Python 3.12\n- Certificate authority tools pre-installed\n- Working directory: /opt/iot-security-lab\n\n### Tasks\n1. Create a Certificate Authority (CA) for device certs\n2. Generate device certificates signed by the CA\n3. Implement mutual TLS authentication for MQTT\n4. Add certificate revocation list (CRL) support\n5. Create a device identity verification service\n6. Implement secure boot hash verification\n7. Add encrypted configuration storage\n8. Create an audit log for authentication events\n\n### Permissions & Access\n- Container runs as root\n- OpenSSL and Python 3.12 pre-installed\n- Mosquitto with TLS support",
+    "tasks": [
+      "Create a Certificate Authority (CA) for device certs",
+      "Generate device certificates signed by the CA",
+      "Implement mutual TLS authentication for MQTT",
+      "Add certificate revocation list (CRL) support",
+      "Create a device identity verification service",
+      "Implement secure boot hash verification",
+      "Add encrypted configuration storage",
+      "Create an audit log for authentication events"
+    ],
+    "flags": [
+      {
+        "title": "CA Created",
+        "description": "Run: ls /opt/iot-security-lab/ca/ca-cert.pem. Does CA certificate exist?",
+        "ans": "ca-cert.pem",
+        "pts": 100
+      },
+      {
+        "title": "Device Certs",
+        "description": "Run: ls /opt/iot-security-lab/certs/*.pem | wc -l. Are device certificates generated?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Mutual TLS",
+        "description": "Run: grep -c 'cafile\\|certfile\\|keyfile\\|require_certificate' /opt/iot-security-lab/mosquitto/mosquitto-tls.conf. mTLS configured?",
+        "ans": "4",
+        "pts": 125
+      },
+      {
+        "title": "CRL Support",
+        "description": "Run: grep -c 'crl\\|revoke\\|CRL' /opt/iot-security-lab/ca/*.sh /opt/iot-security-lab/ca/*.py 2>/dev/null | grep -c ':' . CRL functionality present?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Identity Verification",
+        "description": "Run: grep -c 'verify\\|identity\\|authenticate' /opt/iot-security-lab/src/device_auth.py. Identity verification present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Secure Boot",
+        "description": "Run: grep -c 'sha256\\|hash\\|secure_boot\\|integrity' /opt/iot-security-lab/src/secure_boot.py. Secure boot verification present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Encrypted Config",
+        "description": "Run: grep -c 'encrypt\\|decrypt\\|fernet\\|AES' /opt/iot-security-lab/src/config_encryption.py. Encrypted config present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Audit Log",
+        "description": "Run: grep -c 'audit\\|log\\|event' /opt/iot-security-lab/src/audit.py. Audit logging present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/iot-security-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Cert Expiry Check",
+        "description": "Run: grep -c 'expiry\\|not_after\\|valid' /opt/iot-security-lab/src/cert_manager.py. Expiry checking present?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Embedded Linux: Build Custom Image",
+    "description": "Build a custom embedded Linux image using Buildroot with custom packages and filesystem configuration.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "EMBEDDED_LINUX",
+    "briefing": "### Mission Objective\nCreate a minimal embedded Linux system using Buildroot. Configure the toolchain, add custom packages, optimize the filesystem for size, and create a bootable image for an IoT gateway device.\n\n### Environment\n- Ubuntu 22.04 LTS with build dependencies\n- Buildroot pre-installed\n- Working directory: /opt/embedded-linux-lab\n\n### Tasks\n1. Initialize a Buildroot project for ARM architecture\n2. Configure a minimal Linux kernel\n3. Add a custom Python application package\n4. Configure networking packages (wpa_supplicant, iptables)\n5. Create a root filesystem overlay\n6. Optimize image size with package stripping\n7. Build the complete firmware image\n8. Create a flash and deployment script\n\n### Permissions & Access\n- Container runs as root\n- Buildroot and cross-compilation tools installed\n- Sufficient disk space for builds",
+    "tasks": [
+      "Initialize a Buildroot project for ARM architecture",
+      "Configure a minimal Linux kernel",
+      "Add a custom Python application package",
+      "Configure networking packages (wpa_supplicant, iptables)",
+      "Create a root filesystem overlay",
+      "Optimize image size with package stripping",
+      "Build the complete firmware image",
+      "Create a flash and deployment script"
+    ],
+    "flags": [
+      {
+        "title": "Buildroot Config",
+        "description": "Run: ls /opt/embedded-linux-lab/buildroot-*/configs/*.defconfig 2>/dev/null | wc -l. Is Buildroot configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Kernel Configured",
+        "description": "Run: grep -c 'BR2_LINUX_KERNEL' /opt/embedded-linux-lab/buildroot-*/configs/*.defconfig 2>/dev/null. Kernel configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Custom Package",
+        "description": "Run: ls /opt/embedded-linux-lab/package/custom-app/*.mk 2>/dev/null. Custom package defined?",
+        "ans": ".mk",
+        "pts": 125
+      },
+      {
+        "title": "Networking Packages",
+        "description": "Run: grep -c 'wpa_supplicant\\|iptables' /opt/embedded-linux-lab/buildroot-*/configs/*.defconfig 2>/dev/null. Networking packages present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Root Overlay",
+        "description": "Run: ls /opt/embedded-linux-lab/board/rootfs_overlay/etc/ 2>/dev/null | wc -l. Root filesystem overlay present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Size Optimization",
+        "description": "Run: grep -c 'BR2_ENABLE_DEBUG\\|strip\\|optimize' /opt/embedded-linux-lab/buildroot-*/configs/*.defconfig 2>/dev/null. Optimization configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Image Built",
+        "description": "Run: ls /opt/embedded-linux-lab/output/images/*.img 2>/dev/null | wc -l. Is firmware image built?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Deploy Script",
+        "description": "Run: ls -la /opt/embedded-linux-lab/scripts/flash.sh 2>/dev/null. Is deploy script executable?",
+        "ans": "x",
+        "pts": 100
+      },
+      {
+        "title": "Build Log",
+        "description": "Run: ls /opt/embedded-linux-lab/output/build/build-time.txt 2>/dev/null. Build log exists?",
+        "ans": "build-time.txt",
+        "pts": 100
+      },
+      {
+        "title": "Architecture Set",
+        "description": "Run: grep 'BR2_arm\\|BR2_aarch64' /opt/embedded-linux-lab/buildroot-*/configs/*.defconfig 2>/dev/null. ARM architecture selected?",
+        "ans": "BR2_arm",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "MQTT QoS & Retained Messages",
+    "description": "Master MQTT QoS levels 0, 1, 2 with retained messages, last will, and message persistence.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1000,
+    "estimatedMinutes": 75,
+    "skillName": "MQTT_PROTOCOL",
+    "briefing": "### Mission Objective\nExplore all three MQTT QoS levels with practical implementations. Understand message delivery guarantees, use retained messages for state storage, and configure last will testament for disconnect notifications.\n\n### Environment\n- Ubuntu 22.04 LTS with Mosquitto and Python 3.12\n- paho-mqtt library pre-installed\n- Working directory: /opt/mqtt-qos-lab\n\n### Tasks\n1. Set up Mosquitto with persistence enabled\n2. Create QoS 0 publisher and measure delivery\n3. Create QoS 1 publisher with acknowledgment\n4. Create QoS 2 publisher with exactly-once delivery\n5. Configure retained messages for device state topics\n6. Set up last will testament for disconnect detection\n7. Compare message delivery reliability across QoS levels\n8. Create a QoS monitoring dashboard\n\n### Permissions & Access\n- Container runs as root\n- Mosquitto and Python 3.12 pre-installed\n- Persistence directory configured",
+    "tasks": [
+      "Set up Mosquitto with persistence enabled",
+      "Create QoS 0 publisher and measure delivery",
+      "Create QoS 1 publisher with acknowledgment",
+      "Create QoS 2 publisher with exactly-once delivery",
+      "Configure retained messages for device state topics",
+      "Set up last will testament for disconnect detection",
+      "Compare message delivery reliability across QoS levels",
+      "Create a QoS monitoring dashboard"
+    ],
+    "flags": [
+      {
+        "title": "Persistence Enabled",
+        "description": "Run: grep 'persistence' /etc/mosquitto/mosquitto.conf. Is persistence enabled?",
+        "ans": "persistence true",
+        "pts": 75
+      },
+      {
+        "title": "QoS 0 Publisher",
+        "description": "Run: grep -c 'qos.*=.*0\\|qos=0' /opt/mqtt-qos-lab/publishers/*.py. QoS 0 publisher present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "QoS 1 Publisher",
+        "description": "Run: grep -c 'qos.*=.*1\\|qos=1' /opt/mqtt-qos-lab/publishers/*.py. QoS 1 publisher present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "QoS 2 Publisher",
+        "description": "Run: grep -c 'qos.*=.*2\\|qos=2' /opt/mqtt-qos-lab/publishers/*.py. QoS 2 publisher present?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Retained Messages",
+        "description": "Run: grep -c 'retain.*True\\|retain=True\\|retained' /opt/mqtt-qos-lab/publishers/*.py. Retained messages used?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Last Will",
+        "description": "Run: grep -c 'will\\|lwt\\|last_will' /opt/mqtt-qos-lab/publishers/*.py /opt/mqtt-qos-lab/subscribers/*.py 2>/dev/null | grep -v ':0$' | wc -l. Last will configured?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Delivery Comparison",
+        "description": "Run: ls /opt/mqtt-qos-lab/comparison/results.json. QoS comparison results exist?",
+        "ans": "results.json",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/mqtt-qos-lab/dashboard/index.html. Does QoS dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/mqtt-qos-lab && python3 -m pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Message Log",
+        "description": "Run: grep -c 'on_message\\|callback\\|handler' /opt/mqtt-qos-lab/subscribers/*.py. Message handlers present?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "LoRaWAN Gateway Setup",
+    "description": "Configure a LoRaWAN gateway simulator with device registration, downlink scheduling, and network server integration.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "DEVICE_MANAGEMENT",
+    "briefing": "### Mission Objective\nSet up a simulated LoRaWAN network with a gateway, network server, and end devices. Configure device join procedures, adaptive data rates, and downlink message scheduling.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- LoRa simulator components pre-installed\n- Working directory: /opt/lorawan-lab\n\n### Tasks\n1. Set up a LoRaWAN gateway simulator\n2. Configure the network server with device join\n3. Register 3 simulated end devices\n4. Implement OTAA (Over-The-Air Activation) join procedure\n5. Create uplink message processing pipeline\n6. Add adaptive data rate (ADR) configuration\n7. Implement downlink scheduling for confirmed messages\n8. Create a LoRaWAN network monitoring dashboard\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 pre-installed\n- All simulation components provided",
+    "tasks": [
+      "Set up a LoRaWAN gateway simulator",
+      "Configure the network server with device join",
+      "Register 3 simulated end devices",
+      "Implement OTAA (Over-The-Air Activation) join procedure",
+      "Create uplink message processing pipeline",
+      "Add adaptive data rate (ADR) configuration",
+      "Implement downlink scheduling for confirmed messages",
+      "Create a LoRaWAN network monitoring dashboard"
+    ],
+    "flags": [
+      {
+        "title": "Gateway Simulator",
+        "description": "Run: ls /opt/lorawan-lab/gateway/*.py. Does gateway simulator exist?",
+        "ans": "gateway",
+        "pts": 100
+      },
+      {
+        "title": "Network Server",
+        "description": "Run: ls /opt/lorawan-lab/network_server/*.py. Does network server exist?",
+        "ans": "network_server",
+        "pts": 100
+      },
+      {
+        "title": "Device Registration",
+        "description": "Run: grep -c 'register\\|device\\|devEUI\\|dev_eui' /opt/lorawan-lab/network_server/*.py. Device registration present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "OTAA Join",
+        "description": "Run: grep -c 'otaa\\|OTAA\\|join\\|joinAccept' /opt/lorawan-lab/network_server/*.py. OTAA join present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Uplink Processing",
+        "description": "Run: grep -c 'uplink\\|uplinkMessage\\|payload' /opt/lorawan-lab/network_server/*.py. Uplink processing present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "ADR Config",
+        "description": "Run: grep -c 'adr\\|ADR\\|dataRate\\|spreading_factor' /opt/lorawan-lab/network_server/*.py. ADR configuration present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Downlink Scheduling",
+        "description": "Run: grep -c 'downlink\\|schedule\\|confirmed' /opt/lorawan-lab/network_server/*.py. Downlink scheduling present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/lorawan-lab/dashboard/index.html. Does LoRaWAN dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/lorawan-lab && python3 -m pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "3 Devices Registered",
+        "description": "Run: grep -c 'Device(' /opt/lorawan-lab/network_server/devices.py 2>/dev/null | head -1 || echo 3. At least 3 devices?",
+        "ans": "3",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "IoT Data Pipeline to TimescaleDB",
+    "description": "Build a complete IoT data pipeline from MQTT sensors through Kafka to TimescaleDB for time-series storage.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1400,
+    "estimatedMinutes": 110,
+    "skillName": "EDGE_COMPUTING",
+    "briefing": "### Mission Objective\nCreate a complete IoT data pipeline that ingests sensor data from MQTT, processes it through a stream processor, and stores it in TimescaleDB (PostgreSQL extension) for time-series analysis.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- PostgreSQL 15 with TimescaleDB\n- Working directory: /opt/iot-pipeline-lab\n\n### Tasks\n1. Set up MQTT publisher generating sensor data\n2. Create a stream processor to validate and transform data\n3. Configure TimescaleDB hypertable for time-series data\n4. Build the data ingestion pipeline\n5. Add data compression and retention policies\n6. Create materialized views for common queries\n7. Build a monitoring dashboard with Grafana\n8. Add alerting for data pipeline failures\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12, PostgreSQL 15, TimescaleDB available\n- Grafana available for dashboards",
+    "tasks": [
+      "Set up MQTT publisher generating sensor data",
+      "Create a stream processor to validate and transform data",
+      "Configure TimescaleDB hypertable for time-series data",
+      "Build the data ingestion pipeline",
+      "Add data compression and retention policies",
+      "Create materialized views for common queries",
+      "Build a monitoring dashboard with Grafana",
+      "Add alerting for data pipeline failures"
+    ],
+    "flags": [
+      {
+        "title": "MQTT Publisher",
+        "description": "Run: ls /opt/iot-pipeline-lab/publishers/sensor_publisher.py. Does sensor publisher exist?",
+        "ans": "sensor_publisher.py",
+        "pts": 100
+      },
+      {
+        "title": "Stream Processor",
+        "description": "Run: ls /opt/iot-pipeline-lab/processor/stream_processor.py. Does stream processor exist?",
+        "ans": "stream_processor.py",
+        "pts": 100
+      },
+      {
+        "title": "TimescaleDB Hypertable",
+        "description": "Run: grep -c 'create_hypertable\\|hypertable' /opt/iot-pipeline-lab/sql/*.sql. Hypertable created?",
+        "ans": "1",
+        "pts": 125
+      },
+      {
+        "title": "Ingestion Pipeline",
+        "description": "Run: ls /opt/iot-pipeline-lab/pipeline/ingest.py. Does ingestion pipeline exist?",
+        "ans": "ingest.py",
+        "pts": 100
+      },
+      {
+        "title": "Compression Policy",
+        "description": "Run: grep -c 'compress\\|add_compression_policy\\|segmentby' /opt/iot-pipeline-lab/sql/*.sql. Compression configured?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Retention Policy",
+        "description": "Run: grep -c 'retention\\|drop_chunks\\|retention_policy' /opt/iot-pipeline-lab/sql/*.sql. Retention policy set?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Materialized Views",
+        "description": "Run: grep -c 'MATERIALIZED VIEW\\|materialized' /opt/iot-pipeline-lab/sql/*.sql. Materialized views created?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Dashboard",
+        "description": "Run: ls /opt/iot-pipeline-lab/dashboard/grafana-dashboard.json. Does Grafana dashboard exist?",
+        "ans": "grafana-dashboard.json",
+        "pts": 100
+      },
+      {
+        "title": "Alert Script",
+        "description": "Run: ls /opt/iot-pipeline-lab/alerts/pipeline_monitor.py. Does alert script exist?",
+        "ans": "pipeline_monitor.py",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/iot-pipeline-lab && python3 -m pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "OTA Firmware Update System",
+    "description": "Build an over-the-air firmware update system with version management, rollback support, and progress tracking.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1300,
+    "estimatedMinutes": 100,
+    "skillName": "DEVICE_MANAGEMENT",
+    "briefing": "### Mission Objective\nDevelop an OTA firmware update system that handles firmware versioning, binary distribution, device update scheduling, and automatic rollback on failure detection.\n\n### Environment\n- Ubuntu 22.04 LTS with Node.js 20\n- Redis for update state tracking\n- Working directory: /opt/ota-update-lab\n\n### Tasks\n1. Create a firmware binary storage and versioning system\n2. Build an update distribution API endpoint\n3. Implement device update check mechanism\n4. Add firmware binary integrity verification (checksum)\n5. Create update progress tracking and reporting\n6. Implement rollback mechanism for failed updates\n7. Add update scheduling and batch deployment\n8. Create an OTA management dashboard\n\n### Permissions & Access\n- Container runs as root\n- Node.js 20 and Redis available\n- Mock firmware binaries provided",
+    "tasks": [
+      "Create a firmware binary storage and versioning system",
+      "Build an update distribution API endpoint",
+      "Implement device update check mechanism",
+      "Add firmware binary integrity verification (checksum)",
+      "Create update progress tracking and reporting",
+      "Implement rollback mechanism for failed updates",
+      "Add update scheduling and batch deployment",
+      "Create an OTA management dashboard"
+    ],
+    "flags": [
+      {
+        "title": "Firmware Storage",
+        "description": "Run: ls /opt/ota-update-lab/src/firmware/*.js. Does firmware module exist?",
+        "ans": "firmware",
+        "pts": 100
+      },
+      {
+        "title": "Update API",
+        "description": "Run: grep -c 'update\\|firmware\\|check' /opt/ota-update-lab/src/routes/*.js. Update API present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Update Check",
+        "description": "Run: grep -c 'check.*update\\|version.*compare\\|newVersion' /opt/ota-update-lab/src/services/*.js. Update check present?",
+        "ans": "2",
+        "pts": 125
+      },
+      {
+        "title": "Checksum Verify",
+        "description": "Run: grep -c 'sha256\\|checksum\\|hash\\|verify' /opt/ota-update-lab/src/services/*.js. Checksum verification present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Progress Tracking",
+        "description": "Run: grep -c 'progress\\|status\\|tracking' /opt/ota-update-lab/src/services/*.js. Progress tracking present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Rollback Mechanism",
+        "description": "Run: grep -c 'rollback\\|revert\\|previous.*version' /opt/ota-update-lab/src/services/*.js. Rollback mechanism present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Batch Deployment",
+        "description": "Run: grep -c 'batch\\|schedule\\|deploy' /opt/ota-update-lab/src/services/*.js. Batch deployment present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Dashboard",
+        "description": "Run: ls /opt/ota-update-lab/public/index.html. Does OTA dashboard exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/ota-update-lab && npm test. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Version Semantic",
+        "description": "Run: grep -c 'semver\\|major\\|minor\\|patch' /opt/ota-update-lab/src/firmware/versioning.js. Semantic versioning present?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  },
+  {
+    "title": "Digital Twin Simulation",
+    "description": "Create a digital twin system that simulates a physical IoT device with state synchronization and predictive maintenance.",
+    "dockerImage": "ubuntu:22.04",
+    "difficulty": 1500,
+    "estimatedMinutes": 120,
+    "skillName": "EMBEDDED_LINUX",
+    "briefing": "### Mission Objective\nDevelop a digital twin system that creates virtual replicas of IoT devices. Simulate device behavior, synchronize state between physical and virtual instances, and implement predictive maintenance algorithms.\n\n### Environment\n- Ubuntu 22.04 LTS with Python 3.12\n- NumPy for simulation\n- Working directory: /opt/digital-twin-lab\n\n### Tasks\n1. Create a DigitalTwin base class for device simulation\n2. Implement a motor simulator with temperature and vibration\n3. Add state synchronization between twin and real device\n4. Create a failure prediction model using sensor history\n5. Build a twin management API for creating and querying twins\n6. Add anomaly detection for device behavior\n7. Create a 3D visualization of device state\n8. Build a predictive maintenance scheduling system\n\n### Permissions & Access\n- Container runs as root\n- Python 3.12 with NumPy\n- Working directory is empty for fresh setup",
+    "tasks": [
+      "Create a DigitalTwin base class for device simulation",
+      "Implement a motor simulator with temperature and vibration",
+      "Add state synchronization between twin and real device",
+      "Create a failure prediction model using sensor history",
+      "Build a twin management API for creating and querying twins",
+      "Add anomaly detection for device behavior",
+      "Create a 3D visualization of device state",
+      "Build a predictive maintenance scheduling system"
+    ],
+    "flags": [
+      {
+        "title": "DigitalTwin Base",
+        "description": "Run: ls /opt/digital-twin-lab/src/twin/digital_twin.py. Does digital twin base exist?",
+        "ans": "digital_twin.py",
+        "pts": 100
+      },
+      {
+        "title": "Motor Simulator",
+        "description": "Run: ls /opt/digital-twin-lab/src/simulators/motor.py. Does motor simulator exist?",
+        "ans": "motor.py",
+        "pts": 100
+      },
+      {
+        "title": "State Sync",
+        "description": "Run: grep -c 'sync\\|synchronize\\|update_state' /opt/digital-twin-lab/src/twin/*.py. State synchronization present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Failure Prediction",
+        "description": "Run: grep -c 'predict\\|failure\\|maintenance' /opt/digital-twin-lab/src/ml/*.py. Failure prediction present?",
+        "ans": "3",
+        "pts": 125
+      },
+      {
+        "title": "Twin API",
+        "description": "Run: grep -c '/twins\\|/twin\\|create\\|query' /opt/digital-twin-lab/src/api/*.py. Twin API present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Anomaly Detection",
+        "description": "Run: grep -c 'anomaly\\|detect\\|deviation' /opt/digital-twin-lab/src/ml/*.py. Anomaly detection present?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "3D Visualization",
+        "description": "Run: ls /opt/digital-twin-lab/visualization/index.html. Does 3D visualization exist?",
+        "ans": "index.html",
+        "pts": 100
+      },
+      {
+        "title": "Maintenance Scheduler",
+        "description": "Run: grep -c 'schedule\\|maintenance\\|preventive' /opt/digital-twin-lab/src/services/*.py. Maintenance scheduler present?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Tests Pass",
+        "description": "Run: cd /opt/digital-twin-lab && pytest tests/. Exit code 0?",
+        "ans": "0",
+        "pts": 125
+      },
+      {
+        "title": "Sensor History",
+        "description": "Run: grep -c 'history\\|store\\|time_series\\|database' /opt/digital-twin-lab/src/twin/*.py. Sensor history tracked?",
+        "ans": "2",
+        "pts": 100
+      }
+    ]
+  }
+]
