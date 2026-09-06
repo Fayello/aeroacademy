@@ -114,6 +114,16 @@ body {
     box-shadow: 0 0 0 3px rgba(122, 214, 42, 0.15);
   }
 
+  select {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    color: #e2e8f0 !important;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  select option {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
+
   .card {
     @apply rounded-xl shadow-sm;
     background-color: var(--bg-card);
@@ -328,6 +338,16 @@ body {
 .light .input-field:focus {
   border-color: #7AD62A;
   box-shadow: 0 0 0 3px rgba(122, 214, 42, 0.15);
+}
+
+.light select {
+  background-color: white !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0;
+}
+.light select option {
+  background-color: white;
+  color: #1e293b;
 }
 
 .light .hover-lift:hover {

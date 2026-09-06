@@ -9,6 +9,11 @@ import { GlobalExceptionFilter } from './common/global-exception.filter';
 import { join, resolve } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('HTTP');
