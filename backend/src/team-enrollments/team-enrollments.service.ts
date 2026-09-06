@@ -75,7 +75,7 @@ export class TeamEnrollmentsService {
       data: { teamId: team.id },
     });
 
-    return team;
+    return this.getMyTeam(ownerId);
   }
 
   async updateTeam(
@@ -165,11 +165,7 @@ export class TeamEnrollmentsService {
       data: { teamId: team.id },
     });
 
-    return {
-      message: `Joined team "${team.name}"`,
-      teamId: team.id,
-      teamName: team.name,
-    };
+    return this.getMyTeam(userId);
   }
 
   async joinTeamByName(userId: string, teamName: string) {
@@ -320,7 +316,7 @@ export class TeamEnrollmentsService {
   }
 
   async getTeams() {
-    return this.prisma.team.findMany({
+    const teams = await this.prisma.team.findMany({
       where: { visibility: 'PUBLIC' },
       include: {
         owner: {
@@ -329,7 +325,7 @@ export class TeamEnrollmentsService {
         teamMembers: {
           include: {
             user: {
-              select: { id: true, name: true, email: true, avatarUrl: true },
+              select: { id: true, name: true, email: true, avatarUrl: true, xp: true },
             },
           },
         },
@@ -340,13 +336,32 @@ export class TeamEnrollmentsService {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    return teams.map((team) => ({
+      ...team,
+      ownerName: team.owner?.name || 'Unknown',
+      memberCount: team._count?.teamMembers ?? team.teamMembers?.length ?? 0,
+      totalXp: (team.teamMembers || []).reduce((sum, tm) => sum + (tm.user?.xp || 0), 0),
+      members: (team.teamMembers || []).map((tm) => ({
+        id: tm.id,
+        userId: tm.userId,
+        name: tm.user?.name || 'Unknown',
+        xp: tm.user?.xp || 0,
+        role: tm.role,
+        joinedAt: tm.joinedAt,
+      })),
+      courses: (team.courseEnrollments || []).map((ce) => ({
+        id: ce.course?.id,
+        title: ce.course?.title,
+      })),
+    }));
   }
 
   async getMyTeam(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user || !user.teamId) return null;
 
-    return this.prisma.team.findUnique({
+    const team = await this.prisma.team.findUnique({
       where: { id: user.teamId },
       include: {
         owner: {
@@ -374,6 +389,28 @@ export class TeamEnrollmentsService {
         },
       },
     });
+
+    if (!team) return null;
+
+    return {
+      ...team,
+      ownerName: team.owner?.name || 'Unknown',
+      memberCount: team.teamMembers?.length ?? 0,
+      totalXp: (team.teamMembers || []).reduce((sum, tm) => sum + (tm.user?.xp || 0), 0),
+      members: (team.teamMembers || []).map((tm) => ({
+        id: tm.id,
+        userId: tm.userId,
+        name: tm.user?.name || 'Unknown',
+        xp: tm.user?.xp || 0,
+        role: tm.role,
+        joinedAt: tm.joinedAt,
+      })),
+      courses: (team.courseEnrollments || []).map((ce) => ({
+        id: ce.course?.id,
+        title: ce.course?.title,
+        progress: undefined,
+      })),
+    };
   }
 
   async getTeam(teamId: string) {
@@ -412,7 +449,26 @@ export class TeamEnrollmentsService {
       },
     });
     if (!team) throw new NotFoundException('Team not found');
-    return team;
+
+    return {
+      ...team,
+      ownerName: team.owner?.name || 'Unknown',
+      memberCount: team.teamMembers?.length ?? 0,
+      totalXp: (team.teamMembers || []).reduce((sum, tm) => sum + (tm.user?.xp || 0), 0),
+      members: (team.teamMembers || []).map((tm) => ({
+        id: tm.id,
+        userId: tm.userId,
+        name: tm.user?.name || 'Unknown',
+        xp: tm.user?.xp || 0,
+        role: tm.role,
+        joinedAt: tm.joinedAt,
+      })),
+      courses: (team.courseEnrollments || []).map((ce) => ({
+        id: ce.course?.id,
+        title: ce.course?.title,
+        progress: undefined,
+      })),
+    };
   }
 
   async enrollTeamInCourse(

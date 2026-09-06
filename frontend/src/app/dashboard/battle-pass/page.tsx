@@ -100,7 +100,7 @@ export default function BattlePassPage() {
       setLoading(true);
       try {
         const [bp, prog, lb] = await Promise.allSettled([
-          fetchApi<BattlePassData>("/battle-pass"),
+          fetchApi<BattlePassData>("/battle-pass/active"),
           fetchApi<BattlePassProgress>(`/battle-pass/progress/${userId}`),
           fetchApi<LeaderboardEntry[]>("/battle-pass/leaderboard"),
         ]);

@@ -254,7 +254,7 @@ export default function CommunityPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate group-hover:text-violet-400 transition-colors">{team.name}</p>
-                  <p className="text-[11px] text-slate-400">{team.memberCount} members · {team.totalXp.toLocaleString()} XP</p>
+                  <p className="text-[11px] text-slate-400">{team.memberCount ?? 0} members · {(team.totalXp ?? 0).toLocaleString()} XP</p>
                 </div>
                 <ChevronRight size={14} className="text-slate-600 group-hover:text-violet-400 shrink-0" />
               </Link>

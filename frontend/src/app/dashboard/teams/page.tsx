@@ -428,9 +428,9 @@ export default function TeamsPage() {
 
   // ─── TABS — MY TEAM / BROWSE ─────────────────────────
   const sortedMembers = myTeam?.members
-    ? [...myTeam.members].sort((a, b) => b.xp - a.xp)
+    ? [...myTeam.members].sort((a, b) => (b.xp || 0) - (a.xp || 0))
     : [];
-  const isOwner = myTeam?.ownerId === (typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}").id : "");
+  const isOwner = myTeam?.ownerId === (typeof window !== "undefined" ? (() => { try { return JSON.parse(localStorage.getItem("user") || "{}").id; } catch { return ""; } })() : "");
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
