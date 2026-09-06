@@ -199,7 +199,7 @@ export class LabsService implements OnModuleInit {
     const targetDocker = docker || this.docker;
     try {
       const localImages = await targetDocker.listImages();
-      const searchTerms =
+      const searchName =
         requestedImage.split('/').pop()?.split(':')[0] || requestedImage;
 
       const exactMatch = localImages.find((img) =>
@@ -209,12 +209,14 @@ export class LabsService implements OnModuleInit {
       );
       if (exactMatch && exactMatch.RepoTags?.[0]) return exactMatch.RepoTags[0];
 
-      const fuzzyMatch = localImages.find((img) =>
-        img.RepoTags?.some((tag) =>
-          tag.toLowerCase().includes(searchTerms.toLowerCase()),
-        ),
+      const prefixMatch = localImages.find((img) =>
+        img.RepoTags?.some((tag) => {
+          const localName = tag.split('/').pop()?.split(':')[0] || tag;
+          return localName.toLowerCase() === searchName.toLowerCase();
+        }),
       );
-      if (fuzzyMatch && fuzzyMatch.RepoTags?.[0]) return fuzzyMatch.RepoTags[0];
+      if (prefixMatch && prefixMatch.RepoTags?.[0])
+        return prefixMatch.RepoTags[0];
 
       return requestedImage.includes(':')
         ? requestedImage
@@ -642,6 +644,17 @@ export class LabsService implements OnModuleInit {
 
     if (!latestInstance) return null;
 
+    const includeLab = {
+      lab: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          difficulty: true,
+        },
+      },
+    };
+
     if (
       latestInstance.status === 'RUNNING' &&
       latestInstance.expiresAt.getTime() <= Date.now()
@@ -649,17 +662,43 @@ export class LabsService implements OnModuleInit {
       return this.prisma.labInstance.update({
         where: { id: latestInstance.id },
         data: { status: 'EXPIRED' },
-        include: {
-          lab: {
-            select: {
-              id: true,
-              title: true,
-              description: true,
-              difficulty: true,
-            },
-          },
-        },
+        include: includeLab,
       });
+    }
+
+    if (
+      latestInstance.status === 'RUNNING' &&
+      latestInstance.containerId
+    ) {
+      try {
+        const targetDocker =
+          this.dockerManager.getDockerForServer(
+            latestInstance.serverId || 'local',
+          ) || this.docker;
+        const container = targetDocker.getContainer(latestInstance.containerId);
+        const inspectInfo = await container.inspect();
+        if (!inspectInfo.State.Running) {
+          logger.warn(
+            `Container ${latestInstance.containerId} stopped (user ${userId}, lab ${labId}), updating DB to STOPPED`,
+          );
+          this.dockerManager.decrementLabs(latestInstance.serverId || 'local');
+          return this.prisma.labInstance.update({
+            where: { id: latestInstance.id },
+            data: { status: 'STOPPED' },
+            include: includeLab,
+          });
+        }
+      } catch {
+        logger.warn(
+          `Container ${latestInstance.containerId} not found (user ${userId}, lab ${labId}), updating DB to STOPPED`,
+        );
+        this.dockerManager.decrementLabs(latestInstance.serverId || 'local');
+        return this.prisma.labInstance.update({
+          where: { id: latestInstance.id },
+          data: { status: 'STOPPED' },
+          include: includeLab,
+        });
+      }
     }
 
     return latestInstance;

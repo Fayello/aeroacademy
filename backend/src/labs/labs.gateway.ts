@@ -213,6 +213,32 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.docker;
       const container = targetDocker.getContainer(instance.containerId);
 
+      let inspectInfo;
+      try {
+        inspectInfo = await container.inspect();
+      } catch {
+        logger.warn(
+          `Container not found (user ${userId}, lab ${data.labId}), container ${instance.containerId}`,
+        );
+        client.emit('error', 'Lab container not found. Please restart the lab.');
+        return;
+      }
+
+      if (!inspectInfo.State.Running) {
+        logger.warn(
+          `Container not running (user ${userId}, lab ${data.labId}), state: ${inspectInfo.State.Status}, exit: ${inspectInfo.State.ExitCode}`,
+        );
+        try {
+          await container.start();
+          logger.info(
+            `Auto-restarted container ${instance.containerId}`,
+          );
+        } catch {
+          client.emit('error', 'Lab instance stopped. Please restart the lab.');
+          return;
+        }
+      }
+
       try {
         const ensureExec = await container.exec({
           AttachStdin: false,
