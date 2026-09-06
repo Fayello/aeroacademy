@@ -118,7 +118,7 @@ export default function StartingPointPage() {
     async function load() {
       try {
         const [allLabs, activeLabs, recs] = await Promise.all([
-          fetchApi<Lab[]>("/labs?take=500"),
+          fetchApi<Lab[]>("/labs?take=600"),
           fetchApi<ActiveLabInstance[]>("/dashboard/active-labs").catch(() => []),
           fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6").catch(() => null),
         ]);
