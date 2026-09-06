@@ -33,6 +33,7 @@ const FILES = [
   'labs-operational-db-mq-web.json',
   'labs-operational-network-mail-backup.json',
   'labs-capstones.json',
+  'labs-capstones-batch2.json',
 ];
 
 async function main() {
