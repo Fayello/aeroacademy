@@ -59,6 +59,37 @@ export class ThreatIntelService {
   private nginxErrorLog = '/var/log/nginx/error.log';
   private suricataEve = '/var/log/suricata/eve.json';
 
+  private readonly trustedIps = new Set([
+    '127.0.0.1',
+    '::1',
+    'localhost',
+    '169.58.158.83',
+    '172.18.0.1',
+    '172.19.0.1',
+    '172.20.0.1',
+    '172.21.0.1',
+    '172.22.0.1',
+    '172.23.0.1',
+    '172.24.0.1',
+    '172.25.0.1',
+    '172.26.0.1',
+    '172.27.0.1',
+    '172.28.0.1',
+    '172.29.0.1',
+    '172.30.0.1',
+    '172.31.0.1',
+    '10.0.0.1',
+    '10.6.0.1',
+    '192.168.0.1',
+    '192.168.1.1',
+  ]);
+
+  private isTrustedIp(ip: string): boolean {
+    if (this.trustedIps.has(ip)) return true;
+    if (ip.startsWith('172.') || ip.startsWith('10.6.')) return true;
+    return false;
+  }
+
   constructor() {
     // Initial parse on startup
     setTimeout(() => this.parseLogs(), 2000);
@@ -105,6 +136,8 @@ export class ThreatIntelService {
 
         let ip = hostnameMatch?.[1] || 'unknown';
         if (ip === 'localhost' || ip === '::1') ip = '127.0.0.1';
+
+        if (this.isTrustedIp(ip)) continue;
 
         const status = Number(codeMatch?.[1] || 403);
         const msg = msgMatch?.[1] || '';
@@ -156,6 +189,7 @@ export class ThreatIntelService {
 
         if (!ipMatch) continue;
         const ip = ipMatch[1];
+        if (this.isTrustedIp(ip)) continue;
         const geo = geoip.lookup(ip);
         const status = Number(codeMatch?.[1] || 403);
         const msg = msgMatch?.[1] || '';
@@ -203,6 +237,7 @@ export class ThreatIntelService {
           if (event.event_type !== 'alert') continue;
 
           const ip = event.src_ip || event.dest_ip || 'unknown';
+          if (this.isTrustedIp(ip)) continue;
           const geo = geoip.lookup(ip);
           const alert = event.alert || {};
 
