@@ -61,7 +61,7 @@ async function main() {
       }
 
       const labRow = await prisma.$queryRaw`
-        INSERT INTO "Lab" (id, title, description, "dockerImage", briefing, tasks, difficulty, "estimatedMinutes", "resourceProfile", "createdAt")
+        INSERT INTO "Lab" (id, title, description, "dockerImage", briefing, tasks, difficulty, "estimatedMinutes", "resourceProfile")
         VALUES (
           gen_random_uuid(),
           ${lab.title},
@@ -71,23 +71,22 @@ async function main() {
           ${JSON.stringify(lab.tasks)}::jsonb,
           ${lab.difficulty},
           ${lab.estimatedMinutes},
-          'STANDARD',
-          NOW()
+          'STANDARD'
         )
         RETURNING id
       `;
       const labId = labRow[0].id;
 
       await prisma.$executeRaw`
-        INSERT INTO "LabSkill" (id, "labId", "skillId", "createdAt")
-        VALUES (gen_random_uuid(), ${labId}::uuid, ${skillId}::uuid, NOW())
+        INSERT INTO "LabSkill" (id, "labId", "skillId")
+        VALUES (gen_random_uuid(), ${labId}::uuid, ${skillId}::uuid)
       `;
 
       for (const flag of lab.flags) {
         const hashed = await hashAnswer(flag.ans);
         await prisma.$executeRaw`
-          INSERT INTO "LabFlag" (id, "labId", title, description, "correctAnswer", points, "createdAt")
-          VALUES (gen_random_uuid(), ${labId}::uuid, ${flag.title}, ${flag.description}, ${hashed}, ${flag.pts}, NOW())
+          INSERT INTO "LabFlag" (id, "labId", title, description, "correctAnswer", points)
+          VALUES (gen_random_uuid(), ${labId}::uuid, ${flag.title}, ${flag.description}, ${hashed}, ${flag.pts})
         `;
         totalFlags++;
       }
