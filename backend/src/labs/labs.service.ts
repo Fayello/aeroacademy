@@ -712,7 +712,7 @@ export class LabsService implements OnModuleInit {
   }) {
     const labs = await this.prisma.lab.findMany({
       skip: opts?.skip ?? 0,
-      take: opts?.take ?? 200,
+      take: opts?.take ?? 500,
       include: {
         flags: {
           include: {

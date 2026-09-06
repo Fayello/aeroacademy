@@ -127,7 +127,7 @@ export default function LabsCatalog() {
     async function loadData() {
       try {
         const [labsData, stats] = await Promise.all([
-          fetchApi("/labs?take=200"),
+          fetchApi("/labs?take=500"),
           fetchApi("/labs/stats"),
         ]);
         if (!cancelled) {
