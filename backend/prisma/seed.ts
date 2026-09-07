@@ -372,6 +372,7 @@ async function main() {
   await prisma.course.deleteMany({});
   await prisma.labFlag.deleteMany({});
   await prisma.lab.deleteMany({});
+  await prisma.activityEvent.deleteMany({});
   await prisma.organization.deleteMany({});
   await prisma.team.deleteMany({});
   await prisma.season.deleteMany({});
