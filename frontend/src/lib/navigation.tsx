@@ -68,6 +68,7 @@ const DEFAULT_CONTEXT: NavigationContext = {
       id: "learn",
       label: "Learn",
       items: [
+        { href: "/dashboard/starting-point", tKey: "nav.startingPoint", icon: "Compass", label: "Starting Point" },
         { href: "/dashboard/courses", tKey: "nav.courses", icon: "GraduationCap", label: "Courses" },
         { href: "/dashboard/learning-paths", tKey: "nav.paths", icon: "Route", label: "Learning Paths" },
         { href: "/dashboard/training", tKey: "nav.masterclasses", icon: "Award", label: "Master Classes" },
@@ -90,6 +91,10 @@ const DEFAULT_CONTEXT: NavigationContext = {
         { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Trophy", label: "Leaderboard" },
         { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
         { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
+        { href: "/dashboard/battle-pass", tKey: "nav.battlePass", icon: "Ticket", label: "Battle Pass" },
+        { href: "/dashboard/boss-missions", tKey: "nav.bossMissions", icon: "Skull", label: "Boss Missions" },
+        { href: "/dashboard/seasons", tKey: "nav.seasons", icon: "Calendar", label: "Seasons" },
+        { href: "/dashboard/badges", tKey: "nav.badges", icon: "Medal", label: "Badges" },
       ],
     },
     {
@@ -99,7 +104,6 @@ const DEFAULT_CONTEXT: NavigationContext = {
         { href: "/dashboard/community", tKey: "nav.community", icon: "Megaphone", label: "Community" },
         { href: "/dashboard/guilds", tKey: "nav.guilds", icon: "Shield", label: "Guilds" },
         { href: "/dashboard/teams", tKey: "nav.teams", icon: "Users", label: "Teams" },
-        { href: "/dashboard/leaderboard", tKey: "nav.leaderboard", icon: "Trophy", label: "Leaderboard" },
       ],
     },
     {
@@ -268,12 +272,14 @@ function getLearnerFallbackContext(experience: UserExperience, role: string, lev
             { href: "/dashboard/ranking", tKey: "nav.ranking", icon: "Trophy", label: "Leaderboard" },
             { href: "/dashboard/head-to-head", tKey: "nav.headToHead", icon: "Swords", label: "Head-to-Head" },
             { href: "/dashboard/challenges/lab-challenges", tKey: "nav.labChallenges", icon: "Swords", label: "Lab Challenges" },
-            { href: "/dashboard/battle-pass", tKey: "nav.battlePass", icon: "Ticket", label: "Battle Pass" },
-            { href: "/dashboard/seasons", tKey: "nav.seasons", icon: "Calendar", label: "Seasons" },
-          ],
-        },
-        {
-          id: "enterprise",
+        { href: "/dashboard/battle-pass", tKey: "nav.battlePass", icon: "Ticket", label: "Battle Pass" },
+        { href: "/dashboard/boss-missions", tKey: "nav.bossMissions", icon: "Skull", label: "Boss Missions" },
+        { href: "/dashboard/seasons", tKey: "nav.seasons", icon: "Calendar", label: "Seasons" },
+        { href: "/dashboard/badges", tKey: "nav.badges", icon: "Medal", label: "Badges" },
+      ],
+    },
+    {
+      id: "enterprise",
           label: "Enterprise",
           items: [
             { href: "/dashboard/enterprise", tKey: "nav.enterprise", icon: "Building2", label: "Enterprise Portal" },
