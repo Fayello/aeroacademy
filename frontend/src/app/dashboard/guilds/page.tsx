@@ -137,7 +137,7 @@ export default function GuildsPage() {
                 <h3 className="text-lg font-bold text-white">{myGuild.name}</h3>
                 <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#7AD62A]/10 text-[#7AD62A]">Your Guild</span>
               </div>
-              <p className="text-sm text-slate-400 mt-0.5">{myGuild._count.members}/50 members · Level {myGuild.level} · {Number(myGuild.xp).toLocaleString()} XP</p>
+              <p className="text-sm text-slate-400 mt-0.5">{myGuild._count?.members ?? 0}/50 members · Level {myGuild.level} · {Number(myGuild.xp).toLocaleString()} XP</p>
               {myGuild.motto && <p className="text-xs text-slate-500 italic mt-1">&ldquo;{myGuild.motto}&rdquo;</p>}
             </div>
             <ChevronRight size={20} className="text-[#7AD62A] shrink-0" />
@@ -214,7 +214,7 @@ export default function GuildsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-base font-bold text-white group-hover:text-[#7AD62A] transition-colors truncate">{guild.name}</h3>
-                  <p className="text-xs text-slate-400">{guild._count.members}/50 members · Level {guild.level}</p>
+                  <p className="text-xs text-slate-400">{guild._count?.members ?? 0}/50 members · Level {guild.level}</p>
                 </div>
               </div>
               {guild.motto && <p className="text-xs text-slate-500 italic mb-2">&ldquo;{guild.motto}&rdquo;</p>}
@@ -279,7 +279,7 @@ export default function GuildsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white truncate">{g.name}</p>
-                  <p className="text-[10px] text-slate-500">{g._count.members} members · Level {g.level}</p>
+                  <p className="text-[10px] text-slate-500">{g._count?.members ?? 0} members · Level {g.level}</p>
                 </div>
                 <span className="text-[10px] text-[#7AD62A] font-semibold">{Number(g.xp).toLocaleString()} XP</span>
               </Link>

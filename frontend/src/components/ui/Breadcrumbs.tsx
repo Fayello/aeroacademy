@@ -69,7 +69,7 @@ export default function Breadcrumbs() {
   if (!pathname || pathname === "/dashboard") return null;
 
   const rootHref = nav.viewMode === "ADMIN" ? nav.adminHomePath || "/dashboard/admin" : "/dashboard";
-  const rootLabel = nav.viewMode === "ADMIN" ? nav.adminViewLabel || "Admin View" : "Learner View";
+  const rootLabel = nav.viewMode === "ADMIN" ? nav.adminViewLabel || "Admin Console" : "Learner Portal";
   const RootIcon = nav.viewMode === "ADMIN" ? Shield : GraduationCap;
 
   const segments = pathname.split("/").filter(Boolean);
@@ -79,7 +79,8 @@ export default function Breadcrumbs() {
     .map((segment, i) => {
       const href = "/" + segments.slice(0, i + 2).join("/");
       const isLast = i === segments.filter((s) => s !== "dashboard").length - 1;
-      const label = labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
+      const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const label = labelMap[segment] || (UUID_RE.test(segment) ? "Details" : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " "));
       return { href, label, isLast };
     });
 
