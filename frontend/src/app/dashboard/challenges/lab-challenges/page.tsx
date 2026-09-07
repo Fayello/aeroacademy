@@ -60,10 +60,30 @@ export default function LabChallengesPage() {
   const [search, setSearch] = useState("");
   const [labs, setLabs] = useState<{ id: string; title: string; difficulty: number }[]>([]);
   const [sending, setSending] = useState(false);
-
-  const myId = typeof window !== "undefined" ? (() => { try { return JSON.parse(localStorage.getItem("user") || "{}").id; } catch { return ""; } })() : "";
+  const [myId, setMyId] = useState<string>("");
 
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.id) setMyId(parsed.id);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (myId) return;
+    fetchApi<{ id: string }>("/auth/me").then((me) => {
+      if (me?.id) {
+        setMyId(me.id);
+        try { localStorage.setItem("user", JSON.stringify(me)); } catch {}
+      }
+    }).catch(() => {});
+  }, [myId]);
+
+  useEffect(() => {
+    if (!myId) return;
     setError("");
     Promise.all([
       fetchApi<Challenge[]>("/challenges/lab-challenges/mine"),
@@ -77,7 +97,7 @@ export default function LabChallengesPage() {
       setError(err instanceof Error ? err.message : "Failed to load lab challenges");
     })
       .finally(() => setLoading(false));
-  }, []);
+  }, [myId]);
 
   const filteredOpponents = leaderboard.filter(
     (e) => e.id !== myId && (e.name.toLowerCase().includes(search.toLowerCase()) || e.username?.toLowerCase().includes(search.toLowerCase()))

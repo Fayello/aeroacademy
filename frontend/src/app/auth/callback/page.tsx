@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import { fetchApi } from "@/lib/api";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -19,7 +20,13 @@ export default function AuthCallbackPage() {
       localStorage.setItem("token", accessToken);
       localStorage.setItem("refresh_token", refreshToken);
       document.cookie = `token=${accessToken}; path=/; max-age=3600; samesite=lax`;
-      router.replace("/dashboard");
+
+      fetchApi<{ id: string; name: string; email: string; role: string; xp: number; userExperience: string }>("/auth/me")
+        .then((user) => {
+          if (user) localStorage.setItem("user", JSON.stringify(user));
+        })
+        .catch(() => {})
+        .finally(() => router.replace("/dashboard"));
     } else {
       router.replace("/dashboard");
     }
