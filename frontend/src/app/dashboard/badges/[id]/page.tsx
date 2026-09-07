@@ -5,7 +5,6 @@ import { fetchApi } from "@/lib/api";
 import Link from "next/link";
 import {
   Award,
-  Loader2,
   ArrowLeft,
   Trophy,
   Star,
@@ -26,6 +25,7 @@ import {
   Lock,
   Sparkles,
 } from "lucide-react";
+import { DashboardEmptyState, DashboardErrorState, DashboardLoadingState, StatusPill } from "@/components/dashboard/DashboardStates";
 
 interface BadgeDetail {
   id: string;
@@ -54,10 +54,10 @@ const iconMap: Record<string, typeof Trophy> = {
 };
 
 const tierColors: Record<string, string> = {
-  BRONZE: "bg-amber-500/10 border-amber-200 text-amber-700",
-  SILVER: "bg-white/5 border-white/10 text-slate-700",
-  GOLD: "bg-yellow-50 border-yellow-200 text-yellow-700",
-  PLATINUM: "bg-purple-50 border-purple-200 text-purple-700",
+  BRONZE: "bg-amber-500/10 border-amber-400/25",
+  SILVER: "bg-white/[0.06] border-slate-300/20",
+  GOLD: "bg-yellow-500/10 border-yellow-400/25",
+  PLATINUM: "bg-purple-500/10 border-purple-400/25",
 };
 
 const tierBg: Record<string, string> = {
@@ -98,43 +98,62 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
   const [allBadges, setAllBadges] = useState<BadgeDetail[]>([]);
   const [myBadges, setMyBadges] = useState<UserBadge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function load() {
+    try {
+      setLoading(true);
+      setError("");
+      const [badges, earned] = await Promise.allSettled([
+        fetchApi<BadgeDetail[]>("/badges"),
+        fetchApi<UserBadge[]>("/badges/my"),
+      ]);
+      if (badges.status === "fulfilled") {
+        setAllBadges(Array.isArray(badges.value) ? badges.value : []);
+      } else {
+        setError(badges.reason instanceof Error ? badges.reason.message : "Failed to load badge details");
+      }
+      if (earned.status === "fulfilled") {
+        setMyBadges(Array.isArray(earned.value) ? earned.value : []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [badges, earned] = await Promise.all([
-          fetchApi<BadgeDetail[]>("/badges"),
-          fetchApi<UserBadge[]>("/badges/my"),
-        ]);
-        setAllBadges(badges);
-        setMyBadges(earned);
-      } catch {
-        // silent
-      } finally {
-        setLoading(false);
-      }
-    }
     load();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-blue-500 animate-spin" />
-      </div>
+      <DashboardLoadingState title="Loading badge detail" rows={2} />
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardErrorState
+        title="Unable to load badge"
+        description={error}
+        onRetry={load}
+      />
     );
   }
 
   const badge = allBadges.find((b) => b.id === id);
   if (!badge) {
     return (
-      <div className="rounded-xl border border-white/10 bg-[#0f172a] p-12 text-center">
-        <Award size={32} className="text-slate-300 mx-auto mb-3" />
-        <p className="text-sm text-slate-500">Badge not found</p>
-        <Link href="/dashboard/badges" className="text-xs text-blue-600 hover:text-blue-700 mt-3 inline-block">
+      <DashboardEmptyState
+        icon={Award}
+        title="Badge not found"
+        description="This badge is not in the current catalog."
+        action={(
+          <Link href="/dashboard/badges" className="text-sm font-semibold text-[#7AD62A] hover:text-[#9ae457]">
           Back to Badges
-        </Link>
-      </div>
+          </Link>
+        )}
+      />
     );
   }
 
@@ -172,24 +191,24 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
 
         <div className="p-6 space-y-5">
           <div className="text-center">
-            <p className="text-sm text-slate-600 leading-relaxed">{badge.description}</p>
+            <p className="text-sm text-slate-300 leading-relaxed">{badge.description}</p>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-3 bg-white/5 rounded-lg">
               <Sparkles size={18} className="text-amber-500 mx-auto mb-1" />
               <p className="text-lg font-bold text-white">{badge.xpReward}</p>
-              <p className="text-[11px] text-slate-500">XP Reward</p>
+              <p className="text-[11px] text-slate-400">XP Reward</p>
             </div>
             <div className="text-center p-3 bg-white/5 rounded-lg">
               <Users size={18} className="text-blue-500 mx-auto mb-1" />
               <p className="text-lg font-bold text-white">{badge._count.users}</p>
-              <p className="text-[11px] text-slate-500">Earned By</p>
+              <p className="text-[11px] text-slate-400">Earned By</p>
             </div>
             <div className="text-center p-3 bg-white/5 rounded-lg">
               <Target size={18} className="text-[#7AD62A] mx-auto mb-1" />
               <p className="text-lg font-bold text-white">{badge.tier}</p>
-              <p className="text-[11px] text-slate-500">Tier</p>
+              <p className="text-[11px] text-slate-400">Tier</p>
             </div>
           </div>
 
@@ -204,7 +223,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-slate-500 text-sm bg-white/5 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-slate-300 text-sm bg-white/5 p-3 rounded-lg">
               <Lock size={16} />
               <span className="font-medium">Not Yet Earned</span>
             </div>
@@ -212,7 +231,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
 
           <div className="bg-white/5 rounded-lg p-4">
             <h2 className="text-sm font-semibold text-white mb-2">Requirement</h2>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-300">
               {requirementLabels[badge.requirement] || badge.requirement}
             </p>
           </div>
@@ -231,7 +250,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
                       className={`rounded-lg border p-3 text-center transition-all hover:shadow-sm ${
                         rbEarned
                           ? tierColors[rb.tier] || tierColors.BRONZE
-                          : "bg-white/5 border-white/10 opacity-60"
+                          : "bg-white/[0.03] border-white/10 opacity-70"
                       }`}
                     >
                       <div
@@ -242,6 +261,7 @@ export default function BadgeDetailPage({ params }: { params: Promise<{ id: stri
                         <RbIcon size={16} className="text-white" />
                       </div>
                       <p className="text-[10px] font-semibold text-white truncate">{rb.name}</p>
+                      {rbEarned && <div className="mt-2"><StatusPill tone="success">Earned</StatusPill></div>}
                     </Link>
                   );
                 })}

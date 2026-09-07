@@ -33,7 +33,7 @@ export default function ActivityFeed({ feed }: ActivityFeedProps) {
               "bg-[#7AD62A]/60"
             }`} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-slate-700 leading-snug">{item.message}</p>
+              <p className="text-sm text-slate-300 leading-snug">{item.message}</p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs text-slate-400">
                   {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -46,7 +46,7 @@ export default function ActivityFeed({ feed }: ActivityFeedProps) {
           </div>
         )        ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+            <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-3">
               <Activity size={20} className="text-slate-400" />
             </div>
             <p className="text-sm font-medium text-white">No activity yet</p>

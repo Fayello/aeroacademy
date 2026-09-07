@@ -19,7 +19,7 @@ export default function BottomNav() {
     { href: "/dashboard", label: t("mobile.home"), icon: Home, show: true },
     { href: "/dashboard/courses", label: t("mobile.learn"), icon: GraduationCap, show: true },
     { href: "/dashboard/labs", label: t("mobile.labs"), icon: FlaskConical, show: true },
-    { href: "/dashboard/leaderboard", label: t("mobile.compete"), icon: Swords, show: hasCompete },
+    { href: "/dashboard/ranking", label: t("mobile.compete"), icon: Swords, show: hasCompete },
     { href: "/dashboard/notifications", label: t("mobile.notifications"), icon: Bell, show: true, isNotifications: true },
     { href: "/dashboard/profile", label: t("mobile.me"), icon: User, show: true },
   ];

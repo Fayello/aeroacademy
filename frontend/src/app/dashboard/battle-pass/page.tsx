@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { Loader2, Crown, Lock, CheckCircle2, Star, Zap, Gift, Shield, Trophy, Sparkles, Medal, Award } from "lucide-react";
+import { Crown, Lock, CheckCircle2, Star, Zap, Gift, Shield, Trophy, Sparkles, Medal, Award } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
 import EmptyState from "@/components/ui/EmptyState";
+import { DashboardEmptyState, DashboardErrorState, DashboardLoadingState } from "@/components/dashboard/DashboardStates";
 import toast from "@/lib/toast";
 
 interface BattlePassTier {
@@ -40,7 +41,7 @@ interface ProgressTier {
 interface BattlePassProgress {
   battlePassId: string;
   title: string;
-  season: { id: string; name: string } | null;
+  season: { id: string; name: string } | string | null;
   totalXpEarned: number;
   currentTier: number;
   totalTiers: number;
@@ -79,8 +80,10 @@ export default function BattlePassPage() {
   const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<TabType>("tiers");
   const [battlePass, setBattlePass] = useState<BattlePassData | null>(null);
+  const [activeSeason, setActiveSeason] = useState<{ id: string; name: string } | null>(null);
   const [progress, setProgress] = useState<BattlePassProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [error, setError] = useState("");
   const [userId] = useState<string | null>(() => {
     try {
       const stored = typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -98,16 +101,22 @@ export default function BattlePassPage() {
     let cancelled = false;
     async function load() {
       setLoading(true);
+      setError("");
       try {
-        const [bp, prog, lb] = await Promise.allSettled([
+        const [season, bp, prog, lb] = await Promise.allSettled([
+          fetchApi<{ id: string; name: string }>("/seasons/active"),
           fetchApi<BattlePassData>("/battle-pass/active"),
           fetchApi<BattlePassProgress>(`/battle-pass/progress/${userId}`),
           fetchApi<LeaderboardEntry[]>("/battle-pass/leaderboard"),
         ]);
         if (!cancelled) {
+          if (season.status === "fulfilled" && season.value) setActiveSeason(season.value);
           if (bp.status === "fulfilled") setBattlePass(bp.value);
           if (prog.status === "fulfilled") setProgress(prog.value);
           if (lb.status === "fulfilled") setLeaderboard(lb.value);
+          if (bp.status === "rejected") {
+            setError(bp.reason instanceof Error ? bp.reason.message : "Failed to load battle pass");
+          }
         }
       } catch {
         if (!cancelled) toast.error("Failed to load battle pass");
@@ -136,9 +145,9 @@ export default function BattlePassPage() {
   }
 
   function getPositionStyle(position: number): { bg: string; text: string; icon?: string } {
-    if (position === 1) return { bg: "bg-amber-500/10 border-amber-200", text: "text-amber-400", icon: "text-amber-500" };
+    if (position === 1) return { bg: "bg-amber-500/10 border-amber-400/30", text: "text-amber-400", icon: "text-amber-500" };
     if (position === 2) return { bg: "bg-white/5 border-white/10", text: "text-slate-400", icon: "text-slate-400" };
-    if (position === 3) return { bg: "bg-orange-50 border-orange-200", text: "text-orange-400", icon: "text-orange-500" };
+    if (position === 3) return { bg: "bg-orange-500/10 border-orange-400/25", text: "text-orange-400", icon: "text-orange-500" };
     return { bg: "bg-[#0f172a] border-white/10", text: "text-slate-300" };
   }
 
@@ -153,9 +162,16 @@ export default function BattlePassPage() {
     return (
       <div className="space-y-6">
         <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={20} className="text-blue-500 animate-spin" />
-        </div>
+        <DashboardLoadingState title="Loading battle pass" rows={3} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
+        <DashboardErrorState description={error} onRetry={() => window.location.reload()} />
       </div>
     );
   }
@@ -164,15 +180,12 @@ export default function BattlePassPage() {
     return (
       <div className="space-y-6">
         <PageHeader title={t("nav.battle-pass")} description="Progress through tiers and earn exclusive rewards" />
-        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10">
-            <Crown size={28} className="text-purple-500" />
-          </div>
-          <h3 className="text-sm font-semibold text-white mb-1">No battle pass active</h3>
-          <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-300">
-            Battle passes bring tiered rewards and exclusive content. The next one is being prepared — check back soon.
-          </p>
-        </div>
+        <DashboardEmptyState
+          icon={Crown}
+          title="No battle pass active"
+          description={activeSeason ? `${activeSeason.name} is active, but no battle pass has been attached yet.` : "Battle pass rewards are between rotations. Continue learning while the next track is prepared."}
+          tone="warning"
+        />
       </div>
     );
   }
@@ -210,7 +223,7 @@ export default function BattlePassPage() {
       )}
 
       {progress && (
-        <div className="bg-gradient-to-r from-[#0F203A] to-[#1a3a5c] rounded-xl p-6 text-white">
+        <div className="bg-gradient-to-r from-[#0F203A] to-[#1a3a5c] rounded-xl border border-white/10 p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
@@ -338,7 +351,7 @@ export default function BattlePassPage() {
                     )}
 
                     {tier.rewards != null && (
-                      <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-white/5" : "bg-[#7AD62A]/10/50"}`}>
+                      <div className={`flex items-center gap-2 p-2 rounded-lg ${isLocked ? "bg-white/5" : "bg-[#7AD62A]/10"}`}>
                         <RewardIcon size={14} className={isLocked ? "text-slate-400" : "text-[#7AD62A]"} />
                         <span className={`text-[11px] font-medium ${isLocked ? "text-slate-400" : "text-slate-400"}`}>
                           {typeof tier.rewards === "string"
@@ -353,7 +366,7 @@ export default function BattlePassPage() {
                     {tier.isPremium && (
                       <div className="mt-2 flex items-center gap-1">
                         <Sparkles size={10} className="text-amber-500" />
-                        <span className="text-[10px] font-bold text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded-full border border-amber-200">
+                        <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded-full border border-amber-400/25">
                           Premium
                         </span>
                       </div>

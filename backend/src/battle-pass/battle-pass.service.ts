@@ -172,7 +172,7 @@ export class BattlePassService {
     return {
       battlePassId: battlePass.id,
       title: battlePass.title,
-      season: activeSeason.name,
+      season: { id: activeSeason.id, name: activeSeason.name },
       totalXpEarned,
       currentTier,
       totalTiers: battlePass.totalTiers,

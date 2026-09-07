@@ -5,10 +5,10 @@ interface BadgeProps {
 }
 
 const variants = {
-  emerald: "bg-[#7AD62A]/10 text-[#0F203A] border-[#7AD62A]/20",
-  blue: "bg-blue-500/10 text-blue-700 border-blue-200",
-  amber: "bg-amber-500/10 text-amber-700 border-amber-200",
-  red: "bg-red-500/10 text-red-700 border-red-200",
+  emerald: "bg-[#7AD62A]/10 text-[#7AD62A] border-[#7AD62A]/25",
+  blue: "bg-blue-500/10 text-blue-300 border-blue-400/25",
+  amber: "bg-amber-500/10 text-amber-300 border-amber-400/25",
+  red: "bg-red-500/10 text-red-300 border-red-400/25",
   slate: "bg-white/5 text-slate-400 border-white/10",
 };
 

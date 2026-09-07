@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import PageHeader from "@/components/ui/PageHeader";
+import { DashboardEmptyState, DashboardErrorState, DashboardLoadingState } from "@/components/dashboard/DashboardStates";
 import {
-  Swords, Loader2, Plus, Check, X, Clock, Trophy, Zap,
-  ChevronRight, User, FlaskConical, Search,
+  Swords, Loader2, Plus, Check, X, Clock, Trophy,
+  ChevronRight, FlaskConical, Search,
 } from "lucide-react";
 
 interface Challenge {
@@ -51,6 +52,7 @@ export default function LabChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [selectedOpponent, setSelectedOpponent] = useState<string>("");
   const [selectedLab, setSelectedLab] = useState<string>("");
@@ -61,6 +63,7 @@ export default function LabChallengesPage() {
   const myId = typeof window !== "undefined" ? (() => { try { return JSON.parse(localStorage.getItem("user") || "{}").id; } catch { return ""; } })() : "";
 
   useEffect(() => {
+    setError("");
     Promise.all([
       fetchApi<Challenge[]>("/challenges/lab-challenges/mine"),
       fetchApi<LeaderboardEntry[]>("/dashboard/leaderboard?limit=30"),
@@ -69,7 +72,9 @@ export default function LabChallengesPage() {
       setChallenges(c || []);
       setLeaderboard(l || []);
       setLabs(labData || []);
-    }).catch(() => {})
+    }).catch((err) => {
+      setError(err instanceof Error ? err.message : "Failed to load lab challenges");
+    })
       .finally(() => setLoading(false));
   }, []);
 
@@ -121,8 +126,18 @@ export default function LabChallengesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="text-[#7AD62A] animate-spin" />
+      <div className="space-y-6">
+        <PageHeader title="Lab Challenges" description="Challenge another engineer to complete a lab faster. Who finishes first?" />
+        <DashboardLoadingState title="Loading challenge board" rows={2} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Lab Challenges" description="Challenge another engineer to complete a lab faster. Who finishes first?" />
+        <DashboardErrorState description={error} onRetry={() => window.location.reload()} />
       </div>
     );
   }
@@ -306,11 +321,12 @@ export default function LabChallengesPage() {
             })}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <Swords size={24} className="text-slate-600 mx-auto mb-2" />
-            <p className="text-sm text-slate-500">No active challenges</p>
-            <p className="text-xs text-slate-600 mt-1">Send a challenge to get started</p>
-          </div>
+          <DashboardEmptyState
+            icon={Swords}
+            title="No active challenges"
+            description={leaderboard.length === 0 || labs.length === 0 ? "Challenge setup is waiting for available opponents and labs." : "Send a challenge to a peer and race through the same lab."}
+            tone="accent"
+          />
         )}
       </div>
 

@@ -28,8 +28,10 @@ import {
   ScrollText,
   ShieldAlert,
   TrendingUp,
+  Ticket,
   Trophy,
   Users,
+  Skull,
 } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { fetchApi } from "@/lib/api";
@@ -61,9 +63,11 @@ const ICON_MAP: Record<string, typeof Home> = {
   ScrollText,
   ShieldAlert,
   TrendingUp,
+  Ticket,
   Trophy,
   Settings,
   Users,
+  Skull,
 };
 
 export default function Sidebar() {
@@ -104,7 +108,7 @@ export default function Sidebar() {
 
   if (loading) {
     return (
-      <aside className={`fixed left-0 top-12 bottom-0 bg-[#0a0f1a] border-r border-white/6 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+      <aside className={`fixed left-0 top-12 bottom-0 bg-[#0a0f1a] border-r border-white/6 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-64"}`} aria-label="Main navigation">
         <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
         <div className="absolute inset-0 scanline-overlay pointer-events-none" />
         <div className="p-5 flex items-center gap-3">
@@ -126,7 +130,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`fixed left-0 top-12 bottom-0 bg-[#0a0f1a] border-r border-white/6 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-60"}`} aria-label="Main navigation">
+    <aside className={`fixed left-0 top-12 bottom-0 bg-[#0a0f1a] border-r border-white/6 hidden md:flex flex-col z-50 transition-all duration-300 overflow-hidden ${collapsed ? "w-16" : "w-64"}`} aria-label="Main navigation">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.03] pointer-events-none" />
 
       {/* Logo */}
@@ -201,7 +205,7 @@ export default function Sidebar() {
       )}
 
       {/* Main Nav — Flat list, no accordions */}
-      <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto min-h-0">
+      <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto overscroll-contain min-h-0">
         {sections.map((section) => {
           // Single-item sections render as a direct link
           if (section.items.length === 1) {
@@ -228,8 +232,6 @@ export default function Sidebar() {
           }
 
           // Multi-item section: show section header, then items flat
-          const firstItem = section.items[0];
-          const Icon = ICON_MAP[firstItem?.icon] || Target;
           const isActive = section.items.some(
             (item) => pathname === item.href || pathname.startsWith(item.href + "/")
           );
@@ -307,7 +309,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className={`px-3 pb-3 shrink-0 space-y-0.5 ${collapsed ? "px-2" : ""}`}>
+      <div className={`border-t border-white/6 bg-[#0a0f1a] px-3 py-3 shrink-0 space-y-0.5 ${collapsed ? "px-2" : ""}`}>
         <div className={`flex items-center ${collapsed ? "flex-col gap-0.5" : "gap-1"}`}>
           <Link prefetch={false}
             href="/dashboard/notifications"

@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { Loader2, Calendar, Zap, Trophy, Clock, Star, Crown } from "lucide-react";
+import { Loader2, Calendar, Zap, Trophy, Clock, Star } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Badge from "@/components/ui/Badge";
+import { DashboardEmptyState, DashboardLoadingState, LeaderboardRow } from "@/components/dashboard/DashboardStates";
 import toast from "@/lib/toast";
 
 interface BattlePass {
@@ -53,27 +54,6 @@ function timeRemaining(endDate: string) {
   if (days > 0) return `${days}d ${hours}h remaining`;
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   return `${hours}h ${minutes}m remaining`;
-}
-
-function positionStyle(pos: number) {
-  if (pos === 1) return "bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300 text-yellow-700";
-  if (pos === 2) return "bg-gradient-to-r from-slate-50 to-gray-50 border-white/10 text-slate-600";
-  if (pos === 3) return "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300 text-orange-700";
-  return "bg-[#0f172a] border-white/10 text-slate-700";
-}
-
-function positionBadge(pos: number) {
-  if (pos === 1) return <Crown size={16} className="text-yellow-500" />;
-  if (pos === 2) return <Trophy size={16} className="text-slate-400" />;
-  if (pos === 3) return <Trophy size={16} className="text-orange-500" />;
-  return <span className="text-xs font-bold text-slate-400 w-4 text-center">#{pos}</span>;
-}
-
-function positionBg(pos: number) {
-  if (pos === 1) return "bg-yellow-500";
-  if (pos === 2) return "bg-slate-400";
-  if (pos === 3) return "bg-orange-500";
-  return "bg-slate-300";
 }
 
 export default function SeasonsPage() {
@@ -132,9 +112,7 @@ export default function SeasonsPage() {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
         <PageHeader title="Seasons" description="Track current season progress and competition" />
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={20} className="text-blue-500 animate-spin" />
-        </div>
+        <DashboardLoadingState title="Loading season program" rows={2} />
       </div>
     );
   }
@@ -177,7 +155,7 @@ export default function SeasonsPage() {
                 </div>
                 {activeSeason.battlePass && (
                   <Link
-                    href="/battle-pass"
+                    href="/dashboard/battle-pass"
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg border border-white/20 text-sm font-medium text-white transition-colors shrink-0"
                   >
                     <Star size={16} className="text-[#7AD62A]" />
@@ -190,15 +168,12 @@ export default function SeasonsPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-            <Calendar size={28} className="text-indigo-500" />
-          </div>
-          <h3 className="text-sm font-semibold text-white mb-1">No active season</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            Seasons bring themed challenges and exclusive rewards. The next one is being prepared — check back soon.
-          </p>
-        </div>
+        <DashboardEmptyState
+          icon={Calendar}
+          title="No active season"
+          description="Seasonal competition is between rotations. Your normal learning progress still counts while the next season is prepared."
+          tone="accent"
+        />
       )}
 
       {seasons.length > 0 && (
@@ -217,14 +192,14 @@ export default function SeasonsPage() {
                 </thead>
                 <tbody>
                   {seasons.map((season) => (
-                    <tr key={season.id} className="border-b border-slate-100 last:border-0 hover:bg-white/5 transition-colors">
+                    <tr key={season.id} className="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors">
                       <td className="py-3 px-3">
                         <div>
                           <p className="font-medium text-white">{season.name}</p>
                           <p className="text-xs text-slate-500">{season.theme}</p>
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-slate-600">
+                      <td className="py-3 px-3 text-slate-300">
                         <div className="flex items-center gap-1.5">
                           <Calendar size={12} className="text-slate-400" />
                           {formatDate(season.startDate, lang)} — {formatDate(season.endDate, lang)}
@@ -260,28 +235,17 @@ export default function SeasonsPage() {
               <Loader2 size={20} className="text-blue-500 animate-spin" />
             </div>
           ) : leaderboard.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Trophy size={24} className="text-slate-300 mb-2" />
-              <p className="text-sm text-slate-500">No leaderboard data yet</p>
-            </div>
+            <DashboardEmptyState icon={Trophy} title="No leaderboard data yet" description="Season rankings appear after learners earn season XP." />
           ) : (
             <div className="space-y-2">
               {leaderboard.map((entry) => (
-                <div
+                <LeaderboardRow
                   key={entry.userId}
-                  className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${positionStyle(entry.position)}`}
-                >
-                  <div className={`w-8 h-8 rounded-full ${positionBg(entry.position)} flex items-center justify-center shrink-0`}>
-                    {positionBadge(entry.position)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white truncate">{entry.name}</p>
-                    <p className="text-xs text-slate-500">{entry.division}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="font-semibold text-white">{entry.xp.toLocaleString()} XP</p>
-                  </div>
-                </div>
+                  rank={entry.position}
+                  name={entry.name}
+                  meta={entry.division}
+                  value={`${entry.xp.toLocaleString()} XP`}
+                />
               ))}
             </div>
           )}

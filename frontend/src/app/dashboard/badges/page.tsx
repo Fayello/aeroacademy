@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import {
   Award,
-  Loader2,
   Trophy,
   Star,
   Shield,
@@ -21,6 +20,7 @@ import {
   Crosshair,
   AlertTriangle,
 } from "lucide-react";
+import { DashboardEmptyState, DashboardErrorState, DashboardLoadingState, StatusPill } from "@/components/dashboard/DashboardStates";
 
 interface Badge {
   id: string;
@@ -48,10 +48,10 @@ const iconMap: Record<string, typeof Trophy> = {
 };
 
 const tierColors: Record<string, string> = {
-  BRONZE: "bg-amber-500/10 border-amber-200 text-amber-700",
-  SILVER: "bg-white/5 border-white/10 text-slate-700",
-  GOLD: "bg-yellow-50 border-yellow-200 text-yellow-700",
-  PLATINUM: "bg-purple-50 border-purple-200 text-purple-700",
+  BRONZE: "bg-amber-500/10 border-amber-400/25",
+  SILVER: "bg-white/[0.06] border-slate-300/20",
+  GOLD: "bg-yellow-500/10 border-yellow-400/25",
+  PLATINUM: "bg-purple-500/10 border-purple-400/25",
 };
 
 const tierBg: Record<string, string> = {
@@ -66,6 +66,7 @@ export default function BadgesPage() {
   const [myBadges, setMyBadges] = useState<UserBadge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [earnedError, setEarnedError] = useState("");
   const [filter, setFilter] = useState<"all" | "earned" | "locked">("all");
 
   useEffect(() => {
@@ -76,14 +77,21 @@ export default function BadgesPage() {
     try {
       setLoading(true);
       setError("");
-      const [badges, earned] = await Promise.all([
+      setEarnedError("");
+      const [badges, earned] = await Promise.allSettled([
         fetchApi<Badge[]>("/badges"),
         fetchApi<UserBadge[]>("/badges/my"),
       ]);
-      setAllBadges(badges);
-      setMyBadges(earned);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load badges");
+      if (badges.status === "fulfilled") {
+        setAllBadges(Array.isArray(badges.value) ? badges.value : []);
+      } else {
+        setError(badges.reason instanceof Error ? badges.reason.message : "Failed to load badge catalog");
+      }
+      if (earned.status === "fulfilled") {
+        setMyBadges(Array.isArray(earned.value) ? earned.value : []);
+      } else {
+        setEarnedError(earned.reason instanceof Error ? earned.reason.message : "Your earned badges could not be loaded.");
+      }
     } finally {
       setLoading(false);
     }
@@ -100,20 +108,24 @@ export default function BadgesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-blue-500 animate-spin" />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Badges</h1>
+          <p className="text-sm text-slate-400 mt-1">Loading credential milestones</p>
+        </div>
+        <DashboardLoadingState title="Loading badge catalog" rows={4} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <AlertTriangle size={32} className="text-red-400 mb-3" />
-        <p className="text-sm text-slate-600 mb-3">{error}</p>
-        <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-colors">
-          Try again
-        </button>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Badges</h1>
+          <p className="text-sm text-slate-400 mt-1">Credential milestones and rewards</p>
+        </div>
+        <DashboardErrorState description={error} onRetry={load} />
       </div>
     );
   }
@@ -122,20 +134,27 @@ export default function BadgesPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-2xl font-bold text-white tracking-tight">Badges</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-400 mt-1">
           {myBadges.length} of {allBadges.length} earned
         </p>
       </div>
 
-      <div className="flex gap-2">
+      {earnedError && (
+        <div className="flex items-center gap-2 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <AlertTriangle size={16} />
+          <span>{earnedError} Showing the badge catalog without earned progress.</span>
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-2">
         {(["all", "earned", "locked"] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filter === f
-                ? "bg-blue-600 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-white/10"
+                ? "bg-[#7AD62A] text-[#0F203A]"
+                : "border border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/8"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -143,6 +162,14 @@ export default function BadgesPage() {
         ))}
       </div>
 
+      {filteredBadges.length === 0 ? (
+        <DashboardEmptyState
+          icon={Award}
+          title="No badges in this view"
+          description={filter === "earned" ? "You have not earned a badge yet. Complete labs, lessons, and streak goals to unlock your first milestone." : "The badge catalog is empty for this filter."}
+          tone="accent"
+        />
+      ) : (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {filteredBadges.map((badge) => {
           const earned = earnedIds.has(badge.id);
@@ -154,7 +181,7 @@ export default function BadgesPage() {
               className={`angular-card border p-4 text-center transition-all ${
                 earned
                   ? tierColors[badge.tier] || tierColors.BRONZE
-                  : "bg-white/5 border-white/10 opacity-50"
+                  : "bg-white/[0.03] border-white/10 opacity-70"
               }`}
             >
               <div
@@ -165,19 +192,18 @@ export default function BadgesPage() {
                 <Icon size={20} className="text-white" />
               </div>
               <p className="text-xs font-semibold text-white">{badge.name}</p>
-              <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{badge.description}</p>
+              <p className="text-[10px] text-slate-400 mt-1 line-clamp-2">{badge.description}</p>
               {badge.xpReward > 0 && (
-                <p className="text-[10px] font-bold text-amber-600 mt-2">+{badge.xpReward} XP</p>
+                <p className="text-[10px] font-bold text-amber-300 mt-2">+{badge.xpReward} XP</p>
               )}
               {earned && (
-                <span className="inline-block mt-2 text-[9px] font-medium text-[#7AD62A] bg-[#7AD62A]/10 px-2 py-0.5 rounded-full">
-                  Earned
-                </span>
+                <div className="mt-2"><StatusPill tone="success">Earned</StatusPill></div>
               )}
             </div>
           );
         })}
       </div>
+      )}
     </div>
   );
 }

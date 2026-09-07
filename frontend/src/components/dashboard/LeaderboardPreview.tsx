@@ -23,7 +23,7 @@ export default function LeaderboardPreview({ leaderboard }: LeaderboardPreviewPr
           <Trophy size={16} className="text-amber-500" />
           <h3 className="text-sm font-semibold text-white">Top Performers</h3>
         </div>
-        <Link href="/dashboard/leaderboard" className="text-xs text-[#7AD62A] hover:text-[#0F203A] font-medium flex items-center gap-1">
+        <Link href="/dashboard/leaderboard" className="text-xs text-[#7AD62A] hover:text-[#9ae457] font-medium flex items-center gap-1">
           View all <ChevronRight size={12} />
         </Link>
       </div>
@@ -32,7 +32,7 @@ export default function LeaderboardPreview({ leaderboard }: LeaderboardPreviewPr
         {leaderboard.slice(0, 5).map((op, idx) => (
           <div key={op.id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors">
             <span className="text-xs font-medium text-slate-400 w-5 text-center">{idx + 1}</span>
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600">
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-semibold text-slate-200">
               {op.username?.[0]?.toUpperCase() || op.name?.[0] || '?'}
             </div>
             <div className="flex-1 min-w-0">

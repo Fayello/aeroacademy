@@ -55,16 +55,6 @@ export class ChallengesController {
     return this.featureUnlockService.getUnlockedFeatures(req.user.id);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.challengesService.findOne(id);
-  }
-
-  @Get(':id/leaderboard')
-  async getLeaderboard(@Param('id') id: string) {
-    return this.challengesService.getLeaderboard(id);
-  }
-
   @Post('lab-challenges')
   @Audit('LAB_CHALLENGE_SENT')
   async sendChallenge(
@@ -104,5 +94,15 @@ export class ChallengesController {
     @Param('id') id: string,
   ) {
     return this.challengesService.completeLabChallenge(req.user.id, id);
+  }
+
+  @Get(':id/leaderboard')
+  async getLeaderboard(@Param('id') id: string) {
+    return this.challengesService.getLeaderboard(id);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.challengesService.findOne(id);
   }
 }

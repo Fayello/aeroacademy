@@ -181,6 +181,24 @@ const FEATURE_UNLOCKS = [
   { feature: 'SEASONAL', requiredLevel: 25, description: 'Seasonal competitions' },
 ];
 
+const BADGES = [
+  { name: 'First Steps', description: 'Complete your first lesson', icon: 'Footprints', category: 'SKILL', tier: 'BRONZE', xpReward: 50, requirement: 'complete_1_lesson' },
+  { name: 'Knowledge Seeker', description: 'Complete 5 lessons', icon: 'BookOpen', category: 'SKILL', tier: 'BRONZE', xpReward: 100, requirement: 'complete_5_lessons' },
+  { name: 'Dedicated Learner', description: 'Complete 10 lessons', icon: 'GraduationCap', category: 'SKILL', tier: 'SILVER', xpReward: 200, requirement: 'complete_10_lessons' },
+  { name: 'Course Master', description: 'Complete 25 lessons', icon: 'Award', category: 'SKILL', tier: 'GOLD', xpReward: 500, requirement: 'complete_25_lessons' },
+  { name: 'Scholar', description: 'Complete 50 lessons', icon: 'Crown', category: 'SKILL', tier: 'PLATINUM', xpReward: 1000, requirement: 'complete_50_lessons' },
+  { name: 'First Blood', description: 'Capture your first flag', icon: 'Flag', category: 'SKILL', tier: 'BRONZE', xpReward: 100, requirement: 'capture_1_flag' },
+  { name: 'Flag Hunter', description: 'Capture 5 flags', icon: 'Target', category: 'SKILL', tier: 'BRONZE', xpReward: 200, requirement: 'capture_5_flags' },
+  { name: 'Capture Specialist', description: 'Capture 10 flags', icon: 'Crosshair', category: 'SKILL', tier: 'SILVER', xpReward: 400, requirement: 'capture_10_flags' },
+  { name: 'Flag Collector', description: 'Capture 25 flags', icon: 'Trophy', category: 'SKILL', tier: 'GOLD', xpReward: 800, requirement: 'capture_25_flags' },
+  { name: 'Explorer', description: 'Enroll in 3 courses', icon: 'Compass', category: 'SKILL', tier: 'BRONZE', xpReward: 75, requirement: 'enroll_3_courses' },
+  { name: 'Course Collector', description: 'Enroll in 5 courses', icon: 'Library', category: 'SKILL', tier: 'SILVER', xpReward: 150, requirement: 'enroll_5_courses' },
+  { name: 'Consistent', description: 'Maintain a 7-day streak', icon: 'Flame', category: 'MILESTONE', tier: 'BRONZE', xpReward: 200, requirement: 'streak_7_days' },
+  { name: 'Unstoppable', description: 'Maintain a 30-day streak', icon: 'Zap', category: 'MILESTONE', tier: 'GOLD', xpReward: 1000, requirement: 'streak_30_days' },
+  { name: 'Rising Star', description: 'Reach Level 5', icon: 'Star', category: 'MILESTONE', tier: 'SILVER', xpReward: 300, requirement: 'level_5' },
+  { name: 'Elite Operative', description: 'Reach Level 10', icon: 'Shield', category: 'MILESTONE', tier: 'PLATINUM', xpReward: 1000, requirement: 'level_10' },
+];
+
 async function seedSkillDomains(prisma: PrismaClient) {
   for (const domain of SKILL_DOMAINS) {
     const createdDomain = await prisma.skillDomain.upsert({
@@ -236,6 +254,78 @@ async function seedFeatureUnlocks(prisma: PrismaClient) {
   }
 }
 
+async function seedBadges(prisma: PrismaClient) {
+  for (const badge of BADGES) {
+    await prisma.badge.upsert({
+      where: { name: badge.name },
+      update: badge,
+      create: badge,
+    });
+  }
+}
+
+async function seedGamificationBaseline(prisma: PrismaClient, bossLabId: string) {
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 14);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + 30);
+  endDate.setHours(23, 59, 59, 999);
+
+  await prisma.season.updateMany({ where: { isActive: true }, data: { isActive: false } });
+
+  const season = await prisma.season.create({
+    data: {
+      name: 'Operation Zero Day',
+      theme: 'Security & Infrastructure',
+      domainTheme: 'SECURITY',
+      seasonNumber: 1,
+      xpMultiplier: 1,
+      startDate,
+      endDate,
+      isActive: true,
+    },
+  });
+
+  await prisma.battlePass.create({
+    data: {
+      seasonId: season.id,
+      title: 'Operation Zero Day Pass',
+      totalTiers: 10,
+      tiers: {
+        create: Array.from({ length: 10 }).map((_, index) => ({
+          tierNumber: index + 1,
+          title: index === 0 ? 'Field Briefing' : `Tier ${index + 1} Reward`,
+          xpRequired: (index + 1) * 250,
+          rewards: [{ type: index % 3 === 0 ? 'BADGE' : 'XP', name: index % 3 === 0 ? 'Season Emblem' : `${(index + 1) * 50} bonus XP` }],
+          isPremium: index >= 5,
+        })),
+      },
+    },
+  });
+
+  const securityDomain = await prisma.skillDomain.findUnique({ where: { name: 'SECURITY' } });
+  await prisma.bossMission.create({
+    data: {
+      seasonId: season.id,
+      title: 'Zero Day Readiness Drill',
+      description: 'A focused practical mission covering exploitation triage, evidence capture, and remediation judgment.',
+      difficulty: 'BOSS',
+      maxAttempts: 3,
+      xpReward: 900,
+      ratingReward: 200,
+      prerequisiteLabIds: [bossLabId],
+      requiredDomains: securityDomain ? [{ domainId: securityDomain.id, minRating: 1000 }] : [],
+      domainId: securityDomain?.id,
+      theme: 'Security & Infrastructure',
+      labId: bossLabId,
+      startsAt: startDate,
+      expiresAt: endDate,
+    },
+  });
+}
+
 async function hashAnswer(answer: string): Promise<string> {
   return bcrypt.hash(answer.trim().toLowerCase(), SALT_ROUNDS);
 }
@@ -267,6 +357,14 @@ async function main() {
   await prisma.progress.deleteMany({});
   await prisma.labSubmission.deleteMany({});
   await prisma.labInstance.deleteMany({});
+  await prisma.labChallenge.deleteMany({});
+  await prisma.bossMissionAttempt.deleteMany({});
+  await prisma.bossMission.deleteMany({});
+  await prisma.battlePassProgress.deleteMany({});
+  await prisma.battlePassTier.deleteMany({});
+  await prisma.battlePass.deleteMany({});
+  await prisma.userBadge.deleteMany({});
+  await prisma.badge.deleteMany({});
   await prisma.userAchievement.deleteMany({});
   await prisma.achievement.deleteMany({});
   await prisma.lesson.deleteMany({});
@@ -1214,6 +1312,11 @@ Applications on AWS/GCP can often access a local metadata service at \`169.254.1
   console.log('Seeding certifications...');
   await seedCertifications(prisma);
   console.log('Certification seeding complete!');
+
+  console.log('Seeding badges and gamification baseline...');
+  await seedBadges(prisma);
+  await seedGamificationBaseline(prisma, sqliLab.id);
+  console.log('Gamification baseline seed complete!');
 }
 
 main()

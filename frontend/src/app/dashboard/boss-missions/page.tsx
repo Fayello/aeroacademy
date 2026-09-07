@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import Image from "next/image";
 import PageHeader from "@/components/ui/PageHeader";
+import { DashboardEmptyState, DashboardErrorState, DashboardLoadingState } from "@/components/dashboard/DashboardStates";
 import toast from "@/lib/toast";
 import {
   Loader2,
@@ -77,8 +78,8 @@ interface LeaderboardEntry {
 
 const difficultyConfig: Record<string, { label: string; className: string; color: string }> = {
   EASY: { label: "EASY", className: "bg-green-100 text-green-700", color: "text-green-600" },
-  MEDIUM: { label: "MEDIUM", className: "bg-yellow-100 text-yellow-700", color: "text-yellow-600" },
-  HARD: { label: "HARD", className: "bg-orange-100 text-orange-700", color: "text-orange-600" },
+  MEDIUM: { label: "MEDIUM", className: "bg-yellow-500/10 text-yellow-300 border border-yellow-400/25", color: "text-yellow-300" },
+  HARD: { label: "HARD", className: "bg-orange-500/10 text-orange-300 border border-orange-400/25", color: "text-orange-300" },
   BOSS: { label: "BOSS", className: "bg-red-100 text-red-700", color: "text-red-600" },
 };
 
@@ -115,6 +116,7 @@ export default function BossMissionsPage() {
   });
   const [bosses, setBosses] = useState<BossMission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [selectedBoss, setSelectedBoss] = useState<BossDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -135,10 +137,14 @@ export default function BossMissionsPage() {
     let cancelled = false;
     async function load() {
       try {
+        setError("");
         const data = await fetchApi<BossMission[]>("/boss-missions/active");
         if (!cancelled) setBosses(data);
-      } catch {
-        if (!cancelled) toast.error("Failed to load boss missions");
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load boss missions");
+          toast.error("Failed to load boss missions");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -179,9 +185,16 @@ export default function BossMissionsPage() {
     return (
       <div className="space-y-6">
         <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={20} className="text-[#7AD62A] animate-spin" />
-        </div>
+        <DashboardLoadingState title="Loading boss mission schedule" rows={2} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
+        <DashboardErrorState description={error} onRetry={() => window.location.reload()} />
       </div>
     );
   }
@@ -190,15 +203,12 @@ export default function BossMissionsPage() {
     return (
       <div className="space-y-6">
         <PageHeader title="Boss Missions" description="Challenge yourself against powerful boss labs" />
-        <div className="bg-[#0f172a] rounded-xl border border-white/10 py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-            <Swords size={28} className="text-red-500" />
-          </div>
-          <h3 className="text-sm font-semibold text-white mb-1">No boss missions active</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Boss challenges are being designed. These are high-difficulty labs that test your full skill set — stay ready.
-          </p>
-        </div>
+        <DashboardEmptyState
+          icon={Swords}
+          title="No boss missions active"
+          description="Advanced challenge labs are being scheduled. Use this time to strengthen domain ratings and prerequisites."
+          tone="danger"
+        />
       </div>
     );
   }
@@ -230,7 +240,7 @@ export default function BossMissionsPage() {
             >
               {boss.theme && (
                 <div className="mb-2">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#0F203A]/5 text-[#0F203A] border border-[#0F203A]/10">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-slate-300 border border-white/10">
                     {boss.theme}
                   </span>
                 </div>
@@ -291,7 +301,7 @@ export default function BossMissionsPage() {
                 disabled={expired}
                 className={`w-full py-2 px-4 rounded-lg text-xs font-medium transition-colors ${
                   expired
-                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    ? "bg-white/5 text-slate-400 cursor-not-allowed"
                     : "bg-[#0F203A] text-white hover:bg-[#0F203A]/90"
                 }`}
               >
@@ -324,7 +334,7 @@ export default function BossMissionsPage() {
                       </span>
                     </div>
                     {selectedBoss.boss.theme && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#0F203A]/5 text-[#0F203A] border border-[#0F203A]/10 mb-2">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-slate-300 border border-white/10 mb-2">
                         {selectedBoss.boss.theme}
                       </span>
                     )}
@@ -372,7 +382,7 @@ export default function BossMissionsPage() {
                                 style={{ width: `${Math.min(100, (req.currentRating / Math.max(req.minRating, 1)) * 100)}%` }}
                               />
                             </div>
-                            <span className={`text-[10px] font-medium ${req.met ? "text-[#7AD62A]" : "text-amber-600"}`}>
+                            <span className={`text-[10px] font-medium ${req.met ? "text-[#7AD62A]" : "text-amber-300"}`}>
                               {req.currentRating}/{req.minRating}
                             </span>
                             {req.met ? (

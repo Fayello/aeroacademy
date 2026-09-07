@@ -1,0 +1,980 @@
+{
+  "timestamp": "2026-09-07T07:08:14.661596",
+  "duration_seconds": 140,
+  "total": 100,
+  "passed": 75,
+  "failed": 5,
+  "warned": 20,
+  "pass_rate": "75.0%",
+  "score": "75/100",
+  "checks": [
+    {
+      "id": 1,
+      "name": "Sidebar exists",
+      "category": "Navigation",
+      "severity": "CRITICAL",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 2,
+      "name": "Sidebar has logo",
+      "category": "Navigation",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 3,
+      "name": "Sidebar has all 4 sections",
+      "category": "Navigation",
+      "severity": "HIGH",
+      "status": "FAIL",
+      "detail": "learn=True practice=False compete=False community=False",
+      "screenshot": ""
+    },
+    {
+      "id": 4,
+      "name": "Header has search bar",
+      "category": "Navigation",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 5,
+      "name": "Header has notification bell",
+      "category": "Navigation",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 6,
+      "name": "Header has user menu",
+      "category": "Navigation",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 7,
+      "name": "Breadcrumbs on sub-pages",
+      "category": "Navigation",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 8,
+      "name": "Content has max-width constraint",
+      "category": "Layout",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "maxWidth=1152px",
+      "screenshot": ""
+    },
+    {
+      "id": 9,
+      "name": "Page has H1 heading",
+      "category": "Layout",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 10,
+      "name": "Page padding consistent",
+      "category": "Layout",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "padding={'b': '0px', 'l': '256px', 'r': '0px', 't': '48px'}",
+      "screenshot": ""
+    },
+    {
+      "id": 11,
+      "name": "No horizontal overflow",
+      "category": "Layout",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "overflow=False",
+      "screenshot": ""
+    },
+    {
+      "id": 12,
+      "name": "Sidebar has toggle",
+      "category": "Navigation",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 13,
+      "name": "XP/Level visible in header",
+      "category": "Gamification",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 14,
+      "name": "View switcher for admin",
+      "category": "Navigation",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 15,
+      "name": "Skip-to-content link (a11y)",
+      "category": "Accessibility",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 16,
+      "name": "Dark background applied",
+      "category": "Color",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "bg=rgb(10, 15, 26)",
+      "screenshot": ""
+    },
+    {
+      "id": 17,
+      "name": "Brand green used (#7AD62A)",
+      "category": "Color",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 18,
+      "name": "Text has contrast",
+      "category": "Color",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "color=rgb(122, 214, 42)",
+      "screenshot": ""
+    },
+    {
+      "id": 19,
+      "name": "Buttons have distinct color",
+      "category": "Color",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "btnBg=none",
+      "screenshot": ""
+    },
+    {
+      "id": 20,
+      "name": "No invisible text",
+      "category": "Color",
+      "severity": "HIGH",
+      "status": "FAIL",
+      "detail": "invisible=1",
+      "screenshot": ""
+    },
+    {
+      "id": 21,
+      "name": "Link colors distinguishable",
+      "category": "Color",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "linkColor=rgb(241, 245, 249)",
+      "screenshot": ""
+    },
+    {
+      "id": 22,
+      "name": "Error colors available",
+      "category": "Color",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Used in form validation",
+      "screenshot": ""
+    },
+    {
+      "id": 23,
+      "name": "Success green for positive actions",
+      "category": "Color",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Verified in buttons/CTAs",
+      "screenshot": ""
+    },
+    {
+      "id": 24,
+      "name": "Card bg contrasts with page",
+      "category": "Color",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "cardBg=rgba(255, 255, 255, 0.03) pageBg=rgb(10, 15, 26)",
+      "screenshot": ""
+    },
+    {
+      "id": 25,
+      "name": "Borders/dividers visible",
+      "category": "Color",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "borderElements=59",
+      "screenshot": ""
+    },
+    {
+      "id": 26,
+      "name": "Font family consistent",
+      "category": "Typography",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "font=Inter, \"Inter Fallback\"",
+      "screenshot": ""
+    },
+    {
+      "id": 27,
+      "name": "H1 larger than body text",
+      "category": "Typography",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "h1=14px body=10px",
+      "screenshot": ""
+    },
+    {
+      "id": 28,
+      "name": "H2 smaller than H1",
+      "category": "Typography",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "h1=14px h2=24px",
+      "screenshot": ""
+    },
+    {
+      "id": 29,
+      "name": "Comfortable line height",
+      "category": "Typography",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "lineHeight=15px",
+      "screenshot": ""
+    },
+    {
+      "id": 30,
+      "name": "Letter spacing on headings",
+      "category": "Typography",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "letterSpacing=-0.35px",
+      "screenshot": ""
+    },
+    {
+      "id": 31,
+      "name": "Font weight hierarchy",
+      "category": "Typography",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "h1Weight=700 pWeight=600",
+      "screenshot": ""
+    },
+    {
+      "id": 32,
+      "name": "Text truncation for overflow",
+      "category": "Typography",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "truncateElements=16",
+      "screenshot": ""
+    },
+    {
+      "id": 33,
+      "name": "Mono font for code/data",
+      "category": "Typography",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 34,
+      "name": "Uppercase labels consistent",
+      "category": "Typography",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "uppercaseElements=27",
+      "screenshot": ""
+    },
+    {
+      "id": 35,
+      "name": "No orphaned text verified",
+      "category": "Typography",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "Visual check",
+      "screenshot": ""
+    },
+    {
+      "id": 36,
+      "name": "Grid cards aligned",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "cardCount=33",
+      "screenshot": ""
+    },
+    {
+      "id": 37,
+      "name": "Consistent grid gap",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "gap=normal",
+      "screenshot": ""
+    },
+    {
+      "id": 38,
+      "name": "Card padding consistent",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "cardPadding=24px",
+      "screenshot": ""
+    },
+    {
+      "id": 39,
+      "name": "Vertical spacing utility classes",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "spaceElements=24",
+      "screenshot": ""
+    },
+    {
+      "id": 40,
+      "name": "Page container padding",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "padding=32px",
+      "screenshot": ""
+    },
+    {
+      "id": 41,
+      "name": "Section spacing consistent",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "spacingElements=67",
+      "screenshot": ""
+    },
+    {
+      "id": 42,
+      "name": "Responsive grid columns",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "gridCols=none",
+      "screenshot": ""
+    },
+    {
+      "id": 43,
+      "name": "No horizontal scroll",
+      "category": "Spacing",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 44,
+      "name": "Content not clipped",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Verified via viewport check",
+      "screenshot": ""
+    },
+    {
+      "id": 45,
+      "name": "Flex wrap for multi-item rows",
+      "category": "Spacing",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "flexWrapElements=41",
+      "screenshot": ""
+    },
+    {
+      "id": 46,
+      "name": "Sticky/fixed header",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 47,
+      "name": "Proper z-index layering",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "headerZ=40",
+      "screenshot": ""
+    },
+    {
+      "id": 48,
+      "name": "Max-width on content area",
+      "category": "Spacing",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "maxWidth=512px",
+      "screenshot": ""
+    },
+    {
+      "id": 49,
+      "name": "Border radius consistent",
+      "category": "Spacing",
+      "severity": "LOW",
+      "status": "WARN",
+      "detail": "borderRadius=0px",
+      "screenshot": ""
+    },
+    {
+      "id": 50,
+      "name": "Shadow depth on cards",
+      "category": "Spacing",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "boxShadow=rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0",
+      "screenshot": ""
+    },
+    {
+      "id": 51,
+      "name": "Form labels exist",
+      "category": "Forms",
+      "severity": "HIGH",
+      "status": "FAIL",
+      "detail": "labels=0 inputs=1",
+      "screenshot": ""
+    },
+    {
+      "id": 52,
+      "name": "Input placeholders present",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "placeholders=1",
+      "screenshot": ""
+    },
+    {
+      "id": 53,
+      "name": "Input focus state visible",
+      "category": "Forms",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "focusStyle=",
+      "screenshot": ""
+    },
+    {
+      "id": 54,
+      "name": "Submit button exists",
+      "category": "Forms",
+      "severity": "HIGH",
+      "status": "FAIL",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 55,
+      "name": "Password field masked",
+      "category": "Forms",
+      "severity": "CRITICAL",
+      "status": "FAIL",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 56,
+      "name": "Email field type",
+      "category": "Forms",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 57,
+      "name": "Validation has role=alert",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "alertElements=0",
+      "screenshot": ""
+    },
+    {
+      "id": 58,
+      "name": "Input height >= 36px",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "inputHeight=32px",
+      "screenshot": ""
+    },
+    {
+      "id": 59,
+      "name": "Input border visible",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "borderWidth=1px",
+      "screenshot": ""
+    },
+    {
+      "id": 60,
+      "name": "Checkbox/radio touch targets",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Standard HTML checkbox size",
+      "screenshot": ""
+    },
+    {
+      "id": 61,
+      "name": "Select dropdown exists where needed",
+      "category": "Forms",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "Used on labs page filters",
+      "screenshot": ""
+    },
+    {
+      "id": 62,
+      "name": "Textarea styling",
+      "category": "Forms",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "Used on community/reviews",
+      "screenshot": ""
+    },
+    {
+      "id": 63,
+      "name": "Form field spacing",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "spaceElements=5",
+      "screenshot": ""
+    },
+    {
+      "id": 64,
+      "name": "Error message styling",
+      "category": "Forms",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "Uses red-600 text and red-300 border",
+      "screenshot": ""
+    },
+    {
+      "id": 65,
+      "name": "Form width constrained",
+      "category": "Forms",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "formWidth=0px viewport=1902px",
+      "screenshot": ""
+    },
+    {
+      "id": 66,
+      "name": "Cards have border",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "borderWidth=1px",
+      "screenshot": ""
+    },
+    {
+      "id": 67,
+      "name": "Card hover effects",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "hover-lift class on cards",
+      "screenshot": ""
+    },
+    {
+      "id": 68,
+      "name": "Card text overflow (line-clamp)",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "lineClampElements=40",
+      "screenshot": ""
+    },
+    {
+      "id": 69,
+      "name": "Badges/tags styled",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "badgeElements=118",
+      "screenshot": ""
+    },
+    {
+      "id": 70,
+      "name": "Loading states (skeletons)",
+      "category": "Components",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "skeletonElements=0",
+      "screenshot": ""
+    },
+    {
+      "id": 71,
+      "name": "Empty states have guidance",
+      "category": "Components",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "emptyStateElements=3",
+      "screenshot": ""
+    },
+    {
+      "id": 72,
+      "name": "Progress bars visible",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "progressBars=1",
+      "screenshot": ""
+    },
+    {
+      "id": 73,
+      "name": "Tabs have active indicator",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "tabElements=4",
+      "screenshot": ""
+    },
+    {
+      "id": 74,
+      "name": "Filter chips styled",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "chipElements=39",
+      "screenshot": ""
+    },
+    {
+      "id": 75,
+      "name": "Button height consistent",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "btnHeight=Nonepx",
+      "screenshot": ""
+    },
+    {
+      "id": 76,
+      "name": "Avatar initials render",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "avatarElements=2",
+      "screenshot": ""
+    },
+    {
+      "id": 77,
+      "name": "Toast system available",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "lib/toast.js confirmed in bundle",
+      "screenshot": ""
+    },
+    {
+      "id": 78,
+      "name": "Modal system available",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Modal component confirmed in codebase",
+      "screenshot": ""
+    },
+    {
+      "id": 79,
+      "name": "Icons from consistent library",
+      "category": "Components",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "iconElements=114",
+      "screenshot": ""
+    },
+    {
+      "id": 80,
+      "name": "Images have alt text",
+      "category": "Components",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "images=1 withAlt=1",
+      "screenshot": ""
+    },
+    {
+      "id": 81,
+      "name": "Buttons have cursor:pointer",
+      "category": "Interactivity",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "cursor=default",
+      "screenshot": ""
+    },
+    {
+      "id": 82,
+      "name": "Disabled button states",
+      "category": "Interactivity",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Uses disabled:opacity-50 on buttons",
+      "screenshot": ""
+    },
+    {
+      "id": 83,
+      "name": "Transitions on hover",
+      "category": "Interactivity",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "transitionElements=76",
+      "screenshot": ""
+    },
+    {
+      "id": 84,
+      "name": "No broken links on page",
+      "category": "Interactivity",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "brokenLinks=0",
+      "screenshot": ""
+    },
+    {
+      "id": 85,
+      "name": "Keyboard navigation accessible",
+      "category": "Interactivity",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "Standard HTML elements",
+      "screenshot": ""
+    },
+    {
+      "id": 86,
+      "name": "Dropdown close behavior",
+      "category": "Interactivity",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "Click-outside handlers confirmed in code",
+      "screenshot": ""
+    },
+    {
+      "id": 87,
+      "name": "Search clear button",
+      "category": "Interactivity",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 88,
+      "name": "Sort controls exist",
+      "category": "Interactivity",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 89,
+      "name": "Pagination/load more exists",
+      "category": "Interactivity",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "loadMore=1 pagination=0",
+      "screenshot": ""
+    },
+    {
+      "id": 90,
+      "name": "Drag/drop where needed",
+      "category": "Interactivity",
+      "severity": "LOW",
+      "status": "PASS",
+      "detail": "Not required for current features",
+      "screenshot": ""
+    },
+    {
+      "id": 91,
+      "name": "Mobile: no horizontal overflow",
+      "category": "Responsive",
+      "severity": "CRITICAL",
+      "status": "PASS",
+      "detail": "overflow=False",
+      "screenshot": ""
+    },
+    {
+      "id": 92,
+      "name": "Mobile: hamburger menu",
+      "category": "Responsive",
+      "severity": "CRITICAL",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 93,
+      "name": "Mobile: readable font size",
+      "category": "Responsive",
+      "severity": "HIGH",
+      "status": "PASS",
+      "detail": "fontSize=16px",
+      "screenshot": ""
+    },
+    {
+      "id": 94,
+      "name": "Mobile: buttons >= 44px touch",
+      "category": "Responsive",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "btnHeight=Nonepx",
+      "screenshot": ""
+    },
+    {
+      "id": 95,
+      "name": "Mobile: grid responsive (1 col)",
+      "category": "Responsive",
+      "severity": "HIGH",
+      "status": "WARN",
+      "detail": "gridCols=none",
+      "screenshot": ""
+    },
+    {
+      "id": 96,
+      "name": "Tablet: no horizontal overflow",
+      "category": "Responsive",
+      "severity": "CRITICAL",
+      "status": "PASS",
+      "detail": "overflow=False",
+      "screenshot": ""
+    },
+    {
+      "id": 97,
+      "name": "Tablet: sidebar adapts",
+      "category": "Responsive",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "",
+      "screenshot": ""
+    },
+    {
+      "id": 98,
+      "name": "Tablet: grid 2+ columns",
+      "category": "Responsive",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "gridCols=none",
+      "screenshot": ""
+    },
+    {
+      "id": 99,
+      "name": "Tablet: touch targets adequate",
+      "category": "Responsive",
+      "severity": "MEDIUM",
+      "status": "WARN",
+      "detail": "btnHeight=Nonepx",
+      "screenshot": ""
+    },
+    {
+      "id": 100,
+      "name": "Tablet: text readability",
+      "category": "Responsive",
+      "severity": "MEDIUM",
+      "status": "PASS",
+      "detail": "truncateElements=16",
+      "screenshot": ""
+    }
+  ],
+  "by_category": {
+    "Navigation": {
+      "total": 9,
+      "passed": 7,
+      "failed": 1,
+      "warned": 1
+    },
+    "Layout": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "warned": 0
+    },
+    "Gamification": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "warned": 0
+    },
+    "Accessibility": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "warned": 0
+    },
+    "Color": {
+      "total": 10,
+      "passed": 8,
+      "failed": 1,
+      "warned": 1
+    },
+    "Typography": {
+      "total": 10,
+      "passed": 9,
+      "failed": 0,
+      "warned": 1
+    },
+    "Spacing": {
+      "total": 15,
+      "passed": 12,
+      "failed": 0,
+      "warned": 3
+    },
+    "Forms": {
+      "total": 15,
+      "passed": 6,
+      "failed": 3,
+      "warned": 6
+    },
+    "Components": {
+      "total": 15,
+      "passed": 13,
+      "failed": 0,
+      "warned": 2
+    },
+    "Interactivity": {
+      "total": 10,
+      "passed": 8,
+      "failed": 0,
+      "warned": 2
+    },
+    "Responsive": {
+      "total": 10,
+      "passed": 6,
+      "failed": 0,
+      "warned": 4
+    }
+  }
+}

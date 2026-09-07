@@ -6,6 +6,7 @@ import { getDifficultyStyle, getProgressStatus } from "@/lib/labs";
 import { Rocket, Star, CheckCircle, Clock, Lock, ArrowRight, Shield, FileCheck } from "lucide-react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
+import { DashboardLoadingState } from "@/components/dashboard/DashboardStates";
 import { getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreLabAgainstOnboarding } from "@/lib/onboarding";
 import type { DashboardRecommendations, Lab } from "@/types/api";
 
@@ -190,27 +191,15 @@ export default function StartingPointPage() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <PageHeader title="Your Learning Path" description="Building your skills step by step" />
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="angular-card bg-[#0f172a] p-6 animate-pulse">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-slate-100" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-slate-100 rounded w-1/3" />
-                  <div className="h-3 bg-slate-100 rounded w-2/3" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <DashboardLoadingState title="Building your starter path" rows={3} />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <PageHeader
         title={pathTitle}
         description={journeySummary || "Follow this guided sequence to build your first practical proof and move toward certification readiness"}
@@ -308,7 +297,6 @@ export default function StartingPointPage() {
             />
           </div>
         </div>
-        <div className="absolute top-0 right-0 w-40 h-40 bg-[#7AD62A]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
       </div>
 
       {/* Lab list */}
@@ -340,7 +328,7 @@ export default function StartingPointPage() {
             isLocked
               ? "border-white/10 bg-white/[0.03] opacity-80"
               : isCompleted
-              ? "border-[#7AD62A]/20 bg-[#7AD62A]/10/30"
+              ? "border-[#7AD62A]/20 bg-[#7AD62A]/10"
               : "border-white/10 bg-[#0f172a] hover:border-white/10"
           }`;
 
@@ -354,7 +342,7 @@ export default function StartingPointPage() {
                       ? "bg-[#7AD62A] text-white"
                       : isCurrent
                       ? "bg-[#0F203A] text-white"
-                      : "bg-slate-100 text-slate-400"
+                      : "bg-white/10 text-slate-300"
                   }`}
                 >
                   {isCompleted ? (
@@ -420,8 +408,8 @@ export default function StartingPointPage() {
       {labs.length > 0 && completedCount === labs.length && (
         <div className="angular-card bg-[#7AD62A]/10 border border-[#7AD62A]/20 p-6 text-center">
           <Star size={32} className="mx-auto mb-3 text-[#7AD62A] fill-[#7AD62A]" />
-          <h3 className="text-lg font-bold text-[#0F203A] mb-1">Path Complete!</h3>
-          <p className="text-sm text-slate-600 mb-4">
+          <h3 className="text-lg font-bold text-white mb-1">Path Complete!</h3>
+          <p className="text-sm text-slate-300 mb-4">
             You&apos;ve completed the beginner path. Ready for more advanced challenges?
           </p>
           <Link

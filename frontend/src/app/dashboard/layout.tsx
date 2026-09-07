@@ -194,7 +194,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
       : "Search course catalog";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-64 md:py-0 relative overflow-hidden safe-area-pt">
+    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/6 bg-[#0a0f1a] px-3 py-2 md:h-12 md:px-3 md:pl-72 md:py-0 relative overflow-hidden safe-area-pt">
       <div className="absolute inset-0 angular-grid-bg opacity-[0.02] pointer-events-none" />
       <div className="relative flex flex-col gap-2.5 md:flex-row md:items-center md:gap-2">
         <div className="flex items-center gap-2 md:hidden">
@@ -587,8 +587,8 @@ export default function DashboardLayout({
             </a>
             <DashboardHeader onToggleSidebar={toggleSidebar} />
             <Sidebar />
-            <main id="main-content" className="pt-32 pb-20 sm:pt-28 md:pt-12 md:pb-0 md:pl-64 min-h-screen safe-area-pb" role="main">
-              <div className="max-w-6xl mx-auto p-4 md:p-8 w-full">
+            <main id="main-content" className="pt-28 pb-20 sm:pt-24 md:pt-12 md:pb-0 md:pl-64 min-h-screen safe-area-pb" role="main">
+              <div className="max-w-7xl mx-auto p-4 md:p-8 w-full">
                 <DashboardModeBanner />
                 <div className="hidden md:block">
                   <Breadcrumbs />
