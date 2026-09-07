@@ -14,6 +14,7 @@ import { AchievementService } from '../dashboard/achievement.service';
 import { LeaguesService } from '../leagues/leagues.service';
 import { ProgressionService } from '../common/progression.service';
 import { MissionService } from '../challenges/mission.service';
+import { ChallengesService } from '../challenges/challenges.service';
 import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
 import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
@@ -69,6 +70,7 @@ export class LabsService implements OnModuleInit {
     private emailService: EmailService,
     private progressionService: ProgressionService,
     private missionService: MissionService,
+    private challengesService: ChallengesService,
     private domainRankingService: DomainRankingService,
   ) {
     this.docker = dockerManager.getLocalDocker();
@@ -916,6 +918,12 @@ export class LabsService implements OnModuleInit {
           labTitle: lab?.title,
           timestamp: new Date(),
         });
+
+        this.challengesService
+          .recordLabChallengeTime(userId, flag.labId)
+          .catch((err) =>
+            logger.error('ChallengesService.recordLabChallengeTime failed', err),
+          );
 
         // Award bonus domain rating for lab completion
         if (primarySkill?.domain?.id) {

@@ -96,6 +96,15 @@ export class ChallengesController {
     return this.challengesService.completeLabChallenge(req.user.id, id);
   }
 
+  @Post('lab-challenges/:id/cancel')
+  @Audit('LAB_CHALLENGE_CANCELLED')
+  async cancelChallenge(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+  ) {
+    return this.challengesService.cancelLabChallenge(req.user.id, id);
+  }
+
   @Get(':id/leaderboard')
   async getLeaderboard(@Param('id') id: string) {
     return this.challengesService.getLeaderboard(id);

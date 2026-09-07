@@ -138,6 +138,16 @@ export default function LabChallengesPage() {
     }
   }
 
+  async function handleCancel(id: string) {
+    try {
+      await fetchApi(`/challenges/lab-challenges/${id}/cancel`, { method: "POST" });
+      setChallenges((prev) => prev.map((c) => c.id === id ? { ...c, status: "DECLINED" } : c));
+      toast.success("Challenge cancelled");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to cancel");
+    }
+  }
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -297,7 +307,12 @@ export default function LabChallengesPage() {
                   </p>
                   <p className="text-[11px] text-slate-500">Waiting for response · Expires {new Date(c.expiresAt).toLocaleDateString()}</p>
                 </div>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">Pending</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">Pending</span>
+                  <button onClick={() => handleCancel(c.id)} className="px-2 py-1 border border-white/10 text-slate-400 text-[10px] rounded-lg hover:bg-white/5 hover:text-red-400 transition-colors">
+                    Cancel
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -340,12 +355,20 @@ export default function LabChallengesPage() {
                     </div>
                   </div>
                   {myTime === null && (
-                    <Link
-                      href={`/dashboard/labs/${c.lab.id}`}
-                      className="block w-full text-center px-4 py-2 bg-[#7AD62A] text-[#0F203A] text-sm font-semibold rounded-lg hover:bg-[#6bc422] transition-colors"
-                    >
-                      Start Lab <ChevronRight size={14} className="inline ml-1" />
-                    </Link>
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/dashboard/labs/${c.lab.id}`}
+                        className="flex-1 block text-center px-4 py-2 bg-[#7AD62A] text-[#0F203A] text-sm font-semibold rounded-lg hover:bg-[#6bc422] transition-colors"
+                      >
+                        Start Lab <ChevronRight size={14} className="inline ml-1" />
+                      </Link>
+                      <button
+                        onClick={() => handleComplete(c.id)}
+                        className="px-4 py-2 border border-[#7AD62A]/30 text-[#7AD62A] text-sm font-semibold rounded-lg hover:bg-[#7AD62A]/10 transition-colors"
+                      >
+                        I&apos;m Done
+                      </button>
+                    </div>
                   )}
                   {myTime !== null && theirTime === null && (
                     <p className="text-xs text-slate-400 text-center">Waiting for opponent to finish...</p>

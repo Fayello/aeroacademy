@@ -120,6 +120,56 @@ export class ChallengesService {
     });
   }
 
+  async recordLabChallengeTime(userId: string, labId: string) {
+    const challenge = await this.prisma.labChallenge.findFirst({
+      where: {
+        labId,
+        status: 'ACCEPTED',
+        OR: [{ challengerId: userId }, { opponentId: userId }],
+      },
+    });
+    if (!challenge) return null;
+
+    const isChallenger = challenge.challengerId === userId;
+    const timeField = isChallenger ? 'challengerTime' : 'opponentTime';
+    const alreadySubmitted = isChallenger ? challenge.challengerTime : challenge.opponentTime;
+    if (alreadySubmitted !== null) return null;
+
+    const elapsed = Math.floor((Date.now() - challenge.createdAt.getTime()) / 1000);
+
+    const updateData: Record<string, unknown> = {
+      [timeField]: elapsed,
+    };
+
+    const otherTime = isChallenger ? challenge.opponentTime : challenge.challengerTime;
+    if (otherTime !== null) {
+      updateData.winnerId = elapsed < otherTime ? userId : elapsed > otherTime ? (isChallenger ? challenge.opponentId : challenge.challengerId) : null;
+      updateData.status = 'COMPLETED';
+    }
+
+    return this.prisma.labChallenge.update({
+      where: { id: challenge.id },
+      data: updateData,
+      include: {
+        challenger: { select: { id: true, name: true, username: true } },
+        opponent: { select: { id: true, name: true, username: true } },
+        lab: { select: { id: true, title: true } },
+      },
+    });
+  }
+
+  async cancelLabChallenge(userId: string, challengeId: string) {
+    const challenge = await this.prisma.labChallenge.findUnique({ where: { id: challengeId } });
+    if (!challenge) throw new NotFoundException('Challenge not found');
+    if (challenge.challengerId !== userId) throw new BadRequestException('Only the challenger can cancel');
+    if (challenge.status !== 'PENDING') throw new BadRequestException('Can only cancel pending challenges');
+
+    return this.prisma.labChallenge.update({
+      where: { id: challengeId },
+      data: { status: 'DECLINED' },
+    });
+  }
+
   async sendLabChallenge(challengerId: string, opponentId: string, labId: string) {
     if (challengerId === opponentId) {
       throw new BadRequestException('Cannot challenge yourself');

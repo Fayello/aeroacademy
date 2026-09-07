@@ -397,6 +397,20 @@ export class MissionService implements OnModuleInit {
     return newlyCompleted;
   }
 
+  @Cron(CronExpression.EVERY_HOUR)
+  async expireLabChallenges() {
+    const expired = await this.prisma.labChallenge.updateMany({
+      where: {
+        status: 'PENDING',
+        expiresAt: { lt: new Date() },
+      },
+      data: { status: 'EXPIRED' },
+    });
+    if (expired.count > 0) {
+      this.logger.log(`Expired ${expired.count} stale lab challenges`);
+    }
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async generateDailyMissions() {
     this.logger.log('Running daily mission generation cron...');
