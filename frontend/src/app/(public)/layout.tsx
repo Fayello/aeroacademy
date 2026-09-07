@@ -42,8 +42,18 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         )}
       </nav>
       <main className="flex-1">{children}</main>
-      <footer className="border-t border-white/5 py-6 px-6 text-center text-xs text-white/40">
-        © 2026 XpertClass — Hands-on cybersecurity training.
+      <footer className="border-t border-white/5 py-8 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40">
+          <div className="flex items-center gap-4">
+            <span>© 2026 XpertClass</span>
+            <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
+          </div>
+          <div className="flex items-center gap-4">
+            <a href="https://github.com/Fayello/aeroacademy" target="_blank" rel="noopener noreferrer" className="hover:text-white/60 transition-colors">GitHub</a>
+            <Link href="/community" className="hover:text-white/60 transition-colors">Community</Link>
+          </div>
+        </div>
       </footer>
     </div>
   );

@@ -185,7 +185,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
       ? nav.role === "RECRUITER"
         ? "Search talent pipeline..."
         : "Search admin workspace..."
-      : "Search course catalog...";
+      : "Search courses...";
   const searchAriaLabel =
     nav.viewMode === "ADMIN"
       ? nav.role === "RECRUITER"
@@ -447,10 +447,21 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
 function DashboardModeBanner() {
   const pathname = usePathname();
   const { nav } = useNavigation();
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    try { setDismissed(localStorage.getItem("dashboard-banner-dismissed") === "true"); } catch {}
+  }, []);
+
+  const dismiss = () => {
+    setDismissed(true);
+    try { localStorage.setItem("dashboard-banner-dismissed", "true"); } catch {}
+  };
 
   const isPrivilegedUser = nav.canAccessAdminView;
 
   if (!isPrivilegedUser) return null;
+  if (dismissed && nav.viewMode !== "ADMIN") return null;
 
   const adminMode = nav.viewMode === "ADMIN";
   const Icon = adminMode ? Shield : GraduationCap;
@@ -503,6 +514,11 @@ function DashboardModeBanner() {
         >
           {destinationLabel}
         </Link>
+        {!adminMode && (
+          <button onClick={dismiss} className="text-[11px] text-slate-400 hover:text-white transition-colors ml-2 shrink-0">
+            Dismiss
+          </button>
+        )}
       </div>
 
       <p className="text-[11px] font-medium text-slate-400">{routeHint}</p>

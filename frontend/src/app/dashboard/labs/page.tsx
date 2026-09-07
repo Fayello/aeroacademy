@@ -38,6 +38,7 @@ export default function LabsCatalog() {
   const [sortBy, setSortBy] = useState<"featured" | "domain" | "difficulty" | "title">("featured");
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [pageSize, setPageSize] = useState(30);
   const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
   const onboarding = readOnboardingSelections();
   const focusLabel = getFocusLabelFromOnboarding(onboarding);
@@ -107,6 +108,8 @@ export default function LabsCatalog() {
     });
 
   const hasActiveFilters = searchQuery !== "" || difficultyFilter !== "ALL" || domainFilter !== "ALL" || activeTab !== "all";
+  const paginatedLabs = filteredLabs.slice(0, pageSize);
+  const hasMore = filteredLabs.length > pageSize;
 
   const tabCounts = {
     all: labs.length,
@@ -345,7 +348,6 @@ export default function LabsCatalog() {
         </div>
       </div>
 
-      {/* Results */}
       {filteredLabs.length === 0 ? (
         <div className="angular-card border border-white/10 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-[#7AD62A]/10 flex items-center justify-center mx-auto mb-4">
@@ -370,7 +372,7 @@ export default function LabsCatalog() {
         </div>
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredLabs.map((lab) => {
+          {paginatedLabs.map((lab) => {
             const diff = getDifficultyStyle(lab.difficulty || 1200);
             const flags = lab.flags?.length || 0;
             const solvedFlags = getSolvedCount(lab.flags);
@@ -483,7 +485,7 @@ export default function LabsCatalog() {
               <span className="hidden lg:block w-20 shrink-0">Time</span>
               <span className="w-20 shrink-0 text-right">Status</span>
             </div>
-            {filteredLabs.map((lab, index) => {
+            {paginatedLabs.map((lab, index) => {
               const diff = getDifficultyStyle(lab.difficulty || 1200);
               const flags = lab.flags?.length || 0;
               const solvedFlags = getSolvedCount(lab.flags);
@@ -550,7 +552,7 @@ export default function LabsCatalog() {
           </div>
 
           <div className="space-y-3 md:hidden">
-            {filteredLabs.map((lab) => {
+            {paginatedLabs.map((lab) => {
               const diff = getDifficultyStyle(lab.difficulty || 1200);
               const flags = lab.flags?.length || 0;
               const solvedFlags = getSolvedCount(lab.flags);
@@ -611,6 +613,16 @@ export default function LabsCatalog() {
             })}
           </div>
         </>
+      )}
+      {hasMore && filteredLabs.length > 0 && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={() => setPageSize((p) => p + 30)}
+            className="px-6 py-2.5 rounded-lg border border-white/10 bg-white/5 text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            Load more ({paginatedLabs.length} of {filteredLabs.length})
+          </button>
+        </div>
       )}
     </div>
   );

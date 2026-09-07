@@ -695,9 +695,32 @@ export default function LabWorkspace() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 className="animate-spin text-slate-400" size={32} />
-        <p className="text-sm text-slate-400">Loading lab...</p>
+      <div className="space-y-6 animate-in fade-in duration-500">
+        <nav className="flex items-center gap-1.5 text-sm text-slate-400">
+          <div className="h-4 w-4 bg-white/10 rounded animate-pulse" />
+          <div className="h-4 w-12 bg-white/10 rounded animate-pulse" />
+          <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+        </nav>
+        <div className="angular-card bg-[#0f172a] overflow-hidden">
+          <div className="h-1.5 w-full bg-white/10 animate-pulse" />
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-20 bg-white/10 rounded animate-pulse" />
+              <div className="h-3 w-20 bg-white/10 rounded animate-pulse" />
+            </div>
+            <div className="h-7 w-64 bg-white/10 rounded animate-pulse" />
+            <div className="h-4 w-96 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="flex items-center gap-1 border-b border-white/10">
+          <div className="h-10 w-24 bg-white/10 rounded animate-pulse" />
+          <div className="h-10 w-24 bg-white/10 rounded animate-pulse" />
+          <div className="h-10 w-24 bg-white/10 rounded animate-pulse" />
+        </div>
+        <div className="angular-card bg-[#0f172a] p-8 text-center">
+          <Loader2 className="animate-spin text-slate-500 mx-auto mb-3" size={24} />
+          <p className="text-sm text-slate-400">Loading lab workspace...</p>
+        </div>
       </div>
     );
   }
