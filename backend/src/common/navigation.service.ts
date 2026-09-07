@@ -144,7 +144,7 @@ export class NavigationService {
     const adminHomePath =
       role === 'RECRUITER' ? '/dashboard/enterprise' : '/dashboard/admin';
     const adminViewLabel =
-      role === 'RECRUITER' ? 'Recruitment Workspace' : 'Admin Workspace';
+      role === 'RECRUITER' ? 'Recruiting Console' : 'Admin Console';
     const adminRoutePrefixes =
       role === 'RECRUITER'
         ? [

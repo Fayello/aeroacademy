@@ -50,20 +50,20 @@ const objectiveLabels: Record<string, string> = {
 };
 
 const difficultyConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  EASY: { label: "Easy", color: "text-[#6bc422]", bg: "bg-emerald-50", border: "border-emerald-200" },
-  MEDIUM: { label: "Medium", color: "text-amber-700", bg: "bg-amber-500/10", border: "border-amber-200" },
-  HARD: { label: "Hard", color: "text-red-700", bg: "bg-red-500/10", border: "border-red-200" },
-  BOSS: { label: "Boss", color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-200" },
+  EASY: { label: "Easy", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+  MEDIUM: { label: "Medium", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+  HARD: { label: "Hard", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
+  BOSS: { label: "Boss", color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
 };
 
 const typeConfig: Record<string, { label: string; icon: typeof Trophy; color: string; bg: string; border: string }> = {
-  DAILY_WARMUP: { label: "Warmup", icon: Flame, color: "text-orange-700", bg: "bg-orange-50", border: "border-orange-200" },
-  DAILY_SKILL: { label: "Skill", icon: Target, color: "text-blue-700", bg: "bg-blue-500/10", border: "border-blue-200" },
-  DAILY_BOSS: { label: "Boss", icon: Swords, color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-200" },
-  WEEKLY: { label: "Weekly", icon: Calendar, color: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-200" },
-  MONTHLY: { label: "Monthly", icon: Crown, color: "text-yellow-700", bg: "bg-yellow-50", border: "border-yellow-200" },
-  SEASONAL: { label: "Seasonal", icon: Zap, color: "text-cyan-700", bg: "bg-cyan-50", border: "border-cyan-200" },
-  TEAM_WEEKLY: { label: "Team", icon: Users, color: "text-[#6bc422]", bg: "bg-emerald-50", border: "border-emerald-200" },
+  DAILY_WARMUP: { label: "Warmup", icon: Flame, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
+  DAILY_SKILL: { label: "Skill", icon: Target, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+  DAILY_BOSS: { label: "Boss", icon: Swords, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+  WEEKLY: { label: "Weekly", icon: Calendar, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
+  MONTHLY: { label: "Monthly", icon: Crown, color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/20" },
+  SEASONAL: { label: "Seasonal", icon: Zap, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
+  TEAM_WEEKLY: { label: "Team", icon: Users, color: "text-[#7AD62A]", bg: "bg-[#7AD62A]/10", border: "border-[#7AD62A]/20" },
 };
 
 export default function ChallengesPage() {
@@ -102,7 +102,7 @@ export default function ChallengesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-blue-500 animate-spin" />
+        <Loader2 size={20} className="text-blue-400 animate-spin" />
       </div>
     );
   }
@@ -111,7 +111,7 @@ export default function ChallengesPage() {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <AlertTriangle size={32} className="text-red-400 mb-3" />
-        <p className="text-sm text-slate-600 mb-3">{error}</p>
+        <p className="text-sm text-slate-400 mb-3">{error}</p>
         <button onClick={load} className="px-4 py-2 text-sm font-medium text-[#7AD62A] hover:bg-[#7AD62A]/10 rounded-lg transition-colors">
           Try again
         </button>
@@ -133,8 +133,8 @@ export default function ChallengesPage() {
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filter === f
-                ? "bg-slate-800 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-white/10"
+                ? "bg-white/10 text-white"
+                : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -143,12 +143,12 @@ export default function ChallengesPage() {
       </div>
 
       {filteredChallenges.length === 0 ? (
-        <div className="angular-card bg-[#0f172a] py-16 text-center">
+        <div className="angular-card bg-[#0f172a] py-16 text-center border border-white/10">
           <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-            <Trophy size={28} className="text-amber-500" />
+            <Trophy size={28} className="text-amber-400" />
           </div>
           <h3 className="text-sm font-semibold text-white mb-1">No missions in this category</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
             New challenges are added regularly. Try a different category or check back later.
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function ChallengesPage() {
               <Link
                 key={challenge.id}
                 href={`/dashboard/challenges/${challenge.id}`}
-                className="angular-card border border-white/10 bg-[#0f172a] overflow-hidden hover:border-blue-300 hover:shadow-md transition-all block"
+                className="angular-card border border-white/10 bg-[#0f172a] overflow-hidden hover:border-blue-400/30 hover:shadow-md transition-all block"
               >
                 <div className="p-5">
                   <div className="flex items-start justify-between mb-3">
@@ -188,28 +188,28 @@ export default function ChallengesPage() {
                       </div>
                     </div>
                     {challenge.xpReward > 0 && (
-                      <span className="text-xs font-bold text-amber-600 bg-amber-500/10 px-2 py-1 rounded-full border border-amber-200">
+                      <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full border border-amber-500/20">
                         +{challenge.xpReward} XP
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-500 mb-3 line-clamp-2">{challenge.description}</p>
+                  <p className="text-xs text-slate-400 mb-3 line-clamp-2">{challenge.description}</p>
 
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     {challenge.domain && (
-                      <span className="text-[11px] text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
+                      <span className="text-[11px] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
                         {challenge.domain.displayName}
                       </span>
                     )}
                     {challenge.skill && (
-                      <span className="text-[11px] text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full">
+                      <span className="text-[11px] text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">
                         {challenge.skill.displayName}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-[11px] text-slate-500">
+                  <div className="flex items-center gap-4 text-[11px] text-slate-400">
                     <span className="flex items-center gap-1">
                       <ObjIcon size={12} />
                       {challenge.objectiveTarget} {objectiveLabels[challenge.objectiveType]}
@@ -227,8 +227,8 @@ export default function ChallengesPage() {
                   </div>
                 </div>
 
-                <div className="px-5 py-3 bg-white/5 border-t border-slate-100">
-                  <span className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                <div className="px-5 py-3 bg-white/5 border-t border-white/10">
+                  <span className="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1">
                     View Details <ChevronRight size={12} />
                   </span>
                 </div>

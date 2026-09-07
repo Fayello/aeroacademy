@@ -58,7 +58,7 @@ export default function ViewSwitcher({ compact = false }: ViewSwitcherProps) {
           className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-semibold transition-all ${adminActive}`}
         >
           <Shield size={11} />
-          <span>{nav.role === "RECRUITER" ? "Recruiting" : "Admin"}</span>
+          <span>{nav.role === "RECRUITER" ? "Recruiting" : "Admin Console"}</span>
         </button>
         <button
           type="button"
@@ -67,7 +67,7 @@ export default function ViewSwitcher({ compact = false }: ViewSwitcherProps) {
           className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[11px] font-semibold transition-all ${learnerActive}`}
         >
           <GraduationCap size={11} />
-          <span>Learner</span>
+          <span>Learner Portal</span>
         </button>
       </div>
     );
@@ -76,13 +76,13 @@ export default function ViewSwitcher({ compact = false }: ViewSwitcherProps) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-1.5">
       <div className="mb-2 flex items-center justify-between px-1.5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">View</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">Workspace</p>
         <p className="text-[10px] text-slate-500">
           {nav.viewMode === "ADMIN"
             ? nav.role === "RECRUITER"
               ? "Talent and outreach"
-              : "Operations and control"
-            : "Learning and progress"}
+              : "Admin Console"
+            : "Learner Portal"}
         </p>
       </div>
       <div className="grid grid-cols-2 gap-1">
@@ -98,7 +98,7 @@ export default function ViewSwitcher({ compact = false }: ViewSwitcherProps) {
         >
           <div className="flex items-center gap-2">
             <Shield size={14} className={nav.viewMode === "ADMIN" ? "text-[#7AD62A]" : "text-slate-500"} />
-            <span className="text-sm font-semibold">{nav.role === "RECRUITER" ? "Recruiting" : "Admin"}</span>
+            <span className="text-sm font-semibold">{nav.role === "RECRUITER" ? "Recruiting Console" : "Admin Console"}</span>
           </div>
           <p className="mt-1 text-[11px] leading-relaxed text-inherit/80">
             {nav.role === "RECRUITER"
@@ -118,7 +118,7 @@ export default function ViewSwitcher({ compact = false }: ViewSwitcherProps) {
         >
           <div className="flex items-center gap-2">
             <GraduationCap size={14} className={nav.viewMode === "LEARNER" ? "text-blue-300" : "text-slate-500"} />
-            <span className="text-sm font-semibold">Learner</span>
+            <span className="text-sm font-semibold">Learner Portal</span>
           </div>
           <p className="mt-1 text-[11px] leading-relaxed text-inherit/80">
             Return to training, labs, and certification progress.

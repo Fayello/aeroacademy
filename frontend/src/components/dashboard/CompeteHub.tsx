@@ -100,8 +100,8 @@ export default function CompeteHub() {
           if (challenges.status === "fulfilled" && Array.isArray(challenges.value)) {
             const all = challenges.value;
             setChallengeStats({
-              active: all.filter((c) => (c.status === "ACTIVE" || c.status === "AVAILABLE")).length,
-              completed: all.filter((c) => (c.status === "COMPLETED")).length,
+              active: all.filter((c) => c.isActive === true).length,
+              completed: all.filter((c) => c.isActive === false).length,
               total: all.length,
             });
           }

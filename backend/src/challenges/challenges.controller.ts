@@ -101,6 +101,15 @@ export class ChallengesController {
     return this.challengesService.getLeaderboard(id);
   }
 
+  @Post(':id/join')
+  @Audit('CHALLENGE_JOINED')
+  async joinChallenge(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+  ) {
+    return this.challengesService.joinChallenge(req.user.id, id);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.challengesService.findOne(id);

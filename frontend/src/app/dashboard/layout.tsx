@@ -167,13 +167,13 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const isPrivilegedUser = nav.canAccessAdminView;
   const viewLabel =
     nav.viewMode === "ADMIN"
-      ? nav.adminViewLabel || "Admin View"
-      : "Learner View";
+      ? nav.adminViewLabel || "Admin Console"
+      : "Learner Portal";
   const viewHint =
     nav.viewMode === "ADMIN"
       ? nav.role === "RECRUITER"
         ? "Talent pipeline and institutional outreach"
-        : "Operations and control"
+        : "Platform operations and control"
       : "Courses, labs, and personal progress";
   const ViewIcon = nav.viewMode === "ADMIN" ? Shield : GraduationCap;
   const viewAccent =
@@ -184,13 +184,13 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     nav.viewMode === "ADMIN"
       ? nav.role === "RECRUITER"
         ? "Search talent pipeline..."
-        : "Search admin workspace..."
+        : "Search admin console..."
       : "Search courses...";
   const searchAriaLabel =
     nav.viewMode === "ADMIN"
       ? nav.role === "RECRUITER"
         ? "Search talent pipeline"
-        : "Search admin workspace"
+        : "Search admin console"
       : "Search course catalog";
 
   return (
@@ -269,7 +269,7 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             {nav.viewMode === "ADMIN"
               ? nav.role === "RECRUITER"
                 ? "Search recruiting workspaces and press Enter to open the talent view."
-                : "Search the admin workspace and press Enter to open the control surface."
+                : "Search the admin console and press Enter to open operations."
               : "Search courses and press Enter to open the catalog results."}
           </p>
         </div>
@@ -475,20 +475,20 @@ function DashboardModeBanner() {
     ? "border-[#7AD62A]/20 bg-[#7AD62A]/12 text-[#7AD62A]"
     : "border-blue-400/20 bg-blue-400/12 text-blue-200";
   const title = adminMode
-    ? `${nav.adminViewLabel || "Admin Workspace"} active`
-    : "Learner View active";
+    ? `${nav.adminViewLabel || "Admin Console"} active`
+    : "Learner Portal active";
   const description = adminMode
     ? nav.role === "RECRUITER"
       ? "You are in the recruiting workspace. Navigation now prioritizes talent discovery, inquiries, and community pipeline work."
-      : "You are in platform operations. Links, breadcrumbs, and actions are now admin-scoped."
-    : "You are in learner space. Courses, labs, and personal progress are prioritized here.";
+      : "You are in the Admin Console. Links, breadcrumbs, and actions are now scoped to platform operations."
+    : "You are in the Learner Portal. Courses, labs, and personal progress are prioritized here.";
   const destinationHref = adminMode ? "/dashboard" : nav.adminHomePath || "/dashboard/admin";
-  const destinationLabel = adminMode ? "Go to learner workspace" : `Open ${nav.adminViewLabel || "admin workspace"}`;
+  const destinationLabel = adminMode ? "Go to Learner Portal" : `Open ${nav.adminViewLabel || "Admin Console"}`;
   const inAdminWorkspace =
     pathname.startsWith("/dashboard/admin") || pathname.startsWith("/dashboard/enterprise");
   const routeHint = inAdminWorkspace
-    ? `Current route: ${nav.adminViewLabel || "admin workspace"}`
-    : "Current route: learner workspace";
+    ? `Current route: ${nav.adminViewLabel || "Admin Console"}`
+    : "Current route: Learner Portal";
 
   return (
     <div className={`mb-4 flex flex-col gap-3 rounded-2xl border px-4 py-3 sm:px-5 ${accentClasses}`}>
@@ -501,7 +501,7 @@ function DashboardModeBanner() {
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-semibold text-white">{title}</p>
               <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${badgeClasses}`}>
-                {adminMode ? (nav.role === "RECRUITER" ? "Recruiting" : "Admin") : "Learner"}
+                {adminMode ? (nav.role === "RECRUITER" ? "Recruiting" : "Admin") : "Learner Portal"}
               </span>
             </div>
             <p className="mt-1 text-sm text-slate-300">{description}</p>

@@ -133,8 +133,8 @@ function getAdminHomePath(role: string) {
 }
 
 function getAdminViewLabel(role: string) {
-  if (role === "RECRUITER") return "Recruitment Workspace";
-  if (role === "ADMIN") return "Admin Workspace";
+  if (role === "RECRUITER") return "Recruiting Console";
+  if (role === "ADMIN") return "Admin Console";
   return null;
 }
 
@@ -418,7 +418,7 @@ function getAdminFallbackContext(role: string, level: number): NavigationContext
       showAdmin: true,
       canAccessAdminView: true,
       adminHomePath: "/dashboard/enterprise",
-      adminViewLabel: "Recruitment Workspace",
+      adminViewLabel: "Recruiting Console",
       adminRoutePrefixes: getAdminRoutePrefixes(role),
     };
   }
@@ -479,7 +479,7 @@ function getAdminFallbackContext(role: string, level: number): NavigationContext
     showAdmin: true,
     canAccessAdminView: true,
     adminHomePath: "/dashboard/admin",
-    adminViewLabel: "Admin Workspace",
+    adminViewLabel: "Admin Console",
     adminRoutePrefixes: getAdminRoutePrefixes(role),
   };
 }

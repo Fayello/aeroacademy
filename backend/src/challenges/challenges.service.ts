@@ -92,6 +92,34 @@ export class ChallengesService {
     });
   }
 
+  async joinChallenge(userId: string, challengeId: string) {
+    const challenge = await this.prisma.challenge.findUnique({
+      where: { id: challengeId },
+    });
+    if (!challenge) throw new NotFoundException('Challenge not found');
+    if (!challenge.isActive) throw new BadRequestException('Challenge is no longer active');
+
+    const now = new Date();
+    if (now < challenge.startAt) throw new BadRequestException('Challenge has not started yet');
+    if (now > challenge.endAt) throw new BadRequestException('Challenge has ended');
+
+    const existing = await this.prisma.userChallenge.findUnique({
+      where: { userId_challengeId: { userId, challengeId } },
+    });
+    if (existing) return existing;
+
+    return this.prisma.userChallenge.create({
+      data: {
+        userId,
+        challengeId,
+        target: challenge.objectiveTarget,
+      },
+      include: {
+        challenge: { select: { id: true, title: true, objectiveTarget: true } },
+      },
+    });
+  }
+
   async sendLabChallenge(challengerId: string, opponentId: string, labId: string) {
     if (challengerId === opponentId) {
       throw new BadRequestException('Cannot challenge yourself');

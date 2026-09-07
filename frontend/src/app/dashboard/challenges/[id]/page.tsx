@@ -17,8 +17,12 @@ import {
   Medal,
   Award,
   CheckCircle2,
+  ExternalLink,
+  Zap,
+  Calendar,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
+import { DashboardLoadingState } from "@/components/dashboard/DashboardStates";
 
 interface ChallengeDetail {
   id: string;
@@ -34,6 +38,7 @@ interface ChallengeDetail {
   difficulty: string;
   domain: { id: string; name: string } | null;
   skill: { id: string; name: string } | null;
+  metadata: { labId?: string } | null;
   userChallenges: Array<{
     id: string;
     progress: number;
@@ -61,10 +66,10 @@ const objectiveLabels: Record<string, string> = {
 };
 
 const difficultyColors: Record<string, string> = {
-  EASY: "bg-green-100 text-green-700",
-  MEDIUM: "bg-yellow-100 text-yellow-700",
-  HARD: "bg-red-100 text-red-700",
-  BOSS: "bg-purple-100 text-purple-700",
+  EASY: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  MEDIUM: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  HARD: "bg-red-500/10 text-red-400 border border-red-500/20",
+  BOSS: "bg-purple-500/10 text-purple-400 border border-purple-500/20",
 };
 
 export default function ChallengeDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -72,6 +77,18 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
   const [challenge, setChallenge] = useState<ChallengeDetail | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      if (stored) {
+        const parsed = JSON.parse(stored) as { id?: string };
+        setUserId(parsed.id || null);
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -91,12 +108,26 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
     load();
   }, [id]);
 
+  async function handleJoin() {
+    if (!userId || !challenge) return;
+    setJoining(true);
+    try {
+      await fetchApi(`/challenges/${challenge.id}/join`, { method: "POST" });
+      toast.success("Challenge joined! Start working on it to track progress.");
+      const updated = await fetchApi<ChallengeDetail>(`/challenges/${challenge.id}`);
+      setChallenge(updated);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to join challenge");
+    } finally {
+      setJoining(false);
+    }
+  }
+
+  const isEnrolled = userId ? challenge?.userChallenges.some((uc) => uc.user.id === userId) : false;
+  const myProgress = userId ? challenge?.userChallenges.find((uc) => uc.user.id === userId) : null;
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="text-blue-500 animate-spin" />
-      </div>
-    );
+    return <DashboardLoadingState />;
   }
 
   if (!challenge) {
@@ -166,18 +197,18 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
         <div className="p-6 space-y-5">
           <div>
             <h2 className="text-sm font-semibold text-white mb-2">About</h2>
-            <p className="text-sm text-slate-600 leading-relaxed">{challenge.description}</p>
+            <p className="text-sm text-slate-400 leading-relaxed">{challenge.description}</p>
           </div>
 
           {(challenge.domain || challenge.skill) && (
             <div className="flex items-center gap-2 flex-wrap">
               {challenge.domain && (
-                <span className="text-xs bg-blue-500/10 text-blue-700 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20">
                   {challenge.domain.name}
                 </span>
               )}
               {challenge.skill && (
-                <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/20">
                   {challenge.skill.name}
                 </span>
               )}
@@ -185,45 +216,110 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <Target size={18} className="text-blue-500 mx-auto mb-1" />
+            <div className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+              <Target size={18} className="text-blue-400 mx-auto mb-1" />
               <p className="text-lg font-bold text-white">{challenge.objectiveTarget}</p>
-              <p className="text-[11px] text-slate-500">{objectiveLabels[challenge.objectiveType]}</p>
+              <p className="text-[11px] text-slate-400">{objectiveLabels[challenge.objectiveType]}</p>
             </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <Users size={18} className="text-blue-500 mx-auto mb-1" />
+            <div className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+              <Users size={18} className="text-blue-400 mx-auto mb-1" />
               <p className="text-lg font-bold text-white">{challenge.userChallenges.length}</p>
-              <p className="text-[11px] text-slate-500">Participants</p>
+              <p className="text-[11px] text-slate-400">Participants</p>
             </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
-              <Trophy size={18} className="text-blue-500 mx-auto mb-1" />
+            <div className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+              <Trophy size={18} className="text-blue-400 mx-auto mb-1" />
               <p className="text-lg font-bold text-white">
                 {challenge.userChallenges.filter((uc) => uc.completed).length}
               </p>
-              <p className="text-[11px] text-slate-500">Completed</p>
+              <p className="text-[11px] text-slate-400">Completed</p>
             </div>
+          </div>
+
+          {myProgress && (
+            <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-slate-300">Your Progress</span>
+                <span className="text-xs text-slate-400">{myProgress.progress}/{challenge.objectiveTarget}</span>
+              </div>
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${myProgress.completed ? "bg-[#7AD62A]" : "bg-blue-500"}`}
+                  style={{ width: `${Math.min(100, Math.round((myProgress.progress / challenge.objectiveTarget) * 100))}%` }}
+                />
+              </div>
+              {myProgress.completed && (
+                <p className="text-xs text-[#7AD62A] mt-2 flex items-center gap-1">
+                  <CheckCircle2 size={12} /> Completed!
+                  {challenge.xpReward > 0 && <span className="text-amber-400 ml-1">+{challenge.xpReward} XP</span>}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-3">
+            {challenge.metadata?.labId && (
+              <Link
+                href={`/dashboard/labs/${challenge.metadata.labId}`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                <ExternalLink size={14} />
+                {isEnrolled ? "Go to Lab" : "Start Challenge"}
+              </Link>
+            )}
+            {!isEnrolled && (
+              <button
+                onClick={handleJoin}
+                disabled={joining}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#229C62] hover:bg-[#229C62]/80 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+              >
+                {joining ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
+                {joining ? "Joining..." : "Join Challenge"}
+              </button>
+            )}
+            {challenge.xpReward > 0 && (
+              <span className="inline-flex items-center gap-1 px-3 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium rounded-lg">
+                <Zap size={14} /> +{challenge.xpReward} XP
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            {challenge.startAt && (
+              <span className="flex items-center gap-1">
+                <Calendar size={12} /> Starts: {new Date(challenge.startAt).toLocaleDateString()}
+              </span>
+            )}
+            {challenge.endAt && (
+              <span className="flex items-center gap-1">
+                <Clock size={12} /> Ends: {new Date(challenge.endAt).toLocaleDateString()}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-white/10 bg-[#0f172a] overflow-hidden">
-        <div className="p-4 border-b border-slate-100">
+        <div className="p-4 border-b border-white/10">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Medal size={16} className="text-amber-500" /> Leaderboard
+            <Medal size={16} className="text-amber-400" /> Leaderboard
           </h2>
         </div>
         {leaderboard.length === 0 ? (
-          <EmptyState icon={Users} title="No participants yet" description="" />
+          <div className="py-12 text-center">
+            <Users size={28} className="text-slate-500 mx-auto mb-2" />
+            <p className="text-sm text-slate-400">No participants yet</p>
+            <p className="text-xs text-slate-500 mt-1">Be the first to join this challenge</p>
+          </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-white/5">
             {leaderboard.map((entry, i) => {
               const name = entry.user?.name || "Unknown";
               const pct = Math.min(100, Math.round((entry.progress / challenge.objectiveTarget) * 100));
               const rankIcon =
                 i === 0 ? (
-                  <Crown size={16} className="text-yellow-500" />
+                  <Crown size={16} className="text-amber-400" />
                 ) : i === 1 ? (
-                  <Medal size={16} className="text-slate-400" />
+                  <Medal size={16} className="text-slate-300" />
                 ) : i === 2 ? (
                   <Award size={16} className="text-amber-600" />
                 ) : (
@@ -244,7 +340,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-[10px] text-slate-500 whitespace-nowrap">
+                      <span className="text-[10px] text-slate-400 whitespace-nowrap">
                         {entry.progress}/{challenge.objectiveTarget}
                       </span>
                     </div>

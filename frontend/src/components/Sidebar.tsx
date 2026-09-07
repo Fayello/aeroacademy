@@ -104,7 +104,7 @@ export default function Sidebar() {
   const canAccessAdminView = nav.canAccessAdminView;
   const adminMode = canAccessAdminView && nav.viewMode === "ADMIN";
   const adminHomePath = nav.adminHomePath || "/dashboard/admin";
-  const adminWorkspaceLabel = nav.adminViewLabel || "Admin Workspace";
+  const adminWorkspaceLabel = nav.adminViewLabel || "Admin Console";
 
   if (loading) {
     return (
@@ -292,7 +292,7 @@ export default function Sidebar() {
             {!collapsed && (
               <div className="pt-2 mt-2 border-t border-white/6">
                 <p className="px-3 mb-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-                  {nav.role === "RECRUITER" ? "Recruiting" : "Admin"}
+                  {nav.role === "RECRUITER" ? "Recruiting Console" : "Admin Console"}
                 </p>
               </div>
             )}
