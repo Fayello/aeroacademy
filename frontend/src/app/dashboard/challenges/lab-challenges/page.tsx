@@ -9,6 +9,7 @@ import {
   Swords, Loader2, Plus, Check, X, Clock, Trophy,
   ChevronRight, FlaskConical, Search,
 } from "lucide-react";
+import toast from "@/lib/toast";
 
 interface Challenge {
   id: string;
@@ -83,6 +84,7 @@ export default function LabChallengesPage() {
   );
 
   const pendingReceived = challenges.filter((c) => c.opponentId === myId && c.status === "PENDING");
+  const pendingSent = challenges.filter((c) => c.challengerId === myId && c.status === "PENDING");
   const active = challenges.filter((c) => (c.challengerId === myId || c.opponentId === myId) && c.status === "ACCEPTED");
   const completed = challenges.filter((c) => (c.challengerId === myId || c.opponentId === myId) && c.status === "COMPLETED");
 
@@ -99,7 +101,10 @@ export default function LabChallengesPage() {
       setSelectedOpponent("");
       setSelectedLab("");
       setSearch("");
-    } catch {}
+      toast.success("Challenge sent!");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send challenge");
+    }
     setSending(false);
   }
 
@@ -107,21 +112,30 @@ export default function LabChallengesPage() {
     try {
       const res = await fetchApi<Challenge>(`/challenges/lab-challenges/${id}/accept`, { method: "POST" });
       setChallenges((prev) => prev.map((c) => c.id === id ? res : c));
-    } catch {}
+      toast.success("Challenge accepted! Start the lab to race.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to accept");
+    }
   }
 
   async function handleDecline(id: string) {
     try {
       await fetchApi(`/challenges/lab-challenges/${id}/decline`, { method: "POST" });
       setChallenges((prev) => prev.map((c) => c.id === id ? { ...c, status: "DECLINED" } : c));
-    } catch {}
+      toast.success("Challenge declined");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to decline");
+    }
   }
 
   async function handleComplete(id: string) {
     try {
       const res = await fetchApi<Challenge>(`/challenges/lab-challenges/${id}/complete`, { method: "POST" });
       setChallenges((prev) => prev.map((c) => c.id === id ? res : c));
-    } catch {}
+      toast.success("Results finalized!");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to finalize");
+    }
   }
 
   if (loading) {
@@ -256,6 +270,34 @@ export default function LabChallengesPage() {
                     <X size={12} className="inline mr-1" /> Decline
                   </button>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Pending sent */}
+      {pendingSent.length > 0 && (
+        <div className="angular-card bg-[#0f172a] border border-white/6 p-5">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+            <Clock size={14} className="text-blue-400" /> Sent Challenges ({pendingSent.length})
+          </h3>
+          <div className="space-y-2">
+            {pendingSent.map((c) => (
+              <div key={c.id} className="flex items-center gap-4 p-3 rounded-xl border border-white/4 bg-white/[0.02]">
+                <div className="w-9 h-9 rounded-full bg-blue-500/10 flex items-center justify-center text-xs font-bold text-blue-400">
+                  {c.opponent.username?.[0]?.toUpperCase() || c.opponent.name[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white">
+                    You challenged{" "}
+                    <span className="font-medium">{c.opponent.username || c.opponent.name}</span>
+                    {" "}on{" "}
+                    <span className="font-medium">{c.lab.title}</span>
+                  </p>
+                  <p className="text-[11px] text-slate-500">Waiting for response · Expires {new Date(c.expiresAt).toLocaleDateString()}</p>
+                </div>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">Pending</span>
               </div>
             ))}
           </div>
