@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MissionService } from './mission.service';
 import { FeatureUnlockService } from './feature-unlock.service';
 import { ProgressionService } from '../common/progression.service';
+import { getRequiredLabLevel, getLevel } from '../common/level.util';
 
 @Injectable()
 export class ChallengesService {
@@ -173,6 +174,26 @@ export class ChallengesService {
   async sendLabChallenge(challengerId: string, opponentId: string, labId: string) {
     if (challengerId === opponentId) {
       throw new BadRequestException('Cannot challenge yourself');
+    }
+
+    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
+    if (!lab) throw new NotFoundException('Lab not found');
+
+    const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
+
+    const [challenger, opponent] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: challengerId }, select: { xp: true, name: true } }),
+      this.prisma.user.findUnique({ where: { id: opponentId }, select: { xp: true, name: true } }),
+    ]);
+
+    const challengerLevel = getLevel(challenger?.xp || 0);
+    const opponentLevel = getLevel(opponent?.xp || 0);
+
+    if (challengerLevel < requiredLevel) {
+      throw new BadRequestException(`You need Level ${requiredLevel} to challenge on this lab. You are Level ${challengerLevel}.`);
+    }
+    if (opponentLevel < requiredLevel) {
+      throw new BadRequestException(`${opponent?.name || 'Opponent'} needs Level ${requiredLevel} for this lab. They are Level ${opponentLevel}.`);
     }
 
     const existing = await this.prisma.labChallenge.findFirst({
