@@ -174,35 +174,53 @@ export class NavigationService {
     });
 
     // Learn
+    const learnItems: NavItem[] = [
+      {
+        href: '/dashboard/starting-point',
+        tKey: 'nav.startingPoint',
+        icon: 'Compass',
+        label: 'Starting Point',
+      },
+      {
+        href: '/dashboard/courses',
+        tKey: 'nav.courses',
+        icon: 'GraduationCap',
+        label: 'Courses',
+      },
+      {
+        href: '/dashboard/learning-paths',
+        tKey: 'nav.paths',
+        icon: 'Route',
+        label: 'Learning Paths',
+      },
+      {
+        href: '/dashboard/training',
+        tKey: 'nav.masterclasses',
+        icon: 'Award',
+        label: 'Master Classes',
+      },
+      {
+        href: '/dashboard/certifications',
+        tKey: 'nav.certifications',
+        icon: 'Award',
+        label: 'Certifications',
+      },
+    ];
+
+    // Add Trainer Dashboard for instructors
+    if (role === 'PROFESSOR' || role === 'TA') {
+      learnItems.splice(3, 0, {
+        href: '/dashboard/training/my-sessions',
+        tKey: 'nav.trainerDashboard',
+        icon: 'BookOpen',
+        label: 'Trainer Dashboard',
+      });
+    }
+
     sections.push({
       id: 'learn',
       label: 'Learn',
-      items: [
-        {
-          href: '/dashboard/courses',
-          tKey: 'nav.courses',
-          icon: 'GraduationCap',
-          label: 'Courses',
-        },
-        {
-          href: '/dashboard/learning-paths',
-          tKey: 'nav.paths',
-          icon: 'Route',
-          label: 'Learning Paths',
-        },
-        {
-          href: '/dashboard/training',
-          tKey: 'nav.masterclasses',
-          icon: 'Award',
-          label: 'Master Classes',
-        },
-        {
-          href: '/dashboard/certifications',
-          tKey: 'nav.certifications',
-          icon: 'Award',
-          label: 'Certifications',
-        },
-      ],
+      items: learnItems,
     });
 
     // Labs
@@ -254,6 +272,30 @@ export class NavigationService {
           icon: 'Swords',
           label: 'Lab Challenges',
         },
+        {
+          href: '/dashboard/battle-pass',
+          tKey: 'nav.battlePass',
+          icon: 'Ticket',
+          label: 'Battle Pass',
+        },
+        {
+          href: '/dashboard/boss-missions',
+          tKey: 'nav.bossMissions',
+          icon: 'Skull',
+          label: 'Boss Missions',
+        },
+        {
+          href: '/dashboard/seasons',
+          tKey: 'nav.seasons',
+          icon: 'Calendar',
+          label: 'Seasons',
+        },
+        {
+          href: '/dashboard/badges',
+          tKey: 'nav.badges',
+          icon: 'Medal',
+          label: 'Badges',
+        },
       ],
     });
 
@@ -279,12 +321,6 @@ export class NavigationService {
           tKey: 'nav.teams',
           icon: 'Users',
           label: 'Teams',
-        },
-        {
-          href: '/dashboard/leaderboard',
-          tKey: 'nav.leaderboard',
-          icon: 'Trophy',
-          label: 'Leaderboard',
         },
       ],
     });
