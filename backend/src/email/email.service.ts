@@ -1419,6 +1419,121 @@ export class EmailService implements OnModuleInit {
       ...renderedEmail,
     });
   }
+
+  async sendChallengeReceived(
+    email: string,
+    challengerName: string | null,
+    labTitle: string,
+  ) {
+    const displayName = challengerName || 'Someone';
+    const labChallengesUrl = this.appUrl('/dashboard/challenges/lab-challenges');
+    const renderedEmail = this.templates.render({
+      eyebrow: 'Lab challenge',
+      title: 'You have been challenged',
+      subtitle: labTitle,
+      intro: `${displayName} challenged you to a lab race.`,
+      body: [
+        `You have a new lab challenge on ${labTitle}. Accept within 48 hours to start competing. The faster you complete the lab, the better your chance of winning.`,
+      ],
+      fields: [
+        { label: 'Lab', value: labTitle },
+        { label: 'Challenger', value: displayName },
+      ],
+      panels: [
+        {
+          title: 'How it works',
+          body: 'Both of you run the same lab. The first to complete all objectives wins the challenge.',
+          tone: 'success',
+        },
+      ],
+      action: { label: 'View challenge', href: labChallengesUrl },
+    });
+
+    return this.send({
+      to: email,
+      from: 'labs',
+      subject: `${displayName} challenged you: ${labTitle}`,
+      ...renderedEmail,
+    });
+  }
+
+  async sendChallengeAccepted(
+    email: string,
+    opponentName: string | null,
+    labTitle: string,
+  ) {
+    const displayName = opponentName || 'Someone';
+    const labChallengesUrl = this.appUrl('/dashboard/challenges/lab-challenges');
+    const renderedEmail = this.templates.render({
+      eyebrow: 'Challenge accepted',
+      title: 'Challenge is on',
+      subtitle: labTitle,
+      intro: `${displayName} accepted your lab challenge.`,
+      body: [
+        `Your challenge on ${labTitle} is now active. Head to the lab and start working. The clock is ticking.`,
+      ],
+      fields: [
+        { label: 'Lab', value: labTitle },
+        { label: 'Opponent', value: displayName },
+      ],
+      action: { label: 'Open lab', href: labChallengesUrl },
+    });
+
+    return this.send({
+      to: email,
+      from: 'labs',
+      subject: `Challenge accepted: ${labTitle}`,
+      ...renderedEmail,
+    });
+  }
+
+  async sendChallengeCompleted(
+    email: string,
+    winnerName: string | null,
+    labTitle: string,
+    isWinner: boolean,
+  ) {
+    const displayName = winnerName || 'Someone';
+    const labChallengesUrl = this.appUrl('/dashboard/challenges/lab-challenges');
+    const tone = isWinner ? 'success' : 'warning';
+    const headline = isWinner ? 'You won the challenge' : 'Challenge completed';
+    const body = isWinner
+      ? [`You beat ${displayName} on ${labTitle}. Great work.`]
+      : [`The challenge on ${labTitle} is over. ${displayName} finished faster this time.`];
+    const panelTitle = isWinner ? 'Victory' : 'Next time';
+    const panelBody = isWinner
+      ? 'Your XP has been updated. Keep pushing your limits.'
+      : 'Review your approach and try again on a harder lab.';
+
+    const renderedEmail = this.templates.render({
+      eyebrow: 'Challenge result',
+      title: headline,
+      subtitle: labTitle,
+      intro: isWinner
+        ? `Congratulations, you won your challenge against ${displayName}.`
+        : `Your challenge against ${displayName} has finished.`,
+      body,
+      fields: [
+        { label: 'Lab', value: labTitle },
+        { label: 'Opponent', value: displayName },
+      ],
+      panels: [
+        {
+          title: panelTitle,
+          body: panelBody,
+          tone,
+        },
+      ],
+      action: { label: 'View challenges', href: labChallengesUrl },
+    });
+
+    return this.send({
+      to: email,
+      from: 'labs',
+      subject: `${headline}: ${labTitle}`,
+      ...renderedEmail,
+    });
+  }
   hasPreference(
     emailPrefs: Record<string, boolean> | null,
     category: string,

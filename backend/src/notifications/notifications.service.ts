@@ -176,6 +176,39 @@ export class NotificationsService implements OnModuleInit {
             logger.error(`Failed to create notification: ${err.message}`),
           );
           break;
+        case 'LAB_CHALLENGE_SENT':
+          this.create({
+            userId: p.userId,
+            title: 'Challenge Sent',
+            message: p.message ?? 'You sent a lab challenge.',
+            type: 'CHALLENGE',
+            link: '/dashboard/challenges/lab-challenges',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'LAB_CHALLENGE_ACCEPTED':
+          this.create({
+            userId: p.userId,
+            title: 'Challenge Accepted',
+            message: p.message ?? 'Your challenge was accepted.',
+            type: 'CHALLENGE',
+            link: '/dashboard/challenges/lab-challenges',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
+        case 'LAB_CHALLENGE_COMPLETED':
+          this.create({
+            userId: p.userId,
+            title: p.title ?? 'Challenge Completed',
+            message: p.message ?? 'A lab challenge has finished.',
+            type: 'SUCCESS',
+            link: '/dashboard/challenges/lab-challenges',
+          }).catch((err) =>
+            logger.error(`Failed to create notification: ${err.message}`),
+          );
+          break;
       }
     });
   }

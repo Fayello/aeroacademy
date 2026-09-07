@@ -1,13 +1,10 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MissionService } from './mission.service';
 import { FeatureUnlockService } from './feature-unlock.service';
 import { ProgressionService } from '../common/progression.service';
+import { EventsService } from '../common/events.service';
+import { EmailService } from '../email/email.service';
 import { getRequiredLabLevel, getLevel } from '../common/level.util';
 
 @Injectable()
@@ -19,6 +16,8 @@ export class ChallengesService {
     private missionService: MissionService,
     private featureUnlockService: FeatureUnlockService,
     private progressionService: ProgressionService,
+    private eventsService: EventsService,
+    private emailService: EmailService,
   ) {}
 
   async findAll() {
@@ -211,7 +210,7 @@ export class ChallengesService {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 48);
 
-    return this.prisma.labChallenge.create({
+    const result = await this.prisma.labChallenge.create({
       data: {
         challengerId,
         opponentId,
@@ -220,10 +219,33 @@ export class ChallengesService {
       },
       include: {
         challenger: { select: { id: true, name: true, username: true } },
-        opponent: { select: { id: true, name: true, username: true } },
+        opponent: { select: { id: true, name: true, username: true, email: true } },
         lab: { select: { id: true, title: true, difficulty: true } },
       },
     });
+
+    const challengerName = result.challenger.name || result.challenger.username;
+    const labTitle = result.lab.title;
+    const msg = `${challengerName} challenged you to "${labTitle}"`;
+
+    this.eventsService.emit('LAB_CHALLENGE_SENT', {
+      userId: opponentId,
+      message: msg,
+    });
+    this.eventsService.emit('LAB_CHALLENGE_SENT', {
+      userId: challengerId,
+      message: `You challenged ${result.opponent.name || result.opponent.username} to "${labTitle}"`,
+    });
+
+    if (result.opponent.email) {
+      this.emailService.sendChallengeReceived(
+        result.opponent.email,
+        challengerName,
+        labTitle,
+      ).catch((err) => this.logger.error(`Failed to send challenge email: ${err.message}`));
+    }
+
+    return result;
   }
 
   async getMyLabChallenges(userId: string) {
@@ -248,15 +270,33 @@ export class ChallengesService {
     if (challenge.status !== 'PENDING') throw new BadRequestException('Challenge is not pending');
     if (new Date() > challenge.expiresAt) throw new BadRequestException('Challenge expired');
 
-    return this.prisma.labChallenge.update({
+    const result = await this.prisma.labChallenge.update({
       where: { id: challengeId },
       data: { status: 'ACCEPTED' },
       include: {
-        challenger: { select: { id: true, name: true, username: true } },
+        challenger: { select: { id: true, name: true, username: true, email: true } },
         opponent: { select: { id: true, name: true, username: true } },
         lab: { select: { id: true, title: true } },
       },
     });
+
+    const opponentName = result.opponent.name || result.opponent.username;
+    const labTitle = result.lab.title;
+
+    this.eventsService.emit('LAB_CHALLENGE_ACCEPTED', {
+      userId: challenge.challengerId,
+      message: `${opponentName} accepted your challenge on "${labTitle}"`,
+    });
+
+    if (result.challenger.email) {
+      this.emailService.sendChallengeAccepted(
+        result.challenger.email,
+        opponentName,
+        labTitle,
+      ).catch((err) => this.logger.error(`Failed to send challenge accepted email: ${err.message}`));
+    }
+
+    return result;
   }
 
   async declineLabChallenge(userId: string, challengeId: string) {
@@ -289,20 +329,78 @@ export class ChallengesService {
     };
 
     const otherTime = isChallenger ? challenge.opponentTime : challenge.challengerTime;
-    if (otherTime !== null) {
+    const bothDone = otherTime !== null;
+    if (bothDone) {
       const myTime = elapsed;
       updateData.winnerId = myTime < otherTime ? userId : myTime > otherTime ? (isChallenger ? challenge.opponentId : challenge.challengerId) : null;
       updateData.status = 'COMPLETED';
     }
 
-    return this.prisma.labChallenge.update({
+    const result = await this.prisma.labChallenge.update({
       where: { id: challengeId },
       data: updateData,
       include: {
-        challenger: { select: { id: true, name: true, username: true } },
-        opponent: { select: { id: true, name: true, username: true } },
+        challenger: { select: { id: true, name: true, username: true, email: true } },
+        opponent: { select: { id: true, name: true, username: true, email: true } },
         lab: { select: { id: true, title: true } },
       },
     });
+
+    if (bothDone) {
+      const winnerId = result.winnerId;
+      const loserId = winnerId
+        ? winnerId === result.challengerId ? result.opponentId : result.challengerId
+        : null;
+      const labTitle = result.lab.title;
+
+      if (winnerId) {
+        const winnerName = winnerId === result.challengerId
+          ? (result.challenger.name || result.challenger.username)
+          : (result.opponent.name || result.opponent.username);
+
+        this.eventsService.emit('LAB_CHALLENGE_COMPLETED', {
+          userId: winnerId,
+          title: 'Challenge Won',
+          message: `You beat ${winnerId === result.challengerId ? (result.opponent.name || result.opponent.username) : (result.challenger.name || result.challenger.username)} on "${labTitle}"`,
+        });
+        if (loserId) {
+          this.eventsService.emit('LAB_CHALLENGE_COMPLETED', {
+            userId: loserId,
+            title: 'Challenge Lost',
+            message: `${winnerName} beat you on "${labTitle}"`,
+          });
+        }
+
+        const winnerEmail = winnerId === result.challengerId ? result.challenger.email : result.opponent.email;
+        const loserEmail = loserId === (result.challengerId) ? result.challenger.email : result.opponent.email;
+        const loserName = loserId === result.challengerId
+          ? (result.challenger.name || result.challenger.username)
+          : (result.opponent.name || result.opponent.username);
+
+        if (winnerEmail) {
+          this.emailService.sendChallengeCompleted(
+            winnerEmail, winnerName, labTitle, true,
+          ).catch((err) => this.logger.error(`Challenge email failed: ${err.message}`));
+        }
+        if (loserEmail) {
+          this.emailService.sendChallengeCompleted(
+            loserEmail, loserName, labTitle, false,
+          ).catch((err) => this.logger.error(`Challenge email failed: ${err.message}`));
+        }
+      } else {
+        this.eventsService.emit('LAB_CHALLENGE_COMPLETED', {
+          userId: result.challengerId,
+          title: 'Challenge Tied',
+          message: `Your challenge on "${labTitle}" ended in a tie`,
+        });
+        this.eventsService.emit('LAB_CHALLENGE_COMPLETED', {
+          userId: result.opponentId,
+          title: 'Challenge Tied',
+          message: `Your challenge on "${labTitle}" ended in a tie`,
+        });
+      }
+    }
+
+    return result;
   }
 }
