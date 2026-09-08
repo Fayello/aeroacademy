@@ -6,6 +6,7 @@ import {
   Body,
   UseGuards,
   Request,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { MissionService } from './mission.service';
@@ -40,7 +41,7 @@ export class ChallengesController {
   @Audit('MISSION_REWARD_CLAIMED')
   async claimReward(
     @Request() req: RequestWithUser,
-    @Param('challengeId') challengeId: string,
+    @Param('challengeId', ParseUUIDPipe) challengeId: string,
   ) {
     return this.challengesService.claimReward(req.user.id, challengeId);
   }
@@ -73,7 +74,7 @@ export class ChallengesController {
   @Audit('LAB_CHALLENGE_ACCEPTED')
   async acceptChallenge(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.challengesService.acceptLabChallenge(req.user.id, id);
   }
@@ -82,7 +83,7 @@ export class ChallengesController {
   @Audit('LAB_CHALLENGE_DECLINED')
   async declineChallenge(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.challengesService.declineLabChallenge(req.user.id, id);
   }
@@ -91,7 +92,7 @@ export class ChallengesController {
   @Audit('LAB_CHALLENGE_COMPLETED')
   async completeChallenge(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.challengesService.completeLabChallenge(req.user.id, id);
   }
@@ -100,13 +101,13 @@ export class ChallengesController {
   @Audit('LAB_CHALLENGE_CANCELLED')
   async cancelChallenge(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.challengesService.cancelLabChallenge(req.user.id, id);
   }
 
   @Get(':id/leaderboard')
-  async getLeaderboard(@Param('id') id: string) {
+  async getLeaderboard(@Param('id', ParseUUIDPipe) id: string) {
     return this.challengesService.getLeaderboard(id);
   }
 
@@ -114,13 +115,13 @@ export class ChallengesController {
   @Audit('CHALLENGE_JOINED')
   async joinChallenge(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.challengesService.joinChallenge(req.user.id, id);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.challengesService.findOne(id);
   }
 }

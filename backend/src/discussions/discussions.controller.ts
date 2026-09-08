@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DiscussionsService } from './discussions.service';
@@ -20,7 +21,7 @@ export class DiscussionsController {
 
   @Get('course/:courseId')
   getPosts(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('tag') tag?: string,
@@ -38,7 +39,7 @@ export class DiscussionsController {
 
   @Get('lab/:labId')
   getLabPosts(
-    @Param('labId') labId: string,
+    @Param('labId', ParseUUIDPipe) labId: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('tag') tag?: string,
@@ -56,39 +57,39 @@ export class DiscussionsController {
   }
 
   @Get('course/:courseId/stats')
-  getStats(@Param('courseId') courseId: string) {
+  getStats(@Param('courseId', ParseUUIDPipe) courseId: string) {
     return this.discussionsService.getStats(courseId);
   }
 
   @Get('lab/:labId/stats')
-  getLabStats(@Param('labId') labId: string) {
+  getLabStats(@Param('labId', ParseUUIDPipe) labId: string) {
     return this.discussionsService.getStats(null, labId);
   }
 
   @Get('course/:courseId/tags')
-  getTags(@Param('courseId') courseId: string) {
+  getTags(@Param('courseId', ParseUUIDPipe) courseId: string) {
     return this.discussionsService.getTags(courseId);
   }
 
   @Get('lab/:labId/tags')
-  getLabTags(@Param('labId') labId: string) {
+  getLabTags(@Param('labId', ParseUUIDPipe) labId: string) {
     return this.discussionsService.getTags(null, labId);
   }
 
   @Get(':postId')
-  getPost(@Param('postId') postId: string, @Req() req: any) {
+  getPost(@Param('postId', ParseUUIDPipe) postId: string, @Req() req: any) {
     return this.discussionsService.getPost(postId, req.user.id);
   }
 
   @Get(':postId/comments')
-  getPostComments(@Param('postId') postId: string) {
+  getPostComments(@Param('postId', ParseUUIDPipe) postId: string) {
     return this.discussionsService.getPostComments(postId);
   }
 
   @Post('course/:courseId')
   createCoursePost(
     @Req() req: any,
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
     @Body() body: { title: string; body: string; tags?: string[] },
   ) {
     return this.discussionsService.createPost(req.user.id, {
@@ -100,7 +101,7 @@ export class DiscussionsController {
   @Post('lab/:labId')
   createLabPost(
     @Req() req: any,
-    @Param('labId') labId: string,
+    @Param('labId', ParseUUIDPipe) labId: string,
     @Body() body: { title: string; body: string; tags?: string[] },
   ) {
     return this.discussionsService.createPost(req.user.id, { ...body, labId });
@@ -109,7 +110,7 @@ export class DiscussionsController {
   @Patch(':postId')
   updatePost(
     @Req() req: any,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body()
     body: {
       title?: string;
@@ -122,19 +123,19 @@ export class DiscussionsController {
   }
 
   @Delete('comments/:commentId')
-  deleteComment(@Req() req: any, @Param('commentId') commentId: string) {
+  deleteComment(@Req() req: any, @Param('commentId', ParseUUIDPipe) commentId: string) {
     return this.discussionsService.deleteComment(req.user.id, commentId);
   }
 
   @Delete(':postId')
-  deletePost(@Req() req: any, @Param('postId') postId: string) {
+  deletePost(@Req() req: any, @Param('postId', ParseUUIDPipe) postId: string) {
     return this.discussionsService.deletePost(req.user.id, postId);
   }
 
   @Post(':postId/comments')
   createComment(
     @Req() req: any,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() body: { body: string; parentCommentId?: string },
   ) {
     return this.discussionsService.createComment(req.user.id, postId, body);
@@ -143,7 +144,7 @@ export class DiscussionsController {
   @Post(':postId/vote')
   votePost(
     @Req() req: any,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() body: { value: 1 | -1 },
   ) {
     return this.discussionsService.vote(req.user.id, {
@@ -155,7 +156,7 @@ export class DiscussionsController {
   @Post('comments/:commentId/vote')
   voteComment(
     @Req() req: any,
-    @Param('commentId') commentId: string,
+    @Param('commentId', ParseUUIDPipe) commentId: string,
     @Body() body: { value: 1 | -1 },
   ) {
     return this.discussionsService.vote(req.user.id, {

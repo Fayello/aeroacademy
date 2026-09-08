@@ -6,6 +6,7 @@ import {
   Body,
   Query,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -33,7 +34,7 @@ export class DomainRankingController {
 
   @Get('my-ranks/:userId')
   async getMyDomainRanks(
-    @Param('userId') userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Query('seasonId') seasonId?: string,
   ) {
     const sid = await this.resolveSeasonId(seasonId);
@@ -43,7 +44,7 @@ export class DomainRankingController {
 
   @Get('domain/:domainId/leaderboard')
   async getDomainLeaderboard(
-    @Param('domainId') domainId: string,
+    @Param('domainId', ParseUUIDPipe) domainId: string,
     @Query('seasonId') seasonId?: string,
     @Query('limit') limit?: string,
   ) {
@@ -70,14 +71,14 @@ export class DomainRankingController {
   }
 
   @Get('history/:userId/all')
-  async getAllRatingHistory(@Param('userId') userId: string) {
+  async getAllRatingHistory(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.domainRankingService.getAllRatingHistory(userId);
   }
 
   @Get('history/:userId/:domainId')
   async getRatingHistory(
-    @Param('userId') userId: string,
-    @Param('domainId') domainId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('domainId', ParseUUIDPipe) domainId: string,
     @Query('seasonId') seasonId?: string,
   ) {
     const sid = await this.resolveSeasonId(seasonId);
@@ -131,7 +132,7 @@ export class DomainRankingController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Post('soft-reset/:seasonId')
-  async softReset(@Param('seasonId') seasonId: string) {
+  async softReset(@Param('seasonId', ParseUUIDPipe) seasonId: string) {
     return this.domainRankingService.softResetSeason(seasonId);
   }
 
@@ -139,7 +140,7 @@ export class DomainRankingController {
   @Roles('ADMIN')
   @Post('initialize/:userId')
   async initializeRanks(
-    @Param('userId') userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Query('seasonId') seasonId?: string,
   ) {
     const sid = await this.resolveSeasonId(seasonId);
@@ -149,17 +150,17 @@ export class DomainRankingController {
   }
 
   @Get('profile/:userId')
-  async getRankedProfile(@Param('userId') userId: string) {
+  async getRankedProfile(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.domainRankingService.getRankedProfile(userId);
   }
 
   @Get('career/:userId')
-  async getCareerHistory(@Param('userId') userId: string) {
+  async getCareerHistory(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.domainRankingService.getCareerHistory(userId);
   }
 
   @Get('capability/:userId')
-  async getCapabilityRanking(@Param('userId') userId: string) {
+  async getCapabilityRanking(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.domainRankingService.getCapabilityRanking(userId);
   }
 

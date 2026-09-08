@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, Request, ParseUUIDPipe } from '@nestjs/common';
 import { GuildsService } from './guilds.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -60,87 +60,87 @@ export class GuildsController {
   // ── Parameterized :id routes AFTER ──
 
   @Get(':id')
-  async getGuildDetail(@Param('id') id: string) {
+  async getGuildDetail(@Param('id', ParseUUIDPipe) id: string) {
     return this.guildsService.getGuildDetail(id);
   }
 
   @Patch(':id')
   @Audit('GUILD_UPDATED')
-  async updateGuild(@Request() req: RequestWithUser, @Param('id') id: string, @Body() body: Record<string, unknown>) {
+  async updateGuild(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Body() body: Record<string, unknown>) {
     return this.guildsService.updateGuild(req.user.id, id, body);
   }
 
   @Delete(':id')
   @Audit('GUILD_DISBANDED')
-  async disbandGuild(@Request() req: RequestWithUser, @Param('id') id: string) {
+  async disbandGuild(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.guildsService.disbandGuild(req.user.id, id);
   }
 
   @Post(':id/join')
   @Audit('GUILD_JOINED')
-  async joinGuild(@Request() req: RequestWithUser, @Param('id') id: string) {
+  async joinGuild(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.guildsService.joinGuild(req.user.id, id);
   }
 
   @Post(':id/apply')
   @Audit('GUILD_APPLICATION_SENT')
-  async applyToGuild(@Request() req: RequestWithUser, @Param('id') id: string, @Body() body: { message?: string }) {
+  async applyToGuild(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Body() body: { message?: string }) {
     return this.guildsService.applyToGuild(req.user.id, id, body.message);
   }
 
   @Post(':id/applications/:appId')
   @Audit('GUILD_APPLICATION_REVIEWED')
-  async reviewApplication(@Request() req: RequestWithUser, @Param('id') id: string, @Param('appId') appId: string, @Body() body: { action: 'APPROVED' | 'REJECTED' }) {
+  async reviewApplication(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Param('appId', ParseUUIDPipe) appId: string, @Body() body: { action: 'APPROVED' | 'REJECTED' }) {
     return this.guildsService.reviewApplication(req.user.id, id, appId, body.action);
   }
 
   @Get(':id/applications')
-  async getApplications(@Request() req: RequestWithUser, @Param('id') id: string) {
+  async getApplications(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.guildsService.getApplications(req.user.id, id);
   }
 
   @Delete(':id/members/:userId')
   @Audit('GUILD_MEMBER_KICKED')
-  async kickMember(@Request() req: RequestWithUser, @Param('id') id: string, @Param('userId') userId: string) {
+  async kickMember(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Param('userId', ParseUUIDPipe) userId: string) {
     return this.guildsService.kickMember(req.user.id, id, userId);
   }
 
   @Post(':id/promote/:userId')
   @Audit('GUILD_MEMBER_PROMOTED')
-  async promoteMember(@Request() req: RequestWithUser, @Param('id') id: string, @Param('userId') userId: string) {
+  async promoteMember(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Param('userId', ParseUUIDPipe) userId: string) {
     return this.guildsService.promoteMember(req.user.id, id, userId);
   }
 
   @Post(':id/demote/:userId')
   @Audit('GUILD_MEMBER_DEMOTED')
-  async demoteMember(@Request() req: RequestWithUser, @Param('id') id: string, @Param('userId') userId: string) {
+  async demoteMember(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Param('userId', ParseUUIDPipe) userId: string) {
     return this.guildsService.demoteMember(req.user.id, id, userId);
   }
 
   @Post(':id/refresh-code')
-  async refreshInviteCode(@Request() req: RequestWithUser, @Param('id') id: string) {
+  async refreshInviteCode(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.guildsService.refreshInviteCode(req.user.id, id);
   }
 
   @Get(':id/chat')
-  async getChatHistory(@Param('id') id: string, @Query('limit') limit?: string) {
+  async getChatHistory(@Param('id', ParseUUIDPipe) id: string, @Query('limit') limit?: string) {
     return this.guildsService.getChatHistory(id, limit ? parseInt(limit) : 100);
   }
 
   @Post(':id/chat')
   @Audit('GUILD_CHAT_SENT')
-  async sendChatMessage(@Request() req: RequestWithUser, @Param('id') id: string, @Body() body: { content: string }) {
+  async sendChatMessage(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Body() body: { content: string }) {
     return this.guildsService.sendChatMessage(id, req.user.id, body.content);
   }
 
   @Post(':id/chat/pin/:messageId')
   @Audit('GUILD_MESSAGE_PINNED')
-  async pinMessage(@Request() req: RequestWithUser, @Param('id') id: string, @Param('messageId') messageId: string) {
+  async pinMessage(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string, @Param('messageId', ParseUUIDPipe) messageId: string) {
     return this.guildsService.pinMessage(req.user.id, id, messageId);
   }
 
   @Get(':id/feed')
-  async getGuildFeed(@Param('id') id: string) {
+  async getGuildFeed(@Param('id', ParseUUIDPipe) id: string) {
     return this.guildsService.getGuildFeed(id);
   }
 }

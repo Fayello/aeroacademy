@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Param,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LeaderboardService } from './leaderboard.service';
@@ -176,8 +177,8 @@ export class DashboardController {
   @UseGuards(AuthGuard('jwt'))
   @Get('head-to-head/:userId1/:userId2')
   async getHeadToHead(
-    @Param('userId1') userId1: string,
-    @Param('userId2') userId2: string,
+    @Param('userId1', ParseUUIDPipe) userId1: string,
+    @Param('userId2', ParseUUIDPipe) userId2: string,
   ) {
     return this.leaderboardService.getHeadToHead(userId1, userId2);
   }

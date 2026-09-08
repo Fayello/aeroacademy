@@ -6,6 +6,7 @@ import {
   Body,
   UseGuards,
   Request,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AssessmentsService } from './assessments.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -33,7 +34,7 @@ export class AssessmentsController {
   }
 
   @Get(':id')
-  async getAssessment(@Param('id') id: string) {
+  async getAssessment(@Param('id', ParseUUIDPipe) id: string) {
     return this.assessmentsService.getAssessment(id);
   }
 
@@ -41,7 +42,7 @@ export class AssessmentsController {
   @Audit('ASSESSMENT_SUBMITTED')
   async submitAssessment(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() body: { answers: Record<string, string> },
   ) {
     return this.assessmentsService.submitAssessment(

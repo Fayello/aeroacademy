@@ -258,7 +258,7 @@ export class LabsController {
   // === REVIEWS ===
 
   @Get(':labId/reviews')
-  async getLabReviews(@Param('labId') labId: string) {
+  async getLabReviews(@Param('labId', ParseUUIDPipe) labId: string) {
     return this.labsService.getLabReviews(labId);
   }
 
@@ -268,7 +268,7 @@ export class LabsController {
   @Audit('LAB_REVIEW_CREATED')
   async createLabReview(
     @Request() req: RequestWithUser,
-    @Param('labId') labId: string,
+    @Param('labId', ParseUUIDPipe) labId: string,
     @Body() body: { rating: number; comment?: string },
   ) {
     return this.labsService.createLabReview(
@@ -284,7 +284,7 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   async getCheckpoint(
     @Request() req: RequestWithUser,
-    @Param('labId') labId: string,
+    @Param('labId', ParseUUIDPipe) labId: string,
   ) {
     return this.labsService.getCheckpoint(req.user.id, labId);
   }
@@ -294,7 +294,7 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   async saveCheckpoint(
     @Request() req: RequestWithUser,
-    @Param('labId') labId: string,
+    @Param('labId', ParseUUIDPipe) labId: string,
     @Body() body: { walkthroughState: number[]; notes?: string },
   ) {
     return this.labsService.saveCheckpoint(

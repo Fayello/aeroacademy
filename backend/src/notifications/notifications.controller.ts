@@ -7,6 +7,7 @@ import {
   Query,
   Request,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -52,12 +53,12 @@ export class NotificationsController {
   }
 
   @Patch(':id/read')
-  async markRead(@Request() req: RequestWithUser, @Param('id') id: string) {
+  async markRead(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.notificationsService.markRead(req.user.id, id);
   }
 
   @Delete(':id')
-  async delete(@Request() req: RequestWithUser, @Param('id') id: string) {
+  async delete(@Request() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.notificationsService.delete(req.user.id, id);
   }
 }
