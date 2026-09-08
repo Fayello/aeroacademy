@@ -59,10 +59,26 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* PWA: manifest is also declared via metadata.manifest; keep explicit link for broader compat */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/logo-icon.svg" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "XpertClass",
+            "url": "https://xpertclass.academy",
+            "logo": "https://xpertclass.academy/logo-icon.svg",
+            "description": "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure.",
+            "sameAs": [],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "email": "info@xpertclass.academy"
+            }
+          }) }}
+        />
       </head>
       <body className={inter.className}>
         <script

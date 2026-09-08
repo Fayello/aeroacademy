@@ -299,6 +299,21 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0f172a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "XpertClass",
+          "url": "https://xpertclass.academy",
+          "description": "Hands-on training platform for security, Linux, DevOps, and cloud infrastructure.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://xpertclass.academy/courses?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }) }}
+      />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#7AD62A] focus:text-white focus:rounded-xl focus:text-sm focus:font-medium"
