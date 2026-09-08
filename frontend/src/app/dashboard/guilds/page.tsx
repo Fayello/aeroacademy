@@ -24,6 +24,7 @@ interface Guild {
   xp: number;
   master: { id: string; name: string };
   _count: { members: number };
+  maxMembers?: number;
 }
 
 const DOMAIN_OPTIONS = ["", "SECURITY", "NETWORKING", "DEVOPS", "DATABASES", "SYSTEMS", "QA"];
@@ -224,10 +225,13 @@ export default function GuildsPage() {
                   <Crown size={10} className="text-amber-400" /> {guild.master.name}
                   {guild.focusDomain && <span className="px-1.5 py-0.5 rounded bg-white/5">{guild.focusDomain}</span>}
                 </div>
-                {!myGuild && guild.visibility !== "PRIVATE" && (
+                {!myGuild && guild.visibility !== "PRIVATE" && (guild._count?.members ?? 0) < (guild.maxMembers || 50) && (
                   <button onClick={() => handleJoin(guild.id)} className="px-3 py-1 bg-[#7AD62A] text-[#0F203A] text-[10px] font-semibold rounded-lg hover:bg-[#6bc422]">
                     {guild.visibility === "INVITE_ONLY" ? "Request" : "Join"}
                   </button>
+                )}
+                {!myGuild && guild.visibility !== "PRIVATE" && (guild._count?.members ?? 0) >= (guild.maxMembers || 50) && (
+                  <span className="text-[10px] text-slate-500">Full</span>
                 )}
                 {!myGuild && guild.visibility === "PRIVATE" && (
                   <Link href={`/dashboard/guilds/${guild.id}`} className="text-[10px] text-slate-400 flex items-center gap-1 hover:text-[#7AD62A] transition-colors"><Lock size={9} /> Apply</Link>

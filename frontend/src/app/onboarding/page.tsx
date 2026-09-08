@@ -143,10 +143,8 @@ export default function OnboardingPage() {
       writeOnboardingSelections(selections);
       router.push("/dashboard");
     } catch {
-      markOnboardingComplete();
-      writeOnboardingSelections(selections);
-      toast.error("Failed to save preferences. You can update them later in Settings.");
-      router.push("/dashboard");
+      toast.error("Failed to save preferences. Please try again.");
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -154,6 +152,7 @@ export default function OnboardingPage() {
 
   const handleSkip = () => {
     markOnboardingComplete();
+    writeOnboardingSelections(selections);
     router.push("/dashboard");
   };
 

@@ -8,6 +8,7 @@ import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 import { CheckCircle2, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { ONBOARDING_COMPLETE_KEY, ONBOARDING_SELECTIONS_KEY } from "@/lib/onboarding";
+import { initTokenRefresh } from "@/lib/api";
 
 function VerifyTokenForm() {
   const router = useRouter();
@@ -35,9 +36,11 @@ function VerifyTokenForm() {
         localStorage.setItem("user", JSON.stringify(r.user));
         localStorage.removeItem(ONBOARDING_COMPLETE_KEY);
         localStorage.removeItem(ONBOARDING_SELECTIONS_KEY);
+        initTokenRefresh();
         setStatus("success");
         toast.success("Email verified! Welcome to XpertClass.");
-        setTimeout(() => router.push("/dashboard"), 1500);
+        const redirectTimer = setTimeout(() => router.push("/dashboard"), 1500);
+        return () => clearTimeout(redirectTimer);
       })
       .catch((err: unknown) => {
         if (cancelled) return;

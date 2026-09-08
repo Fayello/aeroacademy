@@ -280,6 +280,7 @@ export default function GuildDetailPage() {
   }
 
   async function handleRefreshCode() {
+    if (!confirm("This will invalidate the current invite code. All members with the old code won't be able to share it. Continue?")) return;
     try {
       const res = await fetchApi<{ inviteCode: string }>(`/guilds/${guildId}/refresh-code`, { method: "POST" });
       if (guild) setGuild({ ...guild, inviteCode: res.inviteCode });

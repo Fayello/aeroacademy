@@ -283,7 +283,12 @@ export default function ProfilePage() {
     );
   }
 
-  if (!user) return null;
+  if (!user) return (
+    <div className="text-center py-20">
+      <p className="text-slate-400 text-sm">Failed to load profile.</p>
+      <button onClick={() => window.location.reload()} className="mt-3 text-[#7AD62A] text-sm hover:underline">Retry</button>
+    </div>
+  );
 
   const xp = userMetrics?.xp || user.xp || 0;
   const level = userMetrics?.level || getLevel(xp);

@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Verification Code</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Verification Code</label>
                   <input
                     {...resetForm.register("code")}
                     type="text"
@@ -132,7 +132,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">New Password</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">New Password</label>
                   <input
                     {...resetForm.register("password")}
                     type="password"
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Confirm Password</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Confirm Password</label>
                   <input
                     {...resetForm.register("confirmPassword")}
                     type="password"

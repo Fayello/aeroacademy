@@ -160,6 +160,8 @@ export default function MasterClassDetailPage() {
                     {registering ? <Loader2 className="animate-spin" size={14} /> : "Cancel Registration"}
                   </button>
                 </div>
+              ) : mc.maxParticipants && (mc._count?.registrations || 0) >= mc.maxParticipants ? (
+                <div className="text-center text-sm text-slate-400 py-3">This class is full.</div>
               ) : (
                 <button onClick={handleRegister} disabled={registering} className="btn-primary w-full text-sm">
                   {registering ? <Loader2 className="animate-spin" size={14} /> : "Register Now"}

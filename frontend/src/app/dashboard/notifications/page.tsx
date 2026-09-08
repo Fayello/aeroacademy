@@ -155,7 +155,7 @@ export default function NotificationsPage() {
                     {n.title}
                   </p>
                   {!n.read && (
-                    <span className="w-2 h-2 rounded-full bg-slate-800 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-[#7AD62A] shrink-0" />
                   )}
                 </div>
                 <p className="text-sm text-slate-300 mt-0.5">{n.message}</p>

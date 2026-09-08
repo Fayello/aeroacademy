@@ -270,7 +270,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                 {isEnrolled ? "Go to Lab" : "Start Challenge"}
               </Link>
             )}
-            {!isEnrolled && (
+            {!isEnrolled && daysLeft > 0 && (
               <button
                 onClick={handleJoin}
                 disabled={joining}

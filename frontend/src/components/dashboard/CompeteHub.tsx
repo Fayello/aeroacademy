@@ -317,7 +317,8 @@ export default function CompeteHub() {
             return (
               <Link
                 key={mode.id}
-                href={isLocked ? "#" : mode.href}
+                href={isLocked ? "" : mode.href}
+                onClick={isLocked ? (e) => e.preventDefault() : undefined}
                 className={`relative group bg-[#0f172a] rounded-xl border p-5 transition-all ${
                   isLocked
                     ? "border-white/10 opacity-60 cursor-not-allowed"

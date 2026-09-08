@@ -166,6 +166,7 @@ export default function LabWorkspace() {
   const [instance, setInstance] = useState<LabInstance | null>(null);
   const [loading, setLoading] = useState(true);
   const [provisioning, setProvisioning] = useState(false);
+  const [provisioningCount, setProvisioningCount] = useState(0);
   const [connected, setConnected] = useState(false);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -449,8 +450,20 @@ export default function LabWorkspace() {
         const status = await fetchApi(`/labs/status/${id}`);
         if (!cancelled) {
           setInstance(status);
-          if (status && (status.status === "STOPPED" || (status.expiresAt && new Date(status.expiresAt).getTime() <= Date.now()))) {
+          if (status && (status.status === "STOPPED" || status.status === "FAILED" || (status.expiresAt && new Date(status.expiresAt).getTime() <= Date.now()))) {
             clearInterval(pollInterval);
+            if (status.status === "PROVISIONING") {
+              setProvisioning(false);
+            }
+          }
+          if (status && status.status === "PROVISIONING") {
+            setProvisioningCount((c) => {
+              if (c >= 24) {
+                clearInterval(pollInterval);
+                return c;
+              }
+              return c + 1;
+            });
           }
         }
       } catch {
@@ -1123,10 +1136,16 @@ export default function LabWorkspace() {
               </button>
             </>
           ) : isProvisioning ? (
-            <span className="flex items-center gap-2 text-xs text-amber-400">
-              <Loader2 className="animate-spin" size={14} />
-              Provisioning...
-            </span>
+            provisioningCount >= 24 ? (
+              <span className="flex items-center gap-2 text-xs text-red-400">
+                Provisioning timed out. Try again.
+              </span>
+            ) : (
+              <span className="flex items-center gap-2 text-xs text-amber-400">
+                <Loader2 className="animate-spin" size={14} />
+                Provisioning...
+              </span>
+            )
           ) : (
             <button onClick={handleLaunch} disabled={provisioning} className="btn-primary text-xs">
               {provisioning ? <Loader2 className="animate-spin" size={14} /> : <Play size={14} />}

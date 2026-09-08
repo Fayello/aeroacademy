@@ -44,7 +44,7 @@ export default function DashboardPage() {
   }
 
   if (!user) {
-    return <DashboardSkeleton />;
+    return null;
   }
 
   return (
