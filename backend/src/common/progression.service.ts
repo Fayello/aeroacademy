@@ -5,6 +5,7 @@ import { EventsService } from './events.service';
 import { MasteryService } from './mastery.service';
 import { GuildsService } from '../guilds/guilds.service';
 import { CertificationEngineService } from '../certifications/certification-engine.service';
+import { XP_PER_LEVEL, XP_PER_SKILL_LEVEL, CERTIFICATION_XP_THRESHOLD } from './gamification.constants';
 
 export interface AwardXPParams {
   amount: number;
@@ -57,10 +58,10 @@ export class ProgressionService {
       where: { id: userId },
     });
     const oldXp = user.xp;
-    const oldLevel = Math.floor(oldXp / 1000) + 1;
+    const oldLevel = Math.floor(oldXp / XP_PER_LEVEL) + 1;
 
     const newXp = oldXp + amount;
-    const newLevel = Math.floor(newXp / 1000) + 1;
+    const newLevel = Math.floor(newXp / XP_PER_LEVEL) + 1;
 
     await this.prisma.user.update({
       where: { id: userId },
@@ -69,7 +70,7 @@ export class ProgressionService {
 
     this.guildsService.contributeXp(userId, amount).catch(() => {});
 
-    if (newXp >= 5000) {
+    if (newXp >= CERTIFICATION_XP_THRESHOLD) {
       this.certificationEngineService.autoAwardForUser(userId).catch(() => {});
     }
 
@@ -98,7 +99,7 @@ export class ProgressionService {
             skillXp = updated.xp;
           } else {
             skillXp = amount;
-            skillLevel = Math.floor(amount / 500) + 1;
+            skillLevel = Math.floor(amount / XP_PER_SKILL_LEVEL) + 1;
             await this.prisma.userSkill.create({
               data: {
                 userId,
@@ -227,7 +228,7 @@ export class ProgressionService {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
     });
-    return Math.floor(user.xp / 1000) + 1;
+    return Math.floor(user.xp / XP_PER_LEVEL) + 1;
   }
 
   async awardPassXp(

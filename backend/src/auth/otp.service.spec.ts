@@ -1,6 +1,7 @@
 import { OtpService } from './otp.service';
 
 describe('OtpService', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const prisma = {
     otpVerification: {
       deleteMany: jest.fn().mockResolvedValue({}),
@@ -8,7 +9,7 @@ describe('OtpService', () => {
       findFirst: jest.fn().mockResolvedValue(null),
       update: jest.fn().mockResolvedValue({}),
     },
-  } as never;
+  } as any;
 
   const service = new OtpService(prisma);
 

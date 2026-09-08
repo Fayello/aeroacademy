@@ -13,16 +13,14 @@ import { MissionService } from '../challenges/mission.service';
 import { BadgesService } from '../badges/badges.service';
 import { ProgressionService } from '../common/progression.service';
 import { getLevel, getRequiredSectionLevel } from '../common/level.util';
+import { BASE_LESSON_XP, MILESTONE_THRESHOLDS, STREAK_BONUS_XP, STREAK_BONUS_RATE_PER_WEEK, STREAK_BONUS_MAX, FIRST_LESSON_BONUS_RATE } from '../common/gamification.constants';
 
-const MILESTONE_THRESHOLDS = [25, 50, 75, 100];
 const MILESTONE_LABELS: Record<number, string> = {
   25: '25% Complete — Quarter Way!',
   50: '50% Complete — Halfway There!',
   75: '75% Complete — Almost Done!',
   100: '100% Complete — Course Finished!',
 };
-
-const BASE_LESSON_XP = 100;
 const INLINE_PRACTICE_SOURCE = 'INLINE_PRACTICE_COMPLETED';
 
 @Injectable()
@@ -324,7 +322,7 @@ export class ProgressService {
       }
 
       const newStreak = diffDays === 1 ? user.currentStreak + 1 : 1;
-      const bonusXp = diffDays === 1 && newStreak % 7 === 0 ? 500 : 0; // 500 bonus every 7-day streak
+      const bonusXp = diffDays === 1 && newStreak % 7 === 0 ? STREAK_BONUS_XP : 0;
 
       // Award streak milestone freezes: every 7-day streak grants 1 freeze
       const grantFreeze = diffDays === 1 && newStreak > 0 && newStreak % 7 === 0;
@@ -680,12 +678,12 @@ export class ProgressService {
     let multiplier = 1;
 
     // Streak bonus: +10% per 7-day streak, max +50%
-    const streakBonus = Math.min(Math.floor(user.currentStreak / 7) * 0.1, 0.5);
+    const streakBonus = Math.min(Math.floor(user.currentStreak / 7) * STREAK_BONUS_RATE_PER_WEEK, STREAK_BONUS_MAX);
     multiplier += streakBonus;
 
-    // First completion bonus: +50% if this is the user's first lesson
+    // First completion bonus
     if (user.xp === 0) {
-      multiplier += 0.5;
+      multiplier += FIRST_LESSON_BONUS_RATE;
     }
 
     return Math.round(baseXp * multiplier);

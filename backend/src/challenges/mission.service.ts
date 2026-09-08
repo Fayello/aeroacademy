@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ProgressionService } from '../common/progression.service';
 import { EventsService } from '../common/events.service';
 import { EmailService } from '../email/email.service';
+import { XP_PER_LEVEL, SEASONAL_ACCESS_LEVEL, MISSION_DIFFICULTY_BANDS, DAILY_WARMUP_XP, DAILY_SKILL_XP, DAILY_BOSS_XP, WEEKLY_MISSION_XP, TEAM_WEEKLY_MISSION_XP, MONTHLY_MISSION_XP, SEASONAL_MISSION_XP, COMBO_BASE_XP, COMBO_INCREMENT_XP, COMBO_MAX_XP } from '../common/gamification.constants';
 
 @Injectable()
 export class MissionService implements OnModuleInit {
@@ -49,14 +50,14 @@ export class MissionService implements OnModuleInit {
       where: { id: userId },
       select: { xp: true },
     });
-    const userLevel = Math.floor((user?.xp ?? 0) / 1000) + 1;
+    const userLevel = Math.floor((user?.xp ?? 0) / XP_PER_LEVEL) + 1;
 
     const challenges = await this.prisma.challenge.findMany({
       where: {
         isActive: true,
         startAt: { lte: now },
         endAt: { gte: now },
-        ...(userLevel < 25 ? { type: { not: 'SEASONAL' } } : {}),
+        ...(userLevel < SEASONAL_ACCESS_LEVEL ? { type: { not: 'SEASONAL' } } : {}),
       },
     });
 
@@ -257,7 +258,7 @@ export class MissionService implements OnModuleInit {
 
       const { newCombo } = result;
 
-      const comboBonus = Math.min(100 + (newCombo - 1) * 50, 500);
+      const comboBonus = Math.min(COMBO_BASE_XP + (newCombo - 1) * COMBO_INCREMENT_XP, COMBO_MAX_XP);
 
       await this.progressionService
         .awardXP(userId, {
@@ -495,7 +496,7 @@ export class MissionService implements OnModuleInit {
           difficulty: 'EASY',
           objectiveType: 'FLAG_COMPLETIONS',
           objectiveTarget: 1,
-          xpReward: 50,
+          xpReward: DAILY_WARMUP_XP,
           startAt: startOfDay,
           endAt: endOfDay,
           metadata: { labId: warmupLab.id },
@@ -510,7 +511,7 @@ export class MissionService implements OnModuleInit {
           difficulty: 'MEDIUM',
           objectiveType: 'FLAG_COMPLETIONS',
           objectiveTarget: 3,
-          xpReward: 150,
+          xpReward: DAILY_SKILL_XP,
           startAt: startOfDay,
           endAt: endOfDay,
           metadata: { labId: skillLab.id },
@@ -524,7 +525,7 @@ export class MissionService implements OnModuleInit {
           difficulty: 'HARD',
           objectiveType: 'LAB_COMPLETIONS',
           objectiveTarget: 1,
-          xpReward: 500,
+          xpReward: DAILY_BOSS_XP,
           startAt: startOfDay,
           endAt: endOfDay,
           metadata: { labId: bossLab.id },

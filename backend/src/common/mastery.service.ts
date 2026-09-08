@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
-const DECAY_THRESHOLD_DAYS = 7;
-const MAX_SKILL_XP_FOR_MASTERY = 5000;
+import { MASTERY_DECAY_THRESHOLD_DAYS, MAX_SKILL_XP_FOR_MASTERY } from './gamification.constants';
 
 export interface TechnologyGenome {
   domains: DomainGenome[];
@@ -91,7 +89,7 @@ export class MasteryService {
 
   async applyMasteryDecay(): Promise<number> {
     const threshold = new Date();
-    threshold.setDate(threshold.getDate() - DECAY_THRESHOLD_DAYS);
+    threshold.setDate(threshold.getDate() - MASTERY_DECAY_THRESHOLD_DAYS);
 
     const inactiveSkills = await this.prisma.userSkill.findMany({
       where: {
@@ -114,7 +112,7 @@ export class MasteryService {
 
       const daysOverThreshold = Math.max(
         0,
-        daysInactive - DECAY_THRESHOLD_DAYS,
+        daysInactive - MASTERY_DECAY_THRESHOLD_DAYS,
       );
       const decayAmount = Math.min(
         userSkill.mastery,
@@ -210,7 +208,7 @@ export class MasteryService {
       if (
         us.isDecaying ||
         (daysSincePractice !== null &&
-          daysSincePractice > DECAY_THRESHOLD_DAYS &&
+          daysSincePractice > MASTERY_DECAY_THRESHOLD_DAYS &&
           us.mastery > 0)
       ) {
         fadingSkills.push(info);
