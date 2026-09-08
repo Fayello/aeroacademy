@@ -279,6 +279,8 @@ model Section {
   order    Int      @default(0)
   lessons  Lesson[]
   course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
 }
 
 model Lesson {
@@ -294,6 +296,8 @@ model Lesson {
   progress        Progress[]
   quiz            Quiz?
   inlinePractices InlinePractice[]
+
+  @@index([sectionId])
 }
 
 model InlinePractice {
@@ -366,6 +370,8 @@ model Question {
   text    String
   answers Answer[]
   quiz    Quiz     @relation(fields: [quizId], references: [id])
+
+  @@index([quizId])
 }
 
 model Answer {
@@ -374,6 +380,8 @@ model Answer {
   text       String
   isCorrect  Boolean
   question   Question @relation(fields: [questionId], references: [id])
+
+  @@index([questionId])
 }
 
 model Lab {
@@ -399,6 +407,8 @@ model Lab {
   analytics        LabAnalytics?
   reviews          LabReview[]
   challenges       LabChallenge[]
+
+  @@index([difficulty])
 }
 
 model LabFlag {
@@ -467,6 +477,8 @@ model LabInstance {
   user        User      @relation(fields: [userId], references: [id])
 
   @@index([userId, status])
+  @@index([labId])
+  @@index([userId, labId])
 }
 
 model Achievement {
@@ -820,6 +832,8 @@ model LearningPath {
 
   prerequisitePath LearningPath?  @relation("PathPrerequisite", fields: [prerequisitePathId], references: [id])
   prerequisiteFor  LearningPath[] @relation("PathPrerequisite")
+
+  @@index([prerequisitePathId])
 }
 
 model LearningPathCourse {
@@ -870,6 +884,7 @@ model UserBadge {
 
   @@id([userId, badgeId])
   @@index([userId])
+  @@index([badgeId])
 }
 
 model SkillAssessment {
@@ -2136,6 +2151,7 @@ model GuildChatMessage {
 
   @@index([guildId, createdAt])
   @@index([guildId, pinned])
+  @@index([userId])
 }
 
 model GuildApplication {
@@ -2153,4 +2169,5 @@ model GuildApplication {
 
   @@unique([guildId, userId])
   @@index([guildId, status])
+  @@index([userId])
 }
