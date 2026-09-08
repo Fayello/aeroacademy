@@ -139,7 +139,7 @@ function MissionCard({ mission, onClaim, claimingId }: { mission: Mission; onCla
                   {mission.topContributors.map((c, i) => (
                     <div key={c.userId} className="flex items-center justify-between">
                       <span className="text-[10px] text-white/40">
-                        {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} {c.name}
+                        {i === 0 ? '1st' : i === 1 ? '2nd' : '3rd'} {c.name}
                       </span>
                       <span className="text-[10px] text-white/30">{c.progress} flags</span>
                     </div>

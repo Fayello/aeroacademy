@@ -86,7 +86,7 @@ function formatTime(ts: number) {
 }
 
 function Flag({ code }: { code: string }) {
-  if (!code || code === "??") return <span>🏳️</span>;
+  if (!code || code === "??") return <span className="text-xs text-white/30">--</span>;
   const codeLower = code.toLowerCase();
   return (
     <span>

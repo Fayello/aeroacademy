@@ -10,7 +10,21 @@ import {
   Clock,
   Zap,
   X,
+  Syringe,
+  Scroll,
+  Terminal,
+  Link,
+  FolderOpen,
+  Search,
+  Timer,
+  Bomb,
+  Database,
+  Drama,
+  FileText,
+  Cookie,
+  Slash,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import PageHeader from "@/components/ui/PageHeader";
@@ -82,19 +96,19 @@ const SEVERITY_COLORS: Record<string, string> = {
   INFO: "text-slate-400 bg-white/5 border-white/10",
 };
 
-const TYPE_ICONS: Record<string, string> = {
-  "SQL Injection": "💉",
-  XSS: "📜",
-  "Command Injection": "💻",
-  SSRF: "🔗",
-  "Path Traversal": "📁",
-  "Scanner/Recon": "🔍",
-  "Rate Limit Hit": "⏱️",
-  "Log4Shell/RCE": "💣",
-  "NoSQL Injection": "🗄️",
-  Obfuscation: "🎭",
-  Enumeration: "📋",
-  "Honeypot Hit": "🍯",
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  "SQL Injection": Syringe,
+  XSS: Scroll,
+  "Command Injection": Terminal,
+  SSRF: Link,
+  "Path Traversal": FolderOpen,
+  "Scanner/Recon": Search,
+  "Rate Limit Hit": Timer,
+  "Log4Shell/RCE": Bomb,
+  "NoSQL Injection": Database,
+  Obfuscation: Drama,
+  Enumeration: FileText,
+  "Honeypot Hit": Cookie,
 };
 
 function formatTime(ts: number) {
@@ -107,7 +121,7 @@ function formatTime(ts: number) {
 }
 
 function Flag({ code }: { code: string }) {
-  if (!code || code === "??") return <span className="text-xs">🏳️</span>;
+  if (!code || code === "??") return <span className="text-xs text-white/30">--</span>;
   const codeLower = code.toLowerCase();
   return (
     <span className="text-xs">
@@ -420,7 +434,7 @@ export default function ThreatsPage() {
                     className="flex items-center gap-3 py-2"
                   >
                     <span className="text-sm">
-                      {TYPE_ICONS[t.type] || "⚡"}
+                      {(() => { const Icon = TYPE_ICONS[t.type] || Zap; return <Icon size={14} className="text-white/60" />; })()}
                     </span>
                     <span className="text-xs text-white flex-1">{t.type}</span>
                     <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
