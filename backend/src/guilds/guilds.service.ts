@@ -344,20 +344,24 @@ export class GuildsService {
       data: { contributionXp: { increment: amount } },
     });
 
-    const guild = await this.prisma.guild.findUnique({ where: { id: membership.guildId } });
-    if (!guild) return;
+    const result = await this.prisma.$transaction(async (tx) => {
+      const guild = await tx.guild.findUnique({ where: { id: membership.guildId } });
+      if (!guild) return null;
 
-    const newTotalXp = Number(guild.xp) + amount;
-    const newLevel = Math.floor(newTotalXp / 1000) + 1;
+      const newTotalXp = Number(guild.xp) + amount;
+      const newLevel = Math.floor(newTotalXp / 1000) + 1;
 
-    await this.prisma.guild.update({
-      where: { id: membership.guildId },
-      data: {
-        xp: { increment: amount },
-        level: newLevel,
-      },
+      await tx.guild.update({
+        where: { id: membership.guildId },
+        data: {
+          xp: { increment: amount },
+          level: newLevel,
+        },
+      });
+
+      return { guildXp: newTotalXp, guildLevel: newLevel };
     });
 
-    return { guildId: membership.guildId, guildXp: newTotalXp, guildLevel: newLevel };
+    return { guildId: membership.guildId, ...(result || {}) };
   }
 }

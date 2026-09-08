@@ -181,21 +181,25 @@ export default function GuildDetailPage() {
   // Load tab data
   useEffect(() => {
     if (!isMember) return;
+    let cancelled = false;
     if (activeTab === "Chat") {
       setChatLoading(true);
       fetchApi<ChatMessage[]>(`/guilds/${guildId}/chat`).then((msgs) => {
-        setMessages(msgs);
-        setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-      }).catch(() => {}).finally(() => setChatLoading(false));
+        if (!cancelled) {
+          setMessages(msgs);
+          setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+        }
+      }).catch(() => {}).finally(() => { if (!cancelled) setChatLoading(false); });
     }
     if (activeTab === "Feed") {
       setFeedLoading(true);
-      fetchApi<ActivityEvent[]>(`/guilds/${guildId}/feed`).then((f) => setFeed(f || [])).catch(() => {}).finally(() => setFeedLoading(false));
+      fetchApi<ActivityEvent[]>(`/guilds/${guildId}/feed`).then((f) => { if (!cancelled) setFeed(f || []); }).catch(() => {}).finally(() => { if (!cancelled) setFeedLoading(false); });
     }
     if (activeTab === "Applications" && (myRole === "MASTER" || myRole === "OFFICER")) {
       setAppsLoading(true);
-      fetchApi<GuildApplication[]>(`/guilds/${guildId}/applications`).then((a) => setApplications(a || [])).catch(() => {}).finally(() => setAppsLoading(false));
+      fetchApi<GuildApplication[]>(`/guilds/${guildId}/applications`).then((a) => { if (!cancelled) setApplications(a || []); }).catch(() => {}).finally(() => { if (!cancelled) setAppsLoading(false); });
     }
+    return () => { cancelled = true; };
   }, [activeTab, guildId, isMember, myRole]);
 
   async function sendMessage() {

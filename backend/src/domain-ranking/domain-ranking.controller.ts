@@ -8,6 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { DomainRankingService } from './domain-ranking.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -100,6 +102,8 @@ export class DomainRankingController {
     ];
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
   @Post('award')
   async awardRating(
     @Body()
@@ -124,11 +128,15 @@ export class DomainRankingController {
     });
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
   @Post('soft-reset/:seasonId')
   async softReset(@Param('seasonId') seasonId: string) {
     return this.domainRankingService.softResetSeason(seasonId);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
   @Post('initialize/:userId')
   async initializeRanks(
     @Param('userId') userId: string,

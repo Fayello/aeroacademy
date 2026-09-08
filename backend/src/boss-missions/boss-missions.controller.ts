@@ -1,5 +1,7 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { BossMissionsService } from './boss-missions.service';
 import type { RequestWithUser } from '../common/request-with-user';
 
@@ -20,17 +22,25 @@ export class BossMissionsController {
 
   @Get(':bossId/requirements/:userId')
   checkRequirements(
+    @Request() req: RequestWithUser,
     @Param('userId') userId: string,
     @Param('bossId') bossId: string,
   ) {
+    if (req.user.id !== userId && req.user.role !== 'ADMIN') {
+      userId = req.user.id;
+    }
     return this.bossMissionsService.checkDomainRequirements(userId, bossId);
   }
 
   @Get(':bossId/attempts/:userId')
   getUserAttempts(
+    @Request() req: RequestWithUser,
     @Param('userId') userId: string,
     @Param('bossId') bossId: string,
   ) {
+    if (req.user.id !== userId && req.user.role !== 'ADMIN') {
+      userId = req.user.id;
+    }
     return this.bossMissionsService.getUserAttempts(userId, bossId);
   }
 
@@ -39,6 +49,8 @@ export class BossMissionsController {
     return this.bossMissionsService.getLeaderboard(bossId);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
   @Post()
   createBossMission(
     @Body()

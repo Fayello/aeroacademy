@@ -15,36 +15,35 @@ export class LeaguesService {
     labDifficulty: number,
     isCorrect: boolean,
   ) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return;
-
     const activeSeason = await this.prisma.season.findFirst({
       where: { isActive: true },
     });
-    const multiplier = activeSeason ? 1.2 : 1.0; // Seasonal bonus
+    const multiplier = activeSeason ? 1.2 : 1.0;
 
-    const oldRating = user.rank ?? 1200;
-    const expectedScore =
-      1 / (1 + Math.pow(10, (labDifficulty - oldRating) / 400));
-    const actualScore = isCorrect ? 1 : 0;
+    const result = await this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({ where: { id: userId } });
+      if (!user) return null;
 
-    const change = Math.round(
-      this.K_FACTOR * (actualScore - expectedScore) * multiplier,
-    );
-    const newRating = Math.max(0, oldRating + change);
+      const oldRating = user.rank ?? 1200;
+      const expectedScore =
+        1 / (1 + Math.pow(10, (labDifficulty - oldRating) / 400));
+      const actualScore = isCorrect ? 1 : 0;
 
-    // Determine division based on new rating
-    const division = this.getDivision(newRating);
+      const change = Math.round(
+        this.K_FACTOR * (actualScore - expectedScore) * multiplier,
+      );
+      const newRating = Math.max(0, oldRating + change);
+      const division = this.getDivision(newRating);
 
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        rank: newRating,
-        division,
-      },
+      await tx.user.update({
+        where: { id: userId },
+        data: { rank: newRating, division },
+      });
+
+      return { newRating, division, change };
     });
 
-    return { newRating, division, change };
+    return result;
   }
 
   private getDivision(rating: number): string {

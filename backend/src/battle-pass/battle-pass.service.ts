@@ -214,17 +214,18 @@ export class BattlePassService {
       const remainingXp = tier.xpRequired - progress.currentXp;
       const xpToAdd = Math.min(amount, remainingXp);
 
-      await this.prisma.battlePassProgress.update({
+      const updated = await this.prisma.battlePassProgress.update({
         where: { id: progress.id },
         data: {
-          currentXp: progress.currentXp + xpToAdd,
-          ...(progress.currentXp + xpToAdd >= tier.xpRequired
-            ? { unlocked: true, unlockedAt: new Date() }
-            : {}),
+          currentXp: { increment: xpToAdd },
         },
       });
 
-      if (progress.currentXp + xpToAdd >= tier.xpRequired) {
+      if (updated.currentXp >= tier.xpRequired) {
+        await this.prisma.battlePassProgress.update({
+          where: { id: progress.id },
+          data: { unlocked: true, unlockedAt: new Date() },
+        });
         unlockedTiers.push(tier.tierNumber);
         this.logger.log(
           `User ${userId} unlocked battle pass tier ${tier.tierNumber}`,

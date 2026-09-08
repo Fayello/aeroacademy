@@ -64,7 +64,7 @@ export class ProgressionService {
 
     await this.prisma.user.update({
       where: { id: userId },
-      data: { xp: newXp },
+      data: { xp: { increment: amount } },
     });
 
     this.guildsService.contributeXp(userId, amount).catch(() => {});
@@ -90,13 +90,12 @@ export class ProgressionService {
           });
 
           if (existingUserSkill) {
-            const newSkillXp = existingUserSkill.xp + amount;
-            skillLevel = Math.floor(newSkillXp / 500) + 1;
-            await this.prisma.userSkill.update({
+            const updated = await this.prisma.userSkill.update({
               where: { id: existingUserSkill.id },
-              data: { xp: newSkillXp, level: skillLevel },
+              data: { xp: { increment: amount } },
             });
-            skillXp = newSkillXp;
+            skillLevel = updated.level;
+            skillXp = updated.xp;
           } else {
             skillXp = amount;
             skillLevel = Math.floor(amount / 500) + 1;
@@ -293,7 +292,7 @@ export class ProgressionService {
           if (existing) {
             await this.prisma.battlePassProgress.update({
               where: { id: existing.id },
-              data: { currentXp: existing.currentXp + amount },
+              data: { currentXp: { increment: amount } },
             });
           } else {
             await this.prisma.battlePassProgress.create({

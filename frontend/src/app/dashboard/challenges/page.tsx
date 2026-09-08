@@ -72,10 +72,6 @@ export default function ChallengesPage() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "daily" | "weekly" | "monthly" | "seasonal" | "team">("all");
 
-  useEffect(() => {
-    load();
-  }, []);
-
   async function load() {
     try {
       setLoading(true);
@@ -88,6 +84,24 @@ export default function ChallengesPage() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchChallenges() {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await fetchApi<Challenge[]>("/challenges");
+        if (!cancelled) setChallenges(data);
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load challenges");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    fetchChallenges();
+    return () => { cancelled = true; };
+  }, []);
 
   const filteredChallenges = challenges.filter((c) => {
     if (filter === "all") return true;

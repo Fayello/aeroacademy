@@ -780,11 +780,22 @@ export class LabsService implements OnModuleInit {
 
     const isCorrect = await verifyAnswer(answer, flag.correctAnswer);
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.labSubmission.create({
+    const submission = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.labSubmission.findFirst({
+        where: { userId, flagId, isCorrect: true },
+      });
+      if (existing) {
+        return { alreadySolved: true };
+      }
+      const sub = await tx.labSubmission.create({
         data: { userId, flagId, answer: '[REDACTED]', isCorrect },
       });
+      return { submission: sub, alreadySolved: false };
     });
+
+    if (submission.alreadySolved) {
+      return { isCorrect: true, alreadySolved: true, message: 'Already solved.' };
+    }
 
     if (isCorrect) {
       // Award XP through the progression engine

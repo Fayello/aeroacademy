@@ -91,21 +91,25 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     async function load() {
       try {
         const [c, lb] = await Promise.all([
           fetchApi<ChallengeDetail>(`/challenges/${id}`),
           fetchApi<LeaderboardEntry[]>(`/challenges/${id}/leaderboard`),
         ]);
-        setChallenge(c);
-        setLeaderboard(lb);
+        if (!cancelled) {
+          setChallenge(c);
+          setLeaderboard(lb);
+        }
       } catch {
-        toast.error("Failed to load challenge");
+        if (!cancelled) toast.error("Failed to load challenge");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     load();
+    return () => { cancelled = true; };
   }, [id]);
 
   async function handleJoin() {
