@@ -2,7 +2,7 @@
 
 import { useDashboard } from "@/hooks/useDashboard";
 import { Trophy, CheckCircle, TrendingUp, Lock, Crown, Shield, Target, Server, Database, Bug, Code, Network, Users, Medal, Award } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { fetchApi } from "@/lib/api";
 import toast from "@/lib/toast";
 import Badge from "@/components/ui/Badge";
@@ -139,9 +139,15 @@ export default function LeaderboardPage() {
     return () => { cancelled = true; };
   }, []);
 
+  const lastWsUpdate = useRef(0);
+
   useEffect(() => {
     if (!socket) return;
-    const handleLeaderboard = (data: LeaderboardEntry[]) => { setLeaderboard(data); setLoading(false); };
+    const handleLeaderboard = (data: LeaderboardEntry[]) => {
+      lastWsUpdate.current = Date.now();
+      setLeaderboard(data);
+      setLoading(false);
+    };
     socket.on("leaderboard_update", handleLeaderboard);
     return () => { socket.off("leaderboard_update", handleLeaderboard); };
   }, [socket]);
@@ -174,9 +180,12 @@ export default function LeaderboardPage() {
         if (domainFilter !== "all") params.set("domain", domainFilter);
         params.set("limit", "50");
         const qs = params.toString();
+        const fetchStart = Date.now();
         const data = await fetchApi<LeaderboardEntry[]>(`/dashboard/leaderboard${qs ? `?${qs}` : ""}`);
         if (!cancelled) {
-          setLeaderboard(data);
+          if (fetchStart > lastWsUpdate.current) {
+            setLeaderboard(data);
+          }
           setLoading(false);
         }
       } catch {

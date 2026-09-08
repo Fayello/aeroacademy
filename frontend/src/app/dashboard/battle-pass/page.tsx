@@ -242,7 +242,7 @@ export default function BattlePassPage() {
           <div className="h-3 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#7AD62A] to-[#7AD62A] rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${progress.totalTiers > 0 ? (progress.currentTier / progress.totalTiers) * 100 : 0}%` }}
+              style={{ width: `${progress.totalTiers > 0 ? ((progress.currentTier + (nextTier ? getXpProgress(nextTier) / 100 : 0)) / progress.totalTiers) * 100 : 0}%` }}
             />
           </div>
           <div className="flex items-center justify-between mt-2 text-xs text-white/50">

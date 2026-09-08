@@ -184,7 +184,7 @@ export default function GuildDetailPage() {
     let cancelled = false;
     if (activeTab === "Chat") {
       setChatLoading(true);
-      fetchApi<ChatMessage[]>(`/guilds/${guildId}/chat`).then((msgs) => {
+      fetchApi<ChatMessage[]>(`/guilds/${guildId}/chat?limit=50`).then((msgs) => {
         if (!cancelled) {
           setMessages(msgs);
           setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);

@@ -91,7 +91,7 @@ export default function NotificationsPage() {
             }
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
             Refresh
           </button>
           <button

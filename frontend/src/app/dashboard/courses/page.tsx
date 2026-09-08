@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
@@ -336,6 +336,8 @@ function CourseRow({ course, index, isLocked, isEnrolled, sectionCount, category
 
 export default function CoursesPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [courses, setCourses] = useState<CourseListItem[]>([]);
   const [enrollments, setEnrollments] = useState<Record<string, { enrolledAt: string; lastActivityAt: string }>>({});
   const [loading, setLoading] = useState(true);
@@ -347,9 +349,9 @@ export default function CoursesPage() {
     }
   });
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<TabFilter>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get("cat") || null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(searchParams.get("diff") ? Number(searchParams.get("diff")) : null);
+  const [activeTab, setActiveTab] = useState<TabFilter>((searchParams.get("tab") as TabFilter) || "all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [recommendations, setRecommendations] = useState<DashboardRecommendations | null>(null);
@@ -357,6 +359,17 @@ export default function CoursesPage() {
   const focusLabel = getFocusLabelFromOnboarding(onboarding);
   const focusTokens = getInterestTokensFromOnboarding(onboarding);
   const recommendedCourseIds = recommendations?.courses?.map((course) => course.id) || [];
+
+  const syncUrl = useCallback(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("q", searchQuery);
+    if (selectedCategory) params.set("cat", selectedCategory);
+    if (selectedDifficulty) params.set("diff", String(selectedDifficulty));
+    if (activeTab !== "all") params.set("tab", activeTab);
+    router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`);
+  }, [searchQuery, selectedCategory, selectedDifficulty, activeTab, router, pathname]);
+
+  useEffect(() => { syncUrl(); }, [syncUrl]);
 
   const toggleFavorite = async (courseId: string, e: React.MouseEvent) => {
     e.preventDefault();

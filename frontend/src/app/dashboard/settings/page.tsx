@@ -624,12 +624,17 @@ export default function SettingsPage() {
                 Cancel
               </button>
               <button
-                onClick={async () => {
+                onClick={async (e) => {
+                  const btn = e.currentTarget;
+                  btn.disabled = true;
+                  btn.textContent = "Deleting...";
                   try {
                     await fetchApi("/users/me", { method: "DELETE" });
                     logout();
                   } catch (err) {
                     toast.error("Failed to delete account. Please try again.");
+                    btn.disabled = false;
+                    btn.textContent = "Delete account";
                   }
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors flex items-center gap-2"

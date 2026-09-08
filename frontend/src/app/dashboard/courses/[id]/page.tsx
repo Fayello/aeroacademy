@@ -197,6 +197,13 @@ export default function CourseBriefingPage() {
   }, [id, isValidId, router]);
 
   const handleStartCourse = useCallback(async () => {
+    if (course?.sections?.[0]) {
+      const gate = getCourseLock(course.sections[0].title, level);
+      if (gate.locked) {
+        toast.error(`Complete more lessons to unlock this course (Level ${gate.requiredLevel} required)`);
+        return;
+      }
+    }
     setEnrolling(true);
     try {
       await fetchApi(`/courses/${id}/enroll`, { method: "POST" });
@@ -208,7 +215,7 @@ export default function CourseBriefingPage() {
     } finally {
       setEnrolling(false);
     }
-  }, [id, course, router]);
+  }, [id, course, router, level]);
 
   const handleResumeCourse = useCallback(() => {
     if (course?.sections) {

@@ -526,7 +526,7 @@ function StepContent({
       <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">{title}</h1>
       <p className="text-sm text-white/50 mb-8">{subtitle}</p>
 
-      <div className="grid gap-3">
+      <div className="grid gap-3" role={multi ? "listbox" : "radiogroup"} aria-multiselectable={multi || undefined}>
         {options.map((opt) => {
           const Icon = opt.icon;
           const isSelected = selected.includes(opt.id);
@@ -534,6 +534,9 @@ function StepContent({
             <button
               key={opt.id}
               onClick={() => onToggle(opt.id)}
+              role={multi ? "checkbox" : "radio"}
+              aria-checked={isSelected}
+              aria-label={opt.label}
               className={`flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200 group ${
                 isSelected
                   ? "border-[#7AD62A] bg-[#7AD62A]/10"

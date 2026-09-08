@@ -190,7 +190,7 @@ export default function ProfilePage() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [yearlyActivity, setYearlyActivity] = useState<Record<string, number>>({});
   const [pinnedBadgeIds, setPinnedBadgeIds] = useState<string[]>([]);
-  const [pinning, setPinning] = useState(false);
+  const [pinningIds, setPinningIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const { userMetrics } = useDashboard();
 
@@ -257,7 +257,7 @@ export default function ProfilePage() {
   const pinnedBadges = myBadges.filter((ub) => pinnedBadgeIds.includes(ub.badgeId));
 
   const togglePin = async (badgeId: string) => {
-    if (pinning) return;
+    if (pinningIds.has(badgeId)) return;
     const isPinned = pinnedBadgeIds.includes(badgeId);
     const newIds = isPinned
       ? pinnedBadgeIds.filter((id) => id !== badgeId)
@@ -265,13 +265,13 @@ export default function ProfilePage() {
         ? [...pinnedBadgeIds, badgeId]
         : pinnedBadgeIds;
     setPinnedBadgeIds(newIds);
-    setPinning(true);
+    setPinningIds((prev) => new Set(prev).add(badgeId));
     try {
       await fetchApi("/auth/pinned-badges", { method: "PATCH", body: JSON.stringify({ badgeIds: newIds }) });
     } catch {
       setPinnedBadgeIds(isPinned ? [...pinnedBadgeIds] : pinnedBadgeIds.filter((id) => id !== badgeId));
     } finally {
-      setPinning(false);
+      setPinningIds((prev) => { const next = new Set(prev); next.delete(badgeId); return next; });
     }
   };
 
