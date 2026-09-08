@@ -70,11 +70,6 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (hasCompletedOnboarding()) {
-        setChecked(true);
-        return;
-      }
-
       try {
         const profile = await fetchApi<{ preference?: { onboardingCompleted?: boolean; onboardingSelections?: unknown } | null }>("/auth/me");
         syncOnboardingFromProfile(profile);

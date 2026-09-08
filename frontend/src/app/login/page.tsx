@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { ONBOARDING_COMPLETE_KEY, ONBOARDING_SELECTIONS_KEY } from "@/lib/onboarding";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +43,8 @@ export default function LoginPage() {
       localStorage.setItem("token", res.access_token);
       localStorage.setItem("refresh_token", res.refresh_token);
       localStorage.setItem("user", JSON.stringify(res.user));
+      localStorage.removeItem(ONBOARDING_COMPLETE_KEY);
+      localStorage.removeItem(ONBOARDING_SELECTIONS_KEY);
       Cookies.set("token", res.access_token, { expires: rememberMe ? 30 : 1, path: "/" });
       initTokenRefresh();
       toast.success("Welcome back!");

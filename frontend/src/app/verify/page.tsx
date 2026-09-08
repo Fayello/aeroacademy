@@ -7,6 +7,7 @@ import Image from "next/image";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 import { CheckCircle2, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
+import { ONBOARDING_COMPLETE_KEY, ONBOARDING_SELECTIONS_KEY } from "@/lib/onboarding";
 
 function VerifyTokenForm() {
   const router = useRouter();
@@ -32,6 +33,8 @@ function VerifyTokenForm() {
         localStorage.setItem("token", r.access_token as string);
         localStorage.setItem("refresh_token", r.refresh_token as string);
         localStorage.setItem("user", JSON.stringify(r.user));
+        localStorage.removeItem(ONBOARDING_COMPLETE_KEY);
+        localStorage.removeItem(ONBOARDING_SELECTIONS_KEY);
         setStatus("success");
         toast.success("Email verified! Welcome to XpertClass.");
         setTimeout(() => router.push("/dashboard"), 1500);
