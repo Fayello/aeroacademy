@@ -148,74 +148,56 @@ export class DomainRankingService {
       return this.awardDomainRating(params);
     }
 
-    const ratingDelta = this.calculateRatingDelta({
-      ...params,
-      isProvisional: domainRank.isProvisional,
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const ratingDelta = this.calculateRatingDelta({
+        ...params,
+        isProvisional: domainRank.isProvisional,
+      });
 
-    const newRating = Math.max(0, domainRank.rating + ratingDelta);
-    const { name: newDivision, tier: newTier } =
-      this.getDivisionFromRating(newRating);
-    const divisionChanged =
-      newDivision !== domainRank.division ||
-      newTier !== domainRank.divisionTier;
+      const newRating = Math.max(0, domainRank.rating + ratingDelta);
+      const { name: newDivision, tier: newTier } =
+        this.getDivisionFromRating(newRating);
+      const divisionChanged =
+        newDivision !== domainRank.division ||
+        newTier !== domainRank.divisionTier;
 
-    const newCareerHigh = newRating > domainRank.careerHighRating;
-    const newPlacementLeft = domainRank.isProvisional
-      ? Math.max(0, domainRank.placementMatchesLeft - 1)
-      : 0;
-    const placementJustCompleted =
-      domainRank.isProvisional && newPlacementLeft === 0;
+      const newCareerHigh = newRating > domainRank.careerHighRating;
+      const newPlacementLeft = domainRank.isProvisional
+        ? Math.max(0, domainRank.placementMatchesLeft - 1)
+        : 0;
+      const placementJustCompleted =
+        domainRank.isProvisional && newPlacementLeft === 0;
 
-    await this.prisma.domainRank.update({
-      where: {
-        userId_domainId_seasonId: {
-          userId: params.userId,
-          domainId: params.domainId,
-          seasonId: params.seasonId,
+      await tx.domainRank.update({
+        where: {
+          userId_domainId_seasonId: {
+            userId: params.userId,
+            domainId: params.domainId,
+            seasonId: params.seasonId,
+          },
         },
-      },
-      data: {
-        rating: newRating,
-        division: newDivision,
-        divisionTier: newTier,
-        gamesPlayed: { increment: 1 },
-        wins: ratingDelta > 0 ? { increment: 1 } : undefined,
-        losses: ratingDelta < 0 ? { increment: 1 } : undefined,
-        isProvisional: placementJustCompleted
-          ? false
-          : domainRank.isProvisional,
-        placementMatchesLeft: newPlacementLeft,
-        careerHighRating: newCareerHigh
-          ? newRating
-          : domainRank.careerHighRating,
-        careerHighDivision: newCareerHigh
-          ? newDivision
-          : domainRank.careerHighDivision,
-        careerHighTier: newCareerHigh ? newTier : domainRank.careerHighTier,
-      },
-    });
+        data: {
+          rating: newRating,
+          division: newDivision,
+          divisionTier: newTier,
+          gamesPlayed: { increment: 1 },
+          wins: ratingDelta > 0 ? { increment: 1 } : undefined,
+          losses: ratingDelta < 0 ? { increment: 1 } : undefined,
+          isProvisional: placementJustCompleted
+            ? false
+            : domainRank.isProvisional,
+          placementMatchesLeft: newPlacementLeft,
+          careerHighRating: newCareerHigh
+            ? newRating
+            : domainRank.careerHighRating,
+          careerHighDivision: newCareerHigh
+            ? newDivision
+            : domainRank.careerHighDivision,
+          careerHighTier: newCareerHigh ? newTier : domainRank.careerHighTier,
+        },
+      });
 
-    await this.prisma.domainRatingEvent.create({
-      data: {
-        userId: params.userId,
-        domainId: params.domainId,
-        seasonId: params.seasonId,
-        activityType: params.activityType,
-        activityId: params.activityId,
-        difficulty: params.difficulty,
-        performance: params.performance,
-        quality: params.quality,
-        timeEfficiency: params.timeEfficiency,
-        independence: params.independence,
-        ratingDelta,
-        ratingBefore: domainRank.rating,
-        ratingAfter: newRating,
-      },
-    });
-
-    if (domainRank.isProvisional) {
-      await this.prisma.placementMatch.create({
+      await tx.domainRatingEvent.create({
         data: {
           userId: params.userId,
           domainId: params.domainId,
@@ -232,16 +214,36 @@ export class DomainRankingService {
           ratingAfter: newRating,
         },
       });
-    }
 
-    return {
-      ratingDelta,
-      newRating,
-      newDivision,
-      newTier,
-      divisionChanged,
-      placementComplete: placementJustCompleted,
-    };
+      if (domainRank.isProvisional) {
+        await tx.placementMatch.create({
+          data: {
+            userId: params.userId,
+            domainId: params.domainId,
+            seasonId: params.seasonId,
+            activityType: params.activityType,
+            activityId: params.activityId,
+            difficulty: params.difficulty,
+            performance: params.performance,
+            quality: params.quality,
+            timeEfficiency: params.timeEfficiency,
+            independence: params.independence,
+            ratingDelta,
+            ratingBefore: domainRank.rating,
+            ratingAfter: newRating,
+          },
+        });
+      }
+
+      return {
+        ratingDelta,
+        newRating,
+        newDivision,
+        newTier,
+        divisionChanged,
+        placementComplete: placementJustCompleted,
+      };
+    });
   }
 
   async getUserDomainRanks(userId: string, seasonId: string) {

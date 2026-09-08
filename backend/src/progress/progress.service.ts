@@ -272,91 +272,93 @@ export class ProgressService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return;
+    await this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({ where: { id: userId } });
+      if (!user) return;
 
-    const lastActivity = user.lastActivityDate;
-    if (!lastActivity) {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: {
-          currentStreak: 1,
-          longestStreak: Math.max(user.longestStreak, 1),
-          lastActivityDate: today,
-        },
-      });
-      return;
-    }
-
-    const lastDay = new Date(lastActivity);
-    lastDay.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor(
-      (today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    if (diffDays === 0) return; // Already active today
-
-    // V2: Streak freeze — protect streak on 1-day gap if user has freezes
-    if (diffDays === 2 && user.streakFreezes > 0) {
-      const freezeUsedToday =
-        user.lastStreakFreezeUsedAt &&
-        new Date(user.lastStreakFreezeUsedAt).toDateString() ===
-          today.toDateString();
-
-      if (!freezeUsedToday) {
-        // Use one freeze, keep streak going
-        await this.prisma.user.update({
+      const lastActivity = user.lastActivityDate;
+      if (!lastActivity) {
+        await tx.user.update({
           where: { id: userId },
           data: {
-            streakFreezes: user.streakFreezes - 1,
-            lastStreakFreezeUsedAt: new Date(),
+            currentStreak: 1,
+            longestStreak: Math.max(user.longestStreak, 1),
             lastActivityDate: today,
-            // Don't change currentStreak — it stays as-is (frozen)
           },
         });
-
-        this.logger.log(
-          `Streak freeze used for user ${userId}. ${user.streakFreezes - 1} remaining.`,
-        );
         return;
       }
-    }
 
-    const newStreak = diffDays === 1 ? user.currentStreak + 1 : 1;
-    const bonusXp = diffDays === 1 && newStreak % 7 === 0 ? 500 : 0; // 500 bonus every 7-day streak
-
-    // Award streak milestone freezes: every 7-day streak grants 1 freeze
-    const grantFreeze = diffDays === 1 && newStreak > 0 && newStreak % 7 === 0;
-
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        currentStreak: newStreak,
-        longestStreak: Math.max(user.longestStreak, newStreak),
-        lastActivityDate: today,
-        ...(grantFreeze ? { streakFreezes: { increment: 1 } } : {}),
-      },
-    });
-
-    if (bonusXp > 0) {
-      await this.progressionService
-        .awardXP(userId, {
-          amount: bonusXp,
-          source: 'STREAK_BONUS',
-        })
-        .catch((err) =>
-          this.logger.error(
-            'ProgressionService.awardXP failed for streak bonus',
-            err,
-          ),
-        );
-    }
-
-    if (grantFreeze) {
-      this.logger.log(
-        `Streak freeze awarded to user ${userId} for ${newStreak}-day streak`,
+      const lastDay = new Date(lastActivity);
+      lastDay.setHours(0, 0, 0, 0);
+      const diffDays = Math.floor(
+        (today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24),
       );
-    }
+
+      if (diffDays === 0) return; // Already active today
+
+      // V2: Streak freeze — protect streak on 1-day gap if user has freezes
+      if (diffDays === 2 && user.streakFreezes > 0) {
+        const freezeUsedToday =
+          user.lastStreakFreezeUsedAt &&
+          new Date(user.lastStreakFreezeUsedAt).toDateString() ===
+            today.toDateString();
+
+        if (!freezeUsedToday) {
+          // Use one freeze, keep streak going
+          await tx.user.update({
+            where: { id: userId },
+            data: {
+              streakFreezes: user.streakFreezes - 1,
+              lastStreakFreezeUsedAt: new Date(),
+              lastActivityDate: today,
+              // Don't change currentStreak — it stays as-is (frozen)
+            },
+          });
+
+          this.logger.log(
+            `Streak freeze used for user ${userId}. ${user.streakFreezes - 1} remaining.`,
+          );
+          return;
+        }
+      }
+
+      const newStreak = diffDays === 1 ? user.currentStreak + 1 : 1;
+      const bonusXp = diffDays === 1 && newStreak % 7 === 0 ? 500 : 0; // 500 bonus every 7-day streak
+
+      // Award streak milestone freezes: every 7-day streak grants 1 freeze
+      const grantFreeze = diffDays === 1 && newStreak > 0 && newStreak % 7 === 0;
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          currentStreak: newStreak,
+          longestStreak: Math.max(user.longestStreak, newStreak),
+          lastActivityDate: today,
+          ...(grantFreeze ? { streakFreezes: { increment: 1 } } : {}),
+        },
+      });
+
+      if (bonusXp > 0) {
+        await this.progressionService
+          .awardXP(userId, {
+            amount: bonusXp,
+            source: 'STREAK_BONUS',
+          })
+          .catch((err) =>
+            this.logger.error(
+              'ProgressionService.awardXP failed for streak bonus',
+              err,
+            ),
+          );
+      }
+
+      if (grantFreeze) {
+        this.logger.log(
+          `Streak freeze awarded to user ${userId} for ${newStreak}-day streak`,
+        );
+      }
+    });
   }
 
   async getLessonInlinePracticeProgress(userId: string, lessonId: string) {

@@ -468,11 +468,13 @@ export default function LabWorkspace() {
   // Load walkthrough state from server checkpoint
   useEffect(() => {
     if (!lab) return;
+    let cancelled = false;
     const currentLab = lab;
     const steps = getWalkthroughSteps(currentLab);
     async function loadCheckpoint() {
       try {
         const checkpoint = await fetchApi<{ walkthroughState: number[] } | null>(`/labs/${String(id)}/checkpoint`);
+        if (cancelled) return;
         if (checkpoint?.walkthroughState) {
           const completed = checkpoint.walkthroughState as number[];
           steps.forEach((s) => { s.completed = completed.includes(s.id); });
@@ -483,17 +485,21 @@ export default function LabWorkspace() {
           } catch {}
         }
       } catch {
+        if (cancelled) return;
         try {
           const saved = JSON.parse(localStorage.getItem(`walkthrough:${String(id)}`) || "[]") as number[];
           steps.forEach((s) => { s.completed = saved.includes(s.id); });
         } catch {}
       }
-      setWalkthroughSteps(steps);
-      if (isWebLab(currentLab.dockerImage || undefined)) {
-        setWorkspaceView("web");
+      if (!cancelled) {
+        setWalkthroughSteps(steps);
+        if (isWebLab(currentLab.dockerImage || undefined)) {
+          setWorkspaceView("web");
+        }
       }
     }
     loadCheckpoint();
+    return () => { cancelled = true; };
   }, [lab, id]);
 
   useEffect(() => {

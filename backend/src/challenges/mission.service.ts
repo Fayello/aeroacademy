@@ -227,31 +227,37 @@ export class MissionService implements OnModuleInit {
       uniqueDailyTypes.has('DAILY_BOSS');
 
     if (allThreeCompleted) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (!user) return;
+      const result = await this.prisma.$transaction(async (tx) => {
+        const user = await tx.user.findUnique({ where: { id: userId } });
+        if (!user) return null;
 
-      const lastComboDate = user.lastDailyComboDate;
-      const lastDay = lastComboDate ? new Date(lastComboDate) : null;
-      lastDay?.setHours(0, 0, 0, 0);
-      const diffDays = lastDay
-        ? Math.floor(
-            (today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24),
-          )
-        : 999;
+        const lastComboDate = user.lastDailyComboDate;
+        const lastDay = lastComboDate ? new Date(lastComboDate) : null;
+        lastDay?.setHours(0, 0, 0, 0);
+        const diffDays = lastDay
+          ? Math.floor(
+              (today.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24),
+            )
+          : 999;
 
-      // Increment combo streak if consecutive days, reset to 1 otherwise
-      const newCombo = diffDays === 1 ? user.dailyMissionCombo + 1 : 1;
+        const newCombo = diffDays === 1 ? user.dailyMissionCombo + 1 : 1;
 
-      // Combo XP: 100 base + 50 per consecutive day (max 500)
-      const comboBonus = Math.min(100 + (newCombo - 1) * 50, 500);
+        const updatedUser = await tx.user.update({
+          where: { id: userId },
+          data: {
+            dailyMissionCombo: newCombo,
+            lastDailyComboDate: today,
+          },
+        });
 
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: {
-          dailyMissionCombo: newCombo,
-          lastDailyComboDate: today,
-        },
+        return { newCombo, updatedUser };
       });
+
+      if (!result) return;
+
+      const { newCombo } = result;
+
+      const comboBonus = Math.min(100 + (newCombo - 1) * 50, 500);
 
       await this.progressionService
         .awardXP(userId, {
@@ -305,15 +311,22 @@ export class MissionService implements OnModuleInit {
     for (const uc of userChallenges) {
       if (uc.challenge.objectiveType !== eventType) continue;
 
-      let newProgress = uc.progress;
+      let newProgress: number;
+      let didIncrement = false;
 
       switch (eventType) {
         case 'FLAG_COMPLETIONS':
         case 'LAB_COMPLETIONS':
         case 'LESSON_COMPLETIONS':
-        case 'QUIZ_COMPLETIONS':
-          newProgress = uc.progress + 1;
+        case 'QUIZ_COMPLETIONS': {
+          const updated = await this.prisma.userChallenge.update({
+            where: { id: uc.id },
+            data: { progress: { increment: 1 } },
+          });
+          newProgress = updated.progress;
+          didIncrement = true;
           break;
+        }
 
         case 'XP_EARNED': {
           const user = await this.prisma.user.findUnique({
@@ -325,14 +338,14 @@ export class MissionService implements OnModuleInit {
         }
 
         case 'SKILL_XP_EARNED': {
-          if (!uc.challenge.domainId) break;
+          if (!uc.challenge.domainId) continue;
           const skill = await this.prisma.skill.findFirst({
             where: {
               domainId: uc.challenge.domainId,
               name: uc.challenge.skillId ?? undefined,
             },
           });
-          if (!skill) break;
+          if (!skill) continue;
           const userSkill = await this.prisma.userSkill.findUnique({
             where: { userId_skillId: { userId, skillId: skill.id } },
           });
@@ -386,7 +399,7 @@ export class MissionService implements OnModuleInit {
             }
           })
           .catch(() => {});
-      } else if (newProgress !== uc.progress) {
+      } else if (!didIncrement && newProgress !== uc.progress) {
         await this.prisma.userChallenge.update({
           where: { id: uc.id },
           data: { progress: newProgress },

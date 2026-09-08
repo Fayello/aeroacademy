@@ -74,29 +74,35 @@ export default function LabChallengesPage() {
 
   useEffect(() => {
     if (myId) return;
+    let cancelled = false;
     fetchApi<{ id: string }>("/auth/me").then((me) => {
-      if (me?.id) {
+      if (!cancelled && me?.id) {
         setMyId(me.id);
         try { localStorage.setItem("user", JSON.stringify(me)); } catch {}
       }
     }).catch(() => {});
+    return () => { cancelled = true; };
   }, [myId]);
 
   useEffect(() => {
     if (!myId) return;
+    let cancelled = false;
     setError("");
     Promise.all([
       fetchApi<Challenge[]>("/challenges/lab-challenges/mine"),
       fetchApi<LeaderboardEntry[]>("/dashboard/leaderboard?limit=30"),
       fetchApi<{ id: string; title: string; difficulty: number }[]>("/labs"),
     ]).then(([c, l, labData]) => {
-      setChallenges(c || []);
-      setLeaderboard(l || []);
-      setLabs(labData || []);
+      if (!cancelled) {
+        setChallenges(c || []);
+        setLeaderboard(l || []);
+        setLabs(labData || []);
+      }
     }).catch((err) => {
-      setError(err instanceof Error ? err.message : "Failed to load lab challenges");
+      if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load lab challenges");
     })
-      .finally(() => setLoading(false));
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [myId]);
 
   const filteredOpponents = leaderboard.filter(
