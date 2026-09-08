@@ -69,7 +69,8 @@ export function DashboardSocketProvider({ children }: { children: ReactNode }) {
         withCredentials: true,
         reconnection: true,
         reconnectionAttempts: 10,
-        reconnectionDelay: 2000,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 10000,
         timeout: 10000,
       });
 
@@ -77,6 +78,11 @@ export function DashboardSocketProvider({ children }: { children: ReactNode }) {
       s.on("disconnect", () => setIsConnected(false));
       s.on("connect_error", () => {
         setIsConnected(false);
+        const freshToken = localStorage.getItem("token");
+        if (freshToken && freshToken !== authToken) {
+          s.auth = { token: freshToken };
+          s.connect();
+        }
       });
       s.on("intelligence_update", (data: IntelligenceData) => setIntelligence(data));
       s.on("user_metrics_update", (data: UserMetrics) => setUserMetrics(data));

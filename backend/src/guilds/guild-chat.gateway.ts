@@ -3,11 +3,15 @@ import { Server, Socket } from 'socket.io';
 import { GuildsService } from './guilds.service';
 import { JwtService } from '@nestjs/jwt';
 
-@WebSocketGateway({ cors: { origin: '*' }, namespace: '/guild-chat' })
+@WebSocketGateway({
+  cors: { origin: process.env.FRONTEND_URL || 'http://localhost:3000' },
+  namespace: '/guild-chat',
+})
 export class GuildChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+  private static readonly MAX_CONNECTIONS_PER_USER = 3;
   private userSockets = new Map<string, Set<string>>();
   private socketGuilds = new Map<string, string>();
 
@@ -26,7 +30,15 @@ export class GuildChatGateway implements OnGatewayConnection, OnGatewayDisconnec
       client.data.userId = userId;
 
       if (!this.userSockets.has(userId)) this.userSockets.set(userId, new Set());
-      this.userSockets.get(userId)!.add(client.id);
+      const sockets = this.userSockets.get(userId)!;
+      if (sockets.size >= GuildChatGateway.MAX_CONNECTIONS_PER_USER) {
+        const oldest = sockets.values().next().value;
+        if (oldest) {
+          this.server.sockets.sockets.get(oldest)?.disconnect();
+          sockets.delete(oldest);
+        }
+      }
+      sockets.add(client.id);
     } catch {
       client.disconnect();
     }
@@ -65,8 +77,11 @@ export class GuildChatGateway implements OnGatewayConnection, OnGatewayDisconnec
     const userId = client.data.userId;
     if (!userId || !data.content?.trim()) return;
 
+    const content = data.content.trim().slice(0, 2000);
+    if (!content) return;
+
     try {
-      const message = await this.guildsService.sendChatMessage(data.guildId, userId, data.content.trim());
+      const message = await this.guildsService.sendChatMessage(data.guildId, userId, content);
       this.server.to(`guild:${data.guildId}`).emit('new-message', message);
     } catch (err) {
       client.emit('error', { message: 'Failed to send message' });

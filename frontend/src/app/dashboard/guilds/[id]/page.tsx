@@ -155,10 +155,23 @@ export default function GuildDetailPage() {
     const socket = io(`${typeof window !== "undefined" ? window.location.origin : ""}/guild-chat`, {
       auth: { token },
       transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 10000,
+      timeout: 10000,
     });
 
     socket.on("connect", () => {
       socket.emit("join-guild", { guildId });
+    });
+
+    socket.on("connect_error", () => {
+      const freshToken = localStorage.getItem("token");
+      if (freshToken && freshToken !== token) {
+        socket.auth = { token: freshToken };
+        socket.connect();
+      }
     });
 
     socket.on("new-message", (msg: ChatMessage) => {
@@ -169,9 +182,19 @@ export default function GuildDetailPage() {
       setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
     });
 
+    const onTokenRefreshed = () => {
+      const newToken = localStorage.getItem("token");
+      if (newToken) {
+        socket.auth = { token: newToken };
+        socket.disconnect().connect();
+      }
+    };
+    window.addEventListener("token-refreshed", onTokenRefreshed);
+
     socketRef.current = socket;
 
     return () => {
+      window.removeEventListener("token-refreshed", onTokenRefreshed);
       socket.emit("leave-guild", { guildId });
       socket.disconnect();
       socketRef.current = null;

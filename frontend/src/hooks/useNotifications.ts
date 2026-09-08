@@ -54,11 +54,19 @@ export function useNotifications() {
         auth: { token: authToken },
         reconnection: true,
         reconnectionAttempts: 10,
-        reconnectionDelay: 2000,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 10000,
         timeout: 10000,
       });
       globalSocket.on("connect", () => setIsConnected(true));
       globalSocket.on("disconnect", () => setIsConnected(false));
+      globalSocket.on("connect_error", () => {
+        const freshToken = localStorage.getItem("token");
+        if (freshToken && freshToken !== authToken) {
+          globalSocket!.auth = { token: freshToken };
+          globalSocket!.connect();
+        }
+      });
       globalSocket.on("notification:new", (n: NotificationItem) => {
         setNotifications((prev) => [n, ...prev].slice(0, 200));
         if (!n.read) setUnread((u) => u + 1);

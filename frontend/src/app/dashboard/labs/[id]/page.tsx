@@ -571,6 +571,14 @@ export default function LabWorkspace() {
       setAutoReconnecting(false);
       socket.emit("join", { labId: id });
     });
+    socket.on("connect_error", () => {
+      if (socketRef.current !== socket) return;
+      const freshToken = localStorage.getItem("token");
+      if (freshToken && freshToken !== token) {
+        socket.auth = { token: freshToken };
+        socket.connect();
+      }
+    });
     socket.on("output", (data: string) => {
       if (socketRef.current !== socket) return;
       term.write(data);
@@ -616,11 +624,21 @@ export default function LabWorkspace() {
     });
     if (terminalRef.current) resizeObserver.observe(terminalRef.current);
 
+    const onTokenRefreshed = () => {
+      const newToken = localStorage.getItem("token");
+      if (newToken && socketRef.current === socket) {
+        socket.auth = { token: newToken };
+        if (!socket.connected) socket.connect();
+      }
+    };
+    window.addEventListener("token-refreshed", onTokenRefreshed);
+
     socketRef.current = socket;
 
     const origDispose = term.dispose.bind(term);
     term.dispose = () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("token-refreshed", onTokenRefreshed);
       resizeObserver.disconnect();
       origDispose();
     };
