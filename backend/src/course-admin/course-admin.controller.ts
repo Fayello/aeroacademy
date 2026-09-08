@@ -11,10 +11,12 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CourseAdminService } from './course-admin.service';
 
 @Controller('v1/admin/courses')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 export class CourseAdminController {
   constructor(private courseAdminService: CourseAdminService) {}
 

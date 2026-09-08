@@ -22,7 +22,8 @@ export default function MasterClassDetailPage() {
       .then((data) => {
         if (cancelled) return;
         setMc(data);
-        const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
+        let userId = '';
+        try { userId = JSON.parse(localStorage.getItem("user") || "{}").id || ''; } catch {}
         setIsRegistered(data.registrations?.some((r: MasterClassRegistration) => r.userId === userId) || false);
       })
       .catch(() => { if (!cancelled) toast.error("Failed to load master class"); })

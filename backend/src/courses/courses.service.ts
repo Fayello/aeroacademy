@@ -650,7 +650,7 @@ export class CoursesService {
       certificate: {
         courseName: course.title,
         userName: user.name || user.email,
-        issuedAt: enrollment.lastActivityAt.toISOString(),
+        issuedAt: (enrollment.lastActivityAt || new Date()).toISOString(),
       },
     };
   }

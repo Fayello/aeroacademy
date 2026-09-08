@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { fetchApi } from '@/lib/api';
-import { Layers, Loader2, Lock, Server, Globe, Settings, Database, Shield, FlaskConical } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Layers, Loader2, Lock } from 'lucide-react';
 
 interface SkillItem {
   name: string;
@@ -18,13 +17,13 @@ interface SkillDomain {
   skills: SkillItem[];
 }
 
-const domainIcons: Record<string, LucideIcon> = {
-  SYSTEMS: Server,
-  NETWORKING: Globe,
-  DEVOPS: Settings,
-  DATABASES: Database,
-  SECURITY: Shield,
-  QA: FlaskConical,
+const domainIcons: Record<string, string> = {
+  SYSTEMS: '🖥️',
+  NETWORKING: '🌐',
+  DEVOPS: '⚙️',
+  DATABASES: '🗃️',
+  SECURITY: '🔒',
+  QA: '🧪',
 };
 
 const domainColors: Record<string, string> = {
@@ -113,10 +112,7 @@ export default function SkillProfile() {
               className={`bg-gradient-to-br ${domainColors[domain.domain] || 'from-white/10 to-white/5 border-white/20'} border rounded-lg p-4`}
             >
               <div className="flex items-center gap-2 mb-3">
-                {(() => {
-                  const Icon = domainIcons[domain.domain] || Layers;
-                  return <Icon size={16} className="text-white/60" />;
-                })()}
+                <span className="text-base">{domainIcons[domain.domain] || '📌'}</span>
                 <h3 className="text-sm font-semibold text-white">{domain.domainDisplayName}</h3>
               </div>
 

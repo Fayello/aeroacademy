@@ -91,7 +91,7 @@ export default function GuildDetailPage() {
   const params = useParams();
   const router = useRouter();
   const guildId = params.id as string;
-  const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") || "{}") : {};
+  const user = typeof window !== "undefined" ? (() => { try { return JSON.parse(localStorage.getItem("user") || "{}"); } catch { return {}; } })() : {};
 
   const [guild, setGuild] = useState<GuildDetail | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("Roster");

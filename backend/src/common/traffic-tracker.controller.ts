@@ -1,10 +1,12 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { TrafficTrackerService } from './traffic-tracker.service';
 
 @Controller('v1/admin/traffic')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 export class TrafficTrackerController {
   constructor(private tracker: TrafficTrackerService) {}
 

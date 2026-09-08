@@ -64,6 +64,20 @@ export class CoursesController {
     return this.coursesService.findLesson(id);
   }
 
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('my-reviews')
+  async getMyReviews(@Request() req: RequestWithUser) {
+    return this.coursesService.getMyReviews(req.user.id);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('my-favorites')
+  async getMyFavorites(@Request() req: RequestWithUser) {
+    return this.coursesService.getMyFavorites(req.user.id);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.coursesService.findOne(id);
@@ -272,13 +286,6 @@ export class CoursesController {
 
   // === REVIEWS ===
 
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(AuthGuard('jwt'))
-  @Get('my-reviews')
-  async getMyReviews(@Request() req: RequestWithUser) {
-    return this.coursesService.getMyReviews(req.user.id);
-  }
-
   @Get(':courseId/reviews')
   async getCourseReviews(@Param('courseId') courseId: string) {
     return this.coursesService.getCourseReviews(courseId);
@@ -301,13 +308,6 @@ export class CoursesController {
   }
 
   // === FAVORITES ===
-
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(AuthGuard('jwt'))
-  @Get('my-favorites')
-  async getMyFavorites(@Request() req: RequestWithUser) {
-    return this.coursesService.getMyFavorites(req.user.id);
-  }
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AuthGuard('jwt'))

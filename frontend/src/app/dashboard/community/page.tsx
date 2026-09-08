@@ -7,7 +7,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import PageHeader from "@/components/ui/PageHeader";
 import {
   Users, Trophy, FlaskConical, MessageSquare, ChevronRight, Loader2,
-  Shield, Zap, Crown, Target, Activity, Flame, Swords, Check,
+  Shield, Zap, Crown, Target, Activity, Flame, Swords,
 } from "lucide-react";
 import { DIVISION_TEXT_COLORS } from "@/lib/constants";
 
@@ -295,7 +295,7 @@ export default function CommunityPage() {
                 : "border border-[#7AD62A]/30 text-[#7AD62A] hover:bg-[#7AD62A]/10"
             }`}
           >
-            {mySeeking ? <>Seeking <Check size={14} className="inline" /></> : "I'm Looking for a Team"}
+            {mySeeking ? "Seeking ✓" : "I'm Looking for a Team"}
           </button>
         </div>
 

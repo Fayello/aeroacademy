@@ -14,6 +14,7 @@ import { LearningOutcomeService } from './learning-outcome.service';
 import type { RequestWithUser } from './request-with-user';
 
 @Controller('v1/learning-outcomes')
+@UseGuards(AuthGuard('jwt'))
 export class LearningOutcomeController {
   constructor(private readonly service: LearningOutcomeService) {}
 

@@ -67,6 +67,11 @@ export class DomainRankingController {
     );
   }
 
+  @Get('history/:userId/all')
+  async getAllRatingHistory(@Param('userId') userId: string) {
+    return this.domainRankingService.getAllRatingHistory(userId);
+  }
+
   @Get('history/:userId/:domainId')
   async getRatingHistory(
     @Param('userId') userId: string,
@@ -143,11 +148,6 @@ export class DomainRankingController {
   @Get('career/:userId')
   async getCareerHistory(@Param('userId') userId: string) {
     return this.domainRankingService.getCareerHistory(userId);
-  }
-
-  @Get('history/:userId/all')
-  async getAllRatingHistory(@Param('userId') userId: string) {
-    return this.domainRankingService.getAllRatingHistory(userId);
   }
 
   @Get('capability/:userId')

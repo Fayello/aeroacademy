@@ -204,8 +204,8 @@ export default function ReadinessTranscriptPage() {
   const recruiterView = Boolean(requestedUserId) && (viewerRole === "ADMIN" || viewerRole === "RECRUITER");
 
   async function handleCreateShareLink() {
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-    const fallbackUserId = storedUser?.id as string | undefined;
+    let fallbackUserId: string | undefined;
+    try { fallbackUserId = JSON.parse(localStorage.getItem("user") || "{}").id; } catch {}
     const targetUserId = requestedUserId || fallbackUserId;
     if (!targetUserId) return;
 

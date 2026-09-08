@@ -121,6 +121,11 @@ export class DiscussionsController {
     return this.discussionsService.updatePost(req.user.id, postId, body);
   }
 
+  @Delete('comments/:commentId')
+  deleteComment(@Req() req: any, @Param('commentId') commentId: string) {
+    return this.discussionsService.deleteComment(req.user.id, commentId);
+  }
+
   @Delete(':postId')
   deletePost(@Req() req: any, @Param('postId') postId: string) {
     return this.discussionsService.deletePost(req.user.id, postId);
@@ -133,11 +138,6 @@ export class DiscussionsController {
     @Body() body: { body: string; parentCommentId?: string },
   ) {
     return this.discussionsService.createComment(req.user.id, postId, body);
-  }
-
-  @Delete('comments/:commentId')
-  deleteComment(@Req() req: any, @Param('commentId') commentId: string) {
-    return this.discussionsService.deleteComment(req.user.id, commentId);
   }
 
   @Post(':postId/vote')

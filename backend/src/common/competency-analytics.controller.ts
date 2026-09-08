@@ -1,7 +1,9 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CompetencyAnalyticsService } from './competency-analytics.service';
 
 @Controller('v1/competency-analytics')
+@UseGuards(AuthGuard('jwt'))
 export class CompetencyAnalyticsController {
   constructor(private readonly service: CompetencyAnalyticsService) {}
 
