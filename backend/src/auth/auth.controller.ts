@@ -203,15 +203,15 @@ export class AuthController {
       });
 
       if (result.isNewUser || !result.user.emailVerified) {
-        const code = await this.otpService.create(
-          profile.email,
-          'email_verification',
-        );
-        if (code) {
-          this.emailService
-            .sendOtpVerification(profile.email, profile.name, code)
-            .catch(() => {});
+        let verificationToken = result.user.verificationToken;
+        if (!verificationToken) {
+          const crypto = await import('crypto');
+          verificationToken = crypto.randomBytes(32).toString('hex');
+          await this.authService.setVerificationToken(result.user.id, verificationToken);
         }
+        this.emailService
+          .sendVerificationEmail(profile.email, profile.name, verificationToken)
+          .catch(() => {});
         res.writeHead(302, {
           Location: `${frontendUrl}/verify-email?email=${encodeURIComponent(profile.email)}`,
         });

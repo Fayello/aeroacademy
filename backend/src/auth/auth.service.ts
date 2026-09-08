@@ -284,6 +284,13 @@ export class AuthService {
     return this.login(user);
   }
 
+  async setVerificationToken(userId: string, token: string) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { verificationToken: token },
+    });
+  }
+
   async verifyEmailByToken(token: string) {
     const user = await this.prisma.user.findUnique({
       where: { verificationToken: token },
@@ -524,12 +531,14 @@ export class AuthService {
     } else {
       isNewUser = true;
       const referralCode = await this.ensureUniqueReferralCode();
+      const verificationToken = crypto.randomBytes(32).toString('hex');
       user = await this.prisma.user.create({
         data: {
           email: profile.email,
           googleId: profile.googleId,
           name: profile.name,
           referralCode,
+          verificationToken,
         },
       });
     }
