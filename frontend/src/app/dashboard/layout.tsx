@@ -130,6 +130,17 @@ function DashboardHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
     if (typeof navigator !== "undefined") {
       setShortcutKey(/Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘" : "Ctrl");
     }
+    fetchApi<{ xp: number; role: string; name: string; userExperience: string }>("/auth/me")
+      .then((me) => {
+        localStorage.setItem("xp", String(me.xp));
+        setXp(me.xp);
+        setUser((prev) => {
+          const next = { ...prev, xp: me.xp, role: me.role, name: me.name, userExperience: me.userExperience };
+          localStorage.setItem("user", JSON.stringify(next));
+          return next;
+        });
+      })
+      .catch(() => {});
   }, []);
 
   // Ctrl+/ keyboard shortcut for search

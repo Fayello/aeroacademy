@@ -273,6 +273,12 @@ export class NavigationService {
           label: 'Lab Challenges',
         },
         {
+          href: '/dashboard/my-missions',
+          tKey: 'nav.missions',
+          icon: 'Target',
+          label: 'Daily Missions',
+        },
+        {
           href: '/dashboard/battle-pass',
           tKey: 'nav.battlePass',
           icon: 'Ticket',
