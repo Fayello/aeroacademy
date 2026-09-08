@@ -138,9 +138,9 @@ export class LearningOutcomeController {
 
   @Post('evidence')
   async recordEvidence(
+    @Request() req: RequestWithUser,
     @Body()
     body: {
-      userId: string;
       learningOutcomeId: string;
       activityType: string;
       activityId: string;
@@ -148,7 +148,7 @@ export class LearningOutcomeController {
       metadata?: Record<string, unknown>;
     },
   ) {
-    return this.service.recordEvidence(body);
+    return this.service.recordEvidence({ ...body, userId: req.user.id });
   }
 
   // ─── BULK SEED ────────────────────────────────────────────────

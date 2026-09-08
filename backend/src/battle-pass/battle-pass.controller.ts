@@ -7,11 +7,13 @@ import {
   Body,
   Param,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { BattlePassService } from './battle-pass.service';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @Controller('v1/battle-pass')
 @UseGuards(AuthGuard('jwt'))
@@ -91,9 +93,9 @@ export class BattlePassController {
   }
 
   @Post('xp')
-  addXp(@Body() body: { userId: string; amount: number; source: string }) {
+  addXp(@Request() req: RequestWithUser, @Body() body: { amount: number; source: string }) {
     return this.battlePassService.addBattlePassXp(
-      body.userId,
+      req.user.id,
       body.amount,
       body.source,
     );

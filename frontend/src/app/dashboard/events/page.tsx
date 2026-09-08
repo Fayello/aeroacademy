@@ -150,7 +150,7 @@ export default function EventsPage() {
             ),
             userId
               ? fetchApi<{ joined: boolean; progress: number; completed: boolean; eligibleToClaim: boolean }>(
-                  `/global-events/${event.id}/progress?userId=${userId}`
+                  `/global-events/${event.id}/user-progress`
                 )
               : Promise.resolve(null),
           ]);
@@ -191,7 +191,7 @@ export default function EventsPage() {
     try {
       await fetchApi(`/global-events/${eventId}/join`, {
         method: "POST",
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({}),
       });
       toast.success("Joined event!");
       setUserProgressMap((prev) => ({
@@ -223,7 +223,7 @@ export default function EventsPage() {
     try {
       await fetchApi(`/global-events/${eventId}/claim`, {
         method: "POST",
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({}),
       });
       toast.success("Reward claimed!");
       setUserProgressMap((prev) => ({
@@ -247,7 +247,7 @@ export default function EventsPage() {
     try {
       await fetchApi(`/global-events/${eventId}/progress`, {
         method: "POST",
-        body: JSON.stringify({ userId, progress: 1 }),
+        body: JSON.stringify({ progress: 1 }),
       });
       toast.success("Progress updated!");
       setUserProgressMap((prev) => ({

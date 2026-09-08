@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CrossDomainService } from './cross-domain.service';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @Controller('v1/cross-domain')
 @UseGuards(AuthGuard('jwt'))
@@ -40,19 +41,20 @@ export class CrossDomainController {
 
   @Post(':missionId/join')
   joinMission(
+    @Request() req: RequestWithUser,
     @Param('missionId') missionId: string,
-    @Body() body: { userId: string },
   ) {
-    return this.crossDomainService.joinMission(body.userId, missionId);
+    return this.crossDomainService.joinMission(req.user.id, missionId);
   }
 
   @Post(':missionId/progress')
   updateProgress(
+    @Request() req: RequestWithUser,
     @Param('missionId') missionId: string,
-    @Body() body: { userId: string; domainId: string; xp: number },
+    @Body() body: { domainId: string; xp: number },
   ) {
     return this.crossDomainService.updateDomainProgress(
-      body.userId,
+      req.user.id,
       missionId,
       body.domainId,
       body.xp,
@@ -61,9 +63,9 @@ export class CrossDomainController {
 
   @Post(':missionId/claim')
   claimReward(
+    @Request() req: RequestWithUser,
     @Param('missionId') missionId: string,
-    @Body() body: { userId: string },
   ) {
-    return this.crossDomainService.claimReward(body.userId, missionId);
+    return this.crossDomainService.claimReward(req.user.id, missionId);
   }
 }

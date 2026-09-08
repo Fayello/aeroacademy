@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GlobalEventsService } from './global-events.service';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @Controller('v1/global-events')
 @UseGuards(AuthGuard('jwt'))
@@ -27,6 +28,14 @@ export class GlobalEventsController {
     return this.globalEventsService.getCommunityProgress(eventId);
   }
 
+  @Get(':eventId/user-progress')
+  getUserProgress(
+    @Request() req: RequestWithUser,
+    @Param('eventId') eventId: string,
+  ) {
+    return this.globalEventsService.getUserProgress(req.user.id, eventId);
+  }
+
   @Post()
   createEvent(
     @Body()
@@ -48,19 +57,20 @@ export class GlobalEventsController {
 
   @Post(':eventId/join')
   joinEvent(
+    @Request() req: RequestWithUser,
     @Param('eventId') eventId: string,
-    @Body() body: { userId: string },
   ) {
-    return this.globalEventsService.joinEvent(body.userId, eventId);
+    return this.globalEventsService.joinEvent(req.user.id, eventId);
   }
 
   @Post(':eventId/progress')
   updateProgress(
+    @Request() req: RequestWithUser,
     @Param('eventId') eventId: string,
-    @Body() body: { userId: string; progress: number },
+    @Body() body: { progress: number },
   ) {
     return this.globalEventsService.updateProgress(
-      body.userId,
+      req.user.id,
       eventId,
       body.progress,
     );
@@ -68,9 +78,9 @@ export class GlobalEventsController {
 
   @Post(':eventId/claim')
   claimReward(
+    @Request() req: RequestWithUser,
     @Param('eventId') eventId: string,
-    @Body() body: { userId: string },
   ) {
-    return this.globalEventsService.claimReward(body.userId, eventId);
+    return this.globalEventsService.claimReward(req.user.id, eventId);
   }
 }

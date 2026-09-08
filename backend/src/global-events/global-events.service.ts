@@ -175,6 +175,19 @@ export class GlobalEventsService {
     }));
   }
 
+  async getUserProgress(userId: string, eventId: string) {
+    const participant = await this.prisma.globalEventParticipant.findUnique({
+      where: { userId_eventId: { userId, eventId } },
+      select: { progress: true, completed: true, rewardClaimed: true },
+    });
+    return {
+      joined: !!participant,
+      progress: participant?.progress ?? 0,
+      completed: participant?.completed ?? false,
+      eligibleToClaim: (participant?.completed && !participant?.rewardClaimed) ?? false,
+    };
+  }
+
   async getCommunityProgress(eventId: string) {
     const event = await this.prisma.globalEvent.findUnique({
       where: { id: eventId },

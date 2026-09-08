@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BossMissionsService } from './boss-missions.service';
+import type { RequestWithUser } from '../common/request-with-user';
 
 @Controller('v1/boss-missions')
 @UseGuards(AuthGuard('jwt'))
@@ -63,12 +64,13 @@ export class BossMissionsController {
 
   @Post(':bossId/submit')
   submitAttempt(
+    @Request() req: RequestWithUser,
     @Param('bossId') bossId: string,
     @Body()
-    body: { userId: string; score: number; maxScore: number; feedback?: any },
+    body: { score: number; maxScore: number; feedback?: any },
   ) {
     return this.bossMissionsService.submitAttempt(
-      body.userId,
+      req.user.id,
       bossId,
       body.score,
       body.maxScore,
