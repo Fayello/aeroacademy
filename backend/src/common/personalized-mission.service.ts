@@ -107,7 +107,36 @@ export class PersonalizedMissionService {
     }
 
     // Cap at 5 active missions
-    return missions.slice(0, 5);
+    const result = missions.slice(0, 5);
+
+    // Fallback: if no skill data exists yet, generate starter missions from labs
+    if (result.length === 0) {
+      const hasSkills = await this.prisma.userSkill.count({ where: { userId } });
+      if (hasSkills === 0) {
+        const labs = await this.prisma.lab.findMany({
+          where: { difficulty: { lt: 1300 } },
+          orderBy: { difficulty: 'asc' },
+          take: 5,
+        });
+        for (const lab of labs) {
+          result.push({
+            title: `Getting Started: ${lab.title}`,
+            description: `Start your journey with this beginner-friendly lab. ${(lab.description || '').slice(0, 120) || 'Build foundational skills.'}`,
+            difficulty: lab.difficulty || 3,
+            estimatedMinutes: lab.estimatedMinutes || 20,
+            targetSkillId: null,
+            targetSkillName: null,
+            targetDomainId: null,
+            targetDomainName: null,
+            xpReward: 100,
+            masteryReward: 10,
+            missionType: 'WEAKNESS_IMPROVEMENT',
+          });
+        }
+      }
+    }
+
+    return result;
   }
 
   async saveGeneratedMissions(userId: string): Promise<void> {
