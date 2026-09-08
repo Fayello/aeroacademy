@@ -253,6 +253,11 @@ export default function AchievementsPage() {
             </div>
           );
         })}
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center py-12">
+            <p className="text-slate-400 text-sm">No achievements match this filter.</p>
+          </div>
+        )}
       </div>
     </div>
   );

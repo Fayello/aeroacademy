@@ -21,11 +21,11 @@ export default function SandboxCard({ logs }: SandboxCardProps) {
           </div>
         </div>
 
-        <div className="bg-white/5 rounded-lg p-4 font-mono text-xs h-[140px] overflow-y-auto border border-slate-100">
+        <div className="bg-white/5 rounded-lg p-4 font-mono text-xs h-[140px] overflow-y-auto border border-white/10">
           {logs.length > 0 ? (
             <div className="space-y-1.5">
               {logs.slice(0, 5).map((log, i) => (
-                <div key={i} className="flex gap-2 text-slate-600">
+                <div key={i} className="flex gap-2 text-slate-400">
                   <span className="text-slate-400 shrink-0">
                     [{new Date(log.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}]
                   </span>

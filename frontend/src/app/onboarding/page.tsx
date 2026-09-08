@@ -84,15 +84,30 @@ const testimonials = [
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(-1); // -1 = welcome screen
-  const [selections, setSelections] = useState<OnboardingSelections>(EMPTY_ONBOARDING_SELECTIONS);
+  const [selections, setSelections] = useState<OnboardingSelections>(() => {
+    if (typeof window === "undefined") return EMPTY_ONBOARDING_SELECTIONS;
+    try {
+      const saved = localStorage.getItem("onboardingDraft");
+      return saved ? JSON.parse(saved) : EMPTY_ONBOARDING_SELECTIONS;
+    } catch { return EMPTY_ONBOARDING_SELECTIONS; }
+  });
   const [loading, setLoading] = useState(false);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (!user) {
       router.push("/login");
+      return;
     }
+    try { setUserName(JSON.parse(user)?.name || ""); } catch { /* ignore */ }
   }, [router]);
+
+  useEffect(() => {
+    if (step >= 0) {
+      localStorage.setItem("onboardingDraft", JSON.stringify(selections));
+    }
+  }, [selections, step]);
 
   const toggleMulti = (key: "purpose" | "field" | "skills" | "jobInterests", value: string) => {
     setSelections((prev) => {
@@ -141,6 +156,7 @@ export default function OnboardingPage() {
 
       markOnboardingComplete();
       writeOnboardingSelections(selections);
+      localStorage.removeItem("onboardingDraft");
       router.push("/dashboard");
     } catch {
       toast.error("Failed to save preferences. Please try again.");
@@ -153,19 +169,11 @@ export default function OnboardingPage() {
   const handleSkip = () => {
     markOnboardingComplete();
     writeOnboardingSelections(selections);
+    localStorage.removeItem("onboardingDraft");
     router.push("/dashboard");
   };
 
-  const userName = useMemo(() => {
-    try {
-      const s = localStorage.getItem("user");
-      if (s) {
-        const u = JSON.parse(s);
-        return u.name?.split(" ")[0] || u.email?.split("@")[0] || "";
-      }
-    } catch {}
-    return "";
-  }, []);
+  const welcomeName = userName || "there";
 
   const currentTestimonial = testimonials[(step >= 0 ? step : 0) % testimonials.length];
   const completedSteps = Math.max(0, step + 1);
@@ -413,7 +421,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Bottom navigation */}
-        {step >= 0 && step < 6 && (
+        {step >= 0 && (
           <div className="flex items-center justify-between px-6 lg:px-10 py-5 border-t border-white/5">
             <button
               onClick={() => step > 0 ? setStep(step - 1) : setStep(-1)}

@@ -592,8 +592,9 @@ export default function SettingsPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-modal-title"
+          onClick={() => setShowDeleteConfirm(false)}
         >
-          <div className="bg-[#0f172a] rounded-2xl max-w-md w-full p-6">
+          <div className="bg-[#0f172a] rounded-2xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
                 <AlertTriangle size={20} className="text-red-500" />
@@ -631,7 +632,7 @@ export default function SettingsPage() {
                     toast.error("Failed to delete account. Please try again.");
                   }
                 }}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors flex items-center gap-2"
               >
                 Delete account
               </button>

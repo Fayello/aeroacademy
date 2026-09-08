@@ -264,6 +264,8 @@ export default function LessonPage() {
             const nav = findLessonNav();
             if (nav.next) {
               setTimeout(() => router.push(`/dashboard/courses/lessons/${nav.next!.id}`), 600);
+            } else {
+              toast.success("You've completed all lessons in this section!");
             }
           }
         } catch (err) {

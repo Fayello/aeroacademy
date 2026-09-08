@@ -128,7 +128,7 @@ export default function LoginPage() {
                       Check email
                     </Link>
                     <span className="text-amber-300">|</span>
-                    <button type="button" onClick={async () => { await auth.resendVerification(needsVerification); toast.success("Verification link resent!"); }} className="text-xs font-medium text-amber-300 hover:text-amber-200 underline">
+                    <button type="button" onClick={async () => { try { await auth.resendVerification(needsVerification); toast.success("Verification link resent!"); } catch { toast.error("Failed to resend. Try again."); } }} className="text-xs font-medium text-amber-300 hover:text-amber-200 underline">
                       Resend link
                     </button>
                   </div>

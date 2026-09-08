@@ -218,11 +218,12 @@ export default function CourseBriefingPage() {
         return;
       }
       for (const section of course.sections) {
-        for (const lesson of section.lessons) {
-          router.push(`/dashboard/courses/lessons/${lesson.id}`);
+        if (section.lessons?.length) {
+          router.push(`/dashboard/courses/lessons/${section.lessons[0].id}`);
           return;
         }
       }
+      toast.error("This course has no lessons yet.");
     }
   }, [course, id, router]);
 

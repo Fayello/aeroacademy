@@ -57,6 +57,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
     async function verifyOnboarding() {
       if (navLoading) return;
+      if (checked) return;
 
       const onPrivilegedRoute =
         pathname.startsWith("/dashboard/admin") ||

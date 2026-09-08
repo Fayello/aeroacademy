@@ -167,6 +167,14 @@ export default function ForgotPasswordPage() {
 
                 <button
                   type="button"
+                  onClick={async () => { try { await auth.forgotPassword(email); toast.success("New code sent!"); } catch { toast.error("Failed to resend code."); } }}
+                  className="w-full py-2 text-sm text-slate-500 hover:text-slate-200"
+                >
+                  Resend code
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => { setStep("email"); emailForm.reset(); resetForm.reset(); }}
                   className="w-full py-2 text-sm text-slate-500 hover:text-slate-200"
                 >

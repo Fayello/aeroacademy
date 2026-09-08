@@ -98,7 +98,7 @@ export default function HeadToHeadPage() {
           <div className="angular-card bg-[#0f172a] border border-white/6 p-5">
             <div className="flex items-center gap-2 mb-4">
               <Search size={16} className="text-slate-400" />
-              <h2 className="text-sm font-semibold text-white">Choose an opponent</h2>
+              <h2 className="text-sm font-semibold text-white">Choose a user to compare</h2>
             </div>
             <div className="relative mb-4">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />

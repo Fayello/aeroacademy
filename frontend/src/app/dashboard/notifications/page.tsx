@@ -30,7 +30,7 @@ export default function NotificationsPage() {
       ? notifications.filter((n) => !n.read)
       : notifications;
 
-  const hasMore = visible.length < total;
+  const hasMore = filter === "unread" ? notifications.some((n) => !n.read) && visible.length < total : visible.length < total;
 
   const loadMore = () => {
     const nextLimit = Math.min(visible.length + PAGE_SIZE, 200);

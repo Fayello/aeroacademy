@@ -199,6 +199,7 @@ export default function LabWorkspace() {
   const [reviewsData, setReviewsData] = useState<ReviewsData | null>(null);
   const [myRating, setMyRating] = useState(0);
   const [myComment, setMyComment] = useState("");
+  const [launchError, setLaunchError] = useState<string | null>(null);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hoverRating, setHoverRating] = useState(0);
   const [workspaceView, setWorkspaceView] = useState<"terminal" | "web" | "split">("terminal");
@@ -647,12 +648,15 @@ export default function LabWorkspace() {
 
   const handleLaunch = async () => {
     setProvisioning(true);
+    setLaunchError(null);
     try {
       const newInstance = await fetchApi(`/labs/start/${id}`, { method: "POST" });
       setInstance(newInstance);
       toast.success("Lab started successfully.");
-    } catch {
-      toast.error("Failed to start lab.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to start lab.";
+      setLaunchError(msg);
+      toast.error(msg);
     } finally {
       setProvisioning(false);
     }
@@ -740,6 +744,15 @@ export default function LabWorkspace() {
           <Loader2 className="animate-spin text-slate-500 mx-auto mb-3" size={24} />
           <p className="text-sm text-slate-400">Loading lab workspace...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!lab) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <p className="text-slate-400 text-sm">Failed to load lab.</p>
+        <button onClick={() => window.location.reload()} className="text-[#7AD62A] text-sm hover:underline">Retry</button>
       </div>
     );
   }
@@ -1151,6 +1164,9 @@ export default function LabWorkspace() {
               {provisioning ? <Loader2 className="animate-spin" size={14} /> : <Play size={14} />}
               Start Lab
             </button>
+          )}
+          {launchError && (
+            <span className="text-xs text-red-400 mt-1">{launchError}</span>
           )}
         </div>
         </div>

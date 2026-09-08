@@ -81,6 +81,9 @@ function VerifyEmailContent() {
                 {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend link"}
               </button>
             </p>
+            <Link href="/register" className="text-xs text-slate-500 hover:text-slate-300 mt-3 inline-block">
+              Use a different email
+            </Link>
           </div>
         </div>
       </div>

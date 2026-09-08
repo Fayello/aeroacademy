@@ -65,7 +65,12 @@ export default function RegisterPage() {
       toast.success("Account created! Check your email for the verification code.");
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (err) {
-      toast.error(getErrorMessage(err, "Registration failed"));
+      const msg = getErrorMessage(err, "Registration failed");
+      if (msg.toLowerCase().includes("already exists")) {
+        toast.error("An account with this email already exists.");
+      } else {
+        toast.error(msg);
+      }
     }
   };
 
