@@ -1,4 +1,4 @@
-import { Trophy, Flame, CalendarCheck, CalendarX, Video, Info, ArrowUp, Zap, BookOpen, FlaskConical } from "lucide-react";
+import { Trophy, Flame, CalendarCheck, CalendarX, Video, Info, ArrowUp, Zap, BookOpen, FlaskConical, Swords } from "lucide-react";
 
 export function NotificationTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   switch (type) {
@@ -20,6 +20,8 @@ export function NotificationTypeIcon({ type, size = 16 }: { type: string; size?:
       return <BookOpen size={size} className="text-blue-400" />;
     case "LAB_COMPLETED":
       return <FlaskConical size={size} className="text-[#7AD62A]" />;
+    case "CHALLENGE":
+      return <Swords size={size} className="text-orange-400" />;
     default:
       return <Info size={size} className="text-slate-500" />;
   }

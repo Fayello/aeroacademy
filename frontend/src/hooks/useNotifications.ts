@@ -50,7 +50,7 @@ export function useNotifications() {
         globalSocket.close();
         globalSocket = null;
       }
-      globalSocket = io(typeof window !== 'undefined' ? window.location.origin : '', {
+      globalSocket = io(typeof window !== 'undefined' ? `${window.location.origin}/notifications` : '', {
         auth: { token: authToken },
         reconnection: true,
         reconnectionAttempts: 10,
