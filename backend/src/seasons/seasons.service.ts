@@ -132,17 +132,21 @@ export class SeasonsService {
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async checkSeasonExpiry() {
-    const active = await this.prisma.season.findFirst({
-      where: { isActive: true },
-    });
-    if (!active) return;
+    try {
+      const active = await this.prisma.season.findFirst({
+        where: { isActive: true },
+      });
+      if (!active) return;
 
-    const now = new Date();
-    if (now >= active.endDate) {
-      this.logger.warn(
-        `Season ${active.name} has expired. Running rotation...`,
-      );
-      await this.rotateSeason();
+      const now = new Date();
+      if (now >= active.endDate) {
+        this.logger.warn(
+          `Season ${active.name} has expired. Running rotation...`,
+        );
+        await this.rotateSeason();
+      }
+    } catch (error) {
+      this.logger.error('Failed to check season expiry', error);
     }
   }
 }

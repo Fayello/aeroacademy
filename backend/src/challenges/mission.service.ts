@@ -399,435 +399,468 @@ export class MissionService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_HOUR)
   async expireLabChallenges() {
-    const expired = await this.prisma.labChallenge.updateMany({
-      where: {
-        status: 'PENDING',
-        expiresAt: { lt: new Date() },
-      },
-      data: { status: 'EXPIRED' },
-    });
-    if (expired.count > 0) {
-      this.logger.log(`Expired ${expired.count} stale lab challenges`);
+    try {
+      const expired = await this.prisma.labChallenge.updateMany({
+        where: {
+          status: 'PENDING',
+          expiresAt: { lt: new Date() },
+        },
+        data: { status: 'EXPIRED' },
+      });
+      if (expired.count > 0) {
+        this.logger.log(`Expired ${expired.count} stale lab challenges`);
+      }
+    } catch (error) {
+      this.logger.error('Failed to expire lab challenges', error);
     }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async generateDailyMissions() {
-    this.logger.log('Running daily mission generation cron...');
-    const now = new Date();
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(now);
-    endOfDay.setHours(23, 59, 59, 999);
+    try {
+      this.logger.log('Running daily mission generation cron...');
+      const now = new Date();
+      const startOfDay = new Date(now);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(now);
+      endOfDay.setHours(23, 59, 59, 999);
 
-    const tomorrow = new Date(startOfDay);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrow = new Date(startOfDay);
+      tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const existing = await this.prisma.challenge.findFirst({
-      where: {
-        type: { startsWith: 'DAILY' },
-        isActive: true,
-        startAt: { lte: now },
-        endAt: { gte: now },
-      },
-    });
+      const existing = await this.prisma.challenge.findFirst({
+        where: {
+          type: { startsWith: 'DAILY' },
+          isActive: true,
+          startAt: { lte: now },
+          endAt: { gte: now },
+        },
+      });
 
-    if (existing) {
-      this.logger.log('Daily missions already exist for today, skipping');
-      return;
+      if (existing) {
+        this.logger.log('Daily missions already exist for today, skipping');
+        return;
+      }
+
+      const labs = await this.prisma.lab.findMany({
+        include: {
+          labSkills: { include: { skill: { include: { domain: true } } } },
+        },
+      });
+
+      if (labs.length === 0) {
+        this.logger.warn('No labs found, cannot generate daily missions');
+        return;
+      }
+
+      const beginner = labs.filter((l) => l.difficulty < 1200);
+      const intermediate = labs.filter(
+        (l) => l.difficulty >= 1200 && l.difficulty < 1400,
+      );
+      const advanced = labs.filter((l) => l.difficulty >= 1400);
+
+      const pick = <T>(arr: T[]): T | undefined =>
+        arr.length > 0
+          ? arr[Math.floor(Math.random() * arr.length)]
+          : undefined;
+
+      const warmupLab = pick(beginner) ?? pick(labs)!;
+      const skillLab = pick(intermediate) ?? pick(labs)!;
+      const bossLab = pick(advanced) ?? pick(labs)!;
+
+      const warmupSkill = warmupLab.labSkills[0]?.skill;
+      const skillSkill = skillLab.labSkills[0]?.skill;
+      const bossSkill = bossLab.labSkills[0]?.skill;
+
+      const missions = [
+        {
+          type: 'DAILY_WARMUP',
+          domainId: warmupSkill?.domainId ?? null,
+          skillId: warmupSkill?.id ?? null,
+          title: `Daily Warmup: ${warmupLab.title}`,
+          description: 'Solve 1 flag in a beginner lab to warm up.',
+          difficulty: 'EASY',
+          objectiveType: 'FLAG_COMPLETIONS',
+          objectiveTarget: 1,
+          xpReward: 50,
+          startAt: startOfDay,
+          endAt: endOfDay,
+          metadata: { labId: warmupLab.id },
+        },
+        {
+          type: 'DAILY_SKILL',
+          domainId: skillSkill?.domainId ?? null,
+          skillId: skillSkill?.id ?? null,
+          title: `Daily Skill: ${skillLab.title}`,
+          description:
+            'Solve 3 flags in an intermediate lab to sharpen your skills.',
+          difficulty: 'MEDIUM',
+          objectiveType: 'FLAG_COMPLETIONS',
+          objectiveTarget: 3,
+          xpReward: 150,
+          startAt: startOfDay,
+          endAt: endOfDay,
+          metadata: { labId: skillLab.id },
+        },
+        {
+          type: 'DAILY_BOSS',
+          domainId: bossSkill?.domainId ?? null,
+          skillId: bossSkill?.id ?? null,
+          title: `Daily Boss: ${bossLab.title}`,
+          description: 'Complete an advanced lab to prove your mastery.',
+          difficulty: 'HARD',
+          objectiveType: 'LAB_COMPLETIONS',
+          objectiveTarget: 1,
+          xpReward: 500,
+          startAt: startOfDay,
+          endAt: endOfDay,
+          metadata: { labId: bossLab.id },
+        },
+      ];
+
+      const created = await Promise.all(
+        missions.map((m) => this.prisma.challenge.create({ data: m })),
+      );
+
+      this.logger.log(`Generated ${created.length} daily missions`);
+      return created;
+    } catch (error) {
+      this.logger.error('Failed to generate daily missions', error);
     }
-
-    const labs = await this.prisma.lab.findMany({
-      include: {
-        labSkills: { include: { skill: { include: { domain: true } } } },
-      },
-    });
-
-    if (labs.length === 0) {
-      this.logger.warn('No labs found, cannot generate daily missions');
-      return;
-    }
-
-    const beginner = labs.filter((l) => l.difficulty < 1200);
-    const intermediate = labs.filter(
-      (l) => l.difficulty >= 1200 && l.difficulty < 1400,
-    );
-    const advanced = labs.filter((l) => l.difficulty >= 1400);
-
-    const pick = <T>(arr: T[]): T | undefined =>
-      arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
-
-    const warmupLab = pick(beginner) ?? pick(labs)!;
-    const skillLab = pick(intermediate) ?? pick(labs)!;
-    const bossLab = pick(advanced) ?? pick(labs)!;
-
-    const warmupSkill = warmupLab.labSkills[0]?.skill;
-    const skillSkill = skillLab.labSkills[0]?.skill;
-    const bossSkill = bossLab.labSkills[0]?.skill;
-
-    const missions = [
-      {
-        type: 'DAILY_WARMUP',
-        domainId: warmupSkill?.domainId ?? null,
-        skillId: warmupSkill?.id ?? null,
-        title: `Daily Warmup: ${warmupLab.title}`,
-        description: 'Solve 1 flag in a beginner lab to warm up.',
-        difficulty: 'EASY',
-        objectiveType: 'FLAG_COMPLETIONS',
-        objectiveTarget: 1,
-        xpReward: 50,
-        startAt: startOfDay,
-        endAt: endOfDay,
-        metadata: { labId: warmupLab.id },
-      },
-      {
-        type: 'DAILY_SKILL',
-        domainId: skillSkill?.domainId ?? null,
-        skillId: skillSkill?.id ?? null,
-        title: `Daily Skill: ${skillLab.title}`,
-        description:
-          'Solve 3 flags in an intermediate lab to sharpen your skills.',
-        difficulty: 'MEDIUM',
-        objectiveType: 'FLAG_COMPLETIONS',
-        objectiveTarget: 3,
-        xpReward: 150,
-        startAt: startOfDay,
-        endAt: endOfDay,
-        metadata: { labId: skillLab.id },
-      },
-      {
-        type: 'DAILY_BOSS',
-        domainId: bossSkill?.domainId ?? null,
-        skillId: bossSkill?.id ?? null,
-        title: `Daily Boss: ${bossLab.title}`,
-        description: 'Complete an advanced lab to prove your mastery.',
-        difficulty: 'HARD',
-        objectiveType: 'LAB_COMPLETIONS',
-        objectiveTarget: 1,
-        xpReward: 500,
-        startAt: startOfDay,
-        endAt: endOfDay,
-        metadata: { labId: bossLab.id },
-      },
-    ];
-
-    const created = await Promise.all(
-      missions.map((m) => this.prisma.challenge.create({ data: m })),
-    );
-
-    this.logger.log(`Generated ${created.length} daily missions`);
-    return created;
   }
 
   @Cron('0 0 * * 1')
   async generateWeeklyMissions() {
-    this.logger.log('Running weekly mission generation cron...');
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setHours(0, 0, 0, 0);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    try {
+      this.logger.log('Running weekly mission generation cron...');
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setHours(0, 0, 0, 0);
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
 
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
 
-    const existing = await this.prisma.challenge.findFirst({
-      where: {
-        type: 'WEEKLY',
-        isActive: true,
-        startAt: { lte: now },
-        endAt: { gte: now },
-      },
-    });
+      const existing = await this.prisma.challenge.findFirst({
+        where: {
+          type: 'WEEKLY',
+          isActive: true,
+          startAt: { lte: now },
+          endAt: { gte: now },
+        },
+      });
 
-    if (existing) {
-      this.logger.log('Weekly missions already exist, skipping');
-      return;
+      if (existing) {
+        this.logger.log('Weekly missions already exist, skipping');
+        return;
+      }
+
+      const labs = await this.prisma.lab.findMany({
+        include: {
+          labSkills: { include: { skill: { include: { domain: true } } } },
+        },
+      });
+
+      if (labs.length === 0) return;
+
+      const pick = <T>(arr: T[]): T | undefined =>
+        arr.length > 0
+          ? arr[Math.floor(Math.random() * arr.length)]
+          : undefined;
+
+      const allSkills = await this.prisma.skill.findMany({
+        include: { domain: true },
+      });
+      const pickSkill = pick(allSkills);
+
+      const targetLab = pick(labs)!;
+
+      const missions = [
+        {
+          type: 'WEEKLY',
+          domainId: pickSkill?.domainId ?? null,
+          skillId: pickSkill?.id ?? null,
+          title: `Weekly Challenge: ${targetLab.title}`,
+          description: 'Solve 10 flags across any labs this week.',
+          difficulty: 'MEDIUM',
+          objectiveType: 'FLAG_COMPLETIONS',
+          objectiveTarget: 10,
+          xpReward: 500,
+          startAt: startOfWeek,
+          endAt: endOfWeek,
+          metadata: {},
+        },
+      ];
+
+      const created = await Promise.all(
+        missions.map((m) => this.prisma.challenge.create({ data: m })),
+      );
+
+      this.logger.log(`Generated ${created.length} weekly missions`);
+      return created;
+    } catch (error) {
+      this.logger.error('Failed to generate weekly missions', error);
     }
-
-    const labs = await this.prisma.lab.findMany({
-      include: {
-        labSkills: { include: { skill: { include: { domain: true } } } },
-      },
-    });
-
-    if (labs.length === 0) return;
-
-    const pick = <T>(arr: T[]): T | undefined =>
-      arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
-
-    const allSkills = await this.prisma.skill.findMany({
-      include: { domain: true },
-    });
-    const pickSkill = pick(allSkills);
-
-    const targetLab = pick(labs)!;
-
-    const missions = [
-      {
-        type: 'WEEKLY',
-        domainId: pickSkill?.domainId ?? null,
-        skillId: pickSkill?.id ?? null,
-        title: `Weekly Challenge: ${targetLab.title}`,
-        description: 'Solve 10 flags across any labs this week.',
-        difficulty: 'MEDIUM',
-        objectiveType: 'FLAG_COMPLETIONS',
-        objectiveTarget: 10,
-        xpReward: 500,
-        startAt: startOfWeek,
-        endAt: endOfWeek,
-        metadata: {},
-      },
-    ];
-
-    const created = await Promise.all(
-      missions.map((m) => this.prisma.challenge.create({ data: m })),
-    );
-
-    this.logger.log(`Generated ${created.length} weekly missions`);
-    return created;
   }
 
   @Cron('0 0 * * 1')
   async generateTeamWeeklyMissions() {
-    this.logger.log('Running team weekly mission generation cron...');
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setHours(0, 0, 0, 0);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    try {
+      this.logger.log('Running team weekly mission generation cron...');
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setHours(0, 0, 0, 0);
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
 
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
 
-    const existing = await this.prisma.challenge.findFirst({
-      where: {
-        type: 'TEAM_WEEKLY',
-        isActive: true,
-        startAt: { lte: now },
-        endAt: { gte: now },
-      },
-    });
+      const existing = await this.prisma.challenge.findFirst({
+        where: {
+          type: 'TEAM_WEEKLY',
+          isActive: true,
+          startAt: { lte: now },
+          endAt: { gte: now },
+        },
+      });
 
-    if (existing) {
-      this.logger.log('Team weekly missions already exist, skipping');
-      return;
+      if (existing) {
+        this.logger.log('Team weekly missions already exist, skipping');
+        return;
+      }
+
+      const teams = await this.prisma.team.findMany();
+      if (teams.length === 0) {
+        this.logger.log(
+          'No teams found, skipping team weekly mission generation',
+        );
+        return;
+      }
+
+      const allSkills = await this.prisma.skill.findMany({
+        include: { domain: true },
+      });
+      const pick = <T>(arr: T[]): T | undefined =>
+        arr.length > 0
+          ? arr[Math.floor(Math.random() * arr.length)]
+          : undefined;
+      const pickSkill = pick(allSkills);
+
+      const mission = await this.prisma.challenge.create({
+        data: {
+          type: 'TEAM_WEEKLY',
+          domainId: pickSkill?.domainId ?? null,
+          skillId: pickSkill?.id ?? null,
+          title: 'Team Weekly Challenge',
+          description: 'Capture 50 flags as a team this week!',
+          difficulty: 'MEDIUM',
+          objectiveType: 'FLAG_COMPLETIONS',
+          objectiveTarget: 50,
+          xpReward: 2000,
+          startAt: startOfWeek,
+          endAt: endOfWeek,
+          metadata: {},
+        },
+      });
+
+      this.logger.log(`Generated team weekly mission: ${mission.title}`);
+      return mission;
+    } catch (error) {
+      this.logger.error('Failed to generate team weekly missions', error);
     }
-
-    const teams = await this.prisma.team.findMany();
-    if (teams.length === 0) {
-      this.logger.log(
-        'No teams found, skipping team weekly mission generation',
-      );
-      return;
-    }
-
-    const allSkills = await this.prisma.skill.findMany({
-      include: { domain: true },
-    });
-    const pick = <T>(arr: T[]): T | undefined =>
-      arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
-    const pickSkill = pick(allSkills);
-
-    const mission = await this.prisma.challenge.create({
-      data: {
-        type: 'TEAM_WEEKLY',
-        domainId: pickSkill?.domainId ?? null,
-        skillId: pickSkill?.id ?? null,
-        title: 'Team Weekly Challenge',
-        description: 'Capture 50 flags as a team this week!',
-        difficulty: 'MEDIUM',
-        objectiveType: 'FLAG_COMPLETIONS',
-        objectiveTarget: 50,
-        xpReward: 2000,
-        startAt: startOfWeek,
-        endAt: endOfWeek,
-        metadata: {},
-      },
-    });
-
-    this.logger.log(`Generated team weekly mission: ${mission.title}`);
-    return mission;
   }
 
   @Cron('0 0 1 * *')
   async generateMonthlyMissions() {
-    this.logger.log('Running monthly mission generation cron...');
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999,
-    );
+    try {
+      this.logger.log('Running monthly mission generation cron...');
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+      );
 
-    const existing = await this.prisma.challenge.findFirst({
-      where: {
-        type: 'MONTHLY',
-        isActive: true,
-        startAt: { lte: now },
-        endAt: { gte: now },
-      },
-    });
+      const existing = await this.prisma.challenge.findFirst({
+        where: {
+          type: 'MONTHLY',
+          isActive: true,
+          startAt: { lte: now },
+          endAt: { gte: now },
+        },
+      });
 
-    if (existing) {
-      this.logger.log('Monthly missions already exist, skipping');
-      return;
+      if (existing) {
+        this.logger.log('Monthly missions already exist, skipping');
+        return;
+      }
+
+      const labs = await this.prisma.lab.findMany({
+        include: {
+          labSkills: { include: { skill: { include: { domain: true } } } },
+        },
+      });
+
+      if (labs.length === 0) return;
+
+      const pick = <T>(arr: T[]): T | undefined =>
+        arr.length > 0
+          ? arr[Math.floor(Math.random() * arr.length)]
+          : undefined;
+
+      const allSkills = await this.prisma.skill.findMany({
+        include: { domain: true },
+      });
+      const pickSkill = pick(allSkills);
+
+      const targetLab = pick(labs)!;
+
+      const missions = [
+        {
+          type: 'MONTHLY',
+          domainId: pickSkill?.domainId ?? null,
+          skillId: pickSkill?.id ?? null,
+          title: `Monthly Boss: ${targetLab.title}`,
+          description:
+            'Complete 3 labs this month to earn a massive XP bonus.',
+          difficulty: 'HARD',
+          objectiveType: 'LAB_COMPLETIONS',
+          objectiveTarget: 3,
+          xpReward: 2000,
+          startAt: startOfMonth,
+          endAt: endOfMonth,
+          metadata: {},
+        },
+      ];
+
+      const created = await Promise.all(
+        missions.map((m) => this.prisma.challenge.create({ data: m })),
+      );
+
+      this.logger.log(`Generated ${created.length} monthly missions`);
+      return created;
+    } catch (error) {
+      this.logger.error('Failed to generate monthly missions', error);
     }
-
-    const labs = await this.prisma.lab.findMany({
-      include: {
-        labSkills: { include: { skill: { include: { domain: true } } } },
-      },
-    });
-
-    if (labs.length === 0) return;
-
-    const pick = <T>(arr: T[]): T | undefined =>
-      arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : undefined;
-
-    const allSkills = await this.prisma.skill.findMany({
-      include: { domain: true },
-    });
-    const pickSkill = pick(allSkills);
-
-    const targetLab = pick(labs)!;
-
-    const missions = [
-      {
-        type: 'MONTHLY',
-        domainId: pickSkill?.domainId ?? null,
-        skillId: pickSkill?.id ?? null,
-        title: `Monthly Boss: ${targetLab.title}`,
-        description: 'Complete 3 labs this month to earn a massive XP bonus.',
-        difficulty: 'HARD',
-        objectiveType: 'LAB_COMPLETIONS',
-        objectiveTarget: 3,
-        xpReward: 2000,
-        startAt: startOfMonth,
-        endAt: endOfMonth,
-        metadata: {},
-      },
-    ];
-
-    const created = await Promise.all(
-      missions.map((m) => this.prisma.challenge.create({ data: m })),
-    );
-
-    this.logger.log(`Generated ${created.length} monthly missions`);
-    return created;
   }
 
   @Cron('0 0 1 * *')
   async generateSeasonalEvent() {
-    this.logger.log('Running seasonal event generation cron...');
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
+    try {
+      this.logger.log('Running seasonal event generation cron...');
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
 
-    const existing = await this.prisma.challenge.findFirst({
-      where: {
-        type: 'SEASONAL',
-        isActive: true,
-        startAt: { lte: now },
-        endAt: { gte: now },
-      },
-    });
-
-    if (existing) {
-      this.logger.log('Seasonal event already active, skipping');
-      return;
-    }
-
-    const themes = [
-      {
-        name: 'Security Sprint',
-        domain: 'SECURITY',
-        desc: 'Capture 20 flags across security labs.',
-        obj: 'FLAG_COMPLETIONS',
-        target: 20,
-        xp: 3000,
-        diff: 'HARD',
-      },
-      {
-        name: 'DevOps Marathon',
-        domain: 'DEVOPS',
-        desc: 'Complete 5 labs in the DevOps domain.',
-        obj: 'LAB_COMPLETIONS',
-        target: 5,
-        xp: 3000,
-        diff: 'MEDIUM',
-      },
-      {
-        name: 'Networking Gauntlet',
-        domain: 'NETWORKING',
-        desc: 'Solve 15 flags in networking labs.',
-        obj: 'FLAG_COMPLETIONS',
-        target: 15,
-        xp: 3000,
-        diff: 'HARD',
-      },
-      {
-        name: 'Database Deep Dive',
-        domain: 'DATABASES',
-        desc: 'Complete 4 database labs.',
-        obj: 'LAB_COMPLETIONS',
-        target: 4,
-        xp: 3000,
-        diff: 'MEDIUM',
-      },
-      {
-        name: 'Systems Challenge',
-        domain: 'SYSTEMS',
-        desc: 'Solve 15 flags across systems labs.',
-        obj: 'FLAG_COMPLETIONS',
-        target: 15,
-        xp: 3000,
-        diff: 'HARD',
-      },
-      {
-        name: 'QA Sprint',
-        domain: 'QA',
-        desc: 'Complete 3 QA labs.',
-        obj: 'LAB_COMPLETIONS',
-        target: 3,
-        xp: 3000,
-        diff: 'MEDIUM',
-      },
-    ];
-
-    const theme = themes[month % themes.length];
-    const startOfMonth = new Date(year, month, 1);
-    const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
-
-    const domain = await this.prisma.skillDomain.findFirst({
-      where: { name: theme.domain },
-    });
-
-    const seasonal = await this.prisma.challenge.create({
-      data: {
-        type: 'SEASONAL',
-        domainId: domain?.id ?? null,
-        title: `Seasonal: ${theme.name}`,
-        description: theme.desc,
-        difficulty: theme.diff,
-        objectiveType: theme.obj,
-        objectiveTarget: theme.target,
-        xpReward: theme.xp,
-        startAt: startOfMonth,
-        endAt: endOfMonth,
-        metadata: {
-          theme: theme.name,
-          season: `${year}-${String(month + 1).padStart(2, '0')}`,
+      const existing = await this.prisma.challenge.findFirst({
+        where: {
+          type: 'SEASONAL',
+          isActive: true,
+          startAt: { lte: now },
+          endAt: { gte: now },
         },
-      },
-    });
+      });
 
-    this.logger.log(`Generated seasonal event: ${seasonal.title}`);
-    return seasonal;
+      if (existing) {
+        this.logger.log('Seasonal event already active, skipping');
+        return;
+      }
+
+      const themes = [
+        {
+          name: 'Security Sprint',
+          domain: 'SECURITY',
+          desc: 'Capture 20 flags across security labs.',
+          obj: 'FLAG_COMPLETIONS',
+          target: 20,
+          xp: 3000,
+          diff: 'HARD',
+        },
+        {
+          name: 'DevOps Marathon',
+          domain: 'DEVOPS',
+          desc: 'Complete 5 labs in the DevOps domain.',
+          obj: 'LAB_COMPLETIONS',
+          target: 5,
+          xp: 3000,
+          diff: 'MEDIUM',
+        },
+        {
+          name: 'Networking Gauntlet',
+          domain: 'NETWORKING',
+          desc: 'Solve 15 flags in networking labs.',
+          obj: 'FLAG_COMPLETIONS',
+          target: 15,
+          xp: 3000,
+          diff: 'HARD',
+        },
+        {
+          name: 'Database Deep Dive',
+          domain: 'DATABASES',
+          desc: 'Complete 4 database labs.',
+          obj: 'LAB_COMPLETIONS',
+          target: 4,
+          xp: 3000,
+          diff: 'MEDIUM',
+        },
+        {
+          name: 'Systems Challenge',
+          domain: 'SYSTEMS',
+          desc: 'Solve 15 flags across systems labs.',
+          obj: 'FLAG_COMPLETIONS',
+          target: 15,
+          xp: 3000,
+          diff: 'HARD',
+        },
+        {
+          name: 'QA Sprint',
+          domain: 'QA',
+          desc: 'Complete 3 QA labs.',
+          obj: 'LAB_COMPLETIONS',
+          target: 3,
+          xp: 3000,
+          diff: 'MEDIUM',
+        },
+      ];
+
+      const theme = themes[month % themes.length];
+      const startOfMonth = new Date(year, month, 1);
+      const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
+
+      const domain = await this.prisma.skillDomain.findFirst({
+        where: { name: theme.domain },
+      });
+
+      const seasonal = await this.prisma.challenge.create({
+        data: {
+          type: 'SEASONAL',
+          domainId: domain?.id ?? null,
+          title: `Seasonal: ${theme.name}`,
+          description: theme.desc,
+          difficulty: theme.diff,
+          objectiveType: theme.obj,
+          objectiveTarget: theme.target,
+          xpReward: theme.xp,
+          startAt: startOfMonth,
+          endAt: endOfMonth,
+          metadata: {
+            theme: theme.name,
+            season: `${year}-${String(month + 1).padStart(2, '0')}`,
+          },
+        },
+      });
+
+      this.logger.log(`Generated seasonal event: ${seasonal.title}`);
+      return seasonal;
+    } catch (error) {
+      this.logger.error('Failed to generate seasonal event', error);
+    }
   }
 }

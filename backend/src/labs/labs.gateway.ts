@@ -197,17 +197,18 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     logger.info(
       `Terminal join request: user ${userId}, lab ${data.labId}, client ${client.id}`,
     );
-    const instance = await this.labsService.getLabStatus(userId, data.labId);
-
-    if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
-      logger.warn(
-        `Terminal join rejected: no active instance (user ${userId}, lab ${data.labId}, status: ${instance?.status})`,
-      );
-      client.emit('error', 'No active lab instance found');
-      return;
-    }
 
     try {
+      const instance = await this.labsService.getLabStatus(userId, data.labId);
+
+      if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
+        logger.warn(
+          `Terminal join rejected: no active instance (user ${userId}, lab ${data.labId}, status: ${instance?.status})`,
+        );
+        client.emit('error', 'No active lab instance found');
+        return;
+      }
+
       const targetDocker =
         this.dockerManager.getDockerForServer(instance.serverId || 'local') ||
         this.docker;

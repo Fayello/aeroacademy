@@ -31,15 +31,19 @@ export class NotificationsGateway implements OnGatewayConnection, OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.eventsService.events$.subscribe(({ type, payload }) => {
-      if (type === 'NOTIFICATION_CREATED') {
-        const n = payload as { userId: string };
-        if (n?.userId) {
-          this.server
-            .to(`notifications:${n.userId}`)
-            .emit('notification:new', payload);
+    this.eventsService.events$.subscribe({
+      next: ({ type, payload }) => {
+        if (type === 'NOTIFICATION_CREATED') {
+          const n = payload as { userId: string };
+          if (n?.userId) {
+            this.server
+              .to(`notifications:${n.userId}`)
+              .emit('notification:new', payload);
+          }
         }
-      }
+      },
+      error: (err) =>
+        logger.error('Error in notifications subscription', err),
     });
   }
 

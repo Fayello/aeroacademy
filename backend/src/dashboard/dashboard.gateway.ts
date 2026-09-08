@@ -68,36 +68,40 @@ export class DashboardGateway
   ) {}
 
   onModuleInit() {
-    this.eventsService.events$.subscribe(({ type, payload }) => {
-      if (type === 'ACHIEVEMENT_UNLOCKED') {
-        const data = payload as NotificationPayload;
-        for (const [socketId, userId] of this.connectedUsers.entries()) {
-          if (userId === data.userId) {
-            this.server.to(socketId).emit('achievement_unlocked', payload);
+    this.eventsService.events$.subscribe({
+      next: ({ type, payload }) => {
+        if (type === 'ACHIEVEMENT_UNLOCKED') {
+          const data = payload as NotificationPayload;
+          for (const [socketId, userId] of this.connectedUsers.entries()) {
+            if (userId === data.userId) {
+              this.server.to(socketId).emit('achievement_unlocked', payload);
+            }
           }
+
+          this.server.emit('global_feed_update', {
+            type: 'ACHIEVEMENT_UNLOCKED',
+            message:
+              data.messageOverride ||
+              `Operative unlocked merit: ${data.title?.replace('_', ' ') ?? ''}`,
+            points: data.xpReward,
+            timestamp: data.timestamp,
+          });
         }
 
-        this.server.emit('global_feed_update', {
-          type: 'ACHIEVEMENT_UNLOCKED',
-          message:
-            data.messageOverride ||
-            `Operative unlocked merit: ${data.title?.replace('_', ' ') ?? ''}`,
-          points: data.xpReward,
-          timestamp: data.timestamp,
-        });
-      }
-
-      if (type === 'FLAG_CAPTURED') {
-        const data = payload as NotificationPayload;
-        this.server.emit('global_feed_update', {
-          type: 'FLAG_CAPTURED',
-          message:
-            data.messageOverride ||
-            `Operative synchronized flag: ${data.flagTitle ?? ''}`,
-          points: data.points,
-          timestamp: data.timestamp,
-        });
-      }
+        if (type === 'FLAG_CAPTURED') {
+          const data = payload as NotificationPayload;
+          this.server.emit('global_feed_update', {
+            type: 'FLAG_CAPTURED',
+            message:
+              data.messageOverride ||
+              `Operative synchronized flag: ${data.flagTitle ?? ''}`,
+            points: data.points,
+            timestamp: data.timestamp,
+          });
+        }
+      },
+      error: (err) =>
+        logger.error('Error in dashboard subscription', err),
     });
   }
 
@@ -161,46 +165,51 @@ export class DashboardGateway
 
   @Interval(15000)
   async broadcastSystemIntelligence() {
-    if (this.connectedUsers.size === 0) return;
+    try {
+      if (this.connectedUsers.size === 0) return;
 
-    const leaderboard = await this.leaderboardService.getGlobalLeaderboard();
-    this.server.emit('leaderboard_update', leaderboard);
+      const leaderboard =
+        await this.leaderboardService.getGlobalLeaderboard();
+      this.server.emit('leaderboard_update', leaderboard);
 
-    const uniqueUserIds = [...new Set(this.connectedUsers.values())];
+      const uniqueUserIds = [...new Set(this.connectedUsers.values())];
 
-    // Batch: check achievements once per user — every 6th cycle (~90s) to reduce DB load
-    this.achievementCheckCounter++;
-    if (this.achievementCheckCounter >= 6) {
-      this.achievementCheckCounter = 0;
-      await Promise.allSettled(
-        uniqueUserIds.map((uid) =>
-          this.achievementService.checkAndUnlockAchievements(uid),
-        ),
-      );
-    }
-
-    // Batch: fetch metrics for all connected users in parallel
-    const metricsResults = await Promise.allSettled(
-      uniqueUserIds.map(async (uid) => ({
-        userId: uid,
-        intelligence: await this.dashboardService.getSystemIntelligence(uid),
-        userMetrics: await this.dashboardService.getUserMetrics(uid),
-      })),
-    );
-
-    // Emit to each socket
-    for (const [socketId, userId] of this.connectedUsers.entries()) {
-      const result = metricsResults.find(
-        (r) => r.status === 'fulfilled' && r.value.userId === userId,
-      );
-      if (result && result.status === 'fulfilled') {
-        this.server
-          .to(socketId)
-          .emit('intelligence_update', result.value.intelligence);
-        this.server
-          .to(socketId)
-          .emit('user_metrics_update', result.value.userMetrics);
+      // Batch: check achievements once per user — every 6th cycle (~90s) to reduce DB load
+      this.achievementCheckCounter++;
+      if (this.achievementCheckCounter >= 6) {
+        this.achievementCheckCounter = 0;
+        await Promise.allSettled(
+          uniqueUserIds.map((uid) =>
+            this.achievementService.checkAndUnlockAchievements(uid),
+          ),
+        );
       }
+
+      // Batch: fetch metrics for all connected users in parallel
+      const metricsResults = await Promise.allSettled(
+        uniqueUserIds.map(async (uid) => ({
+          userId: uid,
+          intelligence: await this.dashboardService.getSystemIntelligence(uid),
+          userMetrics: await this.dashboardService.getUserMetrics(uid),
+        })),
+      );
+
+      // Emit to each socket
+      for (const [socketId, userId] of this.connectedUsers.entries()) {
+        const result = metricsResults.find(
+          (r) => r.status === 'fulfilled' && r.value.userId === userId,
+        );
+        if (result && result.status === 'fulfilled') {
+          this.server
+            .to(socketId)
+            .emit('intelligence_update', result.value.intelligence);
+          this.server
+            .to(socketId)
+            .emit('user_metrics_update', result.value.userMetrics);
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to broadcast system intelligence', error);
     }
   }
 }
