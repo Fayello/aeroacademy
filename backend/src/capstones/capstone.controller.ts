@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CapstoneService } from './capstone.service';
 import type { RequestWithUser } from '../common/request-with-user';
 
-@Controller('api/v1/capstones')
+@Controller('v1/capstones')
 @UseGuards(AuthGuard('jwt'))
 export class CapstoneController {
   constructor(private readonly capstoneService: CapstoneService) {}
