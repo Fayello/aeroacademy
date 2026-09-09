@@ -50,9 +50,9 @@ export default function CapstoneCatalog() {
   });
 
   useEffect(() => {
-    fetchApi<{ data: CapstoneLab[] }>("/labs?take=600&type=CAPSTONE")
+    fetchApi<CapstoneLab[]>("/labs?take=600&type=CAPSTONE")
       .then((res) => {
-        setCapstones(res.data || []);
+        setCapstones(Array.isArray(res) ? res : []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));

@@ -162,7 +162,7 @@ export class NavigationService {
     // Dashboard (always first)
     sections.push({
       id: 'dashboard',
-      label: 'Command Center',
+      label: 'Dashboard',
       items: [
         {
           href: '/dashboard',
@@ -433,7 +433,7 @@ export class NavigationService {
       sections: [
         {
           id: 'dashboard',
-          label: 'Command Center',
+          label: 'Dashboard',
           items: [
             {
               href: '/dashboard',
