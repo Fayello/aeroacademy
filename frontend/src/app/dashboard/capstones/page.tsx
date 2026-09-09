@@ -6,6 +6,7 @@ import { Trophy, Clock, Cpu, Search, Lock, ArrowRight } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
 import { getLevel } from "@/lib/levelGating";
+import { useI18n } from "@/lib/i18n";
 
 interface CapstoneLab {
   id: string;
@@ -35,6 +36,7 @@ function getRequiredLevel(d: number) {
 }
 
 export default function CapstoneCatalog() {
+  const { t } = useI18n();
   const [capstones, setCapstones] = useState<CapstoneLab[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -48,10 +50,9 @@ export default function CapstoneCatalog() {
   });
 
   useEffect(() => {
-    fetchApi<{ data: CapstoneLab[] }>("/labs?take=600")
+    fetchApi<{ data: CapstoneLab[] }>("/labs?take=600&type=CAPSTONE")
       .then((res) => {
-        const all = res.data || [];
-        setCapstones(all.filter((l) => (l as CapstoneLab & { type?: string }).type === "CAPSTONE"));
+        setCapstones(res.data || []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -69,8 +70,8 @@ export default function CapstoneCatalog() {
   return (
     <div className="min-h-screen bg-[#0a0f1a] text-white p-6">
       <PageHeader
-        title="Capstones"
-        description="Real-world projects that prove you can do the work. Multi-service deployments, production infrastructure, security operations."
+        title={t("capstones.title")}
+        description={t("capstones.description")}
       />
 
       <div className="max-w-7xl mx-auto mt-6">
@@ -80,7 +81,7 @@ export default function CapstoneCatalog() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search capstones..."
+              placeholder={t("capstones.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-[#0f172a] border border-white/10 rounded-lg text-sm focus:outline-none focus:border-[#7AD62A]/50"
@@ -97,7 +98,7 @@ export default function CapstoneCatalog() {
                     : "bg-[#0f172a] text-gray-400 hover:text-white border border-white/10"
                 }`}
               >
-                {d}
+                {d === "ALL" ? t("capstones.domain.ALL") : d}
               </button>
             ))}
           </div>
@@ -105,9 +106,9 @@ export default function CapstoneCatalog() {
 
         {/* Capstone grid */}
         {loading ? (
-          <div className="text-center py-20 text-gray-500">Loading capstones...</div>
+          <div className="text-center py-20 text-gray-500">{t("capstones.loading")}</div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">No capstones found</div>
+          <div className="text-center py-20 text-gray-500">{t("capstones.empty")}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((capstone) => {
@@ -133,7 +134,7 @@ export default function CapstoneCatalog() {
                   <div className="flex items-center gap-2 mb-3">
                     <Trophy className="w-5 h-5 text-[#7AD62A]" />
                     <span className={`text-xs font-medium px-2 py-0.5 rounded ${diff.color}`}>
-                      {diff.label}
+                      {t(`capstones.difficulty.${diff.label}`)}
                     </span>
                   </div>
 
@@ -163,7 +164,7 @@ export default function CapstoneCatalog() {
                         <Cpu className="w-3 h-3" />
                         {capstone.ramRequirement ? `${Math.round(capstone.ramRequirement / 1024)}GB` : "512MB"}
                       </span>
-                      <span>{capstone.flags?.length || 0} flags</span>
+                      <span>{t("capstones.flags", { count: capstone.flags?.length || 0 })}</span>
                     </div>
                     {!locked && (
                       <ArrowRight className="w-4 h-4 text-[#7AD62A] opacity-0 group-hover:opacity-100 transition" />
@@ -172,7 +173,7 @@ export default function CapstoneCatalog() {
 
                   {locked && (
                     <div className="mt-3 text-xs text-amber-400">
-                      Requires Level {reqLevel}
+                      {t("capstones.requiresLevel", { level: reqLevel })}
                     </div>
                   )}
                 </Link>

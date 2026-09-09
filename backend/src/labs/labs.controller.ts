@@ -45,12 +45,14 @@ export class LabsController {
     @Request() req: RequestWithUser,
     @Query('take') take?: string,
     @Query('skip') skip?: string,
+    @Query('type') type?: string,
   ) {
     return this.labsService.findAll({
       userId: req.user.id,
       userRole: req.user.role,
       take: take ? parseInt(take, 10) : undefined,
       skip: skip ? parseInt(skip, 10) : undefined,
+      type,
     });
   }
 
