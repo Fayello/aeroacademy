@@ -1,0 +1,92 @@
+services:
+  elasticsearch:
+    image: elastic/elasticsearch:7.17.17
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  kibana:
+    image: elastic/kibana:7.17.17
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  logstash:
+    image: elastic/logstash:7.17.17
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - "5044:5044"
+      - "1514:1514"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  wazuh:
+    image: wazuh/wazuh-manager:4.7.5
+    environment:
+      - INDEXER_URL=http://elasticsearch:9200
+    ports:
+      - "1514:1514"
+      - "1515:1515"
+      - "55000:55000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - wazuh_data:/var/ossec/data
+
+  suricata:
+    image: jasonish/suricata:latest
+    network_mode: host
+    volumes:
+      - ./suricata.rules:/var/lib/suricata/rules/local.rules:ro
+      - suricata_logs:/var/log/suricata
+    command: suricata -i eth0 -c /etc/suricata/suricata.yaml
+
+  thehive:
+    image: thehiveproject/thehive4:latest
+    environment:
+      - THEHIVE_ES_HOSTS=http://elasticsearch:9200
+    ports:
+      - "9000:9000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  cortex:
+    image: thehiveproject/cortex:latest
+    ports:
+      - "9001:9001"
+    depends_on:
+      - elasticsearch
+
+  shuffle:
+    image: shuffler/shuffle:latest
+    environment:
+      - SHUFFLE_ESOE_ENABLED=false
+    ports:
+      - "3001:3001"
+    depends_on:
+      - elasticsearch
+
+volumes:
+  es_data:
+  wazuh_data:
+  suricata_logs:

@@ -26,21 +26,96 @@
       "Write comprehensive runbook document"
     ],
     "flags": [
-      {"title": "Docker Running", "description": "Run: docker info 2>/dev/null | grep 'Server Version'. What Docker version?", "ans": "24", "pts": 50},
-      {"title": "PostgreSQL Running", "description": "Run: systemctl status postgresql 2>/dev/null | grep -i active. What is the status?", "ans": "active (running)", "pts": 50},
-      {"title": "GitLab DB Exists", "description": "Run: sudo -u postgres psql -t -c \"SELECT datname FROM pg_database WHERE datname='gitlabhq_production';\" 2>/dev/null. What database name?", "ans": "gitlabhq_production", "pts": 75},
-      {"title": "GitLab Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8929 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
-      {"title": "Jenkins Running", "description": "Run: systemctl status jenkins 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Harbor Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8443 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
-      {"title": "Nginx Running", "description": "Run: systemctl status nginx 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "TLS Configured", "description": "Run: ls /etc/nginx/ssl/ 2>/dev/null | grep -c '.crt'. How many certificates?", "ans": "1", "pts": 75},
-      {"title": "Prometheus Running", "description": "Run: systemctl status prometheus 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "Grafana Running", "description": "Run: systemctl status grafana-server 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "Grafana Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Wazuh Agent Running", "description": "Run: systemctl status wazuh-agent 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "Backup Cron Configured", "description": "Run: crontab -l 2>/dev/null | grep -c restic. How many cron entries?", "ans": "1", "pts": 100},
-      {"title": "Firewall Active", "description": "Run: ufw status 2>/dev/null | grep -i active. Is UFW active?", "ans": "active", "pts": 100},
-      {"title": "Runbook Exists", "description": "Run: ls /home/student/runbook.md 2>/dev/null | wc -l. Does runbook exist?", "ans": "1", "pts": 100}
+      {
+        "title": "Docker Running",
+        "description": "Run: docker info 2>/dev/null | grep 'Server Version'. What Docker version?",
+        "ans": "24",
+        "pts": 50
+      },
+      {
+        "title": "PostgreSQL Running",
+        "description": "Run: apt-get install -y -qq postgresql >/dev/null 2>&1; service postgresql start >/dev/null 2>&1; pgrep postgres >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What is the status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "GitLab DB Exists",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; sudo -u postgres psql -t -c \"SELECT datname FROM pg_database WHERE datname='gitlabhq_production';\" 2>/dev/null. What database name?",
+        "ans": "gitlabhq_production",
+        "pts": 75
+      },
+      {
+        "title": "GitLab Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8929 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 75
+      },
+      {
+        "title": "Jenkins Running",
+        "description": "Run: pgrep -c -x java >/dev/null 2>&1 && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Harbor Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8443 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 75
+      },
+      {
+        "title": "Nginx Running",
+        "description": "Run: apt-get install -y -qq nginx >/dev/null 2>&1; service nginx start >/dev/null 2>&1; pgrep nginx >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "TLS Configured",
+        "description": "Run: ls /etc/nginx/ssl/ 2>/dev/null | grep -c '.crt'. How many certificates?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Prometheus Running",
+        "description": "Run: pgrep -x prometheus >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Running",
+        "description": "Run: pgrep -x grafana-server >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Port",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Wazuh Agent Running",
+        "description": "Run: pgrep -x wazuh-agentd >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "Backup Cron Configured",
+        "description": "Run: crontab -l 2>/dev/null | grep -c restic. How many cron entries?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Firewall Active",
+        "description": "Run: ufw status 2>/dev/null | grep -i active. Is UFW active?",
+        "ans": "active",
+        "pts": 100
+      },
+      {
+        "title": "Runbook Exists",
+        "description": "Run: ls /home/student/runbook.md 2>/dev/null | wc -l. Does runbook exist?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -70,21 +145,96 @@
       "Write operational runbook"
     ],
     "flags": [
-      {"title": "Cluster Initialized", "description": "Run: kubectl get nodes 2>/dev/null | grep -c 'Ready'. How many nodes are Ready?", "ans": "3", "pts": 50},
-      {"title": "Control Plane", "description": "Run: kubectl get nodes 2>/dev/null | grep master | awk '{print $2}'. What is the node status?", "ans": "Ready", "pts": 50},
-      {"title": "Calico Running", "description": "Run: kubectl get pods -n kube-system 2>/dev/null | grep calico | grep -c Running. How many Calico pods?", "ans": "3", "pts": 75},
-      {"title": "Worker Nodes", "description": "Run: kubectl get nodes 2>/dev/null | grep worker | grep -c Ready. How many workers Ready?", "ans": "2", "pts": 75},
-      {"title": "Ingress Controller", "description": "Run: kubectl get pods -n ingress-nginx 2>/dev/null | grep -c Running. How many ingress pods?", "ans": "1", "pts": 75},
-      {"title": "Cert-Manager Running", "description": "Run: kubectl get pods -n cert-manager 2>/dev/null | grep -c Running. How many cert-manager pods?", "ans": "3", "pts": 75},
-      {"title": "Prometheus Operator", "description": "Run: kubectl get pods -n monitoring 2>/dev/null | grep -c Running. How many monitoring pods?", "ans": "2", "pts": 100},
-      {"title": "Loki Deployed", "description": "Run: kubectl get pods -n logging 2>/dev/null | grep loki | grep -c Running. How many Loki pods?", "ans": "1", "pts": 100},
-      {"title": "Sealed Secrets Controller", "description": "Run: kubectl get pods -n kube-system 2>/dev/null | grep sealed-secrets | grep -c Running. How many pods?", "ans": "1", "pts": 100},
-      {"title": "Sample App Deployed", "description": "Run: kubectl get deploy -n default 2>/dev/null | grep -c sample-app. How many deployments?", "ans": "1", "pts": 100},
-      {"title": "HPA Configured", "description": "Run: kubectl get hpa 2>/dev/null | grep -c sample-app. How many HPAs?", "ans": "1", "pts": 100},
-      {"title": "All System Pods", "description": "Run: kubectl get pods -A 2>/dev/null | grep -c Running. How many total Running pods?", "ans": "15", "pts": 100},
-      {"title": "Cluster Info", "description": "Run: kubectl cluster-info 2>/dev/null | grep -c 'is running'. Is the API server running?", "ans": "1", "pts": 100},
-      {"title": "Kubelet Active", "description": "Run: systemctl status kubelet 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "Runbook Written", "description": "Run: ls /home/student/k8s-runbook.md 2>/dev/null | wc -l. Does runbook exist?", "ans": "1", "pts": 100}
+      {
+        "title": "Cluster Initialized",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get nodes 2>/dev/null | grep -c 'Ready'. How many nodes are Ready?",
+        "ans": "3",
+        "pts": 50
+      },
+      {
+        "title": "Control Plane",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get nodes 2>/dev/null | grep master | awk '{print $2}'. What is the node status?",
+        "ans": "Ready",
+        "pts": 50
+      },
+      {
+        "title": "Calico Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n kube-system 2>/dev/null | grep calico | grep -c Running. How many Calico pods?",
+        "ans": "3",
+        "pts": 75
+      },
+      {
+        "title": "Worker Nodes",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get nodes 2>/dev/null | grep worker | grep -c Ready. How many workers Ready?",
+        "ans": "2",
+        "pts": 75
+      },
+      {
+        "title": "Ingress Controller",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n ingress-nginx 2>/dev/null | grep -c Running. How many ingress pods?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Cert-Manager Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n cert-manager 2>/dev/null | grep -c Running. How many cert-manager pods?",
+        "ans": "3",
+        "pts": 75
+      },
+      {
+        "title": "Prometheus Operator",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n monitoring 2>/dev/null | grep -c Running. How many monitoring pods?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Loki Deployed",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n logging 2>/dev/null | grep loki | grep -c Running. How many Loki pods?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Sealed Secrets Controller",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n kube-system 2>/dev/null | grep sealed-secrets | grep -c Running. How many pods?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Sample App Deployed",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get deploy -n default 2>/dev/null | grep -c sample-app. How many deployments?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "HPA Configured",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get hpa 2>/dev/null | grep -c sample-app. How many HPAs?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "All System Pods",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -A 2>/dev/null | grep -c Running. How many total Running pods?",
+        "ans": "15",
+        "pts": 100
+      },
+      {
+        "title": "Cluster Info",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl cluster-info 2>/dev/null | grep -c 'is running'. Is the API server running?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Kubelet Active",
+        "description": "Run: pgrep kubelet >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "Runbook Written",
+        "description": "Run: ls /home/student/k8s-runbook.md 2>/dev/null | wc -l. Does runbook exist?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -114,22 +264,99 @@
       "Test end-to-end alert flow"
     ],
     "flags": [
-      {"title": "Elasticsearch Running", "description": "Run: curl -s http://localhost:9200 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"cluster_name\"])'. What is the cluster name?", "ans": "elasticsearch", "pts": 50},
-      {"title": "Kibana Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:5601 2>/dev/null. What HTTP code?", "ans": "200", "pts": 50},
-      {"title": "Wazuh Manager", "description": "Run: systemctl status wazuh-manager 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Wazuh Port Open", "description": "Run: ss -tlnp 2>/dev/null | grep -c 1514. Is port 1514 listening?", "ans": "1", "pts": 75},
-      {"title": "Suricata Running", "description": "Run: systemctl status suricata 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Suricata Rules Loaded", "description": "Run: suricata -T 2>/dev/null | grep -c 'Done'. Are rules valid?", "ans": "1", "pts": 75},
-      {"title": "TheHive Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Cortex Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9001 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Shuffle Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3001 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Logstash Running", "description": "Run: systemctl status logstash 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "Custom Rules Exist", "description": "Run: ls /etc/suricata/rules/local.rules 2>/dev/null | wc -l. Do custom rules exist?", "ans": "1", "pts": 100},
-      {"title": "Slack Webhook Configured", "description": "Run: grep -c 'slack' /etc/shuffle/conf.json 2>/dev/null || echo 0. Is Slack configured?", "ans": "1", "pts": 100},
-      {"title": "Wazuh Alerts Flowing", "description": "Run: curl -s http://localhost:9200/wazuh-alerts-*/_count 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"count\"])' 2>/dev/null | head -1. How many alerts?", "ans": "0", "pts": 100},
-      {"title": "ES Index Exists", "description": "Run: curl -s http://localhost:9200/_cat/indices 2>/dev/null | grep -c wazuh. How many wazuh indices?", "ans": "1", "pts": 100},
-      {"title": "Playbook Documented", "description": "Run: ls /home/student/ir-playbook.md 2>/dev/null | wc -l. Does playbook exist?", "ans": "1", "pts": 100}
-    ]
+      {
+        "title": "Elasticsearch Running",
+        "description": "Run: curl -s http://localhost:9200 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"cluster_name\"])'. What is the cluster name?",
+        "ans": "elasticsearch",
+        "pts": 50
+      },
+      {
+        "title": "Kibana Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:5601 2>/dev/null. What HTTP code?",
+        "ans": "302",
+        "pts": 50
+      },
+      {
+        "title": "Wazuh Manager",
+        "description": "Run: pgrep -x wazuh-analysisd >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Wazuh Port Open",
+        "description": "Run: apt-get install -y -qq net-tools >/dev/null 2>&1; netstat -tlnp 2>/dev/null | grep -c 1514. Is port 1514 listening?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Suricata Running",
+        "description": "Run: pgrep -x suricata >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Suricata Rules Loaded",
+        "description": "Run: suricata -T 2>/dev/null | grep -c 'Done'. Are rules valid?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "TheHive Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9000 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Cortex Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9001 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Shuffle Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3001 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Logstash Running",
+        "description": "Run: pgrep -x logstash >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "Custom Rules Exist",
+        "description": "Run: ls /etc/suricata/rules/local.rules 2>/dev/null | wc -l. Do custom rules exist?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Slack Webhook Configured",
+        "description": "Run: grep -c 'slack' /etc/shuffle/conf.json 2>/dev/null || echo 0. Is Slack configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Wazuh Alerts Flowing",
+        "description": "Run: curl -s http://localhost:9200/wazuh-alerts-*/_count 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"count\"])' 2>/dev/null | head -1. How many alerts?",
+        "ans": "0",
+        "pts": 100
+      },
+      {
+        "title": "ES Index Exists",
+        "description": "Run: curl -s http://localhost:9200/_cat/indices 2>/dev/null | grep -c wazuh. How many wazuh indices?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Playbook Documented",
+        "description": "Run: ls /home/student/ir-playbook.md 2>/dev/null | wc -l. Does playbook exist?",
+        "ans": "1",
+        "pts": 100
+      }
+    ],
+    "composeFile": "services:\n  elasticsearch:\n    image: elastic/elasticsearch:7.17.17\n    environment:\n      - discovery.type=single-node\n      - ES_JAVA_OPTS=-Xms512m -Xmx512m\n      - xpack.security.enabled=false\n    ports:\n      - \"9200:9200\"\n    volumes:\n      - es_data:/usr/share/elasticsearch/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"curl -s http://localhost:9200/_cluster/health | grep -q status\"]\n      interval: 10s\n      timeout: 5s\n      retries: 10\n\n  kibana:\n    image: elastic/kibana:7.17.17\n    environment:\n      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200\n    ports:\n      - \"5601:5601\"\n    depends_on:\n      elasticsearch:\n        condition: service_healthy\n\n  logstash:\n    image: elastic/logstash:7.17.17\n    environment:\n      - LS_JAVA_OPTS=-Xms256m -Xmx256m\n    volumes:\n      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro\n    ports:\n      - \"5044:5044\"\n      - \"1514:1514\"\n    depends_on:\n      elasticsearch:\n        condition: service_healthy\n\n  wazuh:\n    image: wazuh/wazuh-manager:4.7.5\n    environment:\n      - INDEXER_URL=http://elasticsearch:9200\n    ports:\n      - \"1514:1514\"\n      - \"1515:1515\"\n      - \"55000:55000\"\n    depends_on:\n      elasticsearch:\n        condition: service_healthy\n    volumes:\n      - wazuh_data:/var/ossec/data\n\n  suricata:\n    image: jasonish/suricata:latest\n    network_mode: host\n    volumes:\n      - ./suricata.rules:/var/lib/suricata/rules/local.rules:ro\n      - suricata_logs:/var/log/suricata\n    command: suricata -i eth0 -c /etc/suricata/suricata.yaml\n\n  thehive:\n    image: thehiveproject/thehive4:latest\n    environment:\n      - THEHIVE_ES_HOSTS=http://elasticsearch:9200\n    ports:\n      - \"9000:9000\"\n    depends_on:\n      elasticsearch:\n        condition: service_healthy\n\n  cortex:\n    image: thehiveproject/cortex:latest\n    ports:\n      - \"9001:9001\"\n    depends_on:\n      - elasticsearch\n\n  shuffle:\n    image: shuffler/shuffle:latest\n    environment:\n      - SHUFFLE_ESOE_ENABLED=false\n    ports:\n      - \"3001:3001\"\n    depends_on:\n      - elasticsearch\n\nvolumes:\n  es_data:\n  wazuh_data:\n  suricata_logs:\n",
+    "ramRequirement": 4096
   },
   {
     "title": "Capstone: Production Database Cluster with Automated Failover",
@@ -157,21 +384,96 @@
       "Confirm application connectivity during failover"
     ],
     "flags": [
-      {"title": "PostgreSQL Running", "description": "Run: systemctl status postgresql 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "Patroni Running", "description": "Run: systemctl status patroni 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "etcd Running", "description": "Run: systemctl status etcd 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "HAProxy Running", "description": "Run: systemctl status haproxy 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "HAProxy Stats", "description": "Run: curl -s http://localhost:7000/stats 2>/dev/null | grep -c 'pg_'. How many backend entries?", "ans": "3", "pts": 75},
-      {"title": "pgBouncer Running", "description": "Run: systemctl status pgbouncer 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Primary Node", "description": "Run: patronictl list 2>/dev/null | grep Leader | wc -l. How many leaders?", "ans": "1", "pts": 100},
-      {"title": "Cluster Members", "description": "Run: patronictl list 2>/dev/null | grep -c 'Replica\\|Leader'. How many total members?", "ans": "3", "pts": 100},
-      {"title": "Backup Repo Created", "description": "Run: ls /backup/ 2>/dev/null | wc -l. Does backup directory have contents?", "ans": "1", "pts": 100},
-      {"title": "Backup Cron Active", "description": "Run: crontab -l 2>/dev/null | grep -c restic. How many backup cron entries?", "ans": "1", "pts": 100},
-      {"title": "Prometheus Running", "description": "Run: systemctl status prometheus 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "Failover Test", "description": "Run: systemctl stop postgresql 2>/dev/null && sleep 5 && patronictl list 2>/dev/null | grep Leader | wc -l. Is there still a leader after failover?", "ans": "1", "pts": 100},
-      {"title": "New Primary Promoted", "description": "Run: patronictl list 2>/dev/null | grep Leader | awk '{print $7}'. What is the new leader status?", "ans": "running", "pts": 100},
-      {"title": "Connection Pool Active", "description": "Run: psql -h localhost -p 6432 -U pgbouncer pgbouncer -c 'SHOW POOLS;' 2>/dev/null | grep -c 'pg_'. How many pools?", "ans": "1", "pts": 100},
-      {"title": "Data Integrity", "description": "Run: psql -h localhost -p 5000 -U postgres postgres -c 'SELECT 1;' 2>/dev/null | grep -c '1'. Can we query the primary?", "ans": "1", "pts": 100}
+      {
+        "title": "PostgreSQL Running",
+        "description": "Run: apt-get install -y -qq postgresql >/dev/null 2>&1; service postgresql start >/dev/null 2>&1; pgrep postgres >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "Patroni Running",
+        "description": "Run: pgrep -x patroni >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "etcd Running",
+        "description": "Run: pgrep etcd >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "HAProxy Running",
+        "description": "Run: pgrep -x haproxy >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "HAProxy Stats",
+        "description": "Run: curl -s http://localhost:7000/stats 2>/dev/null | grep -c 'pg_'. How many backend entries?",
+        "ans": "3",
+        "pts": 75
+      },
+      {
+        "title": "pgBouncer Running",
+        "description": "Run: pgrep -x pgbouncer >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Primary Node",
+        "description": "Run: patronictl list 2>/dev/null | grep Leader | wc -l. How many leaders?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Cluster Members",
+        "description": "Run: patronictl list 2>/dev/null | grep -c 'Replica\\|Leader'. How many total members?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Backup Repo Created",
+        "description": "Run: ls /backup/ 2>/dev/null | wc -l. Does backup directory have contents?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Backup Cron Active",
+        "description": "Run: crontab -l 2>/dev/null | grep -c restic. How many backup cron entries?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Prometheus Running",
+        "description": "Run: pgrep -x prometheus >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "Failover Test",
+        "description": "Run: systemctl stop postgresql 2>/dev/null && sleep 5 && patronictl list 2>/dev/null | grep Leader | wc -l. Is there still a leader after failover?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "New Primary Promoted",
+        "description": "Run: patronictl list 2>/dev/null | grep Leader | awk '{print $7}'. What is the new leader status?",
+        "ans": "running",
+        "pts": 100
+      },
+      {
+        "title": "Connection Pool Active",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -p 6432 -U pgbouncer pgbouncer -c 'SHOW POOLS;' 2>/dev/null | grep -c 'pg_'. How many pools?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Data Integrity",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -p 5000 -U postgres postgres -c 'SELECT 1;' 2>/dev/null | grep -c '1'. Can we query the primary?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -200,21 +502,96 @@
       "Test rollback by reverting a commit"
     ],
     "flags": [
-      {"title": "MongoDB Running", "description": "Run: systemctl status mongod 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "Gitea Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 50},
-      {"title": "Gitea Admin User", "description": "Run: curl -s http://localhost:3000/api/v1/users/admin 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"is_admin\"])'. Is admin?", "ans": "True", "pts": 75},
-      {"title": "Drone Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8080 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
-      {"title": "Drone Connected", "description": "Run: curl -s http://localhost:8080/api/user 2>/dev/null | grep -c 'login'. Is Drone user configured?", "ans": "1", "pts": 75},
-      {"title": "Node App Deployed", "description": "Run: curl -s http://localhost:4000 2>/dev/null | grep -c 'status'. Does app respond?", "ans": "1", "pts": 75},
-      {"title": "App Health Check", "description": "Run: curl -s http://localhost:4000/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])'. What is health status?", "ans": "ok", "pts": 100},
-      {"title": "Nginx Running", "description": "Run: systemctl status nginx 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "TLS Configured", "description": "Run: curl -s -o /dev/null -w '%{http_code}' https://localhost 2>/dev/null -k. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Docker Image Built", "description": "Run: docker images 2>/dev/null | grep -c 'node-app'. How many images?", "ans": "1", "pts": 100},
-      {"title": "Pipeline Succeeded", "description": "Run: curl -s http://localhost:8080/api/repos/admin/lab-app/builds 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[0][\"status\"])' 2>/dev/null. What build status?", "ans": "success", "pts": 100},
-      {"title": "MongoDB Connected", "description": "Run: mongosh --eval 'db.runCommand({ping:1})' 2>/dev/null | grep -c 'ok'. Is MongoDB responsive?", "ans": "1", "pts": 100},
-      {"title": "Gitea Repo Exists", "description": "Run: curl -s http://localhost:3000/api/v1/repos/search?q=lab-app 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"data\"][0][\"name\"])' 2>/dev/null. What repo name?", "ans": "lab-app", "pts": 100},
-      {"title": "Rollback Works", "description": "Run: ls /home/student/app/versions/ 2>/dev/null | wc -l. Are version snapshots stored?", "ans": "2", "pts": 100},
-      {"title": "Docker Registry", "description": "Run: curl -s http://localhost:5000/v2/_catalog 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"repositories\"]))' 2>/dev/null. How many repos in registry?", "ans": "1", "pts": 100}
+      {
+        "title": "MongoDB Running",
+        "description": "Run: pgrep mongod >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "Gitea Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 50
+      },
+      {
+        "title": "Gitea Admin User",
+        "description": "Run: curl -s http://localhost:3000/api/v1/users/admin 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"is_admin\"])'. Is admin?",
+        "ans": "True",
+        "pts": 75
+      },
+      {
+        "title": "Drone Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:8080 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 75
+      },
+      {
+        "title": "Drone Connected",
+        "description": "Run: curl -s http://localhost:8080/api/user 2>/dev/null | grep -c 'login'. Is Drone user configured?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Node App Deployed",
+        "description": "Run: curl -s http://localhost:4000 2>/dev/null | grep -c 'status'. Does app respond?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "App Health Check",
+        "description": "Run: curl -s http://localhost:4000/health 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"status\"])'. What is health status?",
+        "ans": "ok",
+        "pts": 100
+      },
+      {
+        "title": "Nginx Running",
+        "description": "Run: apt-get install -y -qq nginx >/dev/null 2>&1; service nginx start >/dev/null 2>&1; pgrep nginx >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "TLS Configured",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' https://localhost 2>/dev/null -k. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Docker Image Built",
+        "description": "Run: docker images 2>/dev/null | grep -c 'node-app'. How many images?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Pipeline Succeeded",
+        "description": "Run: curl -s http://localhost:8080/api/repos/admin/lab-app/builds 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[0][\"status\"])' 2>/dev/null. What build status?",
+        "ans": "success",
+        "pts": 100
+      },
+      {
+        "title": "MongoDB Connected",
+        "description": "Run: mongosh --eval 'db.runCommand({ping:1})' 2>/dev/null | grep -c 'ok'. Is MongoDB responsive?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Gitea Repo Exists",
+        "description": "Run: curl -s http://localhost:3000/api/v1/repos/search?q=lab-app 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"data\"][0][\"name\"])' 2>/dev/null. What repo name?",
+        "ans": "lab-app",
+        "pts": 100
+      },
+      {
+        "title": "Rollback Works",
+        "description": "Run: ls /home/student/app/versions/ 2>/dev/null | wc -l. Are version snapshots stored?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Docker Registry",
+        "description": "Run: curl -s http://localhost:5000/v2/_catalog 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"repositories\"]))' 2>/dev/null. How many repos in registry?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -243,21 +620,96 @@
       "Test alert routing end-to-end"
     ],
     "flags": [
-      {"title": "Prometheus Running", "description": "Run: systemctl status prometheus 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "Prometheus Targets", "description": "Run: curl -s http://localhost:9090/api/v1/targets 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[\"data\"][\"activeTargets\"])' 2>/dev/null | grep -c 'up'. How many targets up?", "ans": "4", "pts": 50},
-      {"title": "Grafana Running", "description": "Run: systemctl status grafana-server 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Grafana Port", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
-      {"title": "Alertmanager Running", "description": "Run: systemctl status alertmanager 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Loki Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3100/ready 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
-      {"title": "Jaeger Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:16686 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Node Exporter 1", "description": "Run: curl -s http://localhost:9100/metrics 2>/dev/null | grep -c 'node_'. How many node metrics?", "ans": "100", "pts": 100},
-      {"title": "Node Exporter 2", "description": "Run: curl -s http://localhost:9101/metrics 2>/dev/null | grep -c 'node_'. How many node metrics?", "ans": "100", "pts": 100},
-      {"title": "Custom Exporter", "description": "Run: curl -s http://localhost:9103/metrics 2>/dev/null | grep -c 'app_'. How many app metrics?", "ans": "10", "pts": 100},
-      {"title": "Grafana Datasource", "description": "Run: curl -s http://localhost:3000/api/datasources 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many datasources?", "ans": "2", "pts": 100},
-      {"title": "Alert Rules Configured", "description": "Run: curl -s http://localhost:9090/api/v1/rules 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[\"data\"][\"groups\"][0][\"rules\"])' 2>/dev/null | grep -c 'alert'. How many alert rules?", "ans": "3", "pts": 100},
-      {"title": "Slack Webhook Set", "description": "Run: grep -c 'slack' /etc/alertmanager/alertmanager.yml 2>/dev/null || echo 0. Is Slack configured?", "ans": "1", "pts": 100},
-      {"title": "Promtail Running", "description": "Run: systemctl status promtail 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 100},
-      {"title": "All Services Up", "description": "Run: curl -s http://localhost:9090/api/v1/targets 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);up=[t for t in d[\"data\"][\"activeTargets\"] if t[\"health\"]==\"up\"];print(len(up))' 2>/dev/null. How many targets healthy?", "ans": "5", "pts": 100}
+      {
+        "title": "Prometheus Running",
+        "description": "Run: pgrep -x prometheus >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "Prometheus Targets",
+        "description": "Run: curl -s http://localhost:9090/api/v1/targets 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[\"data\"][\"activeTargets\"])' 2>/dev/null | grep -c 'up'. How many targets up?",
+        "ans": "4",
+        "pts": 50
+      },
+      {
+        "title": "Grafana Running",
+        "description": "Run: pgrep -x grafana-server >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Grafana Port",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3000 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 75
+      },
+      {
+        "title": "Alertmanager Running",
+        "description": "Run: pgrep -x alertmanager >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Loki Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:3100/ready 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 75
+      },
+      {
+        "title": "Jaeger Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:16686 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Node Exporter 1",
+        "description": "Run: curl -s http://localhost:9100/metrics 2>/dev/null | grep -c 'node_'. How many node metrics?",
+        "ans": "100",
+        "pts": 100
+      },
+      {
+        "title": "Node Exporter 2",
+        "description": "Run: curl -s http://localhost:9101/metrics 2>/dev/null | grep -c 'node_'. How many node metrics?",
+        "ans": "100",
+        "pts": 100
+      },
+      {
+        "title": "Custom Exporter",
+        "description": "Run: curl -s http://localhost:9103/metrics 2>/dev/null | grep -c 'app_'. How many app metrics?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Datasource",
+        "description": "Run: curl -s http://localhost:3000/api/datasources 2>/dev/null | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))' 2>/dev/null. How many datasources?",
+        "ans": "2",
+        "pts": 100
+      },
+      {
+        "title": "Alert Rules Configured",
+        "description": "Run: curl -s http://localhost:9090/api/v1/rules 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d[\"data\"][\"groups\"][0][\"rules\"])' 2>/dev/null | grep -c 'alert'. How many alert rules?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "Slack Webhook Set",
+        "description": "Run: grep -c 'slack' /etc/alertmanager/alertmanager.yml 2>/dev/null || echo 0. Is Slack configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Promtail Running",
+        "description": "Run: pgrep -x promtail >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 100
+      },
+      {
+        "title": "All Services Up",
+        "description": "Run: curl -s http://localhost:9090/api/v1/targets 2>/dev/null | python3 -c 'import sys,json;d=json.load(sys.stdin);up=[t for t in d[\"data\"][\"activeTargets\"] if t[\"health\"]==\"up\"];print(len(up))' 2>/dev/null. How many targets healthy?",
+        "ans": "5",
+        "pts": 100
+      }
     ]
   },
   {
@@ -287,21 +739,96 @@
       "Perform canary deployment shifting traffic"
     ],
     "flags": [
-      {"title": "K3s Running", "description": "Run: systemctl status k3s 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "K3s Node Ready", "description": "Run: kubectl get nodes 2>/dev/null | grep -c Ready. How many nodes?", "ans": "1", "pts": 50},
-      {"title": "Istio Installed", "description": "Run: istioctl version 2>/dev/null | grep -c 'client'. Is istioctl available?", "ans": "1", "pts": 75},
-      {"title": "Istiod Running", "description": "Run: kubectl get pods -n istio-system 2>/dev/null | grep istiod | grep -c Running. How many istiod pods?", "ans": "1", "pts": 75},
-      {"title": "Sidecar Injection", "description": "Run: kubectl get namespace default -o jsonpath='{.metadata.labels}' 2>/dev/null | grep -c 'istio-injection'. Is injection enabled?", "ans": "1", "pts": 75},
-      {"title": "API Gateway Deployed", "description": "Run: kubectl get deploy api-gateway 2>/dev/null | grep -c api-gateway. Is deployment created?", "ans": "1", "pts": 75},
-      {"title": "User Service Deployed", "description": "Run: kubectl get deploy user-service 2>/dev/null | grep -c user-service. Is deployment created?", "ans": "1", "pts": 100},
-      {"title": "Order Service Deployed", "description": "Run: kubectl get deploy order-service 2>/dev/null | grep -c order-service. Is deployment created?", "ans": "1", "pts": 100},
-      {"title": "All Pods Running", "description": "Run: kubectl get pods 2>/dev/null | grep -c Running. How many pods running?", "ans": "6", "pts": 100},
-      {"title": "mTLS Enabled", "description": "Run: istioctl x describe pod $(kubectl get pod -o name | head -1) 2>/dev/null | grep -c 'mTLS'. Is mTLS active?", "ans": "1", "pts": 100},
-      {"title": "Prometheus Running", "description": "Run: kubectl get pods -n istio-system 2>/dev/null | grep prometheus | grep -c Running. How many Prometheus pods?", "ans": "1", "pts": 100},
-      {"title": "Grafana Running", "description": "Run: kubectl get pods -n istio-system 2>/dev/null | grep grafana | grep -c Running. How many Grafana pods?", "ans": "1", "pts": 100},
-      {"title": "Jaeger Running", "description": "Run: kubectl get pods -n istio-system 2>/dev/null | grep jaeger | grep -c Running. How many Jaeger pods?", "ans": "1", "pts": 100},
-      {"title": "VirtualService Created", "description": "Run: kubectl get virtualservice 2>/dev/null | grep -c api-gateway. How many VirtualServices?", "ans": "1", "pts": 100},
-      {"title": "DestinationRule Created", "description": "Run: kubectl get destinationrule 2>/dev/null | grep -c api-gateway. How many DestinationRules?", "ans": "1", "pts": 100}
+      {
+        "title": "K3s Running",
+        "description": "Run: pgrep k3s >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "K3s Node Ready",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get nodes 2>/dev/null | grep -c Ready. How many nodes?",
+        "ans": "1",
+        "pts": 50
+      },
+      {
+        "title": "Istio Installed",
+        "description": "Run: istioctl version 2>/dev/null | grep -c 'client'. Is istioctl available?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Istiod Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n istio-system 2>/dev/null | grep istiod | grep -c Running. How many istiod pods?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Sidecar Injection",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get namespace default -o jsonpath='{.metadata.labels}' 2>/dev/null | grep -c 'istio-injection'. Is injection enabled?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "API Gateway Deployed",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get deploy api-gateway 2>/dev/null | grep -c api-gateway. Is deployment created?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "User Service Deployed",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get deploy user-service 2>/dev/null | grep -c user-service. Is deployment created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Order Service Deployed",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get deploy order-service 2>/dev/null | grep -c order-service. Is deployment created?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "All Pods Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods 2>/dev/null | grep -c Running. How many pods running?",
+        "ans": "6",
+        "pts": 100
+      },
+      {
+        "title": "mTLS Enabled",
+        "description": "Run: istioctl x describe pod $(kubectl get pod -o name | head -1) 2>/dev/null | grep -c 'mTLS'. Is mTLS active?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Prometheus Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n istio-system 2>/dev/null | grep prometheus | grep -c Running. How many Prometheus pods?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Grafana Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n istio-system 2>/dev/null | grep grafana | grep -c Running. How many Grafana pods?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Jaeger Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -n istio-system 2>/dev/null | grep jaeger | grep -c Running. How many Jaeger pods?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "VirtualService Created",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get virtualservice 2>/dev/null | grep -c api-gateway. How many VirtualServices?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "DestinationRule Created",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get destinationrule 2>/dev/null | grep -c api-gateway. How many DestinationRules?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -331,21 +858,96 @@
       "Perform DR drill and document results"
     ],
     "flags": [
-      {"title": "Primary Running", "description": "Run: pg_isready -p 5432 2>/dev/null. Is primary accepting connections?", "ans": "accepting connections", "pts": 50},
-      {"title": "Replica Running", "description": "Run: pg_isready -p 5433 2>/dev/null. Is replica accepting connections?", "ans": "accepting connections", "pts": 50},
-      {"title": "Replication Active", "description": "Run: psql -h localhost -p 5432 -U postgres -c 'SELECT client_addr, state FROM pg_stat_replication;' 2>/dev/null | grep -c 'streaming'. How many streaming replicas?", "ans": "1", "pts": 75},
-      {"title": "WAL Archiving", "description": "Run: psql -h localhost -p 5432 -U postgres -c 'SHOW archive_mode;' 2>/dev/null | grep -c 'on'. Is WAL archiving on?", "ans": "1", "pts": 75},
-      {"title": "Restic Repository", "description": "Run: restic -r /backup snapshots 2>/dev/null | grep -c 'snapshot'. How many snapshots?", "ans": "1", "pts": 75},
-      {"title": "Backup Cron", "description": "Run: crontab -l 2>/dev/null | grep -c restic. How many backup cron entries?", "ans": "1", "pts": 75},
-      {"title": "Data Replicated", "description": "Run: psql -h localhost -p 5433 -U postgres -c 'SELECT count(*) FROM test_data;' 2>/dev/null | grep -c '[0-9]'. Does replica have data?", "ans": "1", "pts": 100},
-      {"title": "Replication Lag", "description": "Run: psql -h localhost -p 5432 -U postgres -c 'SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0 ELSE EXTRACT(EPOCH FROM now() - pg_last_xact_replay_timestamp())::int END AS lag;' 2>/dev/null | grep -c '0'. Is lag zero?", "ans": "1", "pts": 100},
-      {"title": "Backup Size", "description": "Run: restic -r /backup stats 2>/dev/null | grep -c 'snapshots'. Are stats available?", "ans": "1", "pts": 100},
-      {"title": "Restore Works", "description": "Run: ls /tmp/restore_test/ 2>/dev/null | wc -l. Does restore directory have files?", "ans": "1", "pts": 100},
-      {"title": "RTO Measured", "description": "Run: grep -c 'RTO' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is RTO documented?", "ans": "1", "pts": 100},
-      {"title": "RPO Measured", "description": "Run: grep -c 'RPO' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is RPO documented?", "ans": "1", "pts": 100},
-      {"title": "DR Runbook Exists", "description": "Run: ls /home/student/dr-runbook.md 2>/dev/null | wc -l. Does DR runbook exist?", "ans": "1", "pts": 100},
-      {"title": "Failover Tested", "description": "Run: grep -ci 'failover' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is failover documented?", "ans": "1", "pts": 100},
-      {"title": "DR Drill Documented", "description": "Run: grep -ci 'drill' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is DR drill documented?", "ans": "1", "pts": 100}
+      {
+        "title": "Primary Running",
+        "description": "Run: pg_isready -p 5432 2>/dev/null. Is primary accepting connections?",
+        "ans": "accepting connections",
+        "pts": 50
+      },
+      {
+        "title": "Replica Running",
+        "description": "Run: pg_isready -p 5433 2>/dev/null. Is replica accepting connections?",
+        "ans": "accepting connections",
+        "pts": 50
+      },
+      {
+        "title": "Replication Active",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -p 5432 -U postgres -c 'SELECT client_addr, state FROM pg_stat_replication;' 2>/dev/null | grep -c 'streaming'. How many streaming replicas?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "WAL Archiving",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -p 5432 -U postgres -c 'SHOW archive_mode;' 2>/dev/null | grep -c 'on'. Is WAL archiving on?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Restic Repository",
+        "description": "Run: restic -r /backup snapshots 2>/dev/null | grep -c 'snapshot'. How many snapshots?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Backup Cron",
+        "description": "Run: crontab -l 2>/dev/null | grep -c restic. How many backup cron entries?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Data Replicated",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -p 5433 -U postgres -c 'SELECT count(*) FROM test_data;' 2>/dev/null | grep -c '[0-9]'. Does replica have data?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Replication Lag",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -p 5432 -U postgres -c 'SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0 ELSE EXTRACT(EPOCH FROM now() - pg_last_xact_replay_timestamp())::int END AS lag;' 2>/dev/null | grep -c '0'. Is lag zero?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Backup Size",
+        "description": "Run: restic -r /backup stats 2>/dev/null | grep -c 'snapshots'. Are stats available?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Restore Works",
+        "description": "Run: ls /tmp/restore_test/ 2>/dev/null | wc -l. Does restore directory have files?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "RTO Measured",
+        "description": "Run: grep -c 'RTO' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is RTO documented?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "RPO Measured",
+        "description": "Run: grep -c 'RPO' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is RPO documented?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "DR Runbook Exists",
+        "description": "Run: ls /home/student/dr-runbook.md 2>/dev/null | wc -l. Does DR runbook exist?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Failover Tested",
+        "description": "Run: grep -ci 'failover' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is failover documented?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "DR Drill Documented",
+        "description": "Run: grep -ci 'drill' /home/student/dr-runbook.md 2>/dev/null || echo 0. Is DR drill documented?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -374,21 +976,96 @@
       "Send test email and verify spam filtering"
     ],
     "flags": [
-      {"title": "Postfix Running", "description": "Run: systemctl status postfix 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "Dovecot Running", "description": "Run: systemctl status dovecot 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "Rspamd Running", "description": "Run: systemctl status rspamd 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "SMTP Port 25", "description": "Run: ss -tlnp 2>/dev/null | grep -c ':25'. Is SMTP listening on 25?", "ans": "1", "pts": 75},
-      {"title": "IMAP Port 143", "description": "Run: ss -tlnp 2>/dev/null | grep -c ':143'. Is IMAP listening on 143?", "ans": "1", "pts": 75},
-      {"title": "DKIM Keys Exist", "description": "Run: ls /etc/opendkim/keys/ 2>/dev/null | wc -l. How many DKIM key directories?", "ans": "1", "pts": 75},
-      {"title": "TLS Configured", "description": "Run: postconf -n 2>/dev/null | grep -c 'smtpd_tls_cert'. Is TLS configured in Postfix?", "ans": "1", "pts": 100},
-      {"title": "Dovecot SSL", "description": "Run: grep -c 'ssl = yes' /etc/dovecot/conf.d/10-ssl.conf 2>/dev/null || echo 0. Is SSL enabled?", "ans": "1", "pts": 100},
-      {"title": "Roundcube Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9090 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Rspamd Web UI", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:11334 2>/dev/null. What HTTP code?", "ans": "200", "pts": 100},
-      {"title": "Mail User Exists", "description": "Run: id testuser 2>/dev/null | grep -c 'testuser'. Does mail user exist?", "ans": "1", "pts": 100},
-      {"title": "Postfix Config", "description": "Run: postconf myhostname 2>/dev/null | grep -c 'myhostname'. Is hostname configured?", "ans": "1", "pts": 100},
-      {"title": "DKIM Signing Active", "description": "Run: postconf -m 2>/dev/null | grep -c 'dkim'. Is DKIM milter configured?", "ans": "1", "pts": 100},
-      {"title": "Spam Filter Active", "description": "Run: postconf -n 2>/dev/null | grep -c 'content_filter'. Is spam filtering configured?", "ans": "1", "pts": 100},
-      {"title": "Mail Queue Empty", "description": "Run: mailq 2>/dev/null | grep -c 'Mail queue is empty'. Is queue empty?", "ans": "1", "pts": 100}
+      {
+        "title": "Postfix Running",
+        "description": "Run: pgrep -x master >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "Dovecot Running",
+        "description": "Run: pgrep -x dovecot >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "Rspamd Running",
+        "description": "Run: pgrep -x rspamd >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "SMTP Port 25",
+        "description": "Run: apt-get install -y -qq net-tools >/dev/null 2>&1; netstat -tlnp 2>/dev/null | grep -c ':25'. Is SMTP listening on 25?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "IMAP Port 143",
+        "description": "Run: apt-get install -y -qq net-tools >/dev/null 2>&1; netstat -tlnp 2>/dev/null | grep -c ':143'. Is IMAP listening on 143?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "DKIM Keys Exist",
+        "description": "Run: ls /etc/opendkim/keys/ 2>/dev/null | wc -l. How many DKIM key directories?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "TLS Configured",
+        "description": "Run: postconf -n 2>/dev/null | grep -c 'smtpd_tls_cert'. Is TLS configured in Postfix?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Dovecot SSL",
+        "description": "Run: grep -c 'ssl = yes' /etc/dovecot/conf.d/10-ssl.conf 2>/dev/null || echo 0. Is SSL enabled?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Roundcube Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:9090 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Rspamd Web UI",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:11334 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 100
+      },
+      {
+        "title": "Mail User Exists",
+        "description": "Run: id testuser 2>/dev/null | grep -c 'testuser'. Does mail user exist?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Postfix Config",
+        "description": "Run: postconf myhostname 2>/dev/null | grep -c 'myhostname'. Is hostname configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "DKIM Signing Active",
+        "description": "Run: postconf -m 2>/dev/null | grep -c 'dkim'. Is DKIM milter configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Spam Filter Active",
+        "description": "Run: postconf -n 2>/dev/null | grep -c 'content_filter'. Is spam filtering configured?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Mail Queue Empty",
+        "description": "Run: mailq 2>/dev/null | grep -c 'Mail queue is empty'. Is queue empty?",
+        "ans": "1",
+        "pts": 100
+      }
     ]
   },
   {
@@ -417,21 +1094,96 @@
       "Implement OTA update mechanism"
     ],
     "flags": [
-      {"title": "K3s Running", "description": "Run: systemctl status k3s 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "Mosquitto Running", "description": "Run: systemctl status mosquitto 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 50},
-      {"title": "MQTT Port Open", "description": "Run: ss -tlnp 2>/dev/null | grep -c ':1883'. Is MQTT port listening?", "ans": "1", "pts": 75},
-      {"title": "Node-RED Running", "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:1880 2>/dev/null. What HTTP code?", "ans": "200", "pts": 75},
-      {"title": "PostgreSQL Running", "description": "Run: systemctl status postgresql 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Prometheus Running", "description": "Run: systemctl status prometheus 2>/dev/null | grep -i active. What status?", "ans": "active (running)", "pts": 75},
-      {"title": "Sensor Data Exists", "description": "Run: psql -h localhost -U postgres sensor_db -c 'SELECT count(*) FROM readings;' 2>/dev/null | grep -c '[0-9]'. Are there readings?", "ans": "1", "pts": 100},
-      {"title": "MQTT Messages Flowing", "description": "Run: mosquitto_sub -h localhost -t 'sensors/#' -W 3 -C 1 2>/dev/null | wc -c. Did we receive data?", "ans": "1", "pts": 100},
-      {"title": "Node-RED Flow Deployed", "description": "Run: curl -s http://localhost:1880/flows 2>/dev/null | grep -c 'mqtt'. Is MQTT flow active?", "ans": "1", "pts": 100},
-      {"title": "Device Simulator Running", "description": "Run: ps aux 2>/dev/null | grep -c 'simulator'. Is simulator process running?", "ans": "1", "pts": 100},
-      {"title": "Edge Pods Running", "description": "Run: kubectl get pods 2>/dev/null | grep -c Running. How many edge pods?", "ans": "3", "pts": 100},
-      {"title": "MQTT Exporter", "description": "Run: curl -s http://localhost:9104/metrics 2>/dev/null | grep -c 'mqtt_'. How many MQTT metrics?", "ans": "10", "pts": 100},
-      {"title": "OTA Config Present", "description": "Run: ls /home/student/ota-config.yaml 2>/dev/null | wc -l. Does OTA config exist?", "ans": "1", "pts": 100},
-      {"title": "Data Pipeline Active", "description": "Run: psql -h localhost -U postgres sensor_db -c 'SELECT DISTINCT sensor_id FROM readings;' 2>/dev/null | grep -c 'sensor'. How many unique sensors?", "ans": "3", "pts": 100},
-      {"title": "K3s Pods Ready", "description": "Run: kubectl get pods -A 2>/dev/null | grep -c '1/1'. How many pods fully ready?", "ans": "5", "pts": 100}
+      {
+        "title": "K3s Running",
+        "description": "Run: pgrep k3s >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "Mosquitto Running",
+        "description": "Run: pgrep -x mosquitto >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 50
+      },
+      {
+        "title": "MQTT Port Open",
+        "description": "Run: apt-get install -y -qq net-tools >/dev/null 2>&1; netstat -tlnp 2>/dev/null | grep -c ':1883'. Is MQTT port listening?",
+        "ans": "1",
+        "pts": 75
+      },
+      {
+        "title": "Node-RED Running",
+        "description": "Run: curl -s -o /dev/null -w '%{http_code}' http://localhost:1880 2>/dev/null. What HTTP code?",
+        "ans": "200",
+        "pts": 75
+      },
+      {
+        "title": "PostgreSQL Running",
+        "description": "Run: apt-get install -y -qq postgresql >/dev/null 2>&1; service postgresql start >/dev/null 2>&1; pgrep postgres >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Prometheus Running",
+        "description": "Run: pgrep -x prometheus >/dev/null && echo \"active (running)\" || echo \"inactive (dead)\". What status?",
+        "ans": "active (running)",
+        "pts": 75
+      },
+      {
+        "title": "Sensor Data Exists",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -U postgres sensor_db -c 'SELECT count(*) FROM readings;' 2>/dev/null | grep -c '[0-9]'. Are there readings?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "MQTT Messages Flowing",
+        "description": "Run: mosquitto_sub -h localhost -t 'sensors/#' -W 3 -C 1 2>/dev/null | wc -c. Did we receive data?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Node-RED Flow Deployed",
+        "description": "Run: curl -s http://localhost:1880/flows 2>/dev/null | grep -c 'mqtt'. Is MQTT flow active?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Device Simulator Running",
+        "description": "Run: ps aux 2>/dev/null | grep -c 'simulator'. Is simulator process running?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Edge Pods Running",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods 2>/dev/null | grep -c Running. How many edge pods?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "MQTT Exporter",
+        "description": "Run: curl -s http://localhost:9104/metrics 2>/dev/null | grep -c 'mqtt_'. How many MQTT metrics?",
+        "ans": "10",
+        "pts": 100
+      },
+      {
+        "title": "OTA Config Present",
+        "description": "Run: ls /home/student/ota-config.yaml 2>/dev/null | wc -l. Does OTA config exist?",
+        "ans": "1",
+        "pts": 100
+      },
+      {
+        "title": "Data Pipeline Active",
+        "description": "Run: apt-get install -y -qq postgresql-client >/dev/null 2>&1; psql -h localhost -U postgres sensor_db -c 'SELECT DISTINCT sensor_id FROM readings;' 2>/dev/null | grep -c 'sensor'. How many unique sensors?",
+        "ans": "3",
+        "pts": 100
+      },
+      {
+        "title": "K3s Pods Ready",
+        "description": "Run: apt-get install -y -qq apt-transport-https ca-certificates curl >/dev/null 2>&1; kubectl get pods -A 2>/dev/null | grep -c '1/1'. How many pods fully ready?",
+        "ans": "5",
+        "pts": 100
+      }
     ]
   }
 ]

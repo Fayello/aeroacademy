@@ -1,0 +1,11 @@
+# Custom Suricata rules for SOC capstone
+# Students should add their own detection rules here
+
+# Example: Detect Nmap scans
+alert tcp any any -> $HOME_NET any (msg:"ET SCAN Nmap -sS"; flags:S,12; threshold:type both, track by_src, count 20, seconds 60; sid:1000001; rev:1;)
+
+# Example: Detect brute force SSH
+alert tcp any any -> $HOME_NET 22 (msg:"ET BRUTE FORCE SSH"; flags:S,12; threshold:type both, track by_src, count 5, seconds 60; sid:1000002; rev:1;)
+
+# Example: Detect SQL injection attempts
+alert http any any -> $HOME_NET any (msg:"ET SQL Injection"; content:"SELECT"; http_uri; content:"FROM"; http_uri; sid:1000003; rev:1;)

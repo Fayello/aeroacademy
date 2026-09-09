@@ -19,6 +19,7 @@ import { DomainRankingService } from '../domain-ranking/domain-ranking.service';
 import { verifyAnswer, decryptCredentials } from '../common/crypto.util';
 import { getLevel, getRequiredLabLevel } from '../common/level.util';
 import { DockerManager } from './docker-manager.service';
+import { ComposeManager } from './compose-manager.service';
 import { EmailService } from '../email/email.service';
 import Docker from 'dockerode';
 import * as net from 'net';
@@ -67,6 +68,7 @@ export class LabsService implements OnModuleInit {
     private achievementService: AchievementService,
     private leaguesService: LeaguesService,
     private dockerManager: DockerManager,
+    private composeManager: ComposeManager,
     private emailService: EmailService,
     private progressionService: ProgressionService,
     private missionService: MissionService,
@@ -81,6 +83,8 @@ export class LabsService implements OnModuleInit {
       await this.docker.ping();
       logger.info('Connected to local Docker daemon');
       await this.pruneOrphanedContainers();
+      await this.composeManager.init();
+      logger.info('Compose manager initialized');
     } catch {
       logger.error('Docker daemon unavailable. Labs will not work.');
     }
@@ -288,6 +292,36 @@ export class LabsService implements OnModuleInit {
 
     const instance = result;
 
+    // CAPSTONE: Use Docker Compose stack
+    if (lab.type === 'CAPSTONE' && lab.composeFile) {
+      try {
+        const composeProject = await this.composeManager.deployCapstone(
+          instance.id,
+          labId,
+          userId,
+          lab.composeFile,
+          port,
+        );
+
+        await this.prisma.labInstance.update({
+          where: { id: instance.id },
+          data: { status: 'RUNNING' },
+        });
+
+        logger.info(`Capstone lab started: ${lab.title} (compose stack)`);
+        return { ...instance, status: 'RUNNING', composeProject };
+      } catch (err) {
+        await this.prisma.labInstance.update({
+          where: { id: instance.id },
+          data: { status: 'STOPPED' },
+        });
+        throw new BadRequestException(
+          `Failed to start capstone: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
+
+    // PRACTICE: Standard single-container lab
     try {
       const imageName = await this.resolveLocalImage(
         lab.dockerImage,
@@ -471,6 +505,19 @@ export class LabsService implements OnModuleInit {
     });
 
     if (!instance) return { success: true };
+
+    // CAPSTONE: Stop compose stack
+    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
+    if (lab?.type === 'CAPSTONE') {
+      await this.composeManager.stopCapstone(instance.id);
+      await this.prisma.labInstance.update({
+        where: { id: instance.id },
+        data: { status: 'STOPPED' },
+      });
+      return { success: true };
+    }
+
+    // PRACTICE: Stop single container
     if (!instance.containerId) {
       await this.prisma.labInstance.update({
         where: { id: instance.id },
@@ -496,7 +543,6 @@ export class LabsService implements OnModuleInit {
       data: { status: 'STOPPED' },
     });
 
-    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
     await this.activityService
       .log(userId, 'LAB_STOPPED', {
         labId,
@@ -1021,6 +1067,14 @@ export class LabsService implements OnModuleInit {
           include: {
             submissions: {
               where: userId ? { isCorrect: true, userId } : { isCorrect: true },
+            },
+          },
+        },
+        capstonePhases: true,
+        labSkills: {
+          include: {
+            skill: {
+              include: { domain: true },
             },
           },
         },

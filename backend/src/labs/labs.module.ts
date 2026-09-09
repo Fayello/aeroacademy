@@ -4,6 +4,7 @@ import { LabsController } from './labs.controller';
 import { LabsGateway } from './labs.gateway';
 import { LabsCron } from './labs.cron';
 import { DockerManager } from './docker-manager.service';
+import { ComposeManager } from './compose-manager.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
@@ -23,7 +24,7 @@ import { DomainRankingModule } from '../domain-ranking/domain-ranking.module';
     DomainRankingModule,
   ],
   controllers: [LabsController],
-  providers: [DockerManager, LabsService, LabsGateway, LabsCron],
-  exports: [LabsService, DockerManager],
+  providers: [DockerManager, ComposeManager, LabsService, LabsGateway, LabsCron],
+  exports: [LabsService, DockerManager, ComposeManager],
 })
 export class LabsModule {}

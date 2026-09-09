@@ -397,6 +397,9 @@ model Lab {
   difficulty       Int              @default(1200)
   estimatedMinutes Int?             @default(60)
   resourceProfile  ResourceProfile  @default(STANDARD)
+  type             LabType          @default(PRACTICE)
+  composeFile      String?          // Docker Compose YAML for capstones
+  ramRequirement   Int?             @default(512)  // MB required
   flags            LabFlag[]
   instances        LabInstance[]
   lesson           Lesson?
@@ -407,8 +410,11 @@ model Lab {
   analytics        LabAnalytics?
   reviews          LabReview[]
   challenges       LabChallenge[]
+  capstonePhases   CapstonePhase[]
+  capstonePrereqs  CapstonePrereq[]
 
   @@index([difficulty])
+  @@index([type])
 }
 
 model LabFlag {
@@ -420,6 +426,31 @@ model LabFlag {
   correctAnswer String
   lab           Lab             @relation(fields: [labId], references: [id])
   submissions   LabSubmission[]
+
+  @@index([labId])
+}
+
+model CapstonePhase {
+  id           String @id @default(uuid())
+  labId        String
+  phaseNumber  Int
+  title        String
+  description  String
+  requirements Json   // { flags: [...], tasks: [...], deliverable: "..." }
+
+  lab          Lab    @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@unique([labId, phaseNumber])
+  @@index([labId])
+}
+
+model CapstonePrereq {
+  id                 String @id @default(uuid())
+  labId              String
+  skillDomainId      String
+  requiredPercentage Int    @default(80)
+
+  lab                Lab    @relation(fields: [labId], references: [id], onDelete: Cascade)
 
   @@index([labId])
 }
@@ -673,6 +704,11 @@ enum ResourceProfile {
   LIGHTWEIGHT
   STANDARD
   HEAVY
+}
+
+enum LabType {
+  PRACTICE
+  CAPSTONE
 }
 
 enum InstitutionalInquiryType {
