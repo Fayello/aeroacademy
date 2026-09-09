@@ -58,6 +58,7 @@ import { TrafficTrackerModule } from './common/traffic-tracker.module';
 import { ThreatIntelModule } from './common/threat-intel.module';
 import { SecurityOpsModule } from './common/security-ops.module';
 import { GuildsModule } from './guilds/guilds.module';
+import { CapstonesModule } from './capstones/capstones.module';
 
 @Module({
   imports: [
@@ -123,6 +124,7 @@ import { GuildsModule } from './guilds/guilds.module';
     TrafficTrackerModule,
     ThreatIntelModule,
     SecurityOpsModule,
+    CapstonesModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

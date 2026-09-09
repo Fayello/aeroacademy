@@ -451,8 +451,10 @@ model CapstonePrereq {
   requiredPercentage Int    @default(80)
 
   lab                Lab    @relation(fields: [labId], references: [id], onDelete: Cascade)
+  skillDomain        SkillDomain @relation(fields: [skillDomainId], references: [id], onDelete: Cascade)
 
   @@index([labId])
+  @@index([skillDomainId])
 }
 
 model LabCheckpoint {
@@ -1067,6 +1069,7 @@ model SkillDomain {
   personalizedMissions PersonalizedMission[]
   learningOutcomes     LearningOutcome[]
   practicalAssessments PracticalAssessment[]
+  capstonePrereqs      CapstonePrereq[]
 }
 
 model Skill {
