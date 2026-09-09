@@ -164,7 +164,7 @@ export default function CapstoneCatalog() {
                         <Cpu className="w-3 h-3" />
                         {capstone.ramRequirement ? `${Math.round(capstone.ramRequirement / 1024)}GB` : "512MB"}
                       </span>
-                      <span>{t("capstones.flags", { count: capstone.flags?.length || 0 })}</span>
+                      <span>{capstone.flags?.length || 0} flags</span>
                     </div>
                     {!locked && (
                       <ArrowRight className="w-4 h-4 text-[#7AD62A] opacity-0 group-hover:opacity-100 transition" />
