@@ -299,7 +299,7 @@ export default function BattlePassPage() {
                 return (
                   <div
                     key={tier.tierNumber}
-                    className={`relative w-44 flex-shrink-0 rounded-xl border p-4 transition-all duration-300 ${
+                    className={`relative w-36 sm:w-44 flex-shrink-0 rounded-xl border p-4 transition-all duration-300 ${
                       isCurrent
                         ? "bg-[#0f172a] border-[#7AD62A] shadow-lg ring-2 ring-[#7AD62A]/20 scale-105"
                         : isUnlocked

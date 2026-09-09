@@ -712,7 +712,7 @@ export default function ProfilePage() {
       {/* Level Unlocks */}
       <div className="angular-card border-white/10 p-6">
         <h2 className="text-lg font-semibold text-white mb-4">Content Unlocks</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
           {LEVEL_UNLOCKS.map(({ level: reqLevel, label, icon: Icon }) => {
             const unlocked = level >= reqLevel;
             return (
@@ -968,7 +968,7 @@ export default function ProfilePage() {
       {/* Quick Links */}
       <div className="angular-card border-white/10 p-6">
         <h2 className="text-lg font-semibold text-white mb-4">More</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { href: "/dashboard/profile/edit", label: "Settings", icon: Settings },
             { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },

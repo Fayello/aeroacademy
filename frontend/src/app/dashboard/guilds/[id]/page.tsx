@@ -493,7 +493,7 @@ export default function GuildDetailPage() {
 
         {/* === CHAT TAB === */}
         {activeTab === "Chat" && (
-          <div className="angular-card bg-[#0f172a] border border-white/5 overflow-hidden flex flex-col" style={{ height: "450px" }}>
+          <div className="angular-card bg-[#0f172a] border border-white/5 overflow-hidden flex flex-col h-[450px] max-h-[50vh]">
             {chatLoading ? (
               <div className="flex-1 flex items-center justify-center"><Loader2 size={20} className="text-[#7AD62A] animate-spin" /></div>
             ) : (

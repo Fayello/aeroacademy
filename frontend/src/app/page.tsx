@@ -692,12 +692,12 @@ export default function LandingPage() {
             <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">What you will learn</h2>
             <p className="text-lg text-slate-500 mt-4">Structured learning paths from fundamentals to advanced topics.</p>
           </div>
-          <div className="flex justify-center border-b border-white/10 mb-10">
+          <div className="flex overflow-x-auto justify-start sm:justify-center border-b border-white/10 mb-10 scrollbar-hide">
             {LEARNING_PATHS.map((path, i) => (
               <button
                 key={path.tab}
                 onClick={() => setActiveTab(i)}
-                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-all ${activeTab === i ? "border-[#7AD62A] text-[#7AD62A]" : "border-transparent text-slate-400 hover:text-slate-300"}`}
+                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-all ${activeTab === i ? "border-[#7AD62A] text-[#7AD62A]" : "border-transparent text-slate-400 hover:text-slate-300"}`}
               >
                 <path.icon size={16} /> {path.tab}
               </button>
