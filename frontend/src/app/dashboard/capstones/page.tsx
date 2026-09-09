@@ -173,7 +173,7 @@ export default function CapstoneCatalog() {
 
                   {locked && (
                     <div className="mt-3 text-xs text-amber-400">
-                      {t("capstones.requiresLevel", { level: reqLevel })}
+                      Requires Level {reqLevel}
                     </div>
                   )}
                 </Link>
