@@ -354,10 +354,10 @@ export class LabsService implements OnModuleInit {
           PortBindings: { [internalPort]: [{ HostPort: port.toString() }] },
           Memory: resourceLimits.memoryMB * 1024 * 1024,
           CpuQuota: resourceLimits.cpuQuota,
-          NetworkMode: 'tactical-net',
+          NetworkMode: 'aeroacademy_labs',
         },
         NetworkingConfig: {
-          EndpointsConfig: { 'tactical-net': {} },
+          EndpointsConfig: { aeroacademy_labs: {} },
         },
       };
 
@@ -366,18 +366,7 @@ export class LabsService implements OnModuleInit {
       }
 
       let container;
-      try {
-        container = await targetDocker.createContainer(containerOpts);
-      } catch (netErr) {
-        logger.warn(
-          `Overlay network failed, falling back to bridge: ${netErr instanceof Error ? netErr.message : String(netErr)}`,
-        );
-        containerOpts.HostConfig.NetworkMode = 'aeroacademy_labs';
-        containerOpts.NetworkingConfig = {
-          EndpointsConfig: { aeroacademy_labs: {} },
-        };
-        container = await targetDocker.createContainer(containerOpts);
-      }
+      container = await targetDocker.createContainer(containerOpts);
 
       await container.start();
       this.dockerManager.incrementLabs(serverId);
