@@ -235,6 +235,12 @@ export class NavigationService {
           label: 'Labs',
         },
         {
+          href: '/dashboard/capstones',
+          tKey: 'nav.capstones',
+          icon: 'Trophy',
+          label: 'Capstones',
+        },
+        {
           href: '/dashboard/exams',
           tKey: 'nav.exams',
           icon: 'ClipboardCheck',
@@ -470,6 +476,12 @@ export class NavigationService {
               tKey: 'nav.labs',
               icon: 'FlaskConical',
               label: 'Labs',
+            },
+            {
+              href: '/dashboard/capstones',
+              tKey: 'nav.capstones',
+              icon: 'Trophy',
+              label: 'Capstones',
             },
             {
               href: '/dashboard/exams',
