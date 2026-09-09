@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import toast from "@/lib/toast";
+import { useI18n } from "@/lib/i18n";
 
 interface CapstonePhase {
   id: string;
@@ -42,6 +43,7 @@ interface LabInstance {
 
 export default function CapstoneDetail() {
   const { id } = useParams();
+  const { t } = useI18n();
   const [capstone, setCapstone] = useState<CapstoneLab | null>(null);
   const [instance, setInstance] = useState<LabInstance | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,15 +54,15 @@ export default function CapstoneDetail() {
   const [flagResults, setFlagResults] = useState<Record<string, { correct: boolean; message: string }>>({});
 
   useEffect(() => {
-    fetchApi<{ data: CapstoneLab }>(`/labs/definition/${id}`)
-      .then((res) => setCapstone(res.data))
+    fetchApi<CapstoneLab>(`/labs/definition/${id}`)
+      .then((res) => setCapstone(res))
       .catch(console.error)
       .finally(() => setLoading(false));
 
-    fetchApi<{ data: LabInstance }>(`/labs/status/${id}`)
+    fetchApi<LabInstance>(`/labs/status/${id}`)
       .then((res) => {
-        if (res.data && res.data.status === "RUNNING") {
-          setInstance(res.data);
+        if (res && res.status === "RUNNING") {
+          setInstance(res);
         }
       })
       .catch(() => {});
@@ -69,11 +71,11 @@ export default function CapstoneDetail() {
   const startLab = async () => {
     setStarting(true);
     try {
-      const res = await fetchApi<{ data: LabInstance }>(`/labs/start/${id}`, { method: "POST" });
-      setInstance(res.data);
-      toast.success("Capstone stack deploying... This may take 2-3 minutes.");
+      const res = await fetchApi<LabInstance>(`/labs/start/${id}`, { method: "POST" });
+      setInstance(res);
+      toast.success(t("capstoneDetail.deployingToast"));
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to start capstone");
+      toast.error(err instanceof Error ? err.message : t("capstoneDetail.startError"));
     } finally {
       setStarting(false);
     }
@@ -84,9 +86,9 @@ export default function CapstoneDetail() {
     try {
       await fetchApi(`/labs/stop/${id}`, { method: "POST" });
       setInstance(null);
-      toast.success("Capstone stopped");
+      toast.success(t("capstoneDetail.stoppedToast"));
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to stop capstone");
+      toast.error(err instanceof Error ? err.message : t("capstoneDetail.stopError"));
     } finally {
       setStopping(false);
     }
@@ -95,7 +97,7 @@ export default function CapstoneDetail() {
   const submitFlag = async (flagId: string) => {
     const answer = flagAnswers[flagId];
     if (!answer?.trim()) {
-      toast.error("Enter an answer first");
+      toast.error(t("capstoneDetail.enterAnswer"));
       return;
     }
     try {
@@ -105,19 +107,19 @@ export default function CapstoneDetail() {
       );
       setFlagResults((prev) => ({
         ...prev,
-        [flagId]: { correct: res.isCorrect, message: res.message || (res.isCorrect ? "Correct!" : "Incorrect") },
+        [flagId]: { correct: res.isCorrect, message: res.message || (res.isCorrect ? t("capstoneDetail.correct") : t("capstoneDetail.incorrect")) },
       }));
-      if (res.isCorrect) toast.success("Flag solved!");
-      else toast.error("Incorrect answer");
+      if (res.isCorrect) toast.success(t("capstoneDetail.flagSolved"));
+      else toast.error(t("capstoneDetail.incorrectAnswer"));
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to submit flag");
+      toast.error(err instanceof Error ? err.message : t("capstoneDetail.submitFlagError"));
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0f1a] text-white p-6">
-        <div className="text-center py-20 text-gray-500">Loading capstone...</div>
+        <div className="text-center py-20 text-gray-500">{t("capstoneDetail.loading")}</div>
       </div>
     );
   }
@@ -125,7 +127,7 @@ export default function CapstoneDetail() {
   if (!capstone) {
     return (
       <div className="min-h-screen bg-[#0a0f1a] text-white p-6">
-        <div className="text-center py-20 text-gray-500">Capstone not found</div>
+        <div className="text-center py-20 text-gray-500">{t("capstoneDetail.notFound")}</div>
       </div>
     );
   }
@@ -140,7 +142,7 @@ export default function CapstoneDetail() {
         {/* Header */}
         <div className="mb-6">
           <Link href="/dashboard/capstones" className="text-sm text-gray-400 hover:text-white flex items-center gap-1 mb-4">
-            <ArrowLeft className="w-4 h-4" /> Back to Capstones
+            <ArrowLeft className="w-4 h-4" /> {t("capstoneDetail.back")}
           </Link>
 
           <div className="flex items-start justify-between">
@@ -157,7 +159,7 @@ export default function CapstoneDetail() {
                 <>
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 text-green-400 rounded-lg text-sm">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                    Running
+                    {t("capstoneDetail.running")}
                   </div>
                   <button
                     onClick={stopLab}
@@ -165,7 +167,7 @@ export default function CapstoneDetail() {
                     className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition text-sm"
                   >
                     <Square className="w-4 h-4" />
-                    {stopping ? "Stopping..." : "Stop"}
+                    {stopping ? t("capstoneDetail.stopping") : t("capstoneDetail.stop")}
                   </button>
                 </>
               ) : (
@@ -175,7 +177,7 @@ export default function CapstoneDetail() {
                   className="flex items-center gap-2 px-5 py-2.5 bg-[#7AD62A] text-black rounded-lg font-medium hover:bg-[#6ac125] transition"
                 >
                   <Play className="w-4 h-4" />
-                  {starting ? "Deploying..." : "Deploy Stack"}
+                  {starting ? t("capstoneDetail.deploying") : t("capstoneDetail.deployStack")}
                 </button>
               )}
             </div>
@@ -186,25 +188,25 @@ export default function CapstoneDetail() {
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="bg-[#0f172a] border border-white/10 rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-[#7AD62A]">{capstone.flags?.length || 0}</div>
-            <div className="text-xs text-gray-400 mt-1">Total Flags</div>
+            <div className="text-xs text-gray-400 mt-1">{t("capstoneDetail.totalFlags")}</div>
           </div>
           <div className="bg-[#0f172a] border border-white/10 rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-green-400">{solvedFlags}</div>
-            <div className="text-xs text-gray-400 mt-1">Solved</div>
+            <div className="text-xs text-gray-400 mt-1">{t("capstoneDetail.solved")}</div>
           </div>
           <div className="bg-[#0f172a] border border-white/10 rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-blue-400 flex items-center justify-center gap-1">
               <Clock className="w-5 h-5" />
               {capstone.estimatedMinutes}m
             </div>
-            <div className="text-xs text-gray-400 mt-1">Est. Time</div>
+            <div className="text-xs text-gray-400 mt-1">{t("capstoneDetail.estTime")}</div>
           </div>
           <div className="bg-[#0f172a] border border-white/10 rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-purple-400 flex items-center justify-center gap-1">
               <Cpu className="w-5 h-5" />
               {capstone.ramRequirement ? `${Math.round(capstone.ramRequirement / 1024)}GB` : "512MB"}
             </div>
-            <div className="text-xs text-gray-400 mt-1">RAM Required</div>
+            <div className="text-xs text-gray-400 mt-1">{t("capstoneDetail.ramRequired")}</div>
           </div>
         </div>
 
@@ -216,7 +218,7 @@ export default function CapstoneDetail() {
               <div className="bg-[#0f172a] border border-white/10 rounded-xl p-6">
                 <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Terminal className="w-5 h-5 text-[#7AD62A]" />
-                  Mission Briefing
+                  {t("capstoneDetail.briefing")}
                 </h2>
                 <div className="prose prose-invert prose-sm max-w-none text-gray-300 whitespace-pre-wrap">
                   {capstone.briefing}
@@ -227,7 +229,7 @@ export default function CapstoneDetail() {
             {/* Phases */}
             {phases.length > 0 && (
               <div className="bg-[#0f172a] border border-white/10 rounded-xl p-6">
-                <h2 className="text-lg font-semibold mb-4">Phases</h2>
+                <h2 className="text-lg font-semibold mb-4">{t("capstoneDetail.phases")}</h2>
                 <div className="space-y-3">
                   {phases.map((phase) => (
                     <button
@@ -247,7 +249,7 @@ export default function CapstoneDetail() {
                         )}
                         <div>
                           <div className="font-medium text-sm">
-                            Phase {phase.phaseNumber}: {phase.title}
+                            {t("capstoneDetail.phase", { number: phase.phaseNumber, title: phase.title })}
                           </div>
                           <div className="text-xs text-gray-400 mt-1">{phase.description}</div>
                         </div>
@@ -260,7 +262,7 @@ export default function CapstoneDetail() {
 
             {/* Flags */}
             <div className="bg-[#0f172a] border border-white/10 rounded-xl p-6">
-              <h2 className="text-lg font-semibold mb-4">Verification Flags</h2>
+              <h2 className="text-lg font-semibold mb-4">{t("capstoneDetail.verificationFlags")}</h2>
               <div className="space-y-3">
                 {capstone.flags?.map((flag) => {
                   const result = flagResults[flag.id];
@@ -283,7 +285,7 @@ export default function CapstoneDetail() {
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          placeholder="Your answer..."
+                          placeholder={t("capstoneDetail.answerPlaceholder")}
                           value={flagAnswers[flag.id] || ""}
                           onChange={(e) => setFlagAnswers((prev) => ({ ...prev, [flag.id]: e.target.value }))}
                           onKeyDown={(e) => e.key === "Enter" && submitFlag(flag.id)}
@@ -295,7 +297,7 @@ export default function CapstoneDetail() {
                           disabled={!isRunning || !flagAnswers[flag.id]?.trim()}
                           className="px-3 py-1.5 bg-[#7AD62A] text-black rounded text-sm font-medium hover:bg-[#6ac125] transition disabled:opacity-50"
                         >
-                          Submit
+                          {t("capstoneDetail.submit")}
                         </button>
                       </div>
                       {result && (
@@ -315,19 +317,19 @@ export default function CapstoneDetail() {
             {/* Connection info */}
             {isRunning && (
               <div className="bg-[#0f172a] border border-white/10 rounded-xl p-4">
-                <h3 className="text-sm font-semibold mb-3">Connection</h3>
+                <h3 className="text-sm font-semibold mb-3">{t("capstoneDetail.connection")}</h3>
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Status</span>
-                    <span className="text-green-400">Running</span>
+                    <span className="text-gray-400">{t("capstoneDetail.status")}</span>
+                    <span className="text-green-400">{t("capstoneDetail.running")}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Expires</span>
+                    <span className="text-gray-400">{t("capstoneDetail.expires")}</span>
                     <span>{instance ? new Date(instance.expiresAt).toLocaleTimeString() : "—"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Stack</span>
-                    <span>{capstone.composeFile ? "Docker Compose" : "Single Container"}</span>
+                    <span className="text-gray-400">{t("capstoneDetail.stack")}</span>
+                    <span>{capstone.composeFile ? t("capstoneDetail.dockerCompose") : t("capstoneDetail.singleContainer")}</span>
                   </div>
                 </div>
               </div>
@@ -335,7 +337,7 @@ export default function CapstoneDetail() {
 
             {/* Skills */}
             <div className="bg-[#0f172a] border border-white/10 rounded-xl p-4">
-              <h3 className="text-sm font-semibold mb-3">Skills Tested</h3>
+              <h3 className="text-sm font-semibold mb-3">{t("capstoneDetail.skillsTested")}</h3>
               <div className="flex flex-wrap gap-1.5">
                 {capstone.labSkills?.map((s, i) => (
                   <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-gray-400">
@@ -351,8 +353,8 @@ export default function CapstoneDetail() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
                   <div className="text-xs text-amber-200">
-                    <p className="font-medium mb-1">Capstone Requirements</p>
-                    <p>This capstone requires significant resources. The stack may take 2-3 minutes to fully deploy.</p>
+                    <p className="font-medium mb-1">{t("capstoneDetail.requirements")}</p>
+                    <p>{t("capstoneDetail.requirementsDesc")}</p>
                   </div>
                 </div>
               </div>
