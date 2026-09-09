@@ -768,6 +768,13 @@ export class LabsService implements OnModuleInit {
             },
           },
         },
+        labSkills: {
+          include: {
+            skill: {
+              include: { domain: true },
+            },
+          },
+        },
       },
     });
 
