@@ -81,7 +81,6 @@ const DEFAULT_CONTEXT: NavigationContext = {
       items: [
         { href: "/dashboard/labs", tKey: "nav.labs", icon: "FlaskConical", label: "Labs" },
         { href: "/dashboard/capstones", tKey: "nav.capstones", icon: "Trophy", label: "Capstones" },
-        { href: "/dashboard/skill-fusion", tKey: "nav.skillFusion", icon: "Atom", label: "Skill Fusion" },
         { href: "/dashboard/exams", tKey: "nav.exams", icon: "ClipboardCheck", label: "Practical Exams" },
         { href: "/dashboard/assessments", tKey: "nav.assessments", icon: "Target", label: "Skill Assessments" },
       ],
