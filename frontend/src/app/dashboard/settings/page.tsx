@@ -18,11 +18,12 @@ import {
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import toast from "@/lib/toast";
 import type { UserPreference } from "@/types/api";
+import { LanguageSwitcher, useI18n } from "@/lib/i18n";
 
 interface SettingsSection {
   id: string;
   label: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ size?: number }>;
   description: string;
 }
 
@@ -36,47 +37,43 @@ interface SettingsUser {
 const EMAIL_PREFS = [
   {
     key: "weeklyDigest",
-    label: "Weekly digest",
-    description: "Weekly progress, ranking movement, and next-step summaries.",
+    labelKey: "settings.emailPref.weeklyDigest.label",
+    descriptionKey: "settings.emailPref.weeklyDigest.desc",
   },
   {
     key: "courseUpdates",
-    label: "Course updates",
-    description:
-      "Enrollment, course starts, new lessons, and course completion emails.",
+    labelKey: "settings.emailPref.courseUpdates.label",
+    descriptionKey: "settings.emailPref.courseUpdates.desc",
   },
   {
     key: "nudges",
-    label: "Learning nudges",
-    description:
-      "Helpful reminders when a course or lab is waiting for action.",
+    labelKey: "settings.emailPref.nudges.label",
+    descriptionKey: "settings.emailPref.nudges.desc",
   },
   {
     key: "reengagement",
-    label: "Re-engagement",
-    description:
-      "Occasional reminders when you have been inactive for a while.",
+    labelKey: "settings.emailPref.reengagement.label",
+    descriptionKey: "settings.emailPref.reengagement.desc",
   },
   {
     key: "achievements",
-    label: "Achievements",
-    description:
-      "Achievement and recognition emails when you unlock something meaningful.",
+    labelKey: "settings.emailPref.achievements.label",
+    descriptionKey: "settings.emailPref.achievements.desc",
   },
   {
     key: "milestones",
-    label: "Milestones",
-    description: "Progress milestones, XP checkpoints, and readiness movement.",
+    labelKey: "settings.emailPref.milestones.label",
+    descriptionKey: "settings.emailPref.milestones.desc",
   },
   {
     key: "streaks",
-    label: "Streaks",
-    description: "Training streak reminders and streak milestone messages.",
+    labelKey: "settings.emailPref.streaks.label",
+    descriptionKey: "settings.emailPref.streaks.desc",
   },
   {
     key: "labCompletions",
-    label: "Lab completions",
-    description: "Lab completion and practical progress confirmations.",
+    labelKey: "settings.emailPref.labCompletions.label",
+    descriptionKey: "settings.emailPref.labCompletions.desc",
   },
 ];
 
@@ -134,34 +131,15 @@ function PreferenceRow({
   );
 }
 
-const sections: SettingsSection[] = [
-  {
-    id: "account",
-    label: "Account",
-    icon: User,
-    description: "Manage your profile and personal information",
-  },
-  {
-    id: "notifications",
-    label: "Notifications",
-    icon: Bell,
-    description: "Configure how you receive notifications",
-  },
-  {
-    id: "security",
-    label: "Security",
-    icon: Shield,
-    description: "Password, 2FA, and session management",
-  },
-  {
-    id: "appearance",
-    label: "Appearance",
-    icon: Palette,
-    description: "Customize the look and feel",
-  },
+const sections: Array<Omit<SettingsSection, "label" | "description"> & { labelKey: string; descriptionKey: string }> = [
+  { id: "account", labelKey: "settings.account", icon: User, descriptionKey: "settings.accountDesc" },
+  { id: "notifications", labelKey: "settings.notifications", icon: Bell, descriptionKey: "settings.notificationsDesc" },
+  { id: "security", labelKey: "settings.security", icon: Shield, descriptionKey: "settings.securityDesc" },
+  { id: "appearance", labelKey: "settings.appearance", icon: Palette, descriptionKey: "settings.appearanceDesc" },
 ];
 
 export default function SettingsPage() {
+  const { t } = useI18n();
   const [activeSection, setActiveSection] = useState("account");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [user, setUser] = useState<SettingsUser | null>(() => {
@@ -241,15 +219,15 @@ export default function SettingsPage() {
           onboardingCompleted: current?.onboardingCompleted || false,
           onboardingSelections: current?.onboardingSelections || {},
         }));
-        toast.success("Preference updated");
+        toast.success(t("settings.preferenceUpdated"));
       } catch {
         setPreferences(previous);
-        toast.error("Failed to update preference");
+        toast.error(t("settings.preferenceUpdateFailed"));
       } finally {
         setSavingPreference(null);
       }
     },
-    [preferences],
+    [preferences, t],
   );
 
   const updateEmailPreference = useCallback(
@@ -271,15 +249,15 @@ export default function SettingsPage() {
             ? { ...current, emailPreferences: saved.emailPreferences || next }
             : current,
         );
-        toast.success("Email preference updated");
+        toast.success(t("settings.emailPreferenceUpdated"));
       } catch {
         setEmailPrefs(previous);
-        toast.error("Failed to update email preference");
+        toast.error(t("settings.emailPreferenceUpdateFailed"));
       } finally {
         setSavingEmailPreference(null);
       }
     },
-    [emailPrefs],
+    [emailPrefs, t],
   );
 
   // Close modal on Escape
@@ -344,8 +322,8 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
-        title="Settings"
-        description="Manage your account preferences"
+        title={t("settings.title")}
+        description={t("settings.description")}
       />
 
       <div className="flex flex-col sm:flex-row gap-6">
@@ -364,7 +342,7 @@ export default function SettingsPage() {
                   }`}
                 >
                   <Icon size={18} />
-                  {section.label}
+                  {t(section.labelKey)}
                 </button>
               );
             })}
@@ -376,33 +354,33 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">
-                  Profile
+                  {t("settings.profile")}
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-3 border-b border-white/10">
                     <div>
-                      <p className="text-sm font-medium text-white">Name</p>
+                      <p className="text-sm font-medium text-white">{t("settings.name")}</p>
                       <p className="text-sm text-slate-500">
-                        {user?.name || "Not set"}
+                        {user?.name || t("settings.notSet")}
                       </p>
                     </div>
                     <Link
                       href="/dashboard/profile/edit"
                       className="text-sm text-[#7AD62A] hover:underline"
                     >
-                      Edit
+                      {t("common.edit")}
                     </Link>
                   </div>
                   <div className="flex items-center justify-between py-3 border-b border-white/10">
                     <div>
-                      <p className="text-sm font-medium text-white">Email</p>
+                      <p className="text-sm font-medium text-white">{t("settings.email")}</p>
                       <p className="text-sm text-slate-500">{user?.email}</p>
                     </div>
-                    <span className="text-xs text-slate-400">Verified</span>
+                    <span className="text-xs text-slate-400">{t("common.verified")}</span>
                   </div>
                   <div className="flex items-center justify-between py-3">
                     <div>
-                      <p className="text-sm font-medium text-white">Role</p>
+                      <p className="text-sm font-medium text-white">{t("settings.role")}</p>
                       <p className="text-sm text-slate-500">{user?.role}</p>
                     </div>
                   </div>
@@ -411,22 +389,22 @@ export default function SettingsPage() {
 
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">
-                  Danger Zone
+                  {t("settings.dangerZone")}
                 </h2>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-white">
-                      Delete account
+                      {t("settings.deleteAccount")}
                     </p>
                     <p className="text-sm text-slate-500">
-                      Permanently delete your account and all data
+                      {t("settings.deleteAccountDesc")}
                     </p>
                   </div>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-500/10 transition-colors"
                   >
-                    Delete account
+                    {t("settings.deleteAccount")}
                   </button>
                 </div>
               </div>
@@ -437,16 +415,15 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-2">
-                  Notification Preferences
+                  {t("settings.notificationPrefs")}
                 </h2>
                 <p className="text-sm text-slate-400 mb-6">
-                  Control whether AeroAcademy sends progress and summary updates
-                  beyond the in-app notification center.
+                  {t("settings.notificationPrefsDesc")}
                 </p>
                 <div className="space-y-4">
                   <PreferenceRow
-                    label="Progress alerts"
-                    description="Receive product alerts for labs, achievements, and important account activity."
+                    label={t("settings.progressAlerts")}
+                    description={t("settings.progressAlertsDesc")}
                     enabled={preferences?.notificationsEnabled ?? true}
                     busy={
                       savingPreference === "notificationsEnabled" ||
@@ -457,8 +434,8 @@ export default function SettingsPage() {
                     }
                   />
                   <PreferenceRow
-                    label="Weekly digest"
-                    description="Get a weekly summary of your progress, ranking movement, and newly released learning opportunities."
+                    label={t("settings.weeklyDigest")}
+                    description={t("settings.weeklyDigestDesc")}
                     enabled={preferences?.weeklyDigestEnabled ?? true}
                     busy={
                       savingPreference === "weeklyDigestEnabled" || !preferences
@@ -472,19 +449,17 @@ export default function SettingsPage() {
 
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-2">
-                  Email Categories
+                  {t("settings.emailCategories")}
                 </h2>
                 <p className="text-sm text-slate-400 mb-6">
-                  Choose the non-security emails you want to receive.
-                  Verification, password reset, and account security emails are
-                  always sent when needed.
+                  {t("settings.emailCategoriesDesc")}
                 </p>
                 <div className="space-y-4">
                   {EMAIL_PREFS.map((pref) => (
                     <PreferenceRow
                       key={pref.key}
-                      label={pref.label}
-                      description={pref.description}
+                      label={t(pref.labelKey)}
+                      description={t(pref.descriptionKey)}
                       enabled={emailPrefs[pref.key] !== false}
                       busy={savingEmailPreference === pref.key}
                       onToggle={(value) =>
@@ -497,19 +472,17 @@ export default function SettingsPage() {
 
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">
-                  Always Available In-App
+                  {t("settings.alwaysAvailable")}
                 </h2>
                 <div className="space-y-4">
                   {[
                     {
-                      label: "Platform notifications",
-                      description:
-                        "Unread alerts, exam updates, and platform events remain available in your notification center.",
+                      label: t("settings.platformNotifications"),
+                      description: t("settings.platformNotificationsDesc"),
                     },
                     {
-                      label: "Security events",
-                      description:
-                        "Critical account and verification notices remain available even if optional email categories are disabled.",
+                      label: t("settings.securityEvents"),
+                      description: t("settings.securityEventsDesc"),
                     },
                   ].map((item) => (
                     <div
@@ -526,7 +499,7 @@ export default function SettingsPage() {
                       </div>
                       <span className="inline-flex items-center gap-1.5 text-xs text-[#7AD62A] bg-[#7AD62A]/10 px-3 py-1 rounded-full">
                         <Mail size={12} />
-                        Active
+                        {t("common.active")}
                       </span>
                     </div>
                   ))}
@@ -539,23 +512,23 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">
-                  Password
+                  {t("settings.password")}
                 </h2>
                 <Link
                   href="/dashboard/profile/change-password"
                   className="angular-btn inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#7AD62A] border border-[#7AD62A] hover:bg-[#7AD62A]/10 transition-colors"
                 >
                   <Key size={16} />
-                  Change password
+                  {t("settings.changePassword")}
                 </Link>
               </div>
 
               <div className="angular-card bg-[#0f172a] p-6">
                 <h2 className="text-lg font-semibold text-white mb-4">
-                  Sessions
+                  {t("settings.sessions")}
                 </h2>
                 <p className="text-sm text-slate-500 mb-4">
-                  You are currently signed in on this device.
+                  {t("settings.signedInDevice")}
                 </p>
                 <button
                   onClick={() => {
@@ -563,7 +536,7 @@ export default function SettingsPage() {
                   }}
                   className="px-4 py-2.5 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-500/10 transition-colors"
                 >
-                  Sign out
+                  {t("settings.signOut")}
                 </button>
               </div>
             </div>
@@ -571,15 +544,24 @@ export default function SettingsPage() {
 
           {activeSection === "appearance" && (
             <div className="angular-card bg-[#0f172a] p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Theme</h2>
+              <h2 className="text-lg font-semibold text-white mb-4">{t("settings.appearance")}</h2>
               <div className="flex items-center justify-between py-3 border-b border-white/10">
                 <div>
-                  <p className="text-sm font-medium text-white">Dark mode</p>
+                  <p className="text-sm font-medium text-white">{t("settings.darkMode")}</p>
                   <p className="text-sm text-slate-500">
-                    Toggle between light and dark themes
+                    {t("settings.darkModeDesc")}
                   </p>
                 </div>
                 <ThemeToggle />
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium text-white">{t("settings.language")}</p>
+                  <p className="text-sm text-slate-500">
+                    {t("settings.languageDesc")}
+                  </p>
+                </div>
+                <LanguageSwitcher />
               </div>
             </div>
           )}
@@ -604,16 +586,15 @@ export default function SettingsPage() {
                   id="delete-modal-title"
                   className="font-semibold text-white"
                 >
-                  Delete account
+                  {t("settings.deleteAccount")}
                 </h3>
                 <p className="text-sm text-slate-500">
-                  This action cannot be undone
+                  {t("settings.deleteCannotUndo")}
                 </p>
               </div>
             </div>
             <p className="text-sm text-slate-400 mb-6">
-              All your data including progress, certificates, and lab history
-              will be permanently deleted.
+              {t("settings.deleteModalDesc")}
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -621,25 +602,25 @@ export default function SettingsPage() {
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 text-sm font-medium text-slate-300 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 onClick={async (e) => {
                   const btn = e.currentTarget;
                   btn.disabled = true;
-                  btn.textContent = "Deleting...";
+                  btn.textContent = t("settings.deleting");
                   try {
                     await fetchApi("/users/me", { method: "DELETE" });
                     logout();
-                  } catch (err) {
-                    toast.error("Failed to delete account. Please try again.");
+                  } catch {
+                    toast.error(t("settings.deleteFailed"));
                     btn.disabled = false;
-                    btn.textContent = "Delete account";
+                    btn.textContent = t("settings.deleteAccount");
                   }
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors flex items-center gap-2"
               >
-                Delete account
+                {t("settings.deleteAccount")}
               </button>
             </div>
           </div>
