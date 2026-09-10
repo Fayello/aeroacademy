@@ -1,6 +1,9 @@
 "use client";
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
+import dynamic from "next/dynamic";
 import { Zap, Atom, Plus, BookOpen, Trophy, Sparkles, X, ChevronDown, ChevronUp, RotateCcw, Settings } from "lucide-react";
+
+const LandingArena3D = dynamic(() => import("./LandingArena3D"), { ssr: false });
 
 const FUSION_KEYFRAMES = `
 @keyframes fusionNotifIn {
@@ -424,19 +427,12 @@ function getCategoryBreakdown(discovered: Discovery[]): Record<string, { discove
    COMPONENT
    ═══════════════════════════════════════════════════════════ */
 export default function SkillFusionLab() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const nodesRef = useRef<SkillNode[]>([]);
-  const particlesRef = useRef<Particle[]>([]);
-  const explosionsRef = useRef<Explosion[]>([]);
   const discoveredRef = useRef<Set<string>>(new Set());
-  const dragNodeRef = useRef<SkillNode | null>(null);
-  const mouseRef = useRef({ x: -9999, y: -9999 });
-  const animFrameRef = useRef<number>(0);
   const fusionCbRef = useRef<((d: Discovery) => void) | null>(null);
 
   const [discovered, setDiscovered] = useState<Discovery[]>(() => loadDiscoveries());
   const [arenaEmpty, setArenaEmpty] = useState(true);
+  const [arenaSkills, setArenaSkills] = useState<{ id: string; label: string; color: string; category: string }[]>([]);
   const [score, setScore] = useState(() => loadDiscoveries().reduce((s, d) => s + d.score, 0));
   const [fusionMsg, setFusionMsg] = useState<{ name: string; rarity: string; score: number; description: string } | null>(null);
   const [showJournal, setShowJournal] = useState(false);
@@ -596,76 +592,49 @@ export default function SkillFusionLab() {
 
   useEffect(() => { fusionCbRef.current = onDiscovery; }, [onDiscovery]);
 
+  const handleArena3DFusion = useCallback((a: string, b: string) => {
+    const key = [a, b].sort().join("+");
+    if (discoveredRef.current.has(key)) return;
+    const fusion = REAL_FUSIONS[key];
+    if (!fusion) return;
+    discoveredRef.current.add(key);
+    const discovery: Discovery = {
+      id: key, a, b, result: fusion.name,
+      tier: fusion.tier, rarity: fusion.rarity,
+      timestamp: Date.now(), score: fusion.score,
+      description: fusion.description,
+    };
+    fusionCbRef.current?.(discovery);
+  }, []);
+
   const addCustomNode = useCallback(() => {
     if (!customName.trim()) return;
-    const w = containerRef.current?.offsetWidth || 800;
-    const h = containerRef.current?.offsetHeight || 500;
-    nodesRef.current.push({
-      id: "custom_" + Date.now(),
-      label: customName.trim(),
-      color: "#fbbf24",
-      glow: rgba("#fbbf24", 0.4),
-      x: w / 2 + (Math.random() - 0.5) * 200,
-      y: h / 2 + (Math.random() - 0.5) * 200,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      radius: 30, pulse: 0, pulseDir: 1, dragging: false, tier: 0, rarity: "Custom",
-    });
+    setArenaSkills((prev) => [
+      ...prev,
+      {
+        id: "custom_" + Date.now(),
+        label: customName.trim(),
+        color: "#fbbf24",
+        category: "Custom",
+      },
+    ]);
     setArenaEmpty(false);
     setCustomName("");
     setShowCreator(false);
   }, [customName]);
 
-  const spawnNode = useCallback((skill: { id: string; label: string; color: string }) => {
-    const w = containerRef.current?.offsetWidth || 800;
-    const h = containerRef.current?.offsetHeight || 500;
-    nodesRef.current.push({
-      id: skill.id + "_" + Date.now(),
-      label: skill.label,
-      color: skill.color,
-      glow: rgba(skill.color, 0.4),
-      x: w / 2 + (Math.random() - 0.5) * 300,
-      y: h / 2 + (Math.random() - 0.5) * 200,
-      vx: (Math.random() - 0.5) * 0.6,
-      vy: (Math.random() - 0.5) * 0.6,
-      radius: 32, pulse: 0, pulseDir: 1, dragging: false, tier: 0, rarity: "Base",
+  const spawnNode = useCallback((skill: { id: string; label: string; color: string; category?: string }) => {
+    setArenaSkills((prev) => {
+      if (prev.some((s) => s.id === skill.id)) return prev;
+      return [...prev, { id: skill.id, label: skill.label, color: skill.color, category: skill.category || "Tech" }];
     });
     setArenaEmpty(false);
   }, []);
 
-  const spawnParticles = useCallback((x: number, y: number, color: string, count: number) => {
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 3 + 0.5;
-      particlesRef.current.push({
-        x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-        life: 1, maxLife: 1, color, size: Math.random() * 3 + 1,
-      });
-    }
-  }, []);
-
-  const spawnExplosion = useCallback((x: number, y: number, label: string, rarity: string) => {
-    const count = rarity === "Mythic" ? 120 : rarity === "Legendary" ? 90 : rarity === "Epic" ? 70 : 50;
-    const p: Particle[] = [];
-    const rarityColor = RARITY_COLORS[rarity] || "#10b981";
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 7 + 1.5;
-      p.push({
-        x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-        life: 1, maxLife: 1,
-        color: Math.random() > 0.3 ? rarityColor : COLORS[Math.floor(Math.random() * COLORS.length)],
-        size: Math.random() * 5 + 1.5,
-      });
-    }
-    explosionsRef.current.push({ x, y, life: 1, particles: p, label, rarity });
-  }, []);
+  // Old Canvas 2D particle/explosion functions removed — Three.js handles effects
 
   const resetGame = useCallback(() => {
-    nodesRef.current = [];
-    particlesRef.current = [];
-    explosionsRef.current = [];
-    discoveredRef.current.clear();
+    setArenaSkills([]);
     setArenaEmpty(true);
     setDiscovered([]);
     setScore(0);
@@ -676,343 +645,7 @@ export default function SkillFusionLab() {
     setRarestDiscovery(null);
   }, []);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let w = 0, h = 0;
-
-    const resize = () => {
-      const rect = container.getBoundingClientRect();
-      w = rect.width; h = rect.height;
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-
-    const getBaseId = (label: string) => {
-      const base = BASE_SKILLS.find(s => s.label === label);
-      return base ? base.id : null;
-    };
-
-    const handleMouseDown = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-      for (const node of nodesRef.current) {
-        if ((mx - node.x) ** 2 + (my - node.y) ** 2 < (node.radius + 10) ** 2) {
-          node.dragging = true;
-          dragNodeRef.current = node;
-          break;
-        }
-      }
-    };
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-      if (dragNodeRef.current) {
-        dragNodeRef.current.x = mouseRef.current.x;
-        dragNodeRef.current.y = mouseRef.current.y;
-        dragNodeRef.current.vx = 0;
-        dragNodeRef.current.vy = 0;
-      }
-    };
-    const handleMouseUp = () => { if (dragNodeRef.current) { dragNodeRef.current.dragging = false; dragNodeRef.current = null; } };
-    const handleTouchStart = (e: TouchEvent) => {
-      if (!e.touches.length) return;
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.touches[0].clientX - rect.left, my = e.touches[0].clientY - rect.top;
-      for (const node of nodesRef.current) {
-        if ((mx - node.x) ** 2 + (my - node.y) ** 2 < (node.radius + 15) ** 2) {
-          node.dragging = true;
-          dragNodeRef.current = node;
-          e.preventDefault();
-          break;
-        }
-      }
-    };
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!dragNodeRef.current || !e.touches.length) return;
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      dragNodeRef.current.x = e.touches[0].clientX - rect.left;
-      dragNodeRef.current.y = e.touches[0].clientY - rect.top;
-      dragNodeRef.current.vx = 0;
-      dragNodeRef.current.vy = 0;
-    };
-    const handleTouchEnd = () => { if (dragNodeRef.current) { dragNodeRef.current.dragging = false; dragNodeRef.current = null; } };
-
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("mouseleave", handleMouseUp);
-    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-    canvas.addEventListener("touchend", handleTouchEnd);
-
-    const animate = () => {
-      ctx.clearRect(0, 0, w, h);
-      const nodes = nodesRef.current;
-      const time = Date.now();
-
-      // Connections
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i], b = nodes[j];
-          const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-          if (dist < 180) {
-            const alpha = (1 - dist / 180) * 0.12;
-            const baseA = getBaseId(a.label), baseB = getBaseId(b.label);
-            const key = baseA && baseB ? [baseA, baseB].sort().join("+") : null;
-            const isFused = key ? discoveredRef.current.has(key) : false;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            if (isFused) {
-              ctx.strokeStyle = rgba("#10b981", 0.4 + Math.sin(time / 300) * 0.3);
-              ctx.lineWidth = 2;
-              ctx.shadowColor = "rgba(16,185,129,0.4)";
-              ctx.shadowBlur = 8;
-            } else {
-              ctx.strokeStyle = rgba("#94a3b8", alpha);
-              ctx.lineWidth = 0.8;
-            }
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-          }
-        }
-      }
-
-      // Ambient
-      if (Math.random() < 0.1) {
-        particlesRef.current.push({
-          x: Math.random() * w, y: h + 5,
-          vx: (Math.random() - 0.5) * 0.4, vy: -(Math.random() * 0.8 + 0.2),
-          life: 1, maxLife: 1,
-          color: COLORS[Math.floor(Math.random() * COLORS.length)],
-          size: Math.random() * 1.5 + 0.5,
-        });
-      }
-      particlesRef.current = particlesRef.current.filter((p) => {
-        p.x += p.vx; p.y += p.vy; p.life -= 0.004;
-        if (p.life <= 0) return false;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-        ctx.fillStyle = rgba(p.color, p.life * 0.4);
-        ctx.fill();
-        return true;
-      });
-
-      // Node proximity glow boost
-      const closeProximity = new Map<SkillNode, number>();
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dist = Math.sqrt((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2);
-          if (dist < 100 && dist > 0) {
-            const intensity = 1 - dist / 100;
-            closeProximity.set(nodes[i], Math.max(closeProximity.get(nodes[i]) || 0, intensity));
-            closeProximity.set(nodes[j], Math.max(closeProximity.get(nodes[j]) || 0, intensity));
-          }
-        }
-      }
-
-      // Nodes
-      for (const node of nodes) {
-        if (!node.dragging) {
-          node.x += node.vx; node.y += node.vy;
-          if (node.x < node.radius || node.x > w - node.radius) node.vx *= -1;
-          if (node.y < node.radius || node.y > h - node.radius) node.vy *= -1;
-          node.x = Math.max(node.radius, Math.min(w - node.radius, node.x));
-          node.y = Math.max(node.radius, Math.min(h - node.radius, node.y));
-          node.vx += (Math.random() - 0.5) * 0.015;
-          node.vy += (Math.random() - 0.5) * 0.015;
-          node.vx *= 0.999; node.vy *= 0.999;
-        }
-        node.pulse += 0.03 * node.pulseDir;
-        if (node.pulse > 1) node.pulseDir = -1;
-        if (node.pulse < 0) node.pulseDir = 1;
-
-        const rarityColor = RARITY_COLORS[node.rarity] || node.color;
-        const isBase = node.rarity === "Base";
-        const isCustom = node.rarity === "Custom";
-        const pulseScale = 1 + node.pulse * 0.06;
-        const r = node.radius * pulseScale;
-        const proximityGlow = closeProximity.get(node) || 0;
-        const glowMultiplier = 1 + proximityGlow * 1.8;
-        const glowRadius = r * 2.5 * glowMultiplier;
-        const glowAlpha = 0.3 + proximityGlow * 0.35;
-
-        const grad = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, glowRadius);
-        grad.addColorStop(0, rgba(isCustom ? "#fbbf24" : isBase ? node.color : rarityColor, glowAlpha));
-        grad.addColorStop(1, "transparent");
-        ctx.fillStyle = grad;
-        ctx.fillRect(node.x - glowRadius, node.y - glowRadius, glowRadius * 2, glowRadius * 2);
-
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, r + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = rgba(isBase ? node.color : rarityColor, 0.35 + proximityGlow * 0.45);
-        ctx.lineWidth = node.tier > 0 ? 2.5 : 1.5;
-        if (proximityGlow > 0.1) {
-          ctx.shadowColor = rgba(rarityColor, proximityGlow * 0.7);
-          ctx.shadowBlur = 12 * proximityGlow;
-        }
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
-        const bg = ctx.createRadialGradient(node.x - r * 0.3, node.y - r * 0.3, 0, node.x, node.y, r);
-        bg.addColorStop(0, rgba(isCustom ? "#fbbf24" : isBase ? node.color : rarityColor, 0.2));
-        bg.addColorStop(1, rgba(isCustom ? "#fbbf24" : isBase ? node.color : rarityColor, 0.05));
-        ctx.fillStyle = bg;
-        ctx.fill();
-        ctx.strokeStyle = isBase ? rgba(node.color, 0.5) : rarityColor;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.save();
-        ctx.font = "bold 18px Inter, system-ui, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = isCustom ? "#fbbf24" : isBase ? node.color : rarityColor;
-        ctx.fillText(node.label.charAt(0).toUpperCase(), node.x, node.y);
-        ctx.restore();
-
-        ctx.font = "bold 10px Inter, system-ui, sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#cbd5e1";
-        const labelText = node.label.length > 16 ? node.label.slice(0, 14) + "..." : node.label;
-        ctx.fillText(labelText, node.x, node.y + r + 16);
-
-        if (node.tier > 0) {
-          ctx.font = "8px Inter, system-ui, sans-serif";
-          ctx.fillStyle = rarityColor;
-          ctx.fillText(`${node.rarity}`, node.x, node.y + r + 27);
-        } else if (isCustom) {
-          ctx.font = "8px Inter, system-ui, sans-serif";
-          ctx.fillStyle = "#fbbf24";
-          ctx.fillText("CUSTOM", node.x, node.y + r + 27);
-        }
-      }
-
-      // Explosions
-      explosionsRef.current = explosionsRef.current.filter((exp) => {
-        exp.life -= 0.012;
-        if (exp.life <= 0) return false;
-
-        // Shockwave ring
-        if (exp.life > 0.6) {
-          const ringProgress = 1 - (exp.life - 0.6) / 0.4;
-          const ringRadius = ringProgress * 120;
-          ctx.save();
-          ctx.globalAlpha = (1 - ringProgress) * 0.5;
-          ctx.beginPath();
-          ctx.arc(exp.x, exp.y, ringRadius, 0, Math.PI * 2);
-          ctx.strokeStyle = RARITY_COLORS[exp.rarity] || "#10b981";
-          ctx.lineWidth = 3 * (1 - ringProgress);
-          ctx.stroke();
-          ctx.restore();
-        }
-
-        for (const p of exp.particles) {
-          p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy *= 0.97; p.life -= 0.018;
-          if (p.life > 0) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * p.life * 2, 0, Math.PI * 2);
-            ctx.fillStyle = rgba(p.color, p.life * 0.2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-            ctx.fillStyle = rgba(p.color, p.life * 0.8);
-            ctx.fill();
-            ctx.restore();
-          }
-        }
-        if (exp.life > 0.4) {
-          ctx.save();
-          const labelAlpha = (exp.life - 0.4) / 0.6;
-          const labelScale = 0.8 + (1 - exp.life) * 0.4;
-          ctx.globalAlpha = labelAlpha;
-          ctx.font = `bold ${Math.round(14 * labelScale)}px Inter, system-ui, sans-serif`;
-          ctx.textAlign = "center";
-          const rarityColor = RARITY_COLORS[exp.rarity] || "#10b981";
-          ctx.fillStyle = rarityColor;
-          ctx.shadowColor = rgba(rarityColor, 0.9);
-          ctx.shadowBlur = 20;
-          ctx.fillText(exp.label, exp.x, exp.y - 25 - (1 - exp.life) * 40);
-          ctx.shadowBlur = 0;
-          ctx.restore();
-        }
-        return true;
-      });
-
-      // Fusion check
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          if (!nodes[i].dragging && !nodes[j].dragging) continue;
-          if (Math.sqrt((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2) >= 60) continue;
-
-          const baseA = getBaseId(nodes[i].label);
-          const baseB = getBaseId(nodes[j].label);
-          if (!baseA || !baseB || baseA === baseB) continue;
-
-          const key = [baseA, baseB].sort().join("+");
-          if (discoveredRef.current.has(key)) continue;
-
-          const fusion = REAL_FUSIONS[key];
-          if (!fusion) continue;
-
-          discoveredRef.current.add(key);
-          const discovery: Discovery = {
-            id: key, a: baseA, b: baseB, result: fusion.name,
-            tier: fusion.tier, rarity: fusion.rarity,
-            timestamp: Date.now(), score: fusion.score,
-            description: fusion.description,
-          };
-
-          const rarityColor = RARITY_COLORS[fusion.rarity] || "#10b981";
-          spawnExplosion((nodes[i].x + nodes[j].x) / 2, (nodes[i].y + nodes[j].y) / 2, fusion.name, fusion.rarity);
-          spawnParticles(nodes[i].x, nodes[i].y, nodes[i].color, 15);
-          spawnParticles(nodes[j].x, nodes[j].y, nodes[j].color, 15);
-
-          nodes[i].label = fusion.name;
-          nodes[i].tier = fusion.tier;
-          nodes[i].rarity = fusion.rarity;
-          nodes[i].color = rarityColor;
-          nodes[i].glow = rgba(rarityColor, 0.4);
-          nodes[i].radius = 32 + fusion.tier * 4;
-          nodes[i].vx = (Math.random() - 0.5) * 0.4;
-          nodes[i].vy = (Math.random() - 0.5) * 0.4;
-          nodes.splice(j, 1);
-          fusionCbRef.current?.(discovery);
-        }
-      }
-
-      animFrameRef.current = requestAnimationFrame(animate);
-    };
-
-    animFrameRef.current = requestAnimationFrame(animate);
-    window.addEventListener("resize", resize);
-
-    return () => {
-      cancelAnimationFrame(animFrameRef.current);
-      window.removeEventListener("resize", resize);
-      canvas.removeEventListener("mousedown", handleMouseDown);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseup", handleMouseUp);
-      canvas.removeEventListener("mouseleave", handleMouseUp);
-      canvas.removeEventListener("touchstart", handleTouchStart);
-      canvas.removeEventListener("touchmove", handleTouchMove);
-      canvas.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [spawnParticles, spawnExplosion]);
+  // Old Canvas 2D render loop removed — replaced by Three.js LandingArena3D
 
   return (
     <section className="py-16 px-4 sm:px-6 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden scanline-overlay">
@@ -1340,8 +973,17 @@ export default function SkillFusionLab() {
         </div>
 
         {/* Canvas */}
-        <div ref={containerRef} className="relative w-full h-[450px] sm:h-[500px] angular-card border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
-          <canvas ref={canvasRef} className="absolute inset-0 cursor-grab active:cursor-grabbing" />
+        <div className="relative w-full h-[450px] sm:h-[500px] angular-card border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+          <Suspense fallback={
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-slate-500 text-sm">Loading 3D arena...</div>
+            </div>
+          }>
+            <LandingArena3D
+              skills={arenaSkills}
+              onFusion={handleArena3DFusion}
+            />
+          </Suspense>
           {arenaEmpty && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
