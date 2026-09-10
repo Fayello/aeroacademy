@@ -447,7 +447,6 @@ export default function SkillFusionLab() {
   const [showCreator, setShowCreator] = useState(false);
   const [customName, setCustomName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [showAllSkills, setShowAllSkills] = useState(false);
   const [streakData, setStreakData] = useState<{ lastDate: string; streak: number }>(() => {
     const savedStreak = loadStreak();
     const today = new Date().toISOString().slice(0, 10);
@@ -536,10 +535,7 @@ export default function SkillFusionLab() {
     [selectedCategory]
   );
 
-  const visibleSkills = useMemo(() =>
-    showAllSkills ? filteredSkills : filteredSkills.slice(0, 12),
-    [filteredSkills, showAllSkills]
-  );
+  const visibleSkills = useMemo(() => filteredSkills, [filteredSkills]);
 
   const stats = useMemo(() => {
     const rarityCount: Record<string, number> = {};
@@ -953,10 +949,9 @@ export default function SkillFusionLab() {
         return true;
       });
 
-      // Fusion check
+      // Fusion check — triggers whenever two base skill nodes overlap (drag or drift)
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          if (!nodes[i].dragging && !nodes[j].dragging) continue;
           if (Math.sqrt((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2) >= 60) continue;
 
           const baseA = getBaseId(nodes[i].label);
@@ -1330,12 +1325,6 @@ export default function SkillFusionLab() {
                 <Plus size={10} /> {skill.label}
               </button>
             ))}
-            {filteredSkills.length > 12 && (
-              <button onClick={() => setShowAllSkills(!showAllSkills)}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/40 text-slate-500 hover:text-slate-300 border border-slate-700/30 cursor-pointer">
-                {showAllSkills ? "Show less" : `+${filteredSkills.length - 12} more`}
-              </button>
-            )}
           </div>
         </div>
 
