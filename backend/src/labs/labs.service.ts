@@ -30,12 +30,12 @@ import createLogger from '../common/logger';
 const logger = createLogger('Labs');
 
 const LAB_EXPIRY_HOURS = parseInt(process.env.LAB_EXPIRY_HOURS || '2', 10);
-const LAB_MEMORY_MB = parseInt(process.env.LAB_MEMORY_MB || '512', 10);
-const LAB_CPU_QUOTA = parseInt(process.env.LAB_CPU_QUOTA || '100000', 10);
+const LAB_MEMORY_MB = parseInt(process.env.LAB_MEMORY_MB || '768', 10);
+const LAB_CPU_QUOTA = parseInt(process.env.LAB_CPU_QUOTA || '150000', 10);
 const PORT_RANGE_START = parseInt(process.env.LAB_PORT_START || '8000', 10);
 const PORT_RANGE_END = parseInt(process.env.LAB_PORT_END || '9000', 10);
 const MAX_CONCURRENT_LABS = parseInt(
-  process.env.LAB_MAX_CONCURRENT || '40',
+  process.env.LAB_MAX_CONCURRENT || '12',
   10,
 );
 const MAX_LABS_PER_USER = parseInt(process.env.MAX_LABS_PER_USER || '3', 10);
@@ -47,9 +47,9 @@ const STALE_PROVISIONING_MS = parseInt(
 function getResourceLimits(profile: string): { memoryMB: number; cpuQuota: number } {
   switch (profile) {
     case 'LIGHTWEIGHT':
-      return { memoryMB: 256, cpuQuota: 50000 };
+      return { memoryMB: 512, cpuQuota: 100000 };
     case 'HEAVY':
-      return { memoryMB: 1024, cpuQuota: 200000 };
+      return { memoryMB: 1536, cpuQuota: 250000 };
     default:
       return { memoryMB: LAB_MEMORY_MB, cpuQuota: LAB_CPU_QUOTA };
   }
