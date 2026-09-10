@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import {
   Sparkles, Trophy, BookOpen, Plus, RotateCcw, ChevronDown, ChevronUp,
   Search, X, Star, Zap, Award, Info, Lock, CheckCircle2, ArrowRight,
 } from 'lucide-react';
 import { SKILLS, FUSIONS, CATEGORIES, getFusionRarity, RARITY_TIERS } from './data';
 import type { Skill, Fusion, SkillCategory, RarityTier } from './data';
+import type * as THREE from 'three';
+
+const Arena3D = dynamic(() => import('./Arena3D'), { ssr: false });
 
 interface DiscoveredFusion extends Fusion {
   discoveredAt: number;
@@ -136,6 +140,20 @@ export default function SkillFusionLab() {
   const removeFromArena = useCallback((skillId: string) => {
     setArenaSkills((prev) => prev.filter((s) => s.id !== skillId));
   }, []);
+
+  const handleArenaSelect = useCallback(
+    (skillId: string) => {
+      const inArena = arenaSkills.some((s) => s.id === skillId);
+      if (inArena) {
+        removeFromArena(skillId);
+      } else {
+        addToArena(allSkills.find((s) => s.id === skillId)!);
+      }
+    },
+    [arenaSkills, allSkills, addToArena, removeFromArena],
+  );
+
+  const handleSkillMove = useCallback((_skillId: string, _position: any) => {}, []);
 
   const tryFusion = useCallback(() => {
     if (arenaSkills.length !== 2) return;
@@ -408,12 +426,34 @@ export default function SkillFusionLab() {
 
       {/* Arena */}
       <div className="max-w-5xl mx-auto px-4 mb-8">
-        <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 min-h-[200px] relative overflow-hidden">
-          {/* Arena background decoration */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-white/20" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-white/10" />
-          </div>
+        <div className="bg-[#0f172a] border border-white/10 rounded-2xl min-h-[350px] lg:min-h-[450px] relative overflow-hidden">
+          {/* 3D Arena */}
+          {arenaSkills.length > 0 && !animatingFusion && (
+            <div className="absolute inset-0 z-10">
+              <Suspense fallback={
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-gray-600 text-sm">Loading 3D arena...</div>
+                </div>
+              }>
+                <Arena3D
+                  arenaSkills={arenaSkills}
+                  onSkillMove={handleSkillMove}
+                  onSelect={(id) => removeFromArena(id)}
+                  selectedId={null}
+                  isFusing={false}
+                />
+              </Suspense>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {arenaSkills.length === 0 && !animatingFusion && (
+            <div className="flex flex-col items-center justify-center h-[350px] lg:h-[450px] text-center relative z-10">
+              <Plus className="w-8 h-8 text-gray-700 mb-2" />
+              <p className="text-gray-500 text-sm">Click any skill above to add it to the arena</p>
+              <p className="text-gray-600 text-xs mt-1">Then drag two together to discover a real specialization</p>
+            </div>
+          )}
 
           {/* Fusion animation overlay */}
           {animatingFusion && (
@@ -451,59 +491,12 @@ export default function SkillFusionLab() {
             </div>
           )}
 
-          {/* Arena content */}
-          {arenaSkills.length === 0 && !animatingFusion && (
-            <div className="flex flex-col items-center justify-center h-32 text-center relative z-10">
-              <Plus className="w-8 h-8 text-gray-700 mb-2" />
-              <p className="text-gray-500 text-sm">Click any skill above to add it to the arena</p>
-              <p className="text-gray-600 text-xs mt-1">Then drag two together to discover a real specialization</p>
-            </div>
-          )}
-
-          {arenaSkills.length > 0 && (
-            <div className="flex items-center justify-center gap-4 relative z-10">
-              {arenaSkills.map((skill, i) => (
-                <div key={skill.id} className="flex items-center gap-4">
-                  <div className="text-center">
-                    <div
-                      className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl border-2 mb-2 mx-auto cursor-pointer hover:scale-110 transition-transform"
-                      style={{
-                        backgroundColor: skill.color + '20',
-                        borderColor: skill.color + '60',
-                      }}
-                      onClick={() => removeFromArena(skill.id)}
-                      title="Click to remove"
-                    >
-                      {skill.icon}
-                    </div>
-                    <div className="text-sm font-medium" style={{ color: skill.color }}>
-                      {skill.name}
-                    </div>
-                    <div className="text-[10px] text-gray-600">{skill.category}</div>
-                  </div>
-                  {i < arenaSkills.length - 1 && arenaSkills.length === 2 && (
-                    <div className="text-2xl font-bold text-[#7AD62A]">+</div>
-                  )}
-                </div>
-              ))}
-
-              {arenaSkills.length === 1 && (
-                <div className="text-center">
-                  <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-white/10 flex items-center justify-center mb-2 mx-auto">
-                    <Plus className="w-6 h-6 text-gray-700" />
-                  </div>
-                  <div className="text-xs text-gray-600">Add second skill</div>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Fusion button */}
           {arenaSkills.length === 2 && !animatingFusion && (
-            <div className="flex justify-center mt-4 relative z-10">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
               <button
                 onClick={tryFusion}
-                className="flex items-center gap-2 bg-[#7AD62A] text-[#0a0f1a] px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#8ce63a] transition-colors"
+                className="flex items-center gap-2 bg-[#7AD62A] text-[#0a0f1a] px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#8ce63a] transition-colors shadow-lg shadow-[#7AD62A]/20"
               >
                 <Zap className="w-4 h-4" />
                 Fuse Skills
