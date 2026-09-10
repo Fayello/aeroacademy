@@ -339,14 +339,16 @@ function rgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+const FUSION_STORAGE_KEY = "aero_fusions_v3";
+
 function loadDiscoveries(): Discovery[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem("aero_fusions") || "[]"); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(FUSION_STORAGE_KEY) || "[]"); } catch { return []; }
 }
 
 function saveDiscoveries(d: Discovery[]) {
   if (typeof window === "undefined") return;
-  localStorage.setItem("aero_fusions", JSON.stringify(d));
+  localStorage.setItem(FUSION_STORAGE_KEY, JSON.stringify(d));
 }
 
 const RARITY_RANK: Record<string, number> = {
@@ -949,10 +951,13 @@ export default function SkillFusionLab() {
         return true;
       });
 
-      // Fusion check — triggers whenever two base skill nodes overlap (drag or drift)
+      // Fusion check — triggers whenever two base skill nodes overlap
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          if (Math.sqrt((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2) >= 60) continue;
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist >= 80) continue;
 
           const baseA = getBaseId(nodes[i].label);
           const baseB = getBaseId(nodes[j].label);
