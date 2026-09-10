@@ -1,357 +1,743 @@
 'use client';
 
-import { useState, useCallback, Suspense, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import * as THREE from 'three';
-import SkillNode3D from './SkillNode3D';
-import ConnectionLines from './ConnectionLines';
-import FusionResult from './FusionResult';
-import Particles from './Particles';
-import { SKILLS, FUSIONS } from './data';
-import type { SkillNode, FusionRule } from './data';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import {
+  Sparkles, Trophy, BookOpen, Plus, RotateCcw, ChevronDown, ChevronUp,
+  Search, X, Star, Zap, Award, Info, Lock, CheckCircle2, ArrowRight,
+} from 'lucide-react';
+import { SKILLS, FUSIONS, CATEGORIES, getFusionRarity, RARITY_TIERS } from './data';
+import type { Skill, Fusion, SkillCategory, RarityTier } from './data';
 
-const FUSION_DISTANCE = 1.8;
-
-interface ActiveFusion {
-  a: string;
-  b: string;
+interface DiscoveredFusion extends Fusion {
+  discoveredAt: number;
+  skillAData: Skill;
+  skillBData: Skill;
 }
 
-interface FusionCelebration {
-  fusion: FusionRule;
-  position: [number, number, number];
+interface JournalEntry {
+  fusion: DiscoveredFusion;
+  note: string;
 }
 
-function Scene({
-  skills,
-  setSkills,
-  selectedId,
-  setSelectedId,
-  draggingId,
-  setDraggingId,
-  activeFusion,
-  setActiveFusion,
-  celebration,
-  setCelebration,
-}: {
-  skills: SkillNode[];
-  setSkills: React.Dispatch<React.SetStateAction<SkillNode[]>>;
-  selectedId: string | null;
-  setSelectedId: (id: string | null) => void;
-  draggingId: string | null;
-  setDraggingId: (id: string | null) => void;
-  activeFusion: ActiveFusion | null;
-  setActiveFusion: (f: ActiveFusion | null) => void;
-  celebration: FusionCelebration | null;
-  setCelebration: (c: FusionCelebration | null) => void;
-}) {
-  const [discovered, setDiscovered] = useState<Set<string>>(new Set());
+interface CustomSkill {
+  id: string;
+  name: string;
+  category: SkillCategory;
+  color: string;
+  icon: string;
+  isCustom: true;
+}
 
-  const handleSelect = useCallback(
-    (id: string) => {
-      if (draggingId) return;
+const POINTS_PER_FUSION: Record<RarityTier, number> = {
+  common: 50,
+  uncommon: 100,
+  rare: 200,
+  epic: 400,
+  legendary: 800,
+};
 
-      if (selectedId && selectedId !== id) {
-        // Check for fusion
-        const fusion = FUSIONS.find(
-          (f) =>
-            (f.a === selectedId && f.b === id) ||
-            (f.a === id && f.b === selectedId),
-        );
-
-        if (fusion && !discovered.has(fusion.result)) {
-          const skillA = skills.find((s) => s.id === selectedId);
-          const skillB = skills.find((s) => s.id === id);
-          if (skillA && skillB) {
-            const midPos: [number, number, number] = [
-              (skillA.position[0] + skillB.position[0]) / 2,
-              (skillA.position[1] + skillB.position[1]) / 2,
-              0.5,
-            ];
-            setCelebration({ fusion, position: midPos });
-            setDiscovered((prev) => new Set(prev).add(fusion.result));
-          }
-        }
-        setSelectedId(null);
-        setActiveFusion(null);
-      } else {
-        setSelectedId(id === selectedId ? null : id);
-        setActiveFusion(null);
-      }
-    },
-    [selectedId, draggingId, skills, discovered, setSelectedId, setActiveFusion, setCelebration],
-  );
-
-  const handleDragStart = useCallback(
-    (id: string) => {
-      setDraggingId(id);
-    },
-    [setDraggingId],
-  );
-
-  const handleDragEnd = useCallback(
-    (id: string) => {
-      setDraggingId(null);
-      setActiveFusion(null);
-    },
-    [setDraggingId, setActiveFusion],
-  );
-
-  const handleDragMove = useCallback(
-    (id: string, position: THREE.Vector3) => {
-      setSkills((prev) =>
-        prev.map((s) =>
-          s.id === id ? { ...s, position: [position.x, position.y, s.position[2]] as [number, number, number] } : s,
-        ),
-      );
-
-      // Check proximity to other nodes for fusion preview
-      const dragged = skills.find((s) => s.id === id);
-      if (!dragged) return;
-
-      for (const other of skills) {
-        if (other.id === id) continue;
-        const dist = new THREE.Vector3(...dragged.position).distanceTo(
-          new THREE.Vector3(...other.position),
-        );
-        if (dist < FUSION_DISTANCE) {
-          const fusion = FUSIONS.find(
-            (f) =>
-              (f.a === id && f.b === other.id) ||
-              (f.a === other.id && f.b === id),
-          );
-          if (fusion) {
-            setActiveFusion({ a: id, b: other.id });
-            return;
-          }
-        }
-      }
-      setActiveFusion(null);
-    },
-    [skills, setActiveFusion, setSkills],
-  );
-
-  return (
-    <>
-      {/* Lighting */}
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={0.8} color="#7AD62A" />
-      <pointLight position={[-5, -3, 3]} intensity={0.4} color="#3b82f6" />
-
-      {/* Particles */}
-      <Particles />
-
-      {/* Connection lines */}
-      <ConnectionLines activeFusion={activeFusion} />
-
-      {/* Skill nodes */}
-      {skills.map((skill) => (
-        <SkillNode3D
-          key={skill.id}
-          skill={skill}
-          isSelected={selectedId === skill.id}
-          isDragging={draggingId === skill.id}
-          onSelect={handleSelect}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragMove={handleDragMove}
-        />
-      ))}
-
-      {/* Fusion celebration */}
-      {celebration && (
-        <FusionResult
-          key={celebration.fusion.result}
-          fusion={celebration.fusion}
-          position={celebration.position}
-          onComplete={() => setCelebration(null)}
-        />
-      )}
-
-      {/* Camera controls */}
-      <OrbitControls
-        enablePan={false}
-        enableZoom={true}
-        minDistance={4}
-        maxDistance={12}
-        autoRotate
-        autoRotateSpeed={0.3}
-      />
-    </>
-  );
+function getPointsForFusion(fusion: Fusion): number {
+  return POINTS_PER_FUSION[getFusionRarity(fusion)];
 }
 
 export default function SkillFusionLab() {
-  const [skills, setSkills] = useState<SkillNode[]>(SKILLS);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [activeFusion, setActiveFusion] = useState<ActiveFusion | null>(null);
-  const [celebration, setCelebration] = useState<FusionCelebration | null>(null);
-  const [discovered, setDiscovered] = useState<Set<string>>(new Set());
-  const [isMobile, setIsMobile] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [arenaSkills, setArenaSkills] = useState<Skill[]>([]);
+  const [discovered, setDiscovered] = useState<DiscoveredFusion[]>([]);
+  const [activeFilter, setActiveFilter] = useState<SkillCategory | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showJournal, setShowJournal] = useState(false);
+  const [showCustomSkill, setShowCustomSkill] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [journalNotes, setJournalNotes] = useState<Record<string, string>>({});
+  const [selectedFusion, setSelectedFusion] = useState<DiscoveredFusion | null>(null);
+  const [animatingFusion, setAnimatingFusion] = useState<DiscoveredFusion | null>(null);
+  const [customSkillName, setCustomSkillName] = useState('');
+  const [customSkillCategory, setCustomSkillCategory] = useState<SkillCategory>('tech');
+  const [customSkills, setCustomSkills] = useState<CustomSkill[]>([]);
 
+  // Load from localStorage
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    try {
+      const saved = localStorage.getItem('skill-fusion-discovered');
+      if (saved) setDiscovered(JSON.parse(saved));
+      const notes = localStorage.getItem('skill-fusion-notes');
+      if (notes) setJournalNotes(JSON.parse(notes));
+      const customs = localStorage.getItem('skill-fusion-customs');
+      if (customs) setCustomSkills(JSON.parse(customs));
+    } catch {}
   }, []);
 
-  // Track discovered fusions from celebration state
+  // Save to localStorage
   useEffect(() => {
-    if (celebration) {
-      setDiscovered((prev) => new Set(prev).add(celebration.fusion.result));
+    localStorage.setItem('skill-fusion-discovered', JSON.stringify(discovered));
+  }, [discovered]);
+  useEffect(() => {
+    localStorage.setItem('skill-fusion-notes', JSON.stringify(journalNotes));
+  }, [journalNotes]);
+  useEffect(() => {
+    localStorage.setItem('skill-fusion-customs', JSON.stringify(customSkills));
+  }, [customSkills]);
+
+  const allSkills = useMemo(() => [...SKILLS, ...customSkills], [customSkills]);
+
+  const totalPoints = useMemo(
+    () => discovered.reduce((sum, d) => sum + getPointsForFusion(d), 0),
+    [discovered],
+  );
+
+  const discoveredCount = discovered.length;
+  const totalFusions = FUSIONS.length;
+  const progressPercent = (discoveredCount / totalFusions) * 100;
+
+  const latestFusion = discovered.length > 0 ? discovered[discovered.length - 1] : null;
+
+  const categoryStats = useMemo(() => {
+    const stats: Record<SkillCategory, { discovered: number; total: number }> = {
+      tech: { discovered: 0, total: 0 },
+      science: { discovered: 0, total: 0 },
+      finance: { discovered: 0, total: 0 },
+      creative: { discovered: 0, total: 0 },
+      business: { discovered: 0, total: 0 },
+    };
+    for (const f of FUSIONS) {
+      const rarity = getFusionRarity(f);
+      stats[f.category].total += POINTS_PER_FUSION[rarity];
     }
-  }, [celebration]);
+    for (const d of discovered) {
+      stats[d.category].discovered += getPointsForFusion(d);
+    }
+    return stats;
+  }, [discovered]);
 
-  const selectedSkill = skills.find((s) => s.id === selectedId);
-  const activeFusionRule = activeFusion
-    ? FUSIONS.find(
-        (f) =>
-          (f.a === activeFusion.a && f.b === activeFusion.b) ||
-          (f.a === activeFusion.b && f.b === activeFusion.a),
-      )
-    : null;
+  const filteredSkills = useMemo(() => {
+    let skills = allSkills;
+    if (activeFilter !== 'all') {
+      skills = skills.filter((s) => s.category === activeFilter);
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      skills = skills.filter((s) => s.name.toLowerCase().includes(q));
+    }
+    return skills;
+  }, [allSkills, activeFilter, searchQuery]);
 
-  // Static fallback for mobile/reduced-motion
-  if (isMobile || reducedMotion) {
-    return (
-      <div className="w-full bg-[#0a0f1a] rounded-2xl border border-white/10 p-6">
-        <div className="text-center mb-6">
-          <h3 className="text-xl font-bold text-white mb-2">Skill Fusion Lab</h3>
-          <p className="text-sm text-gray-400">
-            Drag two skills together to discover specializations
-          </p>
+  const addToArena = useCallback(
+    (skill: Skill) => {
+      if (arenaSkills.find((s) => s.id === skill.id)) return;
+      if (arenaSkills.length >= 2) {
+        setArenaSkills([skill]);
+      } else {
+        setArenaSkills((prev) => [...prev, skill]);
+      }
+    },
+    [arenaSkills],
+  );
+
+  const removeFromArena = useCallback((skillId: string) => {
+    setArenaSkills((prev) => prev.filter((s) => s.id !== skillId));
+  }, []);
+
+  const tryFusion = useCallback(() => {
+    if (arenaSkills.length !== 2) return;
+    const [a, b] = arenaSkills;
+    const fusion = FUSIONS.find(
+      (f) =>
+        (f.skillA === a.id && f.skillB === b.id) ||
+        (f.skillA === b.id && f.skillB === a.id),
+    );
+    if (!fusion) return;
+    if (discovered.find((d) => d.name === fusion.name)) {
+      setSelectedFusion({
+        ...fusion,
+        discoveredAt: Date.now(),
+        skillAData: a,
+        skillBData: b,
+      });
+      return;
+    }
+    const newDiscovered: DiscoveredFusion = {
+      ...fusion,
+      discoveredAt: Date.now(),
+      skillAData: a,
+      skillBData: b,
+    };
+    setAnimatingFusion(newDiscovered);
+    setTimeout(() => {
+      setDiscovered((prev) => [...prev, newDiscovered]);
+      setAnimatingFusion(null);
+      setSelectedFusion(newDiscovered);
+      setArenaSkills([]);
+    }, 1500);
+  }, [arenaSkills, discovered]);
+
+  const addCustomSkill = useCallback(() => {
+    if (!customSkillName.trim()) return;
+    const newSkill: CustomSkill = {
+      id: `custom_${Date.now()}`,
+      name: customSkillName.trim(),
+      category: customSkillCategory,
+      color: CATEGORIES[customSkillCategory].color,
+      icon: '✨',
+      isCustom: true,
+    };
+    setCustomSkills((prev) => [...prev, newSkill]);
+    setCustomSkillName('');
+    setShowCustomSkill(false);
+  }, [customSkillName, customSkillCategory]);
+
+  const handleReset = useCallback(() => {
+    setDiscovered([]);
+    setJournalNotes({});
+    setCustomSkills([]);
+    setArenaSkills([]);
+    setSelectedFusion(null);
+    localStorage.removeItem('skill-fusion-discovered');
+    localStorage.removeItem('skill-fusion-notes');
+    localStorage.removeItem('skill-fusion-customs');
+  }, []);
+
+  const mostRecentRarity = latestFusion ? RARITY_TIERS[getFusionRarity(latestFusion)] : null;
+
+  return (
+    <div className="min-h-screen bg-[#0a0f1a] text-white">
+      {/* Header */}
+      <div className="text-center pt-8 pb-6 px-4">
+        <div className="inline-flex items-center gap-2 bg-[#7AD62A]/10 border border-[#7AD62A]/30 rounded-full px-4 py-1.5 mb-4">
+          <Sparkles className="w-4 h-4 text-[#7AD62A]" />
+          <span className="text-sm font-medium text-[#7AD62A]">Skill Fusion Lab</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {skills.map((skill) => (
-            <div
-              key={skill.id}
-              className="rounded-xl border border-white/10 p-4 text-center"
-              style={{ borderColor: skill.color + '40' }}
-            >
+        <h1 className="text-3xl md:text-4xl font-bold mb-3">
+          Discover{' '}
+          <span className="text-[#7AD62A]">{totalFusions}</span>{' '}
+          real specializations
+        </h1>
+        <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
+          Combine two skills to discover a real, existing career field. Each fusion explains
+          what the field is, what professionals do, and why it matters. Build your own
+          learning map.
+        </p>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="max-w-5xl mx-auto px-4 mb-6">
+        <div className="flex flex-wrap items-center gap-3 justify-center">
+          {/* Points */}
+          <div className="flex items-center gap-2 bg-[#0f172a] border border-white/10 rounded-xl px-4 py-2">
+            <Trophy className="w-4 h-4 text-[#7AD62A]" />
+            <span className="text-sm font-bold text-[#7AD62A]">{totalPoints.toLocaleString()}</span>
+            <span className="text-xs text-gray-500">pts</span>
+          </div>
+
+          {/* Progress */}
+          <div className="flex items-center gap-2 bg-[#0f172a] border border-white/10 rounded-xl px-4 py-2">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span className="text-sm font-bold text-white">{discoveredCount}</span>
+            <span className="text-xs text-gray-500">/ {totalFusions}</span>
+            <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden ml-1">
               <div
-                className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold text-lg"
-                style={{ backgroundColor: skill.color + '30', color: skill.color }}
-              >
-                {skill.mastery}
-              </div>
-              <div className="text-sm font-medium text-white">{skill.name}</div>
-              <div className="text-xs text-gray-500">{skill.domain}</div>
+                className="h-full bg-[#7AD62A] rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
             </div>
-          ))}
+          </div>
+
+          {/* Latest fusion badge */}
+          {latestFusion && mostRecentRarity && (
+            <div
+              className="flex items-center gap-1.5 rounded-xl px-3 py-2 border"
+              style={{
+                backgroundColor: mostRecentRarity.color + '15',
+                borderColor: mostRecentRarity.color + '40',
+              }}
+            >
+              <Star className="w-3.5 h-3.5" style={{ color: mostRecentRarity.color }} />
+              <span className="text-xs font-bold" style={{ color: mostRecentRarity.color }}>
+                {mostRecentRarity.label}
+              </span>
+              <span className="text-xs text-gray-400">{latestFusion.name}</span>
+            </div>
+          )}
+
+          {/* Journal */}
+          <button
+            onClick={() => setShowJournal(!showJournal)}
+            className="flex items-center gap-1.5 bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-400 hover:text-white hover:border-white/20 transition-colors"
+          >
+            <BookOpen className="w-4 h-4" />
+            Journal
+            <ChevronDown className="w-3 h-3" />
+          </button>
+
+          {/* Custom Skill */}
+          <button
+            onClick={() => setShowCustomSkill(true)}
+            className="flex items-center gap-1.5 bg-[#7AD62A]/10 border border-[#7AD62A]/30 rounded-xl px-3 py-2 text-sm text-[#7AD62A] hover:bg-[#7AD62A]/20 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Custom Skill
+          </button>
+
+          {/* Admin */}
+          <div className="relative">
+            <button
+              onClick={() => setShowAdmin(!showAdmin)}
+              className="flex items-center gap-1.5 bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-400 hover:text-white hover:border-white/20 transition-colors"
+            >
+              <Zap className="w-4 h-4" />
+              Admin
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            {showAdmin && (
+              <div className="absolute right-0 top-full mt-2 bg-[#0f172a] border border-white/10 rounded-xl p-3 shadow-xl z-50 w-48">
+                <div className="text-xs text-gray-500 mb-2">Admin Panel</div>
+                <button
+                  onClick={handleReset}
+                  className="w-full text-left text-sm text-red-400 hover:text-red-300 px-2 py-1.5 rounded-lg hover:bg-red-500/10 flex items-center gap-2"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset Progress
+                </button>
+                <div className="text-[10px] text-gray-600 mt-2 px-2">
+                  {discovered.length} fusions discovered
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Reset icon */}
+          <button
+            onClick={handleReset}
+            className="p-2 text-gray-600 hover:text-gray-400 transition-colors"
+            title="Reset progress"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
-        <div className="mt-6 space-y-2">
-          <h4 className="text-sm font-semibold text-gray-400">Discoverable Fusions</h4>
-          {FUSIONS.map((f) => {
-            const a = skills.find((s) => s.id === f.a);
-            const b = skills.find((s) => s.id === f.b);
+      </div>
+
+      {/* Category Progress */}
+      <div className="max-w-5xl mx-auto px-4 mb-4">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {(Object.keys(CATEGORIES) as SkillCategory[]).map((cat) => {
+            const stats = categoryStats[cat];
+            const pct = stats.total > 0 ? (stats.discovered / stats.total) * 100 : 0;
             return (
               <div
-                key={f.result}
-                className="flex items-center gap-2 text-xs text-gray-500"
+                key={cat}
+                className="flex items-center gap-2 bg-[#0f172a] border border-white/10 rounded-lg px-3 py-1.5"
               >
-                <span style={{ color: a?.color }}>{a?.name}</span>
-                <span>+</span>
-                <span style={{ color: b?.color }}>{b?.name}</span>
-                <span>=</span>
-                <span className="text-white font-medium">{f.result}</span>
+                <span className="text-xs font-medium text-gray-400">{CATEGORIES[cat].label}</span>
+                <span className="text-xs font-bold" style={{ color: CATEGORIES[cat].color }}>
+                  {stats.discovered}
+                </span>
+                <span className="text-xs text-gray-600">/ {stats.total}</span>
+                <div className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%`, backgroundColor: CATEGORIES[cat].color }}
+                  />
+                </div>
               </div>
             );
           })}
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="w-full h-[500px] lg:h-[600px] bg-[#0a0f1a] rounded-2xl border border-white/10 overflow-hidden relative">
-      {/* Title overlay */}
-      <div className="absolute top-4 left-4 z-10">
-        <h3 className="text-lg font-bold text-white">Skill Fusion Lab</h3>
-        <p className="text-xs text-gray-400">
-          Drag skills together to discover specializations
-        </p>
+      {/* Skill Filter Tabs */}
+      <div className="max-w-5xl mx-auto px-4 mb-3">
+        <div className="flex gap-2 flex-wrap justify-center">
+          <button
+            onClick={() => setActiveFilter('all')}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              activeFilter === 'all'
+                ? 'bg-[#7AD62A] text-[#0a0f1a]'
+                : 'bg-[#0f172a] text-gray-400 hover:text-white border border-white/10'
+            }`}
+          >
+            All ({allSkills.length})
+          </button>
+          {(Object.keys(CATEGORIES) as SkillCategory[]).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                activeFilter === cat
+                  ? 'text-[#0a0f1a]'
+                  : 'bg-[#0f172a] text-gray-400 hover:text-white border border-white/10'
+              }`}
+              style={
+                activeFilter === cat
+                  ? { backgroundColor: CATEGORIES[cat].color }
+                  : undefined
+              }
+            >
+              {CATEGORIES[cat].label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Discovered count */}
-      <div className="absolute top-4 right-4 z-10 bg-[#0f172a]/80 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-white/10">
-        <span className="text-xs text-gray-400">Discovered: </span>
-        <span className="text-sm font-bold text-[#7AD62A]">
-          {discovered.size}
-        </span>
-        <span className="text-xs text-gray-500">/{FUSIONS.length}</span>
+      {/* Skill Tags */}
+      <div className="max-w-5xl mx-auto px-4 mb-6">
+        <div className="flex gap-2 flex-wrap justify-center">
+          {filteredSkills.map((skill) => {
+            const inArena = arenaSkills.some((s) => s.id === skill.id);
+            return (
+              <button
+                key={skill.id}
+                onClick={() => (inArena ? removeFromArena(skill.id) : addToArena(skill))}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                  inArena
+                    ? 'ring-2 ring-white/30 scale-105'
+                    : 'hover:scale-105'
+                }`}
+                style={{
+                  backgroundColor: skill.color + (inArena ? '40' : '20'),
+                  borderColor: skill.color + (inArena ? '80' : '40'),
+                  color: skill.color,
+                }}
+              >
+                {inArena && <CheckCircle2 className="w-3.5 h-3.5" />}
+                {!inArena && <Plus className="w-3.5 h-3.5" />}
+                {skill.name}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Selected skill info */}
-      {selectedSkill && !draggingId && (
-        <div className="absolute bottom-4 left-4 z-10 bg-[#0f172a]/90 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/10 max-w-[200px]">
-          <div className="flex items-center gap-2 mb-1">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: selectedSkill.color }}
-            />
-            <span className="text-sm font-semibold text-white">
-              {selectedSkill.name}
-            </span>
+      {/* Arena */}
+      <div className="max-w-5xl mx-auto px-4 mb-8">
+        <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 min-h-[200px] relative overflow-hidden">
+          {/* Arena background decoration */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-white/20" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-white/10" />
           </div>
-          <div className="text-xs text-gray-400">{selectedSkill.domain}</div>
-          <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${selectedSkill.mastery}%`,
-                backgroundColor: selectedSkill.color,
-              }}
-            />
-          </div>
-          <div className="text-[10px] text-gray-500 mt-1">
-            {selectedSkill.mastery}% mastery
+
+          {/* Fusion animation overlay */}
+          {animatingFusion && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0a0f1a]/80 backdrop-blur-sm">
+              <div className="text-center animate-pulse">
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl border-2 animate-bounce"
+                    style={{
+                      backgroundColor: animatingFusion.skillAData.color + '30',
+                      borderColor: animatingFusion.skillAData.color,
+                    }}
+                  >
+                    {animatingFusion.skillAData.icon}
+                  </div>
+                  <div className="text-3xl text-[#7AD62A] font-bold">+</div>
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl border-2 animate-bounce"
+                    style={{
+                      backgroundColor: animatingFusion.skillBData.color + '30',
+                      borderColor: animatingFusion.skillBData.color,
+                    }}
+                  >
+                    {animatingFusion.skillBData.icon}
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-white mb-2">FUSING...</div>
+                <div
+                  className="text-lg font-bold"
+                  style={{ color: RARITY_TIERS[getFusionRarity(animatingFusion)].color }}
+                >
+                  {animatingFusion.name}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Arena content */}
+          {arenaSkills.length === 0 && !animatingFusion && (
+            <div className="flex flex-col items-center justify-center h-32 text-center relative z-10">
+              <Plus className="w-8 h-8 text-gray-700 mb-2" />
+              <p className="text-gray-500 text-sm">Click any skill above to add it to the arena</p>
+              <p className="text-gray-600 text-xs mt-1">Then drag two together to discover a real specialization</p>
+            </div>
+          )}
+
+          {arenaSkills.length > 0 && (
+            <div className="flex items-center justify-center gap-4 relative z-10">
+              {arenaSkills.map((skill, i) => (
+                <div key={skill.id} className="flex items-center gap-4">
+                  <div className="text-center">
+                    <div
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl border-2 mb-2 mx-auto cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        backgroundColor: skill.color + '20',
+                        borderColor: skill.color + '60',
+                      }}
+                      onClick={() => removeFromArena(skill.id)}
+                      title="Click to remove"
+                    >
+                      {skill.icon}
+                    </div>
+                    <div className="text-sm font-medium" style={{ color: skill.color }}>
+                      {skill.name}
+                    </div>
+                    <div className="text-[10px] text-gray-600">{skill.category}</div>
+                  </div>
+                  {i < arenaSkills.length - 1 && arenaSkills.length === 2 && (
+                    <div className="text-2xl font-bold text-[#7AD62A]">+</div>
+                  )}
+                </div>
+              ))}
+
+              {arenaSkills.length === 1 && (
+                <div className="text-center">
+                  <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-white/10 flex items-center justify-center mb-2 mx-auto">
+                    <Plus className="w-6 h-6 text-gray-700" />
+                  </div>
+                  <div className="text-xs text-gray-600">Add second skill</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Fusion button */}
+          {arenaSkills.length === 2 && !animatingFusion && (
+            <div className="flex justify-center mt-4 relative z-10">
+              <button
+                onClick={tryFusion}
+                className="flex items-center gap-2 bg-[#7AD62A] text-[#0a0f1a] px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#8ce63a] transition-colors"
+              >
+                <Zap className="w-4 h-4" />
+                Fuse Skills
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Selected Fusion Detail */}
+      {selectedFusion && !animatingFusion && (
+        <div className="max-w-5xl mx-auto px-4 mb-8">
+          <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 relative">
+            <button
+              onClick={() => setSelectedFusion(null)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="px-3 py-1 rounded-full text-xs font-bold border"
+                style={{
+                  backgroundColor: RARITY_TIERS[getFusionRarity(selectedFusion)].color + '20',
+                  borderColor: RARITY_TIERS[getFusionRarity(selectedFusion)].color + '50',
+                  color: RARITY_TIERS[getFusionRarity(selectedFusion)].color,
+                }}
+              >
+                {RARITY_TIERS[getFusionRarity(selectedFusion)].label}
+              </div>
+              <h3 className="text-xl font-bold text-white">{selectedFusion.name}</h3>
+              <div className="flex items-center gap-1 text-[#7AD62A] text-sm">
+                <Trophy className="w-3.5 h-3.5" />
+                {getPointsForFusion(selectedFusion)} pts
+              </div>
+            </div>
+
+            <p className="text-gray-400 text-sm mb-4">{selectedFusion.description}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="bg-[#0a0f1a] rounded-xl p-4">
+                <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">What Professionals Do</h4>
+                <p className="text-sm text-gray-300">{selectedFusion.whatTheyDo}</p>
+              </div>
+              <div className="bg-[#0a0f1a] rounded-xl p-4">
+                <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Why It Matters</h4>
+                <p className="text-sm text-gray-300">{selectedFusion.whyItMatters}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <span style={{ color: selectedFusion.skillAData.color }}>
+                {selectedFusion.skillAData.icon} {selectedFusion.skillAData.name}
+              </span>
+              <span>+</span>
+              <span style={{ color: selectedFusion.skillBData.color }}>
+                {selectedFusion.skillBData.icon} {selectedFusion.skillBData.name}
+              </span>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Active fusion preview */}
-      {activeFusionRule && draggingId && (
-        <div className="absolute bottom-4 right-4 z-10 bg-[#7AD62A]/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-[#7AD62A]/30">
-          <div className="text-xs text-[#7AD62A] font-medium">
-            Fusion Available
-          </div>
-          <div className="text-sm font-bold text-white mt-1">
-            {activeFusionRule.result}
-          </div>
-          <div className="text-[10px] text-gray-400 mt-0.5">
-            {activeFusionRule.description}
+      {/* Journal Drawer */}
+      {showJournal && (
+        <div className="max-w-5xl mx-auto px-4 mb-8">
+          <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-[#7AD62A]" />
+                Discovery Journal
+              </h3>
+              <button
+                onClick={() => setShowJournal(false)}
+                className="text-gray-600 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {discovered.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-8">
+                No discoveries yet. Combine two skills in the arena to start your journal.
+              </p>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {[...discovered].reverse().map((d, i) => (
+                  <div
+                    key={`${d.name}-${i}`}
+                    className="bg-[#0a0f1a] rounded-xl p-4 border border-white/5"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div
+                        className="px-2 py-0.5 rounded text-[10px] font-bold"
+                        style={{
+                          backgroundColor: RARITY_TIERS[getFusionRarity(d)].color + '20',
+                          color: RARITY_TIERS[getFusionRarity(d)].color,
+                        }}
+                      >
+                        {RARITY_TIERS[getFusionRarity(d)].label}
+                      </div>
+                      <span className="text-sm font-bold text-white">{d.name}</span>
+                      <span className="text-[10px] text-gray-600 ml-auto">
+                        {new Date(d.discoveredAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400 mb-2">{d.description}</p>
+                    <div className="flex items-center gap-2 text-[10px] text-gray-600">
+                      <span style={{ color: d.skillAData.color }}>
+                        {d.skillAData.icon} {d.skillAData.name}
+                      </span>
+                      <span>+</span>
+                      <span style={{ color: d.skillBData.color }}>
+                        {d.skillBData.icon} {d.skillBData.name}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* Instructions */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 text-[10px] text-gray-600">
-        Click to select &middot; Drag to move &middot; Combine two skills
-      </div>
+      {/* Custom Skill Modal */}
+      {showCustomSkill && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">Create Custom Skill</h3>
+              <button
+                onClick={() => setShowCustomSkill(false)}
+                className="text-gray-600 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-      {/* 3D Canvas */}
-      <Canvas
-        camera={{ position: [0, 0, 7], fov: 50 }}
-        gl={{ antialias: true, alpha: true }}
-        style={{ background: 'transparent' }}
-      >
-        <Suspense fallback={null}>
-          <Scene
-            skills={skills}
-            setSkills={setSkills}
-            selectedId={selectedId}
-            setSelectedId={setSelectedId}
-            draggingId={draggingId}
-            setDraggingId={setDraggingId}
-            activeFusion={activeFusion}
-            setActiveFusion={setActiveFusion}
-            celebration={celebration}
-            setCelebration={setCelebration}
-          />
-        </Suspense>
-      </Canvas>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Skill Name</label>
+                <input
+                  type="text"
+                  value={customSkillName}
+                  onChange={(e) => setCustomSkillName(e.target.value)}
+                  placeholder="e.g. Robotics, Blockchain, FinTech..."
+                  className="w-full bg-[#0a0f1a] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#7AD62A]/50"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Category</label>
+                <div className="flex gap-2 flex-wrap">
+                  {(Object.keys(CATEGORIES) as SkillCategory[]).map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setCustomSkillCategory(cat)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+                        customSkillCategory === cat
+                          ? 'text-[#0a0f1a]'
+                          : 'bg-[#0a0f1a] text-gray-400 border-white/10'
+                      }`}
+                      style={
+                        customSkillCategory === cat
+                          ? { backgroundColor: CATEGORIES[cat].color, borderColor: CATEGORIES[cat].color }
+                          : undefined
+                      }
+                    >
+                      {CATEGORIES[cat].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={addCustomSkill}
+                disabled={!customSkillName.trim()}
+                className="w-full bg-[#7AD62A] text-[#0a0f1a] py-2.5 rounded-xl font-bold text-sm hover:bg-[#8ce63a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                Create Skill
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fusion grid — discovered specializations */}
+      {discovered.length > 0 && !showJournal && (
+        <div className="max-w-5xl mx-auto px-4 pb-8">
+          <h3 className="text-sm font-bold text-gray-500 uppercase mb-3 flex items-center gap-2">
+            <Award className="w-4 h-4" />
+            Discovered Specializations
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[...discovered].reverse().map((d, i) => {
+              const rarity = RARITY_TIERS[getFusionRarity(d)];
+              return (
+                <button
+                  key={`${d.name}-${i}`}
+                  onClick={() => setSelectedFusion(d)}
+                  className="bg-[#0f172a] border border-white/10 rounded-xl p-4 text-left hover:border-white/20 transition-all group"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div
+                      className="px-2 py-0.5 rounded text-[10px] font-bold"
+                      style={{ backgroundColor: rarity.color + '20', color: rarity.color }}
+                    >
+                      {rarity.label}
+                    </div>
+                    <span className="text-xs text-gray-600 ml-auto">
+                      +{getPointsForFusion(d)} pts
+                    </span>
+                  </div>
+                  <div className="text-sm font-bold text-white group-hover:text-[#7AD62A] transition-colors mb-1">
+                    {d.name}
+                  </div>
+                  <p className="text-xs text-gray-500 line-clamp-2">{d.description}</p>
+                  <div className="flex items-center gap-1 mt-2 text-[10px] text-gray-600">
+                    <span style={{ color: d.skillAData.color }}>
+                      {d.skillAData.icon} {d.skillAData.name}
+                    </span>
+                    <span>+</span>
+                    <span style={{ color: d.skillBData.color }}>
+                      {d.skillBData.icon} {d.skillBData.name}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
