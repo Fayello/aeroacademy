@@ -241,6 +241,12 @@ export class NavigationService {
           label: 'Capstones',
         },
         {
+          href: '/dashboard/skill-fusion',
+          tKey: 'nav.skillFusion',
+          icon: 'Atom',
+          label: 'Skill Fusion',
+        },
+        {
           href: '/dashboard/exams',
           tKey: 'nav.exams',
           icon: 'ClipboardCheck',
