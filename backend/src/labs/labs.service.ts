@@ -35,7 +35,7 @@ const LAB_CPU_QUOTA = parseInt(process.env.LAB_CPU_QUOTA || '150000', 10);
 const PORT_RANGE_START = parseInt(process.env.LAB_PORT_START || '8000', 10);
 const PORT_RANGE_END = parseInt(process.env.LAB_PORT_END || '9000', 10);
 const MAX_CONCURRENT_LABS = parseInt(
-  process.env.LAB_MAX_CONCURRENT || '12',
+  process.env.LAB_MAX_CONCURRENT || '20',
   10,
 );
 const MAX_LABS_PER_USER = parseInt(process.env.MAX_LABS_PER_USER || '3', 10);
