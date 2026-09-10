@@ -471,6 +471,14 @@ export default function SkillFusionLab() {
   const fusionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [showAdmin, setShowAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      setIsAdmin(user.role === "ADMIN");
+    } catch { setIsAdmin(false); }
+  }, []);
   const [editingFusion, setEditingFusion] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ name: string; description: string; tier: number; rarity: string; score: number }>({ name: "", description: "", tier: 1, rarity: "Common", score: 100 });
   const [fusionEdits, setFusionEdits] = useState<Record<string, Partial<{ name: string; description: string; tier: number; rarity: string; score: number }>>>(() => loadFusionEdits());
@@ -1081,10 +1089,12 @@ export default function SkillFusionLab() {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7AD62A]/20 border border-[#7AD62A]/30 text-sm text-[#7AD62A]/60 hover:bg-[#7AD62A]/30 transition-all cursor-pointer">
             <Plus size={14} /> Custom Skill
           </button>
-          <button onClick={() => setShowAdmin(!showAdmin)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/50 text-sm text-slate-400 hover:text-violet-400 hover:border-violet-500/30 transition-all cursor-pointer">
-            <Settings size={14} /> Admin {showAdmin ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-          </button>
+          {isAdmin && (
+            <button onClick={() => setShowAdmin(!showAdmin)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/50 text-sm text-slate-400 hover:text-violet-400 hover:border-violet-500/30 transition-all cursor-pointer">
+              <Settings size={14} /> Admin {showAdmin ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            </button>
+          )}
           {discovered.length > 0 && (
             <button onClick={resetGame}
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/30 text-sm text-slate-500 hover:text-red-400 hover:border-red-500/30 transition-all cursor-pointer">
@@ -1208,7 +1218,7 @@ export default function SkillFusionLab() {
         )}
 
         {/* Admin Panel */}
-        {showAdmin && (
+        {isAdmin && showAdmin && (
           <div className="mb-4 p-4 sm:p-5 angular-card bg-slate-800/90 border border-violet-500/20 backdrop-blur-sm max-h-96 overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div>
