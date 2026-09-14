@@ -95,12 +95,13 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          script_stop: true
           script: |
             set -eu
             printf '%s\n' '${{ secrets.SERVER_PASSWORD }}' | sudo -S -p '' sh -c '
               set -eu
-              cd /root/aeroacademy
+              compose_file=$(find /root /opt /srv /home -maxdepth 5 -type f \( -name docker-compose.yml -o -name compose.yml \) -exec grep -l "aeroacademy-backend" {} \; 2>/dev/null | head -n 1)
+              test -n "$compose_file"
+              cd "$(dirname "$compose_file")"
               docker compose pull --ignore-buildable frontend backend
               docker compose up -d --force-recreate docker-proxy frontend backend
               docker image prune -f
