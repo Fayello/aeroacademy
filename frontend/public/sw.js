@@ -1,5 +1,5 @@
 // XpertClass PWA Service Worker
-const CACHE_VERSION = "xpertclass-v2";
+const CACHE_VERSION = "xpertclass-v3";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGES_CACHE = `${CACHE_VERSION}-pages`;
 const OFFLINE_URL = "/";
@@ -34,24 +34,7 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
 
-  // Next.js build manifest chunks: cache-first (immutable content)
-  if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req).then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(STATIC_CACHE).then((c) => c.put(req, copy)).catch(() => {});
-          }
-          return res;
-        }).catch(() => cached);
-      })
-    );
-    return;
-  }
-
-  // Next.js HMR / build: bypass
+  // Next.js owns its versioned runtime assets and preload requests.
   if (url.pathname.startsWith("/_next/")) return;
 
   // Navigation requests: network-first, cache for offline
@@ -71,8 +54,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets (images, fonts, styles, scripts): cache-first
-  if (["style", "script", "image", "font"].includes(req.destination)) {
+  // Stable static assets: cache-first. Scripts stay network-managed.
+  if (["style", "image", "font"].includes(req.destination)) {
     event.respondWith(
       caches.match(req).then((cached) => {
         if (cached) return cached;

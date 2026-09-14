@@ -13,11 +13,15 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DiscussionsService } from './discussions.service';
+import { LabsService } from '../labs/labs.service';
 
 @Controller('v1/discussions')
 @UseGuards(AuthGuard('jwt'))
 export class DiscussionsController {
-  constructor(private discussionsService: DiscussionsService) {}
+  constructor(
+    private readonly discussionsService: DiscussionsService,
+    private readonly labsService: LabsService,
+  ) {}
 
   @Get('course/:courseId')
   getPosts(
@@ -38,14 +42,15 @@ export class DiscussionsController {
   }
 
   @Get('lab/:labId')
-  getLabPosts(
-    @Param('labId', ParseUUIDPipe) labId: string,
+  async getLabPosts(
+    @Param('labId') id: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('tag') tag?: string,
     @Query('sort') sort?: string,
     @Query('search') search?: string,
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.discussionsService.getPosts(null, {
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 20,
@@ -62,7 +67,8 @@ export class DiscussionsController {
   }
 
   @Get('lab/:labId/stats')
-  getLabStats(@Param('labId', ParseUUIDPipe) labId: string) {
+  async getLabStats(@Param('labId') id: string) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.discussionsService.getStats(null, labId);
   }
 
@@ -72,7 +78,8 @@ export class DiscussionsController {
   }
 
   @Get('lab/:labId/tags')
-  getLabTags(@Param('labId', ParseUUIDPipe) labId: string) {
+  async getLabTags(@Param('labId') id: string) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.discussionsService.getTags(null, labId);
   }
 
@@ -99,11 +106,12 @@ export class DiscussionsController {
   }
 
   @Post('lab/:labId')
-  createLabPost(
+  async createLabPost(
     @Req() req: any,
-    @Param('labId', ParseUUIDPipe) labId: string,
+    @Param('labId') id: string,
     @Body() body: { title: string; body: string; tags?: string[] },
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.discussionsService.createPost(req.user.id, { ...body, labId });
   }
 

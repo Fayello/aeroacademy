@@ -29,7 +29,6 @@ import {
   Brain,
   Cpu,
   BarChart3,
-  Palette,
   Building2,
   Users,
   BookOpen,
@@ -173,7 +172,6 @@ export default function OnboardingPage() {
     router.push("/dashboard");
   };
 
-  const welcomeName = userName || "there";
 
   const currentTestimonial = testimonials[(step >= 0 ? step : 0) % testimonials.length];
   const completedSteps = Math.max(0, step + 1);

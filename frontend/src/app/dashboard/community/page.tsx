@@ -6,8 +6,8 @@ import { fetchApi } from "@/lib/api";
 import { useDashboard } from "@/hooks/useDashboard";
 import PageHeader from "@/components/ui/PageHeader";
 import {
-  Users, Trophy, FlaskConical, MessageSquare, ChevronRight, Loader2,
-  Shield, Zap, Crown, Target, Activity, Flame, Swords,
+  Users, Trophy, FlaskConical, ChevronRight, Loader2,
+  Shield, Target, Activity, Flame, Swords,
 } from "lucide-react";
 import { DIVISION_TEXT_COLORS } from "@/lib/constants";
 
@@ -19,22 +19,6 @@ interface Team {
   totalXp: number;
   avatarUrl?: string;
   primaryColor?: string;
-}
-
-interface LeaderboardEntry {
-  id: string;
-  name: string;
-  username?: string;
-  division: string;
-  xp: number;
-  rank: number;
-}
-
-interface FeedItem {
-  type: string;
-  message: string;
-  points?: number;
-  timestamp: string;
 }
 
 interface TeamSeeker {
@@ -305,8 +289,6 @@ export default function CommunityPage() {
               const myDivIdx = DIVISION_ORDER.indexOf(userMetrics?.division || "BRONZE");
               const theirDivIdx = DIVISION_ORDER.indexOf(seeker.division);
               const skillMatch = Math.abs(myDivIdx - theirDivIdx) <= 1;
-              const levelDiff = Math.abs((userMetrics?.xp || 0) - seeker.xp);
-
               return (
                 <div key={seeker.id} className={`p-3 rounded-xl border transition-all ${
                   skillMatch ? "border-[#7AD62A]/30 bg-[#7AD62A]/[0.03]" : "border-white/4 bg-white/[0.02]"

@@ -6,7 +6,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import PageHeader from "@/components/ui/PageHeader";
 import {
   Swords, Loader2, Search, Trophy, Zap, Shield, Flame, Target,
-  Award, ChevronRight, User,
+  Award,
 } from "lucide-react";
 import { DIVISION_TEXT_COLORS } from "@/lib/constants";
 
@@ -30,15 +30,6 @@ interface H2HResult {
   user2: H2HUser;
 }
 
-interface LeaderboardEntry {
-  id: string;
-  name: string;
-  username?: string;
-  division: string;
-  xp: number;
-  rank: number;
-}
-
 function StatBar({ label, val1, val2, icon: Icon, higherIsBetter = true }: { label: string; val1: number; val2: number; icon: typeof Trophy; higherIsBetter?: boolean }) {
   const total = val1 + val2 || 1;
   const pct1 = (val1 / total) * 100;
@@ -60,7 +51,7 @@ function StatBar({ label, val1, val2, icon: Icon, higherIsBetter = true }: { lab
 }
 
 export default function HeadToHeadPage() {
-  const { userMetrics, leaderboard } = useDashboard();
+  const { leaderboard } = useDashboard();
   const [result, setResult] = useState<H2HResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string>("");

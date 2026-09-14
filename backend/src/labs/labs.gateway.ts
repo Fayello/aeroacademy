@@ -184,9 +184,8 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (
       !data?.labId ||
       typeof data.labId !== 'string' ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        data.labId,
-      )
+      data.labId.length > 128 ||
+      !/^[a-z0-9-]+$/i.test(data.labId)
     ) {
       logger.warn(
         `Terminal join rejected: invalid lab ID (client ${client.id})`,
@@ -194,16 +193,28 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit('error', 'Invalid lab ID');
       return;
     }
+
+    let labId: string;
+    try {
+      labId = await this.labsService.resolveLabId(data.labId);
+    } catch {
+      logger.warn(
+        `Terminal join rejected: unknown lab (client ${client.id})`,
+      );
+      client.emit('error', 'Lab not found');
+      return;
+    }
+
     logger.info(
-      `Terminal join request: user ${userId}, lab ${data.labId}, client ${client.id}`,
+      `Terminal join request: user ${userId}, lab ${labId}, client ${client.id}`,
     );
 
     try {
-      const instance = await this.labsService.getLabStatus(userId, data.labId);
+      const instance = await this.labsService.getLabStatus(userId, labId);
 
       if (!instance || !instance.containerId || instance.status !== 'RUNNING') {
         logger.warn(
-          `Terminal join rejected: no active instance (user ${userId}, lab ${data.labId}, status: ${instance?.status})`,
+          `Terminal join rejected: no active instance (user ${userId}, lab ${labId}, status: ${instance?.status})`,
         );
         client.emit('error', 'No active lab instance found');
         return;
@@ -219,7 +230,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         inspectInfo = await container.inspect();
       } catch {
         logger.warn(
-          `Container not found (user ${userId}, lab ${data.labId}), container ${instance.containerId}`,
+          `Container not found (user ${userId}, lab ${labId}), container ${instance.containerId}`,
         );
         client.emit('error', 'Lab container not found. Please restart the lab.');
         return;
@@ -227,7 +238,7 @@ export class LabsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (!inspectInfo.State.Running) {
         logger.warn(
-          `Container not running (user ${userId}, lab ${data.labId}), state: ${inspectInfo.State.Status}, exit: ${inspectInfo.State.ExitCode}`,
+          `Container not running (user ${userId}, lab ${labId}), state: ${inspectInfo.State.Status}, exit: ${inspectInfo.State.ExitCode}`,
         );
         try {
           await container.start();

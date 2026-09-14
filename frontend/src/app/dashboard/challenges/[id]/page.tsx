@@ -21,7 +21,6 @@ import {
   Zap,
   Calendar,
 } from "lucide-react";
-import EmptyState from "@/components/ui/EmptyState";
 import { DashboardLoadingState } from "@/components/dashboard/DashboardStates";
 
 interface ChallengeDetail {

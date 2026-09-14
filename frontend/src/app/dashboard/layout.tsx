@@ -89,7 +89,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
     verifyOnboarding();
     return () => { cancelled = true; };
-  }, [nav.canAccessAdminView, nav.viewMode, navLoading, pathname, router]);
+  }, [checked, nav.canAccessAdminView, nav.viewMode, navLoading, pathname, router]);
 
   if (navLoading || !checked) {
     return (

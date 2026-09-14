@@ -210,20 +210,21 @@ export default function LabWorkspace() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const isMobile = useIsMobile();
   const [mobileCommand, setMobileCommand] = useState("");
+  const activeLabId = lab?.id;
 
   // Load lab reviews
   useEffect(() => {
-    if (activeLabTab !== "reviews" || !id) return;
+    if (activeLabTab !== "reviews" || !activeLabId) return;
     let cancelled = false;
-    fetchApi(`/labs/${id}/reviews`)
+    fetchApi(`/labs/${activeLabId}/reviews`)
       .then((data) => { if (!cancelled) setReviewsData(data as ReviewsData); })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [activeLabTab, id]);
+  }, [activeLabTab, activeLabId]);
 
   // Load existing user review
   useEffect(() => {
-    if (!reviewsData || !id) return;
+    if (!reviewsData) return;
     const timeoutId = window.setTimeout(() => {
       try {
         const stored = localStorage.getItem("user");
@@ -239,25 +240,25 @@ export default function LabWorkspace() {
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [reviewsData, id]);
+  }, [reviewsData]);
 
   const handleSubmitReview = useCallback(async () => {
-    if (myRating < 1) return;
+    if (myRating < 1 || !activeLabId) return;
     setSubmittingReview(true);
     try {
-      await fetchApi(`/labs/${id}/reviews`, {
+      await fetchApi(`/labs/${activeLabId}/reviews`, {
         method: "POST",
         body: JSON.stringify({ rating: myRating, comment: myComment || undefined }),
       });
       toast.success("Review submitted!");
-      const data = await fetchApi(`/labs/${id}/reviews`);
+      const data = await fetchApi(`/labs/${activeLabId}/reviews`);
       setReviewsData(data as ReviewsData);
     } catch {
       toast.error("Failed to submit review");
     } finally {
       setSubmittingReview(false);
     }
-  }, [id, myRating, myComment]);
+  }, [activeLabId, myRating, myComment]);
 
   const clearReconnectTimer = useCallback(() => {
     if (reconnectTimerRef.current) {
@@ -267,19 +268,20 @@ export default function LabWorkspace() {
   }, []);
 
   const toggleWalkthroughStep = useCallback((stepId: number) => {
+    if (!activeLabId) return;
     setWalkthroughSteps((prev) => {
       const next = prev.map((s) => s.id === stepId ? { ...s, completed: !s.completed } : s);
       try {
         const completedIds = next.filter((s) => s.completed).map((s) => s.id);
-        localStorage.setItem(`walkthrough:${String(id)}`, JSON.stringify(completedIds));
-        fetchApi(`/labs/${String(id)}/checkpoint`, {
+        localStorage.setItem(`walkthrough:${activeLabId}`, JSON.stringify(completedIds));
+        fetchApi(`/labs/${activeLabId}/checkpoint`, {
           method: "POST",
           body: JSON.stringify({ walkthroughState: completedIds }),
         }).catch(() => {});
       } catch {}
       return next;
     });
-  }, [id]);
+  }, [activeLabId]);
 
   const handleReconnect = useCallback(() => {
     clearReconnectTimer();
@@ -420,6 +422,7 @@ export default function LabWorkspace() {
 
   useEffect(() => {
     let cancelled = false;
+    let resolvedLabId = String(id);
     const levelTimer = setTimeout(() => {
       try {
         const xp = parseInt(localStorage.getItem("xp") || "0", 10);
@@ -429,14 +432,15 @@ export default function LabWorkspace() {
 
     async function loadLab() {
       try {
-        const labData = await fetchApi(`/labs/definition/${id}`);
+        const labData = await fetchApi<LabDefinition>(`/labs/definition/${id}`);
+        resolvedLabId = labData.id;
         if (!cancelled) {
           setLab(labData);
           if (isMobile && isWebLab(labData.dockerImage || undefined)) {
             setWorkspaceView("web");
           }
         }
-        const status = await fetchApi(`/labs/status/${id}`);
+        const status = await fetchApi<LabInstance | null>(`/labs/status/${resolvedLabId}`);
         if (!cancelled) setInstance(status);
       } catch {
         // silently fail
@@ -448,7 +452,7 @@ export default function LabWorkspace() {
 
     const pollInterval = setInterval(async () => {
       try {
-        const status = await fetchApi(`/labs/status/${id}`);
+        const status = await fetchApi<LabInstance | null>(`/labs/status/${resolvedLabId}`);
         if (!cancelled) {
           setInstance(status);
           if (status && (status.status === "STOPPED" || status.status === "FAILED" || (status.expiresAt && new Date(status.expiresAt).getTime() <= Date.now()))) {
@@ -477,7 +481,7 @@ export default function LabWorkspace() {
       clearTimeout(levelTimer);
       clearInterval(pollInterval);
     };
-  }, [id]);
+  }, [id, isMobile]);
 
   // Load walkthrough state from server checkpoint
   useEffect(() => {
@@ -487,21 +491,21 @@ export default function LabWorkspace() {
     const steps = getWalkthroughSteps(currentLab);
     async function loadCheckpoint() {
       try {
-        const checkpoint = await fetchApi<{ walkthroughState: number[] } | null>(`/labs/${String(id)}/checkpoint`);
+        const checkpoint = await fetchApi<{ walkthroughState: number[] } | null>(`/labs/${currentLab.id}/checkpoint`);
         if (cancelled) return;
         if (checkpoint?.walkthroughState) {
           const completed = checkpoint.walkthroughState as number[];
           steps.forEach((s) => { s.completed = completed.includes(s.id); });
         } else {
           try {
-            const saved = JSON.parse(localStorage.getItem(`walkthrough:${String(id)}`) || "[]") as number[];
+            const saved = JSON.parse(localStorage.getItem(`walkthrough:${currentLab.id}`) || "[]") as number[];
             steps.forEach((s) => { s.completed = saved.includes(s.id); });
           } catch {}
         }
       } catch {
         if (cancelled) return;
         try {
-          const saved = JSON.parse(localStorage.getItem(`walkthrough:${String(id)}`) || "[]") as number[];
+          const saved = JSON.parse(localStorage.getItem(`walkthrough:${currentLab.id}`) || "[]") as number[];
           steps.forEach((s) => { s.completed = saved.includes(s.id); });
         } catch {}
       }
@@ -514,7 +518,7 @@ export default function LabWorkspace() {
     }
     loadCheckpoint();
     return () => { cancelled = true; };
-  }, [lab, id]);
+  }, [lab]);
 
   useEffect(() => {
     return () => {
@@ -525,7 +529,7 @@ export default function LabWorkspace() {
   }, []);
 
   const initTerminal = useCallback(() => {
-    if (!terminalRef.current) return;
+    if (!terminalRef.current || !activeLabId) return;
 
     let savedFontSize = isMobile ? 18 : 14;
     try {
@@ -563,16 +567,13 @@ export default function LabWorkspace() {
 
     socket.on("connect", () => {
       if (socketRef.current !== socket) return;
-      setConnected(true);
-      setHasConnected(true);
-      hasConnectedRef.current = true;
+      setConnected(false);
       sessionEndedRef.current = false;
-      reconnectAttemptsRef.current = 0;
-      setAutoReconnecting(false);
-      socket.emit("join", { labId: id });
+      socket.emit("join", { labId: activeLabId });
     });
     socket.on("connect_error", () => {
       if (socketRef.current !== socket) return;
+      setConnected(false);
       const freshToken = localStorage.getItem("token");
       if (freshToken && freshToken !== token) {
         socket.auth = { token: freshToken };
@@ -585,6 +586,11 @@ export default function LabWorkspace() {
     });
     socket.on("ready", () => {
       if (socketRef.current !== socket) return;
+      setConnected(true);
+      setHasConnected(true);
+      hasConnectedRef.current = true;
+      reconnectAttemptsRef.current = 0;
+      setAutoReconnecting(false);
       term.focus();
     });
     socket.on("disconnect", () => {
@@ -603,6 +609,7 @@ export default function LabWorkspace() {
     });
     socket.on("error", (msg: string) => {
       if (socketRef.current !== socket) return;
+      setConnected(false);
       toast.error(msg || "Terminal error occurred.");
     });
     term.onData((data: string) => socket.emit("input", data));
@@ -642,7 +649,7 @@ export default function LabWorkspace() {
       resizeObserver.disconnect();
       origDispose();
     };
-  }, [id, clearReconnectTimer, scheduleReconnect]);
+  }, [activeLabId, clearReconnectTimer, isMobile, scheduleReconnect]);
 
   const sendCommand = (cmd: string) => {
     if (socketRef.current?.connected) {
@@ -668,7 +675,8 @@ export default function LabWorkspace() {
     setProvisioning(true);
     setLaunchError(null);
     try {
-      const newInstance = await fetchApi(`/labs/start/${id}`, { method: "POST" });
+      if (!activeLabId) throw new Error("Lab is not ready yet.");
+      const newInstance = await fetchApi(`/labs/start/${activeLabId}`, { method: "POST" });
       setInstance(newInstance);
       toast.success("Lab started successfully.");
     } catch (err) {
@@ -689,7 +697,8 @@ export default function LabWorkspace() {
       confirmText: "Terminate",
       onConfirm: async () => {
         try {
-          await fetchApi(`/labs/stop/${id}`, { method: "POST" });
+          if (!activeLabId) return;
+          await fetchApi(`/labs/stop/${activeLabId}`, { method: "POST" });
           toast.success("Lab terminated.");
         } catch {
           // soft-fail
@@ -722,7 +731,8 @@ export default function LabWorkspace() {
           clearReconnectTimer();
           if (socketRef.current) socketRef.current.disconnect();
           if (xtermRef.current) { xtermRef.current.dispose(); xtermRef.current = null; }
-          const newInstance = await fetchApi(`/labs/reset/${id}`, { method: "POST" });
+          if (!activeLabId) return;
+          const newInstance = await fetchApi(`/labs/reset/${activeLabId}`, { method: "POST" });
           setInstance(newInstance);
           toast.success("Lab reset.");
         } catch {
@@ -1114,7 +1124,7 @@ export default function LabWorkspace() {
 
         <div className="flex flex-nowrap sm:flex-wrap items-center gap-2 overflow-x-auto">
           <Link
-            href={`/dashboard/labs/${id}/discussions`}
+            href={`/dashboard/labs/${lab.id}/discussions`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-white/5 text-xs font-medium transition-colors border border-white/10"
           >
             <MessageSquare size={14} />
@@ -1379,7 +1389,7 @@ export default function LabWorkspace() {
                       ) : (
                         <FlagInput
                           flagId={flag.id}
-                          labId={String(id)}
+                          labId={lab.id}
                           setLab={setLab}
                           walkthroughComplete={walkthroughSteps.length === 0 || walkthroughSteps.filter((s) => s.completed).length >= Math.ceil(walkthroughSteps.length * 0.5)}
                         />
