@@ -8,7 +8,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import Link from "next/link";
 import toast from "@/lib/toast";
 import { getLevel } from "@/lib/levelGating";
-import { getDifficultyStyle, getEstimatedTime, getSolvedCount, getProgressStatus } from "@/lib/labs";
+import { getDifficultyStyle, getEstimatedTime, getProgressStatus } from "@/lib/labs";
 import { getFocusLabelFromOnboarding, getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreLabAgainstOnboarding } from "@/lib/onboarding";
 import type { DashboardRecommendations, Lab, LabStats } from "@/types/api";
 
@@ -75,7 +75,7 @@ export default function LabsCatalog() {
       const matchesDifficulty = difficultyFilter === "ALL" || diff.label === difficultyFilter;
       const matchesDomain = domainFilter === "ALL" || getLabDomain(lab) === domainFilter;
 
-      const progressStatus = getProgressStatus(lab.flags);
+      const progressStatus = getProgressStatus(lab.flagCount || 0, lab.solvedFlags || 0);
       const matchesTab =
         activeTab === "all" ||
         (activeTab === "not-started" && progressStatus === "NOT_STARTED") ||
@@ -113,9 +113,9 @@ export default function LabsCatalog() {
 
   const tabCounts = {
     all: labs.length,
-    "not-started": labs.filter((l) => getProgressStatus(l.flags) === "NOT_STARTED").length,
-    "in-progress": labs.filter((l) => getProgressStatus(l.flags) === "IN_PROGRESS").length,
-    "completed": labs.filter((l) => getProgressStatus(l.flags) === "COMPLETED").length,
+    "not-started": labs.filter((l) => getProgressStatus(l.flagCount || 0, l.solvedFlags || 0) === "NOT_STARTED").length,
+    "in-progress": labs.filter((l) => getProgressStatus(l.flagCount || 0, l.solvedFlags || 0) === "IN_PROGRESS").length,
+    "completed": labs.filter((l) => getProgressStatus(l.flagCount || 0, l.solvedFlags || 0) === "COMPLETED").length,
   };
 
   const clearFilters = () => {
@@ -370,12 +370,12 @@ export default function LabsCatalog() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {paginatedLabs.map((lab) => {
             const diff = getDifficultyStyle(lab.difficulty || 1200);
-            const flags = lab.flags?.length || 0;
-            const solvedFlags = getSolvedCount(lab.flags);
+            const flags = lab.flagCount || 0;
+            const solvedFlags = lab.solvedFlags || 0;
             const isLocked = lab.isLocked ?? false;
             const requiredLevel = lab.requiredLevel ?? 1;
             const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;
-            const progressStatus = getProgressStatus(lab.flags);
+            const progressStatus = getProgressStatus(flags, solvedFlags);
 
             if (isLocked) {
               const xpNeeded = requiredLevel * 1000 - level * 1000;
@@ -483,10 +483,10 @@ export default function LabsCatalog() {
             </div>
             {paginatedLabs.map((lab, index) => {
               const diff = getDifficultyStyle(lab.difficulty || 1200);
-              const flags = lab.flags?.length || 0;
-              const solvedFlags = getSolvedCount(lab.flags);
+              const flags = lab.flagCount || 0;
+              const solvedFlags = lab.solvedFlags || 0;
               const isLocked = lab.isLocked ?? false;
-              const progressStatus = getProgressStatus(lab.flags);
+              const progressStatus = getProgressStatus(flags, solvedFlags);
 
               return (
                 <div key={lab.id}>
@@ -550,11 +550,11 @@ export default function LabsCatalog() {
           <div className="space-y-3 md:hidden">
             {paginatedLabs.map((lab) => {
               const diff = getDifficultyStyle(lab.difficulty || 1200);
-              const flags = lab.flags?.length || 0;
-              const solvedFlags = getSolvedCount(lab.flags);
+              const flags = lab.flagCount || 0;
+              const solvedFlags = lab.solvedFlags || 0;
               const isLocked = lab.isLocked ?? false;
               const requiredLevel = lab.requiredLevel ?? 1;
-              const progressStatus = getProgressStatus(lab.flags);
+              const progressStatus = getProgressStatus(flags, solvedFlags);
               const progress = flags > 0 ? (solvedFlags / flags) * 100 : 0;
 
               if (isLocked) {

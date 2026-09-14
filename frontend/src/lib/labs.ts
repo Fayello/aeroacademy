@@ -17,9 +17,17 @@ export function getSolvedCount(flags: LabFlag[] | undefined): number {
   return flags?.filter((f) => f.submissions?.length).length || 0;
 }
 
-export function getProgressStatus(flags: LabFlag[] | undefined): string {
+export function getProgressStatus(totalOrFlags: LabFlag[] | undefined | number, solved?: number): string {
+  if (typeof totalOrFlags === 'number') {
+    const total = totalOrFlags;
+    const s = solved || 0;
+    if (total === 0) return "NOT_STARTED";
+    if (s >= total) return "COMPLETED";
+    return s > 0 ? "IN_PROGRESS" : "NOT_STARTED";
+  }
+  const flags = totalOrFlags;
   if (!flags || flags.length === 0) return "NOT_STARTED";
-  const solved = getSolvedCount(flags);
-  if (solved >= flags.length) return "COMPLETED";
-  return solved > 0 ? "IN_PROGRESS" : "NOT_STARTED";
+  const s = getSolvedCount(flags);
+  if (s >= flags.length) return "COMPLETED";
+  return s > 0 ? "IN_PROGRESS" : "NOT_STARTED";
 }

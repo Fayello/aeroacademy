@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>XpertClass Skill Fusion</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0f1a; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+const W = 1920, H = 1080;
+const NAVY = '#0a0f1a';
+const GREEN = '#7AD62A';
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+3,3)/2; }
+function easeOutBack(t) { const c=1.70158; return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2); }
+function clamp(v,a,b) { return Math.max(a,Math.min(b,v)); }
+function lerp(a,b,t) { return a+(b-a)*t; }
+
+function roundRect(x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function txt(str, x, y, size, color, weight, align) {
+  ctx.font = (weight||'400')+' '+(size||24)+'px system-ui, sans-serif';
+  ctx.fillStyle = color || '#fff';
+  ctx.textAlign = align || 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(str, x, y);
+}
+
+function hexToRgb(hex) {
+  const h = hex.replace('#','');
+  return `${parseInt(h.substring(0,2),16)},${parseInt(h.substring(2,4),16)},${parseInt(h.substring(4,6),16)}`;
+}
+
+function glow(x, y, r, rgba) {
+  const g = ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0, rgba); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(x-r,y-r,r*2,r*2);
+}
+
+function drawCard(cx, cy, letter, label, sub, iconCol, borderCol, alpha) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha = alpha;
+  const cw=260, ch=80, x=cx-cw/2, y=cy-ch/2;
+  glow(cx,cy,80, `rgba(${hexToRgb(iconCol)},0.15)`);
+  roundRect(x,y,cw,ch,14); ctx.fillStyle='rgba(15,23,42,0.92)'; ctx.fill();
+  ctx.strokeStyle=borderCol; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(x+32,cy,22,0,Math.PI*2); ctx.fillStyle=iconCol; ctx.fill();
+  txt(letter, x+32, cy, 18, '#0a0f1a', '700');
+  txt(label, x+62, cy-10, 20, '#fff', '700', 'left');
+  txt(sub, x+62, cy+14, 12, '#64748b', '400', 'left');
+  ctx.restore();
+}
+
+function drawFusion(cx, cy, letters, label, sub, col1, col2, rarity, alpha) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha = alpha;
+  const cw=360, ch=90, x=cx-cw/2, y=cy-ch/2;
+  glow(cx,cy,120,'rgba(122,214,42,0.2)');
+  roundRect(x,y,cw,ch,16); ctx.fillStyle='rgba(15,23,42,0.95)'; ctx.fill();
+  ctx.strokeStyle='rgba(122,214,42,0.5)'; ctx.lineWidth=2; ctx.stroke();
+  const g=ctx.createLinearGradient(x+12,0,x+64,0); g.addColorStop(0,col1); g.addColorStop(1,col2);
+  ctx.beginPath(); ctx.arc(x+38,cy,26,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+  txt(letters, x+38, cy, 20, '#0a0f1a', '800');
+  txt(label, x+78, cy-12, 24, '#fff', '700', 'left');
+  txt(sub, x+78, cy+14, 13, '#94a3b8', '400', 'left');
+  if (rarity) {
+    ctx.font='700 10px system-ui,sans-serif';
+    const rw=ctx.measureText(rarity).width+16;
+    roundRect(x+cw-rw-10, y+8, rw, 20, 5); ctx.fillStyle='rgba(122,214,42,0.15)'; ctx.fill();
+    txt(rarity, x+cw-rw/2-10, y+18, 10, GREEN, '700');
+  }
+  ctx.restore();
+}
+
+// Burst particles - seeded per frame for determinism
+function drawBurstAt(cx, cy, t, alpha) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha = alpha;
+  for (let i = 0; i < 40; i++) {
+    const seed = i * 137.508 + 42;
+    const angle = (seed % 360) * Math.PI / 180;
+    const speed = 2 + (seed % 6);
+    const decay = 0.012 + (seed % 20) * 0.001;
+    const life = clamp(1 - t * decay * 60, 0, 1);
+    if (life <= 0) continue;
+    const dist = t * speed * 60;
+    const px = cx + Math.cos(angle) * dist;
+    const py = cy + Math.sin(angle) * dist;
+    const sz = (1.5 + (seed % 3)) * life;
+    ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI * 2);
+    ctx.fillStyle = i % 3 === 0 ? '#fff' : GREEN;
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+// Grid
+function drawGrid(a) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha=a*0.06; ctx.strokeStyle=GREEN; ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+}
+
+// Particles
+const parts = Array.from({length:25},(_,i)=>({x:(i*73.7)%W,y:(i*91.3)%H,ph:i*1.23,sz:1+(i%3)*0.5}));
+function drawParticles(t, a) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha=a;
+  parts.forEach(p=>{
+    const px=(p.x+Math.sin(t*0.3+p.ph)*40)%W;
+    const py=(p.y+Math.cos(t*0.2+p.ph)*40)%H;
+    ctx.beginPath(); ctx.arc(px,py,p.sz,0,Math.PI*2);
+    ctx.fillStyle=`rgba(122,214,42,${0.1+Math.sin(t*0.5+p.ph)*0.05})`; ctx.fill();
+  });
+  ctx.restore();
+}
+
+// Orbit nodes
+const orbs = [
+  {l:'AI',c:'#10b981'},{l:'Dev',c:'#3b82f6'},{l:'QA',c:'#f59e0b'},{l:'Sec',c:'#8b5cf6'},
+  {l:'Code',c:'#ef4444'},{l:'Cloud',c:'#06b6d4'},{l:'Data',c:'#ec4899'},{l:'Net',c:'#22c55e'},
+];
+function drawOrbit(t, a) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha=a;
+  const cx=W/2,cy=H/2-20,r=260;
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.strokeStyle='rgba(122,214,42,0.12)'; ctx.lineWidth=1; ctx.stroke();
+  const pos=orbs.map((_,i)=>{
+    const ang=(i/orbs.length)*Math.PI*2-Math.PI/2+t*0.15;
+    return{x:cx+Math.cos(ang)*r,y:cy+Math.sin(ang)*r};
+  });
+  for(let i=0;i<pos.length;i++) for(let j=i+1;j<pos.length;j++){
+    const dx=pos[i].x-pos[j].x,dy=pos[i].y-pos[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<350){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[j].x,pos[j].y);
+    ctx.strokeStyle=`rgba(122,214,42,${(1-d/350)*0.12})`;ctx.lineWidth=0.8;ctx.stroke();}
+  }
+  orbs.forEach((o,i)=>{
+    const x=pos[i].x,y=pos[i].y;
+    ctx.shadowColor=o.c;ctx.shadowBlur=15;
+    ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.fillStyle=o.c;ctx.fill();
+    ctx.shadowBlur=0;
+    txt(o.l,x,y,11,'#0a0f1a','700');
+  });
+  ctx.restore();
+}
+
+function drawLine(x1,y1,x2,y2,a) {
+  if(a<=0)return; ctx.save(); ctx.globalAlpha=a*0.3;
+  ctx.strokeStyle=GREEN; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(x1,y1);
+  ctx.quadraticCurveTo(lerp(x1,x2,0.5),lerp(y1,y2,0.5)-20,x2,y2);
+  ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+}
+
+// ═══════ DETERMINISTIC RENDER ═══════
+// t is time in seconds, fully deterministic
+window.renderAt = function(t) {
+  ctx.fillStyle = NAVY; ctx.fillRect(0,0,W,H);
+  drawGrid(clamp(t*0.5,0,0.6));
+  drawParticles(t, clamp(t*0.5,0,0.8));
+
+  // ─── PHASE 1: Logo (0–2.2s) ───
+  if (t < 2.4) {
+    const a = t<0.4 ? easeOut(t/0.4) : t>1.8 ? 1-easeOut((t-1.8)/0.5) : 1;
+    const yo = lerp(30,0,easeOut(clamp(t/0.8,0,1)));
+    ctx.save(); ctx.globalAlpha=a;
+    roundRect(W/2-32, H/2-62+yo, 64, 64, 16);
+    const ig=ctx.createLinearGradient(W/2-32,H/2-62+yo,W/2+32,H/2+2+yo);
+    ig.addColorStop(0,'#229C62');ig.addColorStop(1,GREEN);
+    ctx.fillStyle=ig; ctx.fill(); ctx.shadowColor=GREEN;ctx.shadowBlur=30;ctx.fill();ctx.shadowBlur=0;
+    txt('X',W/2,H/2-30+yo,28,NAVY,'800');
+    txt('XpertClass',W/2+10,H/2-30+yo,42,'#fff','700');
+    const ta=clamp((t-0.4)/0.5,0,1); ctx.globalAlpha=a*ta;
+    txt('What happens when skills connect?',W/2,H/2+40+yo,28,'#94a3b8','400');
+    ctx.restore();
+  }
+
+  // ─── PHASE 2: Security + DevOps (2–5s) ───
+  if (t>2.0 && t<5.2) {
+    const ca=t<2.7?easeOut((t-2.0)/0.7):t>4.4?1-easeOut((t-4.4)/0.6):1;
+    const sp=easeOutBack(clamp((t-2.0)/0.7,0,1));
+    const mp=t>3.5?easeInOut(clamp((t-3.5)/1.0,0,1)):0;
+    const sx=lerp(200,W/2-160,sp), dx=lerp(W-200,W/2+160,sp);
+    const sfx=lerp(W/2-160,W/2-130,mp), dfx=lerp(W/2+160,W/2+130,mp);
+    if(mp>0.2&&mp<0.9) drawLine(sfx+120,H/2,dfx-120,H/2,(mp-0.2)/0.7);
+    drawCard(lerp(sx,sfx,mp),H/2,'S','Security','Cybersecurity & Defense','#10b981','rgba(16,185,129,0.4)',ca);
+    drawCard(lerp(dx,dfx,mp),H/2,'D','DevOps','Infrastructure & Delivery','#3b82f6','rgba(59,130,246,0.4)',ca);
+    if(mp>0.9) drawBurstAt(W/2,H/2,clamp((t-4.2)/0.6,0,1), mp>0.9 ? clamp(1-(t-4.2)/0.8,0,1) : 0);
+  }
+
+  // ─── Fusion 1: DevSecOps (4.8–7.8s) ───
+  if(t>4.8&&t<7.8){
+    const fa=t<5.4?easeOutBack(clamp((t-4.8)/0.6,0,1)):t>7.2?1-easeOut((t-7.2)/0.5):1;
+    drawFusion(W/2,H/2,'DS','DevSecOps','Security-First Pipeline Engineering','#10b981','#3b82f6','EPIC',fa);
+  }
+
+  // ─── PHASE 3: Linux + Cloud (8–10.5s) ───
+  if(t>7.8&&t<10.8){
+    const ca2=t<8.5?easeOut((t-7.8)/0.7):t>10.0?1-easeOut((t-10.0)/0.6):1;
+    const sp2=easeOutBack(clamp((t-7.8)/0.7,0,1));
+    const mp2=t>9.5?easeInOut(clamp((t-9.5)/1.0,0,1)):0;
+    const lx=lerp(200,W/2-160,sp2),cx2=lerp(W-200,W/2+160,sp2);
+    const lfx=lerp(W/2-160,W/2-130,mp2),cfx=lerp(W/2+160,W/2+130,mp2);
+    if(mp2>0.2&&mp2<0.9) drawLine(lfx+120,H/2,cfx-120,H/2,(mp2-0.2)/0.7);
+    drawCard(lerp(lx,lfx,mp2),H/2,'L','Linux','Systems & Infrastructure','#f59e0b','rgba(245,158,11,0.4)',ca2);
+    drawCard(lerp(cx2,cfx,mp2),H/2,'C','Cloud','AWS / GCP / Azure','#8b5cf6','rgba(139,92,246,0.4)',ca2);
+    if(mp2>0.9) drawBurstAt(W/2,H/2,clamp((t-9.8)/0.6,0,1), mp2>0.9 ? clamp(1-(t-9.8)/0.8,0,1) : 0);
+  }
+
+  // ─── Fusion 2: Cloud Architecture (10.3–12.2s) ───
+  if(t>10.3&&t<12.2){
+    const fa2=t<10.9?easeOutBack(clamp((t-10.3)/0.6,0,1)):t>11.6?1-easeOut((t-11.6)/0.5):1;
+    drawFusion(W/2,H/2,'CA','Cloud Architecture','Distributed Systems Design','#f59e0b','#8b5cf6','RARE',fa2);
+  }
+
+  // ─── PHASE 4: Orbit + End card (12–16s) ───
+  if(t>11.8){
+    const ea=easeOut(clamp((t-11.8)/0.8,0,1));
+    drawOrbit(t,ea);
+    ctx.save();ctx.globalAlpha=ea;
+    txt('XpertClass Skill Fusion',W/2,H/2-50,52,'#fff','800');
+    txt('Learn Technology. Prove What You Can Do.',W/2,H/2+10,22,'#64748b','400');
+    ctx.restore();
+  }
+
+  window.__frameReady = true;
+};
+
+// Render frame 0 immediately
+window.renderAt(0);
+</script>
+</body>
+</html>
