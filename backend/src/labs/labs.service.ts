@@ -38,6 +38,11 @@ const MAX_CONCURRENT_LABS = parseInt(
   process.env.LAB_MAX_CONCURRENT || '20',
   10,
 );
+// Host ports occupied by non-Docker processes (e.g. daphne on 8000)
+const HOST_RESERVED_PORTS = (process.env.LAB_HOST_RESERVED_PORTS || '')
+  .split(',')
+  .map((p) => parseInt(p.trim(), 10))
+  .filter((p) => !isNaN(p));
 const MAX_LABS_PER_USER = parseInt(process.env.MAX_LABS_PER_USER || '3', 10);
 const STALE_PROVISIONING_MS = parseInt(
   process.env.LAB_PROVISION_TIMEOUT_MS || (10 * 60 * 1000).toString(),
@@ -1303,20 +1308,30 @@ export class LabsService implements OnModuleInit {
 
       const usedPorts = new Set(activeInstances.map((i) => i.port));
 
+      // Query Docker API for actual host port bindings (TCP bind check inside
+      // containers cannot detect host port conflicts like daphne on port 8000)
+      try {
+        const containers = await this.docker.listContainers({ all: true });
+        for (const container of containers) {
+          const ports = container.Ports || [];
+          for (const p of ports) {
+            if (p.PublicPort && p.Type === 'tcp') {
+              usedPorts.add(p.PublicPort);
+            }
+          }
+        }
+      } catch {
+        // Fallback: if Docker API unavailable, skip host check (DB check still applies)
+      }
+
+      // Also exclude host ports occupied by non-Docker processes
+      for (const port of HOST_RESERVED_PORTS) {
+        usedPorts.add(port);
+      }
+
       for (let port = PORT_RANGE_START; port <= PORT_RANGE_END; port++) {
         if (usedPorts.has(port)) continue;
-
-        const isFree = await new Promise<boolean>((resolve) => {
-          const server = net.createServer();
-          server.once('error', () => resolve(false));
-          server.once('listening', () => {
-            server.close();
-            resolve(true);
-          });
-          server.listen(port);
-        });
-
-        if (isFree) return port;
+        return port;
       }
 
       return null;
