@@ -102,9 +102,17 @@ jobs:
               compose_file=$(find /root /opt /srv /home -maxdepth 5 -type f \( -name docker-compose.yml -o -name compose.yml \) -exec grep -l "aeroacademy-backend" {} \; 2>/dev/null | head -n 1)
               test -n "$compose_file"
               cd "$(dirname "$compose_file")"
-              docker compose pull --ignore-buildable frontend backend
+              docker compose pull frontend backend
               docker compose up -d --force-recreate docker-proxy frontend backend
               docker image prune -f
+              for migration in $(docker compose exec -T backend sh -c "ls -1 prisma/migrations"); do
+                case "$migration" in
+                  migration_lock.toml|20260914_repair_*) continue ;;
+                esac
+                if ! docker compose exec -T db psql -U aeroacademy -d aeroacademy -tAc "SELECT 1 FROM \"_prisma_migrations\" WHERE migration_name = \$\$$migration\$\$ AND finished_at IS NOT NULL LIMIT 1" 2>/dev/null | grep -qx 1; then
+                  docker compose exec -T backend npx prisma migrate resolve --applied "$migration"
+                fi
+              done
               docker compose exec -T backend npx prisma migrate deploy
               sleep 10
               curl -fsS http://localhost:4000/api/v1/labs/health > /dev/null
