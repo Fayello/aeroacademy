@@ -166,8 +166,9 @@ export class LabsController {
   @Audit('LAB_STARTED')
   async startLab(
     @Request() req: RequestWithUser,
-    @Param('id', ParseUUIDPipe) labId: string,
+    @Param('id') id: string,
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.startLab(req.user.id, labId);
   }
 
@@ -178,8 +179,9 @@ export class LabsController {
   @Audit('LAB_STOPPED')
   async stopLab(
     @Request() req: RequestWithUser,
-    @Param('id', ParseUUIDPipe) labId: string,
+    @Param('id') id: string,
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.stopLab(req.user.id, labId);
   }
 
@@ -190,8 +192,9 @@ export class LabsController {
   @Audit('LAB_RESET')
   async resetLab(
     @Request() req: RequestWithUser,
-    @Param('id', ParseUUIDPipe) labId: string,
+    @Param('id') id: string,
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.resetLab(req.user.id, labId);
   }
 
@@ -262,7 +265,8 @@ export class LabsController {
   // === REVIEWS ===
 
   @Get(':labId/reviews')
-  async getLabReviews(@Param('labId', ParseUUIDPipe) labId: string) {
+  async getLabReviews(@Param('labId') id: string) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.getLabReviews(labId);
   }
 
@@ -272,9 +276,10 @@ export class LabsController {
   @Audit('LAB_REVIEW_CREATED')
   async createLabReview(
     @Request() req: RequestWithUser,
-    @Param('labId', ParseUUIDPipe) labId: string,
+    @Param('labId') id: string,
     @Body() body: { rating: number; comment?: string },
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.createLabReview(
       req.user.id,
       labId,
@@ -288,8 +293,9 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   async getCheckpoint(
     @Request() req: RequestWithUser,
-    @Param('labId', ParseUUIDPipe) labId: string,
+    @Param('labId') id: string,
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.getCheckpoint(req.user.id, labId);
   }
 
@@ -298,9 +304,10 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   async saveCheckpoint(
     @Request() req: RequestWithUser,
-    @Param('labId', ParseUUIDPipe) labId: string,
+    @Param('labId') id: string,
     @Body() body: { walkthroughState: number[]; notes?: string },
   ) {
+    const labId = await this.labsService.resolveLabId(id);
     return this.labsService.saveCheckpoint(
       req.user.id,
       labId,
