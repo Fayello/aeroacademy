@@ -751,6 +751,8 @@ export class LabsService implements OnModuleInit {
     const where: any = {};
     if (opts?.type) {
       where.type = opts.type;
+    } else {
+      where.type = 'PRACTICE';
     }
 
     const labs = await this.prisma.lab.findMany({
