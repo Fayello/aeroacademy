@@ -129,22 +129,18 @@ export default function LabsCatalog() {
     let cancelled = false;
     async function loadData() {
       try {
-        const [labsData, stats] = await Promise.all([
-          fetchApi("/labs?take=600"),
-          fetchApi("/labs/stats"),
-        ]);
-        if (!cancelled) {
-          setLabs(labsData);
-          setSystemStats(stats);
-        }
-        fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
-          .then((data) => { if (!cancelled) setRecommendations(data); })
-          .catch(() => {});
+        const labsData = await fetchApi("/labs?take=600");
+        if (!cancelled) setLabs(labsData);
       } catch {
         if (!cancelled) toast.error("Failed to load labs");
-      } finally {
-        if (!cancelled) setLoading(false);
       }
+      fetchApi("/labs/stats")
+        .then((stats) => { if (!cancelled) setSystemStats(stats); })
+        .catch(() => {});
+      fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
+        .then((data) => { if (!cancelled) setRecommendations(data); })
+        .catch(() => {});
+      if (!cancelled) setLoading(false);
     }
     loadData();
     return () => { cancelled = true; };
