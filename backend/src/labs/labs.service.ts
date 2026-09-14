@@ -757,6 +757,7 @@ export class LabsService implements OnModuleInit {
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 600,
       where,
+      orderBy: { id: 'asc' },
       select: {
         id: true,
         title: true,

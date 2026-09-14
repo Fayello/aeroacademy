@@ -50,7 +50,7 @@ export default function CapstoneCatalog() {
   });
 
   useEffect(() => {
-    fetchApi<CapstoneLab[]>("/labs?take=600&type=CAPSTONE")
+    fetchApi<CapstoneLab[]>("/labs?take=50&type=CAPSTONE")
       .then((res) => {
         setCapstones(Array.isArray(res) ? res : []);
       })

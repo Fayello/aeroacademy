@@ -11,17 +11,35 @@ import { getLevel } from "@/lib/levelGating";
 import { getDifficultyStyle, getEstimatedTime, getProgressStatus } from "@/lib/labs";
 import { getFocusLabelFromOnboarding, getInterestTokensFromOnboarding, readOnboardingSelections, reorderItemsByIds, scoreLabAgainstOnboarding } from "@/lib/onboarding";
 import type { DashboardRecommendations, Lab, LabStats } from "@/types/api";
+import { useI18n } from "@/lib/i18n";
 
 type TabFilter = "all" | "not-started" | "in-progress" | "completed";
 
-const TABS: { id: TabFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "not-started", label: "Not started" },
-  { id: "in-progress", label: "In progress" },
-  { id: "completed", label: "Completed" },
+const LAB_FETCH_BATCH_SIZE = 50;
+const MAX_LABS_TO_FETCH = 600;
+
+const TABS: { id: TabFilter; labelKey: string }[] = [
+  { id: "all", labelKey: "labs.all" },
+  { id: "not-started", labelKey: "labs.notStarted" },
+  { id: "in-progress", labelKey: "labs.inProgress" },
+  { id: "completed", labelKey: "labs.completed" },
 ];
 
+const DOMAIN_LABEL_KEYS: Record<string, string> = {
+  Systems: "labs.domain.systems",
+  Networking: "labs.domain.networking",
+  "Web Security": "labs.domain.webSecurity",
+  Security: "labs.domain.security",
+  Cloud: "labs.domain.cloud",
+  Databases: "labs.domain.databases",
+  DevOps: "labs.domain.devops",
+  "AI & MLOps": "labs.domain.aiMlops",
+  "IT Ops": "labs.domain.itOps",
+  Design: "labs.domain.design",
+};
+
 export default function LabsCatalog() {
+  const { t } = useI18n();
   const [labs, setLabs] = useState<Lab[]>([]);
   const [loading, setLoading] = useState(true);
   const [, setSystemStats] = useState<LabStats | null>(null);
@@ -125,26 +143,45 @@ export default function LabsCatalog() {
     setActiveTab("all");
   };
 
+  const domainLabel = (domain: string) => t(DOMAIN_LABEL_KEYS[domain] || "labs.domain.systems");
+  const difficultyLabel = (difficulty: string) => t(`labs.difficulty.${difficulty}`);
+
   useEffect(() => {
     let cancelled = false;
     async function loadData() {
-      try {
-        const labsData = await fetchApi("/labs?take=600");
-        if (!cancelled) setLabs(labsData);
-      } catch {
-        if (!cancelled) toast.error("Failed to load labs");
-      }
       fetchApi("/labs/stats")
         .then((stats) => { if (!cancelled) setSystemStats(stats); })
         .catch(() => {});
       fetchApi<DashboardRecommendations>("/dashboard/recommendations?limit=6")
         .then((data) => { if (!cancelled) setRecommendations(data); })
         .catch(() => {});
-      if (!cancelled) setLoading(false);
+
+      try {
+        let labsData = await fetchApi<Lab[]>(`/labs?take=${LAB_FETCH_BATCH_SIZE}&skip=0`);
+        if (cancelled) return;
+        setLabs(labsData);
+        setLoading(false);
+
+        for (
+          let skip = LAB_FETCH_BATCH_SIZE;
+          labsData.length === LAB_FETCH_BATCH_SIZE && skip < MAX_LABS_TO_FETCH;
+          skip += LAB_FETCH_BATCH_SIZE
+        ) {
+          const nextBatch = await fetchApi<Lab[]>(`/labs?take=${LAB_FETCH_BATCH_SIZE}&skip=${skip}`);
+          if (cancelled) return;
+          labsData = [...labsData, ...nextBatch];
+          setLabs(labsData);
+          if (nextBatch.length < LAB_FETCH_BATCH_SIZE) break;
+        }
+      } catch {
+        if (!cancelled) toast.error(t("labs.loadFailed"));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-    loadData();
+    void loadData();
     return () => { cancelled = true; };
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
@@ -176,11 +213,11 @@ export default function LabsCatalog() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <PageHeader
-        title="Labs"
+        title={t("labs.title")}
         description={
           focusLabel
-            ? `${labs.length} labs available, ranked for ${focusLabel.toLowerCase()}`
-            : `${labs.length} lab${labs.length !== 1 ? "s" : ""} available`
+            ? t("labs.availableForFocus", { count: labs.length, focus: focusLabel.toLowerCase() })
+            : t(labs.length === 1 ? "labs.available" : "labs.availablePlural", { count: labs.length })
         }
       />
 
@@ -195,30 +232,30 @@ export default function LabsCatalog() {
             <Rocket size={18} className="text-[#7AD62A]" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold group-hover:text-[#7AD62A] transition-colors">Just getting started?</h3>
-            <p className="text-xs text-white/60">Follow our guided beginner path — build your skills step by step</p>
+            <h3 className="text-sm font-semibold group-hover:text-[#7AD62A] transition-colors">{t("labs.beginnerTitle")}</h3>
+            <p className="text-xs text-white/60">{t("labs.beginnerDesc")}</p>
           </div>
         </div>
-        <span className="text-xs text-white/40 transition-colors group-hover:text-[#7AD62A] sm:shrink-0">Begin →</span>
+        <span className="text-xs text-white/40 transition-colors group-hover:text-[#7AD62A] sm:shrink-0">{t("labs.begin")} →</span>
       </Link>
 
       {focusLabel && recommendedLabIds.length > 0 && (
         <div className="angular-card bg-[#0f172a] border border-white/10 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#7AD62A]">Personalized ranking</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#7AD62A]">{t("labs.personalizedRanking")}</p>
             <p className="text-sm text-white mt-1">
-              Featured labs are now prioritized for <span className="text-[#7AD62A]">{focusLabel}</span>.
+              {t("labs.personalizedDesc", { focus: focusLabel })}
             </p>
             <p className="text-xs text-slate-400 mt-1">
               {recommendations?.insights?.journeySummary ||
-                "Your interests shape this ranking dynamically, so blended goals like security plus DevOps can surface a mixed practice path."}
+                t("labs.personalizedFallback")}
             </p>
           </div>
           <Link
             href="/dashboard/starting-point"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#7AD62A] hover:bg-[#6bc422] text-[#0F203A] text-sm font-semibold transition-colors"
           >
-            {recommendations?.source === "ai" ? "Open AI-guided path" : "Start Guided Path"}
+            {recommendations?.source === "ai" ? t("labs.openAiPath") : t("labs.startGuidedPath")}
           </Link>
         </div>
       )}
@@ -237,7 +274,7 @@ export default function LabsCatalog() {
                     : "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/10"
                 }`}
               >
-                {tab.label}
+                {t(tab.labelKey)}
                 <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
                   activeTab === tab.id ? "bg-[#7AD62A]/10 text-[#7AD62A]" : "bg-white/5 text-slate-400"
                 }`}>
@@ -249,19 +286,19 @@ export default function LabsCatalog() {
         </div>
 
         <div className="flex items-center justify-between gap-3 sm:justify-end">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 sm:hidden">View mode</p>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 sm:hidden">{t("labs.viewMode")}</p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setViewMode("grid")}
               className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
-              aria-label="Grid view"
+              aria-label={t("labs.gridView")}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode("table")}
               className={`p-1.5 rounded-md transition-colors ${viewMode === "table" ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-300"}`}
-              aria-label="Table view"
+              aria-label={t("labs.tableView")}
             >
               <List size={16} />
             </button>
@@ -277,14 +314,14 @@ export default function LabsCatalog() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search labs..."
+            placeholder={t("labs.searchPlaceholder")}
             className="w-full pl-9 pr-9 py-2.5 text-sm bg-[#0f172a] border border-white/10 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-400 transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
-              aria-label="Clear search"
+              aria-label={t("labs.clearSearch")}
             >
               <X size={14} />
             </button>
@@ -302,13 +339,13 @@ export default function LabsCatalog() {
                   : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
               }`}
             >
-              {d === "ALL" ? "All levels" : d.charAt(0) + d.slice(1).toLowerCase()}
+              {d === "ALL" ? t("labs.allLevels") : difficultyLabel(d)}
             </button>
           ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 w-full text-xs text-slate-400 sm:w-auto">Domain:</span>
+          <span className="mr-1 w-full text-xs text-slate-400 sm:w-auto">{t("labs.domain")}</span>
           {DOMAINS.map((d) => (
             <button
               key={d}
@@ -319,26 +356,26 @@ export default function LabsCatalog() {
                   : "bg-white/5 text-slate-400 border-white/10 hover:border-white/10"
               }`}
             >
-              {d === "ALL" ? "All domains" : d}
+              {d === "ALL" ? t("labs.allDomains") : domainLabel(d)}
             </button>
           ))}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "featured" | "domain" | "difficulty" | "title")}
             className="w-full sm:w-auto sm:ml-2 px-2 py-1.5 text-xs font-medium rounded-full border bg-white/5 text-slate-400 border-white/10 focus:outline-none focus:border-[#7AD62A]/30"
-            aria-label="Sort labs"
+            aria-label={t("labs.sort")}
           >
-            <option value="featured">Sort: Featured</option>
-            <option value="domain">Sort: Domain</option>
-            <option value="difficulty">Sort: Difficulty</option>
-            <option value="title">Sort: Title</option>
+            <option value="featured">{t("labs.sortFeatured")}</option>
+            <option value="domain">{t("labs.sortDomain")}</option>
+            <option value="difficulty">{t("labs.sortDifficulty")}</option>
+            <option value="title">{t("labs.sortTitle")}</option>
           </select>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
               className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-white/5 rounded-full border border-white/10 transition-all"
             >
-              Clear filters
+              {t("labs.clearFilters")}
             </button>
           )}
         </div>
@@ -350,19 +387,19 @@ export default function LabsCatalog() {
             <Microscope size={28} className="text-[#7AD62A]" />
           </div>
           <h3 className="text-sm font-semibold text-white mb-1">
-            {labs.length === 0 ? "The lab is quiet" : "No labs match your filters"}
+            {labs.length === 0 ? t("labs.emptyTitle") : t("labs.noMatch")}
           </h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
             {labs.length === 0
-              ? "Lab environments are being prepared. Check back soon."
-              : "Try adjusting your search or clearing filters."}
+              ? t("labs.emptyDesc")
+              : t("labs.adjustFilters")}
           </p>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
               className="mt-4 px-4 py-2 text-sm font-medium text-white bg-[#7AD62A] rounded-lg hover:bg-[#6bc422] transition-all"
             >
-              Clear all filters
+              {t("labs.clearAll")}
             </button>
           )}
         </div>
@@ -383,16 +420,16 @@ export default function LabsCatalog() {
                 <div
                   key={lab.id}
                   className="group relative angular-card border border-white/10 overflow-hidden opacity-75"
-                  aria-label={`${lab.title} — locked, requires level ${requiredLevel}`}
+                  aria-label={t("labs.lockedRequired", { title: lab.title, level: requiredLevel })}
                 >
                   <div className="absolute inset-0 z-20 backdrop-blur-md bg-[#0a0f1a]/90 flex flex-col items-center justify-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                       <Lock size={20} className="text-amber-400" />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-mono text-slate-300 mb-1">LEVEL {requiredLevel} REQUIRED</p>
+                      <p className="text-xs font-mono text-slate-300 mb-1">{t("labs.levelRequired", { level: requiredLevel })}</p>
                       <div className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">
-                        Earn {xpNeeded > 0 ? xpNeeded : 500} more XP to unlock
+                        {t("labs.earnMore", { xp: xpNeeded > 0 ? xpNeeded : 500 })}
                       </div>
                     </div>
                   </div>
@@ -401,7 +438,7 @@ export default function LabsCatalog() {
                     <LabAvatar title={lab.title} id={lab.id} size={40} className="opacity-50" />
                       <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
-                        <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
+                        <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{difficultyLabel(diff.label)}</span>
                       </div>
                     </div>
                     <h3 className="text-sm font-medium text-slate-400">{lab.title}</h3>
@@ -423,17 +460,17 @@ export default function LabsCatalog() {
                     <LabAvatar title={lab.title} id={lab.id} size={40} />
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={`w-1.5 h-1.5 rounded-full ${diff.dot}`} />
-                      <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{diff.label}</span>
+                      <span className={`text-[10px] font-mono tracking-wider ${diff.color}`}>{difficultyLabel(diff.label)}</span>
                       <span className="text-[10px] font-semibold px-1.5 py-0.5 bg-[#7AD62A]/10 text-[#7AD62A] rounded flex items-center gap-0.5">
                         <Zap size={8} /> {flags * 10} XP
                       </span>
                     </div>
                     {/* Status badge */}
                     {progressStatus === "COMPLETED" && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">{t("labs.done")}</span>
                     )}
                     {progressStatus === "IN_PROGRESS" && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Active</span>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">{t("labs.active")}</span>
                     )}
                   </div>
                   <h3 className="text-sm font-medium text-white group-hover:text-slate-200 transition-colors">{lab.title}</h3>
@@ -456,9 +493,9 @@ export default function LabsCatalog() {
                   )}
 
                   <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-slate-400">{flags} OBJECTIVES</span>
+                    <span className="text-[10px] font-mono text-slate-400">{t("labs.objectives", { count: flags }).toUpperCase()}</span>
                     <span className="text-xs font-medium text-slate-400 group-hover:text-white flex items-center gap-1.5 transition-colors">
-                      LAUNCH
+                      {t("labs.launch").toUpperCase()}
                       <span className="w-5 h-5 rounded-md bg-white/5 group-hover:bg-[#7AD62A]/10 flex items-center justify-center transition-all">
                         <Play size={10} fill="currentColor" />
                       </span>
@@ -475,11 +512,11 @@ export default function LabsCatalog() {
           <div className="angular-card overflow-hidden hidden md:block">
             <div className="flex items-center gap-4 px-4 py-2.5 bg-white/5 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
               <span className="w-6 text-center shrink-0">#</span>
-              <span className="flex-1 min-w-0">Lab</span>
-              <span className="hidden sm:block w-24 shrink-0">Difficulty</span>
-              <span className="hidden md:block w-20 shrink-0">Progress</span>
-              <span className="hidden lg:block w-20 shrink-0">Time</span>
-              <span className="w-20 shrink-0 text-right">Status</span>
+              <span className="flex-1 min-w-0">{t("labs.lab")}</span>
+              <span className="hidden sm:block w-24 shrink-0">{t("labs.difficulty")}</span>
+              <span className="hidden md:block w-20 shrink-0">{t("labs.progress")}</span>
+              <span className="hidden lg:block w-20 shrink-0">{t("labs.time")}</span>
+              <span className="w-20 shrink-0 text-right">{t("labs.status")}</span>
             </div>
             {paginatedLabs.map((lab, index) => {
               const diff = getDifficultyStyle(lab.difficulty || 1200);
@@ -504,7 +541,7 @@ export default function LabsCatalog() {
                           ))}
                         </div>
                       </div>
-                      <span className="w-20 shrink-0 text-right text-xs text-slate-400">Locked</span>
+                      <span className="w-20 shrink-0 text-right text-xs text-slate-400">{t("labs.locked")}</span>
                     </div>
                   ) : (
                     <Link
@@ -521,7 +558,7 @@ export default function LabsCatalog() {
                             <div key={d} className={`w-1.5 h-1.5 rounded-full ${d <= Math.ceil((lab.difficulty || 1200) / 400) ? diff.dot : "bg-white/10"}`} />
                           ))}
                         </div>
-                        <span className="text-[10px] text-slate-400">{diff.label}</span>
+                        <span className="text-[10px] text-slate-400">{difficultyLabel(diff.label)}</span>
                       </div>
                       <div className="hidden md:block w-20 text-xs text-slate-400 shrink-0">
                         {solvedFlags}/{flags}
@@ -531,13 +568,13 @@ export default function LabsCatalog() {
                       </div>
                       <div className="w-20 shrink-0 text-right">
                         {progressStatus === "COMPLETED" && (
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">Done</span>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#7AD62A]/10 text-[#7AD62A]">{t("labs.done")}</span>
                         )}
                         {progressStatus === "IN_PROGRESS" && (
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Active</span>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">{t("labs.active")}</span>
                         )}
                         {progressStatus === "NOT_STARTED" && (
-                          <span className="text-[10px] font-medium text-[#7AD62A] group-hover:underline">Launch</span>
+                          <span className="text-[10px] font-medium text-[#7AD62A] group-hover:underline">{t("labs.launch")}</span>
                         )}
                       </div>
                     </Link>
@@ -566,16 +603,16 @@ export default function LabsCatalog() {
                         <LabAvatar title={lab.title} id={lab.id} size={36} className="opacity-50" />
                         <div className="min-w-0">
                           <h3 className="text-sm font-medium text-slate-300 truncate">{lab.title}</h3>
-                          <p className="text-[11px] text-slate-500">{diff.label}</p>
+                          <p className="text-[11px] text-slate-500">{difficultyLabel(diff.label)}</p>
                         </div>
                       </div>
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-1 text-[10px] font-medium text-amber-400">
                         <Lock size={10} />
-                        Locked
+                        {t("labs.locked")}
                       </span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">{lab.description}</p>
-                    <p className="text-xs text-amber-300">Earn {xpNeeded > 0 ? xpNeeded : 500} more XP to unlock level {requiredLevel}.</p>
+                    <p className="text-xs text-amber-300">{t("labs.earnMoreLevel", { xp: xpNeeded > 0 ? xpNeeded : 500, level: requiredLevel })}</p>
                   </div>
                 );
               }
@@ -587,11 +624,11 @@ export default function LabsCatalog() {
                       <LabAvatar title={lab.title} id={lab.id} size={36} />
                       <div className="min-w-0">
                         <h3 className="text-sm font-medium text-white truncate">{lab.title}</h3>
-                        <p className="text-[11px] text-slate-400">{getLabDomain(lab)} · {diff.label}</p>
+                        <p className="text-[11px] text-slate-400">{domainLabel(getLabDomain(lab))} · {difficultyLabel(diff.label)}</p>
                       </div>
                     </div>
                     <span className="text-[10px] font-medium text-[#7AD62A] shrink-0">
-                      {progressStatus === "COMPLETED" ? "Done" : progressStatus === "IN_PROGRESS" ? "Active" : "Launch"}
+                      {progressStatus === "COMPLETED" ? t("labs.done") : progressStatus === "IN_PROGRESS" ? t("labs.active") : t("labs.launch")}
                     </span>
                   </div>
                   <p className="mt-3 text-xs text-slate-300 line-clamp-2 leading-relaxed">{lab.description}</p>
@@ -616,7 +653,7 @@ export default function LabsCatalog() {
             onClick={() => setPageSize((p) => p + 30)}
             className="px-6 py-2.5 rounded-lg border border-white/10 bg-white/5 text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
           >
-            Load more ({paginatedLabs.length} of {filteredLabs.length})
+            {t("labs.loadMore", { shown: paginatedLabs.length, total: filteredLabs.length })}
           </button>
         </div>
       )}

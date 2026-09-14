@@ -13,7 +13,7 @@ export const revalidate = 0;
 
 async function getLabs() {
   try {
-    const res = await fetch(`${API_URL}/api/v1/labs`, { next: { revalidate: 0 } });
+    const res = await fetch(`${API_URL}/api/v1/labs/public?take=50`, { next: { revalidate: 0 } });
     if (!res.ok) return [];
     const data = await res.json();
     return Array.isArray(data) ? data : data.data || [];

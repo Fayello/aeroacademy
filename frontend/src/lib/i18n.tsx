@@ -31,6 +31,21 @@ const en: Record<string, string> = {
   "common.retry": "Retry",
   "common.error": "Something went wrong",
   "common.verified": "Verified",
+  "verifyEmail.success": "Email verified! Welcome to XpertClass.",
+  "verifyEmail.invalidCode": "Invalid or expired code. Please try again.",
+  "verifyEmail.codeSent": "New verification code sent!",
+  "verifyEmail.resendFailed": "Failed to resend the verification code.",
+  "verifyEmail.backLogin": "Back to login",
+  "verifyEmail.title": "Check your email",
+  "verifyEmail.sentTo": "We sent a 6-digit verification code to",
+  "verifyEmail.emailFallback": "your email address",
+  "verifyEmail.verifying": "Verifying...",
+  "verifyEmail.instructions": "Enter the 6-digit code from your email. The code expires in 10 minutes. Check your spam or junk folder if you do not see it.",
+  "verifyEmail.notReceived": "Didn't receive the code?",
+  "verifyEmail.resendIn": "Resend in {seconds}s",
+  "verifyEmail.sending": "Sending...",
+  "verifyEmail.resend": "Resend code",
+  "verifyEmail.differentEmail": "Use a different email",
   "section.academic": "Academic",
   "section.analytics": "Analytics",
   "section.community": "Community",
@@ -3129,6 +3144,21 @@ const fr: Record<string, string> = {
   "common.retry": "Réessayer",
   "common.error": "Une erreur s'est produite",
   "common.verified": "Vérifié",
+  "verifyEmail.success": "Adresse e-mail vérifiée ! Bienvenue sur XpertClass.",
+  "verifyEmail.invalidCode": "Ce code est incorrect ou a expiré. Veuillez réessayer.",
+  "verifyEmail.codeSent": "Un nouveau code de vérification vous a été envoyé !",
+  "verifyEmail.resendFailed": "Impossible de renvoyer le code de vérification.",
+  "verifyEmail.backLogin": "Retour à la connexion",
+  "verifyEmail.title": "Consultez votre boîte e-mail",
+  "verifyEmail.sentTo": "Nous avons envoyé un code de vérification à 6 chiffres à",
+  "verifyEmail.emailFallback": "votre adresse e-mail",
+  "verifyEmail.verifying": "Vérification...",
+  "verifyEmail.instructions": "Saisissez le code à 6 chiffres reçu par e-mail. Il expire dans 10 minutes. Pensez à vérifier vos courriers indésirables si vous ne le trouvez pas.",
+  "verifyEmail.notReceived": "Vous n'avez pas reçu le code ?",
+  "verifyEmail.resendIn": "Renvoyer dans {seconds} s",
+  "verifyEmail.sending": "Envoi...",
+  "verifyEmail.resend": "Renvoyer le code",
+  "verifyEmail.differentEmail": "Utiliser une autre adresse e-mail",
   "section.academic": "Scolarité",
   "section.analytics": "Analyse",
   "section.community": "Communauté",
@@ -6188,7 +6218,13 @@ function formatValue(template: string, values?: Record<string, string | number>)
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(readStoredLang);
+  // The server and the browser must render the same language during hydration.
+  // Apply the saved/device preference only after React has attached to the page.
+  const [lang, setLangState] = useState<Lang>("en");
+
+  useEffect(() => {
+    setLangState(readStoredLang());
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;

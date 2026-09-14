@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense, useRef } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/lib/api";
 import toast from "@/lib/toast";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 function VerifyEmailContent() {
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get("email") || "";
@@ -68,10 +70,10 @@ function VerifyEmailContent() {
     setVerifying(true);
     try {
       await auth.verifyEmail(email, codeStr);
-      toast.success("Email verified! Welcome to XpertClass.");
+      toast.success(t("verifyEmail.success"));
       router.push("/dashboard");
     } catch {
-      toast.error("Invalid or expired code. Please try again.");
+      toast.error(t("verifyEmail.invalidCode"));
       setCode(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } finally {
@@ -79,26 +81,26 @@ function VerifyEmailContent() {
     }
   };
 
-  const handleResend = useCallback(async () => {
+  const handleResend = async () => {
     if (!email || cooldown > 0) return;
     setResending(true);
     try {
       await auth.resendVerification(email);
-      toast.success("New verification code sent!");
+      toast.success(t("verifyEmail.codeSent"));
       setCooldown(30);
     } catch {
-      toast.error("Failed to resend verification code");
+      toast.error(t("verifyEmail.resendFailed"));
     } finally {
       setResending(false);
     }
-  }, [email, cooldown]);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white/5 px-6">
       <div className="w-full max-w-md">
         <Link href="/login" className="flex items-center gap-2 text-slate-500 hover:text-slate-200 mb-8 transition-colors">
           <ArrowLeft size={16} />
-          <span className="text-sm">Back to login</span>
+          <span className="text-sm">{t("verifyEmail.backLogin")}</span>
         </Link>
 
         <div className="bg-[#0f172a] rounded-2xl shadow-sm border border-white/10 p-8">
@@ -113,11 +115,11 @@ function VerifyEmailContent() {
             <Mail className="text-[#7AD62A]" size={24} />
           </div>
 
-          <h1 className="text-2xl font-bold text-white mb-2">Check your email</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">{t("verifyEmail.title")}</h1>
           <p className="text-slate-500 text-sm mb-1">
-            We sent a 6-digit verification code to
+            {t("verifyEmail.sentTo")}
           </p>
-          <p className="text-white font-medium text-sm mb-6">{email || "your email"}</p>
+          <p className="text-white font-medium text-sm mb-6">{email || t("verifyEmail.emailFallback")}</p>
 
           <div className="flex justify-center gap-2 mb-4" onPaste={handlePaste}>
             {code.map((digit, i) => (
@@ -139,30 +141,29 @@ function VerifyEmailContent() {
           {verifying && (
             <div className="flex items-center justify-center gap-2 text-sm text-slate-500 mb-4">
               <Loader2 className="animate-spin" size={14} />
-              <span>Verifying...</span>
+              <span>{t("verifyEmail.verifying")}</span>
             </div>
           )}
 
           <div className="bg-white/5 rounded-xl p-4 mb-6">
             <p className="text-xs text-slate-400 leading-relaxed">
-              Enter the 6-digit code from your email. The code expires in 10 minutes.
-              Check your spam or junk folder if you don&apos;t see it.
+              {t("verifyEmail.instructions")}
             </p>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-slate-500">
-              Didn&apos;t receive the code?{" "}
+              {t("verifyEmail.notReceived")}{" "}
               <button
                 onClick={handleResend}
                 disabled={resending || cooldown > 0}
                 className="text-[#7AD62A] hover:text-[#6bc422] font-medium disabled:text-slate-400"
               >
-                {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend code"}
+                {cooldown > 0 ? t("verifyEmail.resendIn", { seconds: cooldown }) : resending ? t("verifyEmail.sending") : t("verifyEmail.resend")}
               </button>
             </p>
             <Link href="/register" className="text-xs text-slate-500 hover:text-slate-300 mt-3 inline-block">
-              Use a different email
+              {t("verifyEmail.differentEmail")}
             </Link>
           </div>
         </div>
