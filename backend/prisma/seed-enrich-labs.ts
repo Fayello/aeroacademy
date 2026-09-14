@@ -139,7 +139,7 @@ Become proficient with sed, awk, cut, sort, and write bash scripts that automate
   },
   {
     title: "Linux Fundamentals: Process & Service Management",
-    description: "Master process inspection, signal handling, background jobs, and systemd service management.",
+    description: "Master process inspection, signal handling, background jobs, container-native services, cron, and SSH configuration.",
     dockerImage: "ubuntu:22.04",
     difficulty: 1100,
     estimatedMinutes: 60,
@@ -147,8 +147,8 @@ Become proficient with sed, awk, cut, sort, and write bash scripts that automate
 Learn to inspect, control, and debug Linux processes and services using modern tools.
 
 ### Environment
-- Ubuntu 22.04 LTS
-- systemd, procps, htop
+- Ubuntu 22.04 LTS container
+- procps, SSH, cron, and classic service tools
 - Credentials: root / proc-svc-2024!
 
 ### Tasks
@@ -157,25 +157,25 @@ Learn to inspect, control, and debug Linux processes and services using modern t
 3. Use kill to send SIGTERM then SIGKILL to a process and observe the difference
 4. Use top to sort processes by CPU usage and take a snapshot
 5. Find all zombie processes using ps and explain how to clean them up
-6. Use systemctl to list all running services and identify any failed units
-7. Create a custom systemd service for a simple shell script
-8. Use journalctl to inspect logs for the sshd service
+6. Use the service command to inspect and restart SSH
+7. Validate an SSH configuration drop-in with sshd -t
+8. Inspect authentication logs with grep and tail
 
 ### Permissions & Access
 - Container runs as root \u2014 maintain least privilege
 - Flag files owned by root:root with 644 permissions
 - Working directories use 755 for shared, 700 for private
 - Verify permissions with: stat -c '%U:%G %a' [path]`,
-    tasks: ["Use ps aux to list all running processes and identify the top memory consumer", "Start a background process and use jobs/fg/bg to manage it", "Use kill to send SIGTERM then SIGKILL to a process and observe the difference", "Use top to sort processes by CPU usage and take a snapshot", "Find all zombie processes using ps and explain how to clean them up", "Use systemctl to list all running services and identify any failed units", "Create a custom systemd service for a simple shell script", "Use journalctl to inspect logs for the sshd service"],
+    tasks: ["Use ps aux to list all running processes and identify the top memory consumer", "Start a background process and use jobs/fg/bg to manage it", "Use kill to send SIGTERM then SIGKILL to a process and observe the difference", "Use top to sort processes by CPU usage and take a snapshot", "Find all zombie processes using ps and explain how to clean them up", "Use the service command to inspect and restart SSH", "Validate an SSH configuration drop-in with sshd -t", "Inspect authentication logs with grep and tail"],
     credentials: [
       { service: "container", username: "root", password: "proc-svc-2024!" }
     ],
     flags: [
-      { title: "Process Inspector", description: "Identify top memory consumer process", correctAnswer: "ps aux --sort=-%mem | head -1", points: 100 },
-      { title: "Signal Handler", description: "Demonstrate SIGTERM vs SIGKILL", correctAnswer: "kill -15 <pid> && kill -9 <pid>", points: 150 },
-      { title: "Service Manager", description: "List failed systemd units", correctAnswer: "systemctl list-units --state=failed", points: 150 },
-      { title: "Service Creator", description: "Create a custom systemd service unit", correctAnswer: "systemctl enable my-custom-service", points: 200 },
-      { title: "Log Reader", description: "Inspect sshd logs with journalctl", correctAnswer: "journalctl -u sshd --no-pager", points: 100 }
+      { title: "Process Inspector", description: "Run ps -C sshd -o comm= | head -1 and submit the command name", correctAnswer: "sshd", points: 100 },
+      { title: "Signal Handler", description: "Terminate a sleep process with SIGTERM and submit the wait exit status", correctAnswer: "143", points: 150 },
+      { title: "Service Inspector", description: "Check SSH with service ssh status and submit running when active", correctAnswer: "running", points: 150 },
+      { title: "SSH Config Validator", description: "Run sshd -t && echo valid after creating a valid drop-in", correctAnswer: "valid", points: 200 },
+      { title: "Cron Crafter", description: "Create a cron proof file and submit its content", correctAnswer: "cron_ok", points: 100 }
     ],
   },
   {

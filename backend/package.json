@@ -14,6 +14,7 @@
     "start:prod": "node dist/main",
     "email:previews": "ts-node -r dotenv/config scripts/generate-email-previews.ts",
     "email:test-send": "ts-node -r dotenv/config scripts/send-test-email.ts",
+    "labs:audit": "ts-node scripts/audit-live-labs.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

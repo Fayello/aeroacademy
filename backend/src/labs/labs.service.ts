@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  ServiceUnavailableException,
   OnModuleInit,
   Inject,
   forwardRef,
@@ -22,10 +23,10 @@ import { DockerManager } from './docker-manager.service';
 import { ComposeManager } from './compose-manager.service';
 import { EmailService } from '../email/email.service';
 import Docker from 'dockerode';
-import * as net from 'net';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import createLogger from '../common/logger';
+import { assessLabCompatibility, isLabLaunchable } from './lab-compatibility';
 
 const logger = createLogger('Labs');
 
@@ -49,7 +50,10 @@ const STALE_PROVISIONING_MS = parseInt(
   10,
 );
 
-function getResourceLimits(profile: string): { memoryMB: number; cpuQuota: number } {
+function getResourceLimits(profile: string): {
+  memoryMB: number;
+  cpuQuota: number;
+} {
   switch (profile) {
     case 'LIGHTWEIGHT':
       return { memoryMB: 512, cpuQuota: 100000 };
@@ -64,6 +68,10 @@ function getResourceLimits(profile: string): { memoryMB: number; cpuQuota: numbe
 export class LabsService implements OnModuleInit {
   private docker: Docker;
   private portLock: Promise<void> = Promise.resolve();
+  private launchablePracticeLabIdsCache: {
+    ids: string[];
+    expiresAt: number;
+  } | null = null;
 
   constructor(
     private prisma: PrismaService,
@@ -237,9 +245,55 @@ export class LabsService implements OnModuleInit {
     }
   }
 
+  private async getLaunchablePracticeLabIds(): Promise<string[]> {
+    if (
+      this.launchablePracticeLabIdsCache &&
+      this.launchablePracticeLabIdsCache.expiresAt > Date.now()
+    ) {
+      return this.launchablePracticeLabIdsCache.ids;
+    }
+
+    const labs = await this.prisma.lab.findMany({
+      where: { type: 'PRACTICE' },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        briefing: true,
+        tasks: true,
+        flags: { select: { title: true, description: true } },
+      },
+    });
+    const ids = labs.filter((lab) => isLabLaunchable(lab)).map((lab) => lab.id);
+    this.launchablePracticeLabIdsCache = {
+      ids,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    };
+    return ids;
+  }
+
   async startLab(userId: string, labId: string) {
-    const lab = await this.prisma.lab.findUnique({ where: { id: labId } });
+    const lab = await this.prisma.lab.findUnique({
+      where: { id: labId },
+      include: {
+        flags: { select: { title: true, description: true } },
+      },
+    });
     if (!lab) throw new NotFoundException('Lab not found');
+
+    if (lab.type === 'PRACTICE') {
+      const compatibilityIssues = assessLabCompatibility(lab);
+      if (compatibilityIssues.length > 0) {
+        logger.warn(
+          `Blocked incompatible lab ${lab.id} (${lab.title}): ${compatibilityIssues
+            .map((issue) => issue.code)
+            .join(', ')}`,
+        );
+        throw new ServiceUnavailableException(
+          'This lab is temporarily unavailable while its environment is being repaired.',
+        );
+      }
+    }
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
@@ -357,40 +411,59 @@ export class LabsService implements OnModuleInit {
         });
       }
 
-      let internalPort = '80/tcp';
-      if (imageName.toLowerCase().includes('juice-shop'))
-        internalPort = '3000/tcp';
-      else if (imageName.toLowerCase().includes('webgoat'))
-        internalPort = '8080/tcp';
-      else if (imageName.toLowerCase().includes('nodegoat'))
-        internalPort = '4000/tcp';
+      const normalizedImage = imageName.toLowerCase();
+      const serviceProfiles = [
+        { match: 'juice-shop', port: '3000/tcp', browser: true },
+        { match: 'webgoat', port: '8080/tcp', browser: true },
+        { match: 'nodegoat', port: '4000/tcp', browser: true },
+        { match: 'postgres', port: '5432/tcp', browser: false },
+        { match: 'mongo', port: '27017/tcp', browser: false },
+        { match: 'redis', port: '6379/tcp', browser: false },
+        { match: 'grafana', port: '3000/tcp', browser: true },
+        { match: 'prometheus', port: '9090/tcp', browser: true },
+        { match: 'elasticsearch', port: '9200/tcp', browser: false },
+        { match: 'kibana', port: '5601/tcp', browser: true },
+        { match: 'nginx', port: '80/tcp', browser: true },
+        { match: 'dvwa', port: '80/tcp', browser: true },
+        { match: 'vapi', port: '80/tcp', browser: true },
+      ];
+      const serviceProfile = serviceProfiles.find(({ match }) =>
+        normalizedImage.includes(match),
+      );
+      const internalPort = serviceProfile?.port || '80/tcp';
 
       const env: string[] = [];
-      if (imageName.toLowerCase().includes('nodegoat')) {
+      if (normalizedImage.includes('nodegoat')) {
         const dbName = `nodegoat_${userId.replace(/-/g, '_')}`;
         env.push(`MONGODB_URI=mongodb://tactical-mongo:27017/${dbName}`);
       }
+      if (normalizedImage.includes('postgres')) {
+        env.push('POSTGRES_PASSWORD=lab123');
+      }
+      if (normalizedImage.includes('elasticsearch')) {
+        env.push(
+          'discovery.type=single-node',
+          'ES_JAVA_OPTS=-Xms256m -Xmx256m',
+        );
+      }
 
-      const serviceImages = [
-        'juice-shop',
-        'webgoat',
-        'nodegoat',
-        'webgoat',
-        'dvwa',
-        'vapi',
-      ];
-      const isServiceImage = serviceImages.some((name) =>
-        imageName.toLowerCase().includes(name),
+      const resourceLimits = getResourceLimits(
+        lab.resourceProfile || 'STANDARD',
       );
-
-      const resourceLimits = getResourceLimits(lab.resourceProfile || 'STANDARD');
       const containerOpts: any = {
         Image: imageName,
         name: `lab-${labId.slice(0, 8)}-${userId.slice(0, 8)}-${Date.now()}`,
         ExposedPorts: { [internalPort]: {} },
         Env: env,
         HostConfig: {
-          PortBindings: { [internalPort]: [{ HostPort: port.toString() }] },
+          PortBindings: {
+            [internalPort]: [
+              {
+                HostIp: serviceProfile?.browser ? '0.0.0.0' : '127.0.0.1',
+                HostPort: port.toString(),
+              },
+            ],
+          },
           Memory: resourceLimits.memoryMB * 1024 * 1024,
           CpuQuota: resourceLimits.cpuQuota,
           NetworkMode: 'aeroacademy_labs',
@@ -400,12 +473,11 @@ export class LabsService implements OnModuleInit {
         },
       };
 
-      if (!isServiceImage) {
+      if (!serviceProfile) {
         containerOpts.Cmd = ['tail', '-f', '/dev/null'];
       }
 
-      let container;
-      container = await targetDocker.createContainer(containerOpts);
+      const container = await targetDocker.createContainer(containerOpts);
 
       await container.start();
       this.dockerManager.incrementLabs(serverId);
@@ -416,9 +488,9 @@ export class LabsService implements OnModuleInit {
           AttachStdout: false,
           AttachStderr: false,
           Cmd: [
-            'bash',
+            'sh',
             '-c',
-            'id student >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq sudo > /dev/null 2>&1 && useradd -m -s /bin/bash student && echo "student:lab123" | chpasswd && echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student); exit 0',
+            'id student >/dev/null 2>&1 || { if command -v apt-get >/dev/null 2>&1; then apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo passwd >/dev/null 2>&1 && useradd -m -s /bin/bash student; elif command -v apk >/dev/null 2>&1; then apk add --no-cache bash sudo shadow >/dev/null 2>&1 && useradd -m -s /bin/bash student; elif command -v dnf >/dev/null 2>&1; then dnf install -y -q sudo shadow-utils >/dev/null 2>&1 && useradd -m -s /bin/bash student; fi; }; if id student >/dev/null 2>&1; then echo "student:lab123" | chpasswd; mkdir -p /etc/sudoers.d; echo "student ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/student; chmod 0440 /etc/sudoers.d/student; fi; exit 0',
           ],
         });
         await setupExec.start({ hijack: false });
@@ -435,10 +507,10 @@ export class LabsService implements OnModuleInit {
         let pkgCmd = '';
         if (image.includes('ubuntu') || image.includes('debian')) {
           pkgCmd =
-            'apt-get update -qq && apt-get install -y -qq acl rsyslog openssh-server cron aide iptables fail2ban-client net-tools iputils-ping curl wget > /dev/null 2>&1; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
+            'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban net-tools iputils-ping curl wget procps psmisc > /dev/null 2>&1; mkdir -p /run/sshd; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
         } else if (image.includes('centos') || image.includes('rhel')) {
           pkgCmd =
-            'dnf install -y -q acl rsyslog openssh-server cronie aide iptables-regs net-tools iputils curl wget > /dev/null 2>&1; systemctl start rsyslog 2>/dev/null; systemctl start crond 2>/dev/null; systemctl start sshd 2>/dev/null; exit 0';
+            'dnf install -y -q sudo acl rsyslog openssh-server cronie iptables-nft net-tools iputils curl wget procps-ng > /dev/null 2>&1; ssh-keygen -A >/dev/null 2>&1; mkdir -p /run/sshd; /usr/sbin/sshd 2>/dev/null; /usr/sbin/crond 2>/dev/null; /usr/sbin/rsyslogd 2>/dev/null; exit 0';
         }
         if (pkgCmd) {
           const pkgExec = await container.exec({
@@ -708,10 +780,7 @@ export class LabsService implements OnModuleInit {
       });
     }
 
-    if (
-      latestInstance.status === 'RUNNING' &&
-      latestInstance.containerId
-    ) {
+    if (latestInstance.status === 'RUNNING' && latestInstance.containerId) {
       try {
         const targetDocker =
           this.dockerManager.getDockerForServer(
@@ -760,6 +829,10 @@ export class LabsService implements OnModuleInit {
       where.type = 'PRACTICE';
     }
 
+    if (opts?.userRole !== 'ADMIN' && where.type === 'PRACTICE') {
+      where.id = { in: await this.getLaunchablePracticeLabIds() };
+    }
+
     const labs = await this.prisma.lab.findMany({
       skip: opts?.skip ?? 0,
       take: opts?.take ?? 600,
@@ -797,7 +870,7 @@ export class LabsService implements OnModuleInit {
       },
     });
 
-    let userId = opts?.userId;
+    const userId = opts?.userId;
 
     const labIds = labs.map((l) => l.id);
 
@@ -806,7 +879,9 @@ export class LabsService implements OnModuleInit {
       where: { labId: { in: labIds } },
       _count: { id: true },
     });
-    const flagCountMap = new Map(labFlagCounts.map((r) => [r.labId, r._count.id]));
+    const flagCountMap = new Map(
+      labFlagCounts.map((r) => [r.labId, r._count.id]),
+    );
 
     if (userId) {
       const user = await this.prisma.user.findUnique({
@@ -897,7 +972,11 @@ export class LabsService implements OnModuleInit {
     });
 
     if (submission.alreadySolved) {
-      return { isCorrect: true, alreadySolved: true, message: 'Already solved.' };
+      return {
+        isCorrect: true,
+        alreadySolved: true,
+        message: 'Already solved.',
+      };
     }
 
     if (isCorrect) {
@@ -1036,7 +1115,10 @@ export class LabsService implements OnModuleInit {
         this.challengesService
           .recordLabChallengeTime(userId, flag.labId)
           .catch((err) =>
-            logger.error('ChallengesService.recordLabChallengeTime failed', err),
+            logger.error(
+              'ChallengesService.recordLabChallengeTime failed',
+              err,
+            ),
           );
 
         // Award bonus domain rating for lab completion
@@ -1128,13 +1210,24 @@ export class LabsService implements OnModuleInit {
   }
 
   async resolveLabId(idOrSlug: string): Promise<string> {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        idOrSlug,
+      );
     if (isUuid) return idOrSlug;
 
-    const allLabs = await this.prisma.lab.findMany({ select: { id: true, title: true } });
-    const slug = idOrSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const allLabs = await this.prisma.lab.findMany({
+      select: { id: true, title: true },
+    });
+    const slug = idOrSlug
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
     for (const lab of allLabs) {
-      const labSlug = lab.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const labSlug = lab.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
       if (labSlug === slug) return lab.id;
     }
     throw new NotFoundException('Lab not found');
@@ -1163,6 +1256,9 @@ export class LabsService implements OnModuleInit {
     });
     if (!lab) throw new NotFoundException('Lab not found');
 
+    const compatibilityIssues =
+      lab.type === 'PRACTICE' ? assessLabCompatibility(lab) : [];
+
     if (userRole !== 'ADMIN' && userId) {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
       if (user) {
@@ -1189,7 +1285,15 @@ export class LabsService implements OnModuleInit {
       }
     }
 
-    return { ...lab, credentials };
+    return {
+      ...lab,
+      credentials,
+      isAvailable: compatibilityIssues.length === 0,
+      unavailableReason:
+        compatibilityIssues.length > 0
+          ? 'This lab environment is temporarily unavailable while it is being repaired.'
+          : null,
+    };
   }
 
   async getGlobalStats() {
@@ -1223,7 +1327,9 @@ export class LabsService implements OnModuleInit {
     basePath?: string;
     resourceProfile?: string;
   }) {
-    return this.prisma.lab.create({ data: data as any });
+    const lab = await this.prisma.lab.create({ data: data as any });
+    this.launchablePracticeLabIdsCache = null;
+    return lab;
   }
 
   async update(
@@ -1241,7 +1347,12 @@ export class LabsService implements OnModuleInit {
   ) {
     const lab = await this.prisma.lab.findUnique({ where: { id } });
     if (!lab) throw new NotFoundException('Lab not found');
-    return this.prisma.lab.update({ where: { id }, data: data as any });
+    const updated = await this.prisma.lab.update({
+      where: { id },
+      data: data as any,
+    });
+    this.launchablePracticeLabIdsCache = null;
+    return updated;
   }
 
   async remove(id: string) {
@@ -1260,7 +1371,9 @@ export class LabsService implements OnModuleInit {
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
         this.dockerManager.decrementLabs(instance.serverId || 'local');
-      } catch {}
+      } catch {
+        // The container may already have been removed.
+      }
     }
 
     await this.prisma.$transaction([
@@ -1269,7 +1382,9 @@ export class LabsService implements OnModuleInit {
       this.prisma.labInstance.deleteMany({ where: { labId: id } }),
     ]);
 
-    return this.prisma.lab.delete({ where: { id } });
+    const removed = await this.prisma.lab.delete({ where: { id } });
+    this.launchablePracticeLabIdsCache = null;
+    return removed;
   }
 
   async batchRemove(ids: string[]) {
@@ -1285,7 +1400,9 @@ export class LabsService implements OnModuleInit {
         await container.stop().catch(() => {});
         await container.remove().catch(() => {});
         this.dockerManager.decrementLabs(instance.serverId || 'local');
-      } catch {}
+      } catch {
+        // The container may already have been removed.
+      }
     }
     await this.prisma.$transaction([
       this.prisma.labSubmission.deleteMany({
@@ -1294,7 +1411,11 @@ export class LabsService implements OnModuleInit {
       this.prisma.labFlag.deleteMany({ where: { labId: { in: ids } } }),
       this.prisma.labInstance.deleteMany({ where: { labId: { in: ids } } }),
     ]);
-    return this.prisma.lab.deleteMany({ where: { id: { in: ids } } });
+    const removed = await this.prisma.lab.deleteMany({
+      where: { id: { in: ids } },
+    });
+    this.launchablePracticeLabIdsCache = null;
+    return removed;
   }
 
   async batchStop(items: { labId: string; userId: string }[]) {
@@ -1382,7 +1503,7 @@ export class LabsService implements OnModuleInit {
       data.correctAnswer.trim().toLowerCase(),
       10,
     );
-    return this.prisma.labFlag.create({
+    const flag = await this.prisma.labFlag.create({
       data: {
         labId,
         title: data.title,
@@ -1391,6 +1512,8 @@ export class LabsService implements OnModuleInit {
         correctAnswer: hashedAnswer,
       },
     });
+    this.launchablePracticeLabIdsCache = null;
+    return flag;
   }
 
   async updateFlag(
@@ -1421,10 +1544,12 @@ export class LabsService implements OnModuleInit {
         10,
       );
     }
-    return this.prisma.labFlag.update({
+    const updated = await this.prisma.labFlag.update({
       where: { id: flagId },
       data: updateData,
     });
+    this.launchablePracticeLabIdsCache = null;
+    return updated;
   }
 
   async removeFlag(flagId: string) {
@@ -1432,7 +1557,11 @@ export class LabsService implements OnModuleInit {
       where: { id: flagId },
     });
     if (!flag) throw new NotFoundException('Flag not found');
-    return this.prisma.labFlag.delete({ where: { id: flagId } });
+    const removed = await this.prisma.labFlag.delete({
+      where: { id: flagId },
+    });
+    this.launchablePracticeLabIdsCache = null;
+    return removed;
   }
 
   // === REVIEWS ===

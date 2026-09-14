@@ -71,6 +71,8 @@ interface LabDefinition {
   difficulty: number;
   dockerImage?: string;
   isLocked?: boolean;
+  isAvailable?: boolean;
+  unavailableReason?: string | null;
   tasks?: string[];
   credentials?: LabCredential[];
   flags?: LabFlag[];
@@ -117,7 +119,7 @@ function getEstimatedTime(flags: number) {
   return "4h+";
 }
 
-const WEB_LAB_IMAGES = ["juice-shop", "webgoat", "nodegoat", "vapi", "dvwa", "hackazon", "web-dvwa", "railsgoat", "juice"];
+const WEB_LAB_IMAGES = ["juice-shop", "webgoat", "nodegoat", "vapi", "dvwa", "hackazon", "web-dvwa", "railsgoat", "juice", "grafana", "prometheus", "kibana", "nginx"];
 function isWebLab(dockerImage?: string): boolean {
   if (!dockerImage) return false;
   const lower = dockerImage.toLowerCase();
@@ -781,6 +783,25 @@ export default function LabWorkspace() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <p className="text-slate-400 text-sm">Failed to load lab.</p>
         <button onClick={() => window.location.reload()} className="text-[#7AD62A] text-sm hover:underline">Retry</button>
+      </div>
+    );
+  }
+
+  if (lab.isAvailable === false) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-in fade-in duration-500">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+          <AlertTriangle size={28} className="text-amber-400" />
+        </div>
+        <div className="text-center max-w-md">
+          <h2 className="text-lg font-semibold text-white">Lab under maintenance</h2>
+          <p className="text-sm text-slate-400 mt-1">
+            {lab.unavailableReason || "This lab environment is being repaired and cannot be launched yet."}
+          </p>
+          <Link href="/dashboard/labs" className="btn-primary text-sm mt-4 inline-flex">
+            Back to Labs
+          </Link>
+        </div>
       </div>
     );
   }

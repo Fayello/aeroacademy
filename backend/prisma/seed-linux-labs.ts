@@ -137,7 +137,7 @@ Linux is built on text. Mastering text processing tools is the key to becoming e
     },
     {
       title: 'Linux Fundamentals: Process & Service Management',
-      description: 'Control processes with ps, top, kill, and nohup. Manage systemd services, set up cron jobs, and understand runlevels.',
+      description: 'Control processes with ps, pgrep, signals, and background jobs. Manage container-native services, cron jobs, and SSH configuration.',
       dockerImage: 'ubuntu:22.04',
       difficulty: 1100,
       imageUrl: '/images/labs/ubuntu.png',
@@ -145,7 +145,7 @@ Linux is built on text. Mastering text processing tools is the key to becoming e
 Every running program is a process. Learning to manage them is critical for system administration.
 
 ### Lab Environment
-- Ubuntu 22.04 with systemd
+- Ubuntu 22.04 container with SSH and cron services
 - You are logged in as \`student\` (password: lab123)
 - Use \`sudo\` for system-level operations
 
@@ -153,24 +153,24 @@ Every running program is a process. Learning to manage them is critical for syst
 - **PID**: Process ID — unique identifier for each process
 - **PPID**: Parent Process ID
 - **SIGTERM vs SIGKILL**: Graceful vs forced termination
-- **systemd**: Modern init system and service manager
+- **service**: Container-compatible service management command
 - **cron**: Time-based job scheduler`,
       tasks: [
-        'Find the PID of the sshd service and display its process tree',
+        'Find the sshd processes and display their command names',
         'Start a background process with nohup and verify it survives logout',
         'Kill a process gracefully using SIGTERM, then forcefully with SIGKILL',
-        'Create a systemd service file for a custom script',
+        'Use the service command to check and restart SSH',
         'Set up a cron job that runs every 5 minutes',
-        'Use systemctl to start, stop, enable, and check the status of sshd',
-        'View system logs using journalctl for the sshd service',
+        'Validate an SSH configuration change with sshd -t',
+        'Inspect authentication logs with grep and tail',
       ],
       credentials: encryptCredentials([{ service: 'SSH', username: 'student', password: 'lab123' }], key),
       flags: [
-        { title: 'Process Hunter', description: 'Run: pgrep -a sshd | head -1. Submit the full command line of sshd.', correctAnswer: '/usr/sbin/sshd -D', points: 100 },
-        { title: 'Systemd Master', description: 'Run: systemctl is-active sshd. Submit the status.', correctAnswer: 'active', points: 100 },
+        { title: 'Process Hunter', description: 'Run: ps -C sshd -o comm= | head -1. Submit the command name.', correctAnswer: 'sshd', points: 100 },
+        { title: 'Service Inspector', description: 'Run: service ssh status. If the service is active, submit "running".', correctAnswer: 'running', points: 100 },
         { title: 'Cron Crafter', description: 'Create a cron job that runs "echo cron_ok > /tmp/cron_proof" every minute. Wait and submit the file content.', correctAnswer: 'cron_ok', points: 200 },
-        { title: 'Signal Handler', description: 'Send SIGTERM to process PID 1, then check: echo $? after the signal command. What is the exit code?', correctAnswer: '0', points: 250 },
-        { title: 'Service Architect', description: 'Create /etc/systemd/system/test.service, enable it, run: systemctl is-enabled test.service. Submit the result.', correctAnswer: 'enabled', points: 300 },
+        { title: 'Signal Handler', description: 'Run: sleep 300 & pid=$!; kill -15 $pid; wait $pid; echo $?. Submit the exit status.', correctAnswer: '143', points: 250 },
+        { title: 'SSH Config Validator', description: 'Create a valid SSH drop-in configuration, then run: sudo sshd -t && echo valid. Submit the output.', correctAnswer: 'valid', points: 300 },
       ],
     },
 
