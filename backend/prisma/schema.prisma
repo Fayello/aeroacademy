@@ -260,6 +260,9 @@ model Course {
   description       String
   imageUrl          String?
   estimatedHours    Int?
+  category          String?
+  difficulty        Int?
+  duration          String?
   createdAt         DateTime                 @default(now())
   sections          Section[]
   enrollments       CourseEnrollment[]

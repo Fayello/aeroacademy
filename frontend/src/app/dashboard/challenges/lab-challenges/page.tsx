@@ -88,19 +88,17 @@ export default function LabChallengesPage() {
     if (!myId) return;
     let cancelled = false;
     setError("");
-    Promise.all([
+    Promise.allSettled([
       fetchApi<Challenge[]>("/challenges/lab-challenges/mine"),
       fetchApi<LeaderboardEntry[]>("/dashboard/leaderboard?limit=30"),
       fetchApi<{ id: string; title: string; difficulty: number }[]>("/labs"),
     ]).then(([c, l, labData]) => {
       if (!cancelled) {
-        setChallenges(c || []);
-        setLeaderboard(l || []);
-        setLabs(labData || []);
+        setChallenges(c.status === "fulfilled" ? (c.value || []) : []);
+        setLeaderboard(l.status === "fulfilled" ? (l.value || []) : []);
+        setLabs(labData.status === "fulfilled" ? (labData.value || []) : []);
       }
-    }).catch((err) => {
-      if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load lab challenges");
-    })
+    }).catch(() => {})
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [myId]);
