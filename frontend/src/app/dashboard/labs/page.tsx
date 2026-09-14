@@ -162,16 +162,16 @@ export default function LabsCatalog() {
         setLabs(labsData);
         setLoading(false);
 
+        let batch = labsData;
         for (
           let skip = LAB_FETCH_BATCH_SIZE;
-          labsData.length === LAB_FETCH_BATCH_SIZE && skip < MAX_LABS_TO_FETCH;
+          batch.length === LAB_FETCH_BATCH_SIZE && skip < MAX_LABS_TO_FETCH;
           skip += LAB_FETCH_BATCH_SIZE
         ) {
-          const nextBatch = await fetchApi<Lab[]>(`/labs?take=${LAB_FETCH_BATCH_SIZE}&skip=${skip}`);
+          batch = await fetchApi<Lab[]>(`/labs?take=${LAB_FETCH_BATCH_SIZE}&skip=${skip}`);
           if (cancelled) return;
-          labsData = [...labsData, ...nextBatch];
+          labsData = [...labsData, ...batch];
           setLabs(labsData);
-          if (nextBatch.length < LAB_FETCH_BATCH_SIZE) break;
         }
       } catch {
         if (!cancelled) toast.error(t("labs.loadFailed"));
