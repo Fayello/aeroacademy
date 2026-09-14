@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stats Counter</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0f1a;overflow:hidden}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+const W=1920,H=1080,ctx=document.getElementById('c').getContext('2d');
+const NAVY='#0a0f1a',GREEN='#7AD62A';
+function easeOut(t){return 1-Math.pow(1-t,3)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function lerp(a,b,t){return a+(b-a)*t}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function txt(s,x,y,sz,col,wght,al){ctx.font=(wght||'400')+' '+(sz||24)+'px system-ui,sans-serif';ctx.fillStyle=col||'#fff';ctx.textAlign=al||'center';ctx.textBaseline='middle';ctx.fillText(s,x,y)}
+
+const stats=[
+  {num:540,label:'Labs',suffix:'+',color:'#10b981'},
+  {num:3823,label:'Flags',suffix:'',color:'#3b82f6'},
+  {num:14,label:'Domains',suffix:'',color:'#f59e0b'},
+  {num:21,label:'Skills',suffix:'',color:'#8b5cf6'},
+];
+
+window.renderAt=function(t){
+  ctx.fillStyle=NAVY;ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.save();ctx.globalAlpha=0.04;ctx.strokeStyle=GREEN;ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+
+  // Particles
+  ctx.save();ctx.globalAlpha=0.3;
+  for(let i=0;i<20;i++){
+    const px=(i*97.3+Math.sin(t*0.3+i*1.7)*40)%W;
+    const py=(i*61.1+Math.cos(t*0.2+i*2.1)*40)%H;
+    ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(122,214,42,${0.1+Math.sin(t*0.5+i)*0.05})`;ctx.fill();
+  }
+  ctx.restore();
+
+  // Title
+  if(t<11){
+    const ta=t<0.5?easeOut(t/0.5):t>10?1-easeOut((t-10)/1):1;
+    ctx.save();ctx.globalAlpha=ta;
+    txt('Built for Engineers',W/2,120,36,'#94a3b8','500');
+    ctx.restore();
+  }
+
+  // Stats cards
+  const cardW=380,cardH=180,gap=40;
+  const totalW=stats.length*cardW+(stats.length-1)*gap;
+  const startX=(W-totalW)/2;
+
+  stats.forEach((s,i)=>{
+    const delay=0.5+i*0.4;
+    const appear=clamp((t-delay)/0.5,0,1);
+    const scale=easeOut(appear);
+    const alpha=appear;
+
+    const cx=startX+i*(cardW+gap)+cardW/2;
+    const cy=H/2;
+
+    ctx.save();ctx.globalAlpha=alpha;
+    const sw=cardW*scale,sh=cardH*scale;
+    roundRect(cx-sw/2,cy-sh/2,sw,sh,16);
+    ctx.fillStyle='rgba(15,23,42,0.9)';ctx.fill();
+    ctx.strokeStyle=s.color+'40';ctx.lineWidth=1.5;ctx.stroke();
+
+    // Number counting up
+    const countProgress=clamp((t-delay-0.3)/1.0,0,1);
+    const eased=easeOut(countProgress);
+    const currentNum=Math.round(s.num*eased);
+
+    txt(currentNum+s.suffix,cx,cy-15,52,s.color,'800');
+    txt(s.label,cx,cy+35,18,'#64748b','500');
+    ctx.restore();
+  });
+
+  // Bottom text
+  if(t>3){
+    const ba=clamp((t-3)/0.5,0,1);
+    ctx.save();ctx.globalAlpha=ba;
+    txt('Zero hand-holding.',W/2,H-120,28,'#475569','400');
+    txt('Real infrastructure. Real proof.',W/2,H-80,28,GREEN,'600');
+    ctx.restore();
+  }
+
+  // CTA
+  if(t>5){
+    const ca=clamp((t-5)/0.5,0,1);
+    ctx.save();ctx.globalAlpha=ca;
+    roundRect(W/2-140,H-50,280,44,22);
+    ctx.fillStyle=GREEN;ctx.fill();
+    txt('xpertclass.academy',W/2,H-28,16,NAVY,'700');
+    ctx.restore();
+  }
+};
+ctx.fillStyle=NAVY;ctx.fillRect(0,0,W,H);
+</script>
+</body>
+</html>
