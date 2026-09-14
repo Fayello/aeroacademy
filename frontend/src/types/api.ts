@@ -154,9 +154,15 @@ export interface Lab {
   imageUrl: string | null;
   difficulty: number;
   basePath: string | null;
-  flags: LabFlag[];
+  flags?: LabFlag[];
+  flagCount?: number;
+  solvedFlags?: number;
   isLocked?: boolean;
   requiredLevel?: number;
+  estimatedMinutes?: number | null;
+  resourceProfile?: string;
+  type?: string;
+  labSkills?: { skill: { id: string; name: string; domain: { id: string; name: string; displayName: string } | null } }[];
 }
 
 export interface LabFlag {
