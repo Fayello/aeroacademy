@@ -769,12 +769,6 @@ export class LabsService implements OnModuleInit {
         resourceProfile: true,
         type: true,
         basePath: true,
-        _count: {
-          select: {
-            flags: true,
-            labSkills: true,
-          },
-        },
         labSkills: {
           select: {
             skill: {
@@ -785,7 +779,7 @@ export class LabsService implements OnModuleInit {
                   select: {
                     id: true,
                     name: true,
-                    slug: true,
+                    displayName: true,
                   },
                 },
               },
@@ -796,6 +790,15 @@ export class LabsService implements OnModuleInit {
     });
 
     let userId = opts?.userId;
+
+    const labIds = labs.map((l) => l.id);
+
+    const labFlagCounts = await this.prisma.labFlag.groupBy({
+      by: ['labId'],
+      where: { labId: { in: labIds } },
+      _count: { id: true },
+    });
+    const flagCountMap = new Map(labFlagCounts.map((r) => [r.labId, r._count.id]));
 
     if (userId) {
       const user = await this.prisma.user.findUnique({
@@ -810,13 +813,11 @@ export class LabsService implements OnModuleInit {
       const solvedFlagIds = new Set(userSubmissions.map((s) => s.flagId));
 
       const labFlags = await this.prisma.labFlag.findMany({
-        where: { labId: { in: labs.map((l) => l.id) } },
+        where: { labId: { in: labIds } },
         select: { id: true, labId: true },
       });
-      const flagsByLab = new Map<string, number>();
       const solvedByLab = new Map<string, number>();
       for (const f of labFlags) {
-        flagsByLab.set(f.labId, (flagsByLab.get(f.labId) || 0) + 1);
         if (solvedFlagIds.has(f.id)) {
           solvedByLab.set(f.labId, (solvedByLab.get(f.labId) || 0) + 1);
         }
@@ -824,11 +825,10 @@ export class LabsService implements OnModuleInit {
 
       return labs.map((lab) => {
         const requiredLevel = getRequiredLabLevel(lab.difficulty || 1200);
-        const totalFlags = flagsByLab.get(lab.id) || lab._count.flags;
+        const totalFlags = flagCountMap.get(lab.id) || 0;
         const solvedFlags = solvedByLab.get(lab.id) || 0;
         return {
           ...lab,
-          flags: undefined,
           flagCount: totalFlags,
           solvedFlags,
           isLocked: userLevel < requiredLevel,
@@ -839,8 +839,7 @@ export class LabsService implements OnModuleInit {
 
     return labs.map((lab) => ({
       ...lab,
-      flags: undefined,
-      flagCount: lab._count.flags,
+      flagCount: flagCountMap.get(lab.id) || 0,
       solvedFlags: 0,
       isLocked: false,
       requiredLevel: getRequiredLabLevel(lab.difficulty || 1200),
