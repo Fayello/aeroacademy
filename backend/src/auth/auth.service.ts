@@ -240,7 +240,6 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
     const referralCode = await this.ensureUniqueReferralCode();
     const user = await this.prisma.user.create({
       data: {
@@ -248,18 +247,20 @@ export class AuthService {
         passwordHash,
         name: name || null,
         timezone: timezone || 'UTC',
-        verificationToken,
         referralCode,
       },
     });
 
-    this.emailService
-      .sendVerificationEmail(email, name || null, verificationToken)
-      .catch(() => {});
+    const code = await this.otpService.create(email, 'email_verification');
+    if (code) {
+      this.emailService
+        .sendOtpVerification(email, name || null, code)
+        .catch(() => {});
+    }
 
     return {
       message:
-        'Account created. Please check your email for a verification link.',
+        'Account created. Please check your email for a verification code.',
       email,
     };
   }
@@ -319,27 +320,22 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
       return {
-        message: 'If an account exists, a verification link has been sent.',
+        message: 'If an account exists, a verification code has been sent.',
       };
     }
     if (user.emailVerified) {
       return { message: 'Email already verified.' };
     }
 
-    const verificationToken =
-      user.verificationToken || crypto.randomBytes(32).toString('hex');
-    if (!user.verificationToken) {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { verificationToken },
-      });
+    const code = await this.otpService.create(email, 'email_verification');
+    if (code) {
+      this.emailService
+        .sendOtpVerification(email, user.name, code)
+        .catch(() => {});
     }
-    this.emailService
-      .sendVerificationEmail(email, user.name, verificationToken)
-      .catch(() => {});
 
     return {
-      message: 'If an account exists, a verification link has been sent.',
+      message: 'If an account exists, a verification code has been sent.',
     };
   }
 

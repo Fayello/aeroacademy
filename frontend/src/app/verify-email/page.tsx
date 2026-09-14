@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/lib/api";
@@ -10,10 +10,14 @@ import { Loader2, ArrowLeft, Mail } from "lucide-react";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const email = searchParams.get("email") || "";
 
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -21,15 +25,69 @@ function VerifyEmailContent() {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  const handleCodeChange = (index: number, value: string) => {
+    if (value.length > 1) value = value.slice(-1);
+    if (value && !/^\d$/.test(value)) return;
+
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
+
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+
+    if (newCode.every((c) => c !== "") && newCode.join("").length === 6) {
+      handleVerify(newCode.join(""));
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted.length === 6) {
+      const newCode = pasted.split("");
+      setCode(newCode);
+      inputRefs.current[5]?.focus();
+      handleVerify(pasted);
+    }
+  };
+
+  const handleVerify = async (codeStr: string) => {
+    if (!email || verifying) return;
+    setVerifying(true);
+    try {
+      await auth.verifyEmail(email, codeStr);
+      toast.success("Email verified! Welcome to XpertClass.");
+      router.push("/dashboard");
+    } catch {
+      toast.error("Invalid or expired code. Please try again.");
+      setCode(["", "", "", "", "", ""]);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   const handleResend = useCallback(async () => {
     if (!email || cooldown > 0) return;
     setResending(true);
     try {
       await auth.resendVerification(email);
-      toast.success("New verification link sent!");
+      toast.success("New verification code sent!");
       setCooldown(30);
     } catch {
-      toast.error("Failed to resend verification link");
+      toast.error("Failed to resend verification code");
     } finally {
       setResending(false);
     }
@@ -57,28 +115,50 @@ function VerifyEmailContent() {
 
           <h1 className="text-2xl font-bold text-white mb-2">Check your email</h1>
           <p className="text-slate-500 text-sm mb-1">
-            We sent a verification link to
+            We sent a 6-digit verification code to
           </p>
           <p className="text-white font-medium text-sm mb-6">{email || "your email"}</p>
 
+          <div className="flex justify-center gap-2 mb-4" onPaste={handlePaste}>
+            {code.map((digit, i) => (
+              <input
+                key={i}
+                ref={(el) => { inputRefs.current[i] = el; }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleCodeChange(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(i, e)}
+                disabled={verifying}
+                className="w-12 h-14 text-center text-xl font-bold text-white bg-white/5 border border-white/10 rounded-xl focus:border-[#7AD62A] focus:ring-1 focus:ring-[#7AD62A] outline-none transition-all disabled:opacity-50"
+              />
+            ))}
+          </div>
+
+          {verifying && (
+            <div className="flex items-center justify-center gap-2 text-sm text-slate-500 mb-4">
+              <Loader2 className="animate-spin" size={14} />
+              <span>Verifying...</span>
+            </div>
+          )}
+
           <div className="bg-white/5 rounded-xl p-4 mb-6">
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Click the link in the email to verify your account and start learning. The link expires in 24 hours.
-            </p>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Enter the 6-digit code from your email. The code expires in 10 minutes.
               Check your spam or junk folder if you don&apos;t see it.
             </p>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-slate-500">
-              Didn&apos;t receive the email?{" "}
+              Didn&apos;t receive the code?{" "}
               <button
                 onClick={handleResend}
                 disabled={resending || cooldown > 0}
                 className="text-[#7AD62A] hover:text-[#6bc422] font-medium disabled:text-slate-400"
               >
-                {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend link"}
+                {cooldown > 0 ? `Resend in ${cooldown}s` : resending ? "Sending..." : "Resend code"}
               </button>
             </p>
             <Link href="/register" className="text-xs text-slate-500 hover:text-slate-300 mt-3 inline-block">

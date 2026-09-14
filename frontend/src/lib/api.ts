@@ -264,6 +264,8 @@ export const auth = {
     fetchApi('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   verifyEmailByToken: (token: string) =>
     fetchApi('/auth/verify-email', { method: 'POST', body: JSON.stringify({ token }) }),
+  verifyEmail: (email: string, code: string) =>
+    fetchApi('/auth/verify-email', { method: 'POST', body: JSON.stringify({ email, code }) }),
   resendVerification: (email: string) =>
     fetchApi('/auth/resend-otp', { method: 'POST', body: JSON.stringify({ email }) }),
   forgotPassword: (email: string) =>
