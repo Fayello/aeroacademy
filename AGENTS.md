@@ -2,6 +2,19 @@
 
 ## CRITICAL RULES
 
+### NEVER Touch Missing Persons Platform Containers — NON-NEGOTIABLE
+These containers belong to a separate project. Never stop, restart, remove, prune, or interfere with them in any way. Do not apply any security tooling (modsecurity, fail2ban, WAF rules, rate limiting) to their traffic. They are off-limits.
+
+```
+missingpersonsplatform-frontend-1
+missing_persons_backend
+missingpersonsplatform-elasticsearch-1
+missingpersonsplatform-db-1
+missingpersonsplatform-qdrant-1
+missingpersonsplatform-kafka-1
+missingpersonsplatform-zookeeper-1
+```
+
 ### NEVER Delete Lab Docker Images
 These images are used by the lab platform. They must NEVER be pruned, removed, or deleted.
 
