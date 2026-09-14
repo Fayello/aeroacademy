@@ -72,9 +72,10 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   async getDefinition(
     @Request() req: RequestWithUser,
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
   ) {
-    return this.labsService.getLabDefinition(id, req.user.id, req.user.role);
+    const labId = await this.labsService.resolveLabId(id);
+    return this.labsService.getLabDefinition(labId, req.user.id, req.user.role);
   }
 
   @ApiBearerAuth('JWT-auth')
@@ -82,9 +83,10 @@ export class LabsController {
   @UseGuards(AuthGuard('jwt'))
   async getStatus(
     @Request() req: RequestWithUser,
-    @Param('id', ParseUUIDPipe) labId: string,
+    @Param('id') labId: string,
   ) {
-    return this.labsService.getLabStatus(req.user.id, labId);
+    const resolvedId = await this.labsService.resolveLabId(labId);
+    return this.labsService.getLabStatus(req.user.id, resolvedId);
   }
 
   @ApiBearerAuth('JWT-auth')

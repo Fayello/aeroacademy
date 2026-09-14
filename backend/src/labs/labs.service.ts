@@ -1127,6 +1127,19 @@ export class LabsService implements OnModuleInit {
     };
   }
 
+  async resolveLabId(idOrSlug: string): Promise<string> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    if (isUuid) return idOrSlug;
+
+    const allLabs = await this.prisma.lab.findMany({ select: { id: true, title: true } });
+    const slug = idOrSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    for (const lab of allLabs) {
+      const labSlug = lab.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      if (labSlug === slug) return lab.id;
+    }
+    throw new NotFoundException('Lab not found');
+  }
+
   async getLabDefinition(id: string, userId?: string, userRole?: string) {
     const lab = await this.prisma.lab.findUnique({
       where: { id },
