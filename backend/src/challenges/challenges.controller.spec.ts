@@ -3,7 +3,9 @@ import { ChallengesController } from './challenges.controller';
 
 describe('ChallengesController routing', () => {
   it('declares lab challenge routes before generic challenge id routes', () => {
-    const routeNames = Object.getOwnPropertyNames(ChallengesController.prototype);
+    const routeNames = Object.getOwnPropertyNames(
+      ChallengesController.prototype,
+    );
     const mineIndex = routeNames.indexOf('getMyChallenges');
     const sendIndex = routeNames.indexOf('sendChallenge');
     const findOneIndex = routeNames.indexOf('findOne');
@@ -21,6 +23,8 @@ describe('ChallengesController routing', () => {
   it('keeps the mine route as a concrete static path', () => {
     const path = Reflect.getMetadata(
       PATH_METADATA,
+      // Metadata inspection needs the unbound controller method itself.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       ChallengesController.prototype.getMyChallenges,
     );
 
