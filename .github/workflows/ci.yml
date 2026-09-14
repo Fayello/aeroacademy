@@ -95,14 +95,19 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          script_stop: true
           script: |
-            cd /root/aeroacademy
-            sudo docker compose pull --ignore-buildable frontend backend
-            sudo docker compose up -d --force-recreate docker-proxy frontend backend
-            sudo docker image prune -f
-            # Run database migrations
-            sudo docker compose exec -T backend npx prisma migrate deploy --skip-generate 2>&1 || echo "Migration check done"
-            # Post-deploy health check
-            sleep 10
-            curl -sf http://localhost:4000/ > /dev/null && echo "Backend: OK" || echo "Backend: FAIL"
-            curl -sf http://localhost:3000/ > /dev/null && echo "Frontend: OK" || echo "Frontend: FAIL"
+            set -eu
+            printf '%s\n' '${{ secrets.SERVER_PASSWORD }}' | sudo -S -p '' sh -c '
+              set -eu
+              cd /root/aeroacademy
+              docker compose pull --ignore-buildable frontend backend
+              docker compose up -d --force-recreate docker-proxy frontend backend
+              docker image prune -f
+              docker compose exec -T backend npx prisma migrate deploy
+              sleep 10
+              curl -fsS http://localhost:4000/api/v1/labs/health > /dev/null
+              curl -fsS http://localhost:3000/ > /dev/null
+              echo "Backend: OK"
+              echo "Frontend: OK"
+            '
