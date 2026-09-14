@@ -11,6 +11,10 @@ interface PublicLab {
 
 const args = process.argv.slice(2);
 const summaryOnly = args.includes('--summary');
+const titlesOnly = args.includes('--titles');
+const issueCode = args
+  .find((argument) => argument.startsWith('--code='))
+  ?.slice('--code='.length);
 const baseUrl =
   args.find((argument) => !argument.startsWith('--')) ||
   'https://xpertclass.academy/api/v1';
@@ -34,6 +38,12 @@ async function main() {
 
   const findings = labs
     .map((lab) => ({ lab, issues: assessLabCompatibility(lab) }))
+    .map(({ lab, issues }) => ({
+      lab,
+      issues: issueCode
+        ? issues.filter((issue) => issue.code === issueCode)
+        : issues,
+    }))
     .filter(({ issues }) => issues.length > 0);
 
   console.log(`Audited ${labs.length} live practice labs.`);
@@ -56,8 +66,10 @@ async function main() {
     console.log('');
     for (const { lab, issues } of findings) {
       console.log(`${lab.id}\t${lab.title}`);
-      for (const issue of issues) {
-        console.log(`  - ${issue.code}: ${issue.reason}`);
+      if (!titlesOnly) {
+        for (const issue of issues) {
+          console.log(`  - ${issue.code}: ${issue.reason}`);
+        }
       }
     }
   }

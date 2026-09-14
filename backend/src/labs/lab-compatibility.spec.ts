@@ -45,6 +45,11 @@ describe('lab compatibility', () => {
       'Build the project in Android Studio',
       'DESKTOP_TOOLCHAIN_REQUIRED',
     ],
+    [
+      'unstable runtime output',
+      'Run uname -r and submit the kernel version',
+      'NONDETERMINISTIC_RUNTIME_OUTPUT',
+    ],
   ])('blocks %s requirements', (_name, task, expectedCode) => {
     const issues = assessLabCompatibility({ title: 'Test lab', tasks: [task] });
 
@@ -73,5 +78,30 @@ describe('lab compatibility', () => {
         tasks: ['Write and review a Dockerfile for a Node.js application'],
       }),
     ).toBe(true);
+  });
+
+  it('allows the repaired deterministic beginner cohort', () => {
+    const labs = [
+      {
+        title: 'Linux Fundamentals: Ubuntu CLI Mastery',
+        tasks: ['Change to /etc and confirm the current directory with pwd'],
+      },
+      {
+        title: 'Linux Fundamentals: File Permissions & Users',
+        tasks: ['Create /tmp/shared with mode 1777'],
+      },
+      {
+        title: 'Linux Fundamentals: Text Processing & Shell Scripting',
+        tasks: ['Create a three-line event log and count ERROR records'],
+      },
+      {
+        title: 'Docker & Container Fundamentals',
+        description:
+          'Author and inspect secure Dockerfiles and Compose manifests',
+        tasks: ['Write a Dockerfile based on node:20-alpine'],
+      },
+    ];
+
+    expect(labs.every(isLabLaunchable)).toBe(true);
   });
 });

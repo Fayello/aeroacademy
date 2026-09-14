@@ -507,7 +507,7 @@ export class LabsService implements OnModuleInit {
         let pkgCmd = '';
         if (image.includes('ubuntu') || image.includes('debian')) {
           pkgCmd =
-            'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban net-tools iputils-ping curl wget procps psmisc > /dev/null 2>&1; mkdir -p /run/sshd; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
+            'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban net-tools iputils-ping curl wget procps psmisc gawk man-db > /dev/null 2>&1; mkdir -p /run/sshd; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
         } else if (image.includes('centos') || image.includes('rhel')) {
           pkgCmd =
             'dnf install -y -q sudo acl rsyslog openssh-server cronie iptables-nft net-tools iputils curl wget procps-ng > /dev/null 2>&1; ssh-keygen -A >/dev/null 2>&1; mkdir -p /run/sshd; /usr/sbin/sshd 2>/dev/null; /usr/sbin/crond 2>/dev/null; /usr/sbin/rsyslogd 2>/dev/null; exit 0';

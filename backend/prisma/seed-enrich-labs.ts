@@ -16,7 +16,7 @@ interface LabEntry {
 const labs: LabEntry[] = [
 {
     title: "Linux Fundamentals: Ubuntu CLI Mastery",
-    description: "Master essential Ubuntu command-line operations including navigation, file manipulation, and system information commands.",
+    description: "Learn essential Ubuntu navigation, files, permissions, processes, and links in a fresh practice container.",
     dockerImage: "ubuntu:22.04",
     difficulty: 800,
     estimatedMinutes: 60,
@@ -29,35 +29,33 @@ Gain fluency in the Ubuntu command-line interface by completing real-world navig
 - Credentials: root / ubuntu-cli-2024!
 
 ### Tasks
-1. Navigate to /etc and list all files beginning with net
-2. Create the directory structure /opt/labs/{web,db,logs} in a single command
-3. Use find to locate all .conf files under /etc with their sizes
-4. Use grep to search /var/log/syslog for the word error (create sample entries first)
-5. Redirect the output of uname -a to /tmp/uname.txt and verify its contents
-6. Use wc to count lines, words, and characters in /etc/passwd
-7. Create a symbolic link from /tmp/mylink pointing to /etc/hostname
-8. Use man to find the option for color output in the ls command
+1. Change to /etc and confirm the current directory with pwd
+2. Create /home/student/myproject and a hello.txt file
+3. Copy hello.txt to /tmp and compare both files
+4. Find configuration files without relying on their count
+5. Inspect stable file ownership and process command names
+6. Create and inspect a symbolic link
 
 ### Permissions & Access
 - Container runs as root \u2014 maintain least privilege
 - Flag files owned by root:root with 644 permissions
 - Working directories use 755 for shared, 700 for private
 - Verify permissions with: stat -c '%U:%G %a' [path]`,
-    tasks: ["Navigate to /etc and list all files beginning with net", "Create the directory structure /opt/labs/{web,db,logs} in a single command", "Use find to locate all .conf files under /etc with their sizes", "Use grep to search /var/log/syslog for the word error (create sample entries first)", "Redirect the output of uname -a to /tmp/uname.txt and verify its contents", "Use wc to count lines, words, and characters in /etc/passwd", "Create a symbolic link from /tmp/mylink pointing to /etc/hostname", "Use man to find the option for color output in the ls command"],
+    tasks: ["Change to /etc and confirm the current directory with pwd", "Create /home/student/myproject and a hello.txt file containing Hello XpertClass", "Copy hello.txt to /tmp/hello_backup.txt and compare both files", "Find configuration files under /etc without depending on their exact count", "Inspect /etc/shadow ownership", "Find sshd by command name", "Create and inspect /tmp/hello_link"],
     credentials: [
       { service: "container", username: "root", password: "ubuntu-cli-2024!" }
     ],
     flags: [
-      { title: "Directory Navigator", description: "Correctly list net* files in /etc", correctAnswer: "ls /etc/net*", points: 100 },
-      { title: "Tree Builder", description: "Create /opt/labs/{web,db,logs} structure", correctAnswer: "mkdir -p /opt/labs/{web,db,logs}", points: 150 },
-      { title: "File Finder", description: "Use find to locate .conf files with sizes", correctAnswer: "find /etc -name '*.conf' -exec ls -lh {} \\;", points: 150 },
-      { title: "Log Detective", description: "Search syslog for error entries", correctAnswer: "grep error /var/log/syslog", points: 100 },
-      { title: "Link Creator", description: "Create symlink from /tmp/mylink to /etc/hostname", correctAnswer: "ln -s /etc/hostname /tmp/mylink", points: 200 }
+      { title: "Directory Navigator", description: "Run cd /etc && pwd and submit the output", correctAnswer: "/etc", points: 100 },
+      { title: "File Creator", description: "Create proof.txt containing the provided flag", correctAnswer: "AERO{UBUNTU_FILE_CREATE}", points: 150 },
+      { title: "Permission Reader", description: "Submit the owner of /etc/shadow", correctAnswer: "root", points: 150 },
+      { title: "Process Inspector", description: "Submit the sshd command name", correctAnswer: "sshd", points: 100 },
+      { title: "Link Inspector", description: "Submit the target of /tmp/hello_link", correctAnswer: "/home/student/hello.txt", points: 200 }
     ],
   },
   {
     title: "Linux Fundamentals: File Permissions & Users",
-    description: "Understand and manipulate Linux file permissions, ownership, and user/group management.",
+    description: "Practice Linux ownership, groups, numeric modes, sticky directories, and ACLs using artifacts you create yourself.",
     dockerImage: "ubuntu:22.04",
     difficulty: 900,
     estimatedMinutes: 60,
@@ -84,21 +82,21 @@ Master the Linux permission model by configuring access control for files and di
 - Flag files owned by root:root with 644 permissions
 - Working directories use 755 for shared, 700 for private
 - Verify permissions with: stat -c '%U:%G %a' [path]`,
-    tasks: ["Create users alice and bob with home directories", "Create a group called developers and add both users to it", "Create /opt/project with permissions 770 owned by root:developers", "Use chmod to set SUID on /opt/project/run.sh and verify with ls -la", "Set a umask of 027 and verify new files are created with correct default permissions", "Configure ACL on /opt/project/shared so user bob has rwx access", "Audit all files in /etc owned by root with permissions more permissive than 644", "Demonstrate the difference between chmod 777 and chmod 1777 using /tmp as an example"],
+    tasks: ["Create secret.txt and restrict it to mode 700", "Create admin_group and add student to it", "Create user bob with a home directory and verify the username", "Create /tmp/shared with mode 1777", "Create alice and grant her read access to hello.txt using setfacl", "Use find to identify world-writable files under /home"],
     credentials: [
       { service: "container", username: "root", password: "perms-lab-2024!" }
     ],
     flags: [
-      { title: "User Architect", description: "Create alice and bob users correctly", correctAnswer: "adduser alice && adduser bob", points: 100 },
-      { title: "Group Master", description: "Create developers group with both users", correctAnswer: "groupadd developers && usermod -aG developers alice && usermod -aG developers bob", points: 150 },
-      { title: "SUID Setter", description: "Set SUID bit on run.sh", correctAnswer: "chmod u+s /opt/project/run.sh", points: 200 },
-      { title: "ACL Pro", description: "Set ACL for bob on shared directory", correctAnswer: "setfacl -m u:bob:rwx /opt/project/shared", points: 200 },
-      { title: "Umask Expert", description: "Set umask to 027", correctAnswer: "umask 027", points: 100 }
+      { title: "chmod Master", description: "Create secret.txt with mode 700 and submit the numeric mode", correctAnswer: "700", points: 100 },
+      { title: "Group Master", description: "Create admin_group, add student, and submit the member name", correctAnswer: "student", points: 150 },
+      { title: "User Creator", description: "Create bob and submit the verified username", correctAnswer: "bob", points: 200 },
+      { title: "Sticky Bit Expert", description: "Create /tmp/shared with mode 1777", correctAnswer: "1777", points: 200 },
+      { title: "ACL Pro", description: "Grant alice read access and submit the permission string", correctAnswer: "r--", points: 100 }
     ],
   },
   {
     title: "Linux Fundamentals: Text Processing & Shell Scripting",
-    description: "Learn powerful text processing tools and write effective shell scripts for automation.",
+    description: "Build reproducible text-processing pipelines with grep, sed, awk, cut, sort, and shell scripts.",
     dockerImage: "ubuntu:22.04",
     difficulty: 1000,
     estimatedMinutes: 60,
@@ -106,35 +104,32 @@ Master the Linux permission model by configuring access control for files and di
 Become proficient with sed, awk, cut, sort, and write bash scripts that automate real administrative tasks.
 
 ### Environment
-- Ubuntu 22.04 LTS
-- Bash 5.1+, coreutils, gawk, sed
+- Fresh Ubuntu 22.04 container
+- Bash, coreutils, gawk, and sed
 - Credentials: root / text-script-2024!
 
 ### Tasks
-1. Use awk to extract the 1st and 3rd fields from /etc/passwd delimited by :
-2. Use sed to replace all occurrences of localhost with 127.0.0.1 in /etc/hosts
-3. Use sort and uniq -c to count unique users in /var/log/auth.log
-4. Write a bash script that backs up all .log files in /var/log to /backup with timestamps
-5. Use grep -r to find all files under /etc containing the string password
-6. Write a script that accepts a directory as argument and reports total size of each file type
-7. Use cut to extract all usernames from /etc/passwd and save to /tmp/userlist.txt
-8. Write a while loop that reads /etc/passwd line by line and prints UID and username
+1. Create a three-line event log and count ERROR records with grep
+2. Transform Hello World into Hello XpertClass with sed
+3. Create a small CSV and extract a field with awk
+4. Write a script that counts three supplied user records
+5. Sort and deduplicate a learner-created username list
 
 ### Permissions & Access
 - Container runs as root \u2014 maintain least privilege
 - Flag files owned by root:root with 644 permissions
 - Working directories use 755 for shared, 700 for private
 - Verify permissions with: stat -c '%U:%G %a' [path]`,
-    tasks: ["Use awk to extract the 1st and 3rd fields from /etc/passwd delimited by :", "Use sed to replace all occurrences of localhost with 127.0.0.1 in /etc/hosts", "Use sort and uniq -c to count unique users in /var/log/auth.log", "Write a bash script that backs up all .log files in /var/log to /backup with timestamps", "Use grep -r to find all files under /etc containing the string password", "Write a script that accepts a directory as argument and reports total size of each file type", "Use cut to extract all usernames from /etc/passwd and save to /tmp/userlist.txt", "Write a while loop that reads /etc/passwd line by line and prints UID and username"],
+    tasks: ["Create a three-line event log and count ERROR records with grep", "Transform Hello World into Hello XpertClass with sed", "Create a small CSV and extract the requested field with awk", "Write a script that counts three supplied user records", "Sort and deduplicate a learner-created username list and join it with commas"],
     credentials: [
       { service: "container", username: "root", password: "text-script-2024!" }
     ],
     flags: [
-      { title: "Awk Wizard", description: "Extract fields 1 and 3 from /etc/passwd with awk", correctAnswer: "awk -F: '{print $1,$3}' /etc/passwd", points: 150 },
-      { title: "Sed Substitutor", description: "Replace localhost with 127.0.0.1 using sed", correctAnswer: "sed -i 's/localhost/127.0.0.1/g' /etc/hosts", points: 150 },
-      { title: "Log Counter", description: "Count unique users in auth.log", correctAnswer: "sort /var/log/auth.log | uniq -c", points: 150 },
-      { title: "Script Author", description: "Write backup script for log files", correctAnswer: "bash /opt/scripts/backup-logs.sh", points: 200 },
-      { title: "Pipeline Pro", description: "Extract usernames with cut", correctAnswer: "cut -d: -f1 /etc/passwd > /tmp/userlist.txt", points: 100 }
+      { title: "grep Guru", description: "Count two ERROR records in a learner-created log", correctAnswer: "2", points: 150 },
+      { title: "sed Specialist", description: "Transform Hello World into Hello XpertClass", correctAnswer: "Hello XpertClass", points: 150 },
+      { title: "awk Architect", description: "Extract security from a learner-created CSV", correctAnswer: "security", points: 150 },
+      { title: "Script Writer", description: "Count three supplied user records", correctAnswer: "3", points: 200 },
+      { title: "Pipeline Master", description: "Sort, deduplicate, and join the supplied usernames", correctAnswer: "alice,bob,charlie", points: 100 }
     ],
   },
   {

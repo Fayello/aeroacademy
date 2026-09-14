@@ -9,7 +9,8 @@ export type LabCompatibilityIssueCode =
   | 'CLOUD_ACCOUNT_REQUIRED'
   | 'PREPROVISIONED_ASSETS_REQUIRED'
   | 'HARDWARE_REQUIRED'
-  | 'DESKTOP_TOOLCHAIN_REQUIRED';
+  | 'DESKTOP_TOOLCHAIN_REQUIRED'
+  | 'NONDETERMINISTIC_RUNTIME_OUTPUT';
 
 export interface LabCompatibilityInput {
   title?: string | null;
@@ -104,6 +105,13 @@ const RULES: Array<{
       /\b(Android Studio|Android SDK|Xcode|iOS simulator|mobile emulator|Unity Editor|Unreal Engine|Wireshark GUI)\b/i,
     reason:
       'requires a desktop IDE, GUI, or emulator unavailable in the browser terminal',
+  },
+  {
+    code: 'NONDETERMINISTIC_RUNTIME_OUTPUT',
+    pattern:
+      /\b(what is the pid|submit (?:the )?(?:pid|kernel version|cpu model|total ram)|total size of the root partition|task-clock value|clusterip assigned|how many (?:pods|nodes|targets|rules|shards|cves).*(?:running|ready|up|active|found))\b/i,
+    reason:
+      'expects a fixed answer from runtime values that vary between containers or deployments',
   },
 ];
 

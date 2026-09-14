@@ -54,7 +54,7 @@ When cleaning Docker disk space, ONLY prune:
 This command wipes the database. Use `prisma migrate deploy` or manual schema changes only.
 
 ### Production Deployment
-- Server: `169.58.158.83` (24GB RAM, 8 cores, 600GB disk)
+- Server: `5.189.182.196` (24GB RAM, 8 cores, 600GB disk)
 - SSH: `fayelldev` key `~/.ssh/fayelldev_ed25519`
 - Deploy: `sudo git pull` → `docker compose build --no-cache <service>` → `sudo docker compose up -d --force-recreate <service>`
 - Database backups: `/root/backups/backup.sh` runs daily at 2 AM, keeps 7 days

@@ -26,42 +26,41 @@ export async function seedLinuxLabs(key: string) {
     // ═══════════════════════════════════════════
     {
       title: 'Linux Fundamentals: Ubuntu CLI Mastery',
-      description: 'Master the Ubuntu command line from zero. Navigate the filesystem, manage files, understand permissions, and run basic system commands.',
+      description: 'Learn essential Ubuntu navigation, files, permissions, processes, and links in a fresh practice container.',
       dockerImage: 'ubuntu:22.04',
       difficulty: 800,
       imageUrl: '/images/labs/ubuntu.png',
       briefing: `### Welcome to Linux
-This lab provides a fresh Ubuntu 22.04 environment. You will learn the essential commands that every Linux user must know.
+Work in a fresh Ubuntu 22.04 container. Create every exercise artifact yourself so each result is reproducible.
 
 ### Getting Started
 - Open the terminal
 - You are logged in as \`student\` with password \`lab123\`
-- Explore the filesystem using the commands you've learned
+- Use \`sudo\` only when a task needs system-level access
 
 ### Objectives
 Complete each task below by running the correct commands in the terminal.`,
       tasks: [
-        'Navigate to the /etc directory and list its contents',
-        'Create a directory called "myproject" in your home directory',
-        'Create a file called "hello.txt" with the content "Hello XpertClass"',
-        'Copy hello.txt to /tmp/hello_backup.txt',
-        'Find all files in /etc that end with ".conf"',
-        'Display the current username, hostname, and current directory',
-        'List all running processes with "ps aux"',
-        'Check the disk usage of the / partition using "df -h"',
+        'Change to /etc and confirm the current directory with pwd',
+        'Create /home/student/myproject and a hello.txt file containing Hello XpertClass',
+        'Copy hello.txt to /tmp/hello_backup.txt and compare both files',
+        'Find configuration files under /etc without depending on their exact count',
+        'Inspect /etc/shadow ownership without changing the file',
+        'Find the sshd process by command name rather than PID',
+        'Create /tmp/hello_link pointing to /home/student/hello.txt and inspect its target',
       ],
       credentials: encryptCredentials([{ service: 'SSH', username: 'student', password: 'lab123' }], key),
       flags: [
-        { title: 'Filesystem Navigator', description: 'Navigate to /var/log and run: cat /etc/hostname. Submit the hostname.', correctAnswer: 'aero-lab-ubuntu', points: 100 },
+        { title: 'Filesystem Navigator', description: 'Run: cd /etc && pwd. Submit the output.', correctAnswer: '/etc', points: 100 },
         { title: 'File Creator', description: 'Create /home/student/proof.txt with content "AERO{UBUNTU_FILE_CREATE}". Submit the flag.', correctAnswer: 'AERO{UBUNTU_FILE_CREATE}', points: 150 },
         { title: 'Permission Reader', description: 'Run: ls -la /etc/shadow. What user owns this file?', correctAnswer: 'root', points: 100 },
-        { title: 'Process Inspector', description: 'Run: ps aux | grep sshd. What is the PID of the sshd process?', correctAnswer: '1', points: 150 },
-        { title: 'Disk Space Expert', description: 'Run: df -h / | tail -1. What is the total size of the root partition?', correctAnswer: '7.8G', points: 200 },
+        { title: 'Process Inspector', description: 'Run: ps -C sshd -o comm= | head -1. Submit the command name.', correctAnswer: 'sshd', points: 150 },
+        { title: 'Link Inspector', description: 'Create /tmp/hello_link pointing to /home/student/hello.txt, then run readlink /tmp/hello_link. Submit the output.', correctAnswer: '/home/student/hello.txt', points: 200 },
       ],
     },
     {
       title: 'Linux Fundamentals: File Permissions & Users',
-      description: 'Deep-dive into Linux permissions, user management, groups, and access control lists. Understand chmod, chown, and the permission model.',
+      description: 'Practice Linux ownership, groups, numeric modes, sticky directories, and ACLs using artifacts you create yourself.',
       dockerImage: 'ubuntu:22.04',
       difficulty: 900,
       imageUrl: '/images/labs/ubuntu.png',
@@ -69,7 +68,7 @@ Complete each task below by running the correct commands in the terminal.`,
 Linux security starts with understanding its permission model. Every file and directory has an owner, a group, and a set of permissions.
 
 ### Lab Environment
-- Ubuntu 22.04 with pre-created test files
+- Fresh Ubuntu 22.04 container with user-management and ACL tools
 - You are logged in as \`student\` (password: lab123)
 - Some files require root access to modify
 
@@ -80,26 +79,25 @@ Linux security starts with understanding its permission model. Every file and di
 |own|grp|oth|
 \`\`\``,
       tasks: [
-        'Change the permissions of /home/student/hello.txt to read-write for owner only (chmod 600)',
-        'Create a new group called "developers" and add the student user to it',
-        'Create a new user "alice" and set her password',
-        'Set the setuid bit on /usr/bin/passwd and verify it',
-        'Create a file owned by root in /tmp with sticky bit permissions',
-        'Use setfacl to give user alice read access to /home/student/hello.txt',
+        'Create secret.txt and restrict it to mode 700',
+        'Create admin_group and add student to it',
+        'Create user bob with a home directory and verify the username',
+        'Create /tmp/shared with mode 1777',
+        'Create alice and grant her read access to hello.txt using setfacl',
         'Find all files in /home that are world-writable',
       ],
       credentials: encryptCredentials([{ service: 'SSH', username: 'student', password: 'lab123' }], key),
       flags: [
         { title: 'chmod Master', description: 'Create /home/student/secret.txt, set permissions to 700, then run: stat -c "%a" /home/student/secret.txt. Submit the result.', correctAnswer: '700', points: 100 },
-        { title: 'Group Manager', description: 'Create group "admin_group", add student to it, run: groups student. Submit the groups listed.', correctAnswer: 'student admin_group', points: 150 },
-        { title: 'User Creator', description: 'Create user "bob" with home directory, run: id bob. Submit bob\'s primary group ID number.', correctAnswer: '1001', points: 200 },
+        { title: 'Group Manager', description: 'Create admin_group, add student, then run getent group admin_group | cut -d: -f4. Submit the member name.', correctAnswer: 'student', points: 150 },
+        { title: 'User Creator', description: 'Create bob with a home directory, then run id -un bob. Submit the output.', correctAnswer: 'bob', points: 200 },
         { title: 'Sticky Bit Expert', description: 'Create /tmp/shared with sticky bit, run: stat -c "%a" /tmp/shared. Submit the permission number.', correctAnswer: '1777', points: 200 },
-        { title: 'ACL Master', description: 'Set ACL on /home/student/hello.txt for alice, then run: getfacl /home/student/hello.txt | grep alice. Submit the permission string.', correctAnswer: 'r--', points: 250 },
+        { title: 'ACL Master', description: 'Grant alice read access, then inspect the alice ACL entry and submit its permission string.', correctAnswer: 'r--', points: 250 },
       ],
     },
     {
       title: 'Linux Fundamentals: Text Processing & Shell Scripting',
-      description: 'Master grep, sed, awk, and write your first shell scripts. Process log files and automate repetitive tasks.',
+      description: 'Build reproducible text-processing pipelines with grep, sed, awk, cut, sort, and shell scripts.',
       dockerImage: 'ubuntu:22.04',
       difficulty: 1000,
       imageUrl: '/images/labs/ubuntu.png',
@@ -107,9 +105,9 @@ Linux security starts with understanding its permission model. Every file and di
 Linux is built on text. Mastering text processing tools is the key to becoming efficient.
 
 ### Lab Environment
-- Ubuntu 22.04 with pre-generated log files
+- Fresh Ubuntu 22.04 container; create each small input dataset yourself
 - You are logged in as \`student\` (password: lab123)
-- Sample data is in /home/student/data/
+- Results remain identical across container restarts
 
 ### Key Tools
 - \`grep\` — Search text with regex
@@ -117,22 +115,19 @@ Linux is built on text. Mastering text processing tools is the key to becoming e
 - \`awk\` — Pattern scanning and processing
 - \`cut\`, \`sort\`, \`uniq\`, \`wc\` — Text manipulation`,
       tasks: [
-        'Use grep to find all error messages in /var/log/syslog',
-        'Use sed to replace "ERROR" with "CRITICAL" in a sample file',
-        'Use awk to print the 3rd column of a CSV file',
-        'Write a bash script that counts the number of users in /etc/passwd',
-        'Use grep -r to search for the word "password" in /etc/',
-        'Sort a list of numbers and remove duplicates using sort and uniq',
-        'Use cut to extract usernames from /etc/passwd (first field)',
-        'Write a script that monitors disk usage and alerts if > 80%',
+        'Create a three-line event log and count ERROR records with grep',
+        'Transform Hello World into Hello XpertClass with sed',
+        'Create a small CSV and extract the requested field with awk',
+        'Write a script that counts three supplied user records',
+        'Create a username list, sort it, remove duplicates, and join it with commas',
       ],
       credentials: encryptCredentials([{ service: 'SSH', username: 'student', password: 'lab123' }], key),
       flags: [
-        { title: 'grep Guru', description: 'Run: grep -c "sshd" /var/log/syslog. Submit the count of SSHD entries.', correctAnswer: '0', points: 100 },
+        { title: 'grep Guru', description: 'Create a log containing INFO, ERROR, ERROR; run grep -c ERROR on it and submit the output.', correctAnswer: '2', points: 100 },
         { title: 'sed Specialist', description: 'Run: echo "Hello World" | sed "s/World/XpertClass/". Submit the output.', correctAnswer: 'Hello XpertClass', points: 100 },
-        { title: 'awk Architect', description: 'Run: awk -F: "{print $1}" /etc/passwd | head -3. Submit the first 3 usernames.', correctAnswer: 'root daemon bin', points: 150 },
-        { title: 'Script Writer', description: 'Create /home/student/count_users.sh that outputs the number of users. Run it and submit the count.', correctAnswer: '35', points: 200 },
-        { title: 'Pipeline Master', description: 'Run: cat /etc/passwd | cut -d: -f1 | sort | head -5. Submit the first 5 sorted usernames.', correctAnswer: 'bin daemon games gnats irc', points: 200 },
+        { title: 'awk Architect', description: 'Create a CSV with blue,security as row 2, extract field 2, and submit the output.', correctAnswer: 'security', points: 150 },
+        { title: 'Script Writer', description: 'Create a script that counts three supplied user records. Execute it and submit the output.', correctAnswer: '3', points: 200 },
+        { title: 'Pipeline Master', description: 'Sort and deduplicate charlie, alice, bob, alice; join with commas and submit the output.', correctAnswer: 'alice,bob,charlie', points: 200 },
       ],
     },
     {
@@ -373,39 +368,37 @@ The kernel is the heart of Linux. Understanding it separates admins from enginee
     },
     {
       title: 'Docker & Container Fundamentals',
-      description: 'Master Docker: images, containers, volumes, networks, Dockerfiles, and container orchestration basics.',
+      description: 'Author and inspect secure Dockerfiles, Compose manifests, health checks, and build contexts without requiring a nested container engine.',
       dockerImage: 'ubuntu:22.04',
       difficulty: 1400,
       imageUrl: '/images/labs/docker.png',
       briefing: `### Container Mastery
-Containers are the foundation of modern infrastructure. Learn Docker from the ground up.
+Containers are defined by portable manifests. Learn to author and inspect them safely.
 
 ### Lab Environment
-- Ubuntu 22.04 with Docker pre-installed
+- Fresh Ubuntu 22.04 container with shell text-processing tools
 - You are logged in as \`student\` (password: lab123)
-- Docker is running and accessible
+- The host container engine is intentionally not exposed
 
 ### Container Architecture
 \`\`\`
 Application → Container Runtime → Linux Kernel (namespaces + cgroups)
 \`\`\``,
       tasks: [
-        'Pull the nginx:alpine image and run a container on port 8080',
-        'Create a Dockerfile for a simple Node.js application',
-        'Build the Docker image and tag it as myapp:latest',
-        'Create a Docker volume and mount it to a container',
-        'Create a Docker bridge network and connect two containers',
-        'Use docker exec to run commands inside a running container',
-        'Inspect container logs and resource usage',
-        'Write a docker-compose.yml for a 3-tier app (frontend, api, database)',
+        'Write a multi-stage Dockerfile based on node:20-alpine',
+        'Create a non-root app user and select it with USER',
+        'Add a HEALTHCHECK instruction to the Dockerfile',
+        'Write a Compose manifest with frontend, api, and database services',
+        'Create a .dockerignore file that excludes node_modules and secrets',
+        'Inspect each manifest with grep, awk, and sed',
       ],
       credentials: encryptCredentials([{ service: 'SSH', username: 'student', password: 'lab123' }], key),
       flags: [
-        { title: 'Container Runner', description: 'Run: docker ps --format "{{.Names}}" | head -1. Submit the container name.', correctAnswer: 'web-server', points: 150 },
-        { title: 'Dockerfile Author', description: 'Create a valid Dockerfile, run: docker build -t myapp . 2>&1 | tail -1. Submit the last line.', correctAnswer: 'Successfully tagged myapp:latest', points: 200 },
-        { title: 'Volume Master', description: 'Create volume, mount it, run: docker volume ls | grep data. Submit the volume name.', correctAnswer: 'data-vol', points: 200 },
-        { title: 'Network Engineer', description: 'Create bridge network "app-net", run: docker network ls | grep app-net. Submit the driver.', correctAnswer: 'bridge', points: 250 },
-        { title: 'Compose Architect', description: 'Create docker-compose.yml with 3 services, run: docker compose config --services | wc -l. Submit the count.', correctAnswer: '3', points: 300 },
+        { title: 'Base Image', description: 'Create a Dockerfile beginning with FROM node:20-alpine. Submit the first line.', correctAnswer: 'FROM node:20-alpine', points: 150 },
+        { title: 'Non-Root User', description: 'Add USER app to the Dockerfile and submit the selected username.', correctAnswer: 'app', points: 200 },
+        { title: 'Compose Services', description: 'Create frontend, api, and database service entries and submit their count.', correctAnswer: '3', points: 200 },
+        { title: 'Health Check', description: 'Add a HEALTHCHECK instruction and submit the instruction name.', correctAnswer: 'HEALTHCHECK', points: 250 },
+        { title: 'Build Context', description: 'Add node_modules to .dockerignore and submit the matching line.', correctAnswer: 'node_modules', points: 300 },
       ],
     },
     {
