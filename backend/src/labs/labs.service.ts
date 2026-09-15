@@ -381,6 +381,8 @@ export class LabsService implements OnModuleInit {
     }
 
     // PRACTICE: Standard single-container lab
+    let container: Docker.Container | null = null;
+    let countedAsRunning = false;
     try {
       const imageName = await this.resolveLocalImage(
         lab.dockerImage,
@@ -477,10 +479,11 @@ export class LabsService implements OnModuleInit {
         containerOpts.Cmd = ['tail', '-f', '/dev/null'];
       }
 
-      const container = await targetDocker.createContainer(containerOpts);
+      container = await targetDocker.createContainer(containerOpts);
 
       await container.start();
       this.dockerManager.incrementLabs(serverId);
+      countedAsRunning = true;
 
       try {
         const setupExec = await container.exec({
@@ -493,9 +496,23 @@ export class LabsService implements OnModuleInit {
             'id student >/dev/null 2>&1 || { if command -v apt-get >/dev/null 2>&1; then apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo passwd >/dev/null 2>&1 && useradd -m -s /bin/bash student; elif command -v apk >/dev/null 2>&1; then apk add --no-cache bash sudo shadow >/dev/null 2>&1 && useradd -m -s /bin/bash student; elif command -v dnf >/dev/null 2>&1; then dnf install -y -q sudo shadow-utils >/dev/null 2>&1 && useradd -m -s /bin/bash student; fi; }; if id student >/dev/null 2>&1; then echo "student:lab123" | chpasswd; mkdir -p /etc/sudoers.d; echo "student ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/student; chmod 0440 /etc/sudoers.d/student; fi; exit 0',
           ],
         });
-        await setupExec.start({ hijack: false });
+        await this.waitForExec(setupExec, 'student user setup');
+        if (!serviceProfile) {
+          const verificationExec = await container.exec({
+            AttachStdin: false,
+            AttachStdout: false,
+            AttachStderr: false,
+            Cmd: [
+              'sh',
+              '-c',
+              'id student >/dev/null 2>&1 && command -v sudo >/dev/null 2>&1',
+            ],
+          });
+          await this.waitForExec(verificationExec, 'student user verification');
+        }
         logger.info('Student user setup complete');
       } catch (err) {
+        if (!serviceProfile) throw err;
         logger.warn(
           `Student user setup failed: ${err instanceof Error ? err.message : String(err)}`,
         );
@@ -507,10 +524,10 @@ export class LabsService implements OnModuleInit {
         let pkgCmd = '';
         if (image.includes('ubuntu') || image.includes('debian')) {
           pkgCmd =
-            'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban net-tools iputils-ping curl wget procps psmisc gawk man-db > /dev/null 2>&1; mkdir -p /run/sshd; service rsyslog start 2>/dev/null; service cron start 2>/dev/null; service ssh start 2>/dev/null; exit 0';
+            'set -e; apt-get update -qq; DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban net-tools iputils-ping curl wget procps psmisc gawk man-db > /dev/null 2>&1; mkdir -p /run/sshd; service rsyslog start >/dev/null 2>&1 || true; service cron start >/dev/null; service ssh start >/dev/null';
         } else if (image.includes('centos') || image.includes('rhel')) {
           pkgCmd =
-            'dnf install -y -q sudo acl rsyslog openssh-server cronie iptables-nft net-tools iputils curl wget procps-ng > /dev/null 2>&1; ssh-keygen -A >/dev/null 2>&1; mkdir -p /run/sshd; /usr/sbin/sshd 2>/dev/null; /usr/sbin/crond 2>/dev/null; /usr/sbin/rsyslogd 2>/dev/null; exit 0';
+            'set -e; dnf install -y -q sudo acl rsyslog openssh-server cronie iptables-nft net-tools iputils curl wget procps-ng > /dev/null 2>&1; ssh-keygen -A >/dev/null 2>&1; mkdir -p /run/sshd; /usr/sbin/sshd; /usr/sbin/crond; /usr/sbin/rsyslogd >/dev/null 2>&1 || true';
         }
         if (pkgCmd) {
           const pkgExec = await container.exec({
@@ -519,7 +536,7 @@ export class LabsService implements OnModuleInit {
             AttachStderr: false,
             Cmd: ['bash', '-c', pkgCmd],
           });
-          await pkgExec.start({ hijack: false });
+          await this.waitForExec(pkgExec, 'lab package setup');
           logger.info(`Package setup complete for image: ${image}`);
         }
       } catch (err) {
@@ -562,6 +579,13 @@ export class LabsService implements OnModuleInit {
 
       return updated;
     } catch (err) {
+      if (container) {
+        await container.stop().catch(() => {});
+        await container.remove().catch(() => {});
+      }
+      if (countedAsRunning) {
+        this.dockerManager.decrementLabs(serverId);
+      }
       await this.prisma.labInstance
         .delete({ where: { id: instance.id } })
         .catch(() => {});
@@ -574,6 +598,30 @@ export class LabsService implements OnModuleInit {
         'Lab setup failed. Please try again later.',
       );
     }
+  }
+
+  private async waitForExec(
+    exec: Docker.Exec,
+    label: string,
+    timeoutMs = 10 * 60 * 1000,
+  ): Promise<void> {
+    await exec.start({ hijack: false });
+    const deadline = Date.now() + timeoutMs;
+
+    while (Date.now() < deadline) {
+      const state = await exec.inspect();
+      if (!state.Running) {
+        if (state.ExitCode !== 0) {
+          throw new Error(`${label} failed with exit code ${state.ExitCode}`);
+        }
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
+    throw new Error(
+      `${label} timed out after ${Math.round(timeoutMs / 1000)}s`,
+    );
   }
 
   async stopLab(userId: string, labId: string) {
