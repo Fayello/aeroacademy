@@ -50,6 +50,10 @@ const STALE_PROVISIONING_MS = parseInt(
   process.env.LAB_PROVISION_TIMEOUT_MS || (10 * 60 * 1000).toString(),
   10,
 );
+const SERVICE_READY_TIMEOUT_MS = parseInt(
+  process.env.LAB_SERVICE_READY_TIMEOUT_MS || (5 * 60 * 1000).toString(),
+  10,
+);
 
 function getResourceLimits(profile: string): {
   memoryMB: number;
@@ -641,7 +645,7 @@ export class LabsService implements OnModuleInit {
   private async waitForContainerPort(
     container: Docker.Container,
     port: number,
-    timeoutMs = 5 * 60 * 1000,
+    timeoutMs = SERVICE_READY_TIMEOUT_MS,
   ): Promise<void> {
     const deadline = Date.now() + timeoutMs;
 
@@ -663,7 +667,9 @@ export class LabsService implements OnModuleInit {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
-    throw new Error(`service port ${port} was not ready within 300s`);
+    throw new Error(
+      `service port ${port} was not ready within ${Math.round(timeoutMs / 1000)}s`,
+    );
   }
 
   private canConnect(

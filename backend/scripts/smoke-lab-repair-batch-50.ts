@@ -46,6 +46,12 @@ async function main(): Promise<void> {
     },
   });
   const failures: string[] = [];
+  const titles =
+    process.env.SMOKE_INTERACTIVE_ONLY === '1'
+      ? LAB_REPAIR_BATCH_50_TITLES.filter((title) =>
+          LAB_REPAIR_INTERACTIVE_TITLES.has(title),
+        )
+      : [...LAB_REPAIR_BATCH_50_TITLES];
 
   try {
     const staleInstances = await prisma.labInstance.findMany({
@@ -58,13 +64,9 @@ async function main(): Promise<void> {
     await prisma.activityEvent.deleteMany({ where: { userId: user.id } });
     await prisma.labInstance.deleteMany({ where: { userId: user.id } });
 
-    for (
-      let offset = 0;
-      offset < LAB_REPAIR_BATCH_50_TITLES.length;
-      offset += 5
-    ) {
-      const batch = LAB_REPAIR_BATCH_50_TITLES.slice(offset, offset + 5);
-      console.log(`\nBatch ${offset / 5 + 1}/10`);
+    for (let offset = 0; offset < titles.length; offset += 5) {
+      const batch = titles.slice(offset, offset + 5);
+      console.log(`\nBatch ${offset / 5 + 1}/${Math.ceil(titles.length / 5)}`);
       for (const title of batch) {
         const lab = await prisma.lab.findFirstOrThrow({ where: { title } });
         try {
@@ -117,7 +119,7 @@ async function main(): Promise<void> {
     );
   }
   console.log(
-    '\nRuntime smoke passed: 50/50 labs started, validated, and stopped.',
+    `\nRuntime smoke passed: ${titles.length}/${titles.length} labs started, validated, and stopped.`,
   );
 }
 
