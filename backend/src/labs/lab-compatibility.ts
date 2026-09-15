@@ -115,6 +115,20 @@ const RULES: Array<{
   },
 ];
 
+const ARTIFACT_MODE_MARKER = 'runtime mode: portable artifact validation';
+const ARTIFACT_MODE_ISSUES = new Set<LabCompatibilityIssueCode>([
+  'SYSTEMD_REQUIRED',
+  'CONTAINER_RUNTIME_REQUIRED',
+  'KUBERNETES_REQUIRED',
+  'PRIVILEGED_STORAGE_REQUIRED',
+  'NETWORK_ADMIN_REQUIRED',
+  'KERNEL_ACCESS_REQUIRED',
+  'MULTI_NODE_REQUIRED',
+  'CLOUD_ACCOUNT_REQUIRED',
+  'HARDWARE_REQUIRED',
+  'DESKTOP_TOOLCHAIN_REQUIRED',
+]);
+
 function flattenText(value: unknown): string {
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) return value.map(flattenText).join('\n');
@@ -137,9 +151,13 @@ export function assessLabCompatibility(
     flattenText(lab.flags),
   ].join('\n');
 
-  return RULES.filter((rule) => rule.pattern.test(content)).map(
-    ({ code, reason }) => ({ code, reason }),
-  );
+  const artifactMode = content.toLowerCase().includes(ARTIFACT_MODE_MARKER);
+
+  return RULES.filter(
+    (rule) =>
+      rule.pattern.test(content) &&
+      !(artifactMode && ARTIFACT_MODE_ISSUES.has(rule.code)),
+  ).map(({ code, reason }) => ({ code, reason }));
 }
 
 export function isLabLaunchable(lab: LabCompatibilityInput): boolean {

@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { hashAnswer, encryptCredentials, createLabWithFlags } from './seed-enrich-helpers';
+import { hashAnswer, encryptCredentials } from './seed-enrich-helpers';
+import { applyLabRepairBatch50 } from './lab-repair-batch-50';
 
-interface LabEntry {
+export interface LabEntry {
   title: string;
   description: string;
   dockerImage: string;
@@ -13,7 +14,7 @@ interface LabEntry {
   flags: Array<{ title: string; description: string; correctAnswer: string; points: number }>;
 }
 
-const labs: LabEntry[] = [
+export const labs: LabEntry[] = [
 {
     title: "Linux Fundamentals: Ubuntu CLI Mastery",
     description: "Learn essential Ubuntu navigation, files, permissions, processes, and links in a fresh practice container.",
@@ -4686,6 +4687,8 @@ Apply CIS Ubuntu/Linux benchmark and web server specific hardening measures.
     ],
   }
 ];
+
+applyLabRepairBatch50(labs);
 
 export async function seedEnrichLabs(prisma: PrismaClient, encryptionKey: string) {
   console.log('  === Seeding 118 enriched labs ===');

@@ -522,7 +522,10 @@ export class LabsService implements OnModuleInit {
       try {
         const image = (lab.dockerImage || '').toLowerCase();
         let pkgCmd = '';
-        if (image.includes('ubuntu') || image.includes('debian')) {
+        if (image.includes('aeroacademy/ubuntu-practice')) {
+          pkgCmd =
+            'set -e; mkdir -p /run/sshd; service rsyslog start >/dev/null 2>&1 || true; service cron start >/dev/null; service ssh start >/dev/null';
+        } else if (image.includes('ubuntu') || image.includes('debian')) {
           pkgCmd =
             'set -e; apt-get update -qq; DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo acl rsyslog openssh-server cron aide iptables fail2ban net-tools iputils-ping curl wget procps psmisc gawk man-db > /dev/null 2>&1; mkdir -p /run/sshd; service rsyslog start >/dev/null 2>&1 || true; service cron start >/dev/null; service ssh start >/dev/null';
         } else if (image.includes('centos') || image.includes('rhel')) {
@@ -542,6 +545,13 @@ export class LabsService implements OnModuleInit {
       } catch (err) {
         logger.warn(
           `Package setup failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+
+      if (serviceProfile) {
+        await this.waitForContainerPort(
+          container,
+          Number.parseInt(internalPort, 10),
         );
       }
 
@@ -622,6 +632,33 @@ export class LabsService implements OnModuleInit {
     throw new Error(
       `${label} timed out after ${Math.round(timeoutMs / 1000)}s`,
     );
+  }
+
+  private async waitForContainerPort(
+    container: Docker.Container,
+    port: number,
+    timeoutMs = 5 * 60 * 1000,
+  ): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    const hexPort = port.toString(16).toUpperCase().padStart(4, '0');
+    const command = `for file in /proc/net/tcp /proc/net/tcp6; do while read -r _ local _ state _; do case "$local:$state" in *:${hexPort}:0A) exit 0 ;; esac; done < "$file"; done; exit 1`;
+
+    while (Date.now() < deadline) {
+      try {
+        const readinessExec = await container.exec({
+          AttachStdin: false,
+          AttachStdout: false,
+          AttachStderr: false,
+          Cmd: ['sh', '-c', command],
+        });
+        await this.waitForExec(readinessExec, `service port ${port}`, 10_000);
+        return;
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    throw new Error(`service port ${port} was not ready within 300s`);
   }
 
   async stopLab(userId: string, labId: string) {

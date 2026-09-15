@@ -80,6 +80,28 @@ describe('lab compatibility', () => {
     ).toBe(true);
   });
 
+  it('allows privileged vocabulary in an explicit portable artifact lab', () => {
+    expect(
+      assessLabCompatibility({
+        title: 'Systemd and firewall design',
+        briefing: 'Runtime mode: portable artifact validation',
+        tasks: [
+          'Write a systemd unit file without running systemctl',
+          'Record an iptables policy without applying it',
+        ],
+      }),
+    ).toEqual([]);
+  });
+
+  it('does not hide nondeterministic output in portable artifact mode', () => {
+    expect(
+      assessLabCompatibility({
+        briefing: 'Runtime mode: portable artifact validation',
+        tasks: ['Submit the kernel version'],
+      }).map((issue) => issue.code),
+    ).toContain('NONDETERMINISTIC_RUNTIME_OUTPUT');
+  });
+
   it('allows the repaired deterministic beginner cohort', () => {
     const labs = [
       {
