@@ -24,6 +24,7 @@ import { ComposeManager } from './compose-manager.service';
 import { EmailService } from '../email/email.service';
 import Docker from 'dockerode';
 import * as bcrypt from 'bcrypt';
+import * as net from 'net';
 import { Prisma } from '@prisma/client';
 import createLogger from '../common/logger';
 import { assessLabCompatibility, isLabLaunchable } from './lab-compatibility';
@@ -643,25 +644,45 @@ export class LabsService implements OnModuleInit {
     timeoutMs = 5 * 60 * 1000,
   ): Promise<void> {
     const deadline = Date.now() + timeoutMs;
-    const hexPort = port.toString(16).toUpperCase().padStart(4, '0');
-    const command = `for file in /proc/net/tcp /proc/net/tcp6; do while read -r _ local _ state _; do case "$local:$state" in *:${hexPort}:0A) exit 0 ;; esac; done < "$file"; done; exit 1`;
 
     while (Date.now() < deadline) {
       try {
-        const readinessExec = await container.exec({
-          AttachStdin: false,
-          AttachStdout: false,
-          AttachStderr: false,
-          Cmd: ['sh', '-c', command],
-        });
-        await this.waitForExec(readinessExec, `service port ${port}`, 10_000);
-        return;
+        const inspection = await container.inspect();
+        if (!inspection.State.Running) {
+          throw new Error('service container stopped before becoming ready');
+        }
+        const addresses = Object.values(inspection.NetworkSettings.Networks)
+          .map((network) => network.IPAddress)
+          .filter(Boolean);
+        for (const address of addresses) {
+          if (await this.canConnect(address, port)) return;
+        }
       } catch {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // The service may still be starting.
       }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     throw new Error(`service port ${port} was not ready within 300s`);
+  }
+
+  private canConnect(
+    host: string,
+    port: number,
+    timeoutMs = 1000,
+  ): Promise<boolean> {
+    return new Promise((resolve) => {
+      const socket = net.createConnection({ host, port });
+      const finish = (connected: boolean) => {
+        socket.removeAllListeners();
+        socket.destroy();
+        resolve(connected);
+      };
+      socket.setTimeout(timeoutMs);
+      socket.once('connect', () => finish(true));
+      socket.once('timeout', () => finish(false));
+      socket.once('error', () => finish(false));
+    });
   }
 
   async stopLab(userId: string, labId: string) {

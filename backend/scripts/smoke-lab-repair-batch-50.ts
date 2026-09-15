@@ -48,6 +48,16 @@ async function main(): Promise<void> {
   const failures: string[] = [];
 
   try {
+    const staleInstances = await prisma.labInstance.findMany({
+      where: { userId: user.id },
+      select: { labId: true },
+    });
+    for (const stale of staleInstances) {
+      await labsService.stopLab(user.id, stale.labId).catch(() => undefined);
+    }
+    await prisma.activityEvent.deleteMany({ where: { userId: user.id } });
+    await prisma.labInstance.deleteMany({ where: { userId: user.id } });
+
     for (
       let offset = 0;
       offset < LAB_REPAIR_BATCH_50_TITLES.length;
