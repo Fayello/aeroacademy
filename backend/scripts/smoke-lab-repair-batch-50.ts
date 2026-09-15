@@ -51,26 +51,32 @@ async function main(): Promise<void> {
     },
   });
   const failures: string[] = [];
-  const finalLabs =
-    process.env.SMOKE_BATCH === 'remaining'
-      ? await prisma.lab.findMany({
-          where: {
-            type: 'PRACTICE',
-            briefing: {
-              contains: FINAL_LAB_REPAIR_MARKER,
-              mode: 'insensitive',
-            },
-          },
-          select: { title: true },
-          orderBy: { title: 'asc' },
-        })
-      : [];
-  const batchTitles =
-    process.env.SMOKE_BATCH === 'remaining'
-      ? finalLabs.map((lab) => lab.title)
-      : process.env.SMOKE_BATCH === '02'
-        ? [...LAB_REPAIR_BATCH_02_TITLES]
-        : [...LAB_REPAIR_BATCH_50_TITLES];
+  const databaseBatch = ['remaining', 'all'].includes(
+    process.env.SMOKE_BATCH || '',
+  )
+    ? await prisma.lab.findMany({
+        where: {
+          type: 'PRACTICE',
+          ...(process.env.SMOKE_BATCH === 'remaining'
+            ? {
+                briefing: {
+                  contains: FINAL_LAB_REPAIR_MARKER,
+                  mode: 'insensitive' as const,
+                },
+              }
+            : {}),
+        },
+        select: { title: true },
+        orderBy: { title: 'asc' },
+      })
+    : [];
+  const batchTitles = ['remaining', 'all'].includes(
+    process.env.SMOKE_BATCH || '',
+  )
+    ? databaseBatch.map((lab) => lab.title)
+    : process.env.SMOKE_BATCH === '02'
+      ? [...LAB_REPAIR_BATCH_02_TITLES]
+      : [...LAB_REPAIR_BATCH_50_TITLES];
   const interactiveTitles = new Set([
     ...LAB_REPAIR_INTERACTIVE_TITLES,
     ...FINAL_SERVICE_LAB_TITLES,
@@ -79,6 +85,9 @@ async function main(): Promise<void> {
     process.env.SMOKE_INTERACTIVE_ONLY === '1'
       ? batchTitles.filter((title) => interactiveTitles.has(title))
       : batchTitles;
+  if (process.env.SMOKE_BATCH === 'all' && titles.length !== 510) {
+    throw new Error(`Expected 510 practice labs, found ${titles.length}`);
+  }
   const requestedTitle = process.env.SMOKE_TITLE?.trim();
   if (requestedTitle) {
     titles = titles.filter((title) => title === requestedTitle);
