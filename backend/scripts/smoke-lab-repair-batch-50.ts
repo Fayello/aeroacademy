@@ -8,6 +8,7 @@ import {
   LAB_REPAIR_BATCH_50_TITLES,
   LAB_REPAIR_INTERACTIVE_TITLES,
 } from '../prisma/lab-repair-batch-50';
+import { LAB_REPAIR_BATCH_02_TITLES } from '../prisma/lab-repair-batch-02';
 
 const SMOKE_EMAIL = 'lab-runtime-smoke@invalid.local';
 
@@ -46,12 +47,16 @@ async function main(): Promise<void> {
     },
   });
   const failures: string[] = [];
+  const batchTitles =
+    process.env.SMOKE_BATCH === '02'
+      ? LAB_REPAIR_BATCH_02_TITLES
+      : LAB_REPAIR_BATCH_50_TITLES;
   let titles =
     process.env.SMOKE_INTERACTIVE_ONLY === '1'
       ? LAB_REPAIR_BATCH_50_TITLES.filter((title) =>
           LAB_REPAIR_INTERACTIVE_TITLES.has(title),
         )
-      : [...LAB_REPAIR_BATCH_50_TITLES];
+      : [...batchTitles];
   const requestedTitle = process.env.SMOKE_TITLE?.trim();
   if (requestedTitle) {
     titles = titles.filter((title) => title === requestedTitle);

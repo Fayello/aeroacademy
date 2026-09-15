@@ -1,4 +1,6 @@
 import { labs } from '../prisma/seed-enrich-labs';
+import { LAB_REPAIR_BATCH_50_TITLES } from '../prisma/lab-repair-batch-50';
+import { LAB_REPAIR_BATCH_02_TITLES } from '../prisma/lab-repair-batch-02';
 import { assessLabCompatibility } from '../src/labs/lab-compatibility';
 
 const repairedTitles = new Set([
@@ -7,6 +9,8 @@ const repairedTitles = new Set([
   'Linux Fundamentals: Text Processing & Shell Scripting',
   'Linux Fundamentals: Process & Service Management',
   'Docker & Container Fundamentals',
+  ...LAB_REPAIR_BATCH_50_TITLES,
+  ...LAB_REPAIR_BATCH_02_TITLES,
 ]);
 
 const countArgument = process.argv

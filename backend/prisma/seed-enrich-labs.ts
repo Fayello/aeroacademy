@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { hashAnswer, encryptCredentials } from './seed-enrich-helpers';
 import { applyLabRepairBatch50 } from './lab-repair-batch-50';
+import { applyLabRepairBatch02 } from './lab-repair-batch-02';
 
 export interface LabEntry {
   title: string;
@@ -4689,6 +4690,7 @@ Apply CIS Ubuntu/Linux benchmark and web server specific hardening measures.
 ];
 
 applyLabRepairBatch50(labs);
+applyLabRepairBatch02(labs);
 
 export async function seedEnrichLabs(prisma: PrismaClient, encryptionKey: string) {
   console.log('  === Seeding 118 enriched labs ===');
