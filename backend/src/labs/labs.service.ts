@@ -226,6 +226,33 @@ export class LabsService implements OnModuleInit {
     }
   }
 
+  private async ensureTacticalMongo(targetDocker: Docker): Promise<void> {
+    try {
+      await targetDocker.createNetwork({ Name: 'tactical-net' });
+    } catch {
+      // The shared dependency network already exists.
+    }
+
+    try {
+      const mongo = targetDocker.getContainer('tactical-mongo');
+      const info = await mongo.inspect();
+      if (!info.State.Running) await mongo.start();
+      return;
+    } catch {
+      const mongo = await targetDocker.createContainer({
+        Image: 'mongo:4.4',
+        name: 'tactical-mongo',
+        HostConfig: {
+          NetworkMode: 'tactical-net',
+          Memory: 2 * 1024 * 1024 * 1024,
+          CpuQuota: 200000,
+          RestartPolicy: { Name: 'unless-stopped' },
+        },
+      });
+      await mongo.start();
+    }
+  }
+
   private async resolveLocalImage(
     requestedImage: string,
     docker?: Docker,
@@ -429,6 +456,10 @@ export class LabsService implements OnModuleInit {
       }
 
       const normalizedImage = imageName.toLowerCase();
+      const requiresTacticalMongo = normalizedImage.includes('nodegoat');
+      if (requiresTacticalMongo) {
+        await this.ensureTacticalMongo(targetDocker);
+      }
       const serviceProfiles = [
         { match: 'juice-shop', port: '3000/tcp', browser: true },
         { match: 'webgoat', port: '8080/tcp', browser: true },
@@ -450,7 +481,7 @@ export class LabsService implements OnModuleInit {
       const internalPort = serviceProfile?.port || '80/tcp';
 
       const env: string[] = [];
-      if (normalizedImage.includes('nodegoat')) {
+      if (requiresTacticalMongo) {
         const dbName = `nodegoat_${userId.replace(/-/g, '_')}`;
         env.push(`MONGODB_URI=mongodb://tactical-mongo:27017/${dbName}`);
       }
@@ -495,6 +526,12 @@ export class LabsService implements OnModuleInit {
       }
 
       container = await targetDocker.createContainer(containerOpts);
+
+      if (requiresTacticalMongo) {
+        await targetDocker.getNetwork('tactical-net').connect({
+          Container: container.id,
+        });
+      }
 
       await container.start();
       this.dockerManager.incrementLabs(serverId);

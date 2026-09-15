@@ -46,12 +46,19 @@ async function main(): Promise<void> {
     },
   });
   const failures: string[] = [];
-  const titles =
+  let titles =
     process.env.SMOKE_INTERACTIVE_ONLY === '1'
       ? LAB_REPAIR_BATCH_50_TITLES.filter((title) =>
           LAB_REPAIR_INTERACTIVE_TITLES.has(title),
         )
       : [...LAB_REPAIR_BATCH_50_TITLES];
+  const requestedTitle = process.env.SMOKE_TITLE?.trim();
+  if (requestedTitle) {
+    titles = titles.filter((title) => title === requestedTitle);
+    if (titles.length === 0) {
+      throw new Error(`Smoke target is not in this batch: ${requestedTitle}`);
+    }
+  }
 
   try {
     const staleInstances = await prisma.labInstance.findMany({
