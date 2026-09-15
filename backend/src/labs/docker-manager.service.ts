@@ -36,7 +36,11 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
   constructor() {
     const dockerHost = process.env.DOCKER_HOST || 'http://docker-proxy:2375';
     const url = new URL(dockerHost);
-    this.localDocker = new Docker({ protocol: url.protocol.replace(':', '') as 'http' | 'https', host: url.hostname, port: parseInt(url.port || '2375') });
+    this.localDocker = new Docker({
+      protocol: url.protocol.replace(':', '') as 'http' | 'https',
+      host: url.hostname,
+      port: parseInt(url.port || '2375'),
+    });
   }
 
   async onModuleInit() {
@@ -65,14 +69,23 @@ export class DockerManager implements OnModuleInit, OnModuleDestroy {
       );
 
     if (remoteHost) {
-      await this.addRemoteServer({
-        id: 'remote',
-        name: 'Server 2 (Worker)',
-        host: remoteHost,
-        port: 22,
-        username: remoteUser,
-        keyPath: remoteKey,
-      });
+      try {
+        fs.accessSync(remoteKey, fs.constants.R_OK);
+        await this.addRemoteServer({
+          id: 'remote',
+          name: 'Server 2 (Worker)',
+          host: remoteHost,
+          port: 22,
+          username: remoteUser,
+          keyPath: remoteKey,
+        });
+      } catch (error) {
+        logger.warn(
+          `Remote Docker worker disabled; local worker remains available: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
     }
 
     logger.log(`DockerManager initialized with ${this.servers.size} server(s)`);

@@ -95,11 +95,21 @@ export class LabsService implements OnModuleInit {
     try {
       await this.docker.ping();
       logger.info('Connected to local Docker daemon');
-      await this.pruneOrphanedContainers();
-      await this.composeManager.init();
-      logger.info('Compose manager initialized');
     } catch {
       logger.error('Docker daemon unavailable. Labs will not work.');
+      return;
+    }
+
+    await this.pruneOrphanedContainers();
+    try {
+      await this.composeManager.init();
+      logger.info('Compose manager initialized');
+    } catch (error) {
+      logger.warn(
+        `Compose manager unavailable; practice labs remain operational: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
     }
   }
 
@@ -485,7 +495,7 @@ export class LabsService implements OnModuleInit {
       this.dockerManager.incrementLabs(serverId);
       countedAsRunning = true;
 
-      try {
+      if (!serviceProfile) {
         const setupExec = await container.exec({
           AttachStdin: false,
           AttachStdout: false,
@@ -497,25 +507,18 @@ export class LabsService implements OnModuleInit {
           ],
         });
         await this.waitForExec(setupExec, 'student user setup');
-        if (!serviceProfile) {
-          const verificationExec = await container.exec({
-            AttachStdin: false,
-            AttachStdout: false,
-            AttachStderr: false,
-            Cmd: [
-              'sh',
-              '-c',
-              'id student >/dev/null 2>&1 && command -v sudo >/dev/null 2>&1',
-            ],
-          });
-          await this.waitForExec(verificationExec, 'student user verification');
-        }
+        const verificationExec = await container.exec({
+          AttachStdin: false,
+          AttachStdout: false,
+          AttachStderr: false,
+          Cmd: [
+            'sh',
+            '-c',
+            'id student >/dev/null 2>&1 && command -v sudo >/dev/null 2>&1',
+          ],
+        });
+        await this.waitForExec(verificationExec, 'student user verification');
         logger.info('Student user setup complete');
-      } catch (err) {
-        if (!serviceProfile) throw err;
-        logger.warn(
-          `Student user setup failed: ${err instanceof Error ? err.message : String(err)}`,
-        );
       }
 
       // Install lab-specific packages based on Docker image
