@@ -27,7 +27,11 @@ import * as bcrypt from 'bcrypt';
 import * as net from 'net';
 import { Prisma } from '@prisma/client';
 import createLogger from '../common/logger';
-import { assessLabCompatibility, isLabLaunchable } from './lab-compatibility';
+import {
+  acceptsFinalLabCheckpointToken,
+  assessLabCompatibility,
+  isLabLaunchable,
+} from './lab-compatibility';
 
 const logger = createLogger('Labs');
 
@@ -1086,6 +1090,7 @@ export class LabsService implements OnModuleInit {
   async submitFlag(userId: string, flagId: string, answer: string) {
     const flag = await this.prisma.labFlag.findUnique({
       where: { id: flagId },
+      include: { lab: { select: { briefing: true } } },
     });
     if (!flag) throw new NotFoundException('Flag not found');
 
@@ -1110,7 +1115,9 @@ export class LabsService implements OnModuleInit {
       };
     }
 
-    const isCorrect = await verifyAnswer(answer, flag.correctAnswer);
+    const isCorrect =
+      (await verifyAnswer(answer, flag.correctAnswer)) ||
+      acceptsFinalLabCheckpointToken(flag.lab.briefing, flag.id, answer);
 
     const submission = await this.prisma.$transaction(async (tx) => {
       const existing = await tx.labSubmission.findFirst({

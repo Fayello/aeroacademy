@@ -9,6 +9,10 @@ import {
   LAB_REPAIR_INTERACTIVE_TITLES,
 } from '../prisma/lab-repair-batch-50';
 import { LAB_REPAIR_BATCH_02_TITLES } from '../prisma/lab-repair-batch-02';
+import {
+  FINAL_LAB_REPAIR_MARKER,
+  FINAL_SERVICE_LAB_TITLES,
+} from '../prisma/lab-repair-final';
 
 const SMOKE_EMAIL = 'lab-runtime-smoke@invalid.local';
 
@@ -47,16 +51,34 @@ async function main(): Promise<void> {
     },
   });
   const failures: string[] = [];
+  const finalLabs =
+    process.env.SMOKE_BATCH === 'remaining'
+      ? await prisma.lab.findMany({
+          where: {
+            type: 'PRACTICE',
+            briefing: {
+              contains: FINAL_LAB_REPAIR_MARKER,
+              mode: 'insensitive',
+            },
+          },
+          select: { title: true },
+          orderBy: { title: 'asc' },
+        })
+      : [];
   const batchTitles =
-    process.env.SMOKE_BATCH === '02'
-      ? LAB_REPAIR_BATCH_02_TITLES
-      : LAB_REPAIR_BATCH_50_TITLES;
+    process.env.SMOKE_BATCH === 'remaining'
+      ? finalLabs.map((lab) => lab.title)
+      : process.env.SMOKE_BATCH === '02'
+        ? [...LAB_REPAIR_BATCH_02_TITLES]
+        : [...LAB_REPAIR_BATCH_50_TITLES];
+  const interactiveTitles = new Set([
+    ...LAB_REPAIR_INTERACTIVE_TITLES,
+    ...FINAL_SERVICE_LAB_TITLES,
+  ]);
   let titles =
     process.env.SMOKE_INTERACTIVE_ONLY === '1'
-      ? LAB_REPAIR_BATCH_50_TITLES.filter((title) =>
-          LAB_REPAIR_INTERACTIVE_TITLES.has(title),
-        )
-      : [...batchTitles];
+      ? batchTitles.filter((title) => interactiveTitles.has(title))
+      : batchTitles;
   const requestedTitle = process.env.SMOKE_TITLE?.trim();
   if (requestedTitle) {
     titles = titles.filter((title) => title === requestedTitle);
@@ -81,6 +103,7 @@ async function main(): Promise<void> {
       console.log(`\nBatch ${offset / 5 + 1}/${Math.ceil(titles.length / 5)}`);
       for (const title of batch) {
         const lab = await prisma.lab.findFirstOrThrow({ where: { title } });
+        let smokeContainer: Docker.Container | undefined;
         try {
           const instance = await labsService.startLab(user.id, lab.id);
           if (!instance.containerId || instance.status !== 'RUNNING') {
@@ -90,11 +113,12 @@ async function main(): Promise<void> {
           if (!docker)
             throw new Error(`Docker worker missing: ${instance.serverId}`);
           const container = docker.getContainer(instance.containerId);
+          smokeContainer = container;
           const inspection = await container.inspect();
           if (!inspection.State.Running)
             throw new Error('container is not running');
 
-          if (!LAB_REPAIR_INTERACTIVE_TITLES.has(title)) {
+          if (!interactiveTitles.has(title)) {
             const validation = await container.exec({
               AttachStdin: false,
               AttachStdout: false,
@@ -114,6 +138,7 @@ async function main(): Promise<void> {
           failures.push(`${title}: ${message}`);
           console.error(`FAIL\t${title}\t${message}`);
         } finally {
+          await smokeContainer?.kill().catch(() => undefined);
           await labsService.stopLab(user.id, lab.id).catch(() => undefined);
         }
       }

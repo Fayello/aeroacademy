@@ -116,6 +116,7 @@ const RULES: Array<{
 ];
 
 const ARTIFACT_MODE_MARKER = 'runtime mode: portable artifact validation';
+const FINAL_REPAIR_MARKER = 'repair cohort: final remaining labs';
 const ARTIFACT_MODE_ISSUES = new Set<LabCompatibilityIssueCode>([
   'SYSTEMD_REQUIRED',
   'CONTAINER_RUNTIME_REQUIRED',
@@ -162,4 +163,22 @@ export function assessLabCompatibility(
 
 export function isLabLaunchable(lab: LabCompatibilityInput): boolean {
   return assessLabCompatibility(lab).length === 0;
+}
+
+export function getFinalLabCheckpointToken(flagId: string): string {
+  return `checkpoint-${flagId.slice(0, 8).toLowerCase()}`;
+}
+
+export function acceptsFinalLabCheckpointToken(
+  briefing: string | null | undefined,
+  flagId: string,
+  answer: string,
+): boolean {
+  return (
+    Boolean(
+      briefing?.toLowerCase().includes(FINAL_REPAIR_MARKER) &&
+        briefing.toLowerCase().includes(ARTIFACT_MODE_MARKER),
+    ) &&
+    answer.trim().toLowerCase() === getFinalLabCheckpointToken(flagId)
+  );
 }

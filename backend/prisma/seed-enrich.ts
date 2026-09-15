@@ -41,6 +41,13 @@ async function main() {
     await seedScale82Labs(prisma, process.env.LAB_ENCRYPTION_KEY || 'aeroacademy-labs-default-key-change-in-production-32b!');
   } catch (e) { console.log('  Note: scale-82 not yet run', (e as Error).message.slice(0,120)); }
 
+  // Normalize infrastructure-dependent practice labs after every lab seed source
+  // has run, so fresh deployments receive the same repair as production.
+  console.log('\n--- Phase 3f: Repairing remaining practice labs ---');
+  const { repairRemainingPracticeLabs } = await import('./lab-repair-final');
+  const repairResult = await repairRemainingPracticeLabs(prisma);
+  console.log(`  Repaired ${repairResult.repaired} labs (${repairResult.portable} portable, ${repairResult.serviceBacked} service-backed)`);
+
   // Phase 4: New courses
   console.log('\n--- Phase 4: Seeding new courses ---');
   const { seedEnrichCoursesNew } = await import('./seed-enrich-courses-new');
