@@ -55,9 +55,6 @@ async function main(): Promise<void> {
       if (!flag.description?.includes(token)) {
         failures.push(`${lab.title}/${flag.title}: missing ${token}`);
       }
-      if (!flag.correctAnswer) {
-        failures.push(`${lab.title}/${flag.title}: missing answer hash`);
-      }
     }
   }
 

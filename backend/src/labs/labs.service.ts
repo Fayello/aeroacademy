@@ -1116,8 +1116,9 @@ export class LabsService implements OnModuleInit {
     }
 
     const isCorrect =
-      (await verifyAnswer(answer, flag.correctAnswer)) ||
-      acceptsFinalLabCheckpointToken(flag.lab.briefing, flag.id, answer);
+      acceptsFinalLabCheckpointToken(flag.lab.briefing, flag.id, answer) ||
+      (Boolean(flag.correctAnswer) &&
+        (await verifyAnswer(answer, flag.correctAnswer)));
 
     const submission = await this.prisma.$transaction(async (tx) => {
       const existing = await tx.labSubmission.findFirst({
