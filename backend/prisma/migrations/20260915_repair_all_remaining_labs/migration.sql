@@ -141,7 +141,7 @@ BEGIN
   SELECT count(*) INTO service_count
   FROM "_FinalLabRepairTarget" WHERE "serviceBacked";
 
-  IF repaired_count <> 178 OR portable_count <> 172 OR service_count <> 6 THEN
+  IF repaired_count <> 405 OR portable_count <> 399 OR service_count <> 6 THEN
     RAISE EXCEPTION
       'Final lab repair target mismatch: total %, portable %, service-backed %',
       repaired_count, portable_count, service_count;

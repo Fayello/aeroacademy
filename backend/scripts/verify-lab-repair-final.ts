@@ -25,10 +25,10 @@ async function main(): Promise<void> {
     FINAL_SERVICE_LAB_TITLES.has(lab.title),
   );
 
-  if (labs.length !== 178)
-    failures.push(`expected 178 labs, found ${labs.length}`);
-  if (portable.length !== 172)
-    failures.push(`expected 172 portable labs, found ${portable.length}`);
+  if (labs.length !== 405)
+    failures.push(`expected 405 labs, found ${labs.length}`);
+  if (portable.length !== 399)
+    failures.push(`expected 399 portable labs, found ${portable.length}`);
   if (serviceBacked.length !== 6)
     failures.push(
       `expected 6 service-backed labs, found ${serviceBacked.length}`,
