@@ -523,6 +523,8 @@ export class LabsService implements OnModuleInit {
 
       if (!serviceProfile) {
         containerOpts.Cmd = ['tail', '-f', '/dev/null'];
+      } else if (requiresTacticalMongo) {
+        containerOpts.Cmd = ['node', 'server.js'];
       }
 
       container = await targetDocker.createContainer(containerOpts);
